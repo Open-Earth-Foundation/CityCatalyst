@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { api } from "@/services/api";
 import type { DataSourcePreviewItem } from "@/util/types";
+import { toKebabCase } from "@/util/helpers";
 
 interface SourceLink {
   label: string;
@@ -110,8 +111,10 @@ function SourceLinksList({ links }: { links: SourceLink[] }) {
 
 function SubcategoryAccordion({
   subcategories,
+  t,
 }: {
   subcategories: SourceSubcategory[];
+  t: TFunction;
 }) {
   const defaultSubcategory = subcategories[0]?.value;
 
@@ -143,7 +146,7 @@ function SubcategoryAccordion({
               whiteSpace="normal"
               wordBreak="break-word"
             >
-              {subcategory.title}
+              {t(toKebabCase(subcategory.title))}
             </Text>
           </AccordionItemTrigger>
           <AccordionItemContent px="8px" pb="16px">
@@ -157,6 +160,7 @@ function SubcategoryAccordion({
 
 interface ThirdPartySourcesDrawerProps {
   t: TFunction;
+  tDrawer: TFunction;
   cityId: string;
   year: number;
   inventoryType?: string;
@@ -164,6 +168,7 @@ interface ThirdPartySourcesDrawerProps {
 
 export default function ThirdPartySourcesDrawer({
   t,
+  tDrawer,
   cityId,
   year,
   inventoryType,
@@ -285,13 +290,14 @@ export default function ThirdPartySourcesDrawer({
                           whiteSpace="normal"
                           wordBreak="break-word"
                         >
-                          {category.title}
+                          {tDrawer(toKebabCase(category.title))}
                         </Text>
                       </AccordionItemTrigger>
                       <AccordionItemContent px="8px" pb="16px">
                         {category.subcategories.length > 0 ? (
                           <SubcategoryAccordion
                             subcategories={category.subcategories}
+                            t={tDrawer}
                           />
                         ) : (
                           <Text

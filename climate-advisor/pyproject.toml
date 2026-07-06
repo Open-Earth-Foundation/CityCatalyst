@@ -44,7 +44,7 @@ dependencies = [
     "orjson==3.11.6",
     "ormsgpack==1.12.2",
     "packaging==25.0",
-    "pgvector==0.4.1",
+    "pgvector==0.4.2",
     "pluggy==1.6.0",
     "psycopg2-binary==2.9.11",
     "pycparser==2.23",

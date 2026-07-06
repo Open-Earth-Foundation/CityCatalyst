@@ -18,6 +18,8 @@ on:
       - climate-advisor/k8s/migrate-dev.yml
       - climate-advisor/k8s/service-dev.yml
       - climate-advisor/k8s/db-configmap-dev.yml
+      - k8s/cc-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-develop.yml
   push:
     paths:
@@ -30,6 +32,8 @@ on:
       - climate-advisor/k8s/migrate-dev.yml
       - climate-advisor/k8s/service-dev.yml
       - climate-advisor/k8s/db-configmap-dev.yml
+      - k8s/cc-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
 jobs:
@@ -180,3 +184,11 @@ jobs:
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-dev -n default
+          SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
+          CA_SERVICE_NAME=climate-advisor-service-dev \
+          CA_DEPLOYMENT_NAME=climate-advisor-dev \
+          CC_EXPECTED_AUDIENCE=https://citycatalyst.openearth.dev \
+          CA_SMOKE_USER_ID="${{ vars.CA_SMOKE_USER_ID }}" \
+          CA_SMOKE_CITY_ID="${{ vars.CA_SMOKE_CITY_ID }}" \
+          CA_SMOKE_INVENTORY_ID="${{ vars.CA_SMOKE_INVENTORY_ID }}" \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh

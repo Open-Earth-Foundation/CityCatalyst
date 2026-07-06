@@ -2,14 +2,18 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+from io import BytesIO
 from pathlib import Path
 
 import httpx
 import pytest
+from botocore.exceptions import ClientError, NoCredentialsError, PartialCredentialsError
 from pydantic import ValidationError
 
 from app.modules.prioritizer.scoring_config import is_activity_data_level_mapping_enabled
 from app.modules.prioritizer.models import (
+    ActionLegalAssessmentS3CsvRow,
     ActionPathwayApiItem,
     ActionPolicyScoreApiItem,
     PrioritizerApiRequest,
@@ -18,6 +22,11 @@ from app.services.action_policy_scores_api import (
     ACTION_POLICY_SCORES_ENDPOINT_TEMPLATE,
     ActionPolicyScoresApiService,
     DEFAULT_ACTION_POLICY_SCORES_BASE_URL,
+)
+from app.services.action_financial_feasibility_scores_api import (
+    ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+    ActionFinancialFeasibilityScoresApiService,
+    DEFAULT_ACTION_FINANCIAL_FEASIBILITY_SCORES_BASE_URL,
 )
 from app.services.action_pathways_api import (
     ACTION_PATHWAYS_ENDPOINT,
@@ -30,7 +39,15 @@ from app.services.city_attributes_api import (
 from app.services.action_legal_assessments_api import (
     ActionLegalAssessmentsApiService,
     DEFAULT_LEGAL_ASSESSMENTS_BASE_URL,
-    LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE,
+)
+from app.services.action_legal_assessments_s3 import (
+    ActionLegalAssessmentsS3Service,
+    DEFAULT_LEGAL_S3_BUCKET,
+    DEFAULT_LEGAL_S3_KEY,
+    LEGAL_ASSESSMENTS_S3_ENDPOINT,
+    _map_s3_csv_row_to_legal_assessment_record,
+    get_legal_s3_bucket,
+    get_legal_s3_key,
 )
 from app.services.http_client import (
     UpstreamApiError,
@@ -38,14 +55,18 @@ from app.services.http_client import (
     get_json_with_retries,
 )
 from app.services.data_clients import (
+    ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
     ApiActionPolicyScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPolicyScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
+    S3LegalDataApiClient,
+    get_action_financial_feasibility_scores_data_api_client,
     get_action_mitigation_feasibility_scores_data_api_client,
     get_action_policy_scores_data_api_client,
     get_action_pathways_data_api_client,
@@ -352,20 +373,20 @@ def test_get_city_data_client_rejects_invalid_source(
 
 
 @pytest.mark.unit
-def test_get_legal_data_client_defaults_to_api(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Legal dependency provider defaults to API data source."""
+def test_get_legal_data_client_defaults_to_s3(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Legal dependency provider defaults to the S3 data source."""
     monkeypatch.delenv("HIAP_MEED_LEGAL_DATA_SOURCE", raising=False)
 
     client = get_legal_data_api_client()
 
-    assert isinstance(client, ApiLegalDataApiClient)
+    assert isinstance(client, S3LegalDataApiClient)
 
 
 @pytest.mark.unit
 def test_get_legal_data_client_rejects_invalid_source(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Legal dependency provider rejects invalid source values."""
+    """Legal dependency provider rejects values outside api, mock, or s3."""
     monkeypatch.setenv("HIAP_MEED_LEGAL_DATA_SOURCE", "apii")
 
     with pytest.raises(ValueError, match="HIAP_MEED_LEGAL_DATA_SOURCE"):
@@ -436,6 +457,18 @@ def test_legal_assessments_service_uses_env_base_url_override(
         service._build_legal_assessments_url("CL")
         == "https://legal.example.test/root/api/v1/action-legal-assessments?countryCode=CL"
     )
+
+
+@pytest.mark.unit
+def test_legal_s3_config_uses_documented_defaults(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Legal S3 config falls back to the documented bucket and object key."""
+    monkeypatch.delenv("HIAP_MEED_LEGAL_S3_BUCKET", raising=False)
+    monkeypatch.delenv("HIAP_MEED_LEGAL_S3_KEY", raising=False)
+
+    assert get_legal_s3_bucket() == DEFAULT_LEGAL_S3_BUCKET
+    assert get_legal_s3_key() == DEFAULT_LEGAL_S3_KEY
 
 
 @pytest.mark.unit
@@ -639,104 +672,281 @@ def test_api_city_client_accepts_camelcase_population_fields(
 
 
 @pytest.mark.unit
-def test_api_legal_client_maps_remote_payload_and_metadata(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """API legal client maps remote flat legal rows and exposes fetch metadata."""
-
-    def _mock_get(
-        self: httpx.Client, url: str, headers: dict[str, str] | None = None
-    ) -> httpx.Response:
-        request = httpx.Request("GET", url, headers=headers)
-        return httpx.Response(
-            200,
-            request=request,
-            json=[
-                {
-                    "legalAnalysisId": "id-1",
-                    "srcActionId": "c40_0010",
-                    "countryCode": "CL",
-                    "gpcSector": "stationary_energy",
-                    "verdictCategory": "conditional",
-                    "verdictScore": 0.5,
-                    "ownershipCategory": "conditional",
-                    "ownershipScore": 0.5,
-                    "ownershipWeight": 0.67,
-                    "ownershipDescription": "Authority exists but is conditional.",
-                    "restrictionsCategory": "conditional",
-                    "restrictionsScore": 0.5,
-                    "restrictionsWeight": 0.33,
-                    "restrictionsDescription": "Moderate legal risk.",
-                    "legalJustification": "Test justification",
-                    "analysisDate": "2026-04-30",
-                    "generationMethod": "expert review",
-                    "legalReferences": ["Law 1"],
-                    "releaseId": "release-1",
-                    "createdAt": "2026-05-12T10:36:49.530687+00:00",
-                    "updatedAt": "2026-05-12T10:36:49.530687+00:00",
-                    "ownershipDescriptionI18n": {"en": "Authority exists but is conditional."},
-                    "restrictionsDescriptionI18n": {"en": "Moderate legal risk."},
-                    "legalJustificationI18n": {"en": "Test justification"},
-                }
-            ],
-        )
-
-    monkeypatch.setattr(httpx.Client, "get", _mock_get)
-    client = ApiLegalDataApiClient()
-
-    assessments = client.get_action_legal_assessments("CL")
-
-    assert assessments["c40_0010"].verdict_category == "conditional"
-    assert assessments["c40_0010"].verdict_score == pytest.approx(0.5)
-    assert assessments["c40_0010"].source_metadata["upstream_endpoint"] == (
-        LEGAL_ASSESSMENTS_ENDPOINT_TEMPLATE
+def test_s3_legal_csv_row_maps_required_fields_to_internal_record() -> None:
+    """S3 CSV rows map flat fields, references, and i18n text into legal records."""
+    row = ActionLegalAssessmentS3CsvRow.model_validate(
+        {
+            "action_id": "c40_0010",
+            "action_name_en": "Retrofit buildings",
+            "action_name_es": "Reacondicionar edificios",
+            "sector": "stationary_energy",
+            "verdict_category": "conditional",
+            "verdict_score": "0.5",
+            "ownership_category": "enabled",
+            "ownership_score": "1.0",
+            "ownership_weight": "0.67",
+            "ownership_description": "Authority exists.",
+            "ownership_description_es": "La autoridad existe.",
+            "restrictions_category": "conditional",
+            "restrictions_score": "0.5",
+            "restrictions_weight": "0.33",
+            "restrictions_description": "Moderate legal risk.",
+            "restrictions_description_es": "Riesgo legal moderado.",
+            "legal_justification": "Justificacion legal.",
+            "legal_justification_en": "Legal justification.",
+            "legal_reference_1": "Law 1",
+            "legal_reference_2": "",
+            "legal_reference_3": "Law 3",
+            "analysis_date": "2026-04-30",
+            "generation_method": "expert review",
+            "publisher_id": "publisher-1",
+        }
     )
-    assert assessments["c40_0010"].source_metadata["requested_country_code"] == "CL"
-    assert assessments["c40_0010"].source_metadata["http_status_code"] == 200
+
+    assessment = _map_s3_csv_row_to_legal_assessment_record(
+        row=row,
+        country_code="CL",
+        source_metadata={"source_type": "s3_csv"},
+    )
+
+    assert assessment.action_id == "c40_0010"
+    assert assessment.country_code == "CL"
+    assert assessment.gpc_sector == "stationary_energy"
+    assert assessment.verdict_category == "conditional"
+    assert assessment.verdict_score == pytest.approx(0.5)
+    assert assessment.ownership_weight == pytest.approx(0.67)
+    assert assessment.restrictions_weight == pytest.approx(0.33)
+    assert assessment.legal_references == ["Law 1", "Law 3"]
+    assert assessment.ownership_description_i18n == {
+        "en": "Authority exists.",
+        "es": "La autoridad existe.",
+    }
+    assert assessment.restrictions_description_i18n == {
+        "en": "Moderate legal risk.",
+        "es": "Riesgo legal moderado.",
+    }
+    assert assessment.legal_justification_i18n == {
+        "en": "Legal justification.",
+        "es": "Justificacion legal.",
+    }
+    assert assessment.raw["srcActionId"] == "c40_0010"
+    assert assessment.raw["countryCode"] == "CL"
+    assert assessment.raw["action_name_en"] == "Retrofit buildings"
+    assert assessment.source_metadata["source_type"] == "s3_csv"
 
 
 @pytest.mark.unit
-def test_api_legal_client_rejects_duplicate_action_ids(
+def test_s3_legal_service_parses_multiline_csv_and_metadata() -> None:
+    """S3 legal service parses quoted multiline CSV cells and exposes metadata."""
+
+    class FakeS3Client:
+        """Minimal S3 fake returning one CSV object."""
+
+        def get_object(self, Bucket: str, Key: str) -> dict[str, object]:
+            """Return a small S3 object shaped like boto3 get_object output."""
+            assert Bucket == "legal-bucket"
+            assert Key == "legal/classification.csv"
+            csv_text = (
+                "action_id,sector,verdict_category,verdict_score,"
+                "ownership_category,ownership_score,ownership_weight,"
+                "ownership_description,ownership_description_es,"
+                "restrictions_category,restrictions_score,restrictions_weight,"
+                "restrictions_description,restrictions_description_es,"
+                "legal_justification,legal_justification_en,"
+                "legal_reference_1,legal_reference_2,legal_reference_3,"
+                "legal_reference_4,legal_reference_5,legal_reference_6,"
+                "analysis_date,generation_method,publisher_id\n"
+                'c40_0010,stationary_energy,conditional,0.5,enabled,1,0.67,'
+                '"Authority exists.","La autoridad existe.",conditional,0.5,0.33,'
+                '"Moderate legal risk.","Riesgo legal moderado.",'
+                '"Line one\nLine two","English line one\nEnglish line two",'
+                '"Law 1",,"Law 3",,,,2026-04-30,expert review,publisher-1\n'
+            )
+            return {
+                "Body": BytesIO(csv_text.encode("utf-8")),
+                "LastModified": datetime(2026, 5, 1, 12, 0, tzinfo=UTC),
+                "ETag": '"etag-1"',
+            }
+
+    service = ActionLegalAssessmentsS3Service(
+        bucket="legal-bucket",
+        key="legal/classification.csv",
+        s3_client=FakeS3Client(),
+    )
+
+    assessments = service.get_assessments_by_action_id("CL")
+
+    assessment = assessments["c40_0010"]
+    assert assessment.legal_justification == "Line one\nLine two"
+    assert assessment.legal_justification_i18n["en"] == (
+        "English line one\nEnglish line two"
+    )
+    assert assessment.legal_references == ["Law 1", "Law 3"]
+    assert assessment.source_metadata["upstream_endpoint"] == (
+        LEGAL_ASSESSMENTS_S3_ENDPOINT
+    )
+    assert assessment.source_metadata["upstream_url"] == (
+        "s3://legal-bucket/legal/classification.csv"
+    )
+    assert assessment.source_metadata["s3_key_suffix"] == "classification.csv"
+    assert assessment.source_metadata["upstream_generated_at_utc"] == (
+        "2026-05-01T12:00:00+00:00"
+    )
+    assert assessment.source_metadata["etag"] == '"etag-1"'
+
+
+@pytest.mark.unit
+def test_s3_legal_service_rejects_duplicate_action_ids() -> None:
+    """S3 legal service rejects duplicate action IDs for one country-scoped CSV."""
+
+    class FakeS3Client:
+        """Minimal S3 fake returning duplicate action rows."""
+
+        def get_object(self, Bucket: str, Key: str) -> dict[str, object]:
+            """Return duplicate legal rows."""
+            csv_text = (
+                "action_id,verdict_category,verdict_score\n"
+                "c40_0010,conditional,0.5\n"
+                "c40_0010,enabled,1\n"
+            )
+            return {"Body": BytesIO(csv_text.encode("utf-8"))}
+
+    service = ActionLegalAssessmentsS3Service(
+        bucket="legal-bucket",
+        key="legal/classification.csv",
+        s3_client=FakeS3Client(),
+    )
+
+    with pytest.raises(UpstreamApiError, match="duplicate action_id"):
+        service.get_assessments_by_action_id("CL")
+
+
+@pytest.mark.unit
+def test_s3_legal_service_reports_missing_credentials() -> None:
+    """S3 legal service reports missing AWS credentials clearly."""
+
+    class MissingCredentialsS3Client:
+        """S3 fake that raises the boto3 missing-credentials error."""
+
+        def get_object(self, Bucket: str, Key: str) -> dict[str, object]:
+            """Raise the same exception boto3 raises without credentials."""
+            raise NoCredentialsError()
+
+    service = ActionLegalAssessmentsS3Service(
+        bucket="legal-bucket",
+        key="legal/classification.csv",
+        s3_client=MissingCredentialsS3Client(),
+    )
+
+    with pytest.raises(
+        UpstreamApiError,
+        match="S3 credentials are not configured",
+    ) as error_info:
+        service.get_assessments_by_action_id("CL")
+
+    assert error_info.value.status_code == 503
+
+
+@pytest.mark.unit
+def test_s3_legal_service_reports_partial_credentials() -> None:
+    """S3 legal service reports incomplete AWS credentials clearly."""
+
+    class PartialCredentialsS3Client:
+        """S3 fake that raises the boto3 partial-credentials error."""
+
+        def get_object(self, Bucket: str, Key: str) -> dict[str, object]:
+            """Raise the same exception boto3 raises for incomplete credentials."""
+            raise PartialCredentialsError(
+                provider="env",
+                cred_var="AWS_SECRET_ACCESS_KEY",
+            )
+
+    service = ActionLegalAssessmentsS3Service(
+        bucket="legal-bucket",
+        key="legal/classification.csv",
+        s3_client=PartialCredentialsS3Client(),
+    )
+
+    with pytest.raises(
+        UpstreamApiError,
+        match="S3 credentials are incomplete",
+    ):
+        service.get_assessments_by_action_id("CL")
+
+
+@pytest.mark.unit
+def test_s3_legal_service_reports_access_denied() -> None:
+    """S3 legal service reports access-denied errors without leaking secrets."""
+
+    class AccessDeniedS3Client:
+        """S3 fake that raises an AccessDenied service error."""
+
+        def get_object(self, Bucket: str, Key: str) -> dict[str, object]:
+            """Raise an AWS ClientError for access denial."""
+            raise ClientError(
+                {
+                    "Error": {"Code": "AccessDenied", "Message": "Access denied"},
+                    "ResponseMetadata": {"HTTPStatusCode": 403},
+                },
+                "GetObject",
+            )
+
+    service = ActionLegalAssessmentsS3Service(
+        bucket="legal-bucket",
+        key="legal/classification.csv",
+        s3_client=AccessDeniedS3Client(),
+    )
+
+    with pytest.raises(UpstreamApiError, match="S3 access was denied") as error_info:
+        service.get_assessments_by_action_id("CL")
+
+    assert error_info.value.upstream_status_code == 403
+
+
+@pytest.mark.unit
+def test_s3_legal_service_reports_missing_object() -> None:
+    """S3 legal service reports missing bucket/key errors clearly."""
+
+    class MissingObjectS3Client:
+        """S3 fake that raises a NoSuchKey service error."""
+
+        def get_object(self, Bucket: str, Key: str) -> dict[str, object]:
+            """Raise an AWS ClientError for a missing object."""
+            raise ClientError(
+                {
+                    "Error": {"Code": "NoSuchKey", "Message": "Not found"},
+                    "ResponseMetadata": {"HTTPStatusCode": 404},
+                },
+                "GetObject",
+            )
+
+    service = ActionLegalAssessmentsS3Service(
+        bucket="legal-bucket",
+        key="legal/classification.csv",
+        s3_client=MissingObjectS3Client(),
+    )
+
+    with pytest.raises(UpstreamApiError, match="S3 object was not found") as error_info:
+        service.get_assessments_by_action_id("CL")
+
+    assert error_info.value.upstream_status_code == 404
+
+
+@pytest.mark.unit
+def test_api_legal_client_is_deprecated_before_http(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """API legal client rejects duplicate action IDs for one country."""
+    """API legal client raises its deprecation error before attempting HTTP."""
 
-    def _mock_get(
+    def _fail_get(
         self: httpx.Client, url: str, headers: dict[str, str] | None = None
     ) -> httpx.Response:
-        request = httpx.Request("GET", url, headers=headers)
-        row = {
-            "legalAnalysisId": "id-1",
-            "srcActionId": "c40_0010",
-            "countryCode": "CL",
-            "gpcSector": "stationary_energy",
-            "verdictCategory": "conditional",
-            "verdictScore": 0.5,
-            "ownershipCategory": "conditional",
-            "ownershipScore": 0.5,
-            "ownershipWeight": 0.67,
-            "ownershipDescription": "Authority exists but is conditional.",
-            "restrictionsCategory": "conditional",
-            "restrictionsScore": 0.5,
-            "restrictionsWeight": 0.33,
-            "restrictionsDescription": "Moderate legal risk.",
-            "legalJustification": "Test justification",
-            "analysisDate": "2026-04-30",
-            "generationMethod": "expert review",
-            "legalReferences": ["Law 1"],
-            "releaseId": "release-1",
-            "createdAt": "2026-05-12T10:36:49.530687+00:00",
-            "updatedAt": "2026-05-12T10:36:49.530687+00:00",
-            "ownershipDescriptionI18n": {"en": "Authority exists but is conditional."},
-            "restrictionsDescriptionI18n": {"en": "Moderate legal risk."},
-            "legalJustificationI18n": {"en": "Test justification"},
-        }
-        return httpx.Response(200, request=request, json=[row, dict(row)])
+        raise AssertionError("deprecated legal API client should not perform HTTP")
 
-    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setattr(httpx.Client, "get", _fail_get)
     client = ApiLegalDataApiClient()
 
-    with pytest.raises(UpstreamApiError, match="duplicate src_action_id"):
+    with pytest.raises(UpstreamApiError, match="internal S3 legal source"):
         client.get_action_legal_assessments("CL")
 
 
@@ -1042,6 +1252,223 @@ def test_get_action_mitigation_feasibility_scores_data_client_rejects_invalid_so
         match="HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
     ):
         get_action_mitigation_feasibility_scores_data_api_client()
+
+
+@pytest.mark.unit
+def test_get_action_financial_feasibility_scores_data_client_defaults_to_api(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility dependency provider defaults to API data source."""
+    monkeypatch.delenv(
+        "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
+        raising=False,
+    )
+
+    client = get_action_financial_feasibility_scores_data_api_client()
+
+    assert isinstance(client, ApiActionFinancialFeasibilityScoresDataApiClient)
+
+
+@pytest.mark.unit
+def test_get_action_financial_feasibility_scores_data_client_rejects_invalid_source(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility dependency provider rejects invalid source values."""
+    monkeypatch.setenv(
+        "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
+        "apii",
+    )
+
+    with pytest.raises(
+        ValueError,
+        match="HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
+    ):
+        get_action_financial_feasibility_scores_data_api_client()
+
+
+@pytest.mark.unit
+def test_action_financial_feasibility_scores_service_uses_default_base_url_when_env_is_unset(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility service falls back to the documented default host."""
+    monkeypatch.delenv("CCGLOBAL_API_BASE_URL", raising=False)
+
+    service = ActionFinancialFeasibilityScoresApiService()
+
+    assert service.base_url == DEFAULT_ACTION_FINANCIAL_FEASIBILITY_SCORES_BASE_URL
+
+
+@pytest.mark.unit
+def test_action_financial_feasibility_scores_service_uses_env_base_url_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Financial feasibility service honors the configured upstream host."""
+    monkeypatch.setenv(
+        "CCGLOBAL_API_BASE_URL",
+        "https://finance.example.test/root/ ",
+    )
+
+    service = ActionFinancialFeasibilityScoresApiService()
+
+    assert service.base_url == "https://finance.example.test/root/"
+    assert service._build_action_financial_feasibility_scores_url("CL IQQ", "CL") == (
+        "https://finance.example.test/root/api/v1/cities/"
+        "CL%20IQQ/climate-finance/feasibility?country_code=CL"
+    )
+
+
+@pytest.mark.unit
+def test_mock_action_financial_feasibility_scores_client_loads_scores_from_file() -> None:
+    """Mock financial feasibility client reads checked-in compact score payloads."""
+    mock_file_path = (
+        Path(__file__).resolve().parents[2]
+        / "data"
+        / "mock"
+        / "action_financial_feasibility_scores_api_mock.json"
+    )
+    client = MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=mock_file_path
+    )
+
+    fetch_result = client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+    scores = fetch_result.scores_by_action_id
+
+    assert scores["c40_0034"].financial_feasibility == pytest.approx(1.0)
+    assert scores["c40_0034"].route == "self-deliverable"
+    assert scores["c40_0034"].reason == (
+        "Low-capital action the city can deliver itself."
+    )
+    assert scores["c40_0034"].inputs["finance"]["fund_access"] == "direct"
+    assert scores["c40_0034"].links["detail"].endswith(
+        "/climate-finance/actions/c40_0034"
+    )
+    assert scores["c40_0034"].source_metadata["upstream_endpoint"] == (
+        ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE
+    )
+    assert scores["c40_0034"].source_metadata["requested_locode"] == "CL IQQ"
+
+
+@pytest.mark.unit
+def test_api_action_financial_feasibility_scores_client_maps_remote_payload_and_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API financial feasibility client maps compact batch rows and metadata."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-06-26T14:37:36.830291+00:00",
+                    "endpoint": ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+                    "locode": "CL IQQ",
+                    "country_code": "CL",
+                    "caveat": "Working estimate.",
+                    "filters": {"action_id": None},
+                    "total_records": 1,
+                },
+                "data": [
+                    {
+                        "action_id": "c40_0034",
+                        "action_name": "Material bans",
+                        "sector": "waste",
+                        "financial_feasibility": 1.0,
+                        "route": "self-deliverable",
+                        "reason": "Low-capital action.",
+                        "inputs": {
+                            "action": {"capital_intensity": 0.2},
+                            "city": {"profile": "Self-sufficient"},
+                            "finance": {"fund_access": "direct"},
+                            "evidence": {"n_existing_projects": 0},
+                        },
+                        "links": {
+                            "detail": (
+                                "/api/v1/cities/CL IQQ/climate-finance/actions/c40_0034"
+                            ),
+                        },
+                    }
+                ],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+
+    fetch_result = client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+    scores = fetch_result.scores_by_action_id
+
+    assert scores["c40_0034"].financial_feasibility == pytest.approx(1.0)
+    assert scores["c40_0034"].source_metadata["upstream_endpoint"] == (
+        ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE
+    )
+    assert scores["c40_0034"].source_metadata["requested_locode"] == "CL IQQ"
+    assert scores["c40_0034"].source_metadata["requested_country_code"] == "CL"
+    assert scores["c40_0034"].source_metadata["http_status_code"] == 200
+
+
+@pytest.mark.unit
+def test_api_action_financial_feasibility_scores_client_rejects_duplicate_action_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API financial feasibility client rejects duplicate action IDs for one city."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        row = {
+            "action_id": "c40_0034",
+            "financial_feasibility": 1.0,
+            "inputs": {},
+            "links": {},
+        }
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {
+                    "generated_at_utc": "2026-06-26T14:37:36.830291+00:00",
+                    "endpoint": ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE,
+                    "locode": "CL IQQ",
+                    "country_code": "CL",
+                    "total_records": 2,
+                },
+                "data": [row, dict(row)],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+
+    with pytest.raises(UpstreamApiError, match="duplicate action_id"):
+        client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+
+
+@pytest.mark.unit
+def test_api_action_financial_feasibility_scores_client_maps_404_to_empty_scores(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """API financial feasibility client treats upstream 404 as no scores."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(404, request=request, json={"detail": "not found"})
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "0")
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+
+    fetch_result = client.get_action_financial_feasibility_scores("CL IQQ", "CL")
+
+    assert fetch_result.scores_by_action_id == {}
+    assert fetch_result.source_metadata["http_status_code"] == 404
+    assert fetch_result.warning is not None
 
 
 @pytest.mark.unit

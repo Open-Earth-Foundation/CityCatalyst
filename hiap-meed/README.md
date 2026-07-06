@@ -54,10 +54,14 @@ CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
 UPSTREAM_HTTP_MAX_RETRIES=2
 UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
-HIAP_MEED_LEGAL_DATA_SOURCE=api
+HIAP_MEED_LEGAL_DATA_SOURCE=s3
+HIAP_MEED_LEGAL_S3_BUCKET=test-global-api
+HIAP_MEED_LEGAL_S3_KEY=raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/legal-classification-v2.csv
+HIAP_MEED_LEGAL_S3_REGION=
 HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE=api
 HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE=api
 HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE=api
+HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE=api
 HIAP_MEED_TOP_N=20
 ACTIVITY_DATA_LEVEL_MAPPING=false
 OPENAI_API_KEY=
@@ -87,10 +91,14 @@ Variables:
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
 - `UPSTREAM_HTTP_MAX_RETRIES`: shared retry count for transient upstream HTTP failures (default `2`)
 - `UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS`: fixed sleep between upstream HTTP retry attempts (default `0.5`)
-- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`api` or `mock`)
+- `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`s3`, `mock`, or deprecated `api`; default `s3`)
+- `HIAP_MEED_LEGAL_S3_BUCKET`: private S3 bucket for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
+- `HIAP_MEED_LEGAL_S3_KEY`: private S3 object key for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
+- `HIAP_MEED_LEGAL_S3_REGION`: optional explicit AWS region for the S3 client; leave blank to use the runtime AWS default region/provider chain
 - `HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`: action catalog source (`api` or `mock`)
 - `HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`: action policy scores input source (`api` or `mock`)
 - `HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`: mitigation feasibility scores input source (`api` or `mock`)
+- `HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE`: climate-finance feasibility scores input source (`api` or `mock`)
 - `HIAP_MEED_TOP_N`: default number of ranked actions to return per city (default `20`)
 - `ACTIVITY_DATA_LEVEL_MAPPING`: guarded future Impact mapping switch; `false` keeps true subsector-only matching, `true` calls the current stub and still returns subsector-only results
 - `OPENAI_API_KEY`: API key used by OpenAI-backed features
@@ -266,6 +274,11 @@ Design note:
   The action client returns the full upstream catalog; the prioritization
   pipeline then keeps only mitigation actions and records the filtered count in
   fetch artifacts.
+- Legal source note: legal assessments now come from the internal S3 legal
+  classification CSV by default. The old public
+  `GET /api/v1/action-legal-assessments?countryCode=...` path remains in code
+  only as a deprecated guard and raises before making an HTTP request. Mock
+  legal data is still available for local fixture-based tests.
 - Current implementation note: exclusion preview and prioritization are separate flows. Exclusion preview resolves raw exclusion preferences into proposals for review, while prioritization consumes confirmed `excludedActionIds`. Prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer.
 
 ### 4. Call the prioritization endpoint
@@ -315,7 +328,7 @@ Exclusions:
 
 Legal filtering:
 
-- The hard filter now uses `verdictCategory` from `GET /api/v1/action-legal-assessments`.
+- The hard filter now uses `verdictCategory` mapped from the internal S3 legal classification CSV.
 - Actions with `verdictCategory="blocked"` are discarded before scoring.
 - Missing `verdictCategory` does not hard-filter the action.
 - The Feasibility legal component uses `verdictScore` directly.
@@ -327,7 +340,7 @@ Score normalization policy:
 - Each block applies explicit internal weights that sum to `1.0`.
 - Block score is the canonical weighted sum of those components (no run-relative max-normalization).
 - For normalized components in this system, `0.5` is the neutral midpoint when a component is designed around beneficial vs harmful effects.
-  - Example: the Alignment other-preference co-benefit component and the Feasibility socio-economic component use `0.5` as neutral.
+  - Example: the Alignment other-preference co-benefit component and missing Feasibility legal, mitigation, or financial rows use `0.5` as neutral.
   - By contrast, some one-sided components use `0.0` as the natural baseline because they measure absence of support rather than harmful effect, such as missing policy support or no preferred-sector match.
 
 Impact block behavior (implemented):
@@ -392,7 +405,7 @@ Response fields:
     - `impact_score` (`float`)
     - `alignment_score` (`float`)
     - `feasibility_score` (`float`)
-    - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence
+    - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence; the feasibility section now keeps `feasibility_score` at the top level and groups details under `legal`, `mitigation_feasibility`, and `financial_feasibility`
     - `explanations` (`object`): optional explanation texts keyed by language code when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
   - `warnings` (`string[]`): human-readable translation warnings when canonical English inputs appear non-English or mixed-language
@@ -549,6 +562,22 @@ Example response:
             "impact": {
               "impact_block_score": 0.88,
               "matched_city_subsector_keys_count": 1
+            },
+            "feasibility": {
+              "feasibility_score": 0.59,
+              "legal": {
+                "component_score": 0.5,
+                "component_source": "neutral_fallback"
+              },
+              "mitigation_feasibility": {
+                "component_score": 0.78,
+                "component_source": "action_mitigation_feasibility_score"
+              },
+              "financial_feasibility": {
+                "component_score": 0.6,
+                "route": "needs technical assistance",
+                "reason": "Capacity is the constraint, not money; needs technical assistance."
+              }
             }
           },
           "explanations": {}
@@ -593,7 +622,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, legal, policy-score, and mitigation-feasibility clients resolve to `mock` (file-backed) or `api`. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client uses `GET /api/v1/action-legal-assessments?countryCode=...`. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. These API-backed clients default to `api`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts intentionally keep `source_metadata.upstream_generated_at_utc = null` because the current legal assessments endpoint does not expose a top-level generated-at field.
+Note: city, action, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The legal client resolves to `s3` by default, still supports `mock`, and keeps `api` only as a deprecated failure path. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client downloads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`, parses multiline CSV fields, and maps rows into the existing legal assessment contract. Legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return HTTP `503` with a specific upstream dependency error rather than ranking with neutral legal defaults. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; the first implementation consumes the compact batch evidence only and does not fetch linked named opportunities or projects. The API-backed clients default to `api`, except legal which defaults to `s3`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts include S3 source metadata such as the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available after a successful legal fetch.
 
 ### 5. Logging and artifacts
 

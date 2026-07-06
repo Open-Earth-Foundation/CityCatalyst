@@ -217,6 +217,32 @@ class ActionMitigationFeasibilityScoresFetchResult(BaseModel):
     warning: str | None = None
 
 
+class ActionFinancialFeasibilityScoreRecord(BaseModel):
+    """Internal financial feasibility score contract consumed by Feasibility."""
+
+    action_id: str = Field(min_length=1)
+    action_name: str | None = None
+    sector: str | None = None
+    financial_feasibility: float | None = None
+    route: str | None = None
+    reason: str | None = None
+    inputs: dict[str, Any] = Field(default_factory=dict)
+    links: dict[str, Any] = Field(default_factory=dict)
+    raw: dict[str, Any] = Field(default_factory=dict)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ActionFinancialFeasibilityScoresFetchResult(BaseModel):
+    """Financial feasibility score rows plus request-scoped fetch metadata."""
+
+    scores_by_action_id: dict[str, ActionFinancialFeasibilityScoreRecord] = Field(
+        default_factory=dict
+    )
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    upstream_meta: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
 class ScoredAction(BaseModel):
     """Action scores after weighted aggregation and ranking."""
 

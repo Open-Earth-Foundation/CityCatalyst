@@ -85,7 +85,7 @@ def _normalize_value(value: Any) -> Any:
     return value
 
 
-def _format_row(row: Dict[str, Any]) -> Dict[str, Any]:
+def _format_row(row: Dict[str, Any], country_code: str) -> Dict[str, Any]:
     r = {k: _normalize_value(v) for k, v in row.items()}
     return {
         "action_id": r["action_id"],
@@ -115,9 +115,9 @@ def _format_row(row: Dict[str, Any]) -> Dict[str, Any]:
         # the funds and precedent projects behind these numbers live in the detail routes
         "links": {
             "detail": f"/api/v1/cities/{r['locode']}/climate-finance/actions/{r['action_id']}",
-            "opportunities": f"/api/v1/climate-finance/opportunities?sector={r['sector']}"
+            "opportunities": f"/api/v1/climate-finance/opportunities?country_code={country_code}&sector={r['sector']}"
             if r.get("sector") else None,
-            "projects": f"/api/v1/cities/{r['locode']}/climate-finance/projects?action_id={r['action_id']}",
+            "projects": f"/api/v1/climate-finance/projects?country_code={country_code}&action_id={r['action_id']}",
         },
     }
 
@@ -153,7 +153,7 @@ def get_city_action_financial_feasibility(
             detail="No climate-finance feasibility found for this city",
         )
 
-    data: List[Dict[str, Any]] = [_format_row(dict(row)) for row in rows]
+    data: List[Dict[str, Any]] = [_format_row(dict(row), cc) for row in rows]
 
     return {
         "meta": {

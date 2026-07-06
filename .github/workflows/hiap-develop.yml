@@ -76,10 +76,10 @@ jobs:
         working-directory: hiap
         run: uv sync --frozen
 
-      - name: Run all tests
+      - name: Run non-external tests
         working-directory: hiap
         run: |
-          uv run pytest -c pytest.ini -m "not slow"
+          uv run pytest -c pytest.ini -m "not external"
 
   build:
     needs: test
@@ -139,6 +139,7 @@ jobs:
           kubectl apply -f hiap/k8s/service-dev.yml
 
           kubectl set env deployment/hiap-dev \
+            CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev \
             OPENAI_MODEL_NAME_EXPLANATIONS=gpt-4.1-mini \
             OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION=gpt-4.1-mini \
             OPENAI_MODEL_NAME_PLAN_CREATOR=gpt-4.1 \

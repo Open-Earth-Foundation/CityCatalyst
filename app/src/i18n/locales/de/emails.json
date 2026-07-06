@@ -136,26 +136,23 @@
     "footer2": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449"
   },
   "invite-organization": {
-    "subject": "Organisations-Einladung",
-    "preview": "Organisations-Einladung",
+    "subject": "Sie sind dabei! Richten Sie Ihre erste Stadt in CityCatalyst ein",
+    "preview": "Richten Sie Ihre erste Stadt in CityCatalyst ein",
     "brand": "CityCatalyst",
     "title": "Treten Sie Ihrem Team in CityCatalyst bei",
     "greeting": "Hallo {{name}},",
-    "message": "Sie sind eingeladen, CityCatalyst beizutreten und zum Emissionsinventar der Organisation beizutragen:",
-    "cta": "JETZT BEITRETEN",
-    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449",
     "greeting-no-name": "Hallo,",
-    "message-prefix": "Willkommen bei CityCatalyst! Ihre ",
-    "message-free-trial": "kostenlose Testversion",
-    "message-suffix": " ist jetzt live und wir freuen uns, Sie an Bord zu haben.",
+    "message": "Willkommen bei CityCatalyst! Ihr Konto ist jetzt aktiv – und wir freuen uns sehr, Sie an Bord zu haben.",
     "start-by": "Beginnen Sie damit, ",
     "setting-up-inventory": "Ihr erstes Inventar einzurichten",
     "in-one-city": " in einer Stadt Ihrer Wahl.",
     "steps-heading": "Hier ist, was Sie jetzt sofort tun können",
-    "step1": "<1>Richten Sie Ihr erstes Inventar ein</1> - Sie können während dieser Testphase mit einer Stadt beginnen.",
+    "step1": "<1>Richten Sie Ihr erstes Inventar ein</1> - Sie können mit einer Stadt beginnen.",
     "step2": "<1>Laden Sie Mitarbeiter ein</1> - Arbeiten Sie als Team, um Ihre Daten zu erstellen und zu überprüfen.",
     "step3": "<1>Erkunden Sie die Schlüsselfunktionen</1> - Von der Erstellung Ihres Treibhausgasinventars bis zur Anpassung Ihres Logos und Ihrer Farben.",
-    "step4": "<1>Fragen Sie AI</1> - Unser Klimaassistent ist bereit, Ihre Fragen zu beantworten und Sie im Prozess zu unterstützen, die vorgeschlagenen Auswirkungsmaßnahmen zu überprüfen."
+    "step4": "<1>Fragen Sie AI</1> - Unser Klimaassistent ist bereit, Ihre Fragen zu beantworten und Sie im Prozess zu unterstützen, die vorgeschlagenen Auswirkungsmaßnahmen zu überprüfen.",
+    "cta": "JETZT BEITRETEN",
+    "footer": "Open Earth Foundation ist eine gemeinnützige Körperschaft aus Kalifornien, USA. EIN: 85-3261449"
   },
   "role-update": {
     "subject": "Rolle aktualisiert",

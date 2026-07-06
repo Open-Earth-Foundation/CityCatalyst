@@ -56,13 +56,7 @@ export default function InviteToOrganizationTemplate({
               {t("invite-organization.greeting-no-name")}
             </Text>
           )}
-          <Text>
-            {t("invite-organization.message-prefix")}
-            <strong style={bold}>
-              {t("invite-organization.message-free-trial")}
-            </strong>
-            {t("invite-organization.message-suffix")}
-          </Text>
+          <Text>{t("invite-organization.message")}</Text>
           <Text style={paragraph}>
             {t("invite-organization.start-by")}
             <strong style={bold}>

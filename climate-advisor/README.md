@@ -11,7 +11,8 @@ conversational experience for CityCatalyst (CC). The service lives under
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
   - General chat tools: climate knowledge search plus CityCatalyst inventory
-    tools (`get_user_inventories`, `city_inventory_search`, `get_inventory`,
+    tools (`inventory_list_accessible`, `inventory_status_overview`,
+    `inventory_emissions_context`, and temporary legacy
     `get_all_datasources`)
   - Pre-draft Stationary Energy chat tool (`stationary_energy_start_draft`)
     available only before a draft run is active
@@ -28,17 +29,18 @@ conversational experience for CityCatalyst (CC). The service lives under
 Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
 
 1. General chat
-   - Uses `prompts.default`
+   - Composes `prompts.core` with `prompts.chat`
    - Always exposes `climate_vector_search`
    - Adds CityCatalyst inventory tools only when the request has token, user,
      and thread scope
 2. Stationary Energy review chat
    - Activates when the request or thread context carries
      `stationary_energy_draft_run_id`
-   - Loads `prompts.stationary_energy_review`, then appends the persisted draft
-     snapshot as `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a
-     `<context>...</context>` block
-   - Uses `prompts.stationary_energy_review` instead of `prompts.default`
+   - Loads the composed `prompts.core + prompts.stationary_energy_review`
+     instructions, then appends the persisted draft snapshot as
+     `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a `<context>...</context>`
+     block
+   - Composes `prompts.core` with `prompts.stationary_energy_review`
    - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices
 
@@ -145,9 +147,9 @@ data: {}
    - Loads pruned conversation history from PostgreSQL
    - If a `stationary_energy_draft_run_id` is active, loads the persisted draft
      snapshot plus request-scoped `ui_context`
-   - For Stationary Energy review chat, the first model input is the active
-     `prompts.stationary_energy_review` text followed by the draft snapshot in
-     `<context>...</context>`
+   - For Stationary Energy review chat, the first model input is the composed
+     `prompts.core + prompts.stationary_energy_review` instruction text
+     followed by the draft snapshot in `<context>...</context>`
 4. **Message Persistence**
    - Stores the user message in PostgreSQL
 5. **Agent Execution**
@@ -169,13 +171,23 @@ data: {}
 
 **Added for CityCatalyst inventory chat**
 
-- `get_user_inventories`
-- `city_inventory_search`
-- `get_inventory`
+- `inventory_list_accessible`
+  - Lists all accessible city/year inventories, or filters by city and year.
+  - Requires name, type, and GWP disambiguation when one city/year has multiple
+    inventories.
+- `inventory_status_overview`
+  - Summarizes selected-inventory metadata, completion, and filled/missing
+    sector state.
+- `inventory_emissions_context`
+  - Summarizes selected-inventory total emissions, sector shares, top emitters,
+    and source mix.
 - `get_all_datasources`
+  - Temporary legacy datasource tool used only after an inventory is selected.
 
-These wrappers use the scoped bearer token, refresh it if needed, and trim the
-response payload before it is sent back to the model.
+These tools use the scoped bearer token, refresh it if needed, and keep raw
+CityCatalyst IDs internal to tool chaining rather than user-facing responses.
+When city/year is ambiguous, the prompt asks the user to choose by inventory
+name, type, and GWP before calling detail tools.
 
 **Added for pre-draft Stationary Energy chat**
 
@@ -337,12 +349,22 @@ such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 
 Prompt paths are also configured in `llm_config.yaml`:
 
-- `prompts.default` drives general Climate Advisor chat
-- `prompts.inventory_context` is appended for general inventory chat when CA can
-  load inventory metadata
-- `prompts.stationary_energy_review` drives active Stationary Energy draft
-  review chat without appending `prompts.default`. It includes only the scoped
-  Stationary Energy review tools.
+- `prompts.core` is the shared Clima base prompt used by every workflow
+- `prompts.chat` is the workflow prompt for general Climate Advisor chat
+- `prompts.stationary_energy_review` is the workflow prompt for active
+  Stationary Energy draft review chat
+
+At runtime, CA composes the final system instructions as:
+
+- general chat: `prompts.core + prompts.chat`
+- Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
+
+Workflow prompt `<tools>` sections load shared tool-policy fragments with
+`{{ include: ... }}` directives. Exact tool argument contracts come from the
+registered runtime tool definitions rather than duplicated prompt text.
+Each configured prompt file remains schema-complete with `<role>`, `<task>`,
+`<input>`, and `<output>` blocks; runtime composition wraps the workflow prompt
+inside `<additional_instructions>`.
 
 Some prompt files use reusable fragments with
 `{{ include: tools/example.md }}` directives. Includes are resolved relative to
@@ -593,19 +615,21 @@ data: {}
 
 ### Inventory API Access
 
-The CityCatalyst inventory tool pack exposes:
+The default Clima inventory tool pack exposes:
 
-- `get_user_inventories`
-- `city_inventory_search`
-- `get_inventory`
-- `get_all_datasources`
+- `inventory_list_accessible`
+- `inventory_status_overview`
+- `inventory_emissions_context`
+- `get_all_datasources` as the temporary legacy datasource lookup
 
 These tools:
 
-- construct requests to CityCatalyst inventory endpoints
+- construct requests to CityCatalyst inventory capability endpoints
 - automatically include the scoped JWT in the `Authorization` header
-- refresh the token when needed
-- return trimmed payloads to the agent for lower token cost
+- refresh and persist the token when needed
+- return compact, read-only inventory context to the agent
+- require inventory name, type, and GWP disambiguation when city/year is not
+  unique
 
 ### Stationary Energy Draft Review Boundary
 
@@ -727,9 +751,10 @@ configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
 `MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
 `MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
 separated by MLflow tags such as `workflow` and `context_mode`; active
-Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`.
-MLflow request previews for active Stationary Energy turns show the configured
-Stationary Energy prompt first, followed by the draft JSON context in
+Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`,
+while general chat is tagged `prompt_name=chat`. MLflow request previews for
+active Stationary Energy turns show the composed shared core plus Stationary
+Energy workflow prompt first, followed by the draft JSON context in
 `<context>...</context>`. Other operational defaults such as the MLflow
 `Created by` service identity are handled in code.
 

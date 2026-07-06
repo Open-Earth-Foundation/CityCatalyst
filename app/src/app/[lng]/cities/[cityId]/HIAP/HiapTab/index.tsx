@@ -915,6 +915,7 @@ export function HiapTab({
       <PrintableActionPlanPDF
         actions={toExport}
         t={t}
+        lng={lng}
         cityName={cityData?.name || cityData?.locode}
       />,
     ).toBlob();

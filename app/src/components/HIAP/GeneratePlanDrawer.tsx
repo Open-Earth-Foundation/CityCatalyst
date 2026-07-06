@@ -109,7 +109,7 @@ export const GeneratePlanDrawer = ({
       const actionTitle = planToDisplay.metadata?.actionName || action.name;
 
       // Generate PDF using frontend jsPDF service
-      PDFExportService.generateActionPlanPDF(
+      await PDFExportService.generateActionPlanPDF(
         planToDisplay,
         actionTitle,
         cityName,

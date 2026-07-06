@@ -168,14 +168,34 @@ class StreamingHandler:
                     or await self._load_thread_stationary_energy_draft_run_id()
                 )
 
+            # Resolve the Stationary Energy draft surface scope (city + an explicit
+            # interaction-mode marker) so the agent can offer the start-draft tool
+            # even before any draft run exists. Only the SE draft page sends these.
+            stationary_energy_city_id: Optional[str] = None
+            stationary_energy_surface = bool(self.stationary_energy_draft_run_id)
+            for source in (
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            ):
+                if not isinstance(source, dict):
+                    continue
+                if not stationary_energy_city_id and source.get("city_id"):
+                    stationary_energy_city_id = str(source.get("city_id"))
+                if source.get("stationary_energy_interaction_mode"):
+                    stationary_energy_surface = True
+
             # Create agent service
             self.agent_service = AgentService(
                 cc_access_token=self.cc_access_token,
                 cc_thread_id=self.thread_id,
                 cc_user_id=self.user_id,
                 inventory_id=self.inventory_id,
+                city_id=stationary_energy_city_id,
                 session_factory=self.session_factory,
                 stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+                stationary_energy_surface=stationary_energy_surface,
             )
 
             # Get model override from options

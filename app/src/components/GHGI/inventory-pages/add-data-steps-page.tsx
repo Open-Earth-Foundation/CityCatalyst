@@ -1092,10 +1092,10 @@ export default function AddDataSteps() {
                           {groupedByScope.map(([scopeName, scopeSources]) => (
                             <Box key={`${subSectorId}-${scopeName}`}>
                               <SimpleGrid
-                                templateColumns={{
-                                  base: "1fr",
-                                  md: "repeat(2, 1fr)",
-                                  lg: "repeat(3, 1fr)",
+                                columns={{
+                                  base: 1,
+                                  md: 2,
+                                  lg: 3,
                                 }}
                                 gap="16px"
                               >

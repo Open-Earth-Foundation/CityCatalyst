@@ -174,6 +174,7 @@
   "upload-started-description": "Hochladen von {{fileName}}...",
   "loading-validation-results": "Lade Validierungsergebnisse...",
   "no-field-mappings": "Keine Feldzuordnungen verfügbar",
+  "not-specified": "Nicht angegeben",
   "extract-with-ai": "Extrahieren mit KI",
   "pdf-ready-for-extraction": "PDF bereit für Extraktion",
   "validation-results-description-pdf": "{{count}} Reihen wurden aus der PDF extrahiert. Überprüfen Sie die untenstehenden Daten.",

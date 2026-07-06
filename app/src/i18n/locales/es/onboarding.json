@@ -175,6 +175,7 @@
   "upload-started-description": "Subiendo {{fileName}}...",
   "loading-validation-results": "Cargando resultados de validación...",
   "no-field-mappings": "No hay mapeos de campos disponibles",
+  "not-specified": "No especificado",
   "extract-with-ai": "Extraer con IA",
   "pdf-ready-for-extraction": "PDF listo para extracción",
   "validation-results-description-pdf": "Se extrajeron {{count}} filas del PDF. Revisa los datos a continuación.",

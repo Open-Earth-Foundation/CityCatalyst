@@ -46,6 +46,32 @@ export default function ValidationResultsStep({
     (col) => col.status === "detected",
   ).length;
 
+  const EMISSION_FACTOR_LABELS = new Set([
+    "Emission Factor - CO2",
+    "Emission Factor - CH4",
+    "Emission Factor - N2O",
+    "Emission Factor - Total CO2e",
+  ]);
+
+  const formatExampleValue = (column: ColumnInfo): string | null => {
+    if (!column.exampleValue) return null;
+    if (
+      column.interpretedAs &&
+      EMISSION_FACTOR_LABELS.has(column.interpretedAs)
+    ) {
+      const num = parseFloat(column.exampleValue);
+      if (!isNaN(num)) {
+        const tonnes = num / 1000;
+        const formatted =
+          tonnes < 0.0001
+            ? tonnes.toExponential(2)
+            : parseFloat(tonnes.toFixed(4)).toString();
+        return `${formatted} t CO2e`;
+      }
+    }
+    return column.exampleValue;
+  };
+
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
@@ -121,12 +147,29 @@ export default function ValidationResultsStep({
                       <Text fontWeight="medium">{column.columnName}</Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text color="content.secondary">
-                        {column.exampleValue || "-"}
-                      </Text>
+                      {(() => {
+                        const displayValue = formatExampleValue(column);
+                        return (
+                          <Text
+                            color={
+                              displayValue
+                                ? "content.secondary"
+                                : "content.tertiary"
+                            }
+                          >
+                            {displayValue || t("not-specified")}
+                          </Text>
+                        );
+                      })()}
                     </Table.Cell>
                     <Table.Cell>
-                      <Text>{column.interpretedAs || "-"}</Text>
+                      <Text
+                        color={
+                          column.interpretedAs ? undefined : "content.tertiary"
+                        }
+                      >
+                        {column.interpretedAs || t("not-specified")}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
                       {column.status === "detected" && (

@@ -590,6 +590,16 @@ export default function ImportPage(props: {
     setPendingNavigation(null);
   };
 
+  useEffect(() => {
+    if (!inventoryId) {
+      router.replace(`/${lng}/cities/${cityId}/GHGI/onboarding`);
+    }
+  }, [inventoryId, router, lng, cityId]);
+
+  if (!inventoryId) {
+    return null;
+  }
+
   return (
     <>
       <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">

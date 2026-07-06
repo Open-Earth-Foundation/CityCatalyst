@@ -1,4 +1,3 @@
-import { DisplayLarge } from "@/components/package/Texts/Display";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import {
   DialogBody,
@@ -12,6 +11,7 @@ import { Box, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { MdBarChart } from "react-icons/md";
 import { GrowthRatesExplanationModalTable } from "./GrowthRatesExplanationModalTable";
+import { BodyLarge, DisplayLarge } from "@/components/package";
 
 export function GrowthRatesExplanationModal({
   t,
@@ -35,10 +35,10 @@ export function GrowthRatesExplanationModal({
       size="xl"
       scrollBehavior="inside"
     >
-      <DialogContent maxHeight="90%">
+      <DialogContent maxHeight="calc(100vh - 56px * 2)">
         <DialogHeader>
           <HStack>
-            <Icon as={MdBarChart} boxSize="24px" color="content.tertiary" />
+            <Icon as={MdBarChart} boxSize="24px" color="interactive.control" />
             <Text
               color="content.primary"
               fontWeight="bold"
@@ -66,7 +66,7 @@ export function GrowthRatesExplanationModal({
             </Text>
             <Text
               my="12px"
-              color="content.primary"
+              color="content.tertiary"
               lineHeight="24px"
               fontSize="16px"
               fontStyle="normal"
@@ -75,20 +75,17 @@ export function GrowthRatesExplanationModal({
               {t("city-typology-and-clusters-description")}
             </Text>
           </VStack>
-          <HStack my="12px" mx="24px" marginTop="48px" alignItems="flex-end">
+          <HStack alignItems="flex-end" color="content.tertiary">
             <VStack alignItems="center" justifyItems="end" p="24px">
-              <DisplayLarge color="black">{cluster?.id}</DisplayLarge>
+              <DisplayLarge color="content.tertiary">
+                {cluster?.id}
+              </DisplayLarge>
               <LabelLarge textWrap="nowrap">{t("cluster-#")}</LabelLarge>
             </VStack>
             <VStack alignItems="left" justifyItems="end" p="24px">
-              <DisplayLarge
-                fontSize="body.xl"
-                color="content.primary"
-                lineHeight="32px"
-                fontWeight="regular"
-              >
+              <BodyLarge fontWeight="regular">
                 {cluster?.description?.[lng]}
-              </DisplayLarge>
+              </BodyLarge>
               <LabelLarge>{t("description")}</LabelLarge>
             </VStack>
           </HStack>
@@ -105,7 +102,7 @@ export function GrowthRatesExplanationModal({
             </Text>
             <Text
               my="12px"
-              color="content.primary"
+              color="content.tertiary"
               lineHeight="24px"
               fontSize="16px"
               fontStyle="normal"
@@ -114,13 +111,8 @@ export function GrowthRatesExplanationModal({
               {t("methodology-and-assumptions-description")}
             </Text>
           </VStack>
-          <Box>
-            <Box display="flex" justifySelf="center" width="100%" px="24px">
-              <GrowthRatesExplanationModalTable
-                growthRates={growthRates}
-                t={t}
-              />
-            </Box>
+          <Box display="flex" justifySelf="center" width="100%" px="24px">
+            <GrowthRatesExplanationModalTable growthRates={growthRates} t={t} />
           </Box>
         </DialogBody>
         <DialogCloseTrigger />

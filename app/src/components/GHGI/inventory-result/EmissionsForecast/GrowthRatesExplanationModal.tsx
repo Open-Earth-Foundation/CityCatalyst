@@ -37,7 +37,7 @@ export function GrowthRatesExplanationModal({
     >
       <DialogContent maxHeight="calc(100vh - 56px * 2)">
         <DialogHeader>
-          <HStack>
+          <HStack ml="24px">
             <Icon as={MdBarChart} boxSize="24px" color="interactive.control" />
             <Text
               color="content.primary"

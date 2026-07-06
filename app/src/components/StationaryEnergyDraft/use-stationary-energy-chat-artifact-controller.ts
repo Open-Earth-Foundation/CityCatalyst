@@ -16,18 +16,23 @@ import {
 import {
   addResolvedProposalId,
   buildFocusedDecisionStatePayload,
-  buildSourcePreferenceLabel,
-  buildSourcePreferenceReply,
   buildStationaryEnergyChatRequest,
   type ConfirmedBulkReviewChoicePayload,
   type ConfirmedRollbackReviewChoicePayload,
   hasTerminalDraftStatus,
+  isStationaryEnergyStartDraftToolResult,
   mergeDecisionReviewMessages,
   nextDecisionState,
   resolveInventorySaveConfirmationRequest,
+  resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
   removeResolvedProposalId,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
+import {
+  buildSourcePreferenceLabel,
+  buildSourcePreferenceReply,
+  type SourcePreferenceCommand,
+} from "@/components/StationaryEnergyDraft/source-preference";
 import {
   appendAssistantDeltaToMessages,
   createBulkReviewConfirmationMessage,
@@ -83,6 +88,7 @@ export type LoadingAction =
   | "save_inventory"
   | "chat"
   | null;
+type ErrorRecoveryAction = "start_draft";
 
 type UseStationaryEnergyChatArtifactControllerParams = {
   cityId: string;
@@ -109,6 +115,7 @@ export type StationaryEnergyChatArtifactControllerState = {
   draftState: DraftStatusResponse | null;
   draftStatus: string;
   errorMessage: string | null;
+  errorRecoveryAction: ErrorRecoveryAction | null;
   focusedProposalId: string | null;
   hasDraft: boolean;
   hasSourceBackedProposals: boolean;
@@ -117,7 +124,7 @@ export type StationaryEnergyChatArtifactControllerState = {
   resolvedProposalIds: Set<string>;
   rows: ArtifactRow[];
   showStaleWarning: boolean;
-  sourcePreference: string | null;
+  sourcePreference: SourcePreferenceCommand | null;
   sourcePreferenceOptions: string[];
   stage: DraftStage;
   staleDraft: DraftStatusResponse["staleness"];
@@ -131,7 +138,7 @@ export type StationaryEnergyChatArtifactControllerActions = {
     selectedSourceId?: string,
     label?: string,
   ) => void;
-  choosePreference: (preference: string) => void;
+  choosePreference: (preference: SourcePreferenceCommand) => void;
   continueStaleDraft: () => void;
   confirmBulkReviewChanges: (
     choices: StationaryEnergyToolChoiceSummary[],
@@ -423,6 +430,7 @@ function toolChoiceSignature(choice: unknown): Record<string, unknown> {
 
 function stationaryEnergyToolResultSignature(tool: unknown): string | null {
   if (
+    !isStationaryEnergyStartDraftToolResult(tool) &&
     !isStationaryEnergyReviewToolResult(tool) &&
     !isStationaryEnergyInventoryConfirmationToolResult(tool) &&
     !isStationaryEnergyBulkReviewConfirmationToolResult(tool) &&
@@ -435,7 +443,9 @@ function stationaryEnergyToolResultSignature(tool: unknown): string | null {
   return JSON.stringify({
     ui_event: record.ui_event,
     action: record.action,
+    success: record.success,
     draft_run_id: record.draft_run_id,
+    error_code: record.error_code,
     message_key: record.message_key,
     message_params: record.message_params,
     selected_choices: Array.isArray(record.selected_choices)
@@ -544,17 +554,36 @@ export function useStationaryEnergyChatArtifactController(
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorRecoveryAction, setErrorRecoveryAction] =
+    useState<ErrorRecoveryAction | null>(null);
   const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
   const [draftRuns, setDraftRuns] = useState<DraftListItem[]>([]);
   const [draftListLoading, setDraftListLoading] = useState(false);
   const [resumeAttempted, setResumeAttempted] = useState(false);
-  const [sourcePreference, setSourcePreference] = useState<string | null>(null);
+  const [sourcePreference, setSourcePreference] =
+    useState<SourcePreferenceCommand | null>(null);
   const handledToolResultSignaturesRef = useRef<Set<string>>(new Set());
   const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
     null,
   );
   const [acknowledgedStaleDraftRunId, setAcknowledgedStaleDraftRunId] =
     useState<string | null>(null);
+
+  const clearError = useCallback((): void => {
+    setErrorMessage(null);
+    setErrorRecoveryAction(null);
+  }, []);
+
+  const showError = useCallback(
+    (
+      message: string,
+      recoveryAction: ErrorRecoveryAction | null = null,
+    ): void => {
+      setErrorMessage(message);
+      setErrorRecoveryAction(recoveryAction);
+    },
+    [],
+  );
 
   const applyDraftState = useCallback(
     (payload: DraftStatusResponse) => {
@@ -636,7 +665,7 @@ export function useStationaryEnergyChatArtifactController(
       refreshDraftStatus,
       resumeDraftFromServer,
     }).catch((error) => {
-      setErrorMessage(
+      showError(
         resolveErrorMessage(
           t,
           error,
@@ -651,6 +680,7 @@ export function useStationaryEnergyChatArtifactController(
     refreshDraftStatus,
     resumeAttempted,
     resumeDraftFromServer,
+    showError,
     t,
   ]);
 
@@ -659,7 +689,7 @@ export function useStationaryEnergyChatArtifactController(
       return;
     }
     void loadDraftRuns().catch((error) => {
-      setErrorMessage(
+      showError(
         resolveErrorMessage(
           t,
           error,
@@ -667,7 +697,7 @@ export function useStationaryEnergyChatArtifactController(
         ),
       );
     });
-  }, [featureEnabled, loadDraftRuns, t]);
+  }, [featureEnabled, loadDraftRuns, showError, t]);
 
   // Staggered generation: while a draft is still being generated, poll its
   // status so proposals appear incrementally (the backend commits each batch
@@ -773,8 +803,14 @@ export function useStationaryEnergyChatArtifactController(
         decisionReviewContext,
         decisionState,
         focusedProposalId: effectiveFocusedProposalId,
+        resolvedProposalIds,
       }),
-    [decisionReviewContext, decisionState, effectiveFocusedProposalId],
+    [
+      decisionReviewContext,
+      decisionState,
+      effectiveFocusedProposalId,
+      resolvedProposalIds,
+    ],
   );
   const canSaveAcceptedRowsToInventory = canSaveToInventory({
     draftState,
@@ -922,6 +958,44 @@ export function useStationaryEnergyChatArtifactController(
         setAcknowledgedStaleDraftRunId(toolDraftRunId);
       }
 
+      // The agent started a draft from chat: load the newly created draft so the
+      // overview + review pane pick it up. Generation continues in the
+      // background and the status poller fills in proposals as they arrive.
+      const toolUiEvent =
+        typeof (tool as { ui_event?: unknown } | null)?.ui_event === "string"
+          ? (tool as { ui_event: string }).ui_event
+          : null;
+      if (toolUiEvent === "stationary_energy_draft_started") {
+        const failureMessage = resolveStationaryEnergyStartDraftFailureMessage(
+          t,
+          tool,
+        );
+        if (failureMessage) {
+          showError(failureMessage, "start_draft");
+          return;
+        }
+
+        if (!isStationaryEnergyStartDraftToolResult(tool) || !toolDraftRunId) {
+          showError(
+            t("error-failed-to-start-stationary-energy-draft-retry"),
+            "start_draft",
+          );
+          return;
+        }
+
+        clearError();
+        void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
+          showError(
+            resolveErrorMessage(
+              t,
+              error,
+              "error-failed-to-load-stationary-energy-draft-status",
+            ),
+          );
+        });
+        return;
+      }
+
       if (isStationaryEnergyInventoryConfirmationToolResult(tool)) {
         const toolMessage = resolveStationaryEnergyToolMessage(
           t,
@@ -1045,7 +1119,7 @@ export function useStationaryEnergyChatArtifactController(
 
       if (toolDraftRunId) {
         void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
-          setErrorMessage(
+          showError(
             resolveErrorMessage(
               t,
               error,
@@ -1061,11 +1135,13 @@ export function useStationaryEnergyChatArtifactController(
       appendStagedReviewUpdateConfirmation,
       appendTextMessage,
       canSaveAcceptedRowsToInventory,
+      clearError,
       decisionReviewContext,
       draftState?.draft_run_id,
       refreshDraftStatusSilently,
       removeEmptyAssistantTail,
       removeInventorySaveConfirmationMessages,
+      showError,
       t,
     ],
   );
@@ -1082,7 +1158,7 @@ export function useStationaryEnergyChatArtifactController(
     },
     onError: (error) => {
       removeEmptyAssistantTail();
-      setErrorMessage(
+      showError(
         translateMessage(t, error) || t("error-failed-to-send-message"),
       );
       setLoadingAction(null);
@@ -1115,7 +1191,7 @@ export function useStationaryEnergyChatArtifactController(
         if (required) {
           throw error;
         }
-        setErrorMessage(t("error-chat-history-unavailable"));
+        showError(t("error-chat-history-unavailable"));
         return null;
       } finally {
         if (timeoutId != null) {
@@ -1123,11 +1199,11 @@ export function useStationaryEnergyChatArtifactController(
         }
       }
     },
-    [draftState?.thread_id, inventoryId, t, threadId],
+    [draftState?.thread_id, inventoryId, showError, t, threadId],
   );
 
   const startDraft = useCallback(async (): Promise<void> => {
-    setErrorMessage(null);
+    clearError();
     setLoadingAction("start");
     try {
       const nextThreadId = await ensureThreadId(false);
@@ -1143,7 +1219,7 @@ export function useStationaryEnergyChatArtifactController(
       }
       await refreshDraftStatus(draftRunId);
     } catch (error) {
-      setErrorMessage(
+      showError(
         resolveErrorMessage(
           t,
           error,
@@ -1153,10 +1229,19 @@ export function useStationaryEnergyChatArtifactController(
     } finally {
       setLoadingAction(null);
     }
-  }, [cityId, ensureThreadId, inventoryId, lng, refreshDraftStatus, t]);
+  }, [
+    cityId,
+    clearError,
+    ensureThreadId,
+    inventoryId,
+    lng,
+    refreshDraftStatus,
+    showError,
+    t,
+  ]);
 
   const choosePreference = useCallback(
-    (preference: string): void => {
+    (preference: SourcePreferenceCommand): void => {
       setSourcePreference(preference);
       appendTextMessage("user", buildSourcePreferenceLabel(t, preference));
       appendTextMessage("assistant", buildSourcePreferenceReply(t, preference));
@@ -1174,8 +1259,8 @@ export function useStationaryEnergyChatArtifactController(
   const resetConversationState = useCallback((): void => {
     setChatMessages([]);
     setSourcePreference(null);
-    setErrorMessage(null);
-  }, []);
+    clearError();
+  }, [clearError]);
 
   const startOver = useCallback((): void => {
     clearStoredDraftContext(inventoryId);
@@ -1234,14 +1319,14 @@ export function useStationaryEnergyChatArtifactController(
       return;
     }
 
-    setErrorMessage(null);
+    clearError();
     setLoadingAction("save_draft");
     try {
       await persistReviewDecisions(draftState);
       appendTextMessage("assistant", t("chat-save-draft-success"));
       await refreshDraftStatus(draftState.draft_run_id);
     } catch (error) {
-      setErrorMessage(
+      showError(
         resolveErrorMessage(
           t,
           error,
@@ -1254,9 +1339,11 @@ export function useStationaryEnergyChatArtifactController(
   }, [
     appendTextMessage,
     canPersistDraft,
+    clearError,
     draftState,
     persistReviewDecisions,
     refreshDraftStatus,
+    showError,
     t,
   ]);
 
@@ -1265,7 +1352,7 @@ export function useStationaryEnergyChatArtifactController(
       return;
     }
 
-    setErrorMessage(null);
+    clearError();
     setLoadingAction("save_inventory");
     try {
       if (
@@ -1298,7 +1385,7 @@ export function useStationaryEnergyChatArtifactController(
       );
       await refreshDraftStatus(draftState.draft_run_id);
     } catch (error) {
-      setErrorMessage(
+      showError(
         resolveErrorMessage(
           t,
           error,
@@ -1311,11 +1398,13 @@ export function useStationaryEnergyChatArtifactController(
   }, [
     appendTextMessage,
     canSaveAcceptedRowsToInventory,
+    clearError,
     decisionState,
     draftState,
     inventoryId,
     resolvedProposalIds,
     refreshDraftStatus,
+    showError,
     t,
   ]);
 
@@ -1360,6 +1449,7 @@ export function useStationaryEnergyChatArtifactController(
         return;
       }
 
+      clearError();
       setChatInput("");
       appendTextMessage("user", content);
 
@@ -1394,7 +1484,7 @@ export function useStationaryEnergyChatArtifactController(
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
           removeEmptyAssistantTail();
-          setErrorMessage(
+          showError(
             resolveErrorMessage(t, error, "error-failed-to-send-message"),
           );
         }
@@ -1404,6 +1494,7 @@ export function useStationaryEnergyChatArtifactController(
     [
       appendTextMessage,
       cityId,
+      clearError,
       decisionReviewContext,
       focusedDecisionState,
       draftState,
@@ -1412,6 +1503,7 @@ export function useStationaryEnergyChatArtifactController(
       inventoryId,
       loadingAction,
       removeEmptyAssistantTail,
+      showError,
       startStream,
       t,
     ],
@@ -1532,6 +1624,7 @@ export function useStationaryEnergyChatArtifactController(
       draftState,
       draftStatus: draftState?.status ?? "not_started",
       errorMessage,
+      errorRecoveryAction,
       focusedProposalId: effectiveFocusedProposalId,
       hasDraft: Boolean(draftState),
       hasSourceBackedProposals,

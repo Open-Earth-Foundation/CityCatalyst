@@ -117,6 +117,8 @@
   "edit-subsector": "Editar Subsetor",
   "more-datasets": "Ver mais conjuntos de dados",
   "less-datasets": "Ver menos conjuntos de dados",
+  "notation-key-no-notice": "Para visualizar as chaves de dados \"Não Ocorrido\", consulte:",
+  "manage-missing-sub-sectors": "Gerenciar subsetores ausentes",
   "add-data-heading": "Adicionar Dados aos Seus Dados de Inventário",
   "add-data-details": "Estes são os subsetores a serem completados de acordo com a metodologia GPC para o setor de transporte. Selecione um subsetor e preencha as informações para completar seu inventário.",
   "select-subsector": "Selecionar Subsetor",

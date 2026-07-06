@@ -87,13 +87,16 @@ sequenceDiagram
 
 `AgentService.create_agent()` builds the tool pack at request time:
 
-- Always available:
+- Added outside active Stationary Energy review chat:
   - `climate_vector_search`
 - Added when the request has CityCatalyst credentials and thread scope:
   - `get_user_inventories`
   - `city_inventory_search`
   - `get_inventory`
   - `get_all_datasources`
+- Added when the request is scoped to the Stationary Energy draft surface and
+  no draft run is active:
+  - `stationary_energy_start_draft`
 - Added when the request is scoped to a Stationary Energy draft run:
   - `stationary_energy_list_review_options`
   - `stationary_energy_list_notation_keys`
@@ -116,9 +119,13 @@ sequenceDiagram
 
 - General chat starts from `prompts.default`.
 - General inventory chat can append `prompts.inventory_context`.
+- Stationary Energy draft-surface chat can register `stationary_energy_start_draft`
+  before a draft run exists, using the default prompt plus a focused start-draft
+  instruction.
 - Stationary Energy review chat starts from `prompts.stationary_energy_review`
-  instead of appending to `prompts.default`, and registers only scoped
-  Stationary Energy review tools.
+  instead of appending to `prompts.default`, and registers only tools scoped to
+  the active draft review workflow. That pack includes Stationary Energy review
+  tools, but not the pre-draft `stationary_energy_start_draft` tool.
 
 ## Stationary Energy Review Flow
 
@@ -181,7 +188,8 @@ workflow state in PostgreSQL.
   - Uses `stationary_energy_review` as the full prompt for active Stationary
     Energy review chat.
   - Keeps general inventory and vector-search tools out of active review chat.
-  - Registers the correct tool pack for the request.
+  - Registers the correct Stationary Energy review tool pack when a draft run is
+    active.
 - `services/stationary_energy/stationary_energy_draft_repository.py`
   - Loads draft runs, proposals, decisions, and staged review selections.
   - Persists staged selection status transitions.
@@ -211,6 +219,9 @@ workflow state in PostgreSQL.
 - `tools/stationary_energy_review_tools.py`
   - The scoped Stationary Energy review tool pack backed by
     `StationaryEnergyAgentReviewService`.
+- `tools/stationary_energy_start_draft_tools.py`
+  - The scoped chat tool that starts Stationary Energy draft generation before
+    a draft run is active and review proposals exist.
 
 ### Utility Layer
 
@@ -252,6 +263,7 @@ values inside `tool_result` payloads:
 - `stationary_energy_review_change_confirmation_requested`
 - `stationary_energy_review_rollback_confirmation_requested`
 - `stationary_energy_inventory_save_confirmation_requested`
+- `stationary_energy_draft_started`
 
 ## Prompts And Configuration
 
@@ -264,6 +276,7 @@ settings.
   - Injected only when an inventory is active and CA can fetch its details.
 - `prompts.stationary_energy_review`
   - Used as the full prompt for active Stationary Energy draft review chat.
+  - Defines inline tool policy for the Stationary Energy review tools.
 
 Prompt include directives such as `{{ include: tools/default_tool_policy.md }}`
 are resolved relative to the including file first and then against the prompt

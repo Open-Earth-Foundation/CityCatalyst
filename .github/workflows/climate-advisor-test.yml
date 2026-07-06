@@ -191,7 +191,4 @@ jobs:
           kubectl rollout status deployment/climate-advisor-test -n default --timeout=300s
           SMOKE_FIXTURE_MANIFEST=k8s/test/cc-test-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-test \
-          CA_SMOKE_USER_ID="${{ vars.CA_SMOKE_USER_ID }}" \
-          CA_SMOKE_CITY_ID="${{ vars.CA_SMOKE_CITY_ID }}" \
-          CA_SMOKE_INVENTORY_ID="${{ vars.CA_SMOKE_INVENTORY_ID }}" \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

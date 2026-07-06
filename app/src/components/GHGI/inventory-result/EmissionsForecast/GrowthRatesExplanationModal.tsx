@@ -33,8 +33,9 @@ export function GrowthRatesExplanationModal({
       onOpenChange={onClose}
       placement="center"
       size="xl"
+      scrollBehavior="inside"
     >
-      <DialogContent>
+      <DialogContent maxHeight="90%">
         <DialogHeader>
           <HStack>
             <MdBarChart size="24px" fontSize="24px" />

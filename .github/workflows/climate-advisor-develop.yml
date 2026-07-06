@@ -185,10 +185,5 @@ jobs:
             -n default
           kubectl rollout restart deployment climate-advisor-dev -n default
           SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
-          CA_SERVICE_NAME=climate-advisor-service-dev \
           CA_DEPLOYMENT_NAME=climate-advisor-dev \
-          CC_EXPECTED_AUDIENCE=https://citycatalyst.openearth.dev \
-          CA_SMOKE_USER_ID="${{ vars.CA_SMOKE_USER_ID }}" \
-          CA_SMOKE_CITY_ID="${{ vars.CA_SMOKE_CITY_ID }}" \
-          CA_SMOKE_INVENTORY_ID="${{ vars.CA_SMOKE_INVENTORY_ID }}" \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

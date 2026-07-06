@@ -658,6 +658,11 @@ export default function AddDataSteps() {
     return getSourceSubsectorId(source) === selectedSubsectorId;
   });
 
+  // Check if any data sources were excluded because they only carry notation keys
+  const hasNotationKeySources = dataSources?.some(
+    ({ source }) => source.retrievalMethod === "global_api_notation_key",
+  ) ?? false;
+
   const visibleDataSources = filteredDataSources?.slice(
     0,
     isDataSectionExpanded ? filteredDataSources.length : 6,
@@ -1440,6 +1445,32 @@ export default function AddDataSteps() {
                   as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
                 />
               </Button>
+            )}
+            {hasNotationKeySources && dataSources && dataSources.length > 0 && (
+              <HStack
+                gap={2}
+                mt={6}
+                px={4}
+                py={3}
+                bg="background.neutral"
+                borderRadius="md"
+                color="content.tertiary"
+                fontSize="body.md"
+              >
+                <Icon as={MdInfoOutline} boxSize={5} flexShrink={0} />
+                <Text>
+                  {t("notation-key-no-notice")}{" "}
+                  <Link
+                    href={pathname.replace(/\/data\/.*$/, "/manage-sectors")}
+                    target="_blank"
+                    color="content.link"
+                    textDecoration="underline"
+                    fontWeight="medium"
+                  >
+                    {t("manage-missing-sub-sectors")}
+                  </Link>
+                </Text>
+              </HStack>
             )}
           </Card.Body>
         </Card.Root>

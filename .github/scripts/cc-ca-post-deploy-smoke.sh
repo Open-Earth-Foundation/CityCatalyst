@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# Post-deploy CA/CC smoke for GitHub Actions.
-# Required env: SMOKE_FIXTURE_MANIFEST, CA_SERVICE_NAME, CA_DEPLOYMENT_NAME,
-# CC_EXPECTED_AUDIENCE. Fixture setup, rollout, service health, and CA-to-CC
-# contract checks are blocking.
 set -euo pipefail
 
 NAMESPACE="${K8S_NAMESPACE:-default}"

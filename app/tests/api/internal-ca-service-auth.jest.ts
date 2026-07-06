@@ -25,9 +25,15 @@ const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
 const mockCommitAcceptedStationaryEnergyRows =
   jest.fn<() => Promise<unknown>>();
 const mockListStationaryEnergyNotationKeyTargets =
-  jest.fn<() => Promise<unknown>>();
+  jest.fn<(inventory: unknown) => Promise<unknown>>();
 const mockCommitStationaryEnergyNotationKeys =
-  jest.fn<() => Promise<unknown>>();
+  jest.fn<
+    (params: {
+      inventory: unknown;
+      rows: unknown[];
+      userId: string;
+    }) => Promise<unknown>
+  >();
 
 jest.unstable_mockModule(
   "@/backend/agentic/ghgi/stationary-energy/context",
@@ -56,18 +62,14 @@ let postListNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/g
 let postCommitNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route").POST;
 
 beforeAll(async () => {
-  ({ POST: postLoadContext } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"
-  ));
-  ({ POST: postCommitAccepted } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"
-  ));
-  ({ POST: postListNotationKeys } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"
-  ));
-  ({ POST: postCommitNotationKeys } = await import(
-    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"
-  ));
+  ({ POST: postLoadContext } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"));
+  ({ POST: postCommitAccepted } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"));
+  ({ POST: postListNotationKeys } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"));
+  ({ POST: postCommitNotationKeys } =
+    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"));
 });
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";

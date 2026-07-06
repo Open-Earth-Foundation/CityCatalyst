@@ -144,6 +144,7 @@
   "change-to-admin": "Change to admin",
   "user-removed": "User removed successfully",
   "role-update-success-toast-title": "Role updated successfully",
+  "updating-role": "Updating role...",
   "frozen": "Frozen",
   "already-registered-admin": "{{email}} is already a registered admin",
   "error-invite": "Invitation error",

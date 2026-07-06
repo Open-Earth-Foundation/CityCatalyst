@@ -320,11 +320,11 @@ export default function AddDataSteps() {
 
   const totalStepCompletion = currentStep
     ? clamp(
-        currentStep.connectedProgress +
-          currentStep.addedProgress +
-          currentStep.reasonNEProgress +
-          currentStep.reasonNOProgress,
-      )
+      currentStep.connectedProgress +
+      currentStep.addedProgress +
+      currentStep.reasonNEProgress +
+      currentStep.reasonNOProgress,
+    )
     : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
@@ -647,11 +647,21 @@ export default function AddDataSteps() {
   const selectedSubsectorId = selectedSubsector[0];
 
   const filteredDataSources = dataSources?.filter(({ source }) => {
+    // Hide data sources that only contain notation keys (e.g. "NO" = not occurring)
+    // and no actual emissions data
+    if (source.retrievalMethod === "global_api_notation_key") {
+      return false;
+    }
     if (!selectedSubsectorId || selectedSubsectorId === allSubsectorsValue) {
       return true;
     }
     return getSourceSubsectorId(source) === selectedSubsectorId;
   });
+
+  // Check if any data sources were excluded because they only carry notation keys
+  const hasNotationKeySources = dataSources?.some(
+    ({ source }) => source.retrievalMethod === "global_api_notation_key",
+  ) ?? false;
 
   const visibleDataSources = filteredDataSources?.slice(
     0,
@@ -899,7 +909,7 @@ export default function AddDataSteps() {
                         justify="space-between"
                       >
                         {subSector.completedCount > 0 &&
-                        subSector.completedCount < subSector.totalCount ? (
+                          subSector.completedCount < subSector.totalCount ? (
                           <ProgressCircle.Root
                             size="xs"
                             mr={1}
@@ -1082,10 +1092,10 @@ export default function AddDataSteps() {
                           {groupedByScope.map(([scopeName, scopeSources]) => (
                             <Box key={`${subSectorId}-${scopeName}`}>
                               <SimpleGrid
-                                templateColumns={{
-                                  base: "1fr",
-                                  md: "repeat(2, 1fr)",
-                                  lg: "repeat(3, 1fr)",
+                                columns={{
+                                  base: 1,
+                                  md: 2,
+                                  lg: 3,
                                 }}
                                 gap="16px"
                               >
@@ -1100,7 +1110,7 @@ export default function AddDataSteps() {
                                       borderWidth="1px"
                                       borderColor={
                                         isSourceConnected(source) &&
-                                        source.inventoryValues?.length
+                                          source.inventoryValues?.length
                                           ? "interactive.tertiary"
                                           : "border.overlay"
                                       }
@@ -1126,7 +1136,7 @@ export default function AddDataSteps() {
                                               IV: MdOutlineFactory,
                                               V: LuWheat,
                                             }[
-                                              currentStep.referenceNumber
+                                            currentStep.referenceNumber
                                             ] ?? MdOutlineHomeWork
                                           }
                                           boxSize={9}
@@ -1272,13 +1282,13 @@ export default function AddDataSteps() {
                                           color="content.tertiary"
                                           lineClamp={
                                             isSourceConnected(source) &&
-                                            source.inventoryValues?.length
+                                              source.inventoryValues?.length
                                               ? 0
                                               : 4
                                           }
                                           maxHeight={
                                             isSourceConnected(source) &&
-                                            source.inventoryValues?.length
+                                              source.inventoryValues?.length
                                               ? "100px"
                                               : "184px"
                                           }
@@ -1311,7 +1321,7 @@ export default function AddDataSteps() {
                                             {t("see-more-details")}
                                           </Link>
                                           {isSourceConnected(source) &&
-                                          source.inventoryValues?.length ? (
+                                            source.inventoryValues?.length ? (
                                             <Button
                                               variant="outline"
                                               w="full"
@@ -1338,13 +1348,13 @@ export default function AddDataSteps() {
                                                 isFrozenCheck()
                                                   ? null
                                                   : onDisconnectThirdPartyData(
-                                                      source,
-                                                    )
+                                                    source,
+                                                  )
                                               }
                                               loading={
                                                 isDisconnectLoading &&
                                                 source.datasourceId ===
-                                                  disconnectingDataSourceId
+                                                disconnectingDataSourceId
                                               }
                                               onMouseEnter={() =>
                                                 onButtonHover(source)
@@ -1400,7 +1410,7 @@ export default function AddDataSteps() {
                                               loading={
                                                 isConnectDataSourceLoading &&
                                                 source.datasourceId ===
-                                                  connectingDataSourceId
+                                                connectingDataSourceId
                                               }
                                             >
                                               {t("connect-data")}
@@ -1435,6 +1445,32 @@ export default function AddDataSteps() {
                   as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
                 />
               </Button>
+            )}
+            {hasNotationKeySources && dataSources && dataSources.length > 0 && (
+              <HStack
+                gap={2}
+                mt={6}
+                px={4}
+                py={3}
+                bg="background.neutral"
+                borderRadius="md"
+                color="content.tertiary"
+                fontSize="body.md"
+              >
+                <Icon as={MdInfoOutline} boxSize={5} flexShrink={0} />
+                <Text>
+                  {t("notation-key-no-notice")}{" "}
+                  <Link
+                    href={pathname.replace(/\/data\/.*$/, "/manage-sectors")}
+                    target="_blank"
+                    color="content.link"
+                    textDecoration="underline"
+                    fontWeight="medium"
+                  >
+                    {t("manage-missing-sub-sectors")}
+                  </Link>
+                </Text>
+              </HStack>
             )}
           </Card.Body>
         </Card.Root>

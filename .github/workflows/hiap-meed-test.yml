@@ -109,7 +109,7 @@ jobs:
           kubectl apply -f hiap-meed/k8s/service-test.yml
 
           kubectl set env deployment/hiap-meed-test \
-            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_MEED_TEST}}
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_MEED_TEST}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP_MEED_DEV}} \
             AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP_MEED_DEV}}
 

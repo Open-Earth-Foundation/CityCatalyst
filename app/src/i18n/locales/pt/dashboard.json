@@ -290,6 +290,7 @@
   "last-modified-by": "Última modificação feita por",
   "date": "Data",
   "no-history": "Nenhuma entrada de histórico de versões encontrada.",
+  "not-specified": "Não especificado",
   "subcategory": "Sub-categoria",
   "inventory-versions-restore-failed": "Falha ao restaurar a versão",
   "status-poc": "Prova de Conceito",

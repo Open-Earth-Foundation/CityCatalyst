@@ -25,7 +25,7 @@ export default function AdminInviteAcceptedTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  
+
   return (
     <Html>
       <Head>
@@ -50,7 +50,7 @@ export default function AdminInviteAcceptedTemplate({
             {t("admin-invite-accepted.greeting", { name: user?.name })}
           </Text>
           <Text style={paragraph}>{t("admin-invite-accepted.message")}</Text>
-          
+
           <Section style={listContainer}>
             <Text style={listItem}>
               <span style={listNumber}>1.</span>
@@ -64,12 +64,8 @@ export default function AdminInviteAcceptedTemplate({
               <span style={listNumber}>3.</span>
               <span>{t("admin-invite-accepted.step3")}</span>
             </Text>
-            <Text style={listItem}>
-              <span style={listNumber}>4.</span>
-              <span>{t("admin-invite-accepted.step4")}</span>
-            </Text>
           </Section>
-          
+
           <Section
             style={{
               marginTop: "36px",
@@ -80,16 +76,30 @@ export default function AdminInviteAcceptedTemplate({
               {t("admin-invite-accepted.cta", { defaultValue: "Get Started" })}
             </Link>
           </Section>
-          
-          <Hr style={{ height: "2px", background: "#EBEBEC", marginTop: "36px", marginBottom: "24px" }} />
-          
+
+          <Hr
+            style={{
+              height: "2px",
+              background: "#EBEBEC",
+              marginTop: "36px",
+              marginBottom: "24px",
+            }}
+          />
+
           <Text style={paragraph}>{t("admin-invite-accepted.footer-1")}</Text>
           <Text style={paragraph}>{t("admin-invite-accepted.footer-2")}</Text>
           <Text style={paragraph}>
             <strong>{t("admin-invite-accepted.footer-3")}</strong>
           </Text>
-          
-          <Hr style={{ height: "2px", background: "#EBEBEC", marginTop: "24px", marginBottom: "24px" }} />
+
+          <Hr
+            style={{
+              height: "2px",
+              background: "#EBEBEC",
+              marginTop: "24px",
+              marginBottom: "24px",
+            }}
+          />
           <Text style={footerText}>{t("admin-invite-accepted.footer")}</Text>
         </Container>
       </Body>
@@ -177,3 +187,4 @@ const listNumber = {
   marginRight: "8px",
   minWidth: "20px",
 };
+

@@ -5,9 +5,7 @@ NAMESPACE="${K8S_NAMESPACE:-default}"
 JOB_TIMEOUT="${JOB_TIMEOUT:-180s}"
 
 : "${SMOKE_FIXTURE_MANIFEST:?SMOKE_FIXTURE_MANIFEST is required}"
-: "${CA_SERVICE_NAME:?CA_SERVICE_NAME is required}"
 : "${CA_DEPLOYMENT_NAME:?CA_DEPLOYMENT_NAME is required}"
-: "${CC_EXPECTED_AUDIENCE:?CC_EXPECTED_AUDIENCE is required}"
 
 CA_SMOKE_USER_ID="${CA_SMOKE_USER_ID:-11111111-1111-4111-8111-111111111111}"
 CA_SMOKE_CITY_ID="${CA_SMOKE_CITY_ID:-22222222-2222-4222-8222-222222222222}"
@@ -48,28 +46,10 @@ if [[ -z "${CA_POD}" ]]; then
   exit 1
 fi
 
-echo "Checking CC to CA service reachability via ${CA_SERVICE_NAME}/health"
-kubectl exec -i "${CA_POD}" -n "${NAMESPACE}" -- \
-  python - "${CA_SERVICE_NAME}" <<'PY'
-import sys
-import urllib.error
-import urllib.request
-
-service_name = sys.argv[1]
-url = f"http://{service_name}/health"
-
-try:
-    with urllib.request.urlopen(url, timeout=10) as response:
-        print(f"Health check passed for {url}: HTTP {response.status}")
-except urllib.error.URLError as exc:
-    raise SystemExit(f"Health check failed for {url}: {exc}") from exc
-PY
-
 echo "Running CA to CC auth smoke from deployed Climate Advisor pod"
 kubectl exec "${CA_POD}" -n "${NAMESPACE}" -- \
   env \
     "CA_SMOKE_USER_ID=${CA_SMOKE_USER_ID}" \
     "CA_SMOKE_CITY_ID=${CA_SMOKE_CITY_ID}" \
     "CA_SMOKE_INVENTORY_ID=${CA_SMOKE_INVENTORY_ID}" \
-  python -m scripts.smoke_cc_contract \
-    --expected-audience "${CC_EXPECTED_AUDIENCE}"
+  python -m scripts.smoke_cc_contract

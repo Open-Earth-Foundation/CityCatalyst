@@ -32,12 +32,12 @@ export function GrowthRatesExplanationModal({
       open={isOpen}
       onOpenChange={onClose}
       placement="center"
-      size={"xl"}
+      size="xl"
     >
       <DialogContent>
         <DialogHeader>
           <HStack>
-            <MdBarChart size={"24px"} fontSize={"24px"} />
+            <MdBarChart size="24px" fontSize="24px" />
             <Text
               color="content.primary"
               fontWeight="bold"
@@ -52,7 +52,7 @@ export function GrowthRatesExplanationModal({
         </DialogHeader>
         <Box divideX="1px" borderColor="border.overlay" borderWidth="1px" />
         <DialogBody>
-          <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+          <VStack alignItems="left" justifyItems="end" p="24px">
             <Text
               color="content.primary"
               fontWeight="bold"
@@ -64,7 +64,7 @@ export function GrowthRatesExplanationModal({
               {t("city-typology-and-clusters")}
             </Text>
             <Text
-              my={"12px"}
+              my="12px"
               color="content.primary"
               lineHeight="24px"
               fontSize="16px"
@@ -74,17 +74,12 @@ export function GrowthRatesExplanationModal({
               {t("city-typology-and-clusters-description")}
             </Text>
           </VStack>
-          <HStack
-            my={"12px"}
-            mx={"24px"}
-            marginTop={"48px"}
-            alignItems={"flex-end"}
-          >
-            <VStack alignItems={"center"} justifyItems={"end"} p="24px">
+          <HStack my="12px" mx="24px" marginTop="48px" alignItems="flex-end">
+            <VStack alignItems="center" justifyItems="end" p="24px">
               <DisplayLarge color="black">{cluster?.id}</DisplayLarge>
-              <LabelLarge textWrap={"nowrap"}>{t("cluster-#")}</LabelLarge>
+              <LabelLarge textWrap="nowrap">{t("cluster-#")}</LabelLarge>
             </VStack>
-            <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+            <VStack alignItems="left" justifyItems="end" p="24px">
               <DisplayLarge
                 fontSize="body.xl"
                 color="content.primary"
@@ -96,7 +91,7 @@ export function GrowthRatesExplanationModal({
               <LabelLarge>{t("description")}</LabelLarge>
             </VStack>
           </HStack>
-          <VStack alignItems={"left"} justifyItems={"end"} p="24px">
+          <VStack alignItems="left" justifyItems="end" p="24px">
             <Text
               color="content.primary"
               fontWeight="bold"
@@ -108,7 +103,7 @@ export function GrowthRatesExplanationModal({
               {t("methodology-and-assumptions")}
             </Text>
             <Text
-              my={"12px"}
+              my="12px"
               color="content.primary"
               lineHeight="24px"
               fontSize="16px"
@@ -119,7 +114,7 @@ export function GrowthRatesExplanationModal({
             </Text>
           </VStack>
           <Box>
-            <Box display="flex" justifySelf={"center"} width="100%" px="24px">
+            <Box display="flex" justifySelf="center" width="100%" px="24px">
               <GrowthRatesExplanationModalTable
                 growthRates={growthRates}
                 t={t}

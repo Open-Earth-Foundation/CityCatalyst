@@ -8,7 +8,7 @@ import {
   DialogRoot,
 } from "@/components/ui/dialog";
 import { EmissionsForecastData } from "@/util/types";
-import { Box, HStack, Text, VStack } from "@chakra-ui/react";
+import { Box, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { MdBarChart } from "react-icons/md";
 import { GrowthRatesExplanationModalTable } from "./GrowthRatesExplanationModalTable";
@@ -38,7 +38,7 @@ export function GrowthRatesExplanationModal({
       <DialogContent maxHeight="90%">
         <DialogHeader>
           <HStack>
-            <MdBarChart size="24px" fontSize="24px" />
+            <Icon as={MdBarChart} boxSize="24px" color="content.tertiary" />
             <Text
               color="content.primary"
               fontWeight="bold"

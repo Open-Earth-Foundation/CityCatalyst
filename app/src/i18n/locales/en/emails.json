@@ -140,7 +140,7 @@
     "title": "Join Your Team In CityCatalyst",
     "greeting": "Hi {{name}},",
     "greeting-no-name": "Hi,",
-    "message": "Welcome to CityCatalyst! Your free trial is now live -  and we’re excited to have you onboard.",
+    "message": "Welcome to CityCatalyst! Your free trial is now live - and we’re excited to have you onboard.",
     "message-prefix": "Welcome to CityCatalyst! Your ",
     "message-free-trial": "free trial",
     "message-suffix": " is now live and we're excited to have you onboard.",
@@ -177,8 +177,8 @@
     "brand": "CityCatalyst"
   },
   "admin-invite-accepted": {
-    "subject": "Welcome to CityCatalyst! 🎉 let’s get started. ",
-    "preview": "Welcome to CityCatalyst! 🎉 let’s get started. ",
+    "subject": "Welcome to CityCatalyst! 🎉 let’s get started.",
+    "preview": "Welcome to CityCatalyst! 🎉 let’s get started.",
     "brand": "CityCatalyst",
     "title": "Welcome to CityCatalyst!",
     "greeting": "Hi {{name}},",
@@ -186,7 +186,6 @@
     "step1": "Create your first city project (trial includes 1 city)",
     "step2": "Invite collaborators from your team or partners",
     "step3": "Customize your workspace with your logo and colors",
-    "step4": "Customize your workspace with your logo and colors",
     "footer-1": "Need a hand? We’re here to help, please reach out to citycatalyst@openearth.org with questions!",
     "footer-2": "Let’s make local climate data work harder, together.",
     "footer-3": "The CityCatalyst Team",

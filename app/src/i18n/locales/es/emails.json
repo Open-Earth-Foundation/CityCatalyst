@@ -180,7 +180,7 @@
   },
   "admin-invite-accepted": {
     "subject": "¡Bienvenido a CityCatalyst! 🎉 comencemos.",
-    "preview": "¡Bienvenido a CityCatalyst! 🎉 comencemos. ",
+    "preview": "¡Bienvenido a CityCatalyst! 🎉 comencemos.",
     "brand": "CityCatalyst",
     "title": "¡Bienvenido a CityCatalyst!",
     "greeting": "Hola {{name}},",
@@ -188,7 +188,6 @@
     "step1": "Crea tu primer proyecto de ciudad (la prueba incluye 1 ciudad)",
     "step2": "Invita a colaboradores de tu equipo o socios",
     "step3": "Personaliza tu espacio de trabajo con tu logotipo y colores",
-    "step4": "Personaliza tu espacio de trabajo con tu logotipo y colores",
     "footer-1": "¿Necesitas ayuda? Estamos aquí para ayudarte, por favor contacta a citycatalyst@openearth.org si tienes preguntas!",
     "footer-2": "Hagamos que los datos climáticos locales trabajen más duro, juntos.",
     "footer-3": "El Equipo de CityCatalyst",

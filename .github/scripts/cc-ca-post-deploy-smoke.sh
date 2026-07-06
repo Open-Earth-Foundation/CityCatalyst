@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Post-deploy CA/CC smoke for GitHub Actions.
+# Required env: SMOKE_FIXTURE_MANIFEST, CA_SERVICE_NAME, CA_DEPLOYMENT_NAME,
+# CC_EXPECTED_AUDIENCE. Fixture setup, rollout, service health, and CA-to-CC
+# contract checks are blocking.
 set -euo pipefail
 
 NAMESPACE="${K8S_NAMESPACE:-default}"
@@ -35,29 +39,7 @@ kubectl rollout status "deployment/${CA_DEPLOYMENT_NAME}" \
   -n "${NAMESPACE}" \
   --timeout=300s
 
-echo "Checking endpoints for service/${CA_SERVICE_NAME}"
-READY_ENDPOINTS="$(kubectl get endpoints "${CA_SERVICE_NAME}" \
-  -n "${NAMESPACE}" \
-  -o jsonpath='{.subsets[*].addresses[*].ip}')"
-if [[ -z "${READY_ENDPOINTS}" ]]; then
-  echo "::error::No ready endpoints found for ${CA_SERVICE_NAME}"
-  kubectl describe "service/${CA_SERVICE_NAME}" -n "${NAMESPACE}" || true
-  kubectl get endpoints "${CA_SERVICE_NAME}" -n "${NAMESPACE}" -o yaml || true
-  exit 1
-fi
-
-echo "Checking CC to CA service reachability via ${CA_SERVICE_NAME}/health"
-HEALTH_POD="cc-ca-health-smoke-${GITHUB_RUN_ID:-local}-${GITHUB_RUN_ATTEMPT:-0}"
-kubectl run "${HEALTH_POD}" \
-  --image=curlimages/curl:8.10.1 \
-  --restart=Never \
-  --rm \
-  -i \
-  -n "${NAMESPACE}" \
-  --command -- \
-  curl -fsS --max-time 10 "http://${CA_SERVICE_NAME}/health"
-
-echo "Running CA to CC auth smoke from deployed Climate Advisor pod"
+echo "Finding running Climate Advisor pod for app=${CA_DEPLOYMENT_NAME}"
 CA_POD="$(kubectl get pods \
   -n "${NAMESPACE}" \
   -l "app=${CA_DEPLOYMENT_NAME}" \
@@ -70,6 +52,24 @@ if [[ -z "${CA_POD}" ]]; then
   exit 1
 fi
 
+echo "Checking CC to CA service reachability via ${CA_SERVICE_NAME}/health"
+kubectl exec -i "${CA_POD}" -n "${NAMESPACE}" -- \
+  python - "${CA_SERVICE_NAME}" <<'PY'
+import sys
+import urllib.error
+import urllib.request
+
+service_name = sys.argv[1]
+url = f"http://{service_name}/health"
+
+try:
+    with urllib.request.urlopen(url, timeout=10) as response:
+        print(f"Health check passed for {url}: HTTP {response.status}")
+except urllib.error.URLError as exc:
+    raise SystemExit(f"Health check failed for {url}: {exc}") from exc
+PY
+
+echo "Running CA to CC auth smoke from deployed Climate Advisor pod"
 kubectl exec "${CA_POD}" -n "${NAMESPACE}" -- \
   env \
     "CA_SMOKE_USER_ID=${CA_SMOKE_USER_ID}" \

@@ -218,4 +218,37 @@ def test_single_smoke_script_runs_fixture_job_and_runtime_smoke() -> None:
     assert "kubectl wait --for=condition=complete" in script
     assert 'kubectl logs "job/${JOB_NAME}"' in script
     assert "kubectl rollout status" in script
+    assert 'kubectl exec -i "${CA_POD}"' in script
     assert "python -m scripts.smoke_cc_contract" in script
+
+
+def test_smoke_script_skips_endpoint_inspection() -> None:
+    """Ensure endpoint RBAC cannot block the active smoke checks."""
+    script = (REPO_ROOT / SMOKE_SCRIPT_PATH).read_text(encoding="utf-8")
+
+    pod_lookup = script.index('CA_POD="$(kubectl get pods')
+    health_check = script.index(
+        'urllib.request.urlopen(url, timeout=10)',
+    )
+    auth_check = script.index("python -m scripts.smoke_cc_contract")
+
+    assert "kubectl get endpoints" not in script
+    assert "Checking endpoints" not in script
+    assert "No ready endpoints found" not in script
+    assert "Unable to inspect endpoints" not in script
+    assert pod_lookup < health_check < auth_check
+
+
+def test_smoke_script_does_not_create_extra_health_probe_pods() -> None:
+    """Ensure the health probe reuses the deployed CA pod instead of creating one."""
+    script = (REPO_ROOT / SMOKE_SCRIPT_PATH).read_text(encoding="utf-8")
+
+    pod_lookup = script.index('CA_POD="$(kubectl get pods')
+    health_check = script.index(
+        'urllib.request.urlopen(url, timeout=10)',
+    )
+    auth_check = script.index("python -m scripts.smoke_cc_contract")
+
+    assert "kubectl run" not in script
+    assert "curlimages/curl" not in script
+    assert pod_lookup < health_check < auth_check

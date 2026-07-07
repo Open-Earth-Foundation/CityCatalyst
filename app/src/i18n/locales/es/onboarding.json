@@ -297,5 +297,6 @@
   "chat-suggestion-ar6-3": "¿Cómo ha mejorado la ciencia del clima desde el AR5?",
   "chat-suggestion-ar6-3-message": "¿Cómo ha mejorado nuestra comprensión del cambio climático desde AR5 hasta AR6?",
   "invite-collaborators-step": "Invitar colaboradores",
-  "email": "Correo electrónico"
+  "email": "Correo electrónico",
+  "invite-collaborators-info": "Presiona enter entre cada correo electrónico para agregar miembros."
 }

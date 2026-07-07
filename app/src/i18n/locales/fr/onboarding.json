@@ -294,5 +294,6 @@
   "chat-suggestion-ar6-2-message": "Quelles sont les principales questions et conclusions abordées dans le rapport AR6 du GIEC ?",
   "chat-suggestion-ar6-3": "Comment la science du climat s’est-elle améliorée depuis AR5 ?",
   "chat-suggestion-ar6-3-message": "Comment notre compréhension du changement climatique s’est-elle améliorée de l’AR5 à l’AR6 ?",
-  "email": "E-mail"
+  "email": "E-mail",
+  "invite-collaborators-info": "Appuyez sur Entrée entre chaque e-mail pour ajouter des membres."
 }

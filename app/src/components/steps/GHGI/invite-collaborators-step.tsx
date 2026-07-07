@@ -8,17 +8,18 @@ import {
 } from "react";
 import {
   Box,
+  chakra,
   CheckboxGroup,
+  CloseButton,
   createListCollection,
+  Flex,
   Heading,
   HStack,
   Icon,
   Input,
   Separator,
-  Tag,
   Text,
 } from "@chakra-ui/react";
-import { Field } from "@/components/ui/field";
 import {
   SelectContent,
   SelectItem,
@@ -26,7 +27,6 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { NativeSelectField, NativeSelectRoot } from "@/components/ui/native-select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MdInfoOutline } from "react-icons/md";
@@ -156,13 +156,46 @@ const InviteCollaboratorsStep = forwardRef<
       </Box>
 
       <Box>
-        <Text fontWeight="semibold" mb={2}>
+        <Text
+          color="content.secondary"
+          fontFamily="heading"
+          fontSize="label.lg"
+          fontWeight="medium"
+          lineHeight="20px"
+          letterSpacing="0.5px"
+          mb={2}
+        >
           {t("email")}
         </Text>
-        <Field invalid={!!emailError}>
-          <HStack w="full">
+        <HStack w="full" align="flex-start">
+          {/* Input with role selector inlined on the right */}
+          <Box
+            flex={1}
+            display="flex"
+            alignItems="center"
+            borderWidth="1px"
+            borderColor={
+              emailError ? "sentiment.negativeDefault" : "border.neutral"
+            }
+            borderRadius="md"
+            bg={
+              emailError ? "sentiment.negativeOverlay" : "background.default"
+            }
+            overflow="hidden"
+            h="40px"
+            _focusWithin={{
+              borderColor: "interactive.secondary",
+              boxShadow:
+                "0 0 0 1px var(--chakra-colors-interactive-secondary)",
+            }}
+          >
             <Input
               flex={1}
+              border="none"
+              bg="transparent"
+              h="full"
+              borderRadius={0}
+              _focusVisible={{ boxShadow: "none" }}
               value={emailInput}
               onChange={(e) => {
                 setEmailInput(e.target.value);
@@ -170,82 +203,117 @@ const InviteCollaboratorsStep = forwardRef<
               }}
               onKeyDown={(e) => e.key === "Enter" && addMember()}
               placeholder={t("invite-collaborators-email-placeholder")}
-              borderColor="border.neutral"
-              backgroundColor={
-                emailError ? "sentiment.negativeOverlay" : "background.default"
-              }
             />
-            <NativeSelectRoot variant="outline" w="150px">
-              <NativeSelectField
-                value={selectedRole}
-                onChange={(e) =>
-                  setSelectedRole(e.target.value as "admin" | "collaborator")
-                }
-              >
-                <option value="collaborator">{t("collaborator")}</option>
-                <option value="admin">{t("admin")}</option>
-              </NativeSelectField>
-            </NativeSelectRoot>
-            <Button
-              onClick={addMember}
-              disabled={!emailInput.trim()}
-              textTransform="uppercase"
-              letterSpacing="wider"
-              px="24px"
-              h="40px"
+            <chakra.select
+              value={selectedRole}
+              onChange={(e) =>
+                setSelectedRole(e.target.value as "admin" | "collaborator")
+              }
+              bg="background.neutral"
+              border="none"
+              borderRadius="md"
+              ps={2}
+              pe={1}
+              mx={2}
+              h="28px"
+              color="content.secondary"
+              fontFamily="body"
+              fontSize="body.sm"
+              fontWeight="normal"
+              lineHeight="16px"
+              letterSpacing="0.5px"
+              cursor="pointer"
               flexShrink={0}
+              _focus={{ outline: "none", boxShadow: "none" }}
             >
-              {t("add-member")}
-            </Button>
-          </HStack>
-        </Field>
-        {emailError && (
+              <option value="collaborator">{t("collaborator")}</option>
+              <option value="admin">{t("admin")}</option>
+            </chakra.select>
+          </Box>
+          <Button
+            onClick={addMember}
+            disabled={!emailInput.trim()}
+            textTransform="uppercase"
+            letterSpacing="wider"
+            px="24px"
+            h="40px"
+            flexShrink={0}
+          >
+            {t("add-member")}
+          </Button>
+        </HStack>
+        {emailError ? (
           <HStack mt={2}>
             <Icon as={MdInfoOutline} color="sentiment.negativeDefault" />
             <Text color="sentiment.negativeDefault" fontSize="body.md">
               {t(emailError)}
             </Text>
           </HStack>
+        ) : (
+          <HStack mt={2}>
+            <Icon as={MdInfoOutline} color="interactive.secondary" boxSize={4} />
+            <Text fontSize="body.sm" color="content.tertiary">
+              {t("invite-collaborators-info")}
+            </Text>
+          </HStack>
         )}
         {invitedMembers.length > 0 && (
-          <Box
-            mt={3}
-            borderWidth="2px"
-            borderColor="border.neutral"
-            borderRadius="8px"
-            p={3}
-            display="flex"
-            flexWrap="wrap"
-            gap={2}
-          >
+          <Flex mt={3} flexWrap="wrap" gap={2}>
             {invitedMembers.map((member) => (
-              <Tag.Root
+              <Box
                 key={member.email}
-                variant="solid"
-                backgroundColor="background.neutral"
+                display="inline-flex"
+                alignItems="center"
+                bg="background.neutral"
+                borderRadius="9999px"
+                borderWidth="1px"
+                borderColor="border.neutral"
                 py={1}
-                px={2}
+                px={3}
                 gap={2}
               >
-                <Text color="content.alternative" fontSize="body.md">
+                <Text
+                  color="content.alternative"
+                  fontFamily="body"
+                  fontSize="body.lg"
+                  fontWeight="normal"
+                  lineHeight="24px"
+                  letterSpacing="0.5px"
+                >
                   {member.email}
                 </Text>
-                <Text fontSize="label.sm" color="content.secondary" fontWeight="medium">
-                  {t(member.role)}
-                </Text>
-                <Tag.EndElement>
-                  <Tag.CloseTrigger
-                    color="interactive.control"
-                    onClick={() =>
-                      setInvitedMembers((prev) =>
-                        prev.filter((m) => m.email !== member.email),
-                      )
-                    }
-                  />
-                </Tag.EndElement>
-              </Tag.Root>
+                <Box
+                  bg="background.graySubtle"
+                  borderRadius="md"
+                  px={1}
+                  display="inline-flex"
+                  alignItems="center"
+                >
+                  <Text
+                    fontSize="label.sm"
+                    color="content.secondary"
+                    fontWeight="medium"
+                  >
+                    {t(member.role)}
+                  </Text>
+                </Box>
+                <CloseButton
+                  w="24px"
+                  h="24px"
+                  minW="24px"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  color="content.alternative"
+                  onClick={() =>
+                    setInvitedMembers((prev) =>
+                      prev.filter((m) => m.email !== member.email),
+                    )
+                  }
+                />
+              </Box>
             ))}
-          </Box>
+          </Flex>
         )}
       </Box>
 

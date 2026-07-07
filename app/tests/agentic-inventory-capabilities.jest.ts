@@ -225,6 +225,27 @@ describe("GHGI inventory internal CA capability routes", () => {
     );
   });
 
+  it("treats null list filters as omitted filters", async () => {
+    const res = await listAccessibleRoute(
+      listAccessibleRequest({
+        city_query: null,
+        year: null,
+        include_all_city_years: false,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+
+    expect(payload.data.total_cities).toBeGreaterThanOrEqual(1);
+    expect(payload.data.filters).toEqual({
+      city_query: null,
+      year: null,
+      include_all_city_years: false,
+    });
+  });
+
   it("lists project-admin inventories without direct city membership", async () => {
     const directAssignmentCount = await db.models.CityUser.count({
       where: { cityId: projectAdminOnlyCity.cityId, userId: testUserID },

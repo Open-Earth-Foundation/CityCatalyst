@@ -629,12 +629,21 @@ over a candidate set from the CNB funding reference tables. The agent should
 choose examples, explain why they fit, and surface caveats. It should not present
 a calibrated numeric score yet.
 
+The matching dataset should support a curated tag system as an option. Each
+funded project can carry tags such as sector, hazard, intervention type, finance
+route, applicant type, geography, beneficiary group, and implementation stage.
+The user project profile should be normalized to the same tag vocabulary where
+possible. Matching can then compare tag combinations to find the closest funded
+examples before the later scoring model is calibrated.
+
 ```mermaid
 flowchart TB
-    Project["User project profile"] --> Bundle["Context bundle"]
+    Project["User project profile"] --> Tags["Normalize project tags"]
+    Tags --> Bundle["Context bundle"]
     Funder["Selected funder/opportunity"] --> Bundle
     Bundle --> CandidateSet["Candidate funded projects<br/>from CNB reference tables"]
-    CandidateSet --> AgentDecision["V1: LLM agent match decision<br/>select examples + explain fit"]
+    CandidateSet --> TagCompare["Compare curated tag combinations"]
+    TagCompare --> AgentDecision["V1: LLM agent match decision<br/>select examples + explain fit"]
     AgentDecision --> StoreMatch["Persist matched examples<br/>rationale + caveats + evidence"]
     StoreMatch --> UI["Show examples in interview"]
     StoreMatch --> Draft["Use examples in chapter drafting"]
@@ -659,6 +668,8 @@ flowchart TB
     end
 
     subgraph FactorExamples["Example future scoring factors"]
+        TagOverlap["curated tag overlap"]
+        TagCombo["closest tag combination"]
         SameFunder["same funder"]
         Category["same category"]
         Region["MN -> Midwest -> US"]
@@ -678,9 +689,14 @@ V1 matching result should include:
 
 - matched project id
 - LLM fit rationale
+- matched tag combination, when available
 - source evidence
 - text snippets safe to show as examples
 - caveats or missing fields
+
+The tag vocabulary should be curated data, not invented at runtime by the model.
+The LLM can reason over tags already assigned to projects, but new tags or tag
+weights should be added through the datateam managed CNB database process.
 
 The later curated scoring system should be treated as a concept, not current v1
 behavior. It can add hard filters and weighted scoring once NLC approves the
@@ -948,6 +964,7 @@ Input:
   "region": "MN",
   "instrument_type": "grant",
   "hazards": ["flood", "heat"],
+  "project_tags": ["stormwater", "flood", "green-infrastructure", "city-led"],
   "limit": 10
 }
 ```
@@ -961,6 +978,7 @@ Output:
       "funded_project_id": "uuid",
       "decision": "selected",
       "fit_rationale": "Why the LLM agent considers this example useful.",
+      "matched_tags": ["stormwater", "flood", "city-led"],
       "evidence": [],
       "caveats": []
     }
@@ -971,6 +989,7 @@ Output:
 Rules:
 
 - Retrieve candidate funded projects from CNB reference tables.
+- Use curated project tags when available to find close tag combinations.
 - Use the LLM agent to select comparable examples and explain fit.
 - Do not return calibrated numeric scores in v1.
 - Persist selected matches in `concept_note_matched_projects`.

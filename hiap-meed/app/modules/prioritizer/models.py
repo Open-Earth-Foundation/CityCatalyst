@@ -1130,6 +1130,50 @@ class RankedActionFeasibilityLegalEvidence(BaseModel):
         default=None,
         description="Source used for the legal component score.",
     )
+    ownership_category: str | None = Field(
+        default=None,
+        description="Legal authority category for who can implement the action.",
+    )
+    ownership_score: float | None = Field(
+        default=None,
+        description="Normalized ownership authority score when present.",
+    )
+    ownership_description: str | None = Field(
+        default=None,
+        description="English plain-language description of who has legal authority.",
+    )
+    ownership_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of who has legal authority.",
+    )
+    restrictions_category: str | None = Field(
+        default=None,
+        description="Legal restriction category for the action.",
+    )
+    restrictions_score: float | None = Field(
+        default=None,
+        description="Normalized restrictions score when present.",
+    )
+    restrictions_description: str | None = Field(
+        default=None,
+        description="English plain-language description of legal barriers or restrictions.",
+    )
+    restrictions_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of legal barriers or restrictions.",
+    )
+    legal_justification: str | None = Field(
+        default=None,
+        description="Full Spanish legal reasoning for the verdict when present.",
+    )
+    legal_justification_en: str | None = Field(
+        default=None,
+        description="Full English legal reasoning for the verdict when present.",
+    )
+    references: list[str] = Field(
+        default_factory=list,
+        description="Legal reference strings supporting the verdict.",
+    )
 
 
 class RankedActionFeasibilityMitigationEvidence(BaseModel):

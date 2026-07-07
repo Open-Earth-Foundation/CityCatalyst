@@ -50,4 +50,20 @@ class TestAPIHealth:
         assert feasibility_properties["financial_feasibility"]["$ref"].endswith(
             "/RankedActionFeasibilityFinancialEvidence"
         )
-
+        legal_schema = data["components"]["schemas"][
+            "RankedActionFeasibilityLegalEvidence"
+        ]
+        legal_properties = legal_schema["properties"]
+        assert {
+            "ownership_category",
+            "ownership_score",
+            "ownership_description",
+            "ownership_description_es",
+            "restrictions_category",
+            "restrictions_score",
+            "restrictions_description",
+            "restrictions_description_es",
+            "legal_justification",
+            "legal_justification_en",
+            "references",
+        }.issubset(legal_properties.keys())

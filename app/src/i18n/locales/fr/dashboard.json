@@ -290,6 +290,7 @@
   "date": "Date",
   "no-history": "Aucune entrée d'historique de version trouvée.",
   "not-specified": "Non spécifié",
+  "manually-added-data": "Données ajoutées manuellement",
   "subcategory": "Sous-catégorie",
   "inventory-versions-restore-failed": "Échec de la restauration de la version",
   "status-poc": "Preuve de Concept",

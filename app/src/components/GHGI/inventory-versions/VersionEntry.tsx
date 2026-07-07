@@ -176,8 +176,17 @@ export default function VersionEntry({
           )
         : "-",
       totalEmissionsChangeSign: getChangeSign(entry),
-      source: entry.dataSource?.datasourceName ?? "-",
-      previousSource: entry.previousDataSource?.datasourceName ?? "-",
+      source: entry.dataSource?.datasourceName
+        ? entry.dataSource.datasourceName
+        : !entry.dataSource && entry.version.data?.co2eq != null
+          ? t("manually-added-data")
+          : "-",
+      previousSource: entry.previousDataSource?.datasourceName
+        ? entry.previousDataSource.datasourceName
+        : !entry.previousDataSource &&
+            entry.version.previousVersion?.data?.co2eq != null
+          ? t("manually-added-data")
+          : "-",
     }));
   } else if (moduleName === "hiap") {
     changes = versionEntries.map((entry) => ({

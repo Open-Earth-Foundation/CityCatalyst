@@ -883,11 +883,18 @@ Rules:
 - Does not register CC context loading or context bundle editing as
   agent-callable tools.
 
-### Reference Tools
+### Internal Research Capabilities
+
+These are internal service capabilities, not user-facing tools. They are invoked
+by `ContextBundleService` during context bundle assembly, or by chapter creation
+when the document workspace needs a funder-driven chapter schema. The user sees
+the results as assembled context, matched examples, evidence links, gaps, and
+draft chapter content, not as standalone tools.
 
 #### `funder_get_profile`
 
-Loads the curated funder profile and opportunity criteria.
+Loads the curated funder profile and opportunity criteria into the context
+bundle.
 
 Output includes:
 
@@ -904,7 +911,8 @@ Output includes:
 
 #### `funder_get_template`
 
-Returns the chapter schema that drives the document workspace.
+Returns the chapter schema that drives chapter creation in the document
+workspace.
 
 Output example:
 
@@ -926,7 +934,8 @@ Output example:
 
 #### `similar_projects_search`
 
-Finds comparable funded projects.
+Finds comparable funded projects during context bundle assembly so chapter
+drafting can use grounded examples.
 
 Input:
 

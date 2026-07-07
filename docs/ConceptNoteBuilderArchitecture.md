@@ -243,7 +243,6 @@ flowchart TB
     Bundle --> Sources["selected_sources<br/>grounded excerpts,<br/>source locations"]
     Bundle --> Funder["funder_context<br/>template, rubric, eligibility,<br/>scoring criteria"]
     Bundle --> Examples["similar_projects<br/>project summaries,<br/>award evidence, fit reasons"]
-    Bundle --> Decisions["user_decisions<br/>answers, overrides, confirmed facts"]
     Bundle --> Draft["document_context<br/>chapters, gaps, citations"]
 ```
 
@@ -262,8 +261,7 @@ Recommended high-level shape:
     {
       "label": "string",
       "excerpt": "string",
-      "source_location": "string",
-      "reason_included": "string"
+      "source_location": "string"
     }
   ],
   "funder_context": {
@@ -281,7 +279,6 @@ Recommended high-level shape:
       "evidence": []
     }
   ],
-  "user_decisions": [],
   "document_context": {
     "chapters": [],
     "gaps": [],

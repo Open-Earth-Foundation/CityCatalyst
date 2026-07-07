@@ -875,9 +875,12 @@ Rules:
 - Returns summarized payloads, not raw route dumps.
 - Stores the context bundle snapshot in the datateam managed CNB database for
   reproducibility.
-- Updates the bundle through workflow orchestration when uploads, funder profile,
-  similar projects, or user-confirmed facts change.
-- Does not register CC context loading or context bundle updates as
+- Edits the bundle through workflow orchestration by rebuilding affected sections
+  from changed underlying inputs such as uploads, funder profile changes,
+  refreshed similar projects, or user-confirmed facts.
+- Does not expose arbitrary context bundle replacement. Bundle edits must come
+  from a known workflow trigger and preserve the rest of the assembled context.
+- Does not register CC context loading or context bundle editing as
   agent-callable tools.
 
 ### Reference Tools

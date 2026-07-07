@@ -19,6 +19,8 @@
   "inventory-not-found-for-target-year": "Inventory not found for the target year",
   "file-year-mismatch-title": "File year does not match inventory",
   "file-year-mismatch": "The file's data year does not match the inventory target year. Please upload a file with data for {{year}}.",
+  "inventory-already-has-data-title": "Inventory already contains data",
+  "inventory-already-has-data-description": "This inventory for {{year}} already contains data. Importing again may cause duplicate entries. Please clear existing data first or use a different inventory.",
   "import-completed": "Import completed",
   "import-completed-description": "Your inventory data has been imported successfully.",
   "extracting-chunk-progress": "Extracting... (chunk {{current}} of {{total}})",

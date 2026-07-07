@@ -1432,9 +1432,9 @@ Export preflight should check:
 - Custom chapters are allowed by the export mode.
 - Deleted required chapters are represented in a preflight warning.
 
-Export should not include evidence links, source labels, source locations,
-source manifests, inline citations, or endnotes. Those are workspace review
-features only.
+Export should include final chapter text only. Evidence links, source labels,
+source locations, inline citations, and endnotes are workspace review features
+only.
 
 ## Planned Routes
 

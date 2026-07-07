@@ -15,12 +15,15 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useEffect, useMemo, useState } from "react";
+import React, { use, useEffect, useMemo, useRef, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
 import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-step";
 import ConfirmStep from "@/components/steps/GHGI/confirm-inventory-data-step";
+import InviteCollaboratorsStep, {
+  type InviteCollaboratorsStepRef,
+} from "@/components/steps/GHGI/invite-collaborators-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
@@ -103,11 +106,12 @@ export default function OnboardingSetup(props: {
     : [
         { title: t("set-inventory-details-step") },
         { title: t("set-population-step") },
+        { title: t("invite-collaborators-step") },
         { title: t("set-third-party-data-step") },
         { title: t("confirm-step") },
       ];
 
-  const confirmStepIndex = isUploadMode ? 2 : 3;
+  const confirmStepIndex = isUploadMode ? 2 : 4;
 
   const {
     value: activeStep,
@@ -178,6 +182,8 @@ export default function OnboardingSetup(props: {
   const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
     string | null
   >(null);
+
+  const inviteStepRef = useRef<InviteCollaboratorsStepRef>(null);
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -303,7 +309,7 @@ export default function OnboardingSetup(props: {
 
   // Reset third-party choice each time the user enters that step
   useEffect(() => {
-    if (!isUploadMode && activeStep === 2) {
+    if (!isUploadMode && activeStep === 3) {
       setThirdPartyDataChoice(null);
     }
   }, [activeStep, isUploadMode]);
@@ -380,6 +386,9 @@ export default function OnboardingSetup(props: {
             />
           )}
           {!isUploadMode && activeStep === 2 && (
+            <InviteCollaboratorsStep ref={inviteStepRef} t={t} />
+          )}
+          {!isUploadMode && activeStep === 3 && (
             <ThirdPartyInventoryDataStep
               t={t}
               tDrawer={tDrawer}
@@ -469,6 +478,52 @@ export default function OnboardingSetup(props: {
                 </Button>
               )}
               {!isUploadMode && activeStep == 2 && (
+                <Box display="flex" gap="16px">
+                  <Button
+                    w="auto"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    h="64px"
+                    variant="ghost"
+                    onClick={goToNextStep}
+                    color="content.link"
+                  >
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("skip-this-step")}
+                    </Text>
+                  </Button>
+                  <Button
+                    w="auto"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    h="64px"
+                    onClick={async () => {
+                      try {
+                        await inviteStepRef.current?.sendInvites();
+                      } catch {
+                        makeErrorToast(t("invite-failed"));
+                      }
+                      goToNextStep();
+                    }}
+                  >
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("continue")}
+                    </Text>
+                    <MdArrowForward height="24px" width="24px" />
+                  </Button>
+                </Box>
+              )}
+              {!isUploadMode && activeStep == 3 && (
                 <Button
                   w="auto"
                   gap="8px"

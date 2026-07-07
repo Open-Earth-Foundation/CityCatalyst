@@ -141,8 +141,7 @@ flowchart LR
     Context --> Interview["Guided interview"]
     Interview --> Draft["Draft chapters"]
     Draft --> Review["User review + edits"]
-    Review --> Match["Show examples + fit reasoning"]
-    Match --> Revise["Revise chapters"]
+    Review --> Revise["Revise chapters"]
     Revise --> Export["Generate DOCX/PDF export"]
 
     Upload["User uploads files<br/>any time"] --> Ingest["Convert + ingest"]
@@ -150,7 +149,6 @@ flowchart LR
     Ingest --> Draft
 
     Research["Funder profile<br/>criteria<br/>similar projects"] --> Context
-    Research --> Match
 
     CCData["CC data<br/>city, GHGI, CCRA, HIAP"] --> Context
 ```

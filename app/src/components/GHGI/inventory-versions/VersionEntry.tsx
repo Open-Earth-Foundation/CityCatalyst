@@ -97,8 +97,8 @@ function renderChangeText(
   }
 
   if (
-    change.source != "-" &&
-    change.previousSource != "-" &&
+    change.hasDataSource &&
+    change.hasPreviousDataSource &&
     change.source != change.previousSource
   ) {
     return t("inventory-versions-value-source-change-entry", {
@@ -180,13 +180,15 @@ export default function VersionEntry({
         ? entry.dataSource.datasourceName
         : !entry.dataSource && entry.version.data?.co2eq != null
           ? t("manually-added-data")
-          : "-",
+          : t("not-specified"),
+      hasDataSource: !!entry.dataSource?.datasourceName,
       previousSource: entry.previousDataSource?.datasourceName
         ? entry.previousDataSource.datasourceName
         : !entry.previousDataSource &&
             entry.version.previousVersion?.data?.co2eq != null
           ? t("manually-added-data")
-          : "-",
+          : t("not-specified"),
+      hasPreviousDataSource: !!entry.previousDataSource?.datasourceName,
     }));
   } else if (moduleName === "hiap") {
     changes = versionEntries.map((entry) => ({
@@ -445,15 +447,8 @@ export default function VersionEntry({
                           </Table.Cell>
                           <Table.Cell
                             bgColor={sourceBgColor}
-                            color={
-                              change.source === "-"
-                                ? "content.tertiary"
-                                : undefined
-                            }
                           >
-                            {change.source === "-"
-                              ? t("not-specified")
-                              : change.source}
+                            {change.source}
                           </Table.Cell>
                         </>
                       )}

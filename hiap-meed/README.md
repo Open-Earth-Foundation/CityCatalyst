@@ -566,8 +566,21 @@ Example response:
             "feasibility": {
               "feasibility_score": 0.59,
               "legal": {
+                "assessment_present": true,
+                "verdict_category": "conditional",
                 "component_score": 0.5,
-                "component_source": "neutral_fallback"
+                "component_source": "verdict_score",
+                "ownership_category": "enabled",
+                "ownership_score": 1.0,
+                "ownership_description": "Municipality has explicit legal authority to act directly.",
+                "ownership_description_es": "El municipio cuenta con competencia legal expresa para actuar de forma directa.",
+                "restrictions_category": "conditional",
+                "restrictions_score": 0.5,
+                "restrictions_description": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                "restrictions_description_es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial.",
+                "legal_justification": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal.",
+                "legal_justification_en": "English legal reasoning text from the legal classification source.",
+                "legal_references": ["Ley 18.695 (LOCM) - BCN"]
               },
               "mitigation_feasibility": {
                 "component_score": 0.78,

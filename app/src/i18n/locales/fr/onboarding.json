@@ -295,5 +295,8 @@
   "chat-suggestion-ar6-3": "Comment la science du climat s’est-elle améliorée depuis AR5 ?",
   "chat-suggestion-ar6-3-message": "Comment notre compréhension du changement climatique s’est-elle améliorée de l’AR5 à l’AR6 ?",
   "email": "E-mail",
-  "invite-collaborators-info": "Appuyez sur Entrée entre chaque e-mail pour ajouter des membres."
+  "invite-collaborators-info": "Appuyez sur Entrée entre chaque e-mail pour ajouter des membres.",
+  "invite-collaborators-select-project-to-share": "Sélectionnez le projet que vous souhaitez partager",
+  "projects-label": "Projets",
+  "invite-collaborators-select-project-first": "Sélectionnez un projet ci-dessus pour voir les villes disponibles."
 }

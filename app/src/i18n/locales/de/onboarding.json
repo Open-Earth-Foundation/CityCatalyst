@@ -297,5 +297,8 @@
   "chat-suggestion-ar6-3-message": "Wie hat sich unser Verständnis für den Klimawandel von AR5 zu AR6 verbessert?",
   "invite-collaborators-step": "Mitarbeitende einladen",
   "email": "E-Mail",
-  "invite-collaborators-info": "Drücke Enter zwischen jeder E-Mail, um Mitglieder hinzuzufügen."
+  "invite-collaborators-info": "Drücke Enter zwischen jeder E-Mail, um Mitglieder hinzuzufügen.",
+  "invite-collaborators-select-project-to-share": "Wähle das Projekt aus, das du teilen möchtest",
+  "projects-label": "Projekte",
+  "invite-collaborators-select-project-first": "Wähle oben ein Projekt aus, um verfügbare Städte zu sehen."
 }

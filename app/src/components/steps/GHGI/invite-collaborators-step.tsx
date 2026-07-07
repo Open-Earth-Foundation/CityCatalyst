@@ -317,56 +317,126 @@ const InviteCollaboratorsStep = forwardRef<
         )}
       </Box>
 
-      {selectedProject.length > 0 && (
-        <Box>
-          <Text fontWeight="semibold" mb={4}>
-            {t("invite-collaborators-select-cities")}
-          </Text>
-          {cityData.length > 1 && (
-            <>
-              <Checkbox
-                checked={selectedCities.length === cityData.length}
-                onChange={() => {
-                  if (selectedCities.length === cityData.length) {
-                    setSelectedCities([]);
-                  } else {
-                    setSelectedCities(cityData.map((c) => c.cityId));
-                  }
-                }}
-                mb={4}
-              >
-                <Text fontWeight="semibold" fontSize="body.lg">
-                  {t("invite-collaborators-all-cities")}
-                </Text>
-              </Checkbox>
-              <Separator borderColor="border.overlay" mb={4} />
-            </>
-          )}
-          <CheckboxGroup mb={6}>
-            <Box
-              display="grid"
-              gridTemplateColumns={{
-                base: "1fr",
-                sm: "repeat(2, 1fr)",
-                md: "repeat(3, 1fr)",
+      <Box>
+        <Text
+          fontFamily="heading"
+          fontWeight="bold"
+          fontSize="headline.sm"
+          mb={4}
+        >
+          {t("invite-collaborators-select-project-to-share")}
+        </Text>
+        <Text
+          color="content.secondary"
+          fontFamily="heading"
+          fontSize="label.lg"
+          fontWeight="medium"
+          lineHeight="20px"
+          letterSpacing="0.5px"
+          mb={2}
+        >
+          {t("projects-label")}
+        </Text>
+        <SelectRoot
+          value={selectedProject}
+          onValueChange={(e) => {
+            setSelectedProject(e.value);
+            setSelectedCities([]);
+          }}
+          collection={projectCollection}
+          variant="subtle"
+        >
+          <SelectTrigger>
+            <SelectValueText placeholder={t("select-project")} />
+          </SelectTrigger>
+          <SelectContent portalled={false}>
+            {projectCollection.items.map((p) => (
+              <SelectItem key={p.value} item={p.value}>
+                {p.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectRoot>
+      </Box>
+
+      <Box>
+        <Text
+          fontFamily="heading"
+          fontWeight="bold"
+          fontSize="headline.sm"
+          mb={4}
+        >
+          {t("invite-collaborators-select-cities")}
+        </Text>
+        {selectedProject.length > 0 ? (
+          <Box
+            bg="background.default"
+            px={6}
+            py={4}
+          >
+            <Checkbox
+              checked={
+                cityData.length > 0 &&
+                selectedCities.length === cityData.length
+              }
+              onChange={() => {
+                if (selectedCities.length === cityData.length) {
+                  setSelectedCities([]);
+                } else {
+                  setSelectedCities(cityData.map((c) => c.cityId));
+                }
               }}
-              gap={4}
+              mb={4}
             >
-              {cityData.map(({ cityId, name }) => (
-                <Checkbox
-                  key={cityId}
-                  checked={selectedCities.includes(cityId)}
-                  onChange={() => handleCityToggle(cityId)}
-                >
-                  <Text fontWeight="semibold" fontSize="body.lg">
-                    {name}
-                  </Text>
-                </Checkbox>
-              ))}
-            </Box>
-          </CheckboxGroup>
-        </Box>
-      )}
+              <Text
+                color="content.secondary"
+                fontFamily="body"
+                fontSize="body.lg"
+                fontWeight="normal"
+                lineHeight="24px"
+                letterSpacing="0.5px"
+              >
+                {t("invite-collaborators-all-cities")}
+              </Text>
+            </Checkbox>
+            <Separator borderColor="border.overlay" mb={4} />
+            <CheckboxGroup>
+              <Box
+                display="grid"
+                gridTemplateColumns={{
+                  base: "1fr",
+                  sm: "repeat(2, 1fr)",
+                  md: "repeat(3, 1fr)",
+                }}
+                gap={4}
+              >
+                {cityData.map(({ cityId, name }) => (
+                  <Checkbox
+                    key={cityId}
+                    checked={selectedCities.includes(cityId)}
+                    onChange={() => handleCityToggle(cityId)}
+                  >
+                    <Text
+                      color="content.secondary"
+                      fontFamily="body"
+                      fontSize="body.lg"
+                      fontWeight="normal"
+                      lineHeight="24px"
+                      letterSpacing="0.5px"
+                    >
+                      {name}
+                    </Text>
+                  </Checkbox>
+                ))}
+              </Box>
+            </CheckboxGroup>
+          </Box>
+        ) : (
+          <Text color="content.tertiary" fontSize="body.md">
+            {t("invite-collaborators-select-project-first")}
+          </Text>
+        )}
+      </Box>
     </Box>
   );
 });

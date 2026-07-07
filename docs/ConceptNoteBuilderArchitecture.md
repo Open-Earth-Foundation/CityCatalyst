@@ -630,9 +630,26 @@ why an example was selected.
 
 ```mermaid
 flowchart TB
-    Project["User project profile"] --> Filters["Hard filters"]
-    Funder["Selected funder/opportunity"] --> Filters
-    Filters --> CandidateSet["Candidate funded projects"]
+    Project["User project profile"] --> ProgramGate
+    Funder["Selected funder/opportunity"] --> ProgramGate
+
+    subgraph HardFilters["Hard filters before scoring"]
+        ProgramGate["selected funder/opportunity scope"]
+        GeographyGate["eligible geography"]
+        InstrumentGate["finance route / instrument type"]
+        CategoryGate["project sector / action type"]
+        ApplicantGate["applicant / recipient type"]
+        StatusGate["funded award or valid pipeline entry"]
+        EvidenceGate["usable source evidence"]
+    end
+
+    ProgramGate --> GeographyGate
+    GeographyGate --> InstrumentGate
+    InstrumentGate --> CategoryGate
+    CategoryGate --> ApplicantGate
+    ApplicantGate --> StatusGate
+    StatusGate --> EvidenceGate
+    EvidenceGate --> CandidateSet["Candidate funded projects"]
     CandidateSet --> Score["Score factors"]
     Score --> Rank["Rank and explain"]
     Rank --> StoreMatch["Persist matched examples"]
@@ -661,6 +678,23 @@ flowchart TB
     AwardSize --> Score
     Evidence --> Score
 ```
+
+Hard filters are gates, not ranking signals. A funded project must pass the
+applicable gates before it can be scored.
+
+| Hard filter | What it excludes before scoring |
+| --- | --- |
+| Funder/opportunity scope | Projects from unrelated funders, programs, or opportunity families when the user selected a specific funder/opportunity. |
+| Eligible geography | Projects outside the configured geography fallback path for the opportunity, such as Minnesota, Midwest, then US. |
+| Finance route / instrument type | Examples from the wrong funding route, such as comparing a loan or SRF priority-list project against a competitive grant. |
+| Project sector / action type | Projects in unrelated sectors or action categories. |
+| Applicant / recipient type | Awards to recipient types that do not match the user's applicant profile, such as nonprofit-only awards for a city-led project. |
+| Funded award or valid pipeline entry | Records that are not actual awards or, for priority-list routes, valid pipeline entries. |
+| Usable source evidence | Records without enough source evidence to show the user why the example is relevant. |
+
+If the user project or funder profile is missing a field needed for a hard
+filter, the workflow should not invent it. It should skip that filter, record a
+match caveat, and create a gap if the missing field matters for drafting.
 
 The matching result should include:
 

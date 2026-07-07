@@ -274,37 +274,26 @@ sequenceDiagram
 
 ## Context Bundle
 
-The context bundle is the durable workflow object that explains what the model
-used and what the user can reuse later. In the first release it should be scoped
-to one concept-note run, but shaped so it can later be promoted to a user-wide
-or organization-wide context.
+The context bundle is built for the active project and selected funder. Project
+ownership, run routing, and funder selection already live outside the bundle in
+the surrounding CNB database/API layer, so the bundle should not duplicate IDs.
+It should only carry the context the model and document workspace need.
 
 ```mermaid
 flowchart TB
     Bundle["context_bundle"]
-    Bundle --> Scope["scope<br/>user_id, city_id, project_id,<br/>funder_id, opportunity_id"]
     Bundle --> CCSummary["cc_context<br/>city, GHGI, CCRA, HIAP"]
-    Bundle --> UserDocs["user_documents<br/>uploads, converted source text,<br/>source locations"]
+    Bundle --> Sources["selected_sources<br/>grounded excerpts,<br/>source locations"]
     Bundle --> Funder["funder_context<br/>template, rubric, eligibility,<br/>scoring criteria"]
-    Bundle --> Examples["similar_projects<br/>matched awards and evidence"]
+    Bundle --> Examples["similar_projects<br/>project summaries,<br/>award evidence, fit reasons"]
     Bundle --> Decisions["user_decisions<br/>answers, overrides, confirmed facts"]
-    Bundle --> Draft["document_state<br/>chapters, gaps, citations,<br/>revision pointers"]
-    Bundle --> Export["outputs<br/>docx/pdf file refs,<br/>source manifest"]
+    Bundle --> Draft["document_context<br/>chapters, gaps, citations"]
 ```
 
 Recommended high-level shape:
 
 ```json
 {
-  "bundle_id": "uuid",
-  "run_id": "uuid",
-  "scope": {
-    "user_id": "string",
-    "city_id": "string",
-    "project_id": "string",
-    "funder_id": "string",
-    "opportunity_id": "string"
-  },
   "cc_context": {
     "city": {},
     "project": {},
@@ -312,12 +301,35 @@ Recommended high-level shape:
     "ccra": {},
     "hiap": {}
   },
-  "sources": [],
-  "funder_profile_ref": "uuid",
-  "matched_project_refs": [],
-  "document_ref": "uuid",
-  "created_at": "timestamp",
-  "updated_at": "timestamp"
+  "selected_sources": [
+    {
+      "label": "string",
+      "excerpt": "string",
+      "source_location": "string",
+      "reason_included": "string"
+    }
+  ],
+  "funder_context": {
+    "template": {},
+    "rubric": {},
+    "eligibility": {},
+    "scoring_criteria": []
+  },
+  "similar_projects": [
+    {
+      "title": "string",
+      "summary": "string",
+      "award_context": {},
+      "fit_reason": "string",
+      "evidence": []
+    }
+  ],
+  "user_decisions": [],
+  "document_context": {
+    "chapters": [],
+    "gaps": [],
+    "citations": []
+  }
 }
 ```
 
@@ -1574,8 +1586,6 @@ Minimum test surface:
   render from that same document model?
 - Are custom chapters allowed in the final funder document, or only as
   appendices/internal notes?
-- Should context bundles remain run-scoped for v1, or should users be able to
-  promote them to reusable city/project assets?
 - What source license rules apply to the Minnesota funded-project corpus?
 - Which matching weights are NLC-approved hard gates versus soft signals?
 - Should the export include inline citations, endnotes, or a separate source

@@ -194,27 +194,22 @@ Each workflow step should map to a scoped context loader and scoped tool pack.
 The active step decides which tools are available.
 
 ```mermaid
-stateDiagram-v2
-    [*] --> selecting_scope
-    selecting_scope --> assembling_context
-    assembling_context --> ingesting_user_files
-    ingesting_user_files --> profiling_funder
-    profiling_funder --> matching_examples
-    matching_examples --> interviewing
-    interviewing --> drafting_document
-    drafting_document --> reviewing_document
-    reviewing_document --> editing_document
-    editing_document --> reviewing_document
-    reviewing_document --> exporting
-    exporting --> completed
+flowchart TB
+    Start([Start]) --> Scope["selecting_scope"]
+    Scope --> Ingest["ingesting_user_files<br/>deterministic conversion"]
+    Ingest --> Funder["profiling_funder"]
+    Funder --> Match["matching_examples"]
+    Match --> Context["assembling_context<br/>build context bundle"]
+    Context --> Interview["interviewing"]
+    Interview --> Draft["drafting_document"]
+    Draft --> Edit["editing_document"]
+    Edit --> Draft
+    Draft --> Complete([completed])
 
-    assembling_context --> blocked
-    ingesting_user_files --> blocked
-    profiling_funder --> blocked
-    matching_examples --> blocked
-    exporting --> failed
-    failed --> reviewing_document
-    blocked --> interviewing
+    IngestNote["Full uploads are converted and stored.<br/>Only selected source excerpts enter the context bundle."]
+    ContextNote["Context bundle combines CC data,<br/>selected source excerpts, funder rubric/template,<br/>and matched funded projects."]
+    Ingest -.-> IngestNote
+    Context -.-> ContextNote
 ```
 
 ### Step Scope Table
@@ -222,15 +217,17 @@ stateDiagram-v2
 | Step | Main context | Enabled tool groups |
 | --- | --- | --- |
 | `selecting_scope` | user, city, project candidates | workflow control, CC project reads |
-| `assembling_context` | selected city, project, GHGI, CCRA, HIAP summaries | CC data capabilities, context bundle tools |
-| `ingesting_user_files` | uploaded file refs, converter status | document ingest tools |
+| `ingesting_user_files` | uploaded file refs, deterministic converter status, extracted source inventory | deterministic document ingest tools; no LLM |
 | `profiling_funder` | selected funder, template, criteria | standalone DB tools |
 | `matching_examples` | project profile, funder profile, project KB filters | matching tools |
+| `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | context bundle tools |
 | `interviewing` | gaps, known facts, required template fields | interview tools, document read tools |
 | `drafting_document` | chapter plan, evidence map, examples | chapter draft tools, evidence tools |
-| `reviewing_document` | current document, gaps, comments | document review tools |
 | `editing_document` | selected chapter/revision | document edit tools |
-| `exporting` | final chapters, template, citation map | export tools |
+
+Export is not a workflow step for the LLM. It is a document workspace button
+that calls export preflight and generation routes against the current chapters,
+template, evidence links, and source manifest.
 
 ## Runtime Request Flow
 
@@ -256,9 +253,15 @@ sequenceDiagram
     CA->>Resolver: Resolve step and scope
     Resolver->>Registry: Get capabilities for step
     Registry-->>Resolver: Tool definitions
-    Resolver->>Context: Build bounded context
+    opt User uploaded files
+        CA->>DB: Read deterministic source inventory
+    end
+    CA->>Research: Load selected funder profile/rubric/template
+    CA->>Research: Match comparable funded projects
+    Resolver->>Context: Build context bundle from prepared inputs
     Context->>CC: Load city/project/GHGI/CCRA/HIAP summaries
-    Context->>Research: Load selected funder profile
+    Context->>DB: Select source excerpts from inventory
+    Context->>Research: Attach funder criteria and matches
     Context->>DB: Store context bundle snapshot
     CA->>Agent: Create scoped agent with context and tools
     User->>CCUI: Send message or edit document
@@ -709,7 +712,7 @@ sequenceDiagram
     Adapter->>Converter: Submit file
     Converter-->>Adapter: source text + source locations + warnings
     Adapter-->>CA: Normalized conversion result
-    CA->>DB: Store context source and chunks
+    CA->>DB: Store converted source inventory
     CA-->>UI: SSE upload_ingested or upload_failed
 ```
 
@@ -794,9 +797,9 @@ Revision fields:
 ## Document Tool Deep Dive
 
 Tools should be grouped by step and registered only when relevant. The LLM
-should not be able to delete a chapter while it is only assembling context, and
-it should not be able to export before required chapters are resolved or marked
-as intentionally skipped.
+should not be able to delete a chapter while it is only assembling context.
+Export is not an LLM tool; it is a document workspace button that calls
+preflight and generation routes.
 
 ### Tool Groups
 
@@ -804,11 +807,11 @@ as intentionally skipped.
 | --- | --- | --- | --- | --- |
 | Workflow tools | start, status, resume, retry | yes | no | no |
 | Context tools | load CC summary, load bundle | yes | yes | yes |
-| Ingest tools | convert uploads, index chunks | yes | no | no |
+| Ingest tools | convert uploads, build source inventory | yes | no | no |
 | Research tools | funder profile, template, criteria | no | no | yes |
 | Matching tools | find and explain similar projects | yes | no | yes |
 | Document tools | chapters, text, evidence, gaps | yes | no | optional |
-| Export tools | preflight and generate DOCX/PDF | yes | no | no |
+| Export button actions | preflight and generate DOCX/PDF | yes | no | no |
 
 ### Workflow Tools
 
@@ -1091,7 +1094,6 @@ Rules:
 When enabled:
 
 - `drafting_document`
-- `reviewing_document`
 - `editing_document`
 
 Confirmation:
@@ -1139,7 +1141,6 @@ Rules:
 
 When enabled:
 
-- `reviewing_document`
 - `editing_document`
 
 Confirmation:
@@ -1214,7 +1215,6 @@ Rules:
 When enabled:
 
 - `drafting_document`
-- `reviewing_document`
 - `editing_document`
 
 Confirmation:
@@ -1326,13 +1326,11 @@ flowchart TB
     Registry --> ResearchTools["Research tools"]
     Registry --> MatchingTools["Matching tools"]
     Registry --> DocTools["Document tools"]
-    Registry --> ExportTools["Export tools"]
 
     ContextTools --> Agent["Scoped CNB agent"]
     ResearchTools --> Agent
     MatchingTools --> Agent
     DocTools --> Agent
-    ExportTools --> Agent
 
     Agent --> Rules["Tool policy in prompt<br/>step-specific only"]
 ```
@@ -1342,16 +1340,16 @@ Example registry rows:
 | Capability id | Step | Operation | Writes | Confirmation |
 | --- | --- | --- | --- | --- |
 | `concept_note.context.load_cc` | `assembling_context` | query | CNB context snapshot | no |
-| `concept_note.upload.ingest` | `ingesting_user_files` | workflow | CNB sources/chunks | no |
+| `concept_note.upload.ingest` | `ingesting_user_files` | workflow | CNB source inventory | no |
 | `concept_note.funder.get_profile` | `profiling_funder` | query | no | no |
 | `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches | no |
 | `concept_note.document.add_chapter` | `drafting_document` | command | CNB document | sometimes |
 | `concept_note.document.delete_chapter` | `editing_document` | command | CNB document | yes for non-empty/required |
 | `concept_note.document.edit_text` | `editing_document` | command | CNB revision | sometimes |
 | `concept_note.document.link_evidence` | `drafting_document` | command | CNB evidence links | no |
-| `concept_note.export.preflight` | `exporting` | query | no | no |
-| `concept_note.export.generate_docx` | `exporting` | workflow | CNB export | yes |
-| `concept_note.export.generate_pdf` | `exporting` | workflow | CNB export | yes |
+
+Export preflight, DOCX generation, and PDF generation are button-triggered route
+actions. They are not registered in the scoped agent tool registry.
 
 ## Prompt Model
 
@@ -1474,7 +1472,7 @@ file layout.
 | CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, chapters, revisions, gaps, sources, evidence, and exports. It does not own CNB database infrastructure or migrations. |
 | Research access | Climate Advisor integration over standalone DB | Reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
-| File ingestion | Climate Advisor plus converter adapter | Registers uploads, calls conversion adapter, stores converted source refs and chunks through the CNB storage contract. |
+| File ingestion | Climate Advisor plus converter adapter | Registers uploads, calls conversion adapter, and stores converted source inventory through the CNB storage contract. |
 | CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
 | CC bridge routes | CityCatalyst | Authenticated browser-facing proxy into CA workflow routes. |
 | Capability registry | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag. |

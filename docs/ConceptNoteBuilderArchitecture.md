@@ -316,8 +316,9 @@ important planning rules are:
     from RFP/NOFO/program documents.
   - `derived`: patterns computed from awards data, such as typical recipients,
     award sizes, categories, and revealed preferences.
-- Keep matching criteria calibratable. NLC must approve thresholds and weights
-  before the workflow scores a project against a rubric.
+- Treat calibrated matching criteria as a later concept. NLC should approve
+  thresholds and weights before the workflow uses numeric scoring against a
+  rubric.
 - Treat Minnesota city/GHGI sources as context candidates until license,
   redistribution, and GPC-mapping blockers are resolved.
 
@@ -422,9 +423,10 @@ erDiagram
         uuid match_id
         uuid run_id
         string funded_project_id
-        numeric score
-        jsonb match_factors
+        string decision
+        text fit_rationale
         jsonb evidence
+        jsonb caveats
     }
 
     concept_note_exports {
@@ -625,15 +627,31 @@ Required ingest outputs:
 
 ## Similar Project Matching
 
-Matching must be deterministic first and semantic second. The user needs to see
-why an example was selected.
+For the first release, similar-project matching should be an LLM agent decision
+over a candidate set from the CNB funding reference tables. The agent should
+choose examples, explain why they fit, and surface caveats. It should not present
+a calibrated numeric score yet.
 
 ```mermaid
 flowchart TB
-    Project["User project profile"] --> ProgramGate
-    Funder["Selected funder/opportunity"] --> ProgramGate
+    Project["User project profile"] --> Bundle["Context bundle"]
+    Funder["Selected funder/opportunity"] --> Bundle
+    Bundle --> CandidateSet["Candidate funded projects<br/>from CNB reference tables"]
+    CandidateSet --> AgentDecision["V1: LLM agent match decision<br/>select examples + explain fit"]
+    AgentDecision --> StoreMatch["Persist matched examples<br/>rationale + caveats + evidence"]
+    StoreMatch --> UI["Show examples in interview"]
+    StoreMatch --> Draft["Use examples in chapter drafting"]
 
-    subgraph HardFilters["Hard filters before scoring"]
+    CandidateSet -.-> FutureFilters
+
+    subgraph FutureScoring["Later curated scoring concept"]
+        FutureFilters["hard filters"]
+        FutureFilters --> Score["weighted scoring factors"]
+        Score --> Rank["rank and explain"]
+        Rank --> Calibration["NLC-approved thresholds<br/>and weights"]
+    end
+
+    subgraph FilterExamples["Example future hard filters"]
         ProgramGate["selected funder/opportunity scope"]
         GeographyGate["eligible geography"]
         InstrumentGate["finance route / instrument type"]
@@ -643,20 +661,7 @@ flowchart TB
         EvidenceGate["usable source evidence"]
     end
 
-    ProgramGate --> GeographyGate
-    GeographyGate --> InstrumentGate
-    InstrumentGate --> CategoryGate
-    CategoryGate --> ApplicantGate
-    ApplicantGate --> StatusGate
-    StatusGate --> EvidenceGate
-    EvidenceGate --> CandidateSet["Candidate funded projects"]
-    CandidateSet --> Score["Score factors"]
-    Score --> Rank["Rank and explain"]
-    Rank --> StoreMatch["Persist matched examples"]
-    StoreMatch --> UI["Show examples in interview"]
-    StoreMatch --> Draft["Use examples in chapter drafting"]
-
-    subgraph Factors["Scoring factors"]
+    subgraph FactorExamples["Example future scoring factors"]
         SameFunder["same funder"]
         Category["same category"]
         Region["MN -> Midwest -> US"]
@@ -668,19 +673,24 @@ flowchart TB
         Evidence["source quality"]
     end
 
-    SameFunder --> Score
-    Category --> Score
-    Region --> Score
-    Instrument --> Score
-    Route --> Score
-    Applicant --> Score
-    Hazards --> Score
-    AwardSize --> Score
-    Evidence --> Score
+    FilterExamples -.-> FutureFilters
+    FactorExamples -.-> Score
 ```
 
-Hard filters are gates, not ranking signals. A funded project must pass the
-applicable gates before it can be scored.
+V1 matching result should include:
+
+- matched project id
+- LLM fit rationale
+- source evidence
+- text snippets safe to show as examples
+- caveats or missing fields
+
+The later curated scoring system should be treated as a concept, not current v1
+behavior. It can add hard filters and weighted scoring once NLC approves the
+thresholds and weights.
+
+Conceptual hard filters are gates, not ranking signals. A funded project would
+need to pass the applicable gates before it can be scored.
 
 | Hard filter | What it excludes before scoring |
 | --- | --- |
@@ -692,19 +702,9 @@ applicable gates before it can be scored.
 | Funded award or valid pipeline entry | Records that are not actual awards or, for priority-list routes, valid pipeline entries. |
 | Usable source evidence | Records without enough source evidence to show the user why the example is relevant. |
 
-If the user project or funder profile is missing a field needed for a hard
-filter, the workflow should not invent it. It should skip that filter, record a
-match caveat, and create a gap if the missing field matters for drafting.
-
-The matching result should include:
-
-- matched project id
-- score
-- ranked factors
-- hard filters applied
-- source evidence
-- text snippets safe to show as examples
-- caveats or missing fields
+If the user project or funder profile is missing a field needed for the future
+scoring concept, the workflow should not invent it. It should record a match
+caveat and create a gap if the missing field matters for drafting.
 
 ## PDF Converter Boundary
 
@@ -966,9 +966,10 @@ Output:
   "matches": [
     {
       "funded_project_id": "uuid",
-      "score": 0.82,
-      "reasons": ["same funder", "same instrument", "same region"],
-      "evidence": []
+      "decision": "selected",
+      "fit_rationale": "Why the LLM agent considers this example useful.",
+      "evidence": [],
+      "caveats": []
     }
   ]
 }
@@ -976,9 +977,11 @@ Output:
 
 Rules:
 
-- Apply deterministic filters before semantic ranking.
+- Retrieve candidate funded projects from CNB reference tables.
+- Use the LLM agent to select comparable examples and explain fit.
+- Do not return calibrated numeric scores in v1.
 - Persist selected matches in `concept_note_matched_projects`.
-- Return explainable factors and evidence.
+- Return rationale, evidence, and caveats.
 
 ### Ingest Tools
 
@@ -1517,8 +1520,8 @@ file layout.
 - User-authored text is higher priority than model-generated text.
 - Agent edits to user-locked chapters require confirmation.
 - Required funder criteria must be represented as template requirements or gaps.
-- Matching criteria must be curated and calibrated with NLC, not invented by the
-  model.
+- Future scoring criteria must be curated and calibrated with NLC, not invented
+  by the model.
 - PDF conversion output is evidence input, not automatically trusted truth.
 
 ## Tests
@@ -1533,7 +1536,8 @@ Minimum test surface:
 - User-locked chapter confirmation tests.
 - Required chapter delete/export preflight tests.
 - Source-link preservation tests when editing text.
-- Matching tests with deterministic factor scores.
+- Matching tests for candidate retrieval, LLM decision output, fit rationale,
+  evidence, and caveats.
 - Converter adapter tests with success, warning, and failure payloads.
 - Prompt/tool registration tests proving only the active step's tools are
   available.
@@ -1567,7 +1571,7 @@ Minimum test surface:
 
 - Stand up funder/profile/template/project schema.
 - Add curated ingest scripts.
-- Add reference tools and similar-project matching.
+- Add reference tools and LLM-agent similar-project matching.
 - Persist matched examples and show them in the document workflow.
 
 ### Phase 4: File Ingestion

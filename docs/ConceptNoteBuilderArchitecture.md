@@ -171,8 +171,8 @@ flowchart LR
 ## Data Infrastructure Boundary
 
 The CNB backend should not plan to own or provision the durable data
-infrastructure for concept-note runs, document chapters, revisions, gaps,
-sources, evidence links, funder profiles, or funded-project corpora. Those
+infrastructure for concept-note runs, context bundles, document chapters,
+revisions, gaps, evidence links, funder profiles, or funded-project corpora. Those
 schemas and stores live in the datateam managed CNB database.
 
 The application and Climate Advisor work should consume that infrastructure
@@ -217,7 +217,7 @@ flowchart TB
 | Step | Main context | Enabled tool groups |
 | --- | --- | --- |
 | `selecting_scope` | user, city, project candidates | workflow control, CC project reads |
-| `ingesting_user_files` | uploaded file refs, deterministic converter status, extracted source inventory | deterministic document ingest tools; no LLM |
+| `ingesting_user_files` | uploaded file refs, deterministic converter status, candidate source excerpts | deterministic document ingest tools; no LLM |
 | `profiling_funder` | selected funder, template, criteria | standalone DB tools |
 | `matching_examples` | project profile, funder profile, project KB filters | matching tools |
 | `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | context bundle tools |
@@ -328,14 +328,13 @@ them through typed service/repository contracts.
 ```mermaid
 erDiagram
     threads ||--o{ concept_note_runs : "optionally anchors"
-    concept_note_runs ||--o{ concept_note_context_sources : "uses"
+    concept_note_runs ||--|| concept_note_context_bundles : "stores"
     concept_note_runs ||--o{ concept_note_chapters : "contains"
     concept_note_runs ||--o{ concept_note_gaps : "tracks"
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
-    concept_note_context_sources ||--o{ concept_note_source_chunks : "chunks"
 
     threads {
         uuid thread_id
@@ -360,25 +359,22 @@ erDiagram
         timestamp updated_at
     }
 
-    concept_note_context_sources {
-        uuid source_id
+    concept_note_context_bundles {
         uuid run_id
-        string source_type
-        string source_ref
-        string title
-        string file_ref
-        string content_hash
-        jsonb source_metadata
+        jsonb context_bundle
         timestamp created_at
+        timestamp updated_at
     }
 
-    concept_note_source_chunks {
-        uuid chunk_id
-        uuid source_id
-        int chunk_index
-        text content
-        jsonb source_map
-        vector embedding_vector
+    concept_note_gaps {
+        uuid gap_id
+        uuid run_id
+        uuid chapter_id
+        string field_key
+        string severity
+        text reason
+        string status
+        timestamp created_at
     }
 
     concept_note_chapters {
@@ -410,20 +406,10 @@ erDiagram
         uuid evidence_link_id
         uuid chapter_id
         uuid revision_id
-        uuid source_id
-        uuid chunk_id
+        string selected_source_label
+        string source_location
         string claim_ref
         text quote_or_summary
-    }
-
-    concept_note_gaps {
-        uuid gap_id
-        uuid run_id
-        uuid chapter_id
-        string field_key
-        string severity
-        text reason
-        string status
     }
 
     concept_note_matched_projects {
@@ -444,6 +430,12 @@ erDiagram
         jsonb source_manifest
     }
 ```
+
+`concept_note_gaps` are unresolved missing facts or required template fields
+that cannot be grounded from the context bundle yet. They are not source records.
+They are drafting/export blockers or warnings such as missing budget amount,
+missing partner confirmation, or a required funder section with no
+evidence-backed content.
 
 ### Standalone DB
 
@@ -678,7 +670,7 @@ sequenceDiagram
     Adapter->>Converter: Submit file
     Converter-->>Adapter: source text + source locations + warnings
     Adapter-->>CA: Normalized conversion result
-    CA->>DB: Store converted source inventory
+    CA->>DB: Store selected source context in context bundle
     CA-->>UI: SSE upload_ingested or upload_failed
 ```
 
@@ -686,20 +678,15 @@ Adapter output contract:
 
 ```json
 {
-  "source_id": "uuid",
   "file_ref": "string",
   "title": "string",
   "document_type": "pdf|docx|xlsx|html|text|other",
-  "markdown": "string",
-  "chunks": [
+  "converted_text": "string",
+  "source_locations": [
     {
-      "chunk_index": 0,
-      "content": "string",
-      "source_map": {
-        "page": 1,
-        "bbox": null,
-        "section_heading": "string"
-      }
+      "label": "string",
+      "excerpt": "string",
+      "source_location": "page 1, section heading"
     }
   ],
   "extracted_entities": [],
@@ -773,7 +760,7 @@ preflight and generation routes.
 | --- | --- | --- | --- | --- |
 | Workflow tools | start, status, resume, retry | yes | no | no |
 | Context tools | load CC summary, load bundle | yes | yes | yes |
-| Ingest tools | convert uploads, build source inventory | yes | no | no |
+| Ingest tools | convert uploads, prepare candidate source excerpts | yes | no | no |
 | Research tools | funder profile, template, criteria | no | no | yes |
 | Matching tools | find and explain similar projects | yes | no | yes |
 | Document tools | chapters, text, evidence, gaps | yes | no | optional |
@@ -957,9 +944,14 @@ Output:
 
 ```json
 {
-  "source_id": "uuid",
-  "status": "indexed",
-  "chunk_count": 42,
+  "status": "converted",
+  "selected_sources": [
+    {
+      "label": "Climate Action Plan",
+      "excerpt": "string",
+      "source_location": "page 4"
+    }
+  ],
   "warnings": [],
   "extracted_summary": "string"
 }
@@ -968,13 +960,14 @@ Output:
 Rules:
 
 - Calls the converter adapter.
-- Stores source text and source location metadata.
-- Adds the upload to the context bundle.
+- Does not persist converter chunks or separate CNB source tables.
+- Stores selected source context in the context bundle.
 - Emits an SSE event so the UI can show the upload as available context.
 
-#### `concept_note_extract_facts_from_source`
+#### `concept_note_extract_facts_from_context`
 
-Extracts structured facts from an indexed source and proposes chapter updates.
+Extracts structured facts from selected source context in the context bundle and
+proposes chapter updates.
 
 Rules:
 
@@ -1306,7 +1299,7 @@ Example registry rows:
 | Capability id | Step | Operation | Writes | Confirmation |
 | --- | --- | --- | --- | --- |
 | `concept_note.context.load_cc` | `assembling_context` | query | CNB context snapshot | no |
-| `concept_note.upload.ingest` | `ingesting_user_files` | workflow | CNB source inventory | no |
+| `concept_note.upload.ingest` | `ingesting_user_files` | workflow | context bundle selected sources | no |
 | `concept_note.funder.get_profile` | `profiling_funder` | query | no | no |
 | `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches | no |
 | `concept_note.document.add_chapter` | `drafting_document` | command | CNB document | sometimes |
@@ -1435,10 +1428,10 @@ file layout.
 | Responsibility | Owner | Boundary |
 | --- | --- | --- |
 | Workflow orchestration | Climate Advisor | Starts/resumes runs, resolves active step, scopes tools, streams responses. |
-| CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, chapters, revisions, gaps, sources, evidence, and exports. It does not own CNB database infrastructure or migrations. |
+| CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
 | Research access | Climate Advisor integration over standalone DB | Reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
-| File ingestion | Climate Advisor plus converter adapter | Registers uploads, calls conversion adapter, and stores converted source inventory through the CNB storage contract. |
+| File ingestion | Climate Advisor plus converter adapter | Registers uploads and calls the conversion adapter. CNB persistence keeps only selected source context in the context bundle. |
 | CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
 | CC bridge routes | CityCatalyst | Authenticated browser-facing proxy into CA workflow routes. |
 | Capability registry | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag. |
@@ -1491,8 +1484,8 @@ Minimum test surface:
 
 ### Phase 1: Durable Document Workspace
 
-- Integrate with datateam managed CNB database contracts for runs, chapters,
-  revisions, gaps, sources, and evidence links.
+- Integrate with datateam managed CNB database contracts for runs, context
+  bundles, chapters, revisions, gaps, and evidence links.
 - Add document tools:
   - list chapters
   - get chapter

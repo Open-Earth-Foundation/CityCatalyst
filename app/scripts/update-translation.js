@@ -45,7 +45,7 @@ async function translateString(
     model: AI_MODEL,
     messages,
   });
-  const tokensResponse = await openai.responses.input_tokens.count({
+  const tokensResponse = await openai.responses.inputTokens.count({
     model: AI_MODEL,
     input: messages,
   });

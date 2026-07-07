@@ -132,6 +132,28 @@ def test_prioritize_e2e_with_mock_api_payloads(
             feasibility_summary["financial_feasibility"]["route"],
             str,
         )
+        legal_summary = feasibility_summary["legal"]
+        assert {
+            "ownership_category",
+            "ownership_score",
+            "ownership_description",
+            "ownership_description_es",
+            "restrictions_category",
+            "restrictions_score",
+            "restrictions_description",
+            "restrictions_description_es",
+            "legal_justification",
+            "legal_justification_en",
+            "legal_references",
+        }.issubset(legal_summary.keys())
+        assert isinstance(legal_summary["ownership_description"], str)
+        assert isinstance(legal_summary["ownership_description_es"], str)
+        assert isinstance(legal_summary["restrictions_description"], str)
+        assert isinstance(legal_summary["restrictions_description_es"], str)
+        assert isinstance(legal_summary["legal_justification"], str)
+        assert isinstance(legal_summary["legal_justification_en"], str)
+        assert isinstance(legal_summary["legal_references"], list)
+        assert legal_summary["legal_references"]
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         missing_evidence_rows = [

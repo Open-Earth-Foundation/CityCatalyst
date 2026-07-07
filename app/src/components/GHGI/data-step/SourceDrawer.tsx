@@ -70,8 +70,13 @@ export function SourceDrawer({
   }
 
   const onUrlClick = () => {
-    window.open(source?.url, "_blank");
+    const url = source?.url ?? source?.publisher?.url ?? source?.methodologyUrl;
+
+    if (url) {
+      window.open(ensureProtocol(url), "_blank", "noreferrer");
+    }
   };
+
   const emissionsToBeIncluded = () => {
     let converted;
     if (!!totalEmissionsData && totalEmissionsData !== "?") {

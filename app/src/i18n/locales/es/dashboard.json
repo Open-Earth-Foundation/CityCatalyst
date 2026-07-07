@@ -292,6 +292,8 @@
   "last-modified-by": "Última modificación realizada por",
   "date": "Fecha",
   "no-history": "No se encontraron entradas en el historial de versiones.",
+  "not-specified": "No especificado",
+  "manually-added-data": "Datos añadidos manualmente",
   "subcategory": "Subcategoría",
   "inventory-versions-restore-failed": "Fallo al restaurar la versión",
   "status-poc": "Prueba de Concepto",

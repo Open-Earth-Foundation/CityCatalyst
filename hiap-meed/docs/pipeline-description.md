@@ -1059,8 +1059,14 @@ Key evidence fields in `012_feasibility.json` are grouped per component:
   - `verdict_score_missing`
   - `ownership_category`
   - `ownership_score`
+  - `ownership_description`
+  - `ownership_description_es`
   - `restrictions_category`
   - `restrictions_score`
+  - `restrictions_description`
+  - `restrictions_description_es`
+  - `legal_justification`
+  - `legal_justification_en`
   - `analysis_date`
   - `generation_method`
   - `references`
@@ -1195,6 +1201,7 @@ For each ranked action, the output includes:
 Important current behavior:
 
 - `evidence_summary.feasibility` keeps `feasibility_score` at the top level and groups detailed component evidence under `legal`, `mitigation_feasibility`, and `financial_feasibility`
+- `evidence_summary.feasibility.legal` includes the public legal authority/restriction categories and scores, plain-language ownership and restriction descriptions in English and Spanish, legal justification in Spanish and English, and normalized legal reference strings from the S3 legal classification source when a row is available.
 - `explanations` is `{}` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks

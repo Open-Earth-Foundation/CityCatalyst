@@ -816,6 +816,50 @@ def test_feasibility_block_with_mock_api_data() -> None:
     assert first_action_evidence["financial_feasibility_links"]["detail"].endswith(
         "/climate-finance/actions/c40_0034"
     )
+    first_action_legal_assessment = legal_assessments["c40_0034"]
+    assert (
+        first_action_evidence["ownership_category"]
+        == first_action_legal_assessment.ownership_category
+    )
+    assert (
+        first_action_evidence["ownership_score"]
+        == first_action_legal_assessment.ownership_score
+    )
+    assert (
+        first_action_evidence["ownership_description"]
+        == first_action_legal_assessment.ownership_description
+    )
+    assert (
+        first_action_evidence["ownership_description_es"]
+        == first_action_legal_assessment.ownership_description_i18n["es"]
+    )
+    assert (
+        first_action_evidence["restrictions_category"]
+        == first_action_legal_assessment.restrictions_category
+    )
+    assert (
+        first_action_evidence["restrictions_score"]
+        == first_action_legal_assessment.restrictions_score
+    )
+    assert (
+        first_action_evidence["restrictions_description"]
+        == first_action_legal_assessment.restrictions_description
+    )
+    assert (
+        first_action_evidence["restrictions_description_es"]
+        == first_action_legal_assessment.restrictions_description_i18n["es"]
+    )
+    assert (
+        first_action_evidence["legal_justification"]
+        == first_action_legal_assessment.legal_justification_i18n["es"]
+    )
+    assert (
+        first_action_evidence["legal_justification_en"]
+        == first_action_legal_assessment.legal_justification_i18n["en"]
+    )
+    assert first_action_evidence["legal_references"] == (
+        first_action_legal_assessment.legal_references
+    )
     missing_score_action_ids = result.metadata[
         "missing_mitigation_feasibility_score_action_ids"
     ]

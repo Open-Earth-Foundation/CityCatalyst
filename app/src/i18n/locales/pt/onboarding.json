@@ -52,6 +52,10 @@
   "inventory-not-found-for-target-year": "Inventário não encontrado para o ano-alvo",
   "file-year-mismatch-title": "O ano do arquivo não corresponde ao inventário",
   "file-year-mismatch": "O ano dos dados do arquivo não corresponde ao ano-alvo do inventário. Envie um arquivo com dados de {{year}}.",
+  "inventory-already-has-data-title": "O inventário já contém dados",
+  "inventory-already-has-data-description": "Este inventário para {{year}} já contém dados. Importar novamente pode causar entradas duplicadas. Limpe os dados existentes primeiro ou use um inventário diferente.",
+  "inventory-year-already-exists-title": "Já existe um inventário para este ano",
+  "inventory-year-already-exists-description": "Já existe um inventário para {{year}} nesta cidade. Selecione um ano diferente.",
   "import-completed": "Importação concluída",
   "import-completed-description": "Os dados do seu inventário foram importados com sucesso.",
   "extracting-chunk-progress": "Extraindo... (parte {{current}} de {{total}})",
@@ -132,6 +136,11 @@
   "country-population-required": "A população do país e o ano são necessários",
   "city-name-locode-required": "Nome da cidade e código de localização são obrigatórios",
   "upload-existing-inventory": "Carregar Inventário Existente",
+  "select-inventory-creation-method": "Selecione como criar um inventário de emissões de GEE",
+  "upload-an-existing-inventory": "Carregar um inventário existente",
+  "upload-existing-inventory-option-description": "Carregue um inventário existente nos seguintes formatos: <1>.CSV</1>, <2>.XLSX</2> e <3>.PDF</3> e nosso <4>agente de IA</4> extrairá as informações.",
+  "create-new-inventory-option": "Criar um novo inventário",
+  "create-new-inventory-option-description": "Crie um novo inventário selecionando o <1>ano</1> do inventário, seu <2>objetivo do inventário</2> e o <3>Potencial de Aquecimento Global</3>.",
   "upload-file-step": "Carregar Arquivo",
   "inventory-mapping-step": "Mapeamento do Inventário",
   "validation-results-step": "Resultados da Validação",
@@ -238,6 +247,5 @@
   "gwp-ar6-definition-bullet-point-4": "O AR6 ajuda governos e pessoas a tomar decisoes melhores para proteger o futuro do planeta.",
   "gwp-ar6-definition-summary": "Pense no AR6 como o guia cientifico climatico mais recente e mais claro para entender e enfrentar as mudancas climaticas hoje.",
   "ask-ai": "Perguntar à Clima AI",
-  "help-button": "Preciso de ajuda",
-  "edit": "Editar"
+  "help-button": "Preciso de ajuda"
 }

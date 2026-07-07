@@ -53,6 +53,10 @@
   "inventory-not-found-for-target-year": "Inventar für das Zieljahr nicht gefunden",
   "file-year-mismatch-title": "Dateijahr stimmt nicht mit Inventar überein",
   "file-year-mismatch": "Das Datenjahr der Datei stimmt nicht mit dem Zieljahr des Inventars überein. Bitte laden Sie eine Datei mit Daten für {{year}} hoch.",
+  "inventory-already-has-data-title": "Inventar enthält bereits Daten",
+  "inventory-already-has-data-description": "Dieses Inventar für {{year}} enthält bereits Daten. Ein erneuter Import kann zu doppelten Einträgen führen. Bitte löschen Sie zuerst die vorhandenen Daten oder verwenden Sie ein anderes Inventar.",
+  "inventory-year-already-exists-title": "Ein Inventar für dieses Jahr existiert bereits",
+  "inventory-year-already-exists-description": "Ein Inventar für {{year}} existiert bereits für diese Stadt. Bitte wählen Sie ein anderes Jahr.",
   "import-completed": "Import abgeschlossen",
   "import-completed-description": "Ihre Inventardaten wurden erfolgreich importiert.",
   "extracting-chunk-progress": "Extraktion läuft... (Teil {{current}} von {{total}})",
@@ -132,6 +136,11 @@
   "country-population-required": "Landesbevölkerung und Jahr sind erforderlich",
   "city-name-locode-required": "Stadtname und Standortcode sind erforderlich",
   "upload-existing-inventory": "Bestehendes Inventar hochladen",
+  "select-inventory-creation-method": "Wählen Sie, wie Sie ein THG-Emissionsinventar erstellen möchten",
+  "upload-an-existing-inventory": "Ein vorhandenes Inventar hochladen",
+  "upload-existing-inventory-option-description": "Laden Sie ein vorhandenes Inventar in den folgenden Formaten hoch: <1>.CSV</1>, <2>.XLSX</2> und <3>.PDF</3> und unser <4>KI-Agent</4> extrahiert die Informationen.",
+  "create-new-inventory-option": "Ein neues Inventar erstellen",
+  "create-new-inventory-option-description": "Erstellen Sie ein neues Inventar, indem Sie das <1>Jahr</1> des Inventars, Ihr <2>Inventarziel</2> und das <3>Globale Erwärmungspotenzial</3> auswählen.",
   "upload-file-step": "Datei hochladen",
   "inventory-mapping-step": "Inventarzuordnung",
   "validation-results-step": "Validierungsergebnisse",
@@ -238,6 +247,5 @@
   "gwp-ar6-definition-bullet-point-4": "AR6 hilft Regierungen und Menschen, bessere Entscheidungen zum Schutz der Zukunft des Planeten zu treffen.",
   "gwp-ar6-definition-summary": "AR6 ist der neueste und klarste Klimawissenschaftsleitfaden, der uns hilft, den Klimawandel heute zu verstehen und anzugehen.",
   "ask-ai": "Clima AI fragen",
-  "help-button": "Hilfe benötigt",
-  "edit": "Bearbeiten"
+  "help-button": "Hilfe benötigt"
 }

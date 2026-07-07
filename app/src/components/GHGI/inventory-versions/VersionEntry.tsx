@@ -30,8 +30,6 @@ function toEmissionsString(totalEmissions: number, format?: string): string {
   return `${value} ${unit}CO2e`;
 }
 
-// check if total emissions value was increased or decreased
-// returns 1 if increased, 0 if there was no change and -1 if decreased
 function getChangeSign(entry: VersionHistoryEntry): number {
   const previousVersion = entry.version.previousVersion;
   const co2eq = entry.version.data?.co2eq;
@@ -52,6 +50,7 @@ function getChangeSign(entry: VersionHistoryEntry): number {
 
   return co2eq < previousCo2eq ? 1 : -1;
 }
+
 
 function renderChangeText(
   t: TFunction,
@@ -98,8 +97,8 @@ function renderChangeText(
   }
 
   if (
-    change.source != "-" &&
-    change.previousSource != "-" &&
+    change.hasDataSource &&
+    change.hasPreviousDataSource &&
     change.source != change.previousSource
   ) {
     return t("inventory-versions-value-source-change-entry", {
@@ -177,8 +176,19 @@ export default function VersionEntry({
           )
         : "-",
       totalEmissionsChangeSign: getChangeSign(entry),
-      source: entry.dataSource?.datasourceName ?? "-",
-      previousSource: entry.previousDataSource?.datasourceName ?? "-",
+      source: entry.dataSource?.datasourceName
+        ? entry.dataSource.datasourceName
+        : !entry.dataSource && entry.version.data?.co2eq != null
+          ? t("manually-added-data")
+          : t("not-specified"),
+      hasDataSource: !!entry.dataSource?.datasourceName,
+      previousSource: entry.previousDataSource?.datasourceName
+        ? entry.previousDataSource.datasourceName
+        : !entry.previousDataSource &&
+            entry.version.previousVersion?.data?.co2eq != null
+          ? t("manually-added-data")
+          : t("not-specified"),
+      hasPreviousDataSource: !!entry.previousDataSource?.datasourceName,
     }));
   } else if (moduleName === "hiap") {
     changes = versionEntries.map((entry) => ({
@@ -422,19 +432,9 @@ export default function VersionEntry({
                       : change.totalEmissionsChangeSign === -1
                         ? "sentiment.negativeOverlay"
                         : undefined;
-                  const totalColor =
-                    change.totalEmissionsChangeSign === 1
-                      ? "sentiment.positiveDefault"
-                      : change.totalEmissionsChangeSign === -1
-                        ? "sentiment.negativeDefault"
-                        : undefined;
                   const sourceBgColor =
                     change.source != change.previousSource
                       ? "sentiment.warningOverlay"
-                      : undefined;
-                  const sourceColor =
-                    change.source != change.previousSource
-                      ? "sentiment.warningDefault"
                       : undefined;
 
                   return (
@@ -442,12 +442,11 @@ export default function VersionEntry({
                       {moduleName === "ghgi" && (
                         <>
                           <Table.Cell>{change.subCategory}</Table.Cell>
-                          <Table.Cell bgColor={totalBgColor} color={totalColor}>
+                          <Table.Cell bgColor={totalBgColor}>
                             {change.totalEmissions}
                           </Table.Cell>
                           <Table.Cell
                             bgColor={sourceBgColor}
-                            color={sourceColor}
                           >
                             {change.source}
                           </Table.Cell>

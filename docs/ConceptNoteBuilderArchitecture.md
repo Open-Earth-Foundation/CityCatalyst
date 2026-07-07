@@ -1016,7 +1016,8 @@ Rules:
 - Uses the supporting PDF converter repository for PDF-to-markdown conversion.
 - Does not persist converter chunks in dedicated CNB source tables.
 - Stores selected source context in the context bundle.
-- Emits an SSE event so the UI can show the upload as available context.
+- Triggers context bundle rebuild; the UI receives the single
+  `concept_note_context_bundle_ready` event after the assembled context is ready.
 
 #### `concept_note_extract_facts_from_context`
 
@@ -1395,10 +1396,7 @@ The UI needs typed events for chat and document state.
 | Event | Purpose |
 | --- | --- |
 | `concept_note_run_started` | Run id and initial status. |
-| `concept_note_context_loaded` | Context bundle is ready. |
-| `concept_note_upload_ingested` | Uploaded file indexed and available. |
-| `concept_note_funder_loaded` | Funder profile and template ready. |
-| `concept_note_matches_updated` | Similar projects changed. |
+| `concept_note_context_bundle_ready` | Context bundle is ready. This is the only user-visible event for upload ingest, funder/template load, and similar-project refresh. |
 | `document_chapter_added` | Chapter inserted. |
 | `document_chapter_deleted` | Chapter soft-deleted. |
 | `document_chapter_restored` | Chapter restored. |

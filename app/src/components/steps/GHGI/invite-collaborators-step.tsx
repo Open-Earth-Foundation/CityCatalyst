@@ -317,48 +317,7 @@ const InviteCollaboratorsStep = forwardRef<
         )}
       </Box>
 
-      <Box>
-        <Text
-          fontFamily="heading"
-          fontWeight="bold"
-          fontSize="headline.sm"
-          mb={4}
-        >
-          {t("invite-collaborators-select-project-to-share")}
-        </Text>
-        <Text
-          color="content.secondary"
-          fontFamily="heading"
-          fontSize="label.lg"
-          fontWeight="medium"
-          lineHeight="20px"
-          letterSpacing="0.5px"
-          mb={2}
-        >
-          {t("projects-label")}
-        </Text>
-        <SelectRoot
-          value={selectedProject}
-          onValueChange={(e) => {
-            setSelectedProject(e.value);
-            setSelectedCities([]);
-          }}
-          collection={projectCollection}
-          variant="subtle"
-        >
-          <SelectTrigger>
-            <SelectValueText placeholder={t("select-project")} />
-          </SelectTrigger>
-          <SelectContent portalled={false}>
-            {projectCollection.items.map((p) => (
-              <SelectItem key={p.value} item={p.value}>
-                {p.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </SelectRoot>
-      </Box>
-
+      {invitedMembers.length > 0 && selectedProject.length > 0 && (
       <Box>
         <Text
           fontFamily="heading"
@@ -437,6 +396,7 @@ const InviteCollaboratorsStep = forwardRef<
           </Text>
         )}
       </Box>
+      )}
     </Box>
   );
 });

@@ -1,10 +1,13 @@
 import createHttpError from "http-errors";
+import { Op } from "sequelize";
 
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import { getEmissionResults } from "@/backend/ResultsService";
 import { db } from "@/models";
 import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
+import { User } from "@/models/User";
+import { Roles } from "@/util/types";
 
 type InventoryMetadata = {
   city: string;
@@ -159,7 +162,7 @@ export async function buildAccessibleInventoryList({
   includeAllCityYears?: boolean;
 }): Promise<AccessibleInventoryList> {
   const user = await db.models.User.findOne({
-    attributes: [],
+    attributes: ["userId", "role"],
     where: { userId },
     include: [
       {
@@ -175,7 +178,7 @@ export async function buildAccessibleInventoryList({
   }
 
   const normalizedQuery = normalizeSearch(cityQuery);
-  const cities = user.cities
+  const cities = (await candidateCitiesForUser(user))
     .filter((city: City) => cityMatchesQuery(city, normalizedQuery))
     .map((city: City) => accessibleCity(city, year, includeAllCityYears))
     .filter((city) => city.inventories.length > 0)
@@ -194,6 +197,90 @@ export async function buildAccessibleInventoryList({
       include_all_city_years: includeAllCityYears,
     },
   };
+}
+
+/** Return city candidates broad enough to match PermissionService inventory checks. */
+async function candidateCitiesForUser(user: User): Promise<City[]> {
+  const directCities = user.cities ?? [];
+  if (user.role === Roles.Admin) {
+    return dedupeCities([...directCities, ...(await citiesWithInventories())]);
+  }
+
+  const organizationIds = await elevatedAccessOrganizationIds(user.userId);
+  if (organizationIds.length === 0) {
+    return dedupeCities(directCities);
+  }
+
+  return dedupeCities([
+    ...directCities,
+    ...(await citiesWithInventories(organizationIds)),
+  ]);
+}
+
+/** Return organizations where this user can access inventories beyond direct city rows. */
+async function elevatedAccessOrganizationIds(
+  userId: string,
+): Promise<string[]> {
+  const [organizationAdmins, projectAdmins] = await Promise.all([
+    db.models.OrganizationAdmin.findAll({
+      attributes: ["organizationId"],
+      where: { userId },
+    }),
+    db.models.ProjectAdmin.findAll({
+      attributes: ["projectId"],
+      where: { userId },
+      include: [
+        {
+          model: db.models.Project,
+          as: "project",
+          attributes: ["organizationId"],
+        },
+      ],
+    }),
+  ]);
+
+  return Array.from(
+    new Set([
+      ...organizationAdmins.map((admin) => admin.organizationId),
+      ...projectAdmins
+        .map((admin) => admin.project?.organizationId)
+        .filter(isPresentString),
+    ]),
+  );
+}
+
+/** Load city candidates with their inventories, optionally scoped to organizations. */
+async function citiesWithInventories(
+  organizationIds?: string[],
+): Promise<City[]> {
+  const projectInclude = {
+    model: db.models.Project,
+    as: "project",
+    attributes: ["projectId", "organizationId"],
+    required: Boolean(organizationIds?.length),
+    ...(organizationIds?.length
+      ? { where: { organizationId: { [Op.in]: organizationIds } } }
+      : {}),
+  };
+
+  return (await db.models.City.findAll({
+    include: [
+      { model: db.models.Inventory, as: "inventories" },
+      projectInclude,
+    ],
+  })) as City[];
+}
+
+/** Keep the first candidate when access paths overlap. */
+function dedupeCities(cities: City[]): City[] {
+  const seen = new Set<string>();
+  return cities.filter((city) => {
+    if (seen.has(city.cityId)) {
+      return false;
+    }
+    seen.add(city.cityId);
+    return true;
+  });
 }
 
 export async function buildInventoryStatusOverview(

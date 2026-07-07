@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Box, VStack, HStack, Text, Icon } from "@chakra-ui/react";
+import { CircleFlag } from "react-circle-flags";
 import { DisplaySmall } from "@/components/package/Texts/Display";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { useTranslation } from "@/i18n/client";
@@ -16,7 +17,7 @@ interface InviteData {
   cities?: Array<{
     cityId: string;
     cityName: string;
-    flag: string;
+    countryCode?: string;
   }>;
 }
 
@@ -86,10 +87,12 @@ const InviteSuccessModal: React.FC<InviteSuccessModalProps> = ({
                   w="100%"
                   justify="flex-start"
                 >
-                  {city.flag && (
-                    <Text fontSize="20px" mr="8px">
-                      {city.flag}
-                    </Text>
+                  {city.countryCode && (
+                    <CircleFlag
+                      countryCode={city.countryCode}
+                      width={20}
+                      style={{ marginRight: "8px" }}
+                    />
                   )}
                   <Text
                     fontSize="body.md"
@@ -113,8 +116,8 @@ const InviteSuccessModal: React.FC<InviteSuccessModalProps> = ({
           my="24px"
           fontSize="body.md"
         >
-          <Icon as={MdArrowForward} />
           {t("continue")}
+          <Icon as={MdArrowForward} />
         </Button>
       </VStack>
     </Box>

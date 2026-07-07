@@ -24,25 +24,31 @@ export default class ActionPlanEmailService {
     try {
       const { user, actionName, cityName, language, actionPlanUrl } = input;
 
-      logger.info({
-        userId: user.userId,
-        email: user.email,
-        actionName,
-        cityName,
-        language,
-      }, "Sending action plan ready email");
+      logger.info(
+        {
+          userId: user.userId,
+          email: user.email,
+          actionName,
+          cityName,
+          language,
+        },
+        "Sending action plan ready email",
+      );
 
       // Get translations for the email subject
       const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
       const subject = t("action-plan-ready.subject");
 
-      logger.info({
-        subject,
-        hasUser: !!user,
-        userEmail: user?.email,
-        actionName,
-        cityName,
-      }, "Email subject and template data");
+      logger.info(
+        {
+          subject,
+          hasUser: !!user,
+          userEmail: user?.email,
+          actionName,
+          cityName,
+        },
+        "Email subject and template data",
+      );
 
       // Render the email template with error handling
       let emailHtml: string;
@@ -85,13 +91,19 @@ export default class ActionPlanEmailService {
       });
 
       if (result.success) {
-        logger.info({
-          userId: user.userId,
-          email: user.email,
-          actionName,
-        }, "Action plan ready email sent successfully");
+        logger.info(
+          {
+            userId: user.userId,
+            email: user.email,
+            actionName,
+          },
+          "Action plan ready email sent successfully",
+        );
       } else {
-        logger.error({ userId: user.userId, email: user.email, error: result.error }, "Failed to send action plan ready email");
+        logger.error(
+          { userId: user.userId, email: user.email, error: result.error },
+          "Failed to send action plan ready email",
+        );
       }
     } catch (error: any) {
       logger.error({ err: error }, "Error sending action plan ready email");
@@ -107,7 +119,7 @@ export default class ActionPlanEmailService {
     inventoryId: string,
     language: string = "en",
   ): string {
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+    const baseUrl = process.env.HOST || "http://localhost:3000";
     return `${baseUrl}/${language}/cities/${cityId}/HIAP/${inventoryId}`;
   }
 
@@ -122,7 +134,15 @@ export default class ActionPlanEmailService {
     inventoryId: string,
     language?: string,
   ): Promise<void> {
-    const actionPlanUrl = this.buildActionPlanUrl(cityId, inventoryId, language || "en");
+    const actionPlanUrl = this.buildActionPlanUrl(
+      cityId,
+      inventoryId,
+      language || "en",
+    );
+    logger.info(
+      { actionPlanUrl, cityId, inventoryId, language },
+      "Built action plan URL for notification email",
+    );
 
     await this.sendActionPlanReadyEmail({
       user,

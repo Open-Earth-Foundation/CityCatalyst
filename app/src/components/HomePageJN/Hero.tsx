@@ -45,9 +45,10 @@ export function Hero({
     skip: !city?.locode,
   });
 
-  const formattedEmissions = ghgiCityData?.totalEmissions
-    ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
-    : { value: t("n-a"), unit: "" };
+  const formattedEmissions =
+    ghgiCityData?.totalEmissions != null
+      ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
+      : { value: t("n-a"), unit: "" };
 
   const popWithDS = useMemo(
     () =>

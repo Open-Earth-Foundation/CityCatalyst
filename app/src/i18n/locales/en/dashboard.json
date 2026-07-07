@@ -301,6 +301,7 @@
   "last-modified-by": "Last modified by",
   "date": "Date",
   "no-history": "No version history entries found.",
+  "not-specified": "Not specified",
   "subcategory": "Sub-category",
   "inventory-versions-restore-failed": "Failed to restore version",
   "legend": "Legend",

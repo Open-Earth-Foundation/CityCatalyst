@@ -37,37 +37,31 @@ export const EmissionsForecastCard = ({
         lng={lng}
       />
 
-      <Card.Root paddingY="0px" paddingX="0px" height="650px" width="100%">
+      <Card.Root paddingY="0px" paddingX="0px" minHeight="650px" width="100%">
         <CardHeader>
           <HStack>
             <TitleMedium>
               {t("no-action-emissions-forecast-by-sector")}
             </TitleMedium>
             {" | "}
-            <HStack
+            <TitleMedium
               onClick={() => setIsExplanationModalOpen(true)}
               cursor="pointer"
+              _hover={{ textDecoration: "underline" }}
+              color="content.link"
+              fontWeight="normal"
             >
-              <TitleMedium color="content.link">{t("learn-more")}</TitleMedium>
-              <IconButton
-                padding={0}
-                width={"20px"}
-                height={"20px"}
-                variant="plain"
-                rounded="full"
-                aria-label={"growth-rates-explanation"}
-              >
-                <Icon as={MdInfoOutline} boxSize={5} />
-              </IconButton>
-            </HStack>
+              {t("learn-more")}
+              <Icon as={MdInfoOutline} boxSize={5} ml={2} />
+            </TitleMedium>
           </HStack>
         </CardHeader>
         <CardBody
-          paddingY="0px"
+          py={6}
           paddingLeft={4}
           paddingRight={0}
-          height="600px"
-          width="100%"
+          minHeight="600px"
+          w="full"
         >
           <EmissionsForecastChart
             forecast={forecast}

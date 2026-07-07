@@ -20,6 +20,7 @@ import {
   IconButton,
   Table as ChakraTable,
   Icon,
+  Spinner,
 } from "@chakra-ui/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -111,6 +112,9 @@ export function HiapTab({
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [showUnrankedActions, setShowUnrankedActions] = useState(true);
   const [isShowingHistory, setIsShowingHistory] = useState(false);
+  const [updatingActionId, setUpdatingActionId] = useState<string | null>(null);
+  const [updatingAllRanked, setUpdatingAllRanked] = useState(false);
+  const [updatingAllUnranked, setUpdatingAllUnranked] = useState(false);
 
   // HIAP Query State
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
@@ -269,6 +273,21 @@ export function HiapTab({
         ? updaterOrValue(rowSelection)
         : updaterOrValue;
 
+    // Determine what was toggled to show the row loader
+    const oldKeys = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+    const newKeys = Object.keys(newRowSelection).filter((id) => newRowSelection[id]);
+
+    const toggledIds = [
+      ...oldKeys.filter((id) => !newRowSelection[id]),
+      ...newKeys.filter((id) => !rowSelection[id]),
+    ];
+
+    if (toggledIds.length === 1) {
+      setUpdatingActionId(toggledIds[0]);
+    } else if (toggledIds.length > 1) {
+      setUpdatingAllRanked(true);
+    }
+
     // Show loading toast
     const loadingToastId = toaster.create({
       title: t("updating-selection"),
@@ -328,6 +347,9 @@ export function HiapTab({
         type: "error",
       });
       logger.error(error, "Failed to update selection");
+    } finally {
+      setUpdatingActionId(null);
+      setUpdatingAllRanked(false);
     }
   };
 
@@ -342,6 +364,22 @@ export function HiapTab({
       typeof updaterOrValue === "function"
         ? updaterOrValue(unrankedRowSelection)
         : updaterOrValue;
+
+    // Determine what was toggled to show the row loader
+    const oldKeys = Object.keys(unrankedRowSelection).filter((id) => unrankedRowSelection[id]);
+    const newKeys = Object.keys(newUnrankedRowSelection).filter((id) => newUnrankedRowSelection[id]);
+
+    const toggledIds = [
+      ...oldKeys.filter((id) => !newUnrankedRowSelection[id]),
+      ...newKeys.filter((id) => !unrankedRowSelection[id]),
+    ];
+
+    if (toggledIds.length === 1) {
+      const rawId = toggledIds[0].replace("unranked-", "");
+      setUpdatingActionId(rawId);
+    } else if (toggledIds.length > 1) {
+      setUpdatingAllUnranked(true);
+    }
 
     // Show loading toast
     const loadingToastId = toaster.create({
@@ -402,6 +440,9 @@ export function HiapTab({
         type: "error",
       });
       logger.error(error, "Failed to update unranked selection");
+    } finally {
+      setUpdatingActionId(null);
+      setUpdatingAllUnranked(false);
     }
   };
 
@@ -409,25 +450,55 @@ export function HiapTab({
     () => [
       ...(isSelectionMode
         ? [
-            {
-              id: "select",
-              header: ({ table }: { table: TanStackTable<HIAction> }) => (
+          {
+            id: "select",
+            header: ({ table }: { table: TanStackTable<HIAction> }) => {
+              if (updatingAllRanked) {
+                return (
+                  <Box display="flex" alignItems="center" justifyContent="left" w="18px" h="18px">
+                    <Spinner size="xs" color="content.link" />
+                  </Box>
+                );
+              }
+              return (
                 <Checkbox
-                  checked={table.getIsAllRowsSelected()}
-                  onChange={table.getToggleAllRowsSelectedHandler()}
+                  checked={
+                    table.getIsAllRowsSelected()
+                      ? true
+                      : table.getIsSomeRowsSelected()
+                        ? "indeterminate"
+                        : false
+                  }
+                  disabled={isUpdatingSelection}
+                  onCheckedChange={({ checked }) =>
+                    table.toggleAllRowsSelected(checked === true)
+                  }
                 />
-              ),
-              cell: ({ row }: { row: Row<HIAction> }) => (
+              );
+            },
+            cell: ({ row }: { row: Row<HIAction> }) => {
+              const isThisActionUpdating = updatingActionId === row.original.id;
+              if (isThisActionUpdating) {
+                return (
+                  <Box display="flex" alignItems="center" justifyContent="left" w="18px" h="18px">
+                    <Spinner size="xs" color="content.link" />
+                  </Box>
+                );
+              }
+              return (
                 <Checkbox
                   checked={row.getIsSelected()}
-                  disabled={!row.getCanSelect()}
-                  onChange={row.getToggleSelectedHandler()}
+                  disabled={!row.getCanSelect() || isUpdatingSelection}
+                  onCheckedChange={({ checked }) =>
+                    row.toggleSelected(checked === true)
+                  }
                 />
-              ),
-              enableSorting: false,
-              enableHiding: false,
+              );
             },
-          ]
+            enableSorting: false,
+            enableHiding: false,
+          },
+        ]
         : []),
       {
         accessorKey: "rank",
@@ -458,79 +529,79 @@ export function HiapTab({
       },
       ...(isAdaptation
         ? [
-            {
-              id: "hazards-covered",
-              header: t("hazards-covered"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as AdaptationAction;
-                const hazardCount = action.hazards?.length || 0;
-                return (
-                  <Badge colorScheme="orange">
-                    {hazardCount} {t("hazards")}
-                  </Badge>
-                );
-              },
+          {
+            id: "hazards-covered",
+            header: t("hazards-covered"),
+            cell: ({ row }: { row: Row<HIAction> }) => {
+              const action = row.original as AdaptationAction;
+              const hazardCount = action.hazards?.length || 0;
+              return (
+                <Badge colorScheme="orange">
+                  {hazardCount} {t("hazards")}
+                </Badge>
+              );
             },
-            {
-              id: "adaptation-effectiveness",
-              header: t("effectiveness"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as AdaptationAction;
-                const effectivenessMap: Record<string, number> = {
-                  low: 1,
-                  medium: 2,
-                  high: 3,
-                };
-                const blueBars =
-                  effectivenessMap[action.adaptationEffectiveness] || 0;
-                return <BarVisualization value={blueBars} total={3} />;
-              },
+          },
+          {
+            id: "adaptation-effectiveness",
+            header: t("effectiveness"),
+            cell: ({ row }: { row: Row<HIAction> }) => {
+              const action = row.original as AdaptationAction;
+              const effectivenessMap: Record<string, number> = {
+                low: 1,
+                medium: 2,
+                high: 3,
+              };
+              const blueBars =
+                effectivenessMap[action.adaptationEffectiveness] || 0;
+              return <BarVisualization value={blueBars} total={3} />;
             },
-          ]
+          },
+        ]
         : [
-            {
-              id: "sector",
-              header: t("sector-label"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as MitigationAction;
-                return (
-                  <HStack gap={1} flexWrap="wrap">
-                    {action.sectors.map((sector) => (
-                      <Text key={sector} color="content.secondary">
-                        {t(`sector.${sector}`)}
-                      </Text>
-                    ))}
-                  </HStack>
-                );
-              },
+          {
+            id: "sector",
+            header: t("sector-label"),
+            cell: ({ row }: { row: Row<HIAction> }) => {
+              const action = row.original as MitigationAction;
+              return (
+                <HStack gap={1} flexWrap="wrap">
+                  {action.sectors.map((sector) => (
+                    <Text key={sector} color="content.secondary">
+                      {t(`sector.${sector}`)}
+                    </Text>
+                  ))}
+                </HStack>
+              );
             },
-            {
-              id: "reduction-potential",
-              header: t("ghg-reduction"),
-              cell: ({ row }: { row: Row<HIAction> }) => {
-                const action = row.original as MitigationAction;
-                const totalReduction = Object.values(
-                  action.GHGReductionPotential,
-                )
-                  .filter((value): value is string => value !== null)
-                  .map((value) => {
-                    // Parse range like "80-100" and take the average
-                    if (value.includes("-")) {
-                      const [min, max] = value
-                        .split("-")
-                        .map((v) => parseFloat(v));
-                      return (min + max) / 2;
-                    }
-                    return parseFloat(value);
-                  })
-                  .reduce((sum, value) => sum + value, 0);
-                const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
-                return (
-                  <BarVisualization value={blueBars} total={5} width="60px" />
-                );
-              },
+          },
+          {
+            id: "reduction-potential",
+            header: t("ghg-reduction"),
+            cell: ({ row }: { row: Row<HIAction> }) => {
+              const action = row.original as MitigationAction;
+              const totalReduction = Object.values(
+                action.GHGReductionPotential,
+              )
+                .filter((value): value is string => value !== null)
+                .map((value) => {
+                  // Parse range like "80-100" and take the average
+                  if (value.includes("-")) {
+                    const [min, max] = value
+                      .split("-")
+                      .map((v) => parseFloat(v));
+                    return (min + max) / 2;
+                  }
+                  return parseFloat(value);
+                })
+                .reduce((sum, value) => sum + value, 0);
+              const blueBars = Math.min(Math.ceil(totalReduction / 20), 5);
+              return (
+                <BarVisualization value={blueBars} total={5} width="60px" />
+              );
             },
-          ]),
+          },
+        ]),
       {
         id: "actions",
         header: "",
@@ -549,7 +620,14 @@ export function HiapTab({
         ),
       },
     ],
-    [isSelectionMode, t, isAdaptation],
+    [
+      isSelectionMode,
+      t,
+      isAdaptation,
+      updatingActionId,
+      updatingAllRanked,
+      isUpdatingSelection,
+    ],
   );
 
   // Columns for unranked actions table
@@ -557,19 +635,49 @@ export function HiapTab({
     // Selection column (only shown in selection mode)
     const selectionColumn = {
       id: "select",
-      header: ({ table }: { table: TanStackTable<HIAction> }) => (
-        <Checkbox
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
-      ),
-      cell: ({ row }: { row: Row<HIAction> }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onChange={row.getToggleSelectedHandler()}
-        />
-      ),
+      header: ({ table }: { table: TanStackTable<HIAction> }) => {
+        if (updatingAllUnranked) {
+          return (
+            <Box display="flex" alignItems="center" justifyContent="left" w="18px" h="18px">
+              <Spinner size="xs" color="content.link" />
+            </Box>
+          );
+        }
+        return (
+          <Checkbox
+            checked={
+              table.getIsAllRowsSelected()
+                ? true
+                : table.getIsSomeRowsSelected()
+                  ? "indeterminate"
+                  : false
+            }
+            disabled={isUpdatingSelection}
+            onCheckedChange={({ checked }) =>
+              table.toggleAllRowsSelected(checked === true)
+            }
+          />
+        );
+      },
+      cell: ({ row }: { row: Row<HIAction> }) => {
+        const isThisActionUpdating = updatingActionId === row.original.id;
+        if (isThisActionUpdating) {
+          return (
+            <Box display="flex" alignItems="center" justifyContent="left" w="18px" h="18px">
+              <Spinner size="xs" color="content.link" />
+            </Box>
+          );
+        }
+        return (
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect() || isUpdatingSelection}
+            onCheckedChange={({ checked }) =>
+              row.toggleSelected(checked === true)
+            }
+          />
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     };
@@ -696,7 +804,14 @@ export function HiapTab({
       ...typeSpecificColumns,
       actionsColumn,
     ];
-  }, [isSelectionMode, isAdaptation, t]);
+  }, [
+    isSelectionMode,
+    isAdaptation,
+    t,
+    updatingActionId,
+    updatingAllUnranked,
+    isUpdatingSelection,
+  ]);
 
   const table = useReactTable({
     data: actions,
@@ -800,6 +915,7 @@ export function HiapTab({
       <PrintableActionPlanPDF
         actions={toExport}
         t={t}
+        lng={lng}
         cityName={cityData?.name || cityData?.locode}
       />,
     ).toBlob();

@@ -100,6 +100,8 @@
   "manually-added": "Données ajoutées manuellement",
   "check-data-heading": "Explorez les ensembles de données pertinents à intégrer dans votre inventaire",
   "check-data-details": "Examinez et intégrez automatiquement les données pertinentes pour l'inventaire des GES de votre ville.",
+  "browse-and-connect-external-datasets-heading": "Parcourir et connecter des ensembles de données externes à votre inventaire d'émissions de GES",
+  "browse-and-connect-external-datasets-description": "Vous pouvez examiner et intégrer les données d'émissions de fournisseurs externes directement dans votre inventaire d'émissions de GES.",
   "no-data-sources": "Aucune source de données externe disponible",
   "no-data-sources-description": "Il semble qu'il n'y ait aucune source externe disponible pour le moment.<1></1>Si vous en connaissez, <3>veuillez le signaler</3> et nous donnerons la priorité à votre demande.",
   "data-quality": "Qualité des Données",
@@ -117,6 +119,8 @@
   "edit-subsector": "Modifier le sous-secteur",
   "more-datasets": "Voir plus de jeux de données",
   "less-datasets": "Voir moins de jeux de données",
+  "notation-key-no-notice": "Pour voir les clés de données \"Non Survenu\", consultez :",
+  "manage-missing-sub-sectors": "Gérer les sous-secteurs manquants",
   "add-data-heading": "Ajoutez des données à votre inventaire de données",
   "add-data-details": "Ce sont les sous-secteurs à compléter selon la méthodologie GPC pour le secteur des transports. Sélectionnez un sous-secteur et remplissez les informations pour compléter votre inventaire.",
   "select-subsector": "Sélectionnez le sous-secteur",
@@ -1272,6 +1276,9 @@
   "uncategorized": "Non classé",
   "legend": "Légende",
   "data-already-added-connected": "Ce jeu de données n'est pas disponible, car vous disposez déjà d'un jeu de données connecté pour ce sous-secteur.",
+  "datasets": "jeu de données(s)",
+  "filter-by-subsector": "Filtrer par sous-secteur",
+  "refresh-datasets": "Actualiser les jeux de données",
   "agriculture-forestry-and-other-land-use-afolu": "Agriculture, foresterie et utilisation des terres (AFOLU)",
   "industrial-processes-and-product-uses-ippu": "Processus industriels et utilisation de produits (IPPU)"
 }

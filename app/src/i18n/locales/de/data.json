@@ -30,6 +30,8 @@
   "edit-subsector": "Teilsektor bearbeiten",
   "more-datasets": "Mehr Datensätze anzeigen",
   "less-datasets": "Weniger Datensätze anzeigen",
+  "notation-key-no-notice": "Um die Datenschlüssel \"Nicht aufgetreten\" anzuzeigen, prüfen Sie:",
+  "manage-missing-sub-sectors": "Fehlende Teilsektoren verwalten",
   "add-data-heading": "Fügen Sie manuell Ihre eigenen lokalen Werte hinzu",
   "add-data-details": "Fügen Sie manuell Ihre berechneten Werte für erforderliche Teilsektoren in die Inventur ein.",
   "select-subsector": "Teilsektor auswählen",
@@ -1297,6 +1299,9 @@
   "uncategorized": "Unkategorisiert",
   "legend": "Legende",
   "data-already-added-connected": "Dieser Datensatz ist nicht verfügbar, weil Sie bereits einen verbundenen Datensatz für diesen Teilsektor haben.",
+  "datasets": "Datensatz(e)",
+  "filter-by-subsector": "Nach Teilsektor filtern",
+  "refresh-datasets": "Datensätze aktualisieren",
   "agriculture-forestry-and-other-land-use-afolu": "Landwirtschaft, Forstwirtschaft und Landnutzung (AFOLU)",
   "industrial-processes-and-product-uses-ippu": "Industrielle Prozesse und Produktnutzung (IPPU)"
 }

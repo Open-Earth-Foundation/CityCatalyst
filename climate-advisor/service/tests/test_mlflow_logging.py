@@ -274,6 +274,7 @@ def test_streaming_handler_uses_single_experiment_with_agentic_tags(
 
     assert handler._mlflow_experiment_name(general_payload) == "clima"
     assert handler._mlflow_experiment_name(agentic_payload) == "clima"
+    assert handler._mlflow_tags(general_payload)["prompt_name"] == "chat"
     assert handler._mlflow_tags(agentic_payload)["ca_agentic_flow"] is True
     assert (
         handler._mlflow_tags(agentic_payload)["workflow"]

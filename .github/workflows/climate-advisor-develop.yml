@@ -18,6 +18,8 @@ on:
       - climate-advisor/k8s/migrate-dev.yml
       - climate-advisor/k8s/service-dev.yml
       - climate-advisor/k8s/db-configmap-dev.yml
+      - k8s/cc-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-develop.yml
   push:
     paths:
@@ -30,6 +32,8 @@ on:
       - climate-advisor/k8s/migrate-dev.yml
       - climate-advisor/k8s/service-dev.yml
       - climate-advisor/k8s/db-configmap-dev.yml
+      - k8s/cc-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
 jobs:
@@ -180,3 +184,6 @@ jobs:
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-dev -n default
+          SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
+          CA_DEPLOYMENT_NAME=climate-advisor-dev \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh

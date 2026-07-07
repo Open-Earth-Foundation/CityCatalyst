@@ -787,7 +787,7 @@ preflight and generation routes.
 
 | Group | Purpose | Writes CNB storage | Calls CC | Calls CNB reference tables |
 | --- | --- | --- | --- | --- |
-| Workflow tools | start, status, resume, retry | yes | no | no |
+| Workflow tools | start, resume, retry | yes | no | no |
 | Context tools | load CC summary, load bundle | yes | yes | yes |
 | Ingest tools | convert uploads, prepare candidate source excerpts | yes | no | no |
 | Reference tools | funder profile, template, criteria | no | no | yes |
@@ -833,10 +833,23 @@ Rules:
 - Reuses an active run if the same user, city, project, funder, and opportunity
   already has one.
 
-#### `concept_note_get_status`
+### Always-On Agent Context
 
-Returns current run state, current step, blockers, chapter counts, gaps, matched
-project counts, and export readiness.
+Run status is not an agent tool. The agent should always receive current run
+state as injected context before it answers or calls tools.
+
+Always-on context should include:
+
+- current run state
+- current workflow step
+- blockers
+- chapter counts
+- open gaps
+- matched project counts
+- export readiness
+
+This is crucial because the agent should never need to ask a tool what state the
+workflow is in before deciding what to do next.
 
 ### Context Tools
 
@@ -1422,6 +1435,10 @@ features only.
 ## Planned Routes
 
 ### Climate Advisor
+
+The status routes are for the UI and backend orchestration. Current run state
+must still be injected into the agent context on every turn, not exposed as an
+agent tool.
 
 ```text
 POST /v1/concept-notes/start

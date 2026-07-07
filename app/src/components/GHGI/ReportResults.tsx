@@ -131,7 +131,7 @@ function SectorTabs({
             <Tabs.Trigger
               key={index}
               value={name}
-              minWidth="170px"
+              minWidth="200px"
               height="64px"
             >
               <Icon
@@ -145,6 +145,7 @@ function SectorTabs({
               <Text
                 fontSize="16"
                 lineClamp={2}
+                wordBreak="keep-all"
                 textAlign="left"
                 fontWeight={selectedTab === name ? 600 : 400}
                 fontStyle="normal"
@@ -507,7 +508,6 @@ export default function ReportResults({
   }
 
   // Determine what to show based on context
-  const showManageMissingSectors = context === "inventory" && !isPublic;
   const showOpenCCInventories = context === "dashboard" && !isPublic;
 
   const { data: userInfo } = api.useGetUserInfoQuery(undefined, {
@@ -522,7 +522,7 @@ export default function ReportResults({
           inventory={inventory}
           title={"tab-emission-inventory-results-title"}
           isPublic={isPublic}
-          showActionButtons={showManageMissingSectors}
+          showActionButtons={false}
         />
       )}
 

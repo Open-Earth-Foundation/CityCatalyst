@@ -29,7 +29,7 @@ flowchart TB
   Exec --> Memory
 
   subgraph External["External services"]
-    GlobalAPI["CityCatalyst Global APIs (ccglobal.openearth.dev)"]
+    GlobalAPI["CityCatalyst Global API (CCGLOBAL_API_BASE_URL)"]
     OpenAI["OpenAI provider (env configured)"]
     S3["AWS S3 bucket (artefacts and vector stores)"]
   end
@@ -50,6 +50,6 @@ flowchart TB
 - **Async workflow**: many endpoints return a `taskId` and require polling a progress endpoint before fetching results.
 - **Task persistence**: task state is stored **in memory**, so restarting the server loses tasks.
 - **Upstream dependencies**:
-  - Actions/context/CCRA data is fetched from `ccglobal.openearth.dev`.
+  - Actions/context/CCRA data is fetched from the Global API host configured via `CCGLOBAL_API_BASE_URL` (defaults to `ccglobal.openearth.dev`; production uses `api.citycatalyst.io`).
   - LLM functionality requires OpenAI-related env vars from `.env`.
   - Docker startup downloads artefacts from S3; if you don’t have bucket access, run locally via `python main.py` instead of Docker.

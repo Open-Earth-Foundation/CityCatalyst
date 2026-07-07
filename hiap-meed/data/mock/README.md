@@ -89,7 +89,7 @@ This payload shape is modeled by:
 - `CityApiResponse` (envelope)
 - `CityApiItem` (`city`)
 
-It is being used to fetch basic city context data and also more specific city context data like unemployment rate, renter share, transport logistics employment, electricity access, industry construction employment, median household income, public transport share, poverty rate and home ownership.
+It is being used to fetch basic city context data. The payload can also include broader city indicator fields retained for compatibility with the upstream city attributes contract.
 
 The general logic is that this is the baseline and values might be updated by the city user via the frontend request.
 
@@ -98,7 +98,7 @@ This mock follows the active upstream city attributes schema:
 - `GET /api/v0/city_attributes/{locode}`
 - city fields such as `city_name`, `country_code`, `populationSize`, `populationDensity`, and `area_km2`
 - a `population` indicator object in addition to the top-level population fields
-- all 9 socioeconomic indicator keys currently used by Feasibility
+- optional city indicator objects retained for compatibility with the upstream city attributes contract
 - the current city response DTOs still accept the camelCase population aliases and ignore unexpected extra keys
 
 # action_pathways_api_mock.json:
@@ -133,6 +133,22 @@ It includes:
 - optional dimension detail (`dimension_scores`, `breakdown`) retained for artifacts and explainability evidence
 
 Missing action rows are expected for unmapped actions and score neutrally as `0.5`.
+
+# action_financial_feasibility_scores_api_mock.json:
+
+Mock for GET /api/v1/cities/{locode}/climate-finance/feasibility.
+Financial feasibility scores are city-scoped and provide the climate-finance
+input used in Feasibility scoring.
+
+It includes:
+
+- envelope metadata (`meta.generated_at_utc`, `meta.endpoint`, `meta.locode`, `meta.country_code`, `meta.total_records`)
+- `data[]` rows keyed by `action_id`
+- `financial_feasibility` used as the financial feasibility component
+- compact route and reason evidence retained for artifacts and explanation input
+- link fields for optional follow-up detail/opportunity/project APIs that hiap-meed does not fetch in the first implementation
+
+Missing action rows or missing `financial_feasibility` values are expected to score neutrally as `0.5`.
 
 # action_policy_scores_api_mock.json:
 
@@ -176,7 +192,9 @@ It includes:
 # actions_legal_api_mock.json:
 
 Mock for `GET /api/v1/action-legal-assessments?countryCode=...`.
-Returns the same flat list shape as the live legal assessments API.
+Returns the same flat list shape as the deprecated legal assessments API. The
+runtime legal source now defaults to the internal S3 CSV, while this fixture
+keeps the old API-like shape for local mock-mode regression tests.
 
 It includes:
 
@@ -189,7 +207,9 @@ It includes:
 
 # Legal mock coverage notes:
 
-The flat legal mock now mirrors the live legal assessments API rather than the older requirement-based mock.
+The flat legal mock mirrors the deprecated API-like shape rather than the newer
+S3 CSV shape. The S3 adapter maps its CSV rows into the same internal legal
+record contract before scoring.
 
 For ranking validation, the important cases are:
 

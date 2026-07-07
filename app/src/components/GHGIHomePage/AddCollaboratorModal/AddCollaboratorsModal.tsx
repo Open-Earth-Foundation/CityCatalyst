@@ -39,7 +39,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import {
   SelectContent,
   SelectItem,
-  SelectItemGroup,
   SelectLabel,
   SelectRoot,
   SelectTrigger,
@@ -91,7 +90,6 @@ const AddCollaboratorsDialog = ({
 
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
 
-
   const projectCollection = useMemo(() => {
     return createListCollection({
       items:
@@ -101,7 +99,6 @@ const AddCollaboratorsDialog = ({
         })) ?? [],
     });
   }, [projectsData, organizationProjectsData]);
-
 
   const [inviteUsers, { isLoading: isInviteUsersLoading }] =
     useInviteUsersMutation();
@@ -177,10 +174,10 @@ const AddCollaboratorsDialog = ({
       if (inviteResponse.data.inviteUrls) {
         const inviteUrls = Object.values(inviteResponse.data.inviteUrls);
         if (inviteUrls.length > 0) {
-          const urlsText = inviteUrls.join('\n');
+          const urlsText = inviteUrls.join("\n");
           navigator.clipboard.writeText(urlsText).catch(() => {
             // Fallback if clipboard API fails
-            console.warn('Failed to copy to clipboard');
+            console.warn("Failed to copy to clipboard");
           });
         }
       }

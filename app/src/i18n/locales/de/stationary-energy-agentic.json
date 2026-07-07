@@ -6,5 +6,6 @@
   "draft-notation-key-NE": "Not estimated",
   "draft-notation-key-IE": "Included elsewhere",
   "draft-notation-key-C": "Confidential",
-  "draft-notation-key-NA": "Not applicable"
+  "draft-notation-key-NA": "Not applicable",
+  "error-failed-to-load-stationary-energy-draft-status": "Failed to load Stationary Energy draft status"
 }

@@ -16,6 +16,7 @@ import { api } from "@/services/api";
 interface ReviewConfirmStepProps {
   t: TFunction;
   cityId: string;
+  cityName?: string;
   inventoryId: string;
   importedFileId: string;
   onImport: () => void;
@@ -24,6 +25,7 @@ interface ReviewConfirmStepProps {
 export default function ReviewConfirmStep({
   t,
   cityId,
+  cityName,
   importedFileId,
   onImport,
   inventoryId,
@@ -43,6 +45,11 @@ export default function ReviewConfirmStep({
     return (
       <Box w="full">
         <Box display="flex" flexDir="column" gap="24px" mb={6}>
+          {cityName && (
+            <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+              {cityName}
+            </Text>
+          )}
           <Heading size="lg">{t("review-confirm-heading")}</Heading>
           <Text fontSize="body.lg" color="content.tertiary">
             {t("review-confirm-description")}
@@ -80,8 +87,8 @@ export default function ReviewConfirmStep({
 
   // Fallback to fileInfo and validationResults if reviewData is not available
   const importSummary = reviewData?.importSummary || {
-    sourceFile: fileInfo?.originalFileName || "-",
-    formatDetected: fileInfo?.fileType?.toUpperCase() || "-",
+    sourceFile: fileInfo?.originalFileName || null,
+    formatDetected: fileInfo?.fileType?.toUpperCase() || null,
     rowsFound: data?.rowCount || 0,
     fieldsMapped:
       reviewData?.fieldMappings?.length ||
@@ -104,6 +111,11 @@ export default function ReviewConfirmStep({
   return (
     <Box w="full">
       <Box display="flex" flexDir="column" gap="24px" mb={6}>
+        {cityName && (
+          <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            {cityName}
+          </Text>
+        )}
         <Heading size="lg">{t("review-confirm-heading")}</Heading>
         <Text fontSize="body.lg" color="content.tertiary">
           {t("review-confirm-description")}
@@ -129,13 +141,29 @@ export default function ReviewConfirmStep({
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
                 {t("source-file")}
               </Text>
-              <Text fontWeight="medium">{importSummary.sourceFile}</Text>
+              <Text
+                fontWeight={importSummary.sourceFile ? "medium" : undefined}
+                color={
+                  importSummary.sourceFile ? undefined : "content.tertiary"
+                }
+              >
+                {importSummary.sourceFile || t("not-specified")}
+              </Text>
             </Box>
             <Box w="full">
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>
                 {t("format-detected")}
               </Text>
-              <Text fontWeight="medium">{importSummary.formatDetected}</Text>
+              <Text
+                fontWeight={
+                  importSummary.formatDetected ? "medium" : undefined
+                }
+                color={
+                  importSummary.formatDetected ? undefined : "content.tertiary"
+                }
+              >
+                {importSummary.formatDetected || t("not-specified")}
+              </Text>
             </Box>
             <Box w="full">
               <Text fontSize="body.sm" color="content.tertiary" mb={1}>

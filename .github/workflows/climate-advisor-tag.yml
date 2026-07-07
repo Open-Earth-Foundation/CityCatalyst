@@ -18,6 +18,8 @@ on:
       - climate-advisor/k8s/migrate-prod.yml
       - climate-advisor/k8s/service-prod.yml
       - climate-advisor/k8s/db-configmap-prod.yml
+      - k8s/prod/cc-prod-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-tag.yml
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -169,6 +171,7 @@ jobs:
       SHA: ${{ github.sha }}
       REF: ${{ github.ref }}
       IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
+      MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'clima' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -193,8 +196,12 @@ jobs:
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst.io \
+            MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME}" \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-prod -n default
           kubectl rollout status deployment/climate-advisor-prod -n default --timeout=300s
+          SMOKE_FIXTURE_MANIFEST=k8s/prod/cc-prod-ca-smoke-fixture.yml \
+          CA_DEPLOYMENT_NAME=climate-advisor-prod \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh

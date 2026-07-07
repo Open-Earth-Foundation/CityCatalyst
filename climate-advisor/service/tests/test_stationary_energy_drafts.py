@@ -31,6 +31,7 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftRun,
     StationaryEnergyDraftSourceCandidate,
 )
+from app.models.db.thread import Thread as ChatThread
 from app.models.requests import MessageCreateRequest
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.stationary_energy.stationary_energy_draft_service import (
@@ -49,6 +50,9 @@ from app.services.stationary_energy.stationary_energy_review_models import (
 )
 from app.tools.stationary_energy_review_tools import (
     build_stationary_energy_review_tools,
+)
+from app.tools.stationary_energy_start_draft_tools import (
+    build_stationary_energy_start_draft_tools,
 )
 from app.utils.streaming_handler import StreamingHandler
 
@@ -639,6 +643,101 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
             ],
             _active_jwt(),
         )
+
+    def test_agent_start_draft_tool_refreshes_expired_thread_token_before_start(
+        self,
+    ) -> None:
+        thread_id = self._create_thread(
+            "user-1", context={"access_token": _expired_jwt()}
+        )
+        token_ref = {"value": _expired_jwt()}
+        mock_client = self._mock_cc_client()
+
+        async def exercise() -> dict[str, Any]:
+            tools = build_stationary_energy_start_draft_tools(
+                session_factory=self.session_factory,
+                city_id="city-1",
+                inventory_id="inventory-1",
+                user_id="user-1",
+                thread_id=thread_id,
+                token_ref=token_ref,
+            )
+            start_tool = next(
+                tool
+                for tool in tools
+                if getattr(tool, "name", None) == "stationary_energy_start_draft"
+            )
+            ctx = ToolContext(
+                context=None,
+                tool_call_id="test-call",
+                tool_name="stationary_energy_start_draft",
+                tool_arguments={},
+            )
+
+            output = await start_tool.on_invoke_tool(  # type: ignore[attr-defined]
+                ctx,
+                json.dumps({}),
+            )
+            return json.loads(output)
+
+        with patch(
+            "app.services.stationary_energy.stationary_energy_draft_service.CityCatalystClient",
+            return_value=mock_client,
+        ):
+            data = asyncio.run(exercise())
+
+        self.assertTrue(data["success"], data)
+        self._wait_for_draft_status(data["draft_run_id"], "ready")
+        mock_client.refresh_token.assert_awaited_once_with("user-1")
+        self.assertEqual(token_ref["value"], "fresh-token")
+        self.assertEqual(
+            mock_client.get_stationary_energy_allowed_capabilities.await_args.kwargs[
+                "token"
+            ],
+            "fresh-token",
+        )
+        self.assertEqual(
+            asyncio.run(self._get_thread_context(thread_id))["access_token"],
+            "fresh-token",
+        )
+
+    def test_agent_start_draft_tool_maps_http_errors(self) -> None:
+        token_ref = {"value": None}
+
+        async def exercise() -> dict[str, Any]:
+            tools = build_stationary_energy_start_draft_tools(
+                session_factory=self.session_factory,
+                city_id="city-1",
+                inventory_id="inventory-1",
+                user_id="user-1",
+                thread_id=None,
+                token_ref=token_ref,
+            )
+            start_tool = next(
+                tool
+                for tool in tools
+                if getattr(tool, "name", None) == "stationary_energy_start_draft"
+            )
+            ctx = ToolContext(
+                context=None,
+                tool_call_id="test-call",
+                tool_name="stationary_energy_start_draft",
+                tool_arguments={},
+            )
+
+            output = await start_tool.on_invoke_tool(  # type: ignore[attr-defined]
+                ctx,
+                json.dumps({}),
+            )
+            return json.loads(output)
+
+        data = asyncio.run(exercise())
+
+        self.assertFalse(data["success"], data)
+        self.assertEqual(data["action"], "stationary_energy_start_draft")
+        self.assertEqual(data["message_key"], "tool-error-http")
+        self.assertEqual(data["message_params"], {"status": 401})
+        self.assertEqual(data["error_code"], "http_401")
 
     def test_start_rejects_thread_user_mismatch_before_calling_cc(self) -> None:
         thread_id = self._create_thread("thread-owner")
@@ -2064,26 +2163,48 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertGreaterEqual(len(history), 2)
         self.assertEqual(history[0]["role"], "system")
-        self.assertIn("STATIONARY_ENERGY_DRAFT_CONTEXT_JSON", history[0]["content"])
-        self.assertIn("Testopolis", history[0]["content"])
-        self.assertIn("ds-chat", history[0]["content"])
-        self.assertIn("guidance_context", history[0]["content"])
-        self.assertNotIn("llm_generation", history[0]["content"])
-        self.assertIn("ui_context", history[0]["content"])
-        self.assertIn(proposal_id, history[0]["content"])
-        self.assertIn("Focused right pane row", history[0]["content"])
-        self.assertIn("focused_decision_state", history[0]["content"])
-        self.assertIn("candidate-chat", history[0]["content"])
-        self.assertIn("confirmed_bulk_review_choices", history[0]["content"])
+        system_content = history[0]["content"]
+        self.assertIn(
+            "You are Clima, the CityCatalyst climate assistant.",
+            system_content,
+        )
+        self.assertIn("<additional_instructions>", system_content)
+        self.assertIn(
+            "Handle one Stationary Energy review intent per user turn.",
+            system_content,
+        )
+        context_start = system_content.index("<context>")
+        self.assertGreater(
+            context_start,
+            system_content.index(
+                "Handle one Stationary Energy review intent per user turn."
+            ),
+        )
+        self.assertIn("</context>", system_content)
+        self.assertTrue(system_content.rstrip().endswith("</context>"))
+        self.assertIn(
+            "STATIONARY_ENERGY_DRAFT_CONTEXT_JSON",
+            system_content[context_start:],
+        )
+        self.assertIn("Testopolis", system_content)
+        self.assertIn("ds-chat", system_content)
+        self.assertIn("guidance_context", system_content)
+        self.assertNotIn("llm_generation", system_content)
+        self.assertIn("ui_context", system_content)
+        self.assertIn(proposal_id, system_content)
+        self.assertIn("Focused right pane row", system_content)
+        self.assertIn("focused_decision_state", system_content)
+        self.assertIn("candidate-chat", system_content)
+        self.assertIn("confirmed_bulk_review_choices", system_content)
         self.assertIn(
             "confirmed_staged_review_rollback_choices",
-            history[0]["content"],
+            system_content,
         )
         self.assertIn(
-            "Use subsector-specific energy activity data first.", history[0]["content"]
+            "Use subsector-specific energy activity data first.", system_content
         )
         self.assertNotIn(
-            "raw-output-should-not-be-in-chat-context", history[0]["content"]
+            "raw-output-should-not-be-in-chat-context", system_content
         )
         self.assertEqual(history[-1]["role"], "user")
         self.assertEqual(history[-1]["content"], payload.content)
@@ -2276,6 +2397,13 @@ class StationaryEnergyDraftRouteTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(response.status_code, 201, response.text)
         return UUID(response.json()["thread_id"])
+
+    async def _get_thread_context(self, thread_id: UUID) -> dict[str, Any]:
+        """Return persisted thread context for assertions."""
+        async with self.session_factory() as session:
+            thread = await session.get(ChatThread, thread_id)
+            self.assertIsNotNone(thread)
+            return dict(thread.context or {})
 
     def _latest_draft_run_id(self, user_id: str) -> str:
         async def load_id() -> str:

@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.20.0",
+  "version": "1.21.0-rc.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -34,6 +34,7 @@
     "prettier": "npx prettier . --write",
     "email": "email dev --dir src/lib/emails",
     "create-admin": "tsx scripts/create-admin.ts",
+    "upsert-ca-smoke-fixture": "tsx scripts/upsert-ca-smoke-fixture.ts",
     "update-brazil-emissions": "tsx scripts/update-country-emissions.ts",
     "generate:changelog": "node scripts/generate-changelog.js",
     "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest",
@@ -108,7 +109,7 @@
     "remark-gfm": "^4.0.1",
     "sequelize": "^6.37.7",
     "swagger-ui-react": "^5.32.2",
-    "uuid": "^9.0.1",
+    "uuid": "^14.0.0",
     "wellknown": "^0.5.0",
     "zod": "^3.25.76"
   },

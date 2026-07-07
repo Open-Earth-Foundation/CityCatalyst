@@ -20,7 +20,10 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { callClimateAdvisor } from "@/backend/agentic/ghgi/stationary-energy/ca";
+import {
+  callClimateAdvisor,
+  getClimateAdvisorRequestId,
+} from "@/backend/agentic/ghgi/stationary-energy/ca";
 import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { apiHandler } from "@/util/api";
 
@@ -48,6 +51,7 @@ export const GET = apiHandler(async (req, { session, searchParams }) => {
     method: "GET",
     tokenUserID: session.user.id,
     inventoryId: query.inventory_id,
+    requestId: getClimateAdvisorRequestId(req),
   });
 
   const payload = await response.json();

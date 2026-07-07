@@ -32,16 +32,20 @@ from app.modules.prioritizer.services.exclusion_resolution import (
 )
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
+    ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
     ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
+    S3LegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
     MockActionPolicyScoresDataApiClient,
+    get_action_financial_feasibility_scores_data_api_client,
     get_action_mitigation_feasibility_scores_data_api_client,
     get_action_pathways_data_api_client,
     get_city_data_api_client,
@@ -153,7 +157,7 @@ def _mlflow_source_params() -> dict[str, str]:
     """Return the active source-config params logged on MLflow request runs."""
     return {
         "city_data_source": os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api"),
-        "legal_data_source": os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api"),
+        "legal_data_source": os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "s3"),
         "action_pathways_data_source": os.getenv(
             "HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE", "api"
         ),
@@ -162,6 +166,10 @@ def _mlflow_source_params() -> dict[str, str]:
         ),
         "action_mitigation_feasibility_scores_data_source": os.getenv(
             "HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE",
+            "api",
+        ),
+        "action_financial_feasibility_scores_data_source": os.getenv(
+            "HIAP_MEED_ACTION_FINANCIAL_FEASIBILITY_SCORES_DATA_SOURCE",
             "api",
         ),
     }
@@ -378,7 +386,9 @@ def prioritize(
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
         get_action_pathways_data_api_client
     ),
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ) = Depends(
         get_legal_data_api_client
     ),
     action_policy_scores_data_api_client: (
@@ -390,6 +400,10 @@ def prioritize(
         MockActionMitigationFeasibilityScoresDataApiClient
         | ApiActionMitigationFeasibilityScoresDataApiClient
     ) = Depends(get_action_mitigation_feasibility_scores_data_api_client),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
+    ) = Depends(get_action_financial_feasibility_scores_data_api_client),
 ) -> PrioritizerApiResponse:
     """
     Prioritize actions from the caller request envelope.
@@ -449,12 +463,15 @@ def prioritize(
                     action_mitigation_feasibility_scores_data_api_client=(
                         action_mitigation_feasibility_scores_data_api_client
                     ),
+                    action_financial_feasibility_scores_data_api_client=(
+                        action_financial_feasibility_scores_data_api_client
+                    ),
                     create_explanations=request.requestData.createExplanations,
                     requested_languages=requested_languages,
                     frontend_request_id=request_trace_id,
                 )
                 # Echo frontend request ID for response correlation in clients/logs.
-                per_city_result.metadata["frontend_request_id"] = request_trace_id
+                per_city_result.metadata.frontend_request_id = request_trace_id
                 results.append(
                     PrioritizerApiCityResult(
                         locode=city_input.locode,
@@ -706,13 +723,19 @@ def _run_for_city_input(
     requested_top_n: int | None,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ),
     action_policy_scores_data_api_client: (
         MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),
     action_mitigation_feasibility_scores_data_api_client: (
         MockActionMitigationFeasibilityScoresDataApiClient
         | ApiActionMitigationFeasibilityScoresDataApiClient
+    ),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
     ),
     create_explanations: bool,
     requested_languages: list[str],
@@ -775,30 +798,28 @@ def _run_for_city_input(
             action_mitigation_feasibility_scores_data_api_client=(
                 action_mitigation_feasibility_scores_data_api_client
             ),
+            action_financial_feasibility_scores_data_api_client=(
+                action_financial_feasibility_scores_data_api_client
+            ),
             create_explanations=create_explanations,
             requested_languages=requested_languages,
         )
         metadata = result.metadata
+        explanations_metadata = metadata.explanations
         log_params(
             {
                 "generated_languages_count": len(
-                    metadata.get("explanations", {}).get("generated_languages", [])
-                )
-                if isinstance(metadata.get("explanations"), dict)
-                else None,
+                    explanations_metadata.generated_languages
+                ),
             }
         )
         metrics: dict[str, float] = {"warnings": float(len(result.warnings))}
-        counts = metadata.get("counts")
-        if isinstance(counts, dict):
-            for key, value in counts.items():
-                if isinstance(value, int | float):
-                    metrics[f"counts_{key}"] = float(value)
-        timings = metadata.get("timings")
-        if isinstance(timings, dict):
-            for key, value in timings.items():
-                if isinstance(value, int | float):
-                    metrics[f"timings_{key}"] = float(value)
+        for key, value in metadata.counts.model_dump(mode="json").items():
+            if isinstance(value, int | float):
+                metrics[f"counts_{key}"] = float(value)
+        for key, value in metadata.timings.items():
+            if isinstance(value, int | float):
+                metrics[f"timings_{key}"] = float(value)
         log_metrics(metrics)
         return result
 

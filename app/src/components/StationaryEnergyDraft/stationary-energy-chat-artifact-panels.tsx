@@ -4,8 +4,8 @@ import {
   Box,
   Flex,
   HStack,
-  Input,
   Text,
+  Textarea,
   VStack,
   chakra,
 } from "@chakra-ui/react";
@@ -26,6 +26,7 @@ import {
   AgentBubble,
   BulkReviewConfirmationCard,
   InventorySaveConfirmationCard,
+  RetryableErrorPanel,
   StaleDraftPanel,
   StagedReviewUpdateConfirmationCard,
   StationaryEnergyToolSummaryCard,
@@ -84,6 +85,7 @@ type ClimaChatPanelProps = {
     | "decisionState"
     | "draftState"
     | "errorMessage"
+    | "errorRecoveryAction"
     | "focusedProposalId"
     | "hasSourceBackedProposals"
     | "loadingAction"
@@ -172,16 +174,12 @@ function SuggestedQuestions(props: {
   }
   return (
     <Box
-      position="absolute"
-      left={0}
-      right={0}
-      bottom="52px"
-      zIndex={2}
+      w="full"
       px={{ base: 3, md: 6 }}
-      py={2}
-      pointerEvents="none"
+      pt={2}
+      bg="background.backgroundGreyFlat"
     >
-      <Box w="full" maxW="900px" mx="auto" pointerEvents="auto">
+      <Box w="full" maxW="900px" mx="auto">
         <Flex gap={2} flexWrap="wrap">
           {props.questions.map((question) => (
             <chakra.button
@@ -220,6 +218,9 @@ function SuggestedQuestions(props: {
   );
 }
 
+// The composer grows with its content up to this height (px), then scrolls.
+const COMPOSER_MAX_HEIGHT = 160;
+
 export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const params = useParams();
   const lng = getParamValueRequired(params.lng);
@@ -228,7 +229,9 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   const { t: tDrawer } = useTranslation(lng, "data");
   const scrollRegionRef = useRef<HTMLDivElement | null>(null);
   const shouldFollowChatRef = useRef(true);
-  const chatInputRef = useRef<HTMLInputElement | null>(null);
+  const chatInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const previousLoadingActionRef = useRef(state.loadingAction);
+  const lastFocusedMessageIdRef = useRef<string | null>(null);
   const [viewSourceId, setViewSourceId] = useState<string | null>(null);
   const firstPendingDecision =
     state.decisionReviewContext.find(
@@ -250,9 +253,12 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     state.loadingAction !== "chat" &&
     suggestedQuestions.length > 0;
   const { chatInput } = state;
+  const setChatInput = actions.setChatInput;
   const lastChatMessage = state.chatMessages[state.chatMessages.length - 1];
   const lastChatMessageText =
     lastChatMessage?.kind === "text" ? lastChatMessage.text : "";
+  const lastChatMessageIsUser =
+    lastChatMessage?.kind === "text" && lastChatMessage.role === "user";
 
   const handleChatScroll = useCallback(() => {
     const scrollRegion = scrollRegionRef.current;
@@ -267,24 +273,53 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     shouldFollowChatRef.current = distanceFromBottom < 140;
   }, []);
 
+  const focusComposerInput = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      const input = chatInputRef.current;
+      if (!input) {
+        return;
+      }
+      input.focus();
+      const cursorPosition = input.value.length;
+      input.setSelectionRange(cursorPosition, cursorPosition);
+    });
+  }, []);
+
   const focusChatComposer = useCallback(
     (draftQuestion?: string) => {
       if (draftQuestion && !chatInput.trim()) {
-        actions.setChatInput(draftQuestion);
+        setChatInput(draftQuestion);
       }
-
-      window.requestAnimationFrame(() => {
-        const input = chatInputRef.current;
-        if (!input) {
-          return;
-        }
-        input.focus();
-        const cursorPosition = input.value.length;
-        input.setSelectionRange(cursorPosition, cursorPosition);
-      });
+      focusComposerInput();
     },
-    [actions, chatInput],
+    [chatInput, focusComposerInput, setChatInput],
   );
+
+  // Keep the cursor in the composer after a reply finishes streaming, so the
+  // user can keep typing without clicking back in (the input also stays
+  // enabled mid-stream now).
+  useEffect(() => {
+    const previousLoadingAction = previousLoadingActionRef.current;
+    previousLoadingActionRef.current = state.loadingAction;
+    if (previousLoadingAction === "chat" && state.loadingAction !== "chat") {
+      focusComposerInput();
+    }
+  }, [state.loadingAction, focusComposerInput]);
+
+  const adjustComposerHeight = useCallback(() => {
+    const input = chatInputRef.current;
+    if (!input) {
+      return;
+    }
+    input.style.height = "auto";
+    input.style.height = `${Math.min(input.scrollHeight, COMPOSER_MAX_HEIGHT)}px`;
+  }, []);
+
+  // Grow the composer with its content (up to COMPOSER_MAX_HEIGHT) and shrink
+  // it back when the value is cleared after sending.
+  useEffect(() => {
+    adjustComposerHeight();
+  }, [chatInput, adjustComposerHeight]);
 
   const handleAskAboutProposal = useCallback(
     (label: string) => {
@@ -293,17 +328,31 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
     [focusChatComposer, t],
   );
 
+  // Auto-scroll honours reader intent: follow the live edge only while the
+  // reader is already at the bottom, never pull them while they have scrolled
+  // up or are selecting text, and re-pin when they send a message themselves.
   useEffect(() => {
     const scrollRegion = scrollRegionRef.current;
     if (!scrollRegion) {
       return;
     }
 
-    const shouldFollow =
-      shouldFollowChatRef.current ||
-      state.loadingAction === "chat" ||
-      lastChatMessage?.kind === "text";
-    if (!shouldFollow) {
+    if (lastChatMessageIsUser) {
+      shouldFollowChatRef.current = true;
+    }
+
+    if (!shouldFollowChatRef.current) {
+      return;
+    }
+
+    const selection = window.getSelection();
+    const isSelectingInChat = Boolean(
+      selection &&
+      !selection.isCollapsed &&
+      selection.anchorNode &&
+      scrollRegion.contains(selection.anchorNode),
+    );
+    if (isSelectingInChat) {
       return;
     }
 
@@ -324,9 +373,38 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
   }, [
     lastChatMessage?.id,
     lastChatMessage?.kind,
+    lastChatMessageIsUser,
     lastChatMessageText,
     state.chatMessages.length,
     state.loadingAction,
+  ]);
+
+  useEffect(() => {
+    const previousLoadingAction = previousLoadingActionRef.current;
+    previousLoadingActionRef.current = state.loadingAction;
+
+    if (state.showStaleWarning || state.loadingAction === "chat") {
+      return;
+    }
+
+    const chatJustFinished = previousLoadingAction === "chat";
+    const focusableWidgetPresented =
+      lastChatMessage?.kind !== undefined &&
+      lastChatMessage.kind !== "text" &&
+      lastChatMessage.id !== lastFocusedMessageIdRef.current;
+
+    if (!chatJustFinished && !focusableWidgetPresented) {
+      return;
+    }
+
+    lastFocusedMessageIdRef.current = lastChatMessage?.id ?? null;
+    focusChatComposer();
+  }, [
+    focusChatComposer,
+    lastChatMessage?.id,
+    lastChatMessage?.kind,
+    state.loadingAction,
+    state.showStaleWarning,
   ]);
 
   return (
@@ -377,16 +455,15 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
               stage={state.stage}
             />
             {state.errorMessage ? (
-              <Box
-                color="sentiment.negativeDefault"
-                bg="sentiment.negativeOverlay"
-                borderRadius="rounded"
-                px={3}
-                py={2}
-                fontSize="label.md"
-              >
-                {state.errorMessage}
-              </Box>
+              <RetryableErrorPanel
+                message={state.errorMessage}
+                onRetry={
+                  state.errorRecoveryAction === "start_draft"
+                    ? actions.startDraftFromChat
+                    : undefined
+                }
+                retrying={state.loadingAction === "start"}
+              />
             ) : null}
             {state.chatMessages.map((message) => {
               if (message.kind === "decision_review") {
@@ -400,8 +477,13 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                 const resolved = state.resolvedProposalIds.has(
                   context.proposal_id,
                 );
-                const focusRow = () =>
+                // Focus is set only when the user explicitly asks about this
+                // row, so the chat sends the right context — no longer on
+                // hover, which made the overview panel mirror the chat.
+                const askAboutThisRow = (label: string) => {
                   actions.setFocusedProposal(context.proposal_id);
+                  handleAskAboutProposal(label);
+                };
 
                 return (
                   <Box
@@ -410,8 +492,6 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                     maxW={CHAT_SURFACE_MAX_W}
                     alignSelf="center"
                     transform={CHAT_WIDGET_TRANSFORM}
-                    onMouseEnter={focusRow}
-                    onFocus={focusRow}
                   >
                     {resolved ? (
                       <ActionCompletedDecisionCard
@@ -423,8 +503,9 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                         context={context}
                         decision={state.decisionState[context.proposal_id]}
                         resolved={false}
+                        pristine={!resolved}
                         onDecisionChoice={actions.chooseDecision}
-                        onAskAboutProposal={handleAskAboutProposal}
+                        onAskAboutProposal={askAboutThisRow}
                         onViewSource={setViewSourceId}
                       />
                     ) : (
@@ -432,8 +513,9 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
                         context={context}
                         decision={state.decisionState[context.proposal_id]}
                         resolved={false}
+                        pristine={!resolved}
                         onDecisionChoice={actions.chooseDecision}
-                        onAskAboutProposal={handleAskAboutProposal}
+                        onAskAboutProposal={askAboutThisRow}
                         onViewSource={setViewSourceId}
                       />
                     )}
@@ -546,23 +628,41 @@ export function ClimaChatPanel({ actions, state }: ClimaChatPanelProps) {
         bg="background.backgroundGreyFlat"
       >
         <form
-          onSubmit={actions.submitChat}
+          onSubmit={(event) => {
+            shouldFollowChatRef.current = true;
+            actions.submitChat(event);
+          }}
           style={{ width: "100%", maxWidth: "900px", margin: "0 auto" }}
         >
-          <HStack gap={2}>
-            <Input
+          <HStack gap={2} align="flex-end">
+            <Textarea
               ref={chatInputRef}
               value={state.chatInput}
               onChange={(event) => actions.setChatInput(event.target.value)}
+              onKeyDown={(event) => {
+                // Enter sends; Shift+Enter inserts a newline.
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  !event.nativeEvent.isComposing
+                ) {
+                  event.preventDefault();
+                  event.currentTarget.form?.requestSubmit();
+                }
+              }}
               placeholder={
                 state.pendingDecisionCount > 0
                   ? t("chat-panel-placeholder-review")
                   : t("chat-panel-placeholder-default")
               }
+              rows={1}
+              resize="none"
+              minH="44px"
+              maxH={`${COMPOSER_MAX_HEIGHT}px`}
+              overflowY="auto"
               borderRadius="rounded"
               bg="background.backgroundGreyFlat"
               borderColor="border.overlay"
-              disabled={state.loadingAction === "chat"}
             />
             {state.loadingAction === "chat" ? (
               <Button

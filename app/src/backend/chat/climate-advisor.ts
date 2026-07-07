@@ -1,10 +1,11 @@
 import createHttpError from "http-errors";
 
-type TokenResponse = {
-  access_token: string;
-  expires_in: number;
-  token_type: string;
-};
+import {
+  type ClimateAdvisorTokenResponse,
+  joinServiceUrl,
+  readClimateAdvisorTokenResponse,
+  requireServiceEnv,
+} from "@/backend/climate-advisor-connection";
 
 type QueryValue = string | number | boolean | null | undefined;
 
@@ -26,11 +27,7 @@ type ThreadCreateResponse = {
  * Read a required environment variable for CA proxy calls.
  */
 function requireEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new createHttpError.InternalServerError(`${name} is not configured`);
-  }
-  return value;
+  return requireServiceEnv(name);
 }
 
 /**
@@ -82,7 +79,7 @@ function buildClimateAdvisorUrl(
   path: string,
   searchParams?: Record<string, QueryValue>,
 ): string {
-  const url = new URL(path, requireEnv("CA_BASE_URL"));
+  const url = new URL(joinServiceUrl(requireEnv("CA_BASE_URL"), path));
 
   for (const [key, value] of Object.entries(searchParams ?? {})) {
     if (value === null || value === undefined || value === "") {
@@ -100,22 +97,25 @@ function buildClimateAdvisorUrl(
 export async function issueClimateAdvisorUserToken(params: {
   userId: string;
   inventoryId?: string;
-}): Promise<TokenResponse> {
+}): Promise<ClimateAdvisorTokenResponse> {
   const serviceKey = requireEnv("CC_SERVICE_API_KEY");
   const host = requireEnv("HOST");
   let response: Response;
   try {
-    response = await fetch(`${host}/api/v1/internal/ca/user-token/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CA-Service-Key": serviceKey,
+    response = await fetch(
+      joinServiceUrl(host, "/api/v1/internal/ca/user-token/"),
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CA-Service-Key": serviceKey,
+        },
+        body: JSON.stringify({
+          user_id: params.userId,
+          inventory_id: params.inventoryId,
+        }),
       },
-      body: JSON.stringify({
-        user_id: params.userId,
-        inventory_id: params.inventoryId,
-      }),
-    });
+    );
   } catch (error) {
     throw new createHttpError.BadGateway(
       error instanceof Error
@@ -133,7 +133,7 @@ export async function issueClimateAdvisorUserToken(params: {
     );
   }
 
-  return response.json();
+  return readClimateAdvisorTokenResponse(response);
 }
 
 /**

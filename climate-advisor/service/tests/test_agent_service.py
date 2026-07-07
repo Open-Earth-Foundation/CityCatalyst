@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import asyncio
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 import unittest
 from uuid import uuid4
 
@@ -34,6 +34,7 @@ def build_mock_settings(
     """Create a reusable SimpleNamespace matching AgentService expectations."""
     prompts = MagicMock()
     prompts.get_prompt = MagicMock(return_value=prompt)
+    prompts.compose_prompt = MagicMock(return_value=prompt)
 
     llm_api = SimpleNamespace(
         openrouter=SimpleNamespace(
@@ -389,6 +390,7 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     call_kwargs = mock_agent_class.call_args[1]
                     # System prompt should be included
                     self.assertIsNotNone(call_kwargs.get("instructions"))
+                    mock_settings.llm.prompts.compose_prompt.assert_any_call("chat")
 
     async def test_create_agent_includes_tools(self) -> None:
         """Test agent creation includes configured tools."""
@@ -421,6 +423,7 @@ class SystemPromptLoadingTests(unittest.TestCase):
             self.assertEqual(
                 service.system_prompt, "You are a helpful climate advisor."
             )
+            mock_settings.llm.prompts.compose_prompt.assert_any_call("chat")
 
     @patch("app.services.agent_service.get_settings")
     def test_temperature_from_config(self, mock_get_settings) -> None:
@@ -468,6 +471,37 @@ class InventoryToolIntegrationTests(unittest.TestCase):
             self.assertEqual(service._token_ref["value"], "refreshed-token")
 
     @patch("app.services.agent_service.get_settings")
+    def test_create_agent_does_not_fetch_inventory_for_general_chat(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test general chat no longer preloads active inventory prompt context."""
+        mock_settings = build_mock_settings()
+        mock_get_settings.return_value = mock_settings
+        inventory_tool = MagicMock()
+        inventory_tool.fetch_inventory = AsyncMock()
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.CCInventoryTool",
+            return_value=inventory_tool,
+        ), patch(
+            "app.services.agent_service.build_cc_datasource_tools",
+            return_value=([], {"value": "jwt-token"}),
+        ), patch(
+            "app.services.agent_service.build_inventory_capability_tools",
+            return_value=[],
+        ), patch("app.services.agent_service.Agent"):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+            )
+
+            asyncio.run(service.create_agent())
+
+        inventory_tool.fetch_inventory.assert_not_awaited()
+
+    @patch("app.services.agent_service.get_settings")
     def test_stationary_energy_tools_registered_only_with_draft_context(
         self,
         mock_get_settings,
@@ -482,6 +516,8 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 cc_access_token="jwt-token",
                 cc_thread_id=uuid4(),
                 cc_user_id="user-123",
+                city_id="city-123",
+                inventory_id="inventory-123",
                 session_factory=MagicMock(),
                 stationary_energy_draft_run_id=uuid4(),
             )
@@ -492,31 +528,31 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 getattr(tool, "name", "")
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
-            self.assertIn("stationary_energy_accept_one", tool_names)
-            self.assertIn("stationary_energy_accept_multiple", tool_names)
-            self.assertIn("stationary_energy_accept_all_recommended", tool_names)
-            self.assertIn(
-                "stationary_energy_request_bulk_review_confirmation",
-                tool_names,
+            self.assertEqual(
+                set(tool_names),
+                {
+                    "inventory_status_overview",
+                    "inventory_emissions_context",
+                    "stationary_energy_list_review_options",
+                    "stationary_energy_accept_one",
+                    "stationary_energy_accept_multiple",
+                    "stationary_energy_accept_all_recommended",
+                    "stationary_energy_request_bulk_review_confirmation",
+                    "stationary_energy_request_all_recommended_confirmation",
+                    "stationary_energy_request_staged_source_change_confirmation",
+                    "stationary_energy_request_staged_sources_rollback_confirmation",
+                    "stationary_energy_rollback_staged_sources",
+                    "stationary_energy_save_review_draft",
+                    "stationary_energy_request_inventory_save_confirmation",
+                },
             )
-            self.assertIn(
-                "stationary_energy_request_all_recommended_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_staged_source_change_confirmation",
-                tool_names,
-            )
-            self.assertIn(
-                "stationary_energy_request_staged_sources_rollback_confirmation",
-                tool_names,
-            )
-            self.assertIn("stationary_energy_rollback_staged_sources", tool_names)
-            self.assertIn("stationary_energy_save_review_draft", tool_names)
-            self.assertIn(
-                "stationary_energy_request_inventory_save_confirmation",
-                tool_names,
-            )
+            self.assertNotIn("inventory_list_accessible", tool_names)
+            self.assertNotIn("stationary_energy_start_draft", tool_names)
+            self.assertNotIn("get_user_inventories", tool_names)
+            self.assertNotIn("get_inventory", tool_names)
+            self.assertNotIn("get_all_datasources", tool_names)
+            self.assertNotIn("city_inventory_search", tool_names)
+            self.assertNotIn("climate_vector_search", tool_names)
 
         with patch("app.services.agent_service.AsyncOpenAI"), patch(
             "app.services.agent_service.Agent"
@@ -534,17 +570,89 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 getattr(tool, "name", "")
                 for tool in mock_agent_class.call_args.kwargs["tools"]
             ]
+            self.assertIn("inventory_list_accessible", tool_names)
+            self.assertIn("inventory_status_overview", tool_names)
+            self.assertIn("inventory_emissions_context", tool_names)
+            self.assertIn("get_all_datasources", tool_names)
+            self.assertIn("climate_vector_search", tool_names)
+            self.assertNotIn("get_user_inventories", tool_names)
+            self.assertNotIn("city_inventory_search", tool_names)
+            self.assertNotIn("get_inventory", tool_names)
             self.assertNotIn("stationary_energy_accept_one", tool_names)
 
     @patch("app.services.agent_service.get_settings")
-    def test_stationary_energy_review_prompt_loaded_from_prompt_config(
+    def test_stationary_energy_start_draft_registered_only_before_draft_exists(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test start-draft is available only for the pre-draft SE surface."""
+        mock_settings = build_mock_settings(prompt="Base prompt")
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                city_id="city-123",
+                inventory_id="inventory-123",
+                session_factory=MagicMock(),
+                stationary_energy_surface=True,
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            instructions = mock_agent_class.call_args.kwargs["instructions"]
+            start_draft_tool = next(
+                tool
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+                if getattr(tool, "name", "") == "stationary_energy_start_draft"
+            )
+            self.assertIn("stationary_energy_start_draft", tool_names)
+            self.assertEqual(instructions, "Base prompt")
+            self.assertIn(
+                "pre-draft Stationary Energy surface",
+                start_draft_tool.description,
+            )
+            self.assertIn("no arguments", start_draft_tool.description)
+
+        with patch("app.services.agent_service.AsyncOpenAI"), patch(
+            "app.services.agent_service.Agent"
+        ) as mock_agent_class:
+            service = AgentService(
+                cc_thread_id=uuid4(),
+                cc_user_id="user-123",
+                city_id="city-123",
+                inventory_id="inventory-123",
+                session_factory=MagicMock(),
+                stationary_energy_surface=True,
+                stationary_energy_draft_run_id=uuid4(),
+            )
+
+            asyncio.run(service.create_agent())
+
+            tool_names = [
+                getattr(tool, "name", "")
+                for tool in mock_agent_class.call_args.kwargs["tools"]
+            ]
+            self.assertNotIn("stationary_energy_start_draft", tool_names)
+
+    @patch("app.services.agent_service.get_settings")
+    def test_stationary_energy_review_prompt_uses_composed_workflow_prompt(
         self,
         mock_get_settings,
     ) -> None:
         mock_settings = build_mock_settings(prompt="Base prompt")
-        mock_settings.llm.prompts.get_prompt.side_effect = lambda prompt_type: {
-            "default": "Base prompt",
-            "stationary_energy_review": "Stationary Energy review prompt with tools section",
+        mock_settings.llm.prompts.compose_prompt.side_effect = lambda prompt_type: {
+            "chat": "Composed chat prompt",
+            "stationary_energy_review": (
+                "Composed Stationary Energy review prompt with tools section"
+            ),
         }[prompt_type]
         mock_get_settings.return_value = mock_settings
 
@@ -561,15 +669,15 @@ class InventoryToolIntegrationTests(unittest.TestCase):
 
             asyncio.run(service.create_agent())
 
-            mock_settings.llm.prompts.get_prompt.assert_any_call(
+            mock_settings.llm.prompts.compose_prompt.assert_any_call(
                 "stationary_energy_review"
             )
             instructions = mock_agent_class.call_args.kwargs["instructions"]
-            self.assertIn("Base prompt", instructions)
             self.assertIn(
-                "Stationary Energy review prompt with tools section",
+                "Composed Stationary Energy review prompt with tools section",
                 instructions,
             )
+            mock_settings.llm.prompts.get_prompt.assert_not_called()
 
 
 if __name__ == "__main__":

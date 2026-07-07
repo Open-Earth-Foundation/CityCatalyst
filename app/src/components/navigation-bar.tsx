@@ -394,7 +394,7 @@ export function NavigationBar({
                           paddingTop="12px"
                           paddingBottom="12px"
                           px="16px"
-                          onClick={() => router.push(`/admin`)}
+                          onClick={() => router.push(`/${lng}/admin`)}
                         >
                           <Box display="flex" alignItems="center">
                             {" "}
@@ -416,7 +416,7 @@ export function NavigationBar({
                           paddingTop="12px"
                           paddingBottom="12px"
                           px="16px"
-                          onClick={() => router.push(`/admin/cities`)}
+                          onClick={() => router.push(`/${lng}/admin/cities`)}
                         >
                           <Box display="flex" alignItems="center">
                             <Icon
@@ -476,7 +476,7 @@ export function NavigationBar({
                           px="16px"
                           onClick={() => {
                             router.push(
-                              `/organization/${userAccessStatus.organizationId}/account-settings`,
+                              `/${lng}/organization/${userAccessStatus.organizationId}/account-settings`,
                             );
                           }}
                         >

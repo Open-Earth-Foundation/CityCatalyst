@@ -79,6 +79,7 @@
   "region-or-province-population-placeholder": "Region or province population number",
   "invite-collaborators-heading": "Invite collaborators to your team",
   "invite-collaborators-description": "Admins will be able to add, edit and delete any inventory. Collaborators will be able to only edit inventories.",
+  "email": "Email",
   "invite-collaborators-email-placeholder": "Enter email to add members.",
   "invite-collaborators-select-cities": "Select cities",
   "invite-collaborators-all-cities": "All cities",

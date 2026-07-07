@@ -183,5 +183,7 @@
     }
   },
   "history": "History",
-  "last-update": "Last update"
+  "last-update": "Last update",
+  "view-more": "VIEW MORE",
+  "view-less": "VIEW LESS"
 }

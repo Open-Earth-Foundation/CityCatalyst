@@ -305,5 +305,11 @@
   "legend": "Leyenda",
   "citycatalyst": "CityCatalyst",
   "breadcrumb-hiap": "Actions & Plans",
-  "start-here": "Empieza aquí"
+  "start-here": "Empieza aquí",
+  "inventory-versions-action-change": "{{name}} cambió la acción {{actionName}} a rango {{rank}} y {{selectionStatus}}",
+  "inventory-versions-action-deleted": "{{name}} eliminó la acción {{actionName}}",
+  "selected": "seleccionado",
+  "unselected": "no seleccionado",
+  "name": "Nombre",
+  "rank": "Rango"
 }

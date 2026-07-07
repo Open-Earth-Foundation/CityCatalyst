@@ -31,8 +31,8 @@ data and configuration, not by rebuilding the workflow.
 In scope:
 
 - A Climate Advisor workflow for concept-note runs.
-- A document workspace that supports structured chapters, citations, revisions,
-  gaps, and export.
+- A document workspace that supports structured chapters, evidence review,
+  revisions, gaps, and export.
 - Funding reference tables for funders, funder criteria, templates, and similar
   funded projects in the datateam managed CNB database.
 - A curated research ingest pipeline for funder profiles and funded-project
@@ -130,7 +130,7 @@ The first part of the workflow is context bundle building. The
 
 The agent and document workspace then use that context bundle to:
 
-- Draft document chapters with evidence links.
+- Draft document chapters and show evidence links for user review.
 - Ask only for the identified decisions or missing facts.
 - Let the user edit, add, delete, restore, and reorder chapters.
 - Export DOCX and PDF documents plus a reusable context bundle.
@@ -161,7 +161,7 @@ flowchart LR
 | Chat threads and messages | Climate Advisor | Existing CA conversation model. |
 | Concept-note run state | datateam managed CNB database | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
 | Context bundle snapshot | datateam managed CNB database | Reusable run input/output for this workflow. |
-| Uploaded file references and selected source context | datateam managed CNB database | Needed for mid-flow ingestion, citations, and export. |
+| Uploaded file references and selected source context | datateam managed CNB database | Needed for mid-flow ingestion, evidence review, and export. |
 | Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
 | Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
 | Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
@@ -182,8 +182,8 @@ through stable contracts:
 - typed reference-data clients for funder, funding-opportunity, pipeline, and
   funded-project data
 - stable file references for uploads and exports
-- source labels/locations and evidence link records for citations and audit
-  trails
+- source labels/locations and evidence link records for workspace review and
+  audit trails
 
 The diagrams below describe the logical storage shape the workflow needs. They
 are contract requirements for integration, not a decision that the Climate
@@ -227,8 +227,8 @@ flowchart TB
 | `editing_document` | selected chapter/revision | document edit tools |
 
 Export is not a workflow step for the LLM. It is a document workspace button
-that calls export preflight and generation routes against the current chapters,
-template, evidence links, and source manifest.
+that calls export preflight and generation routes against the current chapters
+and template.
 
 ## Context Bundle
 
@@ -244,7 +244,7 @@ flowchart TB
     Bundle --> Sources["selected_sources<br/>grounded excerpts,<br/>source locations"]
     Bundle --> Funder["funder_context<br/>template, rubric, eligibility,<br/>scoring criteria"]
     Bundle --> Examples["similar_projects<br/>project summaries,<br/>award evidence, fit reasons"]
-    Bundle --> Draft["document_context<br/>chapters, gaps, citations"]
+    Bundle --> Draft["document_context<br/>chapters, gaps"]
 ```
 
 Recommended high-level shape:
@@ -282,8 +282,7 @@ Recommended high-level shape:
   ],
   "document_context": {
     "chapters": [],
-    "gaps": [],
-    "citations": []
+    "gaps": []
   }
 }
 ```
@@ -434,19 +433,18 @@ erDiagram
         string file_type
         string file_ref
         string status
-        jsonb source_manifest
     }
 ```
 
 ### Evidence Links
 
-`concept_note_evidence_links` are citation records. They connect a claim in a
-specific chapter revision to the selected source context that supports it.
+`concept_note_evidence_links` are workspace review records. They connect a claim
+in a specific chapter revision to the selected source context that supports it.
 
 They do not store source documents or converter chunks. The supporting context
 lives in the context bundle, and the evidence link records the user-facing source
-label, source location, claim reference, and quote or summary needed for review
-and export.
+label, source location, claim reference, and quote or summary needed for user
+review.
 
 Example: if a chapter says the project targets the city's largest emissions
 sector, an evidence link can point that claim to a GHGI summary, an uploaded CAP
@@ -713,29 +711,46 @@ convert uploaded PDFs to markdown.
 ## Document Workspace
 
 The document workspace is the product surface where the concept note takes
-shape. It is not just a generated blob. It is a structured, editable document
-with chapters, revisions, citations, and gaps.
+shape. It is not just a generated blob. It is a structured editor for chapter
+text, revision history, missing facts, and evidence review. The final DOCX/PDF
+export is generated from the chapter text and template structure only.
 
 ```mermaid
 flowchart TB
     Template["Funder template"] --> ChapterPlan["Chapter plan"]
     ChapterPlan --> DocService["DocumentWorkspaceService"]
-    Context["Context bundle<br/>CC context, criteria,<br/>funded projects, uploads"] --> DocService
-    DocService --> DraftTools["Draft chapter tools"]
-    DraftTools --> Chapters["Chapters"]
-    UserEdits["User edits"] --> DocService
-    AgentEdits["Agent suggestions"] --> DocService
-    DocService --> Revisions["Chapter revisions"]
-    Chapters --> Revisions
-    Sources["Evidence sources"] --> Citations["Evidence links"]
-    Revisions --> Citations
-    DocService --> Gaps["Missing facts"]
-    Gaps --> Chapters
-    Chapters --> Exporter["DOCX/PDF exporter"]
-    Citations --> Exporter
+    Context["Context bundle<br/>CC context, criteria,<br/>funded projects, selected sources"] --> DocService
+    User["User"] --> Workspace["Document workspace UI"]
+    Workspace --> UserEdits["Add/delete/reorder/edit text"]
+    UserEdits --> DocService
+    DocService --> Chapters["Editable chapters<br/>current text"]
+    DocService --> Revisions["Revision history<br/>add, delete, restore, edit"]
+    Revisions --> Chapters
+    DocService --> Gaps["Missing facts / gaps"]
+    Gaps --> Workspace
+    Workspace --> UserAnswers["User answers<br/>or marks unavailable"]
+    UserAnswers --> DocService
+    Context --> EvidenceLinks["Evidence links<br/>claim -> selected source"]
+    Chapters --> EvidenceLinks
+    EvidenceLinks --> Workspace
+    Chapters --> Exporter["DOCX/PDF export<br/>chapter text only"]
 ```
 
-Chapter fields:
+How it works:
+
+- The selected funder template creates the chapter plan and initial empty
+  chapters.
+- The context bundle supplies drafting context: CC facts, funder criteria,
+  matched project examples, and selected source excerpts.
+- The workspace shows editable chapters as the main document surface.
+- Every add, delete, restore, reorder, or text edit creates a chapter revision.
+  Revisions are an audit/history trail; they do not feed evidence links.
+- Missing facts are stored as gaps and surfaced to the user in the workspace.
+  They do not create chapters by themselves.
+- Evidence links are shown to the user to explain why a claim was grounded.
+  They are review/audit UI only and are ignored by DOCX/PDF export.
+
+Chapter fields should support the editable document surface:
 
 - `chapter_id`
 - `run_id`
@@ -747,17 +762,16 @@ Chapter fields:
 - `required`
 - `user_locked`
 - `deleted`
-- `evidence_links`
 - `latest_revision_id`
 
-Revision fields:
+Revision fields should support history and conflict handling:
 
 - `revision_id`
 - `chapter_id`
 - `revision_number`
 - `author_type`: `agent`, `user`, `system`
 - `change_type`: `draft`, `edit_text`, `add_chapter`, `delete_chapter`,
-  `restore_chapter`, `rewrite`, `citation_update`
+  `restore_chapter`, `rewrite`
 - `body_markdown`
 - `patch_summary`
 - `created_at`
@@ -1024,8 +1038,8 @@ Output:
 
 ### `document_get_chapter`
 
-Returns one chapter with current text, revision metadata, citations, gaps, and
-template requirements.
+Returns one chapter with current text, revision metadata, evidence review state,
+gaps, and template requirements.
 
 ### `document_add_chapter`
 
@@ -1109,7 +1123,7 @@ Rules:
 
 - Use soft delete only. Do not hard-delete chapter rows.
 - Create a revision with `change_type=delete_chapter`.
-- Preserve previous text and evidence links for restore.
+- Preserve previous text for restore.
 - Re-number visible chapters transactionally.
 - If the chapter is required by the funder template, do not delete silently.
   Instead mark it as `deleted=true` and create or update a gap explaining why a
@@ -1124,7 +1138,7 @@ Confirmation:
 
 - Required for non-empty chapters.
 - Required for required template chapters.
-- Required for chapters with citations or user edits.
+- Required for chapters with user edits.
 
 ### `document_restore_chapter`
 
@@ -1179,13 +1193,13 @@ Rules:
 - Always creates a new revision.
 - Never mutates old revision rows.
 - Supports full replacement, patch replacement, append, and selected rewrite.
-- Maintains evidence links where possible.
+- Maintains evidence review state where possible.
 - If a patch cannot be applied cleanly, return a structured conflict and ask
   the user to confirm the current chapter text.
 - If the chapter is `user_locked`, the agent may propose an edit but cannot
   apply it without explicit user confirmation.
-- If an edit removes cited claims, mark affected citations as stale and surface
-  them in the UI.
+- If an edit changes text connected to an evidence link, mark that evidence link
+  as stale and surface it in the UI.
 - If an edit adds factual claims without evidence, create a gap or require the
   agent to attach evidence.
 
@@ -1198,7 +1212,7 @@ Confirmation:
 
 - Not required for direct user edits.
 - Required for agent edits to user-locked text.
-- Required for edits that remove citations, budget numbers, partners, or named
+- Required for edits that remove budget numbers, partners, or named
   commitments.
 
 ### `document_reorder_chapter`
@@ -1221,7 +1235,8 @@ Rules:
 - Evidence links should point to the selected source label and source location
   from the context bundle.
 - Each link should include a claim reference or text range where possible.
-- The export source manifest should derive from these links.
+- Evidence links are shown in the workspace for review and audit only. They are
+  not included in DOCX/PDF export.
 
 ### `document_flag_gap`
 
@@ -1236,8 +1251,7 @@ Examples:
 
 ### `document_mark_chapter_ready`
 
-Marks a chapter ready after required fields, citations, and user review are
-complete.
+Marks a chapter ready after required fields and user review are complete.
 
 Rules:
 
@@ -1266,9 +1280,9 @@ sequenceDiagram
     UI->>CA: Chat message
     CA->>Agent: Scoped editing tool pack
     Agent->>Doc: document_get_chapter
-    Doc-->>Agent: Chapter, citations, gaps
+    Doc-->>Agent: Chapter, evidence review state, gaps
     Agent->>Doc: document_edit_chapter_text(author=agent)
-    Doc->>DB: Insert revision and stale citation markers
+    Doc->>DB: Insert revision
     Agent-->>CA: Summary of change
     CA-->>UI: SSE document_chapter_updated + assistant message
 ```
@@ -1284,7 +1298,7 @@ sequenceDiagram
     participant DB as CNB storage
 
     Agent->>Doc: Request delete chapter
-    Doc->>Doc: Check required, non-empty, citations, user edits
+    Doc->>Doc: Check required, non-empty, user edits
     alt confirmation required
         Doc-->>UI: tool_result document_delete_confirmation_requested
         UI->>User: Show impact summary
@@ -1343,7 +1357,7 @@ Prompt composition should follow the current CA pattern:
 - General chat keeps using the default prompt.
 - Active CNB runs use `concept_note_builder` as the workflow prompt.
 - Runtime context injection is separate from prompt-file composition.
-- The prompt should describe chapter editing rules, citation rules, and
+- The prompt should describe chapter editing rules, evidence-review rules, and
   no-fabrication guardrails.
 
 CNB context should be injected as a bounded JSON block:
@@ -1371,7 +1385,7 @@ The UI needs typed events for chat and document state.
 | `document_chapter_restored` | Chapter restored. |
 | `document_chapter_updated` | New revision created. |
 | `document_gap_added` | Gap or blocker added. |
-| `document_evidence_linked` | Citation/evidence link added. |
+| `document_evidence_linked` | Evidence review link added. |
 | `document_delete_confirmation_requested` | UI must confirm delete. |
 | `document_edit_confirmation_requested` | UI must confirm sensitive edit. |
 | `concept_note_export_ready` | DOCX or PDF export created. |
@@ -1381,26 +1395,29 @@ The UI needs typed events for chat and document state.
 
 ```mermaid
 flowchart LR
-    Preflight["Export preflight"] --> Check["Check required chapters,<br/>gaps, citations,<br/>template order"]
-    Check -->|pass| Render["Render document model"]
+    Preflight["Export preflight"] --> Check["Check required chapters,<br/>gaps,<br/>template order"]
+    Check -->|pass| Render["Render chapter text"]
     Check -->|warnings| Confirm["User confirms warnings"]
     Confirm --> Render
     Render --> Docx["Generate DOCX"]
     Render --> Pdf["Generate PDF"]
     Docx --> Store["Store file"]
     Pdf --> Store
-    Store --> Manifest["Source manifest"]
-    Manifest --> Result["Export result"]
+    Store --> Result["Export result"]
 ```
 
 Export preflight should check:
 
 - Required chapters present or intentionally skipped.
 - Critical gaps resolved.
-- Budget, partners, match funding, and commitments are sourced or user-confirmed.
+- Budget, partners, match funding, and commitments are confirmed or intentionally
+  left blank.
 - Custom chapters are allowed by the export mode.
-- Citations have source labels and source locations from the context bundle.
 - Deleted required chapters are represented in a preflight warning.
+
+Export should not include evidence links, source labels, source locations,
+source manifests, inline citations, or endnotes. Those are workspace review
+features only.
 
 ## Planned Routes
 
@@ -1536,14 +1553,14 @@ Minimum test surface:
 - Add upload registration.
 - Use the supporting PDF converter repository for PDF-to-markdown conversion.
 - Attach converted source context to the context bundle.
-- Enable mid-flow upload ingestion and source-linked drafting through the document workspace.
+- Enable mid-flow upload ingestion and evidence review through the document workspace.
 
 ### Phase 5: Export
 
 - Add export preflight.
 - Add DOCX export generation.
 - Add PDF export generation.
-- Store export file refs and source manifest.
+- Store export file refs.
 - Add retry and failure reporting.
 
 ## Open Questions
@@ -1555,5 +1572,3 @@ Minimum test surface:
   appendices/internal notes?
 - What source license rules apply to the Minnesota funded-project corpus?
 - Which matching weights are NLC-approved hard gates versus soft signals?
-- Should the export include inline citations, endnotes, or a separate source
-  manifest only?

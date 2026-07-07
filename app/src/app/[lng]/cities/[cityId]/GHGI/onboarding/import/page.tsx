@@ -1,8 +1,8 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
-import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
+import { MdArrowBack, MdArrowForward, MdWarning } from "react-icons/md";
+import { Box, HStack, Icon, Text, useSteps } from "@chakra-ui/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import React, { use, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -246,6 +246,18 @@ export default function ImportPage(props: {
   const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
     skip: !inventoryId,
   });
+  const { data: inventoryProgress } = api.useGetInventoryProgressQuery(
+    inventoryId ?? "",
+    { skip: !inventoryId },
+  );
+
+  // Check if the inventory already contains data (any InventoryValue records)
+  const inventoryHasData = useMemo(() => {
+    if (!inventoryProgress?.totalProgress) return false;
+    const { thirdParty, uploaded, reasonNE, reasonNO } =
+      inventoryProgress.totalProgress;
+    return thirdParty + uploaded + reasonNE + reasonNO > 0;
+  }, [inventoryProgress]);
 
   const canContinueMapping = useMemo(() => {
     const cols = mappingStepData?.columnMappings?.columns ?? [];
@@ -661,11 +673,35 @@ export default function ImportPage(props: {
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
                   <Box w="full" display="flex" flexDirection="column" gap="24px">
+                    {inventoryHasData && (
+                      <HStack
+                        gap={3}
+                        px={4}
+                        py={3}
+                        bg="orange.50"
+                        border="1px solid"
+                        borderColor="orange.200"
+                        borderRadius="md"
+                        align="flex-start"
+                      >
+                        <Icon as={MdWarning} boxSize={5} color="orange.500" mt="2px" />
+                        <Box>
+                          <Text fontWeight="semibold" color="orange.800" fontSize="sm">
+                            {t("inventory-already-has-data-title")}
+                          </Text>
+                          <Text color="orange.700" fontSize="sm" mt={1}>
+                            {t("inventory-already-has-data-description", {
+                              year: inventoryYear,
+                            })}
+                          </Text>
+                        </Box>
+                      </HStack>
+                    )}
                     <UploadFileStep
                       t={t}
                       cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
-                      onFileUpload={handleFileUpload}
+                      onFileUpload={inventoryHasData ? () => {} : handleFileUpload}
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
@@ -851,6 +887,7 @@ export default function ImportPage(props: {
                   }
                   h="64px"
                   disabled={
+                    inventoryHasData ||
                     !uploadedFile ||
                     !importedFileId ||
                     (pdfPendingExtraction && (isExtracting || isExtractInProgress)) ||

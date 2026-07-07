@@ -203,11 +203,38 @@ def run(
             "ownership_score": (
                 assessment.ownership_score if assessment is not None else None
             ),
+            "ownership_description": (
+                assessment.ownership_description if assessment is not None else None
+            ),
+            "ownership_description_es": (
+                assessment.ownership_description_i18n.get("es")
+                if assessment is not None
+                else None
+            ),
             "restrictions_category": (
                 assessment.restrictions_category if assessment is not None else None
             ),
             "restrictions_score": (
                 assessment.restrictions_score if assessment is not None else None
+            ),
+            "restrictions_description": (
+                assessment.restrictions_description if assessment is not None else None
+            ),
+            "restrictions_description_es": (
+                assessment.restrictions_description_i18n.get("es")
+                if assessment is not None
+                else None
+            ),
+            "legal_justification": (
+                assessment.legal_justification_i18n.get("es")
+                or assessment.legal_justification
+                if assessment is not None
+                else None
+            ),
+            "legal_justification_en": (
+                assessment.legal_justification_i18n.get("en")
+                if assessment is not None
+                else None
             ),
             "legal_analysis_date": (
                 assessment.analysis_date if assessment is not None else None

@@ -302,6 +302,7 @@
   "date": "Date",
   "no-history": "No version history entries found.",
   "not-specified": "Not specified",
+  "manually-added-data": "Manually added",
   "subcategory": "Sub-category",
   "inventory-versions-restore-failed": "Failed to restore version",
   "legend": "Legend",

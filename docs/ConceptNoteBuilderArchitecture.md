@@ -229,47 +229,6 @@ Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters,
 template, evidence links, and source manifest.
 
-## Runtime Request Flow
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant CCUI as CityCatalyst UI
-    participant CCBridge as CC CNB bridge
-    participant CA as CA CNB routes
-    participant Resolver as Step resolver
-    participant Registry as CNB capability registry
-    participant Context as ContextBundleService
-    participant Agent as CNB agent
-    participant Doc as DocumentWorkspaceService
-    participant Research as Standalone DB
-    participant CC as CC capabilities
-    participant DB as CNB storage
-
-    User->>CCUI: Open Concept Note Builder
-    CCUI->>CCBridge: Start or resume run
-    CCBridge->>CA: POST /v1/concept-notes/start
-    CA->>DB: Create or load concept_note_run
-    CA->>Resolver: Resolve step and scope
-    Resolver->>Registry: Get capabilities for step
-    Registry-->>Resolver: Tool definitions
-    CA->>DB: When uploads exist, read deterministic source inventory
-    CA->>Research: Load selected funder profile/rubric/template
-    CA->>Research: Match comparable funded projects
-    Resolver->>Context: Build context bundle from prepared inputs
-    Context->>CC: Load city/project/GHGI/CCRA/HIAP summaries
-    Context->>DB: Select source excerpts from inventory
-    Context->>Research: Attach funder criteria and matches
-    Context->>DB: Store context bundle snapshot
-    CA->>Agent: Create scoped agent with context and tools
-    User->>CCUI: Send message or edit document
-    CCUI->>CA: POST /v1/messages with concept_note_run_id
-    Agent->>Doc: Read or mutate draft chapters
-    Doc->>DB: Persist chapter revisions
-    Agent-->>CA: Response and tool_result events
-    CA-->>CCUI: SSE stream
-```
-
 ## Context Bundle
 
 The context bundle is built for the active project and selected funder. Project

@@ -212,5 +212,12 @@
   "token-deleted-success": "Token erfolgreich gelöscht",
   "token-delete-error": "Token konnte nicht gelöscht werden",
   "copied-to-clipboard": "In die Zwischenablage kopiert",
-  "green_theme": "Grün"
+  "green_theme": "Grün",
+  "select-theme": "Thema auswählen...",
+  "numerical-formats": "Numerische Formate",
+  "numerical-formats-required": "Numerische Formate sind erforderlich",
+  "comma-and-dot": "Komma und Punkt (z.B.: 1.000.000,50)",
+  "dot-and-comma": "Punkt und Komma (z.B.: 1.000.000,50)",
+  "space-and-comma": "Leerzeichen und Komma (z.B.: 1 000 000,50)",
+  "apostrophe-and-dot": "Apostroph und Punkt (z.B.: 1’000’000.50)"
 }

@@ -183,5 +183,6 @@
   "selection-update-failed": "Aktualisierung der Auswahl fehlgeschlagen",
   "other-available-actions": "Andere verfügbare Aktionen",
   "other-available-actions-description": "Unten sind zusätzliche Klimaschutzmaßnahmen für Ihre Stadt aufgeführt, die nicht in der Top-Rangliste enthalten waren. Diese Maßnahmen können je nach den spezifischen Prioritäten und dem Kontext Ihrer Stadt immer noch relevant sein.",
-  "last-update": "Letztes Update"
+  "last-update": "Letztes Update",
+  "history": "Geschichte"
 }

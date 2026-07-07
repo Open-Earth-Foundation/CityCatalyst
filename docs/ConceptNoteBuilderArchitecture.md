@@ -221,7 +221,7 @@ flowchart TB
 | `ingesting_user_files` | uploaded file refs, deterministic converter status, candidate source excerpts | deterministic document ingest tools; no LLM |
 | `profiling_funder` | selected funder, template, criteria | CNB reference table tools |
 | `matching_examples` | project profile, funder profile, project KB filters | matching tools |
-| `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | context bundle tools |
+| `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | internal `ContextBundleService`; no agent tools |
 | `interviewing` | gaps, known facts, required template fields | interview tools, document read tools |
 | `drafting_document` | chapter plan, evidence map, examples | chapter draft tools, evidence tools |
 | `editing_document` | selected chapter/revision | document edit tools |
@@ -788,7 +788,6 @@ preflight and generation routes.
 | Group | Purpose | Writes CNB storage | Calls CC | Calls CNB reference tables |
 | --- | --- | --- | --- | --- |
 | Workflow tools | start, resume, retry | yes | no | no |
-| Context tools | load CC summary, load bundle | yes | yes | yes |
 | Ingest tools | convert uploads, prepare candidate source excerpts | yes | no | no |
 | Reference tools | funder profile, template, criteria | no | no | yes |
 | Matching tools | find and explain similar projects | yes | no | yes |
@@ -851,11 +850,11 @@ Always-on context should include:
 This is crucial because the agent should never need to ask a tool what state the
 workflow is in before deciding what to do next.
 
-### Context Tools
+### Context Bundle Build Responsibilities
 
-#### `concept_note_load_cc_context`
-
-Loads bounded CityCatalyst data for the selected city/project.
+Context bundle building is not an agent tool group. During `assembling_context`,
+`ContextBundleService` should assemble the bundle before the agent turn and
+inject it as always-on context.
 
 Context loaded:
 
@@ -865,25 +864,23 @@ Context loaded:
 - CCRA risk summary if available.
 - HIAP actions/status if available.
 - Module availability and known missing pieces.
+- Selected source excerpts from uploads.
+- Funder rubric/template and selected opportunity criteria.
+- LLM-selected similar funded projects, rationale, evidence, and caveats.
+- Known gaps that must be surfaced to the user.
 
 Rules:
 
 - Uses current CC-CA capability architecture.
 - Returns summarized payloads, not raw route dumps.
-- Stores a context snapshot in CA for reproducibility.
+- Stores the context bundle snapshot in the datateam managed CNB database for
+  reproducibility.
+- Updates the bundle through workflow orchestration when uploads, funder profile,
+  similar projects, or user-confirmed facts change.
+- Does not register CC context loading or context bundle updates as
+  agent-callable tools.
 
-#### `concept_note_update_context_bundle`
-
-Adds or replaces a context source in the run bundle.
-
-Use cases:
-
-- User uploaded a CAP.
-- Funder profile changed.
-- Similar projects were refreshed.
-- User confirmed a fact in chat.
-
-### Research Tools
+### Reference Tools
 
 #### `funder_get_profile`
 
@@ -1327,13 +1324,11 @@ sequenceDiagram
 ```mermaid
 flowchart TB
     Step["Current workflow_step"] --> Registry["CNB capability registry"]
-    Registry --> ContextTools["Context tools"]
     Registry --> ReferenceTools["Reference tools"]
     Registry --> MatchingTools["Matching tools"]
     Registry --> DocTools["Document tools"]
 
-    ContextTools --> Agent["Scoped CNB agent"]
-    ReferenceTools --> Agent
+    ReferenceTools --> Agent["Scoped CNB agent"]
     MatchingTools --> Agent
     DocTools --> Agent
 
@@ -1344,7 +1339,6 @@ Example registry rows:
 
 | Capability id | Step | Operation | Writes | Confirmation |
 | --- | --- | --- | --- | --- |
-| `concept_note.context.load_cc` | `assembling_context` | query | CNB context snapshot | no |
 | `concept_note.upload.ingest` | `ingesting_user_files` | workflow | context bundle selected sources | no |
 | `concept_note.funder.get_profile` | `profiling_funder` | query | no | no |
 | `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches | no |

@@ -291,6 +291,7 @@
   "date": "Data",
   "no-history": "Nenhuma entrada de histórico de versões encontrada.",
   "not-specified": "Não especificado",
+  "manually-added-data": "Dados adicionados manualmente",
   "subcategory": "Sub-categoria",
   "inventory-versions-restore-failed": "Falha ao restaurar a versão",
   "status-poc": "Prova de Conceito",

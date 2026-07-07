@@ -727,11 +727,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   </Card.Header>
                   <Card.Body justifyContent="space-between" p="0" mt="12px">
                     <Flex direction="row" mb={0} wrap="wrap" gap={2}>
-                      {!isConnected && (
+                      {data?.totals?.emissions?.co2eq_100yr != null &&
+                        data.totals.emissions.co2eq_100yr !== 0n && (
                         <Text fontSize="display.sm" fontWeight="semibold">
                           {convertKgToTonnes(
                             bigIntToDecimal(
-                              data?.totals?.emissions?.co2eq_100yr ?? 0n,
+                              data.totals.emissions.co2eq_100yr,
                             ).toNumber(),
                           )}
                         </Text>

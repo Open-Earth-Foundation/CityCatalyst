@@ -488,7 +488,7 @@ export default function OnboardingSetup(props: {
                     disabled={
                       isCreatingCity ||
                       (activeStep === 0 && !ocCityData) ||
-                      (activeStep === 1 && (!isInventoryDetailsValid || yearAlreadyExists)) ||
+                      (activeStep === 1 && !isInventoryDetailsValid) ||
                       (activeStep === 2 && !isPopulationValid)
                     }
                   >

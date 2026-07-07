@@ -15,7 +15,7 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
@@ -141,6 +141,12 @@ export default function OnboardingSetup(props: {
   });
   const { data: userInfo } = api.useGetUserInfoQuery();
 
+  // Fetch existing inventories for this city to check for duplicate years
+  const { data: existingInventories } = api.useGetInventoriesQuery(
+    { cityId },
+    { skip: !cityId },
+  );
+
   useEffect(() => {
     if (CCCityData) {
       setOcCityData({
@@ -161,6 +167,14 @@ export default function OnboardingSetup(props: {
     selectedGlobalWarmingPotentialValue,
     setSelectedGlobalWarmingPotentialValue,
   ] = useState("");
+
+  // Check if the selected year already has an inventory
+  const selectedYear =
+    selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
+  const yearAlreadyExists = useMemo(() => {
+    if (!selectedYear || !existingInventories) return false;
+    return existingInventories.some((inv) => inv.year === selectedYear);
+  }, [selectedYear, existingInventories]);
   const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
     string | null
   >(null);
@@ -169,6 +183,16 @@ export default function OnboardingSetup(props: {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
   };
+
+  // Show error toast when user selects a year that already has an inventory
+  useEffect(() => {
+    if (yearAlreadyExists && selectedYear) {
+      makeErrorToast(
+        t("inventory-year-already-exists-title"),
+        t("inventory-year-already-exists-description", { year: selectedYear }),
+      );
+    }
+  }, [yearAlreadyExists, selectedYear]);
 
   // Population data
 
@@ -414,6 +438,7 @@ export default function OnboardingSetup(props: {
                   onClick={handleSubmit(onSubmit)}
                   h="64px"
                   type="submit"
+                  disabled={yearAlreadyExists}
                 >
                   <Text
                     fontFamily="button.md"

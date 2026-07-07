@@ -21,6 +21,8 @@
   "file-year-mismatch": "The file's data year does not match the inventory target year. Please upload a file with data for {{year}}.",
   "inventory-already-has-data-title": "Inventory already contains data",
   "inventory-already-has-data-description": "This inventory for {{year}} already contains data. Importing again may cause duplicate entries. Please clear existing data first or use a different inventory.",
+  "inventory-year-already-exists-title": "An inventory for this year already exists",
+  "inventory-year-already-exists-description": "An inventory for {{year}} already exists for this city. Please select a different year.",
   "import-completed": "Import completed",
   "import-completed-description": "Your inventory data has been imported successfully.",
   "extracting-chunk-progress": "Extracting... (chunk {{current}} of {{total}})",

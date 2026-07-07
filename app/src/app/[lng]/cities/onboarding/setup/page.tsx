@@ -16,7 +16,7 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import type {
   Control,
   FieldErrors,
@@ -139,6 +139,30 @@ export default function OnboardingSetup(props: {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
   };
+
+  // Fetch existing inventories for the created city to check for duplicate years
+  const { data: existingInventories } = api.useGetInventoriesQuery(
+    { cityId: createdCityId! },
+    { skip: !createdCityId },
+  );
+
+  // Check if the selected year already has an inventory
+  const selectedYear =
+    selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
+  const yearAlreadyExists = useMemo(() => {
+    if (!selectedYear || !existingInventories) return false;
+    return existingInventories.some((inv) => inv.year === selectedYear);
+  }, [selectedYear, existingInventories]);
+
+  // Show error toast when user selects a year that already has an inventory
+  useEffect(() => {
+    if (yearAlreadyExists && selectedYear) {
+      makeErrorToast(
+        t("inventory-year-already-exists-title"),
+        t("inventory-year-already-exists-description", { year: selectedYear }),
+      );
+    }
+  }, [yearAlreadyExists, selectedYear]);
 
   const makeWarningToast = (title: string, description?: string) => {
     const { showWarningToast } = UseWarningToast({ description, title });
@@ -464,7 +488,7 @@ export default function OnboardingSetup(props: {
                     disabled={
                       isCreatingCity ||
                       (activeStep === 0 && !ocCityData) ||
-                      (activeStep === 1 && !isInventoryDetailsValid) ||
+                      (activeStep === 1 && (!isInventoryDetailsValid || yearAlreadyExists)) ||
                       (activeStep === 2 && !isPopulationValid)
                     }
                   >

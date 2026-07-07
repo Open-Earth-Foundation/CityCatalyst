@@ -54,6 +54,8 @@
   "file-year-mismatch": "O ano dos dados do arquivo não corresponde ao ano-alvo do inventário. Envie um arquivo com dados de {{year}}.",
   "inventory-already-has-data-title": "O inventário já contém dados",
   "inventory-already-has-data-description": "Este inventário para {{year}} já contém dados. Importar novamente pode causar entradas duplicadas. Limpe os dados existentes primeiro ou use um inventário diferente.",
+  "inventory-year-already-exists-title": "Já existe um inventário para este ano",
+  "inventory-year-already-exists-description": "Já existe um inventário para {{year}} nesta cidade. Selecione um ano diferente.",
   "import-completed": "Importação concluída",
   "import-completed-description": "Os dados do seu inventário foram importados com sucesso.",
   "extracting-chunk-progress": "Extraindo... (parte {{current}} de {{total}})",

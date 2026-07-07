@@ -70,6 +70,9 @@ describe("GHGI inventory internal CA capability routes", () => {
   let projectAdminOnlyCity: City;
   let projectAdminOnlyInventory: Inventory;
   let thirdPartySource: DataSourceI18n;
+  let siblingProjectId = "";
+  let siblingProjectCityId = "";
+  let siblingProjectInventoryId = "";
 
   beforeAll(async () => {
     setupTests();
@@ -137,6 +140,32 @@ describe("GHGI inventory internal CA capability routes", () => {
       projectId: testData.projectId,
       userId: testUserID,
     });
+    siblingProjectId = randomUUID();
+    siblingProjectCityId = randomUUID();
+    siblingProjectInventoryId = randomUUID();
+    await db.models.Project.create({
+      projectId: siblingProjectId,
+      name: "Sibling Project",
+      description: "Sibling project for project-admin scope regression",
+      organizationId: testData.organizationId,
+      cityCountLimit: 10,
+    });
+    await db.models.City.create({
+      cityId: siblingProjectCityId,
+      name: "Sibling Project City",
+      country: "United States of America",
+      locode: `US SPC ${randomUUID().slice(0, 8)}`,
+      projectId: siblingProjectId,
+    });
+    await db.models.Inventory.create({
+      inventoryId: siblingProjectInventoryId,
+      ...baseInventory,
+      inventoryName: "SiblingProjectInventory",
+      cityId: siblingProjectCityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      year: 2024,
+    });
 
     await db.models.InventoryValue.bulkCreate(
       inventoryValuesData.map((value, index) => ({
@@ -181,6 +210,11 @@ describe("GHGI inventory internal CA capability routes", () => {
     });
     await db.models.ProjectAdmin.destroy({ where: { projectAdminId } });
     await db.models.City.destroy({ where: { cityId: projectAdminOnlyCityId } });
+    await db.models.Inventory.destroy({
+      where: { inventoryId: siblingProjectInventoryId },
+    });
+    await db.models.City.destroy({ where: { cityId: siblingProjectCityId } });
+    await db.models.Project.destroy({ where: { projectId: siblingProjectId } });
     if (thirdPartySource) {
       await db.models.DataSource.destroy({
         where: { datasourceId: thirdPartySource.datasourceId },
@@ -261,6 +295,10 @@ describe("GHGI inventory internal CA capability routes", () => {
       (candidate: { city_id: string }) =>
         candidate.city_id === projectAdminOnlyCity.cityId,
     );
+    const siblingProjectCity = payload.data.cities.find(
+      (candidate: { city_id: string }) =>
+        candidate.city_id === siblingProjectCityId,
+    );
 
     expect(directAssignmentCount).toBe(0);
     expect(matchingCity).toEqual(
@@ -275,6 +313,7 @@ describe("GHGI inventory internal CA capability routes", () => {
         ]),
       }),
     );
+    expect(siblingProjectCity).toBeUndefined();
   });
 
   it("filters listed inventories through the permission service", async () => {

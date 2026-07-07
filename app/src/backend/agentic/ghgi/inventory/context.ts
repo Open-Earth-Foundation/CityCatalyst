@@ -206,21 +206,25 @@ async function candidateCitiesForUser(user: User): Promise<City[]> {
     return dedupeCities([...directCities, ...(await citiesWithInventories())]);
   }
 
-  const organizationIds = await elevatedAccessOrganizationIds(user.userId);
-  if (organizationIds.length === 0) {
+  const accessScopes = await elevatedAccessScopes(user.userId);
+  if (
+    accessScopes.organizationIds.length === 0 &&
+    accessScopes.projectIds.length === 0
+  ) {
     return dedupeCities(directCities);
   }
 
   return dedupeCities([
     ...directCities,
-    ...(await citiesWithInventories(organizationIds)),
+    ...(await citiesWithInventories(accessScopes)),
   ]);
 }
 
-/** Return organizations where this user can access inventories beyond direct city rows. */
-async function elevatedAccessOrganizationIds(
-  userId: string,
-): Promise<string[]> {
+/** Return project and organization scopes that match the CC project drawer. */
+async function elevatedAccessScopes(userId: string): Promise<{
+  organizationIds: string[];
+  projectIds: string[];
+}> {
   const [organizationAdmins, projectAdmins] = await Promise.all([
     db.models.OrganizationAdmin.findAll({
       attributes: ["organizationId"],
@@ -229,38 +233,39 @@ async function elevatedAccessOrganizationIds(
     db.models.ProjectAdmin.findAll({
       attributes: ["projectId"],
       where: { userId },
-      include: [
-        {
-          model: db.models.Project,
-          as: "project",
-          attributes: ["organizationId"],
-        },
-      ],
     }),
   ]);
 
-  return Array.from(
-    new Set([
-      ...organizationAdmins.map((admin) => admin.organizationId),
-      ...projectAdmins
-        .map((admin) => admin.project?.organizationId)
-        .filter(isPresentString),
-    ]),
-  );
+  return {
+    organizationIds: Array.from(
+      new Set(organizationAdmins.map((admin) => admin.organizationId)),
+    ),
+    projectIds: Array.from(
+      new Set(projectAdmins.map((admin) => admin.projectId)),
+    ),
+  };
 }
 
-/** Load city candidates with their inventories, optionally scoped to organizations. */
-async function citiesWithInventories(
-  organizationIds?: string[],
-): Promise<City[]> {
+/** Load city candidates with their inventories, optionally scoped to projects/orgs. */
+async function citiesWithInventories(accessScopes?: {
+  organizationIds?: string[];
+  projectIds?: string[];
+}): Promise<City[]> {
+  const organizationIds = accessScopes?.organizationIds ?? [];
+  const projectIds = accessScopes?.projectIds ?? [];
+  const projectWhere = [
+    organizationIds.length
+      ? { organizationId: { [Op.in]: organizationIds } }
+      : null,
+    projectIds.length ? { projectId: { [Op.in]: projectIds } } : null,
+  ].filter(Boolean);
+
   const projectInclude = {
     model: db.models.Project,
     as: "project",
     attributes: ["projectId", "organizationId"],
-    required: Boolean(organizationIds?.length),
-    ...(organizationIds?.length
-      ? { where: { organizationId: { [Op.in]: organizationIds } } }
-      : {}),
+    required: projectWhere.length > 0,
+    ...(projectWhere.length > 0 ? { where: { [Op.or]: projectWhere } } : {}),
   };
 
   return (await db.models.City.findAll({

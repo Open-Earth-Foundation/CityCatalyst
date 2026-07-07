@@ -116,6 +116,8 @@
     "brand": "CityCatalyst",
     "greeting": "Hi {{email}},",
     "message": "You have been granted access to {{citiesCount}} cities:",
+    "this-city": "this city",
+    "these-cities": "these cities",
     "cta": "JOIN NOW",
     "expiry": "This invite will remain valid for the next 30 days or until claimed, whichever happens first.",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"

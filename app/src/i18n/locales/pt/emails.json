@@ -117,6 +117,8 @@
     "title": "O acesso foi concedido a você",
     "greeting": "Olá {{email}},",
     "message": "O acesso foi concedido a você para {{citiesCount}}:",
+    "this-city": "esta cidade",
+    "these-cities": "estas cidades",
     "cta": "ENTRE AGORA",
     "expiry": "Este convite permanecerá válido pelos próximos 30 dias ou até ser reivindicado, o que acontecer primeiro.",
     "footer": "Open Earth Foundation é uma corporação de benefício público sem fins lucrativos da Califórnia, EUA. EIN: 85-3261449",

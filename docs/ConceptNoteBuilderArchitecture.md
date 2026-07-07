@@ -159,13 +159,13 @@ flowchart LR
 | --- | --- | --- |
 | City profile, project, GHGI, CCRA, HIAP | CityCatalyst | Existing product source of truth and permission model. |
 | Chat threads and messages | Climate Advisor | Existing CA conversation model. |
-| Concept-note run state | Data-team-managed CNB storage, consumed by Climate Advisor | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
-| Context bundle snapshot | Data-team-managed CNB storage, consumed by Climate Advisor | Reusable run input/output for this workflow. |
-| Uploaded file references and extracted text | Data-team-managed CNB storage plus file storage | Needed for mid-flow ingestion, citations, and export. |
-| Document chapters and revisions | Data-team-managed CNB storage, consumed by Climate Advisor | Draft document state before export. |
-| Funder profiles and criteria | Data-team-managed standalone DB | Shared curated corpus, reusable across cities and agents. |
-| Similar funded projects | Data-team-managed standalone DB | Shared project repository, queryable by funder, category, region, instrument. |
-| Exported DOCX/PDF file references | Data-team-managed CNB storage plus file storage | Workflow output artifacts. |
+| Concept-note run state | datateam managed CNB database | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
+| Context bundle snapshot | datateam managed CNB database | Reusable run input/output for this workflow. |
+| Uploaded file references and extracted text | datateam managed CNB database | Needed for mid-flow ingestion, citations, and export. |
+| Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
+| Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
+| Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
+| Exported DOCX/PDF file references | datateam managed CNB database | Workflow output artifacts. |
 | PDF conversion internals | PDF converter project | External pipeline; CNB only consumes its output contract. |
 
 ## Data Infrastructure Boundary
@@ -173,7 +173,7 @@ flowchart LR
 The CNB backend should not plan to own or provision the durable data
 infrastructure for concept-note runs, document chapters, revisions, gaps,
 sources, evidence links, funder profiles, or funded-project corpora. Those
-schemas and stores are data-team-managed infrastructure.
+schemas and stores live in the datateam managed CNB database.
 
 The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
@@ -353,8 +353,8 @@ important planning rules are:
 ### CNB Workflow Tables
 
 These are the logical workflow/document tables the CNB backend needs to use.
-They should be managed by the data team as infrastructure. Climate Advisor
-consumes them through typed service/repository contracts.
+They should live in the datateam managed CNB database. Climate Advisor consumes
+them through typed service/repository contracts.
 
 ```mermaid
 erDiagram
@@ -619,7 +619,7 @@ flowchart LR
     Sources["NOFOs, program pages,<br/>award lists, reports,<br/>template docs"] --> Fetch["Fetch or upload source"]
     Fetch --> Convert["Normalize source<br/>HTML/PDF/DOCX to markdown"]
     Convert --> Extract["Extract structured facts"]
-    Extract --> Curate["Human/data-team curation"]
+    Extract --> Curate["Human curation"]
     Curate --> Validate["Schema validation<br/>license check<br/>dedupe"]
     Validate --> Store["Standalone DB"]
     Store --> Index["Lexical/vector index"]
@@ -1471,7 +1471,7 @@ file layout.
 | Responsibility | Owner | Boundary |
 | --- | --- | --- |
 | Workflow orchestration | Climate Advisor | Starts/resumes runs, resolves active step, scopes tools, streams responses. |
-| CNB storage access | Climate Advisor integration over data-team storage | Uses typed contracts for runs, chapters, revisions, gaps, sources, evidence, and exports. Does not own CNB database infrastructure or migrations. |
+| CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, chapters, revisions, gaps, sources, evidence, and exports. It does not own CNB database infrastructure or migrations. |
 | Research access | Climate Advisor integration over standalone DB | Reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
 | File ingestion | Climate Advisor plus converter adapter | Registers uploads, calls conversion adapter, stores converted source refs and chunks through the CNB storage contract. |
@@ -1527,7 +1527,7 @@ Minimum test surface:
 
 ### Phase 1: Durable Document Workspace
 
-- Integrate with data-team-managed CNB storage contracts for runs, chapters,
+- Integrate with datateam managed CNB database contracts for runs, chapters,
   revisions, gaps, sources, and evidence links.
 - Add document tools:
   - list chapters

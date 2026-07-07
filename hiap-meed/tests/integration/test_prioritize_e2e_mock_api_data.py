@@ -144,7 +144,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "restrictions_description_es",
             "legal_justification",
             "legal_justification_en",
-            "references",
+            "legal_references",
         }.issubset(legal_summary.keys())
         assert isinstance(legal_summary["ownership_description"], str)
         assert isinstance(legal_summary["ownership_description_es"], str)
@@ -152,8 +152,8 @@ def test_prioritize_e2e_with_mock_api_payloads(
         assert isinstance(legal_summary["restrictions_description_es"], str)
         assert isinstance(legal_summary["legal_justification"], str)
         assert isinstance(legal_summary["legal_justification_en"], str)
-        assert isinstance(legal_summary["references"], list)
-        assert legal_summary["references"]
+        assert isinstance(legal_summary["legal_references"], list)
+        assert legal_summary["legal_references"]
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         missing_evidence_rows = [

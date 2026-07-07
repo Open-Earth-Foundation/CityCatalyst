@@ -580,7 +580,7 @@ Example response:
                 "restrictions_description_es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial.",
                 "legal_justification": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal.",
                 "legal_justification_en": "English legal reasoning text from the legal classification source.",
-                "references": ["Ley 18.695 (LOCM) - BCN"]
+                "legal_references": ["Ley 18.695 (LOCM) - BCN"]
               },
               "mitigation_feasibility": {
                 "component_score": 0.78,

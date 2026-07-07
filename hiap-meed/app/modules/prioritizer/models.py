@@ -1170,7 +1170,7 @@ class RankedActionFeasibilityLegalEvidence(BaseModel):
         default=None,
         description="Full English legal reasoning for the verdict when present.",
     )
-    references: list[str] = Field(
+    legal_references: list[str] = Field(
         default_factory=list,
         description="Legal reference strings supporting the verdict.",
     )

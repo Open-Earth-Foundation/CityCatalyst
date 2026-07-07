@@ -157,7 +157,7 @@ def _group_feasibility_evidence(evidence: dict[str, object]) -> dict[str, object
             "legal_justification_en": evidence.get("legal_justification_en"),
             "analysis_date": evidence.get("legal_analysis_date"),
             "generation_method": evidence.get("legal_generation_method"),
-            "references": list(evidence.get("legal_references", [])),
+            "legal_references": list(evidence.get("legal_references", [])),
         },
         "mitigation_feasibility": {
             "component_score": _safe_float(
@@ -337,8 +337,8 @@ def _build_evidence_summary(
                 "legal_justification_en": feasibility_evidence.get("legal", {}).get(
                     "legal_justification_en"
                 ),
-                "references": list(
-                    feasibility_evidence.get("legal", {}).get("references", [])
+                "legal_references": list(
+                    feasibility_evidence.get("legal", {}).get("legal_references", [])
                 ),
             },
             "mitigation_feasibility": {

@@ -65,5 +65,5 @@ class TestAPIHealth:
             "restrictions_description_es",
             "legal_justification",
             "legal_justification_en",
-            "references",
+            "legal_references",
         }.issubset(legal_properties.keys())

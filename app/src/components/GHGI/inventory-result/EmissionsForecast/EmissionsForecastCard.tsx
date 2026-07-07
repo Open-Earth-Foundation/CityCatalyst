@@ -2,14 +2,7 @@ import { EmissionsForecastData } from "@/util/types";
 import { TFunction } from "i18next";
 import { useState } from "react";
 import { GrowthRatesExplanationModal } from "@/components/GHGI/inventory-result/EmissionsForecast/GrowthRatesExplanationModal";
-import {
-  Card,
-  CardBody,
-  CardHeader,
-  HStack,
-  Icon,
-  IconButton,
-} from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, HStack, Icon } from "@chakra-ui/react";
 import { EmissionsForecastChart } from "@/components/GHGI/inventory-result/EmissionsForecast/EmissionsForecastChart";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleMedium } from "@/components/package/Texts/Title";

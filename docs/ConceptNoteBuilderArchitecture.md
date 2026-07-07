@@ -253,9 +253,7 @@ sequenceDiagram
     CA->>Resolver: Resolve step and scope
     Resolver->>Registry: Get capabilities for step
     Registry-->>Resolver: Tool definitions
-    opt User uploaded files
-        CA->>DB: Read deterministic source inventory
-    end
+    CA->>DB: When uploads exist, read deterministic source inventory
     CA->>Research: Load selected funder profile/rubric/template
     CA->>Research: Match comparable funded projects
     Resolver->>Context: Build context bundle from prepared inputs

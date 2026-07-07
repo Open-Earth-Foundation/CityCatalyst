@@ -20,11 +20,12 @@ uv run pytest -c pytest.ini
 tests/
 ├── conftest.py          # Shared fixtures and configuration
 ├── unit/                # Unit tests for individual functions
-│   ├── test_build_city_data.py
-│   ├── test_models.py
-│   └── test_services.py
+│   ├── test_global_api_services.py
+│   └── test_vectorstore_cache.py
 ├── integration/         # Integration tests for API endpoints
 │   ├── test_api_health.py
+│   ├── test_global_api_live.py
+│   ├── test_plan_creator_api.py
 │   └── test_prioritizer_api.py
 └── README.md           # This file
 ```
@@ -35,7 +36,6 @@ Tests are organized using pytest markers:
 
 - `@pytest.mark.unit` - Fast unit tests for individual functions
 - `@pytest.mark.integration` - Integration tests for API endpoints
-- `@pytest.mark.slow` - Longer running tests
 - `@pytest.mark.external` - Tests requiring external services
 
 ## Running Tests
@@ -55,8 +55,11 @@ pytest -m unit
 # Run only integration tests
 pytest -m integration
 
-# Run tests excluding slow ones
-pytest -m "not slow"
+# Run CI-equivalent local selection
+pytest -m "not external"
+
+# Run only live upstream contract checks
+pytest -m external
 ```
 
 ### Using Makefile
@@ -138,9 +141,10 @@ def test_get_actions_success(mock_session):
 1. **Use descriptive test names** that explain what is being tested
 2. **Follow the AAA pattern**: Arrange, Act, Assert
 3. **Use fixtures** for common test data (defined in `conftest.py`)
-4. **Mock external dependencies** to make tests fast and reliable
+4. **Mock external dependencies** to make default CI tests fast and reliable
 5. **Test both success and failure cases**
 6. **Mark tests appropriately** with pytest markers
+7. **Mark live upstream checks as `external`** so they only run when explicitly requested
 
 ### Common Fixtures Available
 
@@ -163,9 +167,8 @@ def my_fixture():
 
 Test configuration is in `pytest.ini`:
 
-- Coverage settings
+- Marker definitions (including `external` for opt-in live API checks)
 - Test discovery patterns
-- Marker definitions
 - Output formatting
 
 ## Troubleshooting

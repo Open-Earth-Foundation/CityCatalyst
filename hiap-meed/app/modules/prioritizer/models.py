@@ -922,6 +922,44 @@ class ActionMitigationFeasibilityScoresApiResponse(BaseModel):
     scores: list[ActionMitigationFeasibilityScoreApiItem] = Field(default_factory=list)
 
 
+class ActionFinancialFeasibilityScoresApiMeta(BaseModel):
+    """Metadata envelope returned by the financial feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    endpoint: str | None = None
+    locode: str | None = None
+    country_code: str | None = None
+    caveat: str | None = None
+    filters: dict[str, object] = Field(default_factory=dict)
+    total_records: int | None = None
+
+
+class ActionFinancialFeasibilityScoreApiItem(BaseModel):
+    """Single score row returned by the financial feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    action_id: str
+    action_name: str | None = None
+    sector: str | None = None
+    financial_feasibility: float | None = Field(default=None, ge=0.0, le=1.0)
+    route: str | None = None
+    reason: str | None = None
+    inputs: dict[str, Any] = Field(default_factory=dict)
+    links: dict[str, Any] = Field(default_factory=dict)
+
+
+class ActionFinancialFeasibilityScoresApiResponse(BaseModel):
+    """Response model for city-scoped financial feasibility scores endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ActionFinancialFeasibilityScoresApiMeta
+    data: list[ActionFinancialFeasibilityScoreApiItem] = Field(default_factory=list)
+
+
 class ActionLegalAssessmentApiItem(BaseModel):
     """Flat legal assessment row returned by `GET /api/v1/action-legal-assessments`."""
 
@@ -995,12 +1033,333 @@ class ActionLegalAssessmentApiItem(BaseModel):
     )
 
 
+class ActionLegalAssessmentS3CsvRow(BaseModel):
+    """Legal assessment row loaded from the private S3 classification CSV."""
+
+    model_config = ConfigDict(extra="allow")
+
+    action_id: str = Field(min_length=1)
+    verdict_category: str | None = None
+    verdict_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownership_category: str | None = None
+    ownership_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    ownership_weight: float | None = None
+    ownership_description: str | None = None
+    ownership_description_es: str | None = None
+    restrictions_category: str | None = None
+    restrictions_score: float | None = Field(default=None, ge=0.0, le=1.0)
+    restrictions_weight: float | None = None
+    restrictions_description: str | None = None
+    restrictions_description_es: str | None = None
+    legal_justification: str | None = None
+    legal_justification_en: str | None = None
+    legal_reference_1: str | None = None
+    legal_reference_2: str | None = None
+    legal_reference_3: str | None = None
+    legal_reference_4: str | None = None
+    legal_reference_5: str | None = None
+    legal_reference_6: str | None = None
+    action_name_en: str | None = None
+    action_name_es: str | None = None
+    sector: str | None = None
+    analysis_date: str | None = None
+    generation_method: str | None = None
+    publisher_id: str | None = None
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def normalize_blank_cells(cls, value: object) -> object | None:
+        """Normalize blank CSV cells before field-level validation."""
+        if isinstance(value, str) and not value.strip():
+            return None
+        return value
+
+
+class RankedActionImpactEvidenceSummary(BaseModel):
+    """Compact impact evidence snapshot returned for one ranked action."""
+
+    impact_block_score: float = Field(
+        description="Overall Impact block score for this action."
+    )
+    matched_city_subsector_keys_count: int = Field(
+        description="Number of city subsector keys matched by this action."
+    )
+    emissions_reduction_component_score: float = Field(
+        description="Normalized emissions reduction component score."
+    )
+    timeline_component_score: float = Field(
+        description="Normalized implementation timeline component score."
+    )
+
+
+class RankedActionAlignmentEvidenceSummary(BaseModel):
+    """Compact alignment evidence snapshot returned for one ranked action."""
+
+    alignment_score: float = Field(description="Overall Alignment block score.")
+    policy_component_score: float = Field(
+        description="Normalized policy support component score."
+    )
+    sector_component_score: float = Field(
+        description="Normalized sector preference component score."
+    )
+    co_benefit_component_score: float = Field(
+        description="Normalized co-benefit preference component score."
+    )
+    timeframe_component_score: float = Field(
+        description="Normalized timeframe preference component score."
+    )
+
+
+class RankedActionFeasibilityLegalEvidence(BaseModel):
+    """Compact legal feasibility evidence for one ranked action."""
+
+    assessment_present: bool = Field(
+        description="Whether a legal assessment row was available for this action."
+    )
+    assessment_missing: bool = Field(
+        description="Whether the legal component used a missing-row fallback."
+    )
+    verdict_category: str | None = Field(
+        default=None,
+        description="Legal verdict category when a legal assessment row exists.",
+    )
+    component_score: float = Field(
+        description="Normalized legal feasibility component score."
+    )
+    component_source: str | None = Field(
+        default=None,
+        description="Source used for the legal component score.",
+    )
+    ownership_category: str | None = Field(
+        default=None,
+        description="Legal authority category for who can implement the action.",
+    )
+    ownership_score: float | None = Field(
+        default=None,
+        description="Normalized ownership authority score when present.",
+    )
+    ownership_description: str | None = Field(
+        default=None,
+        description="English plain-language description of who has legal authority.",
+    )
+    ownership_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of who has legal authority.",
+    )
+    restrictions_category: str | None = Field(
+        default=None,
+        description="Legal restriction category for the action.",
+    )
+    restrictions_score: float | None = Field(
+        default=None,
+        description="Normalized restrictions score when present.",
+    )
+    restrictions_description: str | None = Field(
+        default=None,
+        description="English plain-language description of legal barriers or restrictions.",
+    )
+    restrictions_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of legal barriers or restrictions.",
+    )
+    legal_justification: str | None = Field(
+        default=None,
+        description="Full Spanish legal reasoning for the verdict when present.",
+    )
+    legal_justification_en: str | None = Field(
+        default=None,
+        description="Full English legal reasoning for the verdict when present.",
+    )
+    legal_references: list[str] = Field(
+        default_factory=list,
+        description="Legal reference strings supporting the verdict.",
+    )
+
+
+class RankedActionFeasibilityMitigationEvidence(BaseModel):
+    """Compact mitigation feasibility evidence for one ranked action."""
+
+    component_score: float = Field(
+        description="Normalized mitigation feasibility component score."
+    )
+    component_source: str | None = Field(
+        default=None,
+        description="Source used for the mitigation feasibility component score.",
+    )
+    score_present: bool = Field(
+        description="Whether a mitigation feasibility row was available."
+    )
+    score_missing: bool = Field(
+        description="Whether the mitigation feasibility component used a missing-row fallback."
+    )
+
+
+class RankedActionFeasibilityFinancialEvidence(BaseModel):
+    """Compact financial feasibility evidence for one ranked action."""
+
+    component_score: float = Field(
+        description="Normalized financial feasibility component score."
+    )
+    component_source: str | None = Field(
+        default=None,
+        description="Source used for the financial feasibility component score.",
+    )
+    score_present: bool = Field(
+        description="Whether a financial feasibility row was available."
+    )
+    score_missing: bool = Field(
+        description="Whether the financial feasibility component used a missing-row fallback."
+    )
+    route: str | None = Field(
+        default=None,
+        description="Qualitative financing route label when present.",
+    )
+    reason: str | None = Field(
+        default=None,
+        description="Human-readable reason for the financing route when present.",
+    )
+    sector: str | None = Field(
+        default=None,
+        description="Financial feasibility sector used by the upstream service.",
+    )
+
+
+class RankedActionFeasibilityEvidenceSummary(BaseModel):
+    """Compact grouped feasibility evidence snapshot returned for one ranked action."""
+
+    feasibility_score: float = Field(description="Overall Feasibility block score.")
+    legal: RankedActionFeasibilityLegalEvidence = Field(
+        description="Grouped legal feasibility evidence."
+    )
+    mitigation_feasibility: RankedActionFeasibilityMitigationEvidence = Field(
+        description="Grouped mitigation feasibility evidence."
+    )
+    financial_feasibility: RankedActionFeasibilityFinancialEvidence = Field(
+        description="Grouped financial feasibility evidence."
+    )
+
+
+class RankedActionEvidenceSummary(BaseModel):
+    """Compact public evidence snapshot used to explain one ranked action."""
+
+    impact: RankedActionImpactEvidenceSummary = Field(
+        description="Compact Impact block evidence snapshot."
+    )
+    alignment: RankedActionAlignmentEvidenceSummary = Field(
+        description="Compact Alignment block evidence snapshot."
+    )
+    feasibility: RankedActionFeasibilityEvidenceSummary = Field(
+        description="Compact Feasibility block evidence snapshot."
+    )
+
+
+class PrioritizationCounts(BaseModel):
+    """Stable action-count summary returned in prioritization metadata."""
+
+    total_actions: int = Field(description="Total actions fetched before filtering.")
+    valid_actions: int = Field(description="Actions remaining after hard filters.")
+    discarded_excluded: int = Field(
+        description="Actions discarded due to confirmed caller exclusions."
+    )
+    discarded_legal: int = Field(
+        description="Actions discarded due to blocked legal feasibility."
+    )
+    ranked_actions: int = Field(description="Number of ranked actions returned.")
+
+
+class PrioritizationWeights(BaseModel):
+    """Resolved weighting configuration returned in prioritization metadata."""
+
+    impact: float = Field(description="Resolved Impact pillar weight.")
+    alignment: float = Field(description="Resolved Alignment pillar weight.")
+    feasibility: float = Field(description="Resolved Feasibility pillar weight.")
+
+
+class PrioritizationExplanationMetadata(BaseModel):
+    """Explanation-generation summary returned in prioritization metadata."""
+
+    requested: bool = Field(
+        description="Whether the caller requested explanation generation."
+    )
+    generated: int = Field(
+        description="Number of ranked actions with generated canonical explanations."
+    )
+    requested_languages: list[str] = Field(
+        default_factory=list,
+        description="Languages requested by the caller for explanations.",
+    )
+    canonical_language: str = Field(
+        description="Canonical source language used for explanation generation."
+    )
+    generated_languages: list[str] = Field(
+        default_factory=list,
+        description="Languages actually present in the returned explanations payload.",
+    )
+    translation_warnings: list[str] = Field(
+        default_factory=list,
+        description="Human-readable warnings from explanation translation.",
+    )
+
+
+class HardFilterEvidenceSummary(BaseModel):
+    """Per-action hard-filter evidence returned in prioritization metadata."""
+
+    model_config = ConfigDict(extra="allow")
+
+    discard_reason: str | None = Field(
+        default=None,
+        description="Hard-filter discard reason when the action was removed.",
+    )
+    legal_assessment_present: bool | None = Field(
+        default=None,
+        description="Whether the hard filter saw a legal assessment row for the action.",
+    )
+    legal_verdict_category: str | None = Field(
+        default=None,
+        description="Legal verdict category observed by the hard filter when present.",
+    )
+
+
+class PrioritizationMetadata(BaseModel):
+    """Stable diagnostics and response metadata returned for one prioritized city."""
+
+    model_config = ConfigDict(extra="allow")
+
+    locode: str = Field(description="UN/LOCODE for the ranked city.")
+    internal_request_id: str = Field(
+        description="Backend-generated internal request identifier."
+    )
+    frontend_request_id: str | None = Field(
+        default=None,
+        description="Caller-generated request identifier echoed for correlation.",
+    )
+    counts: PrioritizationCounts = Field(
+        description="Stable action counts across the prioritization pipeline."
+    )
+    weights: PrioritizationWeights = Field(
+        description="Resolved prioritization weights used for scoring."
+    )
+    timings: dict[str, float] = Field(
+        default_factory=dict,
+        description="Elapsed seconds keyed by pipeline stage name.",
+    )
+    explanations: PrioritizationExplanationMetadata = Field(
+        description="Explanation-generation and translation metadata."
+    )
+    hard_filter_evidence_by_action_id: dict[str, HardFilterEvidenceSummary] = Field(
+        default_factory=dict,
+        description="Per-action hard-filter evidence keyed by action ID.",
+    )
+
+
 class PrioritizationResponse(BaseModel):
     """Per-city prioritization output used by the API response."""
 
     ranked_action_ids: list[str] = Field(default_factory=list)
     ranked_actions: list[RankedActionResult] = Field(default_factory=list)
-    metadata: dict[str, object] = Field(default_factory=dict)
+    metadata: PrioritizationMetadata = Field(
+        description="Stable diagnostics and metadata for the ranked city."
+    )
     warnings: list[str] = Field(default_factory=list)
 
 
@@ -1013,8 +1372,7 @@ class RankedActionResult(BaseModel):
     impact_score: float = Field(description="Impact block score.")
     alignment_score: float = Field(description="Alignment block score.")
     feasibility_score: float = Field(description="Feasibility block score.")
-    evidence_summary: dict[str, object] = Field(
-        default_factory=dict,
+    evidence_summary: RankedActionEvidenceSummary = Field(
         description="Compact public evidence snapshot used to explain the ranking.",
     )
     explanations: dict[str, str] = Field(
@@ -1058,8 +1416,7 @@ class PrioritizerApiCityResult(BaseModel):
         default_factory=list,
         description="Detailed ranked actions with scores, evidence, and explanations.",
     )
-    metadata: dict[str, object] = Field(
-        default_factory=dict,
+    metadata: PrioritizationMetadata = Field(
         description="Diagnostics, timings, counts, and artifact-oriented metadata.",
     )
     warnings: list[str] = Field(

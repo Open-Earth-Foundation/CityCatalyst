@@ -31,4 +31,39 @@ class TestAPIHealth:
 
         assert "openapi" in data
         assert data["info"]["title"] == "HIAP-MEED"
+        ranked_action_schema = data["components"]["schemas"]["RankedActionResult"]
+        evidence_summary_property = ranked_action_schema["properties"]["evidence_summary"]
+        assert evidence_summary_property["$ref"].endswith(
+            "/RankedActionEvidenceSummary"
+        )
 
+        feasibility_schema = data["components"]["schemas"][
+            "RankedActionFeasibilityEvidenceSummary"
+        ]
+        feasibility_properties = feasibility_schema["properties"]
+        assert feasibility_properties["legal"]["$ref"].endswith(
+            "/RankedActionFeasibilityLegalEvidence"
+        )
+        assert feasibility_properties["mitigation_feasibility"]["$ref"].endswith(
+            "/RankedActionFeasibilityMitigationEvidence"
+        )
+        assert feasibility_properties["financial_feasibility"]["$ref"].endswith(
+            "/RankedActionFeasibilityFinancialEvidence"
+        )
+        legal_schema = data["components"]["schemas"][
+            "RankedActionFeasibilityLegalEvidence"
+        ]
+        legal_properties = legal_schema["properties"]
+        assert {
+            "ownership_category",
+            "ownership_score",
+            "ownership_description",
+            "ownership_description_es",
+            "restrictions_category",
+            "restrictions_score",
+            "restrictions_description",
+            "restrictions_description_es",
+            "legal_justification",
+            "legal_justification_en",
+            "legal_references",
+        }.issubset(legal_properties.keys())

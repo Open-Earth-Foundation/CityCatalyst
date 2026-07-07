@@ -1,7 +1,7 @@
 {
   "project-deleted": {
-    "subject": "City Catalyst - Suppression de Projet",
-    "preview": "CityCatalyst: Projet Supprimé",
+    "subject": "Suppression de Projet",
+    "preview": "Projet Supprimé",
     "brand": "CityCatalyst",
     "title": "Projet supprimé du compte {{organizationName}}",
     "greeting": "Bonjour {{name}},",
@@ -10,8 +10,8 @@
     "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
   },
   "role-updated": {
-    "subject": "City Catalyst - Rôle Mis à Jour",
-    "preview": "CityCatalyst: Mise à Jour de Rôle",
+    "subject": "Rôle Mis à Jour",
+    "preview": "Mise à Jour de Rôle",
     "brand": "CityCatalyst",
     "title": "Votre rôle a été mis à jour",
     "greeting": "Bonjour {{email}},",
@@ -20,7 +20,7 @@
     "footer": "CityCatalyst est une plateforme alimentée par la Open Earth Foundation."
   },
   "welcome": {
-    "subject": "City Catalyst - Inscription Utilisateur",
+    "subject": "Inscription Utilisateur",
     "greeting": "Bienvenue sur City Catalyst, {{name}} !",
     "message": "Merci de rejoindre City Catalyst. Nous sommes ravis de vous accueillir et de vous aider à avoir un impact positif sur le parcours de durabilité de votre ville.",
     "cta": "Commencer",
@@ -28,8 +28,8 @@
     "brand": "CityCatalyst"
   },
   "reset-password": {
-    "subject": "City Catalyst - Réinitialiser votre Mot de Passe",
-    "preview": "CityCatalyst: Réinitialiser votre mot de passe",
+    "subject": "Réinitialiser votre Mot de Passe",
+    "preview": "Réinitialiser votre mot de passe",
     "brand": "CityCatalyst",
     "title": "Mot de passe oublié ?",
     "message": "Réinitialisez-le en cliquant sur le bouton ci-dessous :",
@@ -38,8 +38,8 @@
     "footer": "Si vous n'avez pas demandé cela, vous pouvez ignorer cet e-mail en toute sécurité."
   },
   "invite": {
-    "subject": "City Catalyst - Invitation à la Ville",
-    "preview": "CityCatalyst: Invitation à la Ville",
+    "subject": "Invitation à la Ville",
+    "preview": "Invitation à la Ville",
     "brand": "CityCatalyst",
     "title": "Vous avez été invité à rejoindre City Catalyst",
     "greeting": "Bonjour {{name}},",
@@ -49,8 +49,8 @@
     "footer": "Cette invitation expirera dans 7 jours."
   },
   "project-created": {
-    "subject": "City Catalyst - Création de Projet",
-    "preview": "CityCatalyst: Projet Ajouté",
+    "subject": "Création de Projet",
+    "preview": "Projet Ajouté",
     "brand": "CityCatalyst",
     "title": "Projet ajouté au compte {{organizationName}}",
     "greeting": "Bonjour {{name}},",
@@ -59,7 +59,7 @@
     "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
   },
   "account-frozen": {
-    "subject": "City Catalyst - Compte Gelé",
+    "subject": "Compte Gelé",
     "preview": "City Catalyst: Compte Gelé",
     "brand": "CityCatalyst",
     "title": "Votre Compte a été Gelé",
@@ -83,8 +83,8 @@
     "footer-4": "L'équipe CityCatalyst"
   },
   "account-unfrozen": {
-    "subject": "City Catalyst - Compte Activé",
-    "preview": "CityCatalyst: Compte Activé",
+    "subject": "Compte Activé",
+    "preview": "Compte Activé",
     "brand": "CityCatalyst",
     "title": "Votre Compte a été Activé",
     "greeting": "Bonjour {{name}},",
@@ -94,7 +94,7 @@
     "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
   },
   "city-slot-changed": {
-    "subject": "City Catalyst - Emplacements de Ville Modifiés",
+    "subject": "Emplacements de Ville Modifiés",
     "title": "Limite d'Emplacements de Ville Modifiée dans {{organizationName}}",
     "greeting": "Bonjour {{name}},",
     "message": "La limite d'emplacements de ville pour le projet '{{projectName}}' a été modifiée à {{cityCount}}.",
@@ -104,7 +104,7 @@
   },
   "admin-notification": {
     "subject": "CityCatalyst Téléchargement de Fichiers",
-    "preview": "CityCatalyst: Téléchargement de Fichiers",
+    "preview": "Téléchargement de Fichiers",
     "brand": "CityCatalyst",
     "title": "{{userName}} de {{cityName}} a Téléchargé de Nouveaux Fichiers pour Révision",
     "greeting": "Bonjour {{adminNames}},",
@@ -113,18 +113,20 @@
     "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
   },
   "invite-multiple": {
-    "subject": "CityCatalyst: Invitation à la Ville",
+    "subject": "Invitation à la Ville",
     "title": "L'accès vous a été accordé",
     "greeting": "Bonjour {{email}},",
-    "message": "L'accès vous a été accordé à {{citiesCount}} :",
+    "message": "L'accès vous a été accordé à {{citiesCount}}:",
+    "this-city": "cette ville",
+    "these-cities": "ces villes",
     "cta": "REJOIGNEZ MAINTENANT",
     "expiry": "Cette invitation restera valide pendant les 30 prochains jours ou jusqu'à ce qu'elle soit réclamée, selon ce qui se produit en premier.",
     "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449",
     "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
-    "subject": "City Catalyst - Accès Supprimé",
-    "preview": "CityCatalyst: Accès Supprimé",
+    "subject": "Accès Supprimé",
+    "preview": "Accès Supprimé",
     "brand": "CityCatalyst",
     "title": "Changements d'Accès",
     "greeting": "Bonjour {{email}},",
@@ -136,30 +138,27 @@
     "footer2": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449"
   },
   "invite-organization": {
-    "subject": "City Catalyst - Invitation à l'Organisation",
-    "preview": "CityCatalyst: Invitation à l'Organisation",
+    "subject": "C'est parti! Configurez votre première ville dans CityCatalyst",
+    "preview": "Configurez votre première ville dans CityCatalyst",
     "brand": "CityCatalyst",
     "title": "Rejoignez votre Équipe dans CityCatalyst",
     "greeting": "Bonjour {{name}},",
-    "message": "Vous êtes invité à rejoindre CityCatalyst et à contribuer à l'inventaire des émissions de l'organisation :",
+    "message": "Bienvenue sur CityCatalyst ! Votre compte est désormais actif, et nous sommes ravis de vous compter parmi nous.",
     "cta": "REJOINDRE MAINTENANT",
     "footer": "Open Earth Foundation est une corporation à but non lucratif de Californie, États-Unis. EIN: 85-3261449",
     "greeting-no-name": "Salut,",
-    "message-prefix": "Bienvenue sur CityCatalyst ! Votre ",
-    "message-free-trial": "essai gratuit",
-    "message-suffix": " est maintenant en ligne et nous sommes ravis de vous accueillir.",
     "start-by": "Commencez par ",
     "setting-up-inventory": "configurer votre premier inventaire",
     "in-one-city": " dans une ville de votre choix.",
     "steps-heading": "Voici ce que vous pouvez faire dès maintenant",
-    "step1": "<1>Configurez votre premier inventaire</1> - Vous pouvez commencer avec une ville pendant cet essai.",
+    "step1": "<1>Configurez votre premier inventaire</1> - Vous pouvez commencer avec une ville.",
     "step2": "<1>Invitez des collaborateurs</1> - Travaillez en équipe pour construire et examiner vos données.",
     "step3": "<1>Découvrez les fonctionnalités clés</1> - De la construction de votre inventaire de GES à la personnalisation de votre logo et de vos couleurs.",
     "step4": "<1>Demander à l'IA</1> - Notre Assistant Climatique est prêt à répondre à vos questions et à vous soutenir dans le processus de revoir les actions d'impact suggérées."
   },
   "role-update": {
-    "subject": "City Catalyst - Rôle Mis à Jour",
-    "preview": "CityCatalyst: Mise à Jour de Rôle",
+    "subject": "Rôle Mis à Jour",
+    "preview": "Mise à Jour de Rôle",
     "brand": "CityCatalyst",
     "title": "Votre rôle a été mis à jour",
     "greeting": "Bonjour {{email}},",
@@ -168,7 +167,7 @@
     "footer": "CityCatalyst est une plateforme alimentée par la Open Earth Foundation."
   },
   "cities-added": {
-    "subject": "City Catalyst - Villes Ajoutées",
+    "subject": "Villes Ajoutées",
     "preview": "Villes Ajoutées au Projet",
     "title": "Villes Ajoutées au Projet",
     "greeting": "Bonjour {{name}},",
@@ -179,16 +178,15 @@
     "brand": "CityCatalyst"
   },
   "admin-invite-accepted": {
-    "subject": "Bienvenue à CityCatalyst! 🎉 Commençons. ",
-    "preview": "Bienvenue à CityCatalyst! 🎉 Commençons. ",
+    "subject": "Bienvenue à CityCatalyst! 🎉 Commençons.",
+    "preview": "Bienvenue à CityCatalyst! 🎉 Commençons.",
     "brand": "CityCatalyst",
     "title": "Bienvenue à CityCatalyst !",
     "greeting": "Salut {{name}},",
-    "message": "Nous sommes ravis de vous avoir à bord. Voici comment profiter au maximum de votre essai gratuit d'un mois : ",
-    "step1": "Créez votre premier projet de ville (l'essai comprend 1 ville)",
-    "step2": "Invitez des collaborateurs de votre équipe ou des partenaires",
+    "message": "Nous sommes ravis de vous compter parmi nous. Voici comment tirer le meilleur parti de CityCatalyst:",
+    "step1": "Créez votre premier projet de ville",
+    "step2": "Invitez les membres de votre équipe en tant que collaborateurs",
     "step3": "Personnalisez votre espace de travail avec votre logo et vos couleurs",
-    "step4": "Personnalisez votre espace de travail avec votre logo et vos couleurs",
     "footer-1": "Besoin d'aide ? Nous sommes là pour vous aider, veuillez nous contacter à citycatalyst@openearth.org si vous avez des questions !",
     "footer-2": "Faisons travailler les données climatiques locales plus dur, ensemble.",
     "footer-3": "L'équipe CityCatalyst",
@@ -207,8 +205,8 @@
     "footer": "Open Earth Foundation est une organisation à but non lucratif de bienfaisance publique de Californie, USA. EIN : 85-3261449"
   },
   "action-plan-ready": {
-    "subject": "City Catalyst - Plan d'action prêt",
-    "preview": "CityCatalyst: Votre plan d'action climatique est prêt!",
+    "subject": "Plan d'action prêt",
+    "preview": "Votre plan d'action climatique est prêt!",
     "brand": "CityCatalyst",
     "title": "Votre plan d'action climatique est prêt!",
     "greeting": "Salut {{name}},",

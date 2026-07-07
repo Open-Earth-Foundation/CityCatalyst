@@ -1,7 +1,7 @@
 {
   "project-deleted": {
-    "subject": "City Catalyst - Eliminación de Proyecto",
-    "preview": "CityCatalyst: Proyecto Eliminado",
+    "subject": "Eliminación de Proyecto",
+    "preview": "Proyecto Eliminado",
     "brand": "CityCatalyst",
     "title": "Proyecto eliminado en la cuenta de {{organizationName}}",
     "greeting": "Hola {{name}},",
@@ -10,8 +10,8 @@
     "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
   },
   "role-updated": {
-    "subject": "City Catalyst - Rol Actualizado",
-    "preview": "CityCatalyst: Actualización de Rol",
+    "subject": "Rol Actualizado",
+    "preview": "Actualización de Rol",
     "brand": "CityCatalyst",
     "title": "Tu rol ha sido actualizado",
     "greeting": "Hola {{email}},",
@@ -20,7 +20,7 @@
     "footer": "CityCatalyst es una plataforma impulsada por la Open Earth Foundation."
   },
   "welcome": {
-    "subject": "City Catalyst - Registro de Usuario",
+    "subject": "Registro de Usuario",
     "greeting": "¡Bienvenido a City Catalyst, {{name}}!",
     "message": "Gracias por unirte a City Catalyst. Nos emociona tenerte a bordo y ayudarte a hacer un impacto positivo en el viaje de sostenibilidad de tu ciudad.",
     "cta": "Comenzar",
@@ -28,8 +28,8 @@
     "brand": "CityCatalyst"
   },
   "reset-password": {
-    "subject": "City Catalyst - Restablecer tu Contraseña",
-    "preview": "CityCatalyst: Restablecer tu contraseña",
+    "subject": "Restablecer tu Contraseña",
+    "preview": "Restablecer tu contraseña",
     "brand": "CityCatalyst",
     "title": "¿Olvidaste tu contraseña?",
     "message": "Restablécelo haciendo clic en el botón de abajo:",
@@ -38,8 +38,8 @@
     "footer": "Si no solicitaste esto, puedes ignorar este correo de forma segura."
   },
   "invite": {
-    "subject": "City Catalyst - Invitación a Ciudad",
-    "preview": "CityCatalyst: Invitación a Ciudad",
+    "subject": "Invitación a Ciudad",
+    "preview": "Invitación a Ciudad",
     "brand": "CityCatalyst",
     "title": "Has sido invitado a unirte a City Catalyst",
     "greeting": "Hola {{name}},",
@@ -49,8 +49,8 @@
     "footer": "Esta invitación expirará en 7 días."
   },
   "project-created": {
-    "subject": "City Catalyst - Creación de Proyecto",
-    "preview": "CityCatalyst: Proyecto Agregado",
+    "subject": "Creación de Proyecto",
+    "preview": "Proyecto Agregado",
     "brand": "CityCatalyst",
     "title": "Proyecto agregado a la cuenta de {{organizationName}}",
     "greeting": "Hola {{name}},",
@@ -59,7 +59,7 @@
     "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
   },
   "account-frozen": {
-    "subject": "City Catalyst - Cuenta Congelada",
+    "subject": "Cuenta Congelada",
     "preview": "City Catalyst: Cuenta Congelada",
     "brand": "CityCatalyst",
     "title": "Tu Cuenta Ha Sido Congelada",
@@ -83,8 +83,8 @@
     "footer-4": "El Equipo de CityCatalyst"
   },
   "account-unfrozen": {
-    "subject": "City Catalyst - Cuenta Activada",
-    "preview": "CityCatalyst: Cuenta Activada",
+    "subject": "Cuenta Activada",
+    "preview": "Cuenta Activada",
     "brand": "CityCatalyst",
     "title": "Tu Cuenta Ha Sido Activada",
     "greeting": "Hola {{name}},",
@@ -94,7 +94,7 @@
     "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
   },
   "city-slot-changed": {
-    "subject": "City Catalyst - Espacios de Ciudad Cambiados",
+    "subject": "Espacios de Ciudad Cambiados",
     "title": "Límite de Espacios de Ciudad Cambiado en {{organizationName}}",
     "greeting": "Hola {{name}},",
     "message": "El límite de espacios de ciudad para el proyecto '{{projectName}}' ha sido cambiado a {{cityCount}}.",
@@ -103,8 +103,8 @@
     "brand": "CityCatalyst"
   },
   "admin-notification": {
-    "subject": "CityCatalyst Carga de Archivos",
-    "preview": "CityCatalyst: Carga de Archivos",
+    "subject": "Carga de Archivos",
+    "preview": "Carga de Archivos",
     "brand": "CityCatalyst",
     "title": "{{userName}} de {{cityName}} Ha Cargado Nuevos Archivos Para Revisión",
     "greeting": "Hola {{adminNames}},",
@@ -113,18 +113,20 @@
     "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
   },
   "invite-multiple": {
-    "subject": "CityCatalyst: Invitación a Ciudad",
+    "subject": "Invitación a Ciudad",
     "title": "Se te ha otorgado acceso",
     "greeting": "Hola {{email}},",
     "message": "Se te ha otorgado acceso a {{citiesCount}}:",
+    "this-city": "esta ciudad",
+    "these-cities": "estas ciudades",
     "cta": "ÚNETE AHORA",
     "expiry": "Esta invitación permanecerá válida durante los próximos 30 días o hasta que sea reclamada, lo que ocurra primero.",
     "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449",
     "brand": "CityCatalyst"
   },
   "remove-multiple-cities": {
-    "subject": "City Catalyst - Acceso Removido",
-    "preview": "CityCatalyst: Acceso Removido",
+    "subject": "Acceso Removido",
+    "preview": "Acceso Removido",
     "brand": "CityCatalyst",
     "title": "Cambios en el Acceso",
     "greeting": "Hola {{email}},",
@@ -136,30 +138,27 @@
     "footer2": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
   },
   "invite-organization": {
-    "subject": "City Catalyst - Invitación a Organización",
-    "preview": "CityCatalyst: Invitación a Organización",
+    "subject": "¡Ya estás dentro! Configura tu primera ciudad en CityCatalyst.",
+    "preview": "Configura tu primera ciudad en CityCatalyst",
     "brand": "CityCatalyst",
     "title": "Únete a tu Equipo en CityCatalyst",
     "greeting": "Hola {{name}},",
-    "message": "Estás invitado a unirte a CityCatalyst y contribuir al inventario de emisiones de la organización:",
-    "cta": "UNIRSE AHORA",
-    "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449",
     "greeting-no-name": "Hola,",
-    "message-prefix": "Bienvenido a CityCatalyst! Tu ",
-    "message-free-trial": "prueba gratuita",
-    "message-suffix": " ya esta en marcha y estamos emocionados de tenerte a bordo.",
+    "message": "¡Bienvenido a CityCatalyst! Tu cuenta ya está activa y nos entusiasma contar contigo.",
     "start-by": "Comienza por ",
     "setting-up-inventory": "configurar tu primer inventario",
     "in-one-city": " en una ciudad de tu eleccion.",
     "steps-heading": "Aquí está lo que puedes hacer ahora mismo",
-    "step1": "<1>Configura tu primer inventario</1> - Puedes comenzar con una ciudad durante este periodo de prueba.",
+    "step1": "<1>Configura tu primer inventario</1> - Puedes comenzar con una ciudad.",
     "step2": "<1>Invita a colaboradores</1> - Trabaja en equipo para construir y revisar tus datos.",
     "step3": "<1>Explora las características clave</1> - Desde construir tu inventario de GEI hasta personalizar tu logotipo y colores.",
-    "step4": "<1>Pregunta a la IA</1> - Nuestro Asistente Climático está listo para responder tus preguntas y apoyarte en el proceso de revisar las acciones de impacto sugeridas."
+    "step4": "<1>Pregunta a la IA</1> - Nuestro Asistente Climático está listo para responder tus preguntas y apoyarte en el proceso de revisar las acciones de impacto sugeridas.",
+    "cta": "UNIRSE AHORA",
+    "footer": "Open Earth Foundation es una corporación de beneficio público sin fines de lucro de California, EE.UU. EIN: 85-3261449"
   },
   "role-update": {
-    "subject": "City Catalyst - Rol Actualizado",
-    "preview": "CityCatalyst: Actualización de Rol",
+    "subject": "Rol Actualizado",
+    "preview": "Actualización de Rol",
     "brand": "CityCatalyst",
     "title": "Tu rol ha sido actualizado",
     "greeting": "Hola {{email}},",
@@ -168,7 +167,7 @@
     "footer": "CityCatalyst es una plataforma impulsada por la Open Earth Foundation."
   },
   "cities-added": {
-    "subject": "City Catalyst - Ciudades Agregadas",
+    "subject": "Ciudades Agregadas",
     "preview": "Ciudades Agregadas al Proyecto",
     "title": "Ciudades Agregadas al Proyecto",
     "greeting": "Hola {{name}},",
@@ -180,23 +179,22 @@
   },
   "admin-invite-accepted": {
     "subject": "¡Bienvenido a CityCatalyst! 🎉 comencemos.",
-    "preview": "¡Bienvenido a CityCatalyst! 🎉 comencemos. ",
+    "preview": "¡Bienvenido a CityCatalyst! 🎉 comencemos.",
     "brand": "CityCatalyst",
     "title": "¡Bienvenido a CityCatalyst!",
     "greeting": "Hola {{name}},",
-    "message": "Estamos emocionados de tenerte a bordo. Aquí te explicamos cómo aprovechar al máximo tu prueba gratuita de 1 mes: ",
-    "step1": "Crea tu primer proyecto de ciudad (la prueba incluye 1 ciudad)",
-    "step2": "Invita a colaboradores de tu equipo o socios",
+    "message": "Nos alegra contar contigo. Aquí tienes cómo aprovechar al máximo CityCatalyst:",
+    "step1": "Crea tu primer proyecto de ciudad",
+    "step2": "Invita a los miembros de tu equipo como colaboradores",
     "step3": "Personaliza tu espacio de trabajo con tu logotipo y colores",
-    "step4": "Personaliza tu espacio de trabajo con tu logotipo y colores",
     "footer-1": "¿Necesitas ayuda? Estamos aquí para ayudarte, por favor contacta a citycatalyst@openearth.org si tienes preguntas!",
     "footer-2": "Hagamos que los datos climáticos locales trabajen más duro, juntos.",
     "footer-3": "El Equipo de CityCatalyst",
     "footer": "Open Earth Foundation es una corporación sin fines de lucro de beneficio público de California, EE. UU. EIN: 85-3261449"
   },
   "hiap-ranking-ready": {
-    "subject": "CityCatalyst - Clasificación HIAP Lista",
-    "preview": "CityCatalyst: Clasificación HIAP Lista",
+    "subject": "Clasificación HIAP Lista",
+    "preview": "Clasificación HIAP Lista",
     "brand": "CityCatalyst",
     "title": "¡Tus acciones de mitigación están listas!",
     "cta": "Ve a tus acciones",
@@ -207,8 +205,8 @@
     "footer": "Open Earth Foundation es una corporación sin fines de lucro de beneficio público de California, EE. UU. EIN: 85-3261449"
   },
   "action-plan-ready": {
-    "subject": "City Catalyst - Plan de Acción Listo",
-    "preview": "CityCatalyst: ¡Tu plan de acción climática está listo!",
+    "subject": "Plan de Acción Listo",
+    "preview": "¡Tu plan de acción climática está listo!",
     "brand": "CityCatalyst",
     "title": "¡Tu plan de acción climática está listo!",
     "greeting": "Hola {{name}},",

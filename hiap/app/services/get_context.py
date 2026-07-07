@@ -11,22 +11,24 @@ Run it from the root of the project with the following command:
 python scripts/create_city_data/get_context.py --locode "BR ATM"
 """
 
-import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-from pathlib import Path
 import argparse
 import json
 import logging
+import os
+from pathlib import Path
+
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
 
 def get_context(locode):
-    # Base URL for the API
-    base_url = "https://ccglobal.openearth.dev/api/v0/city_context/city"
-    # Construct the API endpoint URL
-    url = f"{base_url}/{locode}"
+    global_api_base = (
+        os.getenv("CCGLOBAL_API_BASE_URL", "https://ccglobal.openearth.dev").rstrip("/")
+    )
+    url = f"{global_api_base}/api/v0/city_context/city/{locode}"
 
     # Configure retry strategy similar to get_actions
     retry_strategy = Retry(

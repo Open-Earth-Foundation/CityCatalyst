@@ -22,6 +22,7 @@ from app.modules.prioritizer.internal_models import (
 )
 from app.modules.prioritizer.models import CityApiItem, FrontendCityInput
 from app.services.data_clients import (
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
@@ -76,6 +77,19 @@ def _load_mock_action_mitigation_feasibility_scores() -> dict[str, object]:
     )
     return feasibility_client.get_action_mitigation_feasibility_scores(
         locode="CL ARI",
+        country_code="CL",
+    ).scores_by_action_id
+
+
+def _load_mock_action_financial_feasibility_scores() -> dict[str, object]:
+    """Load financial feasibility scores from the mock payload."""
+    feasibility_client = MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=(
+            _mock_data_dir() / "action_financial_feasibility_scores_api_mock.json"
+        )
+    )
+    return feasibility_client.get_action_financial_feasibility_scores(
+        locode="CL IQQ",
         country_code="CL",
     ).scores_by_action_id
 
@@ -757,15 +771,17 @@ def test_alignment_timeframe_component_uses_best_multi_select_match(
 
 @pytest.mark.unit
 def test_feasibility_block_with_mock_api_data() -> None:
-    """Feasibility block computes legal+mitigation feasibility scores and evidence."""
+    """Feasibility block computes legal, mitigation, and financial evidence."""
     actions = _load_mock_actions()
     legal_assessments = _load_mock_legal_assessments()
     mitigation_feasibility_scores = _load_mock_action_mitigation_feasibility_scores()
+    financial_feasibility_scores = _load_mock_action_financial_feasibility_scores()
 
     result = feasibility.run(
         actions=actions,
         legal_assessments_by_action_id=legal_assessments,
         mitigation_feasibility_scores_by_action_id=mitigation_feasibility_scores,
+        financial_feasibility_scores_by_action_id=financial_feasibility_scores,
     )
 
     assert len(result.score_by_action_id) == len(actions)
@@ -775,6 +791,7 @@ def test_feasibility_block_with_mock_api_data() -> None:
     assert first_action_evidence["feasibility_score"] == pytest.approx(
         first_action_evidence["legal_contribution"]
         + first_action_evidence["mitigation_feasibility_contribution"]
+        + first_action_evidence["financial_feasibility_contribution"]
     )
     assert (
         first_action_evidence["mitigation_feasibility_component_source"]
@@ -782,6 +799,67 @@ def test_feasibility_block_with_mock_api_data() -> None:
     )
     assert first_action_evidence["mitigation_feasibility_component_score"] == pytest.approx(0.969)
     assert first_action_evidence["mitigation_feasibility_score_present"] is True
+    assert (
+        first_action_evidence["financial_feasibility_component_source"]
+        == "action_financial_feasibility_score"
+    )
+    assert first_action_evidence["financial_feasibility_component_score"] == pytest.approx(1.0)
+    assert first_action_evidence["financial_feasibility_score_present"] is True
+    assert first_action_evidence["financial_feasibility_route"] == "self-deliverable"
+    assert (
+        first_action_evidence["financial_feasibility_reason"]
+        == "Low-capital action the city can deliver itself."
+    )
+    assert first_action_evidence["financial_feasibility_inputs"]["finance"][
+        "fund_access"
+    ] == "direct"
+    assert first_action_evidence["financial_feasibility_links"]["detail"].endswith(
+        "/climate-finance/actions/c40_0034"
+    )
+    first_action_legal_assessment = legal_assessments["c40_0034"]
+    assert (
+        first_action_evidence["ownership_category"]
+        == first_action_legal_assessment.ownership_category
+    )
+    assert (
+        first_action_evidence["ownership_score"]
+        == first_action_legal_assessment.ownership_score
+    )
+    assert (
+        first_action_evidence["ownership_description"]
+        == first_action_legal_assessment.ownership_description
+    )
+    assert (
+        first_action_evidence["ownership_description_es"]
+        == first_action_legal_assessment.ownership_description_i18n["es"]
+    )
+    assert (
+        first_action_evidence["restrictions_category"]
+        == first_action_legal_assessment.restrictions_category
+    )
+    assert (
+        first_action_evidence["restrictions_score"]
+        == first_action_legal_assessment.restrictions_score
+    )
+    assert (
+        first_action_evidence["restrictions_description"]
+        == first_action_legal_assessment.restrictions_description
+    )
+    assert (
+        first_action_evidence["restrictions_description_es"]
+        == first_action_legal_assessment.restrictions_description_i18n["es"]
+    )
+    assert (
+        first_action_evidence["legal_justification"]
+        == first_action_legal_assessment.legal_justification_i18n["es"]
+    )
+    assert (
+        first_action_evidence["legal_justification_en"]
+        == first_action_legal_assessment.legal_justification_i18n["en"]
+    )
+    assert first_action_evidence["legal_references"] == (
+        first_action_legal_assessment.legal_references
+    )
     missing_score_action_ids = result.metadata[
         "missing_mitigation_feasibility_score_action_ids"
     ]
@@ -802,6 +880,28 @@ def test_feasibility_block_with_mock_api_data() -> None:
     assert missing_action_id in result.metadata["missing_legal_assessment_action_ids"]
     assert result.metadata["neutral_legal_fallback_actions_count"] > 0
     assert missing_action_id in result.metadata["neutral_legal_fallback_action_ids"]
+    assert result.metadata["missing_financial_feasibility_score_actions_count"] == 0
+
+
+@pytest.mark.unit
+def test_feasibility_block_missing_financial_score_uses_neutral_fallback() -> None:
+    """Missing financial feasibility rows use the neutral fallback component."""
+    result = feasibility.run(
+        actions=[Action(action_id="A_missing_finance", action_name="Missing finance")],
+        legal_assessments_by_action_id={},
+        mitigation_feasibility_scores_by_action_id={},
+        financial_feasibility_scores_by_action_id={},
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_finance"]
+    assert evidence["financial_feasibility_component_score"] == pytest.approx(0.5)
+    assert evidence["financial_feasibility_component_source"] == "neutral_fallback"
+    assert evidence["financial_feasibility_score_missing"] is True
+    assert evidence["financial_feasibility_contribution"] == pytest.approx(0.165)
+    assert result.metadata["missing_financial_feasibility_score_action_ids"] == [
+        "A_missing_finance"
+    ]
+    assert result.score_by_action_id["A_missing_finance"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit

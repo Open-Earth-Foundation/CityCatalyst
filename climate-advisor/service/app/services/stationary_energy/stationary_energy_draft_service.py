@@ -311,7 +311,7 @@ class StationaryEnergyDraftService:
                 trace_id=trace_id,
             )
 
-            token = await self._ensure_user_token(
+            token = await self.ensure_user_token(
                 user_id=user_id,
                 thread_id=thread_id,
                 token=token,
@@ -966,7 +966,7 @@ class StationaryEnergyDraftService:
                 detail="Draft has no review decisions to save",
             )
 
-        token = await self._ensure_user_token(
+        token = await self.ensure_user_token(
             user_id=payload.user_id,
             thread_id=draft_run.thread_id,
             token=token,
@@ -1201,7 +1201,7 @@ class StationaryEnergyDraftService:
                 ) from exc
             raise
 
-    async def _ensure_user_token(
+    async def ensure_user_token(
         self,
         *,
         user_id: str,
@@ -1318,7 +1318,7 @@ class StationaryEnergyDraftService:
         )
 
         try:
-            token = await self._ensure_user_token(
+            token = await self.ensure_user_token(
                 user_id=draft_run.user_id,
                 thread_id=draft_run.thread_id,
                 token=extract_bearer_token(authorization),

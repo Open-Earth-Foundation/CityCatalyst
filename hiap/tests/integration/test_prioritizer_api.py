@@ -2,11 +2,12 @@
 Integration tests for the prioritizer API endpoints.
 """
 
-import pytest
+import uuid
 import sys
 from pathlib import Path
-from unittest.mock import patch
-import uuid
+from unittest.mock import Mock, patch
+
+import pytest
 
 # Add the app directory to the Python path
 app_dir = Path(__file__).parent.parent.parent / "app"
@@ -17,19 +18,17 @@ sys.path.insert(0, str(app_dir))
 class TestPrioritizerAPI:
     """Test cases for prioritizer API endpoints."""
 
-    @patch("services.get_context.get_context")
-    @patch("services.get_actions.get_actions")
+    @patch("prioritizer.api._execute_prioritization")
+    @patch("prioritizer.api.get_actions")
     def test_start_prioritization_success(
-        self, mock_get_actions, mock_get_context, client, sample_city_data_request
+        self,
+        mock_get_actions,
+        mock_execute_prioritization,
+        client,
+        sample_city_data_request,
     ):
         """Test successful start of prioritization process."""
-        # Mock the external API calls
-        mock_get_context.return_value = {
-            "locode": "BR RIO",
-            "name": "Rio de Janeiro",
-            "biome": "Atlantic Forest",
-        }
-
+        mock_execute_prioritization.return_value = None
         mock_get_actions.return_value = [
             {
                 "ActionID": "MIT001",
@@ -152,13 +151,24 @@ class TestPrioritizerAPI:
         response = client.get(f"/prioritizer/v1/get_prioritization_bulk/{fake_uuid}")
         assert response.status_code == 404
 
-    @patch("services.get_context.get_context")
+    @patch("prioritizer.api._execute_prioritization")
+    @patch("prioritizer.api.get_actions")
     def test_start_prioritization_no_context_data(
-        self, mock_get_context, client, sample_city_data_request
+        self,
+        mock_get_actions,
+        mock_execute_prioritization,
+        client,
+        sample_city_data_request,
     ):
-        """Test prioritization when context data is not available."""
-        # Mock context API to return None
-        mock_get_context.return_value = None
+        """Test prioritization can still be enqueued when background work is deferred."""
+        mock_execute_prioritization.return_value = None
+        mock_get_actions.return_value = [
+            {
+                "ActionID": "MIT001",
+                "ActionName": "Solar Installation",
+                "ActionType": ["mitigation"],
+            }
+        ]
 
         response = client.post(
             "/prioritizer/v1/start_prioritization", json=sample_city_data_request
@@ -176,8 +186,28 @@ class TestPrioritizerAPI:
         # Should return 422 for missing request body
         assert response.status_code == 422
 
-    def test_start_prioritization_different_types(self, client):
+    @patch("prioritizer.api._execute_prioritization")
+    @patch("prioritizer.api.get_actions")
+    def test_start_prioritization_different_types(
+        self,
+        mock_get_actions,
+        mock_execute_prioritization,
+        client,
+    ):
         """Test prioritization with different PrioritizationType values."""
+        mock_execute_prioritization.return_value = None
+        mock_get_actions.return_value = [
+            {
+                "ActionID": "MIT001",
+                "ActionName": "Solar Installation",
+                "ActionType": ["mitigation"],
+            },
+            {
+                "ActionID": "ADA001",
+                "ActionName": "Flood Defense",
+                "ActionType": ["adaptation"],
+            },
+        ]
         base_request = {
             "cityData": {
                 "cityContextData": {"locode": "BR RIO", "populationSize": 6748000},
@@ -233,38 +263,15 @@ class TestPrioritizerAPI:
         )
         assert response.status_code == 422
 
-    @patch("services.get_ccra.get_ccra")
-    @patch("services.get_context.get_context")
-    @patch("services.get_actions.get_actions")
-    @patch("prioritizer.utils.add_explanations.generate_multilingual_explanation")
+    @patch("prioritizer.api._execute_create_explanations")
     def test_create_explanations_start_success(
         self,
-        mock_generate_explanations,
-        mock_get_actions,
-        mock_get_context,
-        mock_get_ccra,
+        mock_execute_create_explanations,
         client,
         sample_city_data_request,
     ):
         """Start explanation creation task when no explanations are present."""
-        # Mock external dependencies so the background worker has stable inputs
-        mock_get_context.return_value = {
-            "locode": "BR RIO",
-            "name": "Rio de Janeiro",
-            "biome": "Atlantic Forest",
-        }
-        mock_get_ccra.return_value = []
-        mock_get_actions.return_value = [
-            {
-                "ActionID": "MIT001",
-                "ActionName": "Solar Installation",
-                "ActionType": ["mitigation"],
-                "BiomeCompatibility": ["Atlantic Forest"],
-            }
-        ]
-        mock_generate_explanations.return_value = {
-            "explanations": {"en": "Test explanation"}
-        }
+        mock_execute_create_explanations.return_value = None
 
         payload = {
             "cityData": sample_city_data_request["cityData"],
@@ -287,16 +294,14 @@ class TestPrioritizerAPI:
         assert "taskId" in data
         assert "status" in data
 
-    @patch("prioritizer.utils.translate_explanations.translate_explanation_text")
+    @patch("prioritizer.api._execute_translate_explanations")
     def test_translate_explanations_start_success(
         self,
-        mock_translate,
+        mock_execute_translate_explanations,
         client,
     ):
         """Start translation task when source language is present on all actions."""
-        from prioritizer.models import Explanation
-
-        mock_translate.return_value = Explanation(explanations={"de": "Übersetzt"})
+        mock_execute_translate_explanations.return_value = None
 
         payload = {
             "locode": "BR RIO",
@@ -389,29 +394,17 @@ class TestPrioritizerAPI:
 class TestPrioritizerWorkflow:
     """Test complete prioritizer workflow"""
 
-    @patch("prioritizer.utils.add_explanations.generate_multilingual_explanation")
-    @patch("prioritizer.utils.tournament.tournament_ranking")
-    @patch("prioritizer.utils.filter_actions_by_biome.filter_actions_by_biome")
-    @patch("services.get_actions.get_actions")
-    @patch("services.get_context.get_context")
+    @patch("prioritizer.api._execute_prioritization")
+    @patch("prioritizer.api.get_actions")
     def test_complete_prioritization_workflow(
         self,
-        mock_explanation,
-        mock_tournament,
-        mock_filter,
         mock_get_actions,
-        mock_get_context,
+        mock_execute_prioritization,
         client,
         sample_city_data_request,
     ):
-        """Test the complete prioritization workflow from start to finish."""
-
-        # Setup all mocks
-        mock_get_context.return_value = {
-            "locode": "BRRIO",
-            "name": "Rio de Janeiro",
-            "biome": "Atlantic Forest",
-        }
+        """Test the endpoint returns a task id without running the worker."""
+        mock_execute_prioritization.return_value = None
 
         mock_actions = [
             {
@@ -421,15 +414,6 @@ class TestPrioritizerWorkflow:
             }
         ]
         mock_get_actions.return_value = mock_actions
-        mock_filter.return_value = mock_actions
-        mock_tournament.return_value = [(mock_actions[0], 1)]
-        mock_explanation.return_value = {
-            "explanations": {
-                "en": "Highly effective action",
-                "es": "Acción muy efectiva",
-                "pt": "Ação muito eficaz",
-            }
-        }
 
         # Start prioritization
         response = client.post(
@@ -438,24 +422,25 @@ class TestPrioritizerWorkflow:
         assert response.status_code == 202
 
         task_id = response.json()["taskId"]
-        # Note: Status could be "pending" or "running" depending on background thread timing
+        assert task_id
 
-        # Note: In a real test, you'd need to wait for the background task
-        # or use async testing to properly test the complete workflow
-        # This test mainly verifies the endpoint structure
-
-    @patch("services.get_context.get_context")
-    @patch("services.get_actions.get_actions")
+    @patch("prioritizer.api._get_bulk_executor")
+    @patch("prioritizer.api.get_actions")
     def test_bulk_prioritization_workflow(
-        self, mock_get_actions, mock_get_context, client
+        self,
+        mock_get_actions,
+        mock_get_bulk_executor,
+        client,
     ):
         """Test bulk prioritization workflow including validation."""
-        # Mock the external API calls
-        mock_get_context.return_value = {
-            "locode": "BR RIO",
-            "name": "Rio de Janeiro",
-            "biome": "Atlantic Forest",
-        }
+        mock_future = Mock()
+        mock_future.done.return_value = False
+        mock_future.cancel.return_value = False
+        mock_future.add_done_callback.return_value = None
+
+        mock_executor = Mock()
+        mock_executor.submit.return_value = mock_future
+        mock_get_bulk_executor.return_value = mock_executor
 
         mock_get_actions.return_value = [
             {

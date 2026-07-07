@@ -5,10 +5,13 @@ description = "MEED+ prioritization engine: scores and ranks city climate action
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi>=0.137.1",
+    "boto3>=1.42.0",
+    "fastapi>=0.138.0",
     "httpx>=0.28.1",
-    "mlflow>=3.0.1",
-    "openai>=2.42.0",
+    "mlflow-skinny>=3.0.1",
+    "numpy>=2.0.0",
+    "pandas>=2.0.0",
+    "openai>=2.44.0",
     "pyyaml>=6.0.3",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.48.0",
@@ -16,5 +19,5 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "pytest>=9.1.0",
+    "pytest>=9.1.1",
 ]

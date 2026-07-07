@@ -13,7 +13,7 @@
     {
       "name": "best_inventory_years_city",
       "content": "What are the best inventory years for {{city_name}} based on data availability?",
-      "expect_tool": "city_inventory_search",
+      "expect_tool": "inventory_list_accessible",
       "requires": [
         "city_name"
       ]

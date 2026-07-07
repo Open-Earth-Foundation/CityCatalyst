@@ -13,8 +13,8 @@ It contains the `api.py` file for production and `local_call.py` for testing the
 
 We are importing data from several sources:
 
-1. City context data from: "https://ccglobal.openearth.dev/api/v0/city_context/city"
-2. City CCRA data from: "https://ccglobal.openearth.dev/api/v0/ccra/risk_assessment/city"
+1. City context data from: `{CCGLOBAL_API_BASE_URL}/api/v0/city_context/city`
+2. City CCRA data from: `{CCGLOBAL_API_BASE_URL}/api/v0/ccra/risk_assessment/city`
 3. City GHGI data is passed via the request body
 
 ### Langsmith

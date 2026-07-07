@@ -89,7 +89,9 @@ export function InviteUserToMultipleCitiesTemplate({
               <Text style={paragraph}>
                 {t("invite-multiple.message", {
                   citiesCount:
-                    cities?.length === 1 ? "this city" : "these cities",
+                    cities?.length === 1
+                      ? t("invite-multiple.this-city")
+                      : t("invite-multiple.these-cities"),
                 })}
               </Text>
               <div>

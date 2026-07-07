@@ -103,7 +103,10 @@ export function ActionCards({
 
           {/* Invite colleagues card */}
           <GridItem display="flex" alignItems="center" gap={4} minH={0} p={0}>
-            <AddCollaboratorButton lng={lng} />
+            <AddCollaboratorButton
+              lng={lng}
+              organizationId={organization.organizationId}
+            />
           </GridItem>
 
           {/* All projects card */}

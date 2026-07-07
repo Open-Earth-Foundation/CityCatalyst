@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 from app.modules.prioritizer.api import (
+    get_action_financial_feasibility_scores_data_api_client,
     get_action_pathways_data_api_client,
     get_city_data_api_client,
     get_legal_data_api_client,
@@ -17,6 +18,7 @@ from app.modules.prioritizer.api import (
     get_action_mitigation_feasibility_scores_data_api_client,
 )
 from app.services.data_clients import (
+    MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
     MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
@@ -59,8 +61,8 @@ def test_prioritize_e2e_with_mock_api_payloads(
     mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
         mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
     )
-    mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
-        mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
+    mock_financial_feasibility_client = MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_financial_feasibility_scores_api_mock.json"
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
@@ -72,8 +74,8 @@ def test_prioritize_e2e_with_mock_api_payloads(
     app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
         lambda: mock_feasibility_client
     )
-    app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
-        lambda: mock_feasibility_client
+    app.dependency_overrides[get_action_financial_feasibility_scores_data_api_client] = (
+        lambda: mock_financial_feasibility_client
     )
     try:
         with TestClient(app) as test_client:
@@ -119,6 +121,39 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "co_benefit_component_score",
             "timeframe_component_score",
         }
+        feasibility_summary = ranked_actions[0]["evidence_summary"]["feasibility"]
+        assert set(feasibility_summary.keys()) == {
+            "feasibility_score",
+            "legal",
+            "mitigation_feasibility",
+            "financial_feasibility",
+        }
+        assert isinstance(
+            feasibility_summary["financial_feasibility"]["route"],
+            str,
+        )
+        legal_summary = feasibility_summary["legal"]
+        assert {
+            "ownership_category",
+            "ownership_score",
+            "ownership_description",
+            "ownership_description_es",
+            "restrictions_category",
+            "restrictions_score",
+            "restrictions_description",
+            "restrictions_description_es",
+            "legal_justification",
+            "legal_justification_en",
+            "legal_references",
+        }.issubset(legal_summary.keys())
+        assert isinstance(legal_summary["ownership_description"], str)
+        assert isinstance(legal_summary["ownership_description_es"], str)
+        assert isinstance(legal_summary["restrictions_description"], str)
+        assert isinstance(legal_summary["restrictions_description_es"], str)
+        assert isinstance(legal_summary["legal_justification"], str)
+        assert isinstance(legal_summary["legal_justification_en"], str)
+        assert isinstance(legal_summary["legal_references"], list)
+        assert legal_summary["legal_references"]
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         missing_evidence_rows = [
@@ -244,6 +279,27 @@ def test_prioritize_e2e_with_mock_api_payloads(
             "action_mitigation_feasibility_scores_api_mock.json"
         )
 
+        fetch_financial_feasibility_files = [
+            file_name
+            for file_name in generated_files
+            if file_name.endswith("_fetch_action_financial_feasibility_scores.json")
+        ]
+        assert len(fetch_financial_feasibility_files) == 1
+        fetch_financial_feasibility_payload = json.loads(
+            (run_dir / fetch_financial_feasibility_files[0]).read_text("utf-8")
+        )["payload"]
+        assert (
+            fetch_financial_feasibility_payload["source"]
+            == "mock_action_financial_feasibility_scores_api"
+        )
+        assert (
+            fetch_financial_feasibility_payload["source_metadata"]["requested_locode"]
+            == "CL IQQ"
+        )
+        assert fetch_financial_feasibility_payload["source_metadata"][
+            "mock_file_path"
+        ].endswith("action_financial_feasibility_scores_api_mock.json")
+
         response_full_payload = json.loads(
             (run_dir / "response_full.json").read_text("utf-8")
         )
@@ -283,12 +339,24 @@ def test_prioritize_e2e_stubbed_activity_mapping_matches_disabled_mode(
     mock_policy_client = MockActionPolicyScoresDataApiClient(
         mock_file_path=mock_data_dir / "action_policy_scores_api_mock.json"
     )
+    mock_feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_mitigation_feasibility_scores_api_mock.json"
+    )
+    mock_financial_feasibility_client = MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=mock_data_dir / "action_financial_feasibility_scores_api_mock.json"
+    )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_pathways_data_api_client] = lambda: mock_action_client
     app.dependency_overrides[get_legal_data_api_client] = lambda: mock_legal_client
     app.dependency_overrides[get_action_policy_scores_data_api_client] = (
         lambda: mock_policy_client
+    )
+    app.dependency_overrides[get_action_mitigation_feasibility_scores_data_api_client] = (
+        lambda: mock_feasibility_client
+    )
+    app.dependency_overrides[get_action_financial_feasibility_scores_data_api_client] = (
+        lambda: mock_financial_feasibility_client
     )
     try:
         with TestClient(app) as test_client:

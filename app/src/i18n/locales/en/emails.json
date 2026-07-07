@@ -115,7 +115,7 @@
     "title": "You've been granted access",
     "brand": "CityCatalyst",
     "greeting": "Hi {{email}},",
-    "message": "You have been granted access to {{citiesCount}} cities:",
+    "message": "You have been granted access to {{citiesCount}}:",
     "this-city": "this city",
     "these-cities": "these cities",
     "cta": "JOIN NOW",

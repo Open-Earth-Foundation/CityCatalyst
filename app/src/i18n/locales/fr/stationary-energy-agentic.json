@@ -7,5 +7,6 @@
   "draft-notation-key-IE": "Included elsewhere",
   "draft-notation-key-C": "Confidential",
   "draft-notation-key-NA": "Not applicable",
-  "error-failed-to-load-stationary-energy-draft-status": "Failed to load Stationary Energy draft status"
+  "error-failed-to-load-stationary-energy-draft-status": "Failed to load Stationary Energy draft status",
+  "sector-card-let-agent-draft": "Rédaction par agent"
 }

@@ -24,8 +24,7 @@ data and configuration, not by rebuilding the workflow.
 - The CityCatalyst global-data concept-note-builder research page, especially
   its supply/awards/pipeline split and its funder, funding opportunity, project,
   action, and funding-link data model.
-- The PDF converter repository as an external conversion dependency with a
-  stable adapter contract.
+- The supporting PDF converter repository for PDF-to-markdown conversion.
 
 ## Scope
 
@@ -39,7 +38,7 @@ In scope:
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
-- A thin adapter boundary for PDF conversion and document ingestion.
+- PDF upload ingestion using the supporting PDF converter repository.
 - Reuse of current CityCatalyst-to-Climate-Advisor connection for CC data.
 
 Out of scope:
@@ -59,8 +58,8 @@ workflow, following the same direction as the Stationary Energy workflow:
 2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
 3. The datateam managed CNB database stores reusable funder and funded-project
    tables alongside CNB workflow tables.
-4. The PDF conversion pipeline is an adapter dependency with a stable output
-   contract.
+4. PDF ingestion should use the supporting PDF converter repository to convert
+   PDFs to markdown.
 5. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
@@ -167,7 +166,7 @@ flowchart LR
 | Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
 | Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
 | Exported DOCX/PDF file references | datateam managed CNB database | Workflow output artifacts. |
-| PDF conversion internals | PDF converter project | External pipeline; CNB only consumes its output contract. |
+| PDF-to-markdown conversion | Supporting PDF converter repo | Used for converting uploaded PDFs to markdown. |
 
 ## Data Infrastructure Boundary
 
@@ -706,52 +705,10 @@ If the user project or funder profile is missing a field needed for the future
 scoring concept, the workflow should not invent it. It should record a match
 caveat and create a gap if the missing field matters for drafting.
 
-## PDF Converter Boundary
+## PDF Conversion
 
-Do not plan conversion internals here. CNB only needs an adapter that accepts a
-file reference and returns a stable ingestion payload.
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant UI as CityCatalyst UI
-    participant CA as CA document ingest route
-    participant Store as File storage
-    participant Adapter as PDF converter adapter
-    participant Converter as PDF_converter
-    participant DB as CNB storage
-
-    User->>UI: Drop PDF/DOCX/CAP document
-    UI->>Store: Upload original file
-    UI->>CA: Register upload with run_id
-    CA->>Adapter: Convert(file_ref)
-    Adapter->>Converter: Submit file
-    Converter-->>Adapter: source text + source locations + warnings
-    Adapter-->>CA: Normalized conversion result
-    CA->>DB: Store selected source context in context bundle
-    CA-->>UI: SSE upload_ingested or upload_failed
-```
-
-Adapter output contract:
-
-```json
-{
-  "file_ref": "string",
-  "title": "string",
-  "document_type": "pdf|docx|xlsx|html|text|other",
-  "converted_text": "string",
-  "source_locations": [
-    {
-      "label": "string",
-      "excerpt": "string",
-      "source_location": "page 1, section heading"
-    }
-  ],
-  "extracted_entities": [],
-  "warnings": [],
-  "confidence": "high|medium|low"
-}
-```
+CNB should use the supporting `Open-Earth-Foundation/PDF_converter` repository to
+convert uploaded PDFs to markdown.
 
 ## Document Workspace
 
@@ -1020,7 +977,7 @@ Output:
 
 Rules:
 
-- Calls the converter adapter.
+- Uses the supporting PDF converter repository for PDF-to-markdown conversion.
 - Does not persist converter chunks in dedicated CNB source tables.
 - Stores selected source context in the context bundle.
 - Emits an SSE event so the UI can show the upload as available context.
@@ -1493,7 +1450,7 @@ file layout.
 | CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
 | Funding reference access | datateam managed CNB database | Climate Advisor reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links from CNB reference tables. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
-| File ingestion | Climate Advisor plus converter adapter | Registers uploads and calls the conversion adapter. CNB persistence keeps only selected source context in the context bundle. |
+| File ingestion | Climate Advisor | Registers uploads and uses the supporting PDF converter repository for PDF-to-markdown conversion. CNB persistence keeps only selected source context in the context bundle. |
 | CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
 | CC bridge routes | CityCatalyst | Authenticated browser-facing proxy into CA workflow routes. |
 | Capability registry | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag. |
@@ -1538,7 +1495,7 @@ Minimum test surface:
 - Source-link preservation tests when editing text.
 - Matching tests for candidate retrieval, LLM decision output, fit rationale,
   evidence, and caveats.
-- Converter adapter tests with success, warning, and failure payloads.
+- PDF ingestion tests with success, warning, and failure payloads.
 - Prompt/tool registration tests proving only the active step's tools are
   available.
 - SSE event shape tests for document updates.
@@ -1577,7 +1534,7 @@ Minimum test surface:
 ### Phase 4: File Ingestion
 
 - Add upload registration.
-- Add PDF converter adapter.
+- Use the supporting PDF converter repository for PDF-to-markdown conversion.
 - Attach converted source context to the context bundle.
 - Enable mid-flow upload ingestion and source-linked drafting through the document workspace.
 

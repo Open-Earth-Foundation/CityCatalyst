@@ -34,8 +34,8 @@ In scope:
 - A Climate Advisor workflow for concept-note runs.
 - A document workspace that supports structured chapters, citations, revisions,
   gaps, and export.
-- A standalone DB for funders, funder criteria, templates, and similar funded
-  projects.
+- Funding reference tables for funders, funder criteria, templates, and similar
+  funded projects in the datateam managed CNB database.
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
@@ -57,7 +57,8 @@ workflow, following the same direction as the Stationary Energy workflow:
 
 1. CityCatalyst owns product data, user permissions, and committed module state.
 2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
-3. A standalone DB owns reusable funder and funded-project data.
+3. The datateam managed CNB database stores reusable funder and funded-project
+   tables alongside CNB workflow tables.
 4. The PDF conversion pipeline is an adapter dependency with a stable output
    contract.
 5. The agent gets a scoped tool pack for the active workflow step, not a flat
@@ -84,9 +85,9 @@ flowchart TB
         MatchService["ProjectMatchingService"]
     end
 
-    subgraph Standalone["Standalone DB"]
-        FunderDB[("Funder criteria<br/>templates")]
-        ProjectKB[("Funded projects<br/>awards<br/>source evidence")]
+    subgraph CNBDB["datateam managed CNB database"]
+        FunderDB[("Funder criteria tables<br/>templates")]
+        ProjectKB[("Funded project tables<br/>awards<br/>source evidence")]
     end
 
     ContextBundle["Context bundle<br/>CC context + funder criteria<br/>funded projects + uploads"]
@@ -161,7 +162,7 @@ flowchart LR
 | Chat threads and messages | Climate Advisor | Existing CA conversation model. |
 | Concept-note run state | datateam managed CNB database | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
 | Context bundle snapshot | datateam managed CNB database | Reusable run input/output for this workflow. |
-| Uploaded file references and extracted text | datateam managed CNB database | Needed for mid-flow ingestion, citations, and export. |
+| Uploaded file references and selected source context | datateam managed CNB database | Needed for mid-flow ingestion, citations, and export. |
 | Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
 | Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
 | Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
@@ -179,10 +180,11 @@ The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
 
 - typed read/write clients or repositories for CNB run and document state
-- typed research clients for funder, funding-opportunity, pipeline, and
+- typed reference-data clients for funder, funding-opportunity, pipeline, and
   funded-project data
 - stable file references for uploads and exports
-- explicit source/evidence ids for citations and audit trails
+- source labels/locations and evidence link records for citations and audit
+  trails
 
 The diagrams below describe the logical storage shape the workflow needs. They
 are contract requirements for integration, not a decision that the Climate
@@ -218,7 +220,7 @@ flowchart TB
 | --- | --- | --- |
 | `selecting_scope` | user, city, project candidates | workflow control, CC project reads |
 | `ingesting_user_files` | uploaded file refs, deterministic converter status, candidate source excerpts | deterministic document ingest tools; no LLM |
-| `profiling_funder` | selected funder, template, criteria | standalone DB tools |
+| `profiling_funder` | selected funder, template, criteria | CNB reference table tools |
 | `matching_examples` | project profile, funder profile, project KB filters | matching tools |
 | `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | context bundle tools |
 | `interviewing` | gaps, known facts, required template fields | interview tools, document read tools |
@@ -291,7 +293,7 @@ Recommended high-level shape:
 
 ### Data Planning Constraints From Global Data
 
-The standalone research model follows the global-data CNB research page. The
+The CNB funding reference table model follows the global-data CNB research page. The
 important planning rules are:
 
 - Keep the four discovered input groups separate: finance landscape, funder
@@ -324,6 +326,10 @@ important planning rules are:
 These are the logical workflow/document tables the CNB backend needs to use.
 They should live in the datateam managed CNB database. Climate Advisor consumes
 them through typed service/repository contracts.
+
+The workflow tables below and the funding reference tables in the next diagram
+are part of the same database infrastructure. They are split into two diagrams
+only so the workflow state and curated funding/reference data are easier to read.
 
 ```mermaid
 erDiagram
@@ -431,16 +437,34 @@ erDiagram
     }
 ```
 
+### Evidence Links
+
+`concept_note_evidence_links` are citation records. They connect a claim in a
+specific chapter revision to the selected source context that supports it.
+
+They do not store source documents or converter chunks. The supporting context
+lives in the context bundle, and the evidence link records the user-facing source
+label, source location, claim reference, and quote or summary needed for review
+and export.
+
+Example: if a chapter says the project targets the city's largest emissions
+sector, an evidence link can point that claim to a GHGI summary, an uploaded CAP
+excerpt, a funder criterion, or a matched funded-project example already present
+in the context bundle.
+
+### Gaps
+
 `concept_note_gaps` are unresolved missing facts or required template fields
 that cannot be grounded from the context bundle yet. They are not source records.
 They are drafting/export blockers or warnings such as missing budget amount,
 missing partner confirmation, or a required funder section with no
 evidence-backed content.
 
-### Standalone DB
+### CNB Funding Reference Tables
 
-The standalone DB is not workflow state. It is the curated, reusable corpus for
-funders and funded projects.
+These tables live in the same datateam managed CNB database as the workflow
+tables. They are the curated, reusable table group for funders and funded
+projects.
 
 ```mermaid
 erDiagram
@@ -582,9 +606,9 @@ flowchart LR
     Convert --> Extract["Extract structured facts"]
     Extract --> Curate["Human curation"]
     Curate --> Validate["Schema validation<br/>license check<br/>dedupe"]
-    Validate --> Store["Standalone DB"]
+    Validate --> Store["CNB funding reference tables"]
     Store --> Index["Lexical/vector index"]
-    Store --> Tools["Runtime research tools"]
+    Store --> Tools["Runtime reference tools"]
 ```
 
 Required ingest outputs:
@@ -756,12 +780,12 @@ preflight and generation routes.
 
 ### Tool Groups
 
-| Group | Purpose | Writes CNB storage | Calls CC | Calls standalone DB |
+| Group | Purpose | Writes CNB storage | Calls CC | Calls CNB reference tables |
 | --- | --- | --- | --- | --- |
 | Workflow tools | start, status, resume, retry | yes | no | no |
 | Context tools | load CC summary, load bundle | yes | yes | yes |
 | Ingest tools | convert uploads, prepare candidate source excerpts | yes | no | no |
-| Research tools | funder profile, template, criteria | no | no | yes |
+| Reference tools | funder profile, template, criteria | no | no | yes |
 | Matching tools | find and explain similar projects | yes | no | yes |
 | Document tools | chapters, text, evidence, gaps | yes | no | optional |
 | Export button actions | preflight and generate DOCX/PDF | yes | no | no |
@@ -960,7 +984,7 @@ Output:
 Rules:
 
 - Calls the converter adapter.
-- Does not persist converter chunks or separate CNB source tables.
+- Does not persist converter chunks in dedicated CNB source tables.
 - Stores selected source context in the context bundle.
 - Emits an SSE event so the UI can show the upload as available context.
 
@@ -1195,12 +1219,13 @@ Rules:
 
 ### `document_link_evidence`
 
-Links a source chunk, funder criterion, CC fact, or similar project example to a
-claim inside a chapter.
+Links selected source context, a funder criterion, a CC fact, or a similar
+project example to a claim inside a chapter.
 
 Rules:
 
-- Evidence links should point to stable source ids and chunk ids.
+- Evidence links should point to the selected source label and source location
+  from the context bundle.
 - Each link should include a claim reference or text range where possible.
 - The export source manifest should derive from these links.
 
@@ -1282,12 +1307,12 @@ sequenceDiagram
 flowchart TB
     Step["Current workflow_step"] --> Registry["CNB capability registry"]
     Registry --> ContextTools["Context tools"]
-    Registry --> ResearchTools["Research tools"]
+    Registry --> ReferenceTools["Reference tools"]
     Registry --> MatchingTools["Matching tools"]
     Registry --> DocTools["Document tools"]
 
     ContextTools --> Agent["Scoped CNB agent"]
-    ResearchTools --> Agent
+    ReferenceTools --> Agent
     MatchingTools --> Agent
     DocTools --> Agent
 
@@ -1380,7 +1405,7 @@ Export preflight should check:
 - Critical gaps resolved.
 - Budget, partners, match funding, and commitments are sourced or user-confirmed.
 - Custom chapters are allowed by the export mode.
-- Citations have stable source refs.
+- Citations have source labels and source locations from the context bundle.
 - Deleted required chapters are represented in a preflight warning.
 
 ## Planned Routes
@@ -1429,7 +1454,7 @@ file layout.
 | --- | --- | --- |
 | Workflow orchestration | Climate Advisor | Starts/resumes runs, resolves active step, scopes tools, streams responses. |
 | CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
-| Research access | Climate Advisor integration over standalone DB | Reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links. |
+| Funding reference access | datateam managed CNB database | Climate Advisor reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links from CNB reference tables. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
 | File ingestion | Climate Advisor plus converter adapter | Registers uploads and calls the conversion adapter. CNB persistence keeps only selected source context in the context bundle. |
 | CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
@@ -1504,11 +1529,11 @@ Minimum test surface:
 - Add CC capability wrappers for city, project, GHGI, CCRA, and HIAP summaries.
 - Persist context snapshots for audit and resume.
 
-### Phase 3: Standalone DB and Matching
+### Phase 3: CNB Reference Tables and Matching
 
 - Stand up funder/profile/template/project schema.
 - Add curated ingest scripts.
-- Add research tools and similar-project matching.
+- Add reference tools and similar-project matching.
 - Persist matched examples and show them in the document workflow.
 
 ### Phase 4: File Ingestion

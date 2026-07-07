@@ -45,15 +45,15 @@ async function translateString(
     model: AI_MODEL,
     messages,
   });
-  const tokensResponse = await openai.responses.inputTokens.count({
+  /* const tokensResponse = await openai.responses.inputTokens.count({
     model: AI_MODEL,
     input: messages,
   });
-  const inputTokens = tokensResponse.input_tokens;
+  const inputTokens = tokensResponse.input_tokens; */
 
   return {
     result: stripQuotes(response.choices[0].message.content),
-    inputTokens,
+    inputTokens: 0,
   };
 }
 

@@ -100,6 +100,14 @@ const EmissionDataSection = ({
     setOpenChangeMethodology(false);
   };
 
+  // Sum the emissions of the activities actually shown in this scope, instead of
+  // relying on inventoryValue.co2eq (which can be stale/0 and made the footer
+  // "Total emissions" show 0 t CO2e even when activities had emissions). See ON-6043.
+  const totalScopeEmissions = activityValues.reduce(
+    (sum, activity) => sum + BigInt(activity.co2eq ?? 0),
+    0n,
+  );
+
   const closeModals = () => {
     setSelectedActivityValue(undefined);
     setAddActivityDataDialogOpen(false);
@@ -377,10 +385,7 @@ const EmissionDataSection = ({
                       fontWeight="semibold"
                       fontSize="headline.md"
                     >
-                      {convertKgToTonnes(
-                        inventoryValue?.co2eq as bigint,
-                        numberFormat,
-                      )}
+                      {convertKgToTonnes(totalScopeEmissions, numberFormat)}
                     </Text>
                   </Box>
                 </Box>

@@ -198,8 +198,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     await transaction.commit();
     committed = true;
 
-    // Send invite email after successful commit (non-fatal)
-    const emailSent = await EmailService.sendOrganizationInvitationEmail(
+    // Send invite email after successful commit (non-fatal).
+    // sendOrganizationInvitationEmail returns { success, inviteUrl }; the object
+    // is always truthy, so we must check `.success` to detect delivery failures.
+    const emailResult = await EmailService.sendOrganizationInvitationEmail(
       {
         email,
         organizationId,
@@ -209,9 +211,15 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       null,
     );
 
-    if (!emailSent) {
-      logger.error({ email }, "Failed to send org invite email (invite was created successfully)");
-      return NextResponse.json({ success: true, emailSent: false }, { status: 200 });
+    if (!emailResult.success) {
+      logger.error(
+        { email },
+        "Failed to send org invite email (invite was created successfully)",
+      );
+      return NextResponse.json(
+        { success: true, emailSent: false },
+        { status: 200 },
+      );
     }
 
     return NextResponse.json({ success: true });

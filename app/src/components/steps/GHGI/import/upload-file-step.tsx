@@ -8,12 +8,21 @@ import {
   Icon,
   IconButton,
   Input,
+  Link,
   Spinner,
   Text,
   VStack,
 } from "@chakra-ui/react";
 import { MdClose, MdUpload } from "react-icons/md";
+import Image from "next/image";
 import { useRef } from "react";
+
+function getFileIcon(fileName: string): string {
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  if (ext === "pdf") return "/assets/pdf_file_icon.svg";
+  if (ext === "csv") return "/assets/csv_file_icon.svg";
+  return "/assets/excel_file_icon.svg";
+}
 import { bytesToMB } from "@/util/helpers";
 
 interface UploadFileStepProps {
@@ -71,10 +80,15 @@ export default function UploadFileStep({
             {cityName}
           </Text>
         )}
-        <Heading size="lg">{t("upload-inventory-file-heading")}</Heading>
-        <Text fontSize="body.lg" color="content.tertiary">
-          {t("upload-inventory-file-description")}
-        </Text>
+        <Heading
+          as="h1"
+          color="content.primary"
+          fontSize="display.sm"
+          lineHeight="44"
+          fontWeight="semibold"
+        >
+          {t("upload-inventory-file-heading")}
+        </Heading>
       </Box>
 
       <Card.Root
@@ -88,25 +102,17 @@ export default function UploadFileStep({
         borderColor="border.default"
       >
         {isUploading ? (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap="16px"
-            py={8}
-          >
-            <Spinner size="md" color="interactive.primary" />
-            <Box>
+          <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
+            <Spinner size="lg" />
+            <Box textAlign="center">
               <Text fontWeight="medium" fontSize="body.md">
                 {t("uploading-file")}
               </Text>
               <Text fontSize="body.sm" color="content.tertiary">
-                {uploadedFile
-                  ? `${uploadedFile.name} - ${bytesToMB(uploadedFile.size)}`
-                  : t("please-wait")}
+                {t("please-wait")}
               </Text>
             </Box>
-          </Box>
+          </VStack>
         ) : uploadedFile ? (
           <Box
             display="flex"
@@ -115,7 +121,12 @@ export default function UploadFileStep({
             w="full"
           >
             <Box display="flex" alignItems="center" gap="16px">
-              <Icon as={MdUpload} boxSize={6} color="interactive.primary" />
+              <Image
+                src={getFileIcon(uploadedFile.name)}
+                alt={uploadedFile.name.split(".").pop()?.toUpperCase() ?? "file"}
+                width={32}
+                height={32}
+              />
               <Box>
                 <Text fontWeight="medium" fontSize="body.md">
                   {uploadedFile.name}
@@ -159,7 +170,12 @@ export default function UploadFileStep({
                   {t("click-to-upload")}
                 </Text>
                 <Text fontSize="body.sm" color="content.tertiary" mt={2}>
-                  {t("file-formats")}
+                  {t("file-formats")}{" "}
+                  <Text as="span" fontWeight="bold">{t("file-formats-list")}</Text>
+                </Text>
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("max-file-size")}{" "}
+                  <Text as="span" fontWeight="bold">{t("max-file-size-value")}</Text>
                 </Text>
               </Box>
             </VStack>
@@ -173,6 +189,46 @@ export default function UploadFileStep({
             />
           </Box>
         )}
+
+        {!isUploading && <Box
+          display="flex"
+          alignItems="center"
+          gap="12px"
+          mt={6}
+        >
+          <Image
+            src="/assets/data-portal-for-cities-logo.svg"
+            alt="Data Portal for Cities"
+            width={130}
+            height={36}
+            style={{ flexShrink: 0 }}
+          />
+          <Text
+            fontSize="body.lg"
+            color="content.tertiary"
+            fontFamily="body"
+            fontWeight="regular"
+            lineHeight="24"
+            letterSpacing="wide"
+          >
+            {t("data-portal-banner-text")}
+            <Link
+              display="block"
+              href="https://dataportalforcities.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              color="content.link"
+              fontFamily="body"
+              fontSize="body.lg"
+              fontWeight="regular"
+              lineHeight="24"
+              letterSpacing="wide"
+              textDecoration="underline"
+            >
+              {t("data-portal-link")}.
+            </Link>
+          </Text>
+        </Box>}
       </Card.Root>
     </Box>
   );

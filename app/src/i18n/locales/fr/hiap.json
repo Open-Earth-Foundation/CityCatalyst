@@ -182,5 +182,8 @@
   "selection-update-failed": "Échec de la mise à jour de la sélection",
   "other-available-actions": "Autres Actions Disponibles",
   "other-available-actions-description": "Voici d'autres actions climatiques disponibles pour votre ville qui n'ont pas été incluses dans la liste des actions les mieux classées. Ces actions peuvent toujours être pertinentes en fonction des priorités spécifiques et du contexte de votre ville.",
-  "last-update": "Dernière mise à jour"
+  "last-update": "Dernière mise à jour",
+  "history": "Histoire",
+  "view-more": "VOIR PLUS",
+  "view-less": "VOIR MOINS"
 }

@@ -1,10 +1,11 @@
 import createHttpError from "http-errors";
 
 import InventoryProgressService from "@/backend/InventoryProgressService";
+import { ProjectService } from "@/backend/ProjectsService";
 import { getEmissionResults } from "@/backend/ResultsService";
 import { db } from "@/models";
-import { City } from "@/models/City";
 import { Inventory } from "@/models/Inventory";
+import { Roles } from "@/util/types";
 
 type InventoryMetadata = {
   city: string;
@@ -41,6 +42,23 @@ type AccessibleInventoryList = {
     year: number | null;
     include_all_city_years: boolean;
   };
+};
+
+type InventoryListInventory = {
+  inventoryId: string;
+  inventoryName?: string | null;
+  year?: number | null;
+  inventoryType?: string | null;
+  globalWarmingPotentialType?: string | null;
+};
+
+type InventoryListCity = {
+  cityId: string;
+  name?: string | null;
+  country?: string | null;
+  region?: string | null;
+  locode?: string | null;
+  inventories?: InventoryListInventory[];
 };
 
 type DataState = {
@@ -159,15 +177,8 @@ export async function buildAccessibleInventoryList({
   includeAllCityYears?: boolean;
 }): Promise<AccessibleInventoryList> {
   const user = await db.models.User.findOne({
-    attributes: [],
+    attributes: ["userId", "role"],
     where: { userId },
-    include: [
-      {
-        model: db.models.City,
-        as: "cities",
-        include: [{ model: db.models.Inventory, as: "inventories" }],
-      },
-    ],
   });
 
   if (!user) {
@@ -175,9 +186,9 @@ export async function buildAccessibleInventoryList({
   }
 
   const normalizedQuery = normalizeSearch(cityQuery);
-  const cities = user.cities
-    .filter((city: City) => cityMatchesQuery(city, normalizedQuery))
-    .map((city: City) => accessibleCity(city, year, includeAllCityYears))
+  const cities = (await candidateCitiesForUser(user.userId, user.role))
+    .filter((city) => cityMatchesQuery(city, normalizedQuery))
+    .map((city) => accessibleCity(city, year, includeAllCityYears))
     .filter((city) => city.inventories.length > 0)
     .sort((a, b) => citySortLabel(a).localeCompare(citySortLabel(b)));
 
@@ -194,6 +205,40 @@ export async function buildAccessibleInventoryList({
       include_all_city_years: includeAllCityYears,
     },
   };
+}
+
+/** Return city candidates using the same maintained project/city discovery as the CC drawer. */
+async function candidateCitiesForUser(
+  userId: string,
+  role?: string | null,
+): Promise<InventoryListCity[]> {
+  if (role === Roles.Admin) {
+    return citiesWithInventories();
+  }
+
+  const projects = await ProjectService.fetchUserProjects(userId);
+  return dedupeCities(
+    projects.flatMap((project) => project.cities as InventoryListCity[]),
+  );
+}
+
+/** Load all city candidates for system admins. */
+async function citiesWithInventories(): Promise<InventoryListCity[]> {
+  return (await db.models.City.findAll({
+    include: [{ model: db.models.Inventory, as: "inventories" }],
+  })) as InventoryListCity[];
+}
+
+/** Keep the first candidate when access paths overlap. */
+function dedupeCities(cities: InventoryListCity[]): InventoryListCity[] {
+  const seen = new Set<string>();
+  return cities.filter((city) => {
+    if (seen.has(city.cityId)) {
+      return false;
+    }
+    seen.add(city.cityId);
+    return true;
+  });
 }
 
 export async function buildInventoryStatusOverview(
@@ -266,18 +311,19 @@ async function loadInventoryForProgress(
 }
 
 function accessibleCity(
-  city: City,
+  city: InventoryListCity,
   year: number | undefined,
   includeAllCityYears: boolean,
 ): AccessibleInventoryCity {
   const inventories = (city.inventories ?? [])
-    .filter((inventory: Inventory) => {
+    .filter((inventory: InventoryListInventory) => {
       return includeAllCityYears || year == null || inventory.year === year;
     })
     .sort(
-      (a: Inventory, b: Inventory) => Number(b.year ?? 0) - Number(a.year ?? 0),
+      (a: InventoryListInventory, b: InventoryListInventory) =>
+        Number(b.year ?? 0) - Number(a.year ?? 0),
     )
-    .map((inventory: Inventory) => ({
+    .map((inventory: InventoryListInventory) => ({
       inventory_id: inventory.inventoryId,
       inventory_name: inventory.inventoryName ?? null,
       year: inventory.year ?? null,
@@ -464,7 +510,10 @@ function normalizeSearch(value: string | null | undefined): string | null {
   return normalized ? normalized : null;
 }
 
-function cityMatchesQuery(city: City, normalizedQuery: string | null): boolean {
+function cityMatchesQuery(
+  city: InventoryListCity,
+  normalizedQuery: string | null,
+): boolean {
   if (!normalizedQuery) {
     return true;
   }

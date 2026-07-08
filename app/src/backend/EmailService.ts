@@ -70,7 +70,7 @@ export default class EmailService {
     },
     organization: Organization,
     user: User | null,
-  ) {
+  ): Promise<{ success: boolean; inviteUrl: string }> {
     const { email, organizationId, role } = request;
 
     if (!process.env.VERIFICATION_TOKEN_SECRET) {
@@ -100,30 +100,36 @@ export default class EmailService {
     params.set("role", role);
 
     const url = `${host}/cities/onboarding?${params.toString()}`;
-    const html = await render(
-      InviteToOrganizationTemplate({
-        url,
-        organization,
+
+    try {
+      const html = await render(
+        InviteToOrganizationTemplate({
+          url,
+          organization,
+          user,
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
         user,
-        language: user?.preferredLanguage,
-      }),
-    );
+        "invite-organization.subject",
+      ).subject;
 
-    const translatedSubject = this.getTranslation(
-      user,
-      "invite-organization.subject",
-    ).subject;
+      await sendEmail({
+        to: email,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        { err, email, organizationId },
+        "Failed to send organization invitation email",
+      );
+      return { success: false, inviteUrl: url };
+    }
 
-    const emailResult = await sendEmail({
-      to: email,
-      subject: translatedSubject,
-      html,
-    });
-
-    return {
-      success: emailResult,
-      inviteUrl: url,
-    };
+    return { success: true, inviteUrl: url };
   }
 
   public static async sendProjectCreationNotificationEmail({

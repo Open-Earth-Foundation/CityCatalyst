@@ -38,7 +38,6 @@ interface EmissionDataSectionProps {
   refNumberWithScope: string;
   activityValues: ActivityValue[];
   suggestedActivities: SuggestedActivity[];
-  totalEmissions: number;
   changeMethodology: () => void;
   inventoryValue: InventoryValue | null;
   numberFormat?: string;
@@ -52,7 +51,6 @@ const EmissionDataSection = ({
   refNumberWithScope,
   activityValues,
   suggestedActivities,
-  totalEmissions,
   changeMethodology,
   inventoryValue,
   numberFormat,
@@ -378,7 +376,10 @@ const EmissionDataSection = ({
                       fontSize="headline.md"
                     >
                       {convertKgToTonnes(
-                        inventoryValue?.co2eq as bigint,
+                        activityValues.reduce(
+                          (sum, av) => sum + BigInt(av.co2eq ?? 0n),
+                          0n,
+                        ),
                         numberFormat,
                       )}
                     </Text>

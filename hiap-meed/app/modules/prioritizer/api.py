@@ -477,6 +477,7 @@ def prioritize(
                         locode=city_input.locode,
                         ranked_action_ids=per_city_result.ranked_action_ids,
                         ranked_actions=per_city_result.ranked_actions,
+                        removed_actions=per_city_result.removed_actions,
                         metadata=per_city_result.metadata,
                         warnings=per_city_result.warnings,
                     )

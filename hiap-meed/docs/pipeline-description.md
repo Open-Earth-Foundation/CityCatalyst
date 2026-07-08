@@ -1227,6 +1227,16 @@ Key metadata includes:
 - `counts.ranked_actions`
 - `hard_filter_evidence_by_action_id`
 
+The response also includes top-level `removed_actions` beside `ranked_actions`.
+This is the frontend-facing list for actions removed before scoring. For legally
+blocked actions, each item uses `removal_source = legal_hard_filter` and includes
+a `legal` object with the verdict, public ownership and restriction
+categories/scores, English and Spanish ownership and restriction descriptions,
+Spanish and English legal justification, and normalized legal reference strings
+from the legal classification source. The metadata
+`hard_filter_evidence_by_action_id` map remains available as the diagnostic
+hard-filter trace.
+
 ## 9. How the Final Ranked List Is Created
 
 The final ranked list is produced in this sequence:

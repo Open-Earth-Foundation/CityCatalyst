@@ -596,6 +596,25 @@ Example response:
           "explanations": {}
         }
       ],
+      "removed_actions": [
+        {
+          "action_id": "c40_0013",
+          "action_name": "Electrify public bus fleets",
+          "removal_reason": "legal_verdict_blocked",
+          "removal_source": "legal_hard_filter",
+          "legal": {
+            "verdict_category": "blocked",
+            "verdict_score": 0.0,
+            "ownership_description": "Authority belongs to another level of government; municipality cannot act alone.",
+            "ownership_description_es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo.",
+            "restrictions_description": "There is a legal prohibition/restriction, or legal reform is needed.",
+            "restrictions_description_es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa.",
+            "legal_justification": "Texto de razonamiento juridico en espanol.",
+            "legal_justification_en": "English legal reasoning text.",
+            "legal_references": ["Ley 18.695 (LOCM) - BCN"]
+          }
+        }
+      ],
       "warnings": [],
       "metadata": {
         "internal_request_id": "d1db6269-4cf9-4d62-8f4c-8f4ce631fbd2",
@@ -628,6 +647,15 @@ Example response:
   ]
 }
 ```
+
+When actions are removed before ranking, the prioritization response includes
+them in `removed_actions` for frontend display. Legally blocked rows include a
+`legal` object with the same public legal detail fields used by ranked actions,
+including `ownership_description`, `ownership_description_es`,
+`restrictions_description`, `restrictions_description_es`,
+`legal_justification`, `legal_justification_en`, and `legal_references`.
+The diagnostic `metadata.hard_filter_evidence_by_action_id` map remains
+available for artifact/debug views.
 
 Common validation errors:
 

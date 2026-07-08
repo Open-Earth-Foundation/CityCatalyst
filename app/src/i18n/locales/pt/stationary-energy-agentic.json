@@ -290,5 +290,21 @@
   "error-chat-history-unavailable": "O histórico de chat do Clima está indisponível, mas o rascunho ainda pode ser executado.",
   "error-draft-start-response-missing-run-id": "A resposta de início do rascunho não incluiu o draft_run_id.",
   "error-failed-to-send-message": "Falha ao enviar mensagem",
-  "source-does-not-match-stationary-energy-target": "A fonte selecionada não corresponde ao alvo de Energia Estacionária revisado"
+  "source-does-not-match-stationary-energy-target": "A fonte selecionada não corresponde ao alvo de Energia Estacionária revisado",
+  "tool-message-notation-options-loaded": "Opções de chave de notação de Energia Estacionária carregadas para {{targets}} linhas elegíveis.",
+  "tool-message-notation-stage-success": "Selecionadas {{selected}} escolhas de notação-chave de Energia Estacionária.",
+  "tool-message-notation-stage-partial": "Selecionados {{selected}} opções de chave de notação e bloqueados {{blocked}} escolhas inválidas.",
+  "tool-message-notation-stage-blocked": "Nenhuma opção de chave de notação foi encenada porque {{blocked}} linhas solicitadas eram inválidas.",
+  "tool-message-notation-stage-none": "Nenhuma opção elegível de chave de notação estava disponível para o palco.",
+  "tool-message-notation-bulk-confirm-success": "Por favor, confirme a aplicação de {{selected}} escolhas de notação-chave de Energia Estacionária.",
+  "tool-message-notation-bulk-confirm-partial": "Por favor, confirme a aplicação de {{selected}} escolhas válidas de chave de notação. {{blocked}} escolhas precisam de esclarecimento primeiro.",
+  "tool-message-notation-bulk-confirm-blocked": "Não consegui preparar essas escolhas de chave de notação. Por favor, esclareça as linhas e chaves.",
+  "tool-message-notation-bulk-confirm-none": "Não há opções elegíveis de chave de notação disponíveis.",
+  "tool-message-notation-rollback-success": "Reverteu {{selected}} escolhas de chaves de notação de Energia Estacionária em estágio.",
+  "tool-message-notation-rollback-partial": "Revertido {{selected}} escolhas de chave de notação em fase de preparação e bloqueado {{blocked}} linhas inválidas.",
+  "tool-message-notation-rollback-blocked": "Nenhuma escolha de chave de notação programada foi revertida porque {{blocked}} linhas solicitadas eram inválidas.",
+  "tool-message-notation-rollback-none": "Não havia opções ativas de chave de notação de Energia Estacionária em estágio para reverter.",
+  "tool-message-inventory-save-confirm-with-notation": "Por favor, confirme antes de escrever {{ready}} linhas de Energia Estacionária revisadas no inventário do CityCatalyst, incluindo {{notation}} linhas de chaves de notação.",
+  "tool-error-invalid-notation-choice": "A escolha da chave de notação de Energia Estacionária foi inválida.",
+  "tool-error-invalid-notation-choices": "As escolhas da chave de notação de Energia Estacionária eram inválidas."
 }

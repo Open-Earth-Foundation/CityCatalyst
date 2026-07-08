@@ -38,7 +38,6 @@ interface EmissionDataSectionProps {
   refNumberWithScope: string;
   activityValues: ActivityValue[];
   suggestedActivities: SuggestedActivity[];
-  totalEmissions: number;
   changeMethodology: () => void;
   inventoryValue: InventoryValue | null;
   numberFormat?: string;
@@ -52,7 +51,6 @@ const EmissionDataSection = ({
   refNumberWithScope,
   activityValues,
   suggestedActivities,
-  totalEmissions,
   changeMethodology,
   inventoryValue,
   numberFormat,

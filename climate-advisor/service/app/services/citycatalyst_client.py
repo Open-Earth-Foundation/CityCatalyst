@@ -75,6 +75,7 @@ class CityCatalystClient:
         # Datasource aggregation pulls several upstream feeds and often exceeds the default 30s.
         self.datasource_timeout = max(self.timeout, 90)
         self._client: Optional[httpx.AsyncClient] = None
+        self.last_refreshed_token: Optional[str] = None
         
         if not self.base_url:
             logger.warning(
@@ -185,7 +186,7 @@ class CityCatalystClient:
         data: Any,
         user_id: str,
     ) -> tuple[str, int, dict[str, Any]]:
-        """Validate a CityCatalyst token refresh payload before using it."""
+        """Validate refresh fields and JWT claims when the token exposes them."""
         if not isinstance(data, dict):
             raise TokenRefreshError("Invalid token refresh response")
 
@@ -194,7 +195,7 @@ class CityCatalystClient:
         expires_in = data.get("expires_in")
         if not isinstance(fresh_token, str) or not fresh_token.strip():
             raise TokenRefreshError("No token in refresh response")
-        if token_type != "Bearer":
+        if token_type is not None and token_type != "Bearer":
             raise TokenRefreshError("Invalid token type in refresh response")
         if (
             isinstance(expires_in, bool)
@@ -204,14 +205,15 @@ class CityCatalystClient:
             raise TokenRefreshError("Invalid token expiry in refresh response")
 
         claims = parse_jwt_claims(fresh_token)
-        if not isinstance(claims, dict):
-            raise TokenRefreshError("Invalid token claims in refresh response")
-        if claims.get("sub") != user_id:
-            raise TokenRefreshError("Refreshed token subject does not match requested user")
-        if claims.get("iss") != "climate-advisor-service":
-            raise TokenRefreshError("Invalid token issuer in refresh response")
-        if not self._audience_matches(claims.get("aud")):
-            raise TokenRefreshError("Invalid token audience in refresh response")
+        if isinstance(claims, dict):
+            if claims.get("sub") != user_id:
+                raise TokenRefreshError("Refreshed token subject does not match requested user")
+            if claims.get("iss") != "climate-advisor-service":
+                raise TokenRefreshError("Invalid token issuer in refresh response")
+            if not self._audience_matches(claims.get("aud")):
+                raise TokenRefreshError("Invalid token audience in refresh response")
+        else:
+            claims = {}
 
         return fresh_token, int(expires_in), claims
 
@@ -406,19 +408,43 @@ class CityCatalystClient:
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
     ) -> Dict[str, Any]:
-        """POST to an internal CityCatalyst capability endpoint and parse the JSON response."""
+        """POST to an internal CityCatalyst capability endpoint with auth refresh."""
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
+        request_token = token
+        user_id = self._refresh_user_id(json_data)
+        self.last_refreshed_token = None
+
         response = await client.post(
             url,
-            headers=self._internal_headers(token),
+            headers=self._internal_headers(request_token),
             json=json_data,
             follow_redirects=True,
             timeout=request_timeout or self.datasource_timeout,
         )
+
+        # Retry once on 401 with a fresh user token, matching the public POST path.
+        if response.status_code == 401 and request_token and user_id:
+            logger.debug("Internal capability got 401, attempting token refresh")
+            try:
+                request_token, _ = await self.refresh_token(user_id)
+                self.last_refreshed_token = request_token
+                response = await client.post(
+                    url,
+                    headers=self._internal_headers(request_token),
+                    json=json_data,
+                    follow_redirects=True,
+                    timeout=request_timeout or self.datasource_timeout,
+                )
+            except TokenRefreshError as e:
+                logger.error("Failed to refresh internal capability token: %s", e)
+                raise CityCatalystClientError(
+                    f"Authentication failed: {e}",
+                    status_code=401,
+                ) from e
 
         if not response.is_success:
             error_text = response.text[:500] if response.text else "Unknown error"
@@ -433,6 +459,14 @@ class CityCatalystClient:
             raise CityCatalystClientError(
                 f"Failed to parse CC capability response: {e}"
             ) from e
+
+    def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
+        """Return the user id available for internal capability token refresh."""
+        user_id = payload.get("user_id")
+        if user_id is None:
+            return None
+        user_id_text = str(user_id).strip()
+        return user_id_text or None
 
     async def get_stationary_energy_allowed_capabilities(
         self,
@@ -481,6 +515,58 @@ class CityCatalystClient:
             token=token,
         )
 
+    async def list_stationary_energy_notation_keys(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List Stationary Energy notation-key targets through the CC internal route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def load_inventory_list_accessible(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List accessible inventories through the CC capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def load_inventory_status_overview(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Load compact whole-inventory status through the CC capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/inventory/status-overview",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def load_inventory_emissions_context(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Load compact whole-inventory emissions context through the CC capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context",
+            json_data=request_payload,
+            token=token,
+        )
+
     async def commit_stationary_energy_accepted(
         self,
         *,
@@ -490,6 +576,19 @@ class CityCatalystClient:
         """Commit accepted Stationary Energy review rows through the CC internal capability route."""
         return await self.post_internal_capability(
             "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def commit_stationary_energy_notation_keys(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Commit saved Stationary Energy notation-key rows through CC."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
             json_data=request_payload,
             token=token,
         )

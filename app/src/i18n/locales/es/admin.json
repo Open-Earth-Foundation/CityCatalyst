@@ -307,5 +307,6 @@
   "status-early-access": "Acceso Anticipado",
   "status-beta": "Beta",
   "status-active": "Activo",
-  "select-status": "Selecciona un estado"
+  "select-status": "Selecciona un estado",
+  "go-back": "Regresa"
 }

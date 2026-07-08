@@ -50,6 +50,8 @@ spec:
               value: "quiet"
             - name: MLFLOW_ASYNC_LOGGING_ENABLED
               value: "true"
+            - name: CA_FEATURE_FLAGS
+              value: "STATIONARY_ENERGY_AGENTIC"
           resources:
             requests:
               memory: "512Mi"

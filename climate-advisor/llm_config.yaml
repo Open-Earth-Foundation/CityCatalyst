@@ -26,11 +26,11 @@ generation:
 
 # System Prompts
 prompts:
-  # Default system prompt for general climate advice
-  default: "prompts/default.md"
+  # Shared core prompt composed into every workflow
+  core: "prompts/core.md"
 
-  # Prompt for inventory-specific context
-  inventory_context: "prompts/inventory_context.md"
+  # Workflow prompt for general climate and inventory chat
+  chat: "prompts/chat.md"
 
   # Prompt for active Stationary Energy review chat flows
   stationary_energy_review: "prompts/stationary_energy_review.md"

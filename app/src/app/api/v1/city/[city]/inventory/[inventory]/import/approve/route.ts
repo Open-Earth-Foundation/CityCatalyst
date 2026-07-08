@@ -597,6 +597,17 @@ export const POST = apiHandler(
       );
     }
 
+    // Check if this inventory already contains data (InventoryValue records)
+    // to prevent duplicate imports
+    const existingValueCount = await db.models.InventoryValue.count({
+      where: { inventoryId },
+    });
+    if (existingValueCount > 0) {
+      throw new createHttpError.Conflict(
+        "This inventory already contains data. Clear existing data before importing again.",
+      );
+    }
+
     // Update mapping configuration if overrides provided
     let mappingConfiguration = importedFile.mappingConfiguration || {};
     if (mappingOverrides) {

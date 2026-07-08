@@ -267,12 +267,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     });
   }, [allDataSources, referenceNumber]);
 
-  let totalEmissions = 0;
-
-  activityData?.forEach((activity: any) => {
-    totalEmissions += parseInt(activity?.co2eq);
-  });
-
   const [isMethodologySelected, setIsMethodologySelected] =
     useState<boolean>(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
@@ -586,7 +580,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 refNumberWithScope={referenceNumber}
                 activityValues={activityValues as unknown as ActivityValue[]}
                 suggestedActivities={suggestedActivities}
-                totalEmissions={totalEmissions}
                 changeMethodology={changeMethodology}
                 inventoryValue={inventoryValue as unknown as InventoryValue}
                 numberFormat={userInfo?.numberFormat}
@@ -727,11 +720,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   </Card.Header>
                   <Card.Body justifyContent="space-between" p="0" mt="12px">
                     <Flex direction="row" mb={0} wrap="wrap" gap={2}>
-                      {!isConnected && (
+                      {data?.totals?.emissions?.co2eq_100yr != null &&
+                        data.totals.emissions.co2eq_100yr !== 0n && (
                         <Text fontSize="display.sm" fontWeight="semibold">
                           {convertKgToTonnes(
                             bigIntToDecimal(
-                              data?.totals?.emissions?.co2eq_100yr ?? 0n,
+                              data.totals.emissions.co2eq_100yr,
                             ).toNumber(),
                           )}
                         </Text>

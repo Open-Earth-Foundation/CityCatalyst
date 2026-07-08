@@ -14,11 +14,22 @@ const decisionSchema = z.object({
     "accept",
     "override_source",
     "override_manual",
+    "set_notation_key",
     "leave_draft",
   ]),
   selected_source_id: z.string().uuid().optional(),
   manual_value: z.number().optional(),
   manual_unit: z.string().optional(),
+  notation_key: z.enum(["NO", "NE", "IE", "C"]).optional(),
+  unavailable_reason: z
+    .enum([
+      "no-occurrance",
+      "not-estimated",
+      "included-elsewhere",
+      "confidential-information",
+    ])
+    .optional(),
+  unavailable_explanation: z.string().optional(),
   note: z.string().optional(),
 });
 

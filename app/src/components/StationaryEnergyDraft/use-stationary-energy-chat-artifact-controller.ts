@@ -82,12 +82,7 @@ import type {
 import { useSSEStream } from "@/hooks/useSSEStream";
 
 export type LoadingAction =
-  | "start"
-  | "refresh"
-  | "save_draft"
-  | "save_inventory"
-  | "chat"
-  | null;
+  "start" | "refresh" | "save_draft" | "save_inventory" | "chat" | null;
 type ErrorRecoveryAction = "start_draft";
 
 type UseStationaryEnergyChatArtifactControllerParams = {
@@ -255,6 +250,7 @@ function normalizeToolChoiceSummary(
   return {
     proposal_id:
       typeof record.proposal_id === "string" ? record.proposal_id : null,
+    target_id: typeof record.target_id === "string" ? record.target_id : null,
     candidate_id:
       typeof record.candidate_id === "string" ? record.candidate_id : null,
     selected_candidate_id:
@@ -277,6 +273,16 @@ function normalizeToolChoiceSummary(
       typeof record.source_meta === "string" ? record.source_meta : null,
     value: typeof record.value === "string" ? record.value : null,
     action: typeof record.action === "string" ? record.action : null,
+    notation_key:
+      typeof record.notation_key === "string" ? record.notation_key : null,
+    unavailable_reason:
+      typeof record.unavailable_reason === "string"
+        ? record.unavailable_reason
+        : null,
+    unavailable_explanation:
+      typeof record.unavailable_explanation === "string"
+        ? record.unavailable_explanation
+        : null,
     rationale: typeof record.rationale === "string" ? record.rationale : null,
     reason: typeof record.reason === "string" ? record.reason : null,
   };
@@ -348,11 +354,37 @@ function enrichToolChoiceSummary(
     (candidate) => candidate.proposal_id === choice.proposal_id,
   );
   if (!context) {
+    if (choice.action === "set_notation_key") {
+      return {
+        ...choice,
+        source_short_label:
+          choice.source_short_label ?? choice.notation_key ?? null,
+        source_label:
+          choice.source_label ??
+          (choice.notation_key ? `Notation key ${choice.notation_key}` : null),
+        source_meta: choice.source_meta ?? choice.unavailable_reason ?? null,
+        value:
+          choice.value ?? choice.unavailable_explanation ?? choice.reason ?? null,
+      };
+    }
     return choice;
   }
 
   const option = optionForToolChoice(choice, context);
   const isLeaveDraft = option?.action === "leave_draft";
+  if (choice.action === "set_notation_key") {
+    return {
+      ...choice,
+      target_label: choice.target_label ?? context.label,
+      source_label:
+        choice.source_label ??
+        (choice.notation_key ? `Notation key ${choice.notation_key}` : null),
+      source_short_label:
+        choice.source_short_label ?? choice.notation_key ?? null,
+      source_meta: choice.source_meta ?? choice.unavailable_reason ?? null,
+      value: choice.value ?? choice.unavailable_explanation ?? null,
+    };
+  }
 
   return {
     ...choice,
@@ -376,12 +408,16 @@ function toolChoiceSignature(choice: unknown): Record<string, unknown> {
   const record = choice as Record<string, unknown>;
   return {
     proposal_id: record.proposal_id,
+    target_id: record.target_id,
     action: record.action,
     candidate_id: record.candidate_id,
     selected_source_id: record.selected_source_id,
     selected_candidate_id: record.selected_candidate_id,
     source_label: record.source_label,
     target_label: record.target_label,
+    notation_key: record.notation_key,
+    unavailable_reason: record.unavailable_reason,
+    unavailable_explanation: record.unavailable_explanation,
     rationale: record.rationale,
     reason: record.reason,
   };
@@ -430,6 +466,7 @@ function confirmedBulkReviewChoicePayload(
 
     acc.push({
       proposal_id: proposalId,
+      ...(choice.target_id ? { target_id: choice.target_id } : {}),
       ...(choice.selected_candidate_id || choice.candidate_id
         ? {
             candidate_id:
@@ -440,6 +477,13 @@ function confirmedBulkReviewChoicePayload(
         ? { selected_source_id: choice.selected_source_id }
         : {}),
       ...(choice.action ? { action: choice.action } : {}),
+      ...(choice.notation_key ? { notation_key: choice.notation_key } : {}),
+      ...(choice.unavailable_reason
+        ? { unavailable_reason: choice.unavailable_reason }
+        : {}),
+      ...(choice.unavailable_explanation
+        ? { unavailable_explanation: choice.unavailable_explanation }
+        : {}),
       ...(choice.rationale ? { rationale: choice.rationale } : {}),
     });
     return acc;
@@ -514,6 +558,11 @@ export function useStationaryEnergyChatArtifactController(
   const [sourcePreference, setSourcePreference] =
     useState<SourcePreferenceCommand | null>(null);
   const handledToolResultSignaturesRef = useRef<Set<string>>(new Set());
+  const pendingInventorySaveConfirmationMessageRef = useRef<
+    string | null | undefined
+  >(undefined);
+  const pendingDraftStatusRefreshCountRef = useRef(0);
+  const canSaveAcceptedRowsToInventoryRef = useRef(false);
   const [focusedProposalId, setFocusedProposalId] = useState<string | null>(
     null,
   );
@@ -538,9 +587,16 @@ export function useStationaryEnergyChatArtifactController(
 
   const applyDraftState = useCallback(
     (payload: DraftStatusResponse) => {
+      const nextDecisionState = buildInitialDecisionState(payload);
+      const nextResolvedProposalIds = resolvedProposalIdsFromReview(payload);
+      canSaveAcceptedRowsToInventoryRef.current = canSaveToInventory({
+        draftState: payload,
+        resolvedProposalIds: nextResolvedProposalIds,
+        decisionState: nextDecisionState,
+      });
       setDraftState(payload);
-      setDecisionState(buildInitialDecisionState(payload));
-      setResolvedProposalIds(resolvedProposalIdsFromReview(payload));
+      setDecisionState(nextDecisionState);
+      setResolvedProposalIds(nextResolvedProposalIds);
       setThreadId(payload.thread_id ?? null);
       if (!payload.staleness?.is_stale) {
         setAcknowledgedStaleDraftRunId(null);
@@ -659,9 +715,9 @@ export function useStationaryEnergyChatArtifactController(
   const draftRunId = draftState?.draft_run_id;
   const isGenerating = Boolean(
     draftState &&
-      ["resolving_scope", "loading_context", "generating"].includes(
-        draftState.status,
-      ),
+    ["resolving_scope", "loading_context", "generating"].includes(
+      draftState.status,
+    ),
   );
   useEffect(() => {
     if (!featureEnabled || !draftRunId || !isGenerating) {
@@ -769,6 +825,9 @@ export function useStationaryEnergyChatArtifactController(
     decisionState,
     isSaving: loadingAction === "save_inventory",
   });
+  useEffect(() => {
+    canSaveAcceptedRowsToInventoryRef.current = canSaveAcceptedRowsToInventory;
+  }, [canSaveAcceptedRowsToInventory]);
   const canPersistDraft = canPersistDraftReview({
     draftState,
     resolvedProposalIds,
@@ -781,7 +840,7 @@ export function useStationaryEnergyChatArtifactController(
   );
   const showStaleWarning = Boolean(
     draftState?.staleness?.is_stale &&
-      acknowledgedStaleDraftRunId !== draftState?.draft_run_id,
+    acknowledgedStaleDraftRunId !== draftState?.draft_run_id,
   );
 
   useEffect(() => {
@@ -828,12 +887,6 @@ export function useStationaryEnergyChatArtifactController(
     );
   }, []);
 
-  useEffect(() => {
-    if (!canSaveAcceptedRowsToInventory) {
-      removeInventorySaveConfirmationMessages();
-    }
-  }, [canSaveAcceptedRowsToInventory, removeInventorySaveConfirmationMessages]);
-
   const appendInventorySaveConfirmation = useCallback((): void => {
     setChatMessages((current) => [
       ...current.filter(
@@ -842,6 +895,28 @@ export function useStationaryEnergyChatArtifactController(
       createInventorySaveConfirmationMessage(),
     ]);
   }, []);
+
+  useEffect(() => {
+    if (!canSaveAcceptedRowsToInventory) {
+      removeInventorySaveConfirmationMessages();
+      return;
+    }
+
+    const pendingMessage = pendingInventorySaveConfirmationMessageRef.current;
+    if (pendingMessage !== undefined) {
+      pendingInventorySaveConfirmationMessageRef.current = undefined;
+      removeInventorySaveConfirmationMessages();
+      if (pendingMessage) {
+        appendTextMessage("assistant", pendingMessage);
+      }
+      appendInventorySaveConfirmation();
+    }
+  }, [
+    appendInventorySaveConfirmation,
+    appendTextMessage,
+    canSaveAcceptedRowsToInventory,
+    removeInventorySaveConfirmationMessages,
+  ]);
 
   const appendBulkReviewConfirmation = useCallback(
     (params: {
@@ -948,6 +1023,9 @@ export function useStationaryEnergyChatArtifactController(
       }
 
       if (isStationaryEnergyInventoryConfirmationToolResult(tool)) {
+        const canSaveAcceptedRowsToInventoryNow =
+          canSaveAcceptedRowsToInventory ||
+          canSaveAcceptedRowsToInventoryRef.current;
         const toolMessage = resolveStationaryEnergyToolMessage(
           t,
           tool,
@@ -956,12 +1034,21 @@ export function useStationaryEnergyChatArtifactController(
             : "error-failed-to-save-accepted-stationary-energy-rows",
         );
         const confirmationRequest = resolveInventorySaveConfirmationRequest({
-          canSaveToInventory: canSaveAcceptedRowsToInventory,
+          canSaveToInventory: canSaveAcceptedRowsToInventoryNow,
           toolSuccess: tool.success,
           toolMessage,
           blockedMessage: t("chat-save-inventory-blocked"),
         });
         removeInventorySaveConfirmationMessages();
+        if (
+          tool.success &&
+          !canSaveAcceptedRowsToInventoryNow &&
+          pendingDraftStatusRefreshCountRef.current > 0
+        ) {
+          pendingInventorySaveConfirmationMessageRef.current =
+            toolMessage ?? null;
+          return;
+        }
         if (confirmationRequest.message) {
           appendTextMessage("assistant", confirmationRequest.message);
         }
@@ -1069,15 +1156,23 @@ export function useStationaryEnergyChatArtifactController(
       }
 
       if (toolDraftRunId) {
-        void refreshDraftStatusSilently(toolDraftRunId).catch((error) => {
-          showError(
-            resolveErrorMessage(
-              t,
-              error,
-              "error-failed-to-load-stationary-energy-draft-status",
-            ),
-          );
-        });
+        pendingDraftStatusRefreshCountRef.current += 1;
+        void refreshDraftStatusSilently(toolDraftRunId)
+          .catch((error) => {
+            showError(
+              resolveErrorMessage(
+                t,
+                error,
+                "error-failed-to-load-stationary-energy-draft-status",
+              ),
+            );
+          })
+          .finally(() => {
+            pendingDraftStatusRefreshCountRef.current = Math.max(
+              0,
+              pendingDraftStatusRefreshCountRef.current - 1,
+            );
+          });
       }
     },
     [
@@ -1361,9 +1456,11 @@ export function useStationaryEnergyChatArtifactController(
 
   const requestSaveToInventoryConfirmation = useCallback((): void => {
     if (!canSaveAcceptedRowsToInventory) {
+      pendingInventorySaveConfirmationMessageRef.current = undefined;
       appendTextMessage("assistant", t("chat-save-inventory-blocked"));
       return;
     }
+    pendingInventorySaveConfirmationMessageRef.current = undefined;
     appendTextMessage("assistant", t("chat-save-inventory-confirm"));
     appendInventorySaveConfirmation();
   }, [
@@ -1374,6 +1471,7 @@ export function useStationaryEnergyChatArtifactController(
   ]);
 
   const confirmSaveToInventory = useCallback((): void => {
+    pendingInventorySaveConfirmationMessageRef.current = undefined;
     removeInventorySaveConfirmationMessages();
     appendTextMessage("user", t("chat-save-inventory-confirmed"));
     void saveToInventory();
@@ -1385,6 +1483,7 @@ export function useStationaryEnergyChatArtifactController(
   ]);
 
   const cancelSaveToInventoryConfirmation = useCallback((): void => {
+    pendingInventorySaveConfirmationMessageRef.current = undefined;
     removeInventorySaveConfirmationMessages();
     appendTextMessage("assistant", t("chat-save-inventory-canceled"));
   }, [appendTextMessage, removeInventorySaveConfirmationMessages, t]);
@@ -1485,7 +1584,16 @@ export function useStationaryEnergyChatArtifactController(
   const cancelBulkReviewChanges = useCallback((): void => {
     removeBulkReviewConfirmationMessages();
     appendTextMessage("assistant", t("chat-bulk-review-canceled"));
-  }, [appendTextMessage, removeBulkReviewConfirmationMessages, t]);
+    if (canSaveAcceptedRowsToInventory) {
+      requestSaveToInventoryConfirmation();
+    }
+  }, [
+    appendTextMessage,
+    canSaveAcceptedRowsToInventory,
+    removeBulkReviewConfirmationMessages,
+    requestSaveToInventoryConfirmation,
+    t,
+  ]);
 
   const confirmStagedReviewRollback = useCallback(
     (choices: StationaryEnergyToolChoiceSummary[]): void => {

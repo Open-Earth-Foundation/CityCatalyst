@@ -80,6 +80,26 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(handler.history_saved)
         fake_agent_service.close.assert_awaited_once()
 
+    async def test_persist_refreshed_token_from_agent_service(self) -> None:
+        handler = StreamingHandler(
+            thread_id="thread-1",
+            user_id="user-1",
+            session_factory=MagicMock(),
+            cc_access_token="old-token",
+        )
+        handler.agent_service = MagicMock()
+        handler.agent_service.current_cc_token.return_value = "fresh-token"
+        handler.token_handler = MagicMock()
+        handler.token_handler.handle_refreshed_token = AsyncMock(return_value=True)
+
+        await handler._persist_refreshed_token_from_agent()
+
+        handler.token_handler.handle_refreshed_token.assert_awaited_once_with(
+            "fresh-token",
+            handler.agent_service,
+        )
+        self.assertEqual(handler.cc_access_token, "fresh-token")
+
     async def test_run_config_uses_persisted_stationary_energy_context_marker(
         self,
     ) -> None:
@@ -447,3 +467,20 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             emitted_tool_result["data"]["action"],
             "stationary_energy_request_staged_sources_rollback_confirmation",
         )
+
+    def test_stationary_energy_instruction_fallback_uses_composed_prompt(self) -> None:
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        handler.stationary_energy_draft_run_id = str(uuid4())
+        prompts = MagicMock()
+        prompts.compose_prompt.return_value = "Composed Stationary Energy prompt"
+        settings = SimpleNamespace(llm=SimpleNamespace(prompts=prompts))
+
+        with patch("app.utils.streaming_handler.get_settings", return_value=settings):
+            instruction_text = handler._stationary_energy_review_instruction_text()
+
+        self.assertEqual(instruction_text, "Composed Stationary Energy prompt")
+        prompts.compose_prompt.assert_called_once_with("stationary_energy_review")

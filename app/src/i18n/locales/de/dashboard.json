@@ -302,5 +302,11 @@
   "legend": "Legende",
   "citycatalyst": "CityCatalyst",
   "breadcrumb-hiap": "Actions & Plans",
-  "start-here": "Hier starten"
+  "start-here": "Hier starten",
+  "inventory-versions-action-change": "{{name}} hat die Aktion {{actionName}} auf Rang {{rank}} geändert und {{selectionStatus}}",
+  "inventory-versions-action-deleted": "{{name}} hat die Aktion {{actionName}} gelöscht",
+  "selected": "ausgewählt",
+  "unselected": "nicht ausgewählt",
+  "name": "Name",
+  "rank": "Rang"
 }

@@ -1233,12 +1233,12 @@ export default function AddDataSteps() {
                                         <Flex
                                           direction="row"
                                           gap="4px"
-                                          flexWrap="nowrap"
+                                          flexWrap="wrap"
                                         >
                                           <Badge
                                             fontSize={12}
                                             borderColor="border.overlay"
-                                            w="fit-content"
+                                            flex="1"
                                           >
                                             <Icon
                                               as={DataCheckIcon}
@@ -1254,7 +1254,7 @@ export default function AddDataSteps() {
                                             <Badge
                                               fontSize={12}
                                               borderColor="border.overlay"
-                                              w="fit-content"
+                                              flex="1"
                                             >
                                               <Icon
                                                 as={FiTarget}

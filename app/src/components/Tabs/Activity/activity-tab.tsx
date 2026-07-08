@@ -267,12 +267,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
     });
   }, [allDataSources, referenceNumber]);
 
-  let totalEmissions = 0;
-
-  activityData?.forEach((activity: any) => {
-    totalEmissions += parseInt(activity?.co2eq);
-  });
-
   const [isMethodologySelected, setIsMethodologySelected] =
     useState<boolean>(false);
   const [selectedMethodology, setSelectedMethodology] = useState("");
@@ -586,7 +580,6 @@ const ActivityTab: FC<ActivityTabProps> = ({
                 refNumberWithScope={referenceNumber}
                 activityValues={activityValues as unknown as ActivityValue[]}
                 suggestedActivities={suggestedActivities}
-                totalEmissions={totalEmissions}
                 changeMethodology={changeMethodology}
                 inventoryValue={inventoryValue as unknown as InventoryValue}
                 numberFormat={userInfo?.numberFormat}

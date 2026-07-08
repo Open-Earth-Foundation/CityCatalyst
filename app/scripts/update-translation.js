@@ -189,9 +189,9 @@ async function synchData(
       totalInputTokens += newInputTokens;
       totalQueries += newQueries;
     }
-
-    return { totalInputTokens, totalQueries };
   }
+
+  return { totalInputTokens, totalQueries };
 }
 
 async function submitStats({ totalInputTokens, totalQueries }) {

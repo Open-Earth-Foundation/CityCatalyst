@@ -171,13 +171,11 @@ export default function UploadFileStep({
                 </Text>
                 <Text fontSize="body.sm" color="content.tertiary" mt={2}>
                   {t("file-formats")}{" "}
-                  <Text as="span" fontWeight="bold">.CSV, .XLSX,</Text>
-                  {" "}and{" "}
-                  <Text as="span" fontWeight="bold">.PDF</Text>
+                  <Text as="span" fontWeight="bold">{t("file-formats-list")}</Text>
                 </Text>
                 <Text fontSize="body.sm" color="content.tertiary">
                   {t("max-file-size")}{" "}
-                  <Text as="span" fontWeight="bold">20MB</Text>
+                  <Text as="span" fontWeight="bold">{t("max-file-size-value")}</Text>
                 </Text>
               </Box>
             </VStack>

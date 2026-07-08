@@ -304,6 +304,9 @@ class StationaryEnergyDraftRepository:
             existing.action = selection.action
             existing.selected_source_id = selection.selected_source_id
             existing.selected_candidate_id = selection.selected_candidate_id
+            existing.notation_key = selection.notation_key
+            existing.unavailable_reason = selection.unavailable_reason
+            existing.unavailable_explanation = selection.unavailable_explanation
             existing.rationale = selection.rationale
             existing.tool_call_id = selection.tool_call_id
             existing.status = selection.status

@@ -24,27 +24,17 @@
 
 import { OrganizationInvite } from "@/models/OrganizationInvite";
 import { Organization } from "@/models/Organization";
-import { json, Op } from "sequelize";
-import {
-  CreateOrganizationInviteRequest,
-  createOrganizationInviteRequest,
-} from "@/util/validation";
+
+import { createOrganizationInviteRequest } from "@/util/validation";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { randomUUID } from "node:crypto";
-import jwt from "jsonwebtoken";
 import { InviteStatus, OrganizationRole } from "@/util/types";
-import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
 import { User } from "@/models/User";
 import EmailService from "@/backend/EmailService";
 import { logger } from "@/services/logger";
-import { OrganizationAdmin } from "@/models/OrganizationAdmin";
-import {
-  CustomInviteError,
-  InviteErrorCodes,
-} from "@/lib/custom-errors/custom-invite-error";
 
 export const GET = apiHandler(async (_req, { params, session }) => {
   const { organization: organizationId } = params;
@@ -123,24 +113,16 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   await Promise.all(
     validatedData.inviteeEmails.map(async (email) => {
+      const normalizedEmail = email.toLowerCase();
       try {
         const user = await User.findOne({
-          where: { email },
+          where: { email: normalizedEmail },
         });
-        const emailResult = await EmailService.sendOrganizationInvitationEmail(
-          {
-            email,
-            organizationId: validatedData.organizationId,
-            role: validatedData.role,
-          },
-          org,
-          user,
-        );
-        if (!emailResult.success) {
-          throw createHttpError.InternalServerError("email-error");
-        }
+
+        // Create or update invite BEFORE attempting to send email so the
+        // invite URL is always available even when SMTP is unavailable.
         let preExistingInvite = await OrganizationInvite.findOne({
-          where: { email, organizationId },
+          where: { email: normalizedEmail, organizationId },
         });
         let invite;
         if (preExistingInvite) {
@@ -154,26 +136,46 @@ export const POST = apiHandler(async (req, { params, session }) => {
           invite = await OrganizationInvite.create({
             id: randomUUID(),
             organizationId: validatedData.organizationId,
-            email: email as string,
+            email: normalizedEmail,
             role: validatedData.role as OrganizationRole,
             status: InviteStatus.PENDING,
           });
         }
+
         if (!invite) {
-          failedInvites.push({ email });
+          failedInvites.push({ email: normalizedEmail });
           logger.error(
-            { email, organizationId },
-            `error in organization/${organizationId}/invitations/route POST`,
+            { email: normalizedEmail, organizationId },
+            `error creating invite in organization/${organizationId}/invitations/route POST`,
           );
-        } else {
-          // Store the invite URL from the email service
-          inviteUrls[email] = emailResult.inviteUrl;
+          return;
         }
+
+        // Send invitation email — non-fatal so the invite URL is still
+        // returned to the admin when SMTP is unavailable.
+        const emailResult = await EmailService.sendOrganizationInvitationEmail(
+          {
+            email: normalizedEmail,
+            organizationId: validatedData.organizationId,
+            role: validatedData.role,
+          },
+          org,
+          user,
+        );
+
+        if (!emailResult.success) {
+          logger.warn(
+            { email: normalizedEmail, organizationId },
+            "Invitation email could not be sent; invite was created and URL is available",
+          );
+        }
+
+        inviteUrls[normalizedEmail] = emailResult.inviteUrl;
         return invite;
       } catch (e) {
-        failedInvites.push({ email });
+        failedInvites.push({ email: normalizedEmail });
         logger.error(
-          { err: e, email, organizationId },
+          { err: e, email: normalizedEmail, organizationId },
           `error in organization/${organizationId}/invitations/route POST`,
         );
       }
@@ -182,7 +184,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
   if (failedInvites.length > 0) {
     throw new createHttpError.InternalServerError(
-      `Failed to send invitations to: ${failedInvites.map((f) => f.email).join(", ")}`,
+      `Failed to create invitations for: ${failedInvites.map((f) => f.email).join(", ")}`,
     );
   }
   return NextResponse.json({

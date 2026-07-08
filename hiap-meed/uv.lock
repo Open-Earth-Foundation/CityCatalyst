@@ -412,7 +412,7 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.42.0" },
     { name = "fastapi", specifier = ">=0.138.0" },
     { name = "httpx", specifier = ">=0.28.1" },
-    { name = "mlflow-skinny", specifier = ">=3.0.1" },
+    { name = "mlflow-skinny", specifier = ">=3.14.0" },
     { name = "numpy", specifier = ">=2.0.0" },
     { name = "openai", specifier = ">=2.44.0" },
     { name = "pandas", specifier = ">=2.0.0" },
@@ -565,7 +565,7 @@ wheels = [
 
 [[package]]
 name = "mlflow-skinny"
-version = "3.13.0"
+version = "3.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "cachetools" },
@@ -589,9 +589,9 @@ dependencies = [
     { name = "typing-extensions" },
     { name = "uvicorn" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/72/13/840db21a4f46ebe6ba9837a38bc93d748e23b6b61986799c8040cd4bf728/mlflow_skinny-3.13.0.tar.gz", hash = "sha256:d2273bfa21f776359f7d6ab2267967e3a6732a5fb00996ad433d0e777dfa3b71", size = 2814837, upload-time = "2026-06-01T05:54:54.175Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e8/4f/a054cd8860590e4e942aee1aab3c94307878159f945fa844acc9ea787721/mlflow_skinny-3.14.0.tar.gz", hash = "sha256:e50f4506422c7737157ae6643c165122af7898345f2e828fa93c4f10128653cf", size = 2901772, upload-time = "2026-06-17T07:57:44.252Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7a/fd/f2739de1b6a09da981927aa90db87340cbe4b3cf6cd175fd5e6e4366208e/mlflow_skinny-3.13.0-py3-none-any.whl", hash = "sha256:ced3d9a580564fae093d14732df8531fb180574f6483d4c642b6083879eb86fc", size = 3365675, upload-time = "2026-06-01T05:54:52.166Z" },
+    { url = "https://files.pythonhosted.org/packages/58/e7/b80f76ce689b9d6f21cdb84abb2b02148a1149e63a6428dd2c629cefd061/mlflow_skinny-3.14.0-py3-none-any.whl", hash = "sha256:a4880e086365871ef9d78e727a34ea5fb1ce615689579998d48e8c65ee1665a9", size = 3462788, upload-time = "2026-06-17T07:57:42.583Z" },
 ]
 
 [[package]]

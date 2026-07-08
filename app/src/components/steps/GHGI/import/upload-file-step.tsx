@@ -84,8 +84,8 @@ export default function UploadFileStep({
           as="h1"
           color="content.primary"
           fontSize="display.sm"
-          lineHeight="44px"
-          fontWeight="600"
+          lineHeight="44"
+          fontWeight="semibold"
         >
           {t("upload-inventory-file-heading")}
         </Heading>

@@ -483,6 +483,8 @@ export type CityResponse = {
   name: string;
   country: string;
   countryLocode: string;
+  region?: string;
+  regionLocode?: string;
   locode: string;
   inventories: {
     inventoryId: string;

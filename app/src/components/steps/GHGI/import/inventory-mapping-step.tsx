@@ -18,6 +18,13 @@ import type { ColumnInfo, RequiredMappingOption } from "@/util/types";
 
 const MANDATORY_KEYS = new Set(["gpcRefNo", "sector", "subsector", "activityAmount"]);
 
+const EMISSION_FACTOR_KEYS = new Set([
+  "emissionFactorCO2",
+  "emissionFactorCH4",
+  "emissionFactorN2O",
+  "emissionFactorTotalCO2e",
+]);
+
 interface InventoryMappingStepProps {
   t: TFunction;
   cityId: string;
@@ -53,6 +60,22 @@ export default function InventoryMappingStep({
     return requiredMappings.find((r) => r.label === label)?.key ?? "";
   };
 
+  const formatExampleValue = (col: ColumnInfo): string | null => {
+    if (!col.exampleValue) return null;
+    if (EMISSION_FACTOR_KEYS.has(getKeyForLabel(col.interpretedAs))) {
+      const num = parseFloat(col.exampleValue);
+      if (!isNaN(num)) {
+        const tonnes = num / 1000;
+        const formatted =
+          tonnes < 0.0001
+            ? tonnes.toExponential(2)
+            : parseFloat(tonnes.toFixed(4)).toString();
+        return `${formatted} t CO2e`;
+      }
+    }
+    return col.exampleValue;
+  };
+
   const getEffectiveKey = (col: ColumnInfo): string => {
     if (col.columnName in mappingOverrides) return mappingOverrides[col.columnName];
     return getKeyForLabel(col.interpretedAs);
@@ -69,7 +92,8 @@ export default function InventoryMappingStep({
   const sortedColumns = [...columns].sort((a, b) => {
     const aReq = isMandatoryColumn(a) ? 0 : 1;
     const bReq = isMandatoryColumn(b) ? 0 : 1;
-    return aReq - bReq;
+    if (aReq !== bReq) return aReq - bReq;
+    return (b.interpretedAs ? 1 : 0) - (a.interpretedAs ? 1 : 0);
   });
 
   if (isLoading) {
@@ -218,9 +242,18 @@ export default function InventoryMappingStep({
                     </Text>
                   </Table.Cell>
                   <Table.Cell>
-                    <Text color="content.secondary">
-                      {col.exampleValue || "-"}
-                    </Text>
+                    {(() => {
+                      const displayValue = formatExampleValue(col);
+                      return (
+                        <Text
+                          color={
+                            displayValue ? "content.secondary" : "content.tertiary"
+                          }
+                        >
+                          {displayValue || t("not-specified")}
+                        </Text>
+                      );
+                    })()}
                   </Table.Cell>
                   <Table.Cell>
                     <Box>

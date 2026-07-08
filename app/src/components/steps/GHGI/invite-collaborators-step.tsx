@@ -2,6 +2,7 @@
 
 import {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useState,
   useMemo,
@@ -54,6 +55,12 @@ const InviteCollaboratorsStep = forwardRef<
   const [invitedMembers, setInvitedMembers] = useState<InvitedMember[]>([]);
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (invitedMembers.length === 0) {
+      setSelectedCities([]);
+    }
+  }, [invitedMembers.length]);
 
   const { data: projectsData } = useGetUserProjectsQuery({});
   const [inviteUsers] = useInviteUsersMutation();

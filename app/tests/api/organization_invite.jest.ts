@@ -18,14 +18,15 @@ import {
   setupTests,
   testUserID,
 } from "../helpers";
-import { Organization } from "@/models/Organization";
 import { OrganizationInvite } from "@/models/OrganizationInvite";
 import { randomUUID } from "node:crypto";
 import { AppSession, Auth } from "@/lib/auth";
 import { InviteStatus, OrganizationRole, Roles } from "@/util/types";
 import { CreateOrganizationInviteRequest } from "@/util/validation";
 import EmailService from "@/backend/EmailService";
-import { SentMessageInfo } from "nodemailer"; // Import the correct type
+
+const TEST_INVITE_URL =
+  "http://localhost:3000/cities/onboarding?organizationId=test&token=test&email=test&role=test";
 
 const organizationData = {
   name: "Test Organization - Org Invite Test",
@@ -51,18 +52,16 @@ const mockUserSession: AppSession = {
 };
 
 describe("Organization Invitations API", () => {
-  let organization: Organization;
   let prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();
     await db.initialize();
     EmailService.sendOrganizationInvitationEmail = jest
-      .fn<() => Promise<{ success: SentMessageInfo; inviteUrl: string }>>()
+      .fn<() => Promise<{ success: boolean; inviteUrl: string }>>()
       .mockResolvedValue({
-        success: { messageId: "test-message-id" } as SentMessageInfo,
-        inviteUrl:
-          "http://localhost:3000/organization/invites?organizationId=test&token=test&email=test&role=test",
+        success: true,
+        inviteUrl: TEST_INVITE_URL,
       });
   });
 
@@ -71,7 +70,7 @@ describe("Organization Invitations API", () => {
       where: { name: organizationData.name },
     });
     Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
-    organization = await db.models.Organization.create({
+    await db.models.Organization.create({
       ...organizationData,
       organizationId: inviteData.organizationId,
     });
@@ -88,13 +87,66 @@ describe("Organization Invitations API", () => {
       params: Promise.resolve({ organization: inviteData.organizationId }),
     });
 
-    console.log(res, "the response from the invite API");
-
     await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data.success).toEqual(true);
     expect(data.inviteUrls).toBeDefined();
     expect(typeof data.inviteUrls).toBe("object");
+  });
+
+  it("should store the invite with a lowercase email", async () => {
+    const mixedCaseEmail = "MixedCase@Example.ORG";
+    const req = mockRequest({
+      ...inviteData,
+      inviteeEmails: [mixedCaseEmail],
+    });
+    const res = await createOrganizationInvite(req, {
+      params: Promise.resolve({ organization: inviteData.organizationId }),
+    });
+
+    await expectStatusCode(res, 200);
+
+    const stored = await db.models.OrganizationInvite.findOne({
+      where: { organizationId: inviteData.organizationId },
+    });
+    expect(stored?.email).toEqual(mixedCaseEmail.toLowerCase());
+
+    const data = await res.json();
+    expect(data.inviteUrls[mixedCaseEmail.toLowerCase()]).toBeDefined();
+  });
+
+  it("should still return an invite URL when the email send fails", async () => {
+    EmailService.sendOrganizationInvitationEmail = jest
+      .fn<() => Promise<{ success: boolean; inviteUrl: string }>>()
+      .mockResolvedValue({
+        success: false,
+        inviteUrl: TEST_INVITE_URL,
+      });
+
+    const req = mockRequest(inviteData);
+    const res = await createOrganizationInvite(req, {
+      params: Promise.resolve({ organization: inviteData.organizationId }),
+    });
+
+    await expectStatusCode(res, 200);
+    const data = await res.json();
+    expect(data.success).toEqual(true);
+    expect(data.inviteUrls[inviteData.inviteeEmails[0]]).toBeDefined();
+
+    // The invite record must exist even though email was not sent.
+    const stored = await db.models.OrganizationInvite.findOne({
+      where: {
+        email: inviteData.inviteeEmails[0],
+        organizationId: inviteData.organizationId,
+      },
+    });
+    expect(stored).not.toBeNull();
+    expect(stored?.status).toEqual(InviteStatus.PENDING);
+
+    // Restore mock for following tests
+    EmailService.sendOrganizationInvitationEmail = jest
+      .fn<() => Promise<{ success: boolean; inviteUrl: string }>>()
+      .mockResolvedValue({ success: true, inviteUrl: TEST_INVITE_URL });
   });
 
   it("should reject non-admin from inviting a consultant", async () => {

@@ -1087,7 +1087,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "hiaRankingId",
   });
   HighImpactActionRankingModel.hasMany(HighImpactActionRankedModel, {
-    as: "highImpactActionsRanked",
+    as: "highImpactActionRanked",
     foreignKey: "hiaRankingId",
   });
 

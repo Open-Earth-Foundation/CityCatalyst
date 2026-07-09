@@ -46,7 +46,7 @@ export class HighImpactActionRanking
   declare isBulk?: boolean;
   declare userId?: string;
 
-  declare highImpactActionsRanked: HighImpactActionRanked[];
+  declare highImpactActionRanked: HighImpactActionRanked[];
 
   static initModel(
     sequelize: Sequelize.Sequelize,

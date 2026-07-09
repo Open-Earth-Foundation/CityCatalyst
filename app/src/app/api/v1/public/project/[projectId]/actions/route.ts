@@ -91,7 +91,7 @@ export const GET = apiHandler(async (_req, { params }) => {
     include: [
       {
         model: db.models.HighImpactActionRanked,
-        as: "highImpactActionsRanked",
+        as: "highImpactActionRanked",
       },
     ],
   });
@@ -102,7 +102,7 @@ export const GET = apiHandler(async (_req, { params }) => {
       actionsByInventoryId[ranking.inventoryId] = [];
     }
     actionsByInventoryId[ranking.inventoryId].push(
-      ranking.highImpactActionsRanked,
+      ranking.highImpactActionRanked,
     );
   });
 

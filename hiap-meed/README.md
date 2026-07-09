@@ -422,6 +422,13 @@ Explanation stage behavior:
 
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
+- Explanation prompts are built from a fixed three-slot structure:
+  1. impact driver from the matched inventory sector/share,
+  2. alignment driver from policy and city-selected priorities,
+  3. the single weakest feasibility component, or a supportive feasibility reason
+     when feasibility is not a constraint.
+- Explanation text intentionally avoids repeating the numeric score bars already
+  returned on each ranked action.
 - Explanations are always authored canonically in English.
 - Requested non-English explanations are translations of the canonical English text.
 - In response metadata, `generated_languages` is the response-level union of explanation languages actually returned across `ranked_actions[].explanations`.

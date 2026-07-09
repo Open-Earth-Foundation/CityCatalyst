@@ -121,7 +121,7 @@ const InviteCollaboratorsStep = forwardRef<
   }));
 
   return (
-    <Box w="720px" display="flex" flexDirection="column" gap={8}>
+    <Box w="720px" display="flex" flexDirection="column" gap={8} data-testid="invite-collaborators-step">
       <Box>
         <Heading
           fontSize="headline.lg"

@@ -15,27 +15,34 @@ import { MdBarChart } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import {
   CityWithProjectDataResponse,
+  InventoryResponse,
   OrganizationWithThemeResponse,
 } from "@/util/types";
 import { MdArrowForward } from "react-icons/md";
 import { AllProjectsIcon } from "../icons";
 import ActionCardSmall from "./ActionCardSmall";
-import { ButtonMedium } from "../package";
+import { useGetUserAccessStatusQuery } from "@/services/api";
 
 export function ActionCards({
   organization,
   lng,
   t,
   city,
-  hasInventory,
+  ghgiCityData,
 }: {
   t: TFunction;
   organization: OrganizationWithThemeResponse;
   lng: string;
   city?: CityWithProjectDataResponse;
-  hasInventory?: boolean;
+  ghgiCityData?: InventoryResponse;
 }) {
   const router = useRouter();
+  const { data: accessStatus } = useGetUserAccessStatusQuery({});
+  const isCollaborator =
+    accessStatus?.isCollaborator &&
+    !accessStatus?.isOrgOwner &&
+    !accessStatus?.isProjectAdmin;
+  const hasNoInventory = !ghgiCityData;
   return (
     <Box display="flex" gap={6} w="full">
       <Box display="flex" flexDirection="column" gap={2} w="full">
@@ -45,11 +52,11 @@ export function ActionCards({
           gap={6}
           alignItems="stretch"
         >
-          {/* Large card — nudge to create inventory if none exists, else dashboard CTA */}
+          {/* Large card - empty state for collaborators with no inventory, or Check your dashboard CTA */}
           <GridItem
             colSpan={1}
             rowSpan={{ base: 1, md: 2 }}
-            bg="base.light"
+            bg={isCollaborator && hasNoInventory ? "background.neutral" : "base.light"}
             borderRadius="lg"
             p={6}
             color="base.dark"
@@ -61,7 +68,36 @@ export function ActionCards({
             borderWidth="2px"
             borderColor="border.neutral"
           >
-            {hasInventory ? (
+            {isCollaborator && hasNoInventory ? (
+              <Box>
+                <Text fontWeight="bold" fontSize="xl" mb={2}>
+                  {t("no-inventory-title")}
+                </Text>
+                <Text
+                  color="base.dark"
+                  fontFamily="body"
+                  fontSize="body.lg"
+                  fontWeight="normal"
+                  lineHeight="24"
+                  letterSpacing="wide"
+                >
+                  {t("no-inventory-description-before")}
+                  <Link
+                    href="mailto:info@openearth.org"
+                    color="content.link"
+                    fontFamily="body"
+                    fontSize="body.lg"
+                    fontWeight="normal"
+                    lineHeight="24"
+                    letterSpacing="wide"
+                    textDecoration="underline"
+                  >
+                    info@openearth.org
+                  </Link>
+                  {t("no-inventory-description-after")}
+                </Text>
+              </Box>
+            ) : (
               <>
                 <Box>
                   <HStack alignItems="center">
@@ -72,7 +108,12 @@ export function ActionCards({
                   </HStack>
                   <Text mt={2}>{t("check-your-dashboard-description")}</Text>
                 </Box>
-                <Box display="flex" alignItems="center" justifyContent="flex-end" mt={4}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="flex-end"
+                  mt={4}
+                >
                   <Link
                     p={1}
                     href={
@@ -96,35 +137,6 @@ export function ActionCards({
                       {t("go-to-dashboard-cta")}
                       <Icon as={MdArrowForward} boxSize={5} color="content.link" />
                     </Button>
-                  </Link>
-                </Box>
-              </>
-            ) : (
-              <>
-                <Box>
-                  <Text fontWeight="bold" fontSize="xl" color="content.link">
-                    {t("get-started-ghg-title")}
-                  </Text>
-                  <Text mt={2}>{t("get-started-ghg-description")}</Text>
-                </Box>
-                <Box display="flex" alignItems="center" justifyContent="flex-end" mt={4}>
-                  <Link
-                    href={
-                      city
-                        ? `/${lng}/cities/${city.cityId}/GHGI/onboarding`
-                        : `/${lng}/cities/onboarding`
-                    }
-                    color="content.link"
-                    fontWeight="bold"
-                    display="flex"
-                    alignItems="center"
-                    gap={2}
-                    textTransform="uppercase"
-                    letterSpacing="wider"
-                    fontSize="sm"
-                  >
-                    {t("launch-ghg-inventories-cta")}
-                    <Icon as={MdArrowForward} boxSize={5} />
                   </Link>
                 </Box>
               </>

@@ -314,5 +314,8 @@
   "legend": "Legend",
   "citycatalyst": "CityCatalyst",
   "breadcrumb-hiap": "Actions & Plans",
-  "start-here": "Start here"
+  "start-here": "Start here",
+  "no-inventory-title": "No greenhouse gas inventory has been created yet",
+  "no-inventory-description-before": "Contact your administrator to create an inventory so you can start contributing. Or reach out to ",
+  "no-inventory-description-after": " if you think this is a mistake."
 }

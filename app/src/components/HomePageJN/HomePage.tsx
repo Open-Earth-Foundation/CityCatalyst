@@ -185,7 +185,7 @@ export default function HomePage({
                 lng={language}
                 organization={orgData}
                 city={city}
-                hasInventory={!!ghgiCityData}
+                ghgiCityData={ghgiCityData}
               />
             </VStack>
           </Box>

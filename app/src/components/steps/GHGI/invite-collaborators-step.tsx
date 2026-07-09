@@ -32,7 +32,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
-import { useGetUserProjectsQuery, useInviteUsersMutation } from "@/services/api";
+import { useGetUserProjectsQuery, useGetUserAccessStatusQuery, useInviteUsersMutation } from "@/services/api";
 import { z } from "zod";
 
 interface InvitedMember {
@@ -64,7 +64,10 @@ const InviteCollaboratorsStep = forwardRef<
   }, [invitedMembers.length]);
 
   const { data: projectsData } = useGetUserProjectsQuery({});
+  const { data: accessStatus } = useGetUserAccessStatusQuery({});
   const [inviteUsers] = useInviteUsersMutation();
+
+  const isCollaborator = accessStatus?.isCollaborator && !accessStatus?.isOrgOwner && !accessStatus?.isProjectAdmin;
 
   const projectCollection = useMemo(
     () =>
@@ -212,31 +215,33 @@ const InviteCollaboratorsStep = forwardRef<
               onKeyDown={(e) => e.key === "Enter" && addMember()}
               placeholder={t("invite-collaborators-email-placeholder")}
             />
-            <chakra.select
-              value={selectedRole}
-              onChange={(e) =>
-                setSelectedRole(e.target.value as "admin" | "collaborator")
-              }
-              bg="background.neutral"
-              border="none"
-              borderRadius="md"
-              ps={2}
-              pe={1}
-              mx={2}
-              h="28px"
-              color="content.secondary"
-              fontFamily="body"
-              fontSize="body.sm"
-              fontWeight="normal"
-              lineHeight="16px"
-              letterSpacing="0.5px"
-              cursor="pointer"
-              flexShrink={0}
-              _focus={{ outline: "none", boxShadow: "none" }}
-            >
-              <option value="collaborator">{t("collaborator")}</option>
-              <option value="admin">{t("admin")}</option>
-            </chakra.select>
+            {!isCollaborator && (
+              <chakra.select
+                value={selectedRole}
+                onChange={(e) =>
+                  setSelectedRole(e.target.value as "admin" | "collaborator")
+                }
+                bg="background.neutral"
+                border="none"
+                borderRadius="md"
+                ps={2}
+                pe={1}
+                mx={2}
+                h="28px"
+                color="content.secondary"
+                fontFamily="body"
+                fontSize="body.sm"
+                fontWeight="normal"
+                lineHeight="16px"
+                letterSpacing="0.5px"
+                cursor="pointer"
+                flexShrink={0}
+                _focus={{ outline: "none", boxShadow: "none" }}
+              >
+                <option value="collaborator">{t("collaborator")}</option>
+                <option value="admin">{t("admin")}</option>
+              </chakra.select>
+            )}
           </Box>
           <Button
             onClick={addMember}

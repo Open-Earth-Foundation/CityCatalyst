@@ -183,6 +183,8 @@
   "projects": "Projetos",
   "n-a": "N/D",
   "no-data": "Sem dados",
+  "no-data-tooltip-line1": "Até que um inventário seja criado,",
+  "no-data-tooltip-line2": "nenhum dado será exibido aqui",
   "project": "Projeto",
   "select-project": "Selecione um Projeto",
   "select-city": "Selecionar cidade",

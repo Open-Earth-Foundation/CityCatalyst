@@ -186,6 +186,8 @@
   "source-open-climate": "Source: OpenClimate",
   "n-a": "N/A",
   "no-data": "No data",
+  "no-data-tooltip-line1": "Until an inventory is created",
+  "no-data-tooltip-line2": "no data will be displayed here",
   "km2": "km²",
   "projects": "Projects",
   "project": "Project",

@@ -181,6 +181,8 @@
   "source-open-climate": "Source : OpenClimate",
   "n-a": "S/O",
   "no-data": "Aucune donnée",
+  "no-data-tooltip-line1": "Aucune donnée ne sera affichée ici",
+  "no-data-tooltip-line2": "tant qu'un inventaire n'aura pas été créé",
   "projects": "Projets",
   "project": "Projet",
   "select-project": "Sélectionnez un Projet",

@@ -48,7 +48,7 @@ export function Hero({
   const formattedEmissions =
     ghgiCityData?.totalEmissions != null
       ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
-      : { value: t("n-a"), unit: "" };
+      : { value: t("no-data"), unit: "" };
 
   const popWithDS = useMemo(
     () =>
@@ -126,7 +126,7 @@ export function Hero({
                         </HeadlineSmall>
                       </>
                     ) : (
-                      t("n-a")
+                      t("no-data")
                     )}
                   </HeadlineSmall>
                   <Tooltip
@@ -179,7 +179,7 @@ export function Hero({
                         </HeadlineSmall>
                       </>
                     ) : (
-                      t("n-a")
+                      t("no-data")
                     )}
                   </HeadlineSmall>
                   <Tooltip

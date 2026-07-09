@@ -44,3 +44,6 @@ playwright/.auth
 
 # generated files
 /public/openapi-spec.json
+
+# local-only dev fixtures (not for commit)
+/scripts/upsert-city-only-fixture.ts

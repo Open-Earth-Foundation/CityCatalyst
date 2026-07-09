@@ -105,7 +105,15 @@ test("City Onboarding", async ({ page }) => {
     await continueButton.click();
   }
 
-  /** "Step 4 – Third-party data opt-out completes onboarding" */
+  /** "Step 4 – Invite collaborators (skip)" */
+  {
+    await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
+      timeout: 15000,
+    });
+    await page.getByRole("button", { name: /Skip this step/i }).click();
+  }
+
+  /** "Step 5 – Third-party data opt-out completes onboarding" */
   {
     await completeThirdPartyDataOnboardingStep(page, "no");
 

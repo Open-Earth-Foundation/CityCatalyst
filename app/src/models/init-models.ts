@@ -233,7 +233,6 @@ import {
   OAuthClientI18NOptionalAttributes,
   OAuthClientI18N,
 } from "./OAuthClientI18N";
-import { se } from "date-fns/locale";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
 import {
@@ -1088,7 +1087,7 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "hiaRankingId",
   });
   HighImpactActionRankingModel.hasMany(HighImpactActionRankedModel, {
-    as: "highImpactActionRanked",
+    as: "highImpactActionsRanked",
     foreignKey: "hiaRankingId",
   });
 

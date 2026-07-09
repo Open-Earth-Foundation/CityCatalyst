@@ -307,14 +307,25 @@ def test_build_prompt_is_canonical_english_only() -> None:
     )
 
     assert "Write every explanation in English." in prompt
-    assert "Follow the fixed structure from `explanation_slots`" in prompt
-    assert "Sentence 1: impact driver." in prompt
-    assert "Sentence 2: alignment driver." in prompt
-    assert "Sentence 3: feasibility driver." in prompt
+    assert "Core grounding rules:" in prompt
+    assert "Sentence plan:" in prompt
+    assert "Sentence 1 rendering rules:" in prompt
+    assert "Sentence 2 rendering rules:" in prompt
+    assert "Sentence 3 rendering rules:" in prompt
+    assert "Style guardrails:" in prompt
+    assert "Sentence 1: impact driver from `explanation_slots.impact_driver`." in prompt
+    assert "Sentence 2: alignment driver from `explanation_slots.alignment_driver`." in prompt
+    assert "Sentence 3: feasibility driver from `explanation_slots.feasibility_driver`." in prompt
     assert "If `feasibility_driver.stance` is `support`" in prompt
+    assert "If `feasibility_driver.stance` is `mixed`" in prompt
     assert "Do not infer extra benefits" in prompt
     assert "Do not repeat the score bars in prose" in prompt
-    assert "Transportation is the largest matched inventory sector" in prompt
+    assert "Transportation accounts for 31% of the city's inventory" in prompt
+    assert "Do not write schema-derived phrases" in prompt
+    assert "matches the city's <timeframe> timeframe preference" in prompt
+    assert "fits the city's short-term timeframe preference" in prompt
+    assert "mention co-benefits and timeframe as separate facts" in prompt
+    assert "matches the city's air quality co-benefit with a short-term timeframe" in prompt
     assert "AFOLU is a smaller part of the city's emissions profile at 11%" in prompt
     assert "Financial feasibility is the main constraint" in prompt
     assert "Financial feasibility is supportive" in prompt

@@ -173,6 +173,8 @@
   "invite-error-toast-title": "Algo salió mal",
   "invite-error-toast-description": "Hubo un error al enviar tus invitaciones",
   "invite-error-toast-text": "Hubo un error al enviar tus invitaciones",
+  "cancel": "Cancelar",
+  "send-invites-action": "Enviar invitaciones",
   "afolu-other-agriculture": "Otra agricultura",
   "afolu-livestock": "Ganado",
   "afolu-land": "Tierra",

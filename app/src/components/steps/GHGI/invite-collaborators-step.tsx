@@ -46,8 +46,8 @@ export interface InviteCollaboratorsStepRef {
 
 const InviteCollaboratorsStep = forwardRef<
   InviteCollaboratorsStepRef,
-  { t: TFunction }
->(({ t }, ref) => {
+  { t: TFunction; onValidityChange?: (canSubmit: boolean) => void }
+>(({ t, onValidityChange }, ref) => {
   const [emailInput, setEmailInput] = useState("");
   const [emailError, setEmailError] = useState("");
   const [selectedRole, setSelectedRole] = useState<"admin" | "collaborator">(
@@ -62,6 +62,10 @@ const InviteCollaboratorsStep = forwardRef<
       setSelectedCities([]);
     }
   }, [invitedMembers.length]);
+
+  useEffect(() => {
+    onValidityChange?.(invitedMembers.length > 0 && selectedProject.length > 0);
+  }, [invitedMembers.length, selectedProject.length, onValidityChange]);
 
   const { data: projectsData } = useGetUserProjectsQuery({});
   const { data: accessStatus } = useGetUserAccessStatusQuery({});

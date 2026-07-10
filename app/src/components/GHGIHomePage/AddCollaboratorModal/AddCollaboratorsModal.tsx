@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import {
   DialogBody,
@@ -33,6 +33,7 @@ const AddCollaboratorsDialog = ({
   const { t } = useTranslation(lng, "onboarding");
   const { t: tDashboard } = useTranslation(lng, "dashboard");
   const stepRef = useRef<InviteCollaboratorsStepRef>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
 
   const { showSuccessToast } = UseSuccessToast({
     title: tDashboard("invite-success-toast-title"),
@@ -77,7 +78,7 @@ const AddCollaboratorsDialog = ({
         </DialogHeader>
         <DialogCloseTrigger mt="2" color="interactive.control" mr="2" />
         <DialogBody p={6}>
-          <InviteCollaboratorsStep ref={stepRef} t={t} />
+          <InviteCollaboratorsStep ref={stepRef} t={t} onValidityChange={setCanSubmit} />
         </DialogBody>
         <DialogFooter
           paddingX={6}
@@ -88,12 +89,12 @@ const AddCollaboratorsDialog = ({
         >
           <Button variant="outline" onClick={onClose}>
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("skip-this-step")}
+              {tDashboard("cancel")}
             </Text>
           </Button>
-          <Button onClick={handleSend}>
+          <Button onClick={handleSend} disabled={!canSubmit}>
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("invite-collaborators-step")}
+              {tDashboard("send-invites-action")}
             </Text>
           </Button>
         </DialogFooter>

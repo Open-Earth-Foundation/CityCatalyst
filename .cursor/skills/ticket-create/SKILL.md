@@ -1,5 +1,5 @@
 ---
-name: create-ticket
+name: ticket-create
 description: Generate structured Linear tickets (stories, tasks, bugs, spikes) with AI-enriched code references and acceptance criteria from a brief description. Use when the product team asks to create a ticket, write a story, draft a task, report a bug, or plan a spike for CityCatalyst.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: create-migration
+name: impl-create-migration
 description: Create a Sequelize database migration and model for CityCatalyst. Use when the user asks to add a database table, column, index, modify the schema, or create a new model.
 ---
 

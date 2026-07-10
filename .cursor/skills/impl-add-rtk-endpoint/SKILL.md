@@ -1,5 +1,5 @@
 ---
-name: add-rtk-endpoint
+name: impl-add-rtk-endpoint
 description: Add a new RTK Query endpoint to CityCatalyst's API service. Use when the user asks to add data fetching, create a query hook, add a mutation, or connect frontend to a new API endpoint.
 ---
 

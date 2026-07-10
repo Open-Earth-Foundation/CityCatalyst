@@ -20,6 +20,7 @@ import { LANGUAGES } from "@/util/types";
 import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
+import { isPasswordPatternValid } from "@/util/validation";
 import { getHomePath } from "@/util/routes";
 
 type Inputs = {
@@ -71,11 +72,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const watchConfirmPassword = watch("confirmPassword", "");
   const passwordsMismatch =
     watchConfirmPassword.length > 0 && watchPassword !== watchConfirmPassword;
-  const passwordPatternValid =
-    watchPassword.length >= 8 &&
-    /[A-Z]/.test(watchPassword) &&
-    /[a-z]/.test(watchPassword) &&
-    /[0-9]/.test(watchPassword);
+  const passwordPatternValid = isPasswordPatternValid(watchPassword);
 
   const isSubmitDisabled =
     !isValid || passwordsMismatch || !passwordPatternValid;

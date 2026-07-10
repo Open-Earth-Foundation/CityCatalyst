@@ -6,6 +6,7 @@ import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-i
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import LabelLarge from "@/components/package/Texts/Label";
 import { BiInfoCircle } from "react-icons/bi";
+import { isPasswordPatternValid } from "@/util/validation";
 
 export default function PasswordInput({
   children,
@@ -35,17 +36,9 @@ export default function PasswordInput({
   const passwordInvalid =
     shouldValidate &&
     watchPassword.length > 0 &&
-    (watchPassword.length < 8 ||
-      !/[A-Z]/.test(watchPassword) ||
-      !/[a-z]/.test(watchPassword) ||
-      !/[0-9]/.test(watchPassword));
+    !isPasswordPatternValid(watchPassword);
 
-  const passwordValid =
-    shouldValidate &&
-    watchPassword.length >= 8 &&
-    /[A-Z]/.test(watchPassword) &&
-    /[a-z]/.test(watchPassword) &&
-    /[0-9]/.test(watchPassword);
+  const passwordValid = shouldValidate && isPasswordPatternValid(watchPassword);
 
   // Show hint until the password fully satisfies the pattern
   const showHint = shouldValidate && !passwordValid;

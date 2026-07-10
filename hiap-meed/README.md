@@ -423,7 +423,7 @@ Explanation stage behavior:
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
 - Explanation prompts are built from a fixed three-slot structure:
-  1. impact driver from the matched inventory sector/share,
+  1. impact driver from the top matched inventory subsector/share,
   2. alignment driver from policy and city-selected priorities,
   3. the single weakest feasibility component, or a supportive feasibility reason
      when feasibility is not a constraint.

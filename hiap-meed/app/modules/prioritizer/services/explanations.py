@@ -37,6 +37,28 @@ SECTOR_DISPLAY_LABELS: dict[str, str] = {
     "ippu": "Industrial Processes and Product Use",
     "afolu": "AFOLU",
 }
+GPC_SUBSECTOR_DISPLAY_LABELS: dict[str, str] = {
+    "I.1": "residential buildings",
+    "I.2": "commercial and institutional buildings and facilities",
+    "I.3": "manufacturing industries and construction",
+    "I.4": "energy industries",
+    "I.5": "agriculture, forestry, and fishing energy use",
+    "I.6": "non-specified stationary energy sources",
+    "II.1": "on-road transportation",
+    "II.2": "railways",
+    "II.3": "waterborne navigation",
+    "II.4": "aviation",
+    "II.5": "off-road transportation",
+    "III.1": "solid waste disposal",
+    "III.2": "biological treatment of waste",
+    "III.3": "incineration and open burning",
+    "III.4": "wastewater treatment and discharge",
+    "IV.1": "industrial processes",
+    "IV.2": "product use",
+    "V.1": "livestock",
+    "V.2": "land",
+    "V.3": "aggregate sources and non-CO2 emissions on land",
+}
 CO_BENEFIT_DISPLAY_LABELS: dict[str, str] = {
     "air_quality": "air quality",
     "cost_of_living": "cost of living",
@@ -305,7 +327,7 @@ def _build_explanation_slots(
 
 
 def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object]:
-    """Return the sector/share impact slot used for the first sentence."""
+    """Return the top matched subsector/share slot used for the first sentence."""
     contributors = impact_evidence.get("subsector_contributors", [])
     if not isinstance(contributors, list) or not contributors:
         return {
@@ -317,40 +339,30 @@ def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object
             "impact_band": _clean_optional_string(impact_evidence.get("impact_band")),
         }
 
-    sector_shares: dict[str, dict[str, object]] = {}
+    contributor_rows: list[dict[str, object]] = []
     for contributor in contributors:
         if not isinstance(contributor, dict):
             continue
         subsector_key = _clean_optional_string(contributor.get("subsector_key"))
         if subsector_key is None:
             continue
-        sector_key = subsector_key.split(".", 1)[0]
         share = _coerce_unit_score(contributor.get("share_of_city")) or 0.0
         reduction_amount = (
             float(contributor["reduction_amount"])
             if isinstance(contributor.get("reduction_amount"), int | float)
             else 0.0
         )
-        sector_row = sector_shares.setdefault(
-            sector_key,
+        contributor_rows.append(
             {
-                "sector_key": sector_key,
-                "sector_label": _display_label_for_sector(sector_key),
-                "share_of_city": 0.0,
-                "reduction_amount": 0.0,
-                "subsector_keys": [],
-            },
+                "subsector_key": subsector_key,
+                "subsector_label": _display_label_for_subsector(subsector_key),
+                "sector_key": subsector_key.split(".", 1)[0],
+                "share_of_city": share,
+                "reduction_amount": reduction_amount,
+            }
         )
-        sector_row["share_of_city"] = float(sector_row["share_of_city"]) + share
-        sector_row["reduction_amount"] = (
-            float(sector_row["reduction_amount"]) + reduction_amount
-        )
-        sector_row["subsector_keys"] = [
-            *list(sector_row["subsector_keys"]),
-            subsector_key,
-        ]
 
-    if not sector_shares:
+    if not contributor_rows:
         return {
             "kind": "no_inventory_match",
             "message": (
@@ -360,23 +372,24 @@ def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object
             "impact_band": _clean_optional_string(impact_evidence.get("impact_band")),
         }
 
-    top_sector = sorted(
-        sector_shares.values(),
+    top_subsector = sorted(
+        contributor_rows,
         key=lambda item: (
             -float(item["reduction_amount"]),
             -float(item["share_of_city"]),
-            str(item["sector_key"]),
+            str(item["subsector_key"]),
         ),
     )[0]
-    share = _coerce_unit_score(top_sector.get("share_of_city")) or 0.0
+    share = _coerce_unit_score(top_subsector.get("share_of_city")) or 0.0
     return {
-        "kind": "sector_share",
-        "sector_key": top_sector["sector_key"],
-        "sector_label": top_sector["sector_label"],
+        "kind": "subsector_share",
+        "subsector_key": top_subsector["subsector_key"],
+        "subsector_label": top_subsector["subsector_label"],
+        "sector_key": top_subsector["sector_key"],
+        "sector_label": _display_label_for_sector(str(top_subsector["sector_key"])),
         "share_of_city_percent": round(share * 100.0, 1),
         "share_phrase": _format_percent_share(share),
         "impact_band": _clean_optional_string(impact_evidence.get("impact_band")),
-        "matched_subsector_keys": top_sector["subsector_keys"],
     }
 
 
@@ -663,6 +676,14 @@ def _clean_string_list(value: object) -> list[str]:
 def _display_label_for_sector(sector_key: str) -> str:
     """Return a human-friendly sector label for a GPC sector or sector tag."""
     return SECTOR_DISPLAY_LABELS.get(sector_key, sector_key.replace("_", " ").title())
+
+
+def _display_label_for_subsector(subsector_key: str) -> str:
+    """Return a human-friendly GPC subsector label."""
+    normalized_key = subsector_key.strip().upper()
+    return GPC_SUBSECTOR_DISPLAY_LABELS.get(
+        normalized_key, f"GPC subsector {normalized_key}"
+    )
 
 
 def _display_label_for_co_benefit(co_benefit_key: str) -> str:

@@ -21,10 +21,11 @@ Sentence plan:
 - Keep each explanation to 3 concise sentences unless a known limitation requires a fourth.
 
 Sentence 1 rendering rules:
-- If `impact_driver.kind` is `sector_share`, name the sector and `share_phrase`.
-- Prefer natural phrasing such as `<Sector> accounts for X of the city's inventory` or `This action targets <Sector>, which accounts for X of the city's inventory`.
+- If `impact_driver.kind` is `subsector_share`, name the subsector and `share_phrase`.
+- Prefer natural phrasing such as `<Subsector> accounts for X of the city's inventory` or `This action targets <subsector>, which accounts for X of the city's inventory`.
+- Avoid broad repeated sector wording such as `This action targets Stationary Energy, which accounts for 97% of the city's inventory` when a subsector label is available.
 - If `impact_driver.kind` is `no_inventory_match`, use the provided `message` in natural prose.
-- Do not write schema-derived phrases such as `<Sector> is the matched inventory sector`, `the matched inventory sector`, or `covering X of the city's inventory`.
+- Do not write schema-derived phrases such as `<Subsector> is the matched inventory subsector`, `the matched inventory sector`, or `covering X of the city's inventory`.
 
 Sentence 2 rendering rules:
 - Combine only concrete alignment facts that are present: policy support, sector priority match or mismatch, co-benefit priority match, and notable timeframe alignment or misalignment.
@@ -61,8 +62,9 @@ Input is a rendered prompt context with:
   - `action_name` (string): Human-readable action name for context only.
   - `explanation_slots` (object): Fixed explanation structure to render:
     - `impact_driver` (object): First-sentence evidence. Usually includes
-      `kind`, `sector_label`, `share_phrase`, `impact_band`, and matched
-      subsector keys, or a `message` when the action has no inventory match.
+      `kind`, `subsector_key`, `subsector_label`, `sector_label`,
+      `share_phrase`, and `impact_band`, or a `message` when the action has no
+      inventory match.
     - `alignment_driver` (object): Second-sentence evidence with:
       - `policy`: policy support status, top `document_name`, and optional
         `evidence_text`.
@@ -101,11 +103,11 @@ Output rules:
   "explanations": [
     {{
       "action_id": "c40_0023",
-      "explanation": "Transportation accounts for 31% of the city's inventory, giving this action a strong impact driver. It is backed by national fleet-electrification targets, matches Transportation as a city-selected priority, and fits the city's short-term timeframe preference. Financial feasibility is the main constraint because this capital-intensive investment likely needs external co-financing."
+      "explanation": "On-road transportation accounts for 31% of the city's inventory, giving this action a strong impact driver. It is backed by national fleet-electrification targets, matches Transportation as a city-selected priority, and fits the city's short-term timeframe preference. Financial feasibility is the main constraint because this capital-intensive investment likely needs external co-financing."
     }},
     {{
       "action_id": "icare_0099",
-      "explanation": "AFOLU is a smaller part of the city's emissions profile at 11%, so this action has more limited inventory reach than top-ranked actions. It is not currently backed by policy evidence and does not match the city's selected priority sector. Financial feasibility is supportive because this is a low-capital action the city can deliver itself."
+      "explanation": "Livestock accounts for 11% of the city's inventory, so this action has more limited inventory reach than top-ranked actions. It is not currently backed by policy evidence and does not match the city's selected priority sector. Financial feasibility is supportive because this is a low-capital action the city can deliver itself."
     }}
   ]
 }}

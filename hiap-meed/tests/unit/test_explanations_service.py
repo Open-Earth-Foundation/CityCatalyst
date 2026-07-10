@@ -118,13 +118,14 @@ def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:
 
     slots = payload["explanation_slots"]
     assert slots["impact_driver"] == {
-        "kind": "sector_share",
+        "kind": "subsector_share",
+        "subsector_key": "II.1",
+        "subsector_label": "on-road transportation",
         "sector_key": "II",
         "sector_label": "Transportation",
-        "share_of_city_percent": 35.0,
-        "share_phrase": "35%",
+        "share_of_city_percent": 31.0,
+        "share_phrase": "31%",
         "impact_band": "high",
-        "matched_subsector_keys": ["II.1", "II.2"],
     }
     assert slots["alignment_driver"]["policy"]["document_name"] == (
         "National Fleet Electrification Plan"
@@ -207,6 +208,7 @@ def test_build_curated_action_payload_allows_supportive_feasibility_slot() -> No
     )
 
     slots = payload["explanation_slots"]
+    assert slots["impact_driver"]["subsector_label"] == "livestock"
     assert slots["impact_driver"]["sector_label"] == "AFOLU"
     assert slots["impact_driver"]["share_phrase"] == "11%"
     assert slots["alignment_driver"]["policy"]["status"] == "not_present"
@@ -320,13 +322,14 @@ def test_build_prompt_is_canonical_english_only() -> None:
     assert "If `feasibility_driver.stance` is `mixed`" in prompt
     assert "Do not infer extra benefits" in prompt
     assert "Do not repeat the score bars in prose" in prompt
-    assert "Transportation accounts for 31% of the city's inventory" in prompt
+    assert "On-road transportation accounts for 31% of the city's inventory" in prompt
+    assert "Avoid broad repeated sector wording" in prompt
     assert "Do not write schema-derived phrases" in prompt
     assert "matches the city's <timeframe> timeframe preference" in prompt
     assert "fits the city's short-term timeframe preference" in prompt
     assert "mention co-benefits and timeframe as separate facts" in prompt
     assert "matches the city's air quality co-benefit with a short-term timeframe" in prompt
-    assert "AFOLU is a smaller part of the city's emissions profile at 11%" in prompt
+    assert "Livestock accounts for 11% of the city's inventory" in prompt
     assert "Financial feasibility is the main constraint" in prompt
     assert "Financial feasibility is supportive" in prompt
     assert "main_strengths" not in prompt

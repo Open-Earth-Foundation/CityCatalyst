@@ -1206,7 +1206,7 @@ Important current behavior:
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
 - The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks.
 - The curated explanation payload follows a fixed three-slot structure:
-  1. impact driver from the matched inventory sector/share,
+  1. impact driver from the top matched inventory subsector/share,
   2. alignment driver from policy and city-selected priorities,
   3. the single weakest feasibility component, or a supportive feasibility reason when feasibility is not a constraint.
 - The generated text should explain why the ranking looks the way it does without repeating the numeric score bars already present in the response.

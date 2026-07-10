@@ -67,6 +67,9 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   });
 
   const watchPassword = watch("password", "");
+  const watchConfirmPassword = watch("confirmPassword", "");
+  const passwordsMismatch =
+    watchConfirmPassword.length > 0 && watchPassword !== watchConfirmPassword;
 
   const [error, setError] = useState("");
 
@@ -79,7 +82,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     if (data.password !== data.confirmPassword) {
       setFormError("confirmPassword", {
         type: "custom",
-        message: "Passwords don't match!",
+        message: t("passwords-dont-match"),
       });
       return;
     }
@@ -194,6 +197,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           shouldValidate={true}
           t={t}
           watchPassword={watchPassword}
+          mismatch={passwordsMismatch}
         />
         <PasswordInput
           register={register}
@@ -202,6 +206,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           name={t("confirm-password")}
           id="confirmPassword"
           shouldValidate={false}
+          mismatch={passwordsMismatch}
         />
         <Field
           label={<LabelLarge>{t("preferred-language")}</LabelLarge>}

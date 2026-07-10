@@ -391,8 +391,8 @@ export default class EmailService {
     email: string;
     organizationName: string;
     brandInformation?: {
-      color: string;
-      logoUrl: string;
+      color?: string;
+      logoUrl?: string;
     };
     user: User | null;
   }) {

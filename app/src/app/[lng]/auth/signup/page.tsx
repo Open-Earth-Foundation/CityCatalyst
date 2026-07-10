@@ -57,9 +57,10 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     handleSubmit,
     register,
     setError: setFormError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     watch,
   } = useForm<Inputs>({
+    mode: "onChange",
     defaultValues: {
       preferredLanguage: lng as LANGUAGES,
       email: prefilledEmail,
@@ -70,6 +71,14 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const watchConfirmPassword = watch("confirmPassword", "");
   const passwordsMismatch =
     watchConfirmPassword.length > 0 && watchPassword !== watchConfirmPassword;
+  const passwordPatternValid =
+    watchPassword.length >= 8 &&
+    /[A-Z]/.test(watchPassword) &&
+    /[a-z]/.test(watchPassword) &&
+    /[0-9]/.test(watchPassword);
+
+  const isSubmitDisabled =
+    !isValid || passwordsMismatch || !passwordPatternValid;
 
   const [error, setError] = useState("");
 
@@ -79,18 +88,9 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   }
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (data.password !== data.confirmPassword) {
-      setFormError("confirmPassword", {
-        type: "custom",
-        message: t("passwords-dont-match"),
-      });
-      return;
-    }
-
     if (typeof data.acceptTerms !== "boolean") {
       data.acceptTerms = data.acceptTerms === "on";
     }
-
     try {
       const res = await fetch("/api/v1/auth/register", {
         method: "POST",
@@ -273,6 +273,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           type="submit"
           formNoValidate
           loading={isSubmitting}
+          disabled={isSubmitDisabled}
           h={16}
           width="full"
           bgColor="interactive.secondary"

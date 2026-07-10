@@ -75,20 +75,7 @@ export default function PasswordInput({
           ),
         }}
         {...register(id, {
-          required: t("password-required"),
-          minLength: { value: 4, message: t("min-length", { length: 4 }) },
-          pattern: shouldValidate
-            ? {
-              hasMinLength: (value: string) =>
-                value.length >= 8 || t("password-min-length"),
-              hasUpperCase: (value: string) =>
-                /[A-Z]/.test(value) || t("password-upper-case"),
-              hasLowerCase: (value: string) =>
-                /[a-z]/.test(value) || t("password-lower-case"),
-              hasNumber: (value: string) =>
-                /[0-9]/.test(value) || t("password-number"),
-            }
-            : undefined,
+          required: t("please-enter-password"),
         })}
       />
 

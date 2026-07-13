@@ -6,8 +6,8 @@ import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo } from "react";
 import { Box, Icon, Spinner, HStack, VStack, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
-import { MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
-import { Tooltip } from "@/components/ui/tooltip";
+import { MdOutlineAspectRatio } from "react-icons/md";
+import { InfoTooltip } from "@/components/InfoTooltip";
 import { formatEmissions, formatNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -129,7 +129,7 @@ export function Hero({
                       t("no-data")
                     )}
                   </HeadlineSmall>
-                  <Tooltip
+                  <InfoTooltip
                     contentProps={
                       ghgiCityData?.totalEmissions == null
                         ? {
@@ -157,22 +157,7 @@ export function Hero({
                           </Text>
                         )
                     }
-                  >
-                    <Box
-                      display="inline-flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      minW="32px"
-                      minH="32px"
-                      cursor="pointer"
-                    >
-                      <Icon
-                        as={MdInfoOutline}
-                        boxSize={4}
-                        color="content.tertiary"
-                      />
-                    </Box>
-                  </Tooltip>
+                  />
                 </HStack>
                 <BodyMedium color="content.tertiary">
                   {ghgiCityData?.year
@@ -211,7 +196,7 @@ export function Hero({
                       t("no-data")
                     )}
                   </HeadlineSmall>
-                  <Tooltip
+                  <InfoTooltip
                     contentProps={
                       !(city.area && city.area > 0)
                         ? {
@@ -243,22 +228,7 @@ export function Hero({
                         </Text>
                       )
                     }
-                  >
-                    <Box
-                      display="inline-flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      minW="32px"
-                      minH="32px"
-                      cursor="pointer"
-                    >
-                      <Icon
-                        as={MdInfoOutline}
-                        boxSize={4}
-                        color="content.tertiary"
-                      />
-                    </Box>
-                  </Tooltip>
+                  />
                 </HStack>
                 <BodyMedium color="content.tertiary">
                   {t("total-land-area")}

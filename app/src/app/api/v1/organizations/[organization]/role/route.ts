@@ -133,7 +133,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
         await EmailService.sendRoleUpdateNotification({
           email,
           brandInformation: {
-            color: org.theme.primaryColor,
+            color: org.theme?.primaryColor,
             logoUrl: org.logoUrl as string,
           },
           organizationName: org.name as string,

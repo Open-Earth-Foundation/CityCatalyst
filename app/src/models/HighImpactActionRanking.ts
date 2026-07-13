@@ -1,6 +1,7 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
+import { HighImpactActionRanked } from "./HighImpactActionRanked";
 
 export interface HighImpactActionRankingAttributes {
   id: string;
@@ -44,6 +45,8 @@ export class HighImpactActionRanking
   declare errorMessage?: string | null;
   declare isBulk?: boolean;
   declare userId?: string;
+
+  declare highImpactActionRanked: HighImpactActionRanked[];
 
   static initModel(
     sequelize: Sequelize.Sequelize,
@@ -135,4 +138,3 @@ export class HighImpactActionRanking
     );
   }
 }
-

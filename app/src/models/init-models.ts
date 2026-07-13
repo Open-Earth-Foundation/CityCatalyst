@@ -233,7 +233,6 @@ import {
   OAuthClientI18NOptionalAttributes,
   OAuthClientI18N,
 } from "./OAuthClientI18N";
-import { se } from "date-fns/locale";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
 import {

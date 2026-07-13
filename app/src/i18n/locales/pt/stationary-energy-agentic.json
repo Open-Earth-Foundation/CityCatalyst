@@ -306,5 +306,7 @@
   "tool-message-notation-rollback-none": "Não havia opções ativas de chave de notação de Energia Estacionária em estágio para reverter.",
   "tool-message-inventory-save-confirm-with-notation": "Por favor, confirme antes de escrever {{ready}} linhas de Energia Estacionária revisadas no inventário do CityCatalyst, incluindo {{notation}} linhas de chaves de notação.",
   "tool-error-invalid-notation-choice": "A escolha da chave de notação de Energia Estacionária foi inválida.",
-  "tool-error-invalid-notation-choices": "As escolhas da chave de notação de Energia Estacionária eram inválidas."
+  "tool-error-invalid-notation-choices": "As escolhas da chave de notação de Energia Estacionária eram inválidas.",
+  "sector-card-draft-with-agent": "Rascunho com agente",
+  "sector-card-draft-with-agent-tooltip": "Permita que o Clima elabore este setor a partir dos seus dados conectados (beta) — você revisará cada valor antes de salvar."
 }

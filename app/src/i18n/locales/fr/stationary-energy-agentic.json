@@ -306,5 +306,7 @@
   "tool-message-notation-rollback-none": "Aucun choix de notation-clé d'Énergie Stationnaire en cours n'était disponible pour être rétabli.",
   "tool-message-inventory-save-confirm-with-notation": "Veuillez confirmer avant d'écrire {{ready}} lignes d'énergie stationnaire révisées dans l'inventaire CityCatalyst, y compris {{notation}} lignes de clés de notation.",
   "tool-error-invalid-notation-choice": "Le choix de la clé de notation de l'énergie Stationnaire était invalide.",
-  "tool-error-invalid-notation-choices": "Les choix de notation-clé d'Énergie Stationnaire étaient invalides."
+  "tool-error-invalid-notation-choices": "Les choix de notation-clé d'Énergie Stationnaire étaient invalides.",
+  "sector-card-draft-with-agent": "Ébauche avec l'agent",
+  "sector-card-draft-with-agent-tooltip": "Laissez Clima ébaucher ce secteur à partir de vos données connectées (bêta) — vous révisez chaque valeur avant de sauvegarder."
 }

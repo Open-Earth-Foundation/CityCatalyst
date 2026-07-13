@@ -306,5 +306,7 @@
   "tool-message-notation-rollback-none": "Es waren keine aktiven festgelegten Stationäre-Energie-Notationsschlüssel-Auswahlmöglichkeiten zum Zurücksetzen verfügbar.",
   "tool-message-inventory-save-confirm-with-notation": "Bitte bestätigen Sie vor dem Schreiben von {{ready}} überprüften Zeilen zu stationärer Energie in das CityCatalyst-Inventar, einschließlich {{notation}} Zeilen mit Bezeichnungsschlüssel.",
   "tool-error-invalid-notation-choice": "Die Auswahl des Notationsschlüssels für stationäre Energie war ungültig.",
-  "tool-error-invalid-notation-choices": "Die Auswahlmöglichkeiten für den Notationsschlüssel der stationären Energie waren ungültig."
+  "tool-error-invalid-notation-choices": "Die Auswahlmöglichkeiten für den Notationsschlüssel der stationären Energie waren ungültig.",
+  "sector-card-draft-with-agent": "Entwurf mit Agent",
+  "sector-card-draft-with-agent-tooltip": "Lassen Sie Clima diesen Sektor aus Ihren verbundenen Daten entwerfen (beta) — Sie überprüfen jeden Wert vor dem Speichern."
 }

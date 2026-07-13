@@ -31,7 +31,10 @@ export function requireRequestUser(
   session: AppSession | null,
   userId: string,
 ): void {
-  if (!session?.user?.id || session.user.id !== userId) {
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("Authentication required");
+  }
+  if (session.user.id !== userId) {
     throw new createHttpError.Forbidden(
       "Request user does not match authenticated service token",
     );

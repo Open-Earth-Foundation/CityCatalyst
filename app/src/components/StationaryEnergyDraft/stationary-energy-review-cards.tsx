@@ -107,6 +107,7 @@ function DecisionReviewBaseCard(props: {
   options: Array<DecisionReviewContext["leaveDraftOption"]>;
   decision?: DraftDecisionState;
   resolved?: boolean;
+  pristine?: boolean;
   onDecisionChoice: (
     proposal: DraftProposal,
     action: DraftDecisionAction,
@@ -205,7 +206,11 @@ function DecisionReviewBaseCard(props: {
         aria-label={t("review-card-aria-label")}
       >
         {props.options.map((option) => {
+          // While the proposal is untouched (`pristine`), nothing is shown as
+          // selected — the recommended source is only a hint (its badge), not a
+          // staged choice. A real selection appears once the user clicks.
           const selected =
+            !props.pristine &&
             props.decision?.action === option.action &&
             (option.action !== "override_source" ||
               props.decision.selectedSourceId === option.id);
@@ -546,6 +551,7 @@ export function SingleSourceProposalCard(props: {
   context: Extract<DecisionReviewContext, { kind: "single_source" }>;
   decision?: DraftDecisionState;
   resolved?: boolean;
+  pristine?: boolean;
   onDecisionChoice: (
     proposal: DraftProposal,
     action: DraftDecisionAction,
@@ -571,6 +577,7 @@ export function SingleSourceProposalCard(props: {
       ]}
       decision={props.decision}
       resolved={props.resolved}
+      pristine={props.pristine}
       onDecisionChoice={props.onDecisionChoice}
       onAskAboutProposal={props.onAskAboutProposal}
       onViewSource={props.onViewSource}
@@ -582,6 +589,7 @@ export function MultiSourceProposalCard(props: {
   context: Extract<DecisionReviewContext, { kind: "multi_source" }>;
   decision?: DraftDecisionState;
   resolved?: boolean;
+  pristine?: boolean;
   onDecisionChoice: (
     proposal: DraftProposal,
     action: DraftDecisionAction,
@@ -621,6 +629,7 @@ export function MultiSourceProposalCard(props: {
       options={options}
       decision={props.decision}
       resolved={props.resolved}
+      pristine={props.pristine}
       onDecisionChoice={props.onDecisionChoice}
       onAskAboutProposal={props.onAskAboutProposal}
       onViewSource={props.onViewSource}

@@ -4,14 +4,8 @@ import {
   clearStoredDraftContext,
   readStoredDraftContext,
 } from "@/components/StationaryEnergyDraft/storage";
+import { TERMINAL_DRAFT_STATUSES } from "@/components/StationaryEnergyDraft/flow-types";
 import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
-
-const TERMINAL_DRAFT_STATUSES = new Set([
-  "saved",
-  "partially_saved",
-  "no_changes",
-  "failed",
-]);
 
 export async function resolveStationaryEnergyDraftResume(params: {
   inventoryId: string;

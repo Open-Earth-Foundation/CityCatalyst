@@ -289,6 +289,8 @@
   "last-modified-by": "Zuletzt geändert von",
   "date": "Datum",
   "no-history": "Keine Versionverlaufseinträge gefunden.",
+  "not-specified": "Nicht angegeben",
+  "manually-added-data": "Manuell hinzugefügte Daten",
   "subcategory": "Unterkategorie",
   "inventory-versions-restore-failed": "Fehler beim Wiederherstellen der Version",
   "status-poc": "Proof of Concept",
@@ -300,5 +302,11 @@
   "legend": "Legende",
   "citycatalyst": "CityCatalyst",
   "breadcrumb-hiap": "Actions & Plans",
-  "start-here": "Hier starten"
+  "start-here": "Hier starten",
+  "inventory-versions-action-change": "{{name}} hat die Aktion {{actionName}} auf Rang {{rank}} geändert und {{selectionStatus}}",
+  "inventory-versions-action-deleted": "{{name}} hat die Aktion {{actionName}} gelöscht",
+  "selected": "ausgewählt",
+  "unselected": "nicht ausgewählt",
+  "name": "Name",
+  "rank": "Rang"
 }

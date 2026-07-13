@@ -63,6 +63,24 @@ def workflow_env_value(text: str, key: str) -> str:
     return match.group(1)
 
 
+def env_flag_set(raw_value: str) -> set[str]:
+    """Parse a comma-separated feature flag env var into names."""
+    return {
+        value.strip().strip("\"'")
+        for value in raw_value.split(",")
+        if value.strip().strip("\"'")
+    }
+
+
+def deployment_env_value(deployment: dict, key: str) -> str:
+    """Return a container env var value from a Kubernetes Deployment."""
+    containers = deployment["spec"]["template"]["spec"]["containers"]
+    for entry in containers[0].get("env", []):
+        if entry.get("name") == key:
+            return entry.get("value", "")
+    raise AssertionError(f"{key} was not set in deployment")
+
+
 def normalized_secret_reference(value: str) -> str:
     """Normalize GitHub expression spacing for secret-reference comparisons."""
     return re.sub(r"\s+", "", value)
@@ -151,6 +169,29 @@ def test_cc_and_ca_use_same_service_secret_reference(
 
 
 @pytest.mark.parametrize("environment, config", ENVIRONMENTS.items())
+def test_stationary_energy_flag_is_enabled_on_web_and_ca(
+    environment: str,
+    config: dict[str, str | list[str]],
+) -> None:
+    """Ensure CA serves Stationary Energy routes when web exposes the UI."""
+    deployment = load_yaml(str(config["deployment"]))
+    ca_workflow = workflow_text(str(config["ca_workflow"]))
+    web_workflow = workflow_text(str(config["web_workflow"]))
+
+    flag = "STATIONARY_ENERGY_AGENTIC"
+    web_flags = env_flag_set(workflow_env_value(web_workflow, "NEXT_PUBLIC_FEATURE_FLAGS"))
+    ca_workflow_flags = env_flag_set(workflow_env_value(ca_workflow, "CA_FEATURE_FLAGS"))
+    ca_deployment_flags = env_flag_set(deployment_env_value(deployment, "CA_FEATURE_FLAGS"))
+
+    assert (flag in ca_workflow_flags) == (flag in web_flags), (
+        f"{environment} web and CA workflow disagree on {flag}"
+    )
+    assert (flag in ca_deployment_flags) == (flag in web_flags), (
+        f"{environment} web and CA deployment manifest disagree on {flag}"
+    )
+
+
+@pytest.mark.parametrize("environment, config", ENVIRONMENTS.items())
 def test_workflow_path_filters_include_validated_files(
     environment: str,
     config: dict[str, str | list[str]],
@@ -218,4 +259,5 @@ def test_single_smoke_script_runs_fixture_job_and_runtime_smoke() -> None:
     assert "kubectl wait --for=condition=complete" in script
     assert 'kubectl logs "job/${JOB_NAME}"' in script
     assert "kubectl rollout status" in script
+    assert 'kubectl exec "${CA_POD}"' in script
     assert "python -m scripts.smoke_cc_contract" in script

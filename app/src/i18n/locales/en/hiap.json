@@ -182,5 +182,8 @@
       "generated-on": "Generated on"
     }
   },
-  "history": "History"
+  "history": "History",
+  "last-update": "Last update",
+  "view-more": "VIEW MORE",
+  "view-less": "VIEW LESS"
 }

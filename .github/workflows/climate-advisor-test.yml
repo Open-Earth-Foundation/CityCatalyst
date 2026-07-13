@@ -182,6 +182,7 @@ jobs:
             CA_LOG_LEVEL=info \
             CA_CORS_ORIGINS="*" \
             CC_BASE_URL=https://citycatalyst-test.openearth.dev \
+            CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC \
             MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME}" \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
@@ -190,10 +191,5 @@ jobs:
           kubectl rollout restart deployment climate-advisor-test -n default
           kubectl rollout status deployment/climate-advisor-test -n default --timeout=300s
           SMOKE_FIXTURE_MANIFEST=k8s/test/cc-test-ca-smoke-fixture.yml \
-          CA_SERVICE_NAME=climate-advisor-service-test \
           CA_DEPLOYMENT_NAME=climate-advisor-test \
-          CC_EXPECTED_AUDIENCE=https://citycatalyst-test.openearth.dev \
-          CA_SMOKE_USER_ID="${{ vars.CA_SMOKE_USER_ID }}" \
-          CA_SMOKE_CITY_ID="${{ vars.CA_SMOKE_CITY_ID }}" \
-          CA_SMOKE_INVENTORY_ID="${{ vars.CA_SMOKE_INVENTORY_ID }}" \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

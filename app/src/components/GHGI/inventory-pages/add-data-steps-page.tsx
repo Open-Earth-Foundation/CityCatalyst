@@ -34,6 +34,7 @@ import {
   Card,
   Center,
   Flex,
+  Grid,
   Heading,
   HStack,
   Icon,
@@ -320,11 +321,11 @@ export default function AddDataSteps() {
 
   const totalStepCompletion = currentStep
     ? clamp(
-        currentStep.connectedProgress +
-          currentStep.addedProgress +
-          currentStep.reasonNEProgress +
-          currentStep.reasonNOProgress,
-      )
+      currentStep.connectedProgress +
+      currentStep.addedProgress +
+      currentStep.reasonNEProgress +
+      currentStep.reasonNOProgress,
+    )
     : 0;
   const formatPercentage = (percentage: number) =>
     Math.round(percentage * 1000) / 10;
@@ -647,11 +648,21 @@ export default function AddDataSteps() {
   const selectedSubsectorId = selectedSubsector[0];
 
   const filteredDataSources = dataSources?.filter(({ source }) => {
+    // Hide data sources that only contain notation keys (e.g. "NO" = not occurring)
+    // and no actual emissions data
+    if (source.retrievalMethod === "global_api_notation_key") {
+      return false;
+    }
     if (!selectedSubsectorId || selectedSubsectorId === allSubsectorsValue) {
       return true;
     }
     return getSourceSubsectorId(source) === selectedSubsectorId;
   });
+
+  // Check if any data sources were excluded because they only carry notation keys
+  const hasNotationKeySources = dataSources?.some(
+    ({ source }) => source.retrievalMethod === "global_api_notation_key",
+  ) ?? false;
 
   const visibleDataSources = filteredDataSources?.slice(
     0,
@@ -899,7 +910,7 @@ export default function AddDataSteps() {
                         justify="space-between"
                       >
                         {subSector.completedCount > 0 &&
-                        subSector.completedCount < subSector.totalCount ? (
+                          subSector.completedCount < subSector.totalCount ? (
                           <ProgressCircle.Root
                             size="xs"
                             mr={1}
@@ -1078,343 +1089,336 @@ export default function AddDataSteps() {
                             {sourcesForSubsector.length} {t("datasets")}
                           </Text>
                         </HStack>
-                        <VStack align="stretch" gap={6}>
+                        <HStack align="stretch" gap={6} w="full">
                           {groupedByScope.map(([scopeName, scopeSources]) => (
-                            <Box key={`${subSectorId}-${scopeName}`}>
-                              <SimpleGrid
-                                templateColumns={{
-                                  base: "1fr",
-                                  md: "repeat(2, 1fr)",
-                                  lg: "repeat(3, 1fr)",
-                                }}
-                                gap="16px"
-                              >
-                                {scopeSources.map(({ source, data }) => {
-                                  const isHovered =
-                                    hoverStates[source.datasourceId];
-                                  return (
-                                    <Card.Root
-                                      key={source.datasourceId}
-                                      data-testid="source-card"
-                                      variant="outline"
-                                      borderWidth="1px"
-                                      borderColor={
-                                        isSourceConnected(source) &&
+                            <Grid
+                              templateColumns="repeat(3, 1fr)"
+                              gap="16px"
+                              key={`${subSectorId}-${scopeName}`}
+                            >
+                              {scopeSources.map(({ source, data }) => {
+                                const isHovered =
+                                  hoverStates[source.datasourceId];
+                                return (
+                                  <Card.Root
+                                    key={source.datasourceId}
+                                    data-testid="source-card"
+                                    variant="outline"
+                                    borderWidth="1px"
+                                    borderColor={
+                                      isSourceConnected(source) &&
                                         source.inventoryValues?.length
-                                          ? "interactive.tertiary"
-                                          : "border.overlay"
-                                      }
-                                      shadow="none"
-                                      _hover={{ shadow: "xl" }}
-                                      transition="all 300ms"
-                                      w="full"
-                                      p="24px"
-                                      gap="4px"
+                                        ? "interactive.tertiary"
+                                        : "border.overlay"
+                                    }
+                                    shadow="none"
+                                    _hover={{ shadow: "xl" }}
+                                    transition="all 300ms"
+                                    w="330px"
+                                    p="24px"
+                                    gap="4px"
+                                  >
+                                    <Card.Header
+                                      p="0"
+                                      display="flex"
+                                      flexDirection="column"
+                                      gap="0"
                                     >
-                                      <Card.Header
-                                        p="0"
-                                        display="flex"
-                                        flexDirection="column"
-                                        gap="0"
+                                      <Icon
+                                        as={
+                                          {
+                                            I: MdOutlineHomeWork,
+                                            II: MdOutlineLocalShipping,
+                                            III: MdOutlineDelete,
+                                            IV: MdOutlineFactory,
+                                            V: LuWheat,
+                                          }[
+                                          currentStep.referenceNumber
+                                          ] ?? MdOutlineHomeWork
+                                        }
+                                        boxSize={9}
+                                        color="content.tertiary-light"
+                                        mb="10px"
+                                      />
+                                      <Flex
+                                        direction="row"
+                                        align="center"
+                                        gap="8px"
                                       >
-                                        <Icon
-                                          as={
-                                            {
-                                              I: MdOutlineHomeWork,
-                                              II: MdOutlineLocalShipping,
-                                              III: MdOutlineDelete,
-                                              IV: MdOutlineFactory,
-                                              V: LuWheat,
-                                            }[
-                                              currentStep.referenceNumber
-                                            ] ?? MdOutlineHomeWork
+                                        <Badge
+                                          variant="plain"
+                                          fontSize="label.sm"
+                                          fontWeight="medium"
+                                          fontFamily="heading"
+                                          letterSpacing="widest"
+                                          bg="background.graySubtle"
+                                          color="content.secondary"
+                                          px="8px"
+                                          py="1px"
+                                          borderRadius="md"
+                                          lineHeight="1.2"
+                                          borderWidth="0"
+                                        >
+                                          {source.subCategory
+                                            ?.referenceNumber ||
+                                            source.subSector?.referenceNumber}
+                                        </Badge>
+                                        <Tooltip
+                                          showArrow
+                                          content={
+                                            source.subSector?.subsectorName
                                           }
-                                          boxSize={9}
-                                          color="content.tertiary-light"
-                                          mb="10px"
-                                        />
+                                        >
+                                          <Text
+                                            fontSize="overline"
+                                            fontWeight="bold"
+                                            color="content.primary"
+                                            textTransform="uppercase"
+                                            letterSpacing="widest"
+                                            lineHeight="24"
+                                            fontFamily="heading"
+                                            lineClamp={1}
+                                          >
+                                            {source.subSector?.subsectorName}
+                                          </Text>
+                                        </Tooltip>
+                                      </Flex>
+                                      <Heading
+                                        fontSize="title.md"
+                                        lineClamp={2}
+                                        minHeight={10}
+                                        mt="6px"
+                                        lineHeight={24}
+                                      >
+                                        {getTranslationFromDict(
+                                          source.datasetName,
+                                        )}
+                                      </Heading>
+                                      <Text fontSize="label.md" mt="4px">
+                                        {t("by-data-source")}{" "}
+                                        <Link
+                                          href={source.publisher?.url}
+                                          target="_blank"
+                                          textDecoration="underline"
+                                          color="content.link"
+                                          rel="noreferrer noopener"
+                                        >
+                                          {source.publisher?.name}
+                                        </Link>
+                                      </Text>
+                                    </Card.Header>
+                                    <Card.Body
+                                      justifyContent="space-between"
+                                      p="0"
+                                    >
+                                      <Flex
+                                        direction="row"
+                                        mb={0}
+                                        wrap="wrap"
+                                        gap={2}
+                                      >
+                                        {data?.totals?.emissions?.co2eq_100yr != null &&
+                                          data.totals.emissions.co2eq_100yr !== 0n && (
+                                            <Text
+                                              fontSize="display.sm"
+                                              fontWeight="semibold"
+                                            >
+                                              {convertKgToTonnes(
+                                                bigIntToDecimal(
+                                                  data.totals.emissions.co2eq_100yr,
+                                                ).toNumber(),
+                                              )}
+                                            </Text>
+                                          )}
                                         <Flex
                                           direction="row"
-                                          align="center"
-                                          gap="8px"
+                                          gap="4px"
+                                          flexWrap="wrap"
                                         >
                                           <Badge
-                                            variant="plain"
-                                            fontSize="label.sm"
-                                            fontWeight="medium"
-                                            fontFamily="heading"
-                                            letterSpacing="widest"
-                                            bg="background.graySubtle"
-                                            color="content.secondary"
-                                            px="8px"
-                                            py="1px"
-                                            borderRadius="md"
-                                            lineHeight="1.2"
-                                            borderWidth="0"
+                                            fontSize={12}
+                                            borderColor="border.overlay"
+                                            flex="1"
                                           >
-                                            {source.subCategory
-                                              ?.referenceNumber ||
-                                              source.subSector?.referenceNumber}
-                                          </Badge>
-                                          <Tooltip
-                                            showArrow
-                                            content={
-                                              source.subSector?.subsectorName
-                                            }
-                                          >
-                                            <Text
-                                              fontSize="overline"
-                                              fontWeight="bold"
-                                              color="content.primary"
-                                              textTransform="uppercase"
-                                              letterSpacing="widest"
-                                              lineHeight="24"
-                                              fontFamily="heading"
-                                              lineClamp={1}
-                                            >
-                                              {source.subSector?.subsectorName}
-                                            </Text>
-                                          </Tooltip>
-                                        </Flex>
-                                        <Heading
-                                          fontSize="title.md"
-                                          lineClamp={2}
-                                          minHeight={10}
-                                          mt="6px"
-                                          lineHeight={24}
-                                        >
-                                          {getTranslationFromDict(
-                                            source.datasetName,
-                                          )}
-                                        </Heading>
-                                        <Text fontSize="label.md" mt="4px">
-                                          {t("by-data-source")}{" "}
-                                          <Link
-                                            href={source.publisher?.url}
-                                            target="_blank"
-                                            textDecoration="underline"
-                                            color="content.link"
-                                            rel="noreferrer noopener"
-                                          >
-                                            {source.publisher?.name}
-                                          </Link>
-                                        </Text>
-                                      </Card.Header>
-                                      <Card.Body
-                                        justifyContent="space-between"
-                                        p="0"
-                                      >
-                                        <Flex
-                                          direction="row"
-                                          mb={0}
-                                          wrap="wrap"
-                                          gap={2}
-                                        >
-                                          {!isSourceConnected(source) &&
-                                            !source.inventoryValues
-                                              ?.length && (
-                                              <Text
-                                                fontSize="display.sm"
-                                                fontWeight="semibold"
-                                              >
-                                                {convertKgToTonnes(
-                                                  bigIntToDecimal(
-                                                    data?.totals?.emissions
-                                                      ?.co2eq_100yr ?? 0n,
-                                                  ).toNumber(),
-                                                )}
-                                              </Text>
+                                            <Icon
+                                              as={DataCheckIcon}
+                                              boxSize={5}
+                                              color="content.tertiary"
+                                            />
+                                            {t("data-quality")}:{" "}
+                                            {t(
+                                              "quality-" + source.dataQuality,
                                             )}
-                                          <Flex
-                                            direction="row"
-                                            gap="4px"
-                                            flexWrap="nowrap"
-                                          >
+                                          </Badge>
+                                          {source.subCategory?.scope && (
                                             <Badge
                                               fontSize={12}
                                               borderColor="border.overlay"
-                                              w="fit-content"
+                                              flex="1"
                                             >
                                               <Icon
-                                                as={DataCheckIcon}
-                                                boxSize={5}
+                                                as={FiTarget}
+                                                boxSize={4}
                                                 color="content.tertiary"
                                               />
-                                              {t("data-quality")}:{" "}
-                                              {t(
-                                                "quality-" + source.dataQuality,
-                                              )}
+                                              {t("scope")}:{" "}
+                                              {
+                                                source.subCategory.scope
+                                                  .scopeName
+                                              }
                                             </Badge>
-                                            {source.subCategory?.scope && (
-                                              <Badge
-                                                fontSize={12}
-                                                borderColor="border.overlay"
-                                                w="fit-content"
-                                              >
-                                                <Icon
-                                                  as={FiTarget}
-                                                  boxSize={4}
-                                                  color="content.tertiary"
-                                                />
-                                                {t("scope")}:{" "}
-                                                {
-                                                  source.subCategory.scope
-                                                    .scopeName
-                                                }
-                                              </Badge>
-                                            )}
-                                          </Flex>
+                                          )}
                                         </Flex>
-                                        <Text
-                                          textOverflow="ellipsis"
-                                          whiteSpace="nowrap"
-                                          overflow="hidden"
-                                          color="content.tertiary"
-                                          lineClamp={
-                                            isSourceConnected(source) &&
+                                      </Flex>
+                                      <Text
+                                        textOverflow="ellipsis"
+                                        whiteSpace="nowrap"
+                                        overflow="hidden"
+                                        color="content.tertiary"
+                                        lineClamp={
+                                          isSourceConnected(source) &&
                                             source.inventoryValues?.length
-                                              ? 0
-                                              : 4
-                                          }
-                                          maxHeight={
-                                            isSourceConnected(source) &&
+                                            ? 0
+                                            : 4
+                                        }
+                                        maxHeight={
+                                          isSourceConnected(source) &&
                                             source.inventoryValues?.length
-                                              ? "100px"
-                                              : "184px"
+                                            ? "100px"
+                                            : "184px"
+                                        }
+                                        fontFamily="body"
+                                        fontSize="body.md"
+                                        lineHeight="20px"
+                                        fontWeight="regular"
+                                        marginTop="8px"
+                                      >
+                                        {getTranslationFromDict(
+                                          source.datasetDescription,
+                                        ) ||
+                                          getTranslationFromDict(
+                                            source.methodologyDescription,
+                                          )}
+                                      </Text>
+                                      <VStack w="full" mb="16px">
+                                        <Link
+                                          textDecoration="underline"
+                                          mt={4}
+                                          mb={2}
+                                          onClick={() =>
+                                            onSourceClick(source, data)
                                           }
-                                          fontFamily="body"
-                                          fontSize="body.md"
-                                          lineHeight="20px"
-                                          fontWeight="regular"
-                                          marginTop="8px"
+                                          alignSelf="flex-start"
+                                          fontSize="label.lg"
+                                          fontWeight="medium"
+                                          letterSpacing="wide"
                                         >
-                                          {getTranslationFromDict(
-                                            source.datasetDescription,
-                                          ) ||
-                                            getTranslationFromDict(
-                                              source.methodologyDescription,
-                                            )}
-                                        </Text>
-                                        <VStack w="full" mb="16px">
-                                          <Link
-                                            textDecoration="underline"
-                                            mt={4}
-                                            mb={2}
-                                            onClick={() =>
-                                              onSourceClick(source, data)
-                                            }
-                                            alignSelf="flex-start"
-                                            fontSize="label.lg"
-                                            fontWeight="medium"
-                                            letterSpacing="wide"
-                                          >
-                                            {t("see-more-details")}
-                                          </Link>
-                                          {isSourceConnected(source) &&
+                                          {t("see-more-details")}
+                                        </Link>
+                                        {isSourceConnected(source) &&
                                           source.inventoryValues?.length ? (
+                                          <Button
+                                            variant="outline"
+                                            w="full"
+                                            h="50px"
+                                            bg={
+                                              isHovered
+                                                ? "semantic.dangerOverlay"
+                                                : "semantic.successOverlay"
+                                            }
+                                            borderColor={
+                                              isHovered
+                                                ? "semantic.danger"
+                                                : "semantic.success"
+                                            }
+                                            borderWidth="1px"
+                                            color={
+                                              isHovered
+                                                ? "semantic.danger"
+                                                : "semantic.success"
+                                            }
+                                            fontWeight="semibold"
+                                            fontSize="14px"
+                                            onClick={() =>
+                                              isFrozenCheck()
+                                                ? null
+                                                : onDisconnectThirdPartyData(
+                                                  source,
+                                                )
+                                            }
+                                            loading={
+                                              isDisconnectLoading &&
+                                              source.datasourceId ===
+                                              disconnectingDataSourceId
+                                            }
+                                            onMouseEnter={() =>
+                                              onButtonHover(source)
+                                            }
+                                            onMouseLeave={() =>
+                                              onMouseLeave(source)
+                                            }
+                                          >
+                                            <Icon as={MdCheckCircleOutline} />
+                                            {isHovered
+                                              ? t("disconnect-data")
+                                              : t("data-connected")}
+                                          </Button>
+                                        ) : isSourceGpcBlocked(source) ? (
+                                          <Tooltip
+                                            showArrow
+                                            content={t(
+                                              "data-already-added-connected",
+                                            )}
+                                          >
                                             <Button
                                               variant="outline"
                                               w="full"
                                               h="50px"
-                                              bg={
-                                                isHovered
-                                                  ? "semantic.dangerOverlay"
-                                                  : "semantic.successOverlay"
-                                              }
-                                              borderColor={
-                                                isHovered
-                                                  ? "semantic.danger"
-                                                  : "semantic.success"
-                                              }
-                                              borderWidth="1px"
-                                              color={
-                                                isHovered
-                                                  ? "semantic.danger"
-                                                  : "semantic.success"
-                                              }
+                                              borderWidth="0"
+                                              bgColor="background.graySubtle"
+                                              disabled
+                                              color="interactive.control"
                                               fontWeight="semibold"
                                               fontSize="14px"
-                                              onClick={() =>
-                                                isFrozenCheck()
-                                                  ? null
-                                                  : onDisconnectThirdPartyData(
-                                                      source,
-                                                    )
-                                              }
-                                              loading={
-                                                isDisconnectLoading &&
-                                                source.datasourceId ===
-                                                  disconnectingDataSourceId
-                                              }
-                                              onMouseEnter={() =>
-                                                onButtonHover(source)
-                                              }
-                                              onMouseLeave={() =>
-                                                onMouseLeave(source)
-                                              }
-                                            >
-                                              <Icon as={MdCheckCircleOutline} />
-                                              {isHovered
-                                                ? t("disconnect-data")
-                                                : t("data-connected")}
-                                            </Button>
-                                          ) : isSourceGpcBlocked(source) ? (
-                                            <Tooltip
-                                              showArrow
-                                              content={t(
-                                                "data-already-added-connected",
-                                              )}
-                                            >
-                                              <Button
-                                                variant="outline"
-                                                w="full"
-                                                h="50px"
-                                                borderWidth="0"
-                                                bgColor="background.graySubtle"
-                                                disabled
-                                                color="interactive.control"
-                                                fontWeight="semibold"
-                                                fontSize="14px"
-                                              >
-                                                {t("connect-data")}
-                                                <Icon
-                                                  as={MdInfoOutline}
-                                                  boxSize={4}
-                                                />
-                                              </Button>
-                                            </Tooltip>
-                                          ) : (
-                                            <Button
-                                              variant="outline"
-                                              w="full"
-                                              h="50px"
-                                              borderWidth="1px"
-                                              borderColor="border.overlay"
-                                              bgColor="background.neutral"
-                                              color="interactive.secondary"
-                                              fontWeight="semibold"
-                                              fontSize="14px"
-                                              onClick={() =>
-                                                onConnectClick(source)
-                                              }
-                                              loading={
-                                                isConnectDataSourceLoading &&
-                                                source.datasourceId ===
-                                                  connectingDataSourceId
-                                              }
                                             >
                                               {t("connect-data")}
+                                              <Icon
+                                                as={MdInfoOutline}
+                                                boxSize={4}
+                                              />
                                             </Button>
-                                          )}
-                                        </VStack>
-                                      </Card.Body>
-                                    </Card.Root>
-                                  );
-                                })}
-                              </SimpleGrid>
-                            </Box>
+                                          </Tooltip>
+                                        ) : (
+                                          <Button
+                                            variant="outline"
+                                            w="full"
+                                            h="50px"
+                                            borderWidth="1px"
+                                            borderColor="border.overlay"
+                                            bgColor="background.neutral"
+                                            color="interactive.secondary"
+                                            fontWeight="semibold"
+                                            fontSize="14px"
+                                            onClick={() =>
+                                              onConnectClick(source)
+                                            }
+                                            loading={
+                                              isConnectDataSourceLoading &&
+                                              source.datasourceId ===
+                                              connectingDataSourceId
+                                            }
+                                          >
+                                            {t("connect-data")}
+                                          </Button>
+                                        )}
+                                      </VStack>
+                                    </Card.Body>
+                                  </Card.Root>
+                                );
+                              })}
+                            </Grid>
                           ))}
-                        </VStack>
+                        </HStack>
                       </Box>
                     );
                   },
@@ -1435,6 +1439,32 @@ export default function AddDataSteps() {
                   as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
                 />
               </Button>
+            )}
+            {hasNotationKeySources && dataSources && dataSources.length > 0 && (
+              <HStack
+                gap={2}
+                mt={6}
+                px={4}
+                py={3}
+                bg="background.neutral"
+                borderRadius="md"
+                color="content.tertiary"
+                fontSize="body.md"
+              >
+                <Icon as={MdInfoOutline} boxSize={5} flexShrink={0} />
+                <Text>
+                  {t("notation-key-no-notice")}{" "}
+                  <Link
+                    href={pathname.replace(/\/data\/.*$/, "/manage-sectors")}
+                    target="_blank"
+                    color="content.link"
+                    textDecoration="underline"
+                    fontWeight="medium"
+                  >
+                    {t("manage-missing-sub-sectors")}
+                  </Link>
+                </Text>
+              </HStack>
             )}
           </Card.Body>
         </Card.Root>

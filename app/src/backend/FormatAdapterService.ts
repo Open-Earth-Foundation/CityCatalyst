@@ -235,13 +235,32 @@ export default class FormatAdapterService {
 
       let gpcRefNo = this.strVal(get(gpcRefIdx));
       const activityType = this.strVal(get(actTypeIdx));
+      const rawSectorVal = this.strVal(get(sectorIdx)) ?? "";
+      const rawSubsectorVal = this.strVal(get(subsectorIdx)) ?? "";
       const { sector, subsector } = splitSectorSubsectorLabels(
-        this.strVal(get(sectorIdx)) ?? "",
-        this.strVal(get(subsectorIdx)) ?? "",
+        rawSectorVal,
+        rawSubsectorVal,
       );
+      // Track which subsector name was actually used for resolution
+      let resolvedSubsector = subsector;
 
       if (!gpcRefNo && sector && subsector) {
         gpcRefNo = resolveGpcRefNo(sector, subsector, activityType ?? undefined);
+        // Fallback: if right side of " > " didn't resolve, try the left side
+        // e.g. "On-road > Other/uncategorized" → "Other/uncategorized" fails → try "On-road"
+        if (!gpcRefNo && rawSubsectorVal.includes(" > ")) {
+          const leftPart = rawSubsectorVal.split(" > ")[0].trim();
+          if (leftPart && leftPart !== subsector) {
+            gpcRefNo = resolveGpcRefNo(sector, leftPart, activityType ?? undefined);
+            if (gpcRefNo) resolvedSubsector = leftPart;
+          }
+        }
+        if (!gpcRefNo && rawSectorVal.includes(" > ")) {
+          const leftPart = rawSectorVal.split(" > ")[0].trim();
+          if (leftPart && leftPart !== sector) {
+            gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityType ?? undefined);
+          }
+        }
       }
 
       const resolvedSector =
@@ -250,9 +269,9 @@ export default class FormatAdapterService {
       rows.push({
         year: targetYear ?? null,
         sector: resolvedSector,
-        subsector: subsector || null,
+        subsector: resolvedSubsector || null,
         scope: this.strVal(get(scopeIdx)),
-        category: subsector || null,
+        category: resolvedSubsector || null,
         totalCO2e,
         co2: this.numVal(get(co2Idx)),
         ch4: this.numVal(get(ch4Idx)),

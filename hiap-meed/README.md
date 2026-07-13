@@ -422,6 +422,13 @@ Explanation stage behavior:
 
 - Explanations are generated only when `requestData.createExplanations=true`.
 - Explanations are generated from post-ranking evidence and do not change ranks.
+- Explanation prompts are built from a fixed three-slot structure:
+  1. impact driver from the top matched inventory subsector/share,
+  2. alignment driver from policy and city-selected priorities,
+  3. the single weakest feasibility component, or a supportive feasibility reason
+     when feasibility is not a constraint.
+- Explanation text intentionally avoids repeating the numeric score bars already
+  returned on each ranked action.
 - Explanations are always authored canonically in English.
 - Requested non-English explanations are translations of the canonical English text.
 - In response metadata, `generated_languages` is the response-level union of explanation languages actually returned across `ranked_actions[].explanations`.
@@ -596,6 +603,25 @@ Example response:
           "explanations": {}
         }
       ],
+      "removed_actions": [
+        {
+          "action_id": "c40_0013",
+          "action_name": "Electrify public bus fleets",
+          "removal_reason": "legal_verdict_blocked",
+          "removal_source": "legal_hard_filter",
+          "legal": {
+            "verdict_category": "blocked",
+            "verdict_score": 0.0,
+            "ownership_description": "Authority belongs to another level of government; municipality cannot act alone.",
+            "ownership_description_es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo.",
+            "restrictions_description": "There is a legal prohibition/restriction, or legal reform is needed.",
+            "restrictions_description_es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa.",
+            "legal_justification": "Texto de razonamiento juridico en espanol.",
+            "legal_justification_en": "English legal reasoning text.",
+            "legal_references": ["Ley 18.695 (LOCM) - BCN"]
+          }
+        }
+      ],
       "warnings": [],
       "metadata": {
         "internal_request_id": "d1db6269-4cf9-4d62-8f4c-8f4ce631fbd2",
@@ -628,6 +654,15 @@ Example response:
   ]
 }
 ```
+
+When actions are removed before ranking, the prioritization response includes
+them in `removed_actions` for frontend display. Legally blocked rows include a
+`legal` object with the same public legal detail fields used by ranked actions,
+including `ownership_description`, `ownership_description_es`,
+`restrictions_description`, `restrictions_description_es`,
+`legal_justification`, `legal_justification_en`, and `legal_references`.
+The diagnostic `metadata.hard_filter_evidence_by_action_id` map remains
+available for artifact/debug views.
 
 Common validation errors:
 

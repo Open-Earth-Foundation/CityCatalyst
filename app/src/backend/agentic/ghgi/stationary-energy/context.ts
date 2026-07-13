@@ -395,7 +395,11 @@ function hasCommittedCurrentValue(value: Record<string, unknown>): boolean {
   }
 
   const unavailableReason = stringField(value["unavailable_reason"]);
-  return Boolean(unavailableReason && unavailableReason !== "reason-NE");
+  return Boolean(
+    unavailableReason &&
+      unavailableReason !== "reason-NE" &&
+      unavailableReason !== "not-estimated",
+  );
 }
 
 async function buildSourceCandidates(

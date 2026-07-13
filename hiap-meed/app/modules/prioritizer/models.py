@@ -1301,6 +1301,73 @@ class PrioritizationExplanationMetadata(BaseModel):
     )
 
 
+class HardFilterLegalAssessmentSummary(BaseModel):
+    """Legal row details returned for hard-filter decisions."""
+
+    model_config = ConfigDict(extra="allow")
+
+    country_code: str | None = Field(
+        default=None,
+        description="Country code used to select the legal assessment row.",
+    )
+    gpc_sector: str | None = Field(
+        default=None,
+        description="GPC sector associated with the legal assessment row.",
+    )
+    ownership_category: str | None = Field(
+        default=None,
+        description="Legal authority category for who can implement the action.",
+    )
+    ownership_score: float | None = Field(
+        default=None,
+        description="Normalized ownership authority score when present.",
+    )
+    ownership_description: str | None = Field(
+        default=None,
+        description="English plain-language description of who has legal authority.",
+    )
+    ownership_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of who has legal authority.",
+    )
+    restrictions_category: str | None = Field(
+        default=None,
+        description="Legal restriction category for the action.",
+    )
+    restrictions_score: float | None = Field(
+        default=None,
+        description="Normalized restrictions score when present.",
+    )
+    restrictions_description: str | None = Field(
+        default=None,
+        description="English plain-language description of legal barriers or restrictions.",
+    )
+    restrictions_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of legal barriers or restrictions.",
+    )
+    legal_justification: str | None = Field(
+        default=None,
+        description="Full Spanish legal reasoning for the verdict when present.",
+    )
+    legal_justification_en: str | None = Field(
+        default=None,
+        description="Full English legal reasoning for the verdict when present.",
+    )
+    legal_references: list[str] = Field(
+        default_factory=list,
+        description="Legal reference strings supporting the verdict.",
+    )
+    analysis_date: str | None = Field(
+        default=None,
+        description="Date when the legal assessment was produced.",
+    )
+    generation_method: str | None = Field(
+        default=None,
+        description="Method used to produce the legal assessment.",
+    )
+
+
 class HardFilterEvidenceSummary(BaseModel):
     """Per-action hard-filter evidence returned in prioritization metadata."""
 
@@ -1317,6 +1384,85 @@ class HardFilterEvidenceSummary(BaseModel):
     legal_verdict_category: str | None = Field(
         default=None,
         description="Legal verdict category observed by the hard filter when present.",
+    )
+    legal_assessment_summary: HardFilterLegalAssessmentSummary | None = Field(
+        default=None,
+        description="Legal row details used by the hard filter when present.",
+    )
+
+
+class RemovedActionLegalEvidence(BaseModel):
+    """Frontend-facing legal evidence for an action removed before ranking."""
+
+    verdict_category: str | None = Field(
+        default=None,
+        description="Legal verdict category that caused or informed removal.",
+    )
+    verdict_score: float | None = Field(
+        default=None,
+        description="Legal verdict score when present.",
+    )
+    ownership_category: str | None = Field(
+        default=None,
+        description="Legal authority category for who can implement the action.",
+    )
+    ownership_score: float | None = Field(
+        default=None,
+        description="Normalized ownership authority score when present.",
+    )
+    ownership_description: str | None = Field(
+        default=None,
+        description="English plain-language description of who has legal authority.",
+    )
+    ownership_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of who has legal authority.",
+    )
+    restrictions_category: str | None = Field(
+        default=None,
+        description="Legal restriction category for the action.",
+    )
+    restrictions_score: float | None = Field(
+        default=None,
+        description="Normalized restrictions score when present.",
+    )
+    restrictions_description: str | None = Field(
+        default=None,
+        description="English plain-language description of legal barriers or restrictions.",
+    )
+    restrictions_description_es: str | None = Field(
+        default=None,
+        description="Spanish plain-language description of legal barriers or restrictions.",
+    )
+    legal_justification: str | None = Field(
+        default=None,
+        description="Full Spanish legal reasoning for the verdict when present.",
+    )
+    legal_justification_en: str | None = Field(
+        default=None,
+        description="Full English legal reasoning for the verdict when present.",
+    )
+    legal_references: list[str] = Field(
+        default_factory=list,
+        description="Legal reference strings supporting the verdict.",
+    )
+
+
+class RemovedActionSummary(BaseModel):
+    """Frontend-facing summary for an action removed before ranking."""
+
+    action_id: str = Field(description="Stable action identifier.")
+    action_name: str = Field(description="Human-readable action name.")
+    removal_reason: str | None = Field(
+        default=None,
+        description="Reason the action was removed before ranking.",
+    )
+    removal_source: str = Field(
+        description="Pipeline source that removed the action.",
+    )
+    legal: RemovedActionLegalEvidence | None = Field(
+        default=None,
+        description="Legal evidence for legal hard-filter removals.",
     )
 
 
@@ -1357,6 +1503,10 @@ class PrioritizationResponse(BaseModel):
 
     ranked_action_ids: list[str] = Field(default_factory=list)
     ranked_actions: list[RankedActionResult] = Field(default_factory=list)
+    removed_actions: list[RemovedActionSummary] = Field(
+        default_factory=list,
+        description="Actions removed before ranking, shaped for frontend display.",
+    )
     metadata: PrioritizationMetadata = Field(
         description="Stable diagnostics and metadata for the ranked city."
     )
@@ -1415,6 +1565,10 @@ class PrioritizerApiCityResult(BaseModel):
     ranked_actions: list[RankedActionResult] = Field(
         default_factory=list,
         description="Detailed ranked actions with scores, evidence, and explanations.",
+    )
+    removed_actions: list[RemovedActionSummary] = Field(
+        default_factory=list,
+        description="Actions removed before ranking, shaped for frontend display.",
     )
     metadata: PrioritizationMetadata = Field(
         description="Diagnostics, timings, counts, and artifact-oriented metadata.",

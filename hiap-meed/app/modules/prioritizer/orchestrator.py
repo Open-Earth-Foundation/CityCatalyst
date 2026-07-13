@@ -14,7 +14,11 @@ from app.modules.prioritizer.blocks import (
 )
 from app.modules.prioritizer.scoring_config import validate_weights
 from app.modules.prioritizer.internal_models import Action, CityEmissionsContext
-from app.modules.prioritizer.models import PrioritizationResponse, RankedActionResult
+from app.modules.prioritizer.models import (
+    PrioritizationResponse,
+    RankedActionResult,
+    RemovedActionSummary,
+)
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
@@ -129,6 +133,63 @@ def _legal_fetch_source_descriptor(
         "source": fallback_descriptor["source"],
         "source_metadata": dict(first_source_metadata),
     }
+
+
+def _removed_action_source(discard_reason: object) -> str:
+    """Return the public source label for one hard-filter removal reason."""
+    if discard_reason == "legal_verdict_blocked":
+        return "legal_hard_filter"
+    if discard_reason == "user_excluded":
+        return "user_exclusion"
+    return "hard_filter"
+
+
+def _build_removed_action_legal_evidence(
+    evidence: dict[str, object],
+) -> dict[str, object] | None:
+    """Return frontend-facing legal evidence for a removed action when present."""
+    summary = evidence.get("legal_assessment_summary")
+    if not isinstance(summary, dict):
+        return None
+    return {
+        "verdict_category": evidence.get("legal_verdict_category"),
+        "verdict_score": evidence.get("legal_verdict_score"),
+        "ownership_category": summary.get("ownership_category"),
+        "ownership_score": summary.get("ownership_score"),
+        "ownership_description": summary.get("ownership_description"),
+        "ownership_description_es": summary.get("ownership_description_es"),
+        "restrictions_category": summary.get("restrictions_category"),
+        "restrictions_score": summary.get("restrictions_score"),
+        "restrictions_description": summary.get("restrictions_description"),
+        "restrictions_description_es": summary.get("restrictions_description_es"),
+        "legal_justification": summary.get("legal_justification"),
+        "legal_justification_en": summary.get("legal_justification_en"),
+        "legal_references": list(summary.get("legal_references", [])),
+    }
+
+
+def _build_removed_actions(
+    *,
+    discarded_actions: list[Action],
+    evidence_by_action_id: dict[str, dict[str, object]],
+) -> list[RemovedActionSummary]:
+    """Return frontend-facing summaries for actions removed before ranking."""
+    removed_actions: list[RemovedActionSummary] = []
+    for action in discarded_actions:
+        evidence = evidence_by_action_id.get(action.action_id, {})
+        removal_reason = evidence.get("discard_reason")
+        removed_actions.append(
+            RemovedActionSummary(
+                action_id=action.action_id,
+                action_name=action.action_name,
+                removal_reason=(
+                    removal_reason if isinstance(removal_reason, str) else None
+                ),
+                removal_source=_removed_action_source(removal_reason),
+                legal=_build_removed_action_legal_evidence(evidence),
+            )
+        )
+    return removed_actions
 
 
 def _group_feasibility_evidence(evidence: dict[str, object]) -> dict[str, object]:
@@ -1455,6 +1516,13 @@ def run_prioritization(
         )
 
     ranked_action_ids = [item.action.action_id for item in scored_actions]
+    removed_actions = _build_removed_actions(
+        discarded_actions=[
+            *hard_filter_result.discarded_excluded,
+            *hard_filter_result.discarded_legal,
+        ],
+        evidence_by_action_id=hard_filter_result.evidence,
+    )
     generated_languages = _collect_generated_languages(
         requested_languages=requested_languages,
         explanations_by_action_id=explanations_by_action_id,
@@ -1492,6 +1560,10 @@ def run_prioritization(
                 "ranked_actions": [
                     ranked_action.model_dump(mode="json")
                     for ranked_action in ranked_actions
+                ],
+                "removed_actions": [
+                    removed_action.model_dump(mode="json")
+                    for removed_action in removed_actions
                 ],
                 "metadata": metadata,
                 "warnings": translation_warnings,
@@ -1578,6 +1650,7 @@ def run_prioritization(
     return PrioritizationResponse(
         ranked_action_ids=ranked_action_ids,
         ranked_actions=ranked_actions,
+        removed_actions=removed_actions,
         metadata=metadata,
         warnings=translation_warnings,
     )

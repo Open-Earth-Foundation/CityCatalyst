@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
 import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -17,7 +17,6 @@ import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
-import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { getHomePath } from "@/util/routes";
@@ -31,6 +30,14 @@ type Inputs = {
   acceptTerms: boolean;
   preferredLanguage: LANGUAGES;
 };
+
+function resolveBrowserLanguage(): LANGUAGES {
+  if (typeof navigator === "undefined") return LANGUAGES.en;
+  const base = navigator.language.split("-")[0];
+  return Object.values(LANGUAGES).includes(base as LANGUAGES)
+    ? (base as LANGUAGES)
+    : LANGUAGES.en;
+}
 
 const normalizeInviteEmail = (value: string | null): string =>
   (value ?? "").replaceAll(" ", "+");
@@ -57,14 +64,19 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     handleSubmit,
     register,
     setError: setFormError,
+    setValue,
     formState: { errors, isSubmitting },
     watch,
   } = useForm<Inputs>({
     defaultValues: {
-      preferredLanguage: lng as LANGUAGES,
+      preferredLanguage: LANGUAGES.en,
       email: prefilledEmail,
     },
   });
+
+  useEffect(() => {
+    setValue("preferredLanguage", resolveBrowserLanguage());
+  }, [setValue]);
 
   const watchPassword = watch("password", "");
 
@@ -203,30 +215,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           id="confirmPassword"
           shouldValidate={false}
         />
-        <Field
-          label={<LabelLarge>{t("preferred-language")}</LabelLarge>}
-          invalid={!!errors.preferredLanguage}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.preferredLanguage?.message}
-              </Text>
-            </Box>
-          }
-        >
-          <LanguageSelector
-            register={register}
-            error={errors.preferredLanguage}
-            t={t}
-            defaultValue={lng as LANGUAGES}
-          />
-        </Field>
+        <input type="hidden" {...register("preferredLanguage")} />
         <Field
           invalid={!!errors.acceptTerms}
           errorText={

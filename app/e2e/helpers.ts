@@ -5,14 +5,20 @@ export async function expectText(page: Page, text: string) {
 }
 
 /** Wait until the auth form is hydrated and inputs are interactive. */
-export async function waitForAuthFormReady(page: Page) {
+export async function waitForAuthFormReady(
+  page: Page,
+  options: { expectEnabled?: boolean } = {},
+) {
+  const { expectEnabled = true } = options;
   await expect(page.locator('input[name="email"]')).toBeVisible();
   await expect(page.locator("form").first()).toHaveAttribute("novalidate", "");
   const submitButton = page.getByRole("button", {
     name: /^(LOG IN|Create Account)$/i,
   });
   await expect(submitButton).toBeVisible();
-  await expect(submitButton).toBeEnabled();
+  if (expectEnabled) {
+    await expect(submitButton).toBeEnabled();
+  }
   await expect(submitButton).toHaveAttribute("formnovalidate", "");
 }
 

@@ -69,6 +69,7 @@ export default function PasswordInput({
         }}
         {...register(id, {
           required: t("please-enter-password"),
+          minLength: { value: 4, message: t("min-length", { length: 4 }) },
         })}
       />
 

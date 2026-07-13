@@ -23,11 +23,12 @@ export async function waitForAuthFormReady(
 }
 
 export async function expectFieldInvalid(page: Page, fieldName: string) {
-  await expect(page.locator(`input[name="${fieldName}"]`)).toHaveAttribute(
-    "aria-invalid",
-    "true",
-    { timeout: 15000 },
-  );
+  // Chakra UI v3 / Ark UI marks the Field.Root container (role="group") with
+  // data-invalid="" when invalid — more reliable than checking aria-invalid on
+  // the input, which is inconsistently propagated through the Chakra/Ark layers.
+  await expect(
+    page.locator(`[role="group"]:has(input[name="${fieldName}"])`),
+  ).toHaveAttribute("data-invalid", "", { timeout: 15000 });
 }
 
 export async function expectValidationMessage(

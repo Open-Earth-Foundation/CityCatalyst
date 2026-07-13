@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { MdInfoOutline } from "react-icons/md";
 import type { TFunction } from "i18next";
 import { useGetUserProjectsQuery, useInviteUsersMutation } from "@/services/api";
+import { z } from "zod";
 
 interface InvitedMember {
   email: string;
@@ -86,7 +87,7 @@ const InviteCollaboratorsStep = forwardRef<
   }, [projectsData, selectedProject]);
 
   const validateEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    z.string().email().safeParse(email).success;
 
   const addMember = () => {
     const trimmed = emailInput.trim();

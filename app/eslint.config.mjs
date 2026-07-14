@@ -1,21 +1,23 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig, globalIgnores } from "eslint/config";
 import i18next from "eslint-plugin-i18next";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 
-const compat = new FlatCompat({
-  // import.meta.dirname is available after Node.js v20.11.0
-  baseDirectory: import.meta.dirname,
-});
-
-const eslintConfig = [
-  ...compat.config({
-    extends: ["next/core-web-vitals"],
-    settings: {
-      next: {
-        rootDir: "app/",
-      },
-    },
-  }),
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
   i18next.configs["flat/recommended"],
-];
+  globalIgnores([
+    "node_modules/**",
+    ".next/**",
+    "out/**",
+    "build/**",
+    "coverage/**",
+    "next-env.d.ts",
+  ]),
+  {
+    rules: {},
+  },
+]);
 
 export default eslintConfig;

@@ -1,6 +1,7 @@
 /**
  * Unit tests for Path B interpret helpers (pure decisions, no LLM).
  */
+import { describe, expect, it } from "@jest/globals";
 import {
   detectedColumnsMatchECRFStructure,
   shouldSkipInterpretForAdapter,

@@ -1,6 +1,7 @@
 /**
  * Unit tests for Path C document chunking helpers (multi-chunk stress readiness).
  */
+import { describe, expect, it } from "@jest/globals";
 import {
   mergeAndDedupeRows,
   PATH_C_CHUNK_OVERLAP,

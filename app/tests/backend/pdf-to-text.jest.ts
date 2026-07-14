@@ -4,6 +4,7 @@
  * Note: `unpdf` is ESM; if this suite fails under default Jest, run with
  * `--experimental-vm-modules` (runtime Next.js extraction is verified separately).
  */
+import { describe, expect, it } from "@jest/globals";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { pdfBufferToText } from "@/backend/PdfToTextService";

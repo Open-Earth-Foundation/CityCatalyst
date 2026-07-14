@@ -25,5 +25,5 @@
     "baseUrl": "."
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.d.ts", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "e2e/**/*", "playwright.config.ts"]
+  "exclude": ["node_modules", "e2e/**/*", "tests/**/*", "playwright.config.ts"]
 }

@@ -1,6 +1,7 @@
 /**
  * Unit tests for bounded async mapPool (Path B/C parallel chunks).
  */
+import { describe, expect, it } from "@jest/globals";
 import {
   getLlmChunkConcurrency,
   mapPool,

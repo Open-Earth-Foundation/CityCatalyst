@@ -1,6 +1,7 @@
 /**
  * Unit tests for Path B table shape chunk planning (pure helpers).
  */
+import { describe, expect, it } from "@jest/globals";
 import {
   ABSOLUTE_MAX_TABLE_SHAPE_CHUNKS,
   BASE_MAX_TABLE_SHAPE_CHUNKS,

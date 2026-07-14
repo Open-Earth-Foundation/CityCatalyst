@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { methodologiesBySector } from "./methodologies";
 import { useParams } from "next/navigation";
 import { LANGUAGES } from "@/util/types";
@@ -9,7 +8,7 @@ import { HeadlineLarge } from "@/components/package/Texts/Headline";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { List, ListItem, VStack, HStack, Image } from "@chakra-ui/react";
+import { List, ListItem, VStack, HStack } from "@chakra-ui/react";
 
 import { ButtonSmall } from "@/components/package/Texts/Button";
 import { Equation as IEquation } from "./types";

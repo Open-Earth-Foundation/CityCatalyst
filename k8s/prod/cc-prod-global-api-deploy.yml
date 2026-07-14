@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cc-global-api
+  name: cc-global-api-deploy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cc-global-api
+  template:
+    metadata:
+      labels:
+        app: cc-global-api
+    spec:
+      containers:
+      - env:
+        - name: PROJECT_NAME
+          value: CityCatalyst Global API
+        envFrom:
+        - configMapRef:
+            name: cc-global-api-db-configmap
+        image: ghcr.io/open-earth-foundation/citycatalyst-global-api:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            - name: X-Liveness-Probe
+              value: "True"
+            path: /health
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 15
+        name: cc-global-api
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            httpHeaders:
+            - name: X-Liveness-Probe
+              value: "True"
+            path: /health
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 15
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 512Mi
+        startupProbe:
+          failureThreshold: 60
+          httpGet:
+            httpHeaders:
+            - name: X-Liveness-Probe
+              value: "True"
+            path: /health
+            port: 8000
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          successThreshold: 1
+          timeoutSeconds: 15

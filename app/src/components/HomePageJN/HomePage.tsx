@@ -232,7 +232,7 @@ export default function HomePage({
         <>
           <Hero
             city={city}
-            ghgiCityData={ghgiCityData}
+            hasInventory={!!ghgiCityData}
             isPublic={isPublic}
             isLoading={isOrgDataLoading || isCityLoading}
             t={t}
@@ -247,7 +247,7 @@ export default function HomePage({
                 lng={language}
                 organization={orgData}
                 city={city}
-                ghgiCityData={ghgiCityData}
+                hasInventory={!!ghgiCityData}
               />
             </VStack>
           </Box>

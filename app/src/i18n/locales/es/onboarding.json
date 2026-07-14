@@ -63,6 +63,7 @@
   "breaking-into-chunks": "Dividiendo el archivo en partes más pequeñas para una extracción más sencilla",
   "interpreting-file": "Interpretando su archivo",
   "interpreting-file-description": "La IA está mapeando columnas y extrayendo filas del inventario. Puede tardar un momento.",
+  "interpreting-chunk-progress": "Interpretando... (parte {{current}} de {{total}})",
   "ghg-inventory-creation": "Creación del inventario de GEI",
   "setup-inventory-details-heading": "Configura los detalles del inventario",
   "setup-inventory-details-description": "Proporcione algunos detalles básicos sobre el inventario que desea crear. Puede editar estos ajustes después.",

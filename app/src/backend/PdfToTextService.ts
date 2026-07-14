@@ -6,7 +6,7 @@
  * even on valid PDFs. `unpdf` is kept external via `serverExternalPackages` as a safeguard.
  *
  * Inputs: PDF `Buffer` (size already capped at upload via MAX_FILE_SIZE).
- * Outputs: trimmed text, page count, truncated flag when pageCount exceeds maxPages.
+ * Outputs: trimmed text (capped to maxPages), page count, truncated flag when pageCount exceeds maxPages.
  */
 import { extractText } from "unpdf";
 import { MAX_FILE_SIZE } from "./FileValidatorService";
@@ -21,23 +21,14 @@ export interface PdfToTextResult {
 }
 
 /**
- * Normalize unpdf text output (string or per-page string[]) into one document string.
- *
- * @param text - Merged string or page array from extractText
- */
-function normalizeExtractedText(text: string | string[]): string {
-  if (Array.isArray(text)) {
-    return text.filter(Boolean).join("\n");
-  }
-  return typeof text === "string" ? text : "";
-}
-
-/**
  * Extract text content from a PDF buffer for use in AI extraction.
+ *
+ * Pages beyond `maxPages` are dropped from the returned text (truncation is enforced,
+ * not only flagged) so large PDFs cannot blow up LLM input size.
  *
  * @param buffer - PDF file buffer
  * @param options - Optional maxPages (default PDF_MAX_PAGES); buffer already validated for size (MAX_FILE_SIZE) at upload
- * @returns Extracted text and metadata; text may be truncated if page count exceeds maxPages
+ * @returns Extracted text and metadata; text is truncated to the first maxPages when needed
  * @throws Error when buffer exceeds MAX_FILE_SIZE or the PDF cannot be parsed
  */
 export async function pdfBufferToText(
@@ -52,13 +43,19 @@ export async function pdfBufferToText(
     );
   }
 
+  // Per-page extraction so we can enforce maxPages (mergePages:true returns all pages).
   const result = await extractText(new Uint8Array(buffer), {
-    mergePages: true,
+    mergePages: false,
   });
+  const pages = Array.isArray(result.text) ? result.text : [];
   const pageCount =
-    typeof result.totalPages === "number" ? result.totalPages : 0;
+    typeof result.totalPages === "number" ? result.totalPages : pages.length;
   const truncated = pageCount > maxPages;
-  const text = normalizeExtractedText(result.text).trim();
+  const text = pages
+    .slice(0, maxPages)
+    .filter(Boolean)
+    .join("\n")
+    .trim();
 
   return {
     text,

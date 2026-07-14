@@ -63,6 +63,7 @@
   "breaking-into-chunks": "Datei wird in kleinere Teile für die Extraktion aufgeteilt",
   "interpreting-file": "Ihre Datei wird interpretiert",
   "interpreting-file-description": "Die KI ordnet Spalten zu und extrahiert Inventarzeilen. Das kann einen Moment dauern.",
+  "interpreting-chunk-progress": "Interpretation läuft... (Teil {{current}} von {{total}})",
   "ghg-inventory-creation": "Erstellung des Treibhausgasinventars",
   "setup-inventory-details-heading": "Einrichten von Inventardetails",
   "setup-inventory-details-description": "Geben Sie einige grundlegende Details über das Inventar an, das Sie erstellen möchten. Sie können diese Einstellungen später bearbeiten.",

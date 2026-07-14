@@ -27,6 +27,7 @@
   "breaking-into-chunks": "Découpage du fichier en parties plus petites pour une extraction plus simple",
   "interpreting-file": "Interprétation de votre fichier",
   "interpreting-file-description": "L'IA mappe les colonnes et extrait les lignes d'inventaire. Cela peut prendre un instant.",
+  "interpreting-chunk-progress": "Interprétation en cours... (partie {{current}} sur {{total}})",
   "setup-step": "Mise en place de votre inventaire",
   "ghg-inventory-creation": "Création de l'inventaire de GES",
   "setup-inventory-details-heading": "Configurer les détails de l'inventaire",

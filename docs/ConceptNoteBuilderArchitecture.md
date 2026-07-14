@@ -22,8 +22,7 @@ data and configuration, not by rebuilding the workflow.
 - The NBS Project Preparation prototype and its document, block, patch,
   knowledge-source, and concept-note patterns.
 - The CityCatalyst global-data concept-note-builder research page, especially
-  its supply/awards/pipeline split and its funder, funding opportunity, project,
-  action, and funding-link data model.
+  its funder and funding reference data.
 - The supporting PDF converter repository for PDF-to-markdown conversion.
 
 ## Scope
@@ -85,8 +84,8 @@ flowchart TB
     end
 
     subgraph CNBDB["datateam managed CNB database"]
-        FunderDB[("Funder criteria tables<br/>templates")]
-        ProjectKB[("Funded project tables<br/>awards<br/>source evidence")]
+        FunderDB[("Funders<br/>criteria + templates")]
+        ProjectKB[("Funding records<br/>opportunities + funded projects<br/>source evidence")]
     end
 
     ContextBundle["Context bundle<br/>CC context + funder criteria<br/>funded projects + uploads"]
@@ -165,7 +164,7 @@ flowchart LR
 | Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
 | Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
 | Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
-| Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
+| Funding opportunities and funded projects | datateam managed CNB database | Shared funding records distinguished by `is_opportunity`. |
 | Exported DOCX/PDF file references | datateam managed CNB database | Workflow output artifacts. |
 | PDF-to-markdown conversion | Climate Advisor | Runs the shared Markdown-only job and uploads the outcome; CityCatalyst verifies and records the result pointer. |
 
@@ -180,8 +179,8 @@ The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
 
 - typed read/write clients or repositories for CNB run and document state
-- typed reference-data clients for funder, funding-opportunity, pipeline, and
-  funded-project data
+- typed reference-data clients for funders, funding records, templates,
+  criteria, and evidence
 - stable file references for uploads and exports
 - source labels/locations and evidence link records for workspace review and
   audit trails
@@ -297,13 +296,10 @@ important planning rules are:
 
 - Keep the four discovered input groups separate: finance landscape, funder
   profiles, comparable awards, and CityCatalyst city context/GHGI.
-- Keep funding lifecycle moments separate:
-  - `supply`: what funding exists, one row per program/opportunity.
-  - `awards`: what got funded, one row per award/funding link.
-- Use three country-agnostic stored concepts: funder, funding opportunity, and
-  funded project. Each funded project is stored as one complete entry.
-- Connect projects to funding through explicit funding links rather than
-  embedding awards directly in project records.
+- Store opportunities and funded projects in one `funding_records` table.
+  `is_opportunity` distinguishes opportunity rows from funded-project rows.
+- Keep each funded project and its award information in one complete row; do
+  not introduce a separate funding-link table.
 - Treat the finance route as document-shaping data. A competitive grant,
   formula/block grant, green-bank loan, capital-investment request, and city
   self-financing path each imply different required document sections.
@@ -353,7 +349,7 @@ erDiagram
         string city_id
         string project_id
         string funder_id
-        string opportunity_id
+        string selected_funding_record_id
         string status
         string workflow_step
         jsonb context_summary
@@ -430,7 +426,7 @@ erDiagram
     concept_note_matched_projects {
         uuid match_id
         uuid run_id
-        string funded_project_id
+        string funding_record_id
         string decision
         text fit_rationale
         jsonb evidence
@@ -480,18 +476,16 @@ evidence-backed content.
 ### CNB Funding Reference Tables
 
 These tables live in the same datateam managed CNB database as the workflow
-tables. They are the curated, reusable table group for funders and funded
-projects.
+tables. They store reusable funders and funding records. A funding record is
+either an opportunity or a funded project.
 
 ```mermaid
 erDiagram
-    funders ||--o{ funding_opportunities : "offers"
-    funding_opportunities ||--o{ funder_templates : "uses"
-    funding_opportunities ||--o{ funder_criteria : "defines"
-    funding_opportunities ||--o{ funding_links : "funds"
-    funded_projects ||--o{ funding_links : "receives"
-    funded_projects ||--o{ funded_project_evidence : "cites"
-    source_documents ||--o{ funded_project_evidence : "supports"
+    funders ||--o{ funding_records : "owns"
+    funding_records ||--o{ funder_templates : "uses when opportunity"
+    funding_records ||--o{ funder_criteria : "defines when opportunity"
+    funding_records ||--o{ funding_record_evidence : "cites"
+    source_documents ||--o{ funding_record_evidence : "supports"
     source_documents ||--o{ funder_criteria : "supports"
 
     funders {
@@ -503,23 +497,33 @@ erDiagram
         jsonb profile
     }
 
-    funding_opportunities {
-        uuid opportunity_id
+    funding_records {
+        uuid funding_record_id
         uuid funder_id
+        bool is_opportunity
         string name
+        string applicant_name
+        string city
+        string state_region
+        string country
+        string category
+        jsonb hazards
+        jsonb interventions
         string finance_route
         string instrument_type
         string region_scope
         numeric min_award
         numeric max_award
+        numeric award_amount
         string currency
-        string live_status
+        int award_year
         string status
+        text summary
     }
 
     funder_templates {
         uuid template_id
-        uuid opportunity_id
+        uuid funding_record_id
         string template_name
         string output_format
         jsonb chapter_schema
@@ -528,40 +532,13 @@ erDiagram
 
     funder_criteria {
         uuid criterion_id
-        uuid opportunity_id
+        uuid funding_record_id
         string criterion_type
         string label
         text requirement_text
         numeric weight
         bool hard_gate
         jsonb normalized_rule
-    }
-
-    funded_projects {
-        uuid funded_project_id
-        string title
-        string applicant_name
-        string city
-        string state_region
-        string country
-        string category
-        jsonb hazards
-        jsonb interventions
-        text summary
-    }
-
-    funding_links {
-        uuid funding_link_id
-        uuid funded_project_id
-        uuid opportunity_id
-        numeric award_amount
-        numeric requested_amount
-        string currency
-        int award_year
-        string fiscal_year
-        string instrument_type
-        string lifecycle_stage
-        string status
     }
 
     source_documents {
@@ -574,15 +551,20 @@ erDiagram
         timestamp fetched_at
     }
 
-    funded_project_evidence {
+    funding_record_evidence {
         uuid evidence_id
-        uuid funded_project_id
+        uuid funding_record_id
         uuid source_document_id
         text claim
         text quote_or_summary
         jsonb source_map
     }
 ```
+
+Rows with `is_opportunity = true` hold the application programme, template, and
+criteria. Rows with `is_opportunity = false` hold one complete funded-project
+example and its award information. Templates and criteria may reference only an
+opportunity record.
 
 ## Research Ingest Pipeline
 
@@ -604,12 +586,11 @@ flowchart LR
 Required ingest outputs:
 
 - Source document record with URL, title, date, license status, and hash.
-- Funder record and funding opportunity record, including route, instrument,
-  geography, live status, and award-size ranges.
+- Funder record and funding records for opportunities and funded projects.
 - Template chapter schema.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
-- Funded-project records and funding links.
+- Opportunity and funded-project details in the shared funding records.
 - Evidence links for each important claim.
 
 ## Similar Project Matching
@@ -848,7 +829,7 @@ Input:
   "city_id": "string",
   "project_id": "string",
   "funder_id": "string",
-  "opportunity_id": "string",
+  "selected_funding_record_id": "string",
   "thread_id": "uuid|null"
 }
 ```
@@ -868,8 +849,8 @@ Rules:
 
 - Creates `concept_note_runs`.
 - Creates initial empty document from the selected funder template.
-- Reuses an active run if the same user, city, project, funder, and opportunity
-  already has one.
+- Reuses an active run if the same user, city, project, funder, and selected
+  funding record already has one.
 
 ### Always-On Agent Context
 
@@ -932,8 +913,8 @@ draft chapter content, not as standalone tools.
 
 #### `funder_get_profile`
 
-Loads the curated funder profile and opportunity criteria into the context
-bundle.
+Loads the curated funder profile and criteria attached to the selected
+opportunity record into the context bundle.
 
 Output includes:
 
@@ -982,7 +963,7 @@ Input:
 {
   "run_id": "uuid",
   "funder_id": "uuid",
-  "opportunity_id": "uuid",
+  "selected_funding_record_id": "uuid",
   "category": "stormwater",
   "region": "MN",
   "instrument_type": "grant",
@@ -998,7 +979,7 @@ Output:
 {
   "matches": [
     {
-      "funded_project_id": "uuid",
+      "funding_record_id": "uuid",
       "decision": "selected",
       "fit_rationale": "Why the LLM agent considers this example useful.",
       "matched_tags": ["stormwater", "flood", "city-led"],
@@ -1011,7 +992,7 @@ Output:
 
 Rules:
 
-- Retrieve candidate funded projects from CNB reference tables.
+- Retrieve candidate funding records where `is_opportunity = false`.
 - Use curated project tags when available to find close tag combinations.
 - Use the LLM agent to select comparable examples and explain fit.
 - Do not return calibrated numeric scores in v1.
@@ -1537,7 +1518,7 @@ file layout.
 | --- | --- | --- |
 | Workflow orchestration | Climate Advisor | Starts/resumes runs, resolves active step, scopes tools, streams responses. |
 | CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
-| Funding reference access | datateam managed CNB database | Climate Advisor reads funders, opportunities, templates, criteria, funded projects, and funding links from CNB reference tables. |
+| Funding reference access | datateam managed CNB database | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
 | Source and OCR result storage | CityCatalyst | Authenticates the user, stores source PDFs, verifies uploaded Markdown results, owns their S3 pointers, and provides exact-object signed URLs through the existing CA integration auth flow. |
 | CNB file ingestion | Climate Advisor | Registers the CN upload, starts the shared Markdown-only converter with `concept_note_upload + upload_id`, then performs later CN-specific source selection through the CNB storage contract. |

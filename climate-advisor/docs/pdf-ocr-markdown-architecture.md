@@ -364,7 +364,7 @@ user_id
 city_id
 project_id
 funder_id
-opportunity_id
+selected_funding_record_id
 status
 workflow_step
 context_summary
@@ -470,7 +470,7 @@ quote_or_summary
 ```text
 match_id
 run_id
-funded_project_id
+funding_record_id
 decision
 fit_rationale
 evidence
@@ -500,27 +500,41 @@ region
 profile
 ```
 
-`funding_opportunities`:
+`funding_records`:
 
 ```text
-opportunity_id
+funding_record_id
 funder_id
+is_opportunity
 name
+applicant_name
+city
+state_region
+country
+category
+hazards
+interventions
 finance_route
 instrument_type
 region_scope
 min_award
 max_award
+award_amount
 currency
-live_status
+award_year
 status
+summary
 ```
+
+`is_opportunity = true` identifies programme/application opportunities;
+`false` identifies complete funded-project examples. Templates and criteria
+reference only opportunity records.
 
 `funder_templates`:
 
 ```text
 template_id
-opportunity_id
+funding_record_id
 template_name
 output_format
 chapter_schema
@@ -531,44 +545,13 @@ required_fields
 
 ```text
 criterion_id
-opportunity_id
+funding_record_id
 criterion_type
 label
 requirement_text
 weight
 hard_gate
 normalized_rule
-```
-
-`funded_projects`:
-
-```text
-funded_project_id
-title
-applicant_name
-city
-state_region
-country
-category
-hazards
-interventions
-summary
-```
-
-`funding_links`:
-
-```text
-funding_link_id
-funded_project_id
-opportunity_id
-award_amount
-requested_amount
-currency
-award_year
-fiscal_year
-instrument_type
-lifecycle_stage
-status
 ```
 
 `source_documents`:
@@ -583,11 +566,11 @@ content_hash
 fetched_at
 ```
 
-`funded_project_evidence`:
+`funding_record_evidence`:
 
 ```text
 evidence_id
-funded_project_id
+funding_record_id
 source_document_id
 claim
 quote_or_summary
@@ -721,33 +704,3 @@ Reuse the useful stage-one concepts from
 Do not copy its CLI assumptions, permanent local-output contract, vision agents,
 structured extraction, mapping, database loading, or storage/retry behavior that
 bypasses CA's job state.
-
-## Verification
-
-The implementation must verify:
-
-- the existing user JWT and service-header contract in both directions, with no
-  OCR-specific secret or token
-- inventory and Concept Note source resolvers, including unauthorized access
-- same UUID under different source types, duplicate starts, two uploads in one
-  Concept Note run, unknown source types, and source metadata conflicts
-- repeated start/retry behavior and valid state transitions
-- PDF validation and stable error classification
-- ordered chunk planning and deterministic Markdown merging
-- retry limits, timeouts, leases, heartbeat, restart recovery, and shutdown
-- no more than two active jobs or two global Mistral requests
-- source, chunk, and merged temporary-file cleanup
-- successful Markdown storage/download and result expiry
-- CA cannot mark success until CC has verified and registered the result, and a
-  repeated completion call is idempotent
-- no result S3 key is persisted in the CA job table
-- no callback, row extraction, schema mapping, or post-processing call
-- identical OCR behavior for every supported source type
-- CA chat/API responsiveness during two simultaneous 20 MB conversions
-
-## Remaining Decisions
-
-- Confirm whether 500 pages is the first production cap after benchmarking.
-- Confirm the sanitized message for each stable error code.
-- Decide later whether Mistral batch processing is useful for non-interactive
-  bulk conversions.

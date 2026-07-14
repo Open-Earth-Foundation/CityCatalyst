@@ -16,6 +16,7 @@ import { MdBarChart } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import {
   CityWithProjectDataResponse,
+  InventoryResponse,
   OrganizationWithThemeResponse,
 } from "@/util/types";
 import { MdArrowForward } from "react-icons/md";
@@ -28,13 +29,13 @@ export function ActionCards({
   lng,
   t,
   city,
-  hasInventory,
+  ghgiCityData,
 }: {
   t: TFunction;
   organization: OrganizationWithThemeResponse;
   lng: string;
   city?: CityWithProjectDataResponse;
-  hasInventory?: boolean;
+  ghgiCityData?: InventoryResponse;
 }) {
   const router = useRouter();
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
@@ -42,7 +43,7 @@ export function ActionCards({
     accessStatus?.isCollaborator &&
     !accessStatus?.isOrgOwner &&
     !accessStatus?.isProjectAdmin;
-  const hasNoInventory = !hasInventory;
+  const hasNoInventory = !ghgiCityData;
   return (
     <Box display="flex" gap={6} w="full">
       <Box display="flex" flexDirection="column" gap={2} w="full">
@@ -101,7 +102,7 @@ export function ActionCards({
                   />
                 </Text>
               </Box>
-            ) : hasInventory ? (
+            ) : ghgiCityData ? (
               <>
                 <Box>
                   <HStack alignItems="center">

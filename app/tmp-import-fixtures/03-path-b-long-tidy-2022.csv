@@ -1,0 +1,6 @@
+Year,Sector,Subsector,Emissions (tCO2e),Activity,Unit,Source
+2022,Stationary Energy,Residential buildings,1200.5,Natural gas,TJ,City inventory report
+2022,Stationary Energy,Commercial buildings,850.2,Electricity,MWh,City inventory report
+2022,Transportation,On-road,3400.0,Diesel,liters,Transport department
+2022,Waste,Solid waste disposal,410.8,Municipal waste,tonnes,Waste agency
+2021,Stationary Energy,Residential buildings,1100.0,Natural gas,TJ,City inventory report

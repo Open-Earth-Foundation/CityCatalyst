@@ -1,0 +1,16 @@
+{
+  "fixture": "F6",
+  "change": "U6-parallel-chunks",
+  "concurrency": 3,
+  "m2_ai_ms": 367759,
+  "m4_n_chunks": 3,
+  "m8_progress": {
+    "total": 3,
+    "current": 1
+  },
+  "m7_status": "failed",
+  "m7_rowCount": null,
+  "errorLog": "Request timed out",
+  "sequentialBaseline_ms": 376714,
+  "dateUtc": "2026-07-14T13:13:55.047Z"
+}

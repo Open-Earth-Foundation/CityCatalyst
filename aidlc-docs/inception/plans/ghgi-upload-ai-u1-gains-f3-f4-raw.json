@@ -1,0 +1,44 @@
+{
+  "env": {
+    "dateUtc": "2026-07-14T02:24:00.000Z",
+    "session": "u1-gains-f3-f4",
+    "llmBaseUrl": "https://openrouter.ai/api/v1",
+    "llmModel": "openai/gpt-4o-mini",
+    "change": "U1-skip-interpret-for-adapter",
+    "cityId": "3efd28a4-f9b3-4ae3-ba6b-d88ae6951338"
+  },
+  "baselineRef": {
+    "F3": { "m2_ms": 12163, "tokens": 5937, "rows": 4, "llmCalls": 2 },
+    "F4": { "m2_ms": 12270, "tokens": 5810, "rows": 4, "llmCalls": 2 }
+  },
+  "results": [
+    {
+      "fixture": "F3",
+      "m2_ai_ms": 7530,
+      "m6_tokens": { "promptTokens": 2883, "completionTokens": 397, "totalTokensSum": 3280 },
+      "m4_n_chunks": 1,
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 4,
+      "llmCalls": 1,
+      "skipInterpretLogged": true
+    },
+    {
+      "fixture": "F4",
+      "m2_ai_ms": 5056,
+      "m6_tokens": { "promptTokens": 2846, "completionTokens": 370, "totalTokensSum": 3216 },
+      "m4_n_chunks": 1,
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 4,
+      "llmCalls": 1,
+      "skipInterpretLogged": true
+    }
+  ],
+  "nfr_o1": {
+    "pathB_f3_f4": "PASS",
+    "m2_delta_pct": { "F3": -38.1, "F4": -58.8 },
+    "m6_delta_pct": { "F3": -44.8, "F4": -44.6 },
+    "rowCount_regression": false,
+    "status_regression": false,
+    "f5": "not_rerun"
+  }
+}

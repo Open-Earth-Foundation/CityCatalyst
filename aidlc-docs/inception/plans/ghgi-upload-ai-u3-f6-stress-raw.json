@@ -1,0 +1,36 @@
+{
+  "env": {
+    "dateUtc": "2026-07-14T02:43:04.141Z",
+    "llmModel": "openai/gpt-4o-mini",
+    "llmBaseUrl": "https://openrouter.ai/api/v1"
+  },
+  "results": [
+    {
+      "run": "F6-1",
+      "fixture": "F6",
+      "path": "B",
+      "n": 1,
+      "httpUpload": 202,
+      "m1_upload_terminal_ms": 380,
+      "post_upload_status": "pending_ai_interpretation",
+      "m2_ai_ms": 504354,
+      "m4_n_chunks": 3,
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 205,
+      "m8_progress": {
+        "total": 3,
+        "current": 3
+      },
+      "errorLog": null,
+      "fileId": "b4b5ef12-57a3-474a-8858-53341d8c63ca",
+      "inventoryId": "91ed618f-f2d5-453e-bc5b-6a0f22926ff9",
+      "cityId": "db44992d-c9e2-4f13-85d9-99eb106adaa2",
+      "fixtureRows": 250,
+      "expectedShapeChunks": 3,
+      "changeId": "U3-stress-extended-baseline",
+      "dateUtc": "2026-07-14T02:43:04.141Z",
+      "llmModel": "openai/gpt-4o-mini",
+      "llmBaseUrl": "https://openrouter.ai/api/v1"
+    }
+  ]
+}

@@ -293,7 +293,9 @@ function setupBuildHook(options) {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
-  serverExternalPackages: ["sequelize"],
+  // Keep PDF parsers outside Turbopack/webpack bundles. pdf-parse's vendored pdf.js
+  // historically produced "bad XRef entry" when bundled; unpdf is the Path C extractor.
+  serverExternalPackages: ["sequelize", "unpdf"],
   turbopack: {
     rules: {},
   },

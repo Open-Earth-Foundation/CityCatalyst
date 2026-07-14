@@ -1,0 +1,16 @@
+{
+  "fixture": "F5",
+  "change": "unpdf-path-c-fix",
+  "m2_ai_ms": 16927,
+  "m7_status": "waiting_for_approval",
+  "m7_rowCount": 4,
+  "errorLog": null,
+  "tokens": {
+    "promptTokens": 3588,
+    "completionTokens": 390,
+    "calls": 1,
+    "total": 3978
+  },
+  "fileId": "faa2a20f-9c9f-4966-b720-06e5fcfbd9b2",
+  "dateUtc": "2026-07-14T12:57:40.620Z"
+}

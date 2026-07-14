@@ -16,6 +16,7 @@ import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import type { ImportStatusResponse } from "@/util/types";
+import { readImportChunkProgress } from "@/util/import-chunk-progress";
 import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
 import { useAppDispatch } from "@/lib/hooks";
@@ -375,11 +376,8 @@ export default function ImportPage(props: {
       makeErrorToast(t("extraction-failed"), resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t));
     },
     onTick: (res) => {
-      const progress = (res as ImportStatusResponse & { mappingConfiguration?: { extractionProgress?: { current: number; total?: number } } })
-        ?.mappingConfiguration?.extractionProgress;
-      const total = progress?.total;
-      if (progress != null && total != null && total > 1)
-        setExtractionProgress({ current: progress.current, total });
+      const progress = readImportChunkProgress(res.mappingConfiguration);
+      if (progress) setExtractionProgress(progress);
     },
     onPollError: (err) =>
       logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed"),
@@ -407,14 +405,23 @@ export default function ImportPage(props: {
     onSuccess: (res) => {
       setLastImportStatus(res);
       setIsInterpretInProgress(false);
+      setExtractionProgress(null);
       setTabularPendingInterpretation(false);
       setTimeout(() => goToNextStep(), 150);
     },
-    onFailure: (res) =>
+    onFailure: (res) => {
+      setIsInterpretInProgress(false);
+      setExtractionProgress(null);
       makeErrorToast(
         t("interpretation-failed") ?? "Interpretation failed",
         resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t),
-      ),
+      );
+    },
+    onTick: (res) => {
+      // Path B shape progress (U2) — same payload key as Path C extract
+      const progress = readImportChunkProgress(res.mappingConfiguration);
+      if (progress) setExtractionProgress(progress);
+    },
     onPollError: (err) =>
       logger.debug({ err, cityId, inventoryId, importedFileId }, "Interpret status poll failed"),
     intervalMs: 3000,
@@ -543,6 +550,7 @@ export default function ImportPage(props: {
     if (!importedFileId || !inventoryId) return;
     stopInterpretPolling();
     setIsInterpretInProgress(true);
+    setExtractionProgress(null);
     makeInfoToast(
       t("interpreting-file"),
       t("interpreting-file-description"),
@@ -558,6 +566,7 @@ export default function ImportPage(props: {
         return;
       }
       setIsInterpretInProgress(false);
+      setExtractionProgress(null);
       if ((result as { importStatus?: string }).importStatus === "failed") {
         const errorLog = (result as { errorLog?: string | null }).errorLog;
         makeErrorToast(
@@ -570,6 +579,7 @@ export default function ImportPage(props: {
       setTimeout(() => goToNextStep(), 150);
     } catch (error: any) {
       setIsInterpretInProgress(false);
+      setExtractionProgress(null);
       const message =
         error?.data?.message || error?.message || t("ai-extraction-failed-default");
       makeErrorToast(t("interpretation-failed") ?? "Interpretation failed", message);
@@ -769,39 +779,62 @@ export default function ImportPage(props: {
                     {tabularPendingInterpretation && (isInterpreting || isInterpretInProgress) && (
                       <Box w="full" mt={2}>
                         <Text fontSize="sm" color="content.tertiary" mb={2}>
-                          {t("interpreting-file-description")}
+                          {extractionProgress && extractionProgress.total > 1
+                            ? t("interpreting-chunk-progress", {
+                                current: extractionProgress.current,
+                                total: extractionProgress.total,
+                              })
+                            : t("interpreting-file-description")}
                         </Text>
-                        <Box
-                          w="full"
-                          h="8px"
-                          bg="background.subtle"
-                          borderRadius="10px"
-                          overflow="hidden"
-                          position="relative"
-                        >
-                          <motion.div
-                            style={{
-                              position: "absolute",
-                              left: 0,
-                              top: 0,
-                              height: "100%",
-                              width: "40%",
-                            }}
-                            animate={{ x: ["0%", "250%"] }}
-                            transition={{
-                              duration: 1.5,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                            }}
+                        {extractionProgress && extractionProgress.total > 1 ? (
+                          <Box
+                            w="full"
+                            h="8px"
+                            bg="background.subtle"
+                            borderRadius="10px"
+                            overflow="hidden"
                           >
                             <Box
                               h="full"
-                              w="full"
                               bg="interactive.primary"
                               borderRadius="10px"
+                              transition="width 0.3s ease"
+                              w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
                             />
-                          </motion.div>
-                        </Box>
+                          </Box>
+                        ) : (
+                          <Box
+                            w="full"
+                            h="8px"
+                            bg="background.subtle"
+                            borderRadius="10px"
+                            overflow="hidden"
+                            position="relative"
+                          >
+                            <motion.div
+                              style={{
+                                position: "absolute",
+                                left: 0,
+                                top: 0,
+                                height: "100%",
+                                width: "40%",
+                              }}
+                              animate={{ x: ["0%", "250%"] }}
+                              transition={{
+                                duration: 1.5,
+                                repeat: Infinity,
+                                ease: "easeInOut",
+                              }}
+                            >
+                              <Box
+                                h="full"
+                                w="full"
+                                bg="interactive.primary"
+                                borderRadius="10px"
+                              />
+                            </motion.div>
+                          </Box>
+                        )}
                       </Box>
                     )}
                   </Box>

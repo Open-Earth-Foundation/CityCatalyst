@@ -1,0 +1,118 @@
+{
+  "env": {
+    "dateUtc": "2026-07-14T02:00:27.000Z",
+    "hostOs": "linux",
+    "app": "npm run dev (Next.js)",
+    "database": "Postgres Docker via scripts/start-db.sh",
+    "base": "http://localhost:3000",
+    "llmBaseUrl": "https://openrouter.ai/api/v1",
+    "llmTimeoutMs": "120000",
+    "llmMaxRetries": "2",
+    "llmModel": "openai/gpt-4o-mini",
+    "openaiKeyPresent": true,
+    "cityId": "1bf329ec-01cb-4e4d-b794-b71ce8c1796d",
+    "year": 2022,
+    "note": "OpenRouter re-run; new F5 PDF (1.7). N=1; curl -L; poll 2s. Tokens from server debug logs.",
+    "session": "openrouter-rerun-2026-07-14"
+  },
+  "results": [
+    {
+      "run": "F0-1",
+      "fixture": "F0",
+      "path": "D",
+      "n": 1,
+      "m1_upload_terminal_ms": 4064,
+      "post_upload_status": "waiting_for_approval",
+      "m2_ai_ms": null,
+      "m4_n_chunks": null,
+      "m6_tokens": null,
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 74,
+      "m8_progress": null,
+      "notes": "near-eCRF control"
+    },
+    {
+      "run": "F3-1",
+      "fixture": "F3",
+      "path": "B",
+      "n": 1,
+      "m1_upload_terminal_ms": 373,
+      "post_upload_status": "pending_ai_interpretation",
+      "m2_ai_ms": 12163,
+      "m4_n_chunks": 1,
+      "m6_tokens": {
+        "calls": [
+          { "phase": "interpretTabular", "promptTokens": 2605, "completionTokens": 52 },
+          { "phase": "shapeTable", "promptTokens": 2882, "completionTokens": 398 }
+        ],
+        "promptTokensSum": 5487,
+        "completionTokensSum": 450,
+        "totalTokensSum": 5937
+      },
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 4,
+      "m8_progress": null,
+      "notes": "adapter long-tidy; 2 sequential LLM calls; chunkCount=1"
+    },
+    {
+      "run": "F4-1",
+      "fixture": "F4",
+      "path": "B",
+      "n": 1,
+      "m1_upload_terminal_ms": 305,
+      "post_upload_status": "pending_ai_interpretation",
+      "m2_ai_ms": 12270,
+      "m4_n_chunks": 1,
+      "m6_tokens": {
+        "calls": [
+          { "phase": "interpretTabular", "promptTokens": 2569, "completionTokens": 23 },
+          { "phase": "shapeTable", "promptTokens": 2845, "completionTokens": 373 }
+        ],
+        "promptTokensSum": 5414,
+        "completionTokensSum": 396,
+        "totalTokensSum": 5810
+      },
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 4,
+      "m8_progress": null,
+      "notes": "adapter wide-year; 2 sequential LLM calls; chunkCount=1"
+    },
+    {
+      "run": "F5-1",
+      "fixture": "F5",
+      "path": "C",
+      "n": 1,
+      "m1_upload_terminal_ms": 300,
+      "post_upload_status": "pending_ai_extraction",
+      "m2_ai_ms": 7521,
+      "m4_n_chunks": 1,
+      "m6_tokens": {
+        "calls": [
+          { "phase": "extract", "promptTokens": 3581, "completionTokens": 385 }
+        ],
+        "promptTokensSum": 3581,
+        "completionTokensSum": 385,
+        "totalTokensSum": 3966
+      },
+      "m7_status": "waiting_for_approval",
+      "m7_rowCount": 4,
+      "m8_progress": null,
+      "notes": "new PDF 1.7; single LLM extract (no multi-chunk); extractionProgress not observed in poll"
+    }
+  ],
+  "priorFailedSession": {
+    "dateUtc": "2026-07-14T01:22:44Z",
+    "summary": "OpenAI direct 429 quota on F3/F4; old F5 PDF bad XRef — superseded by this session"
+  },
+  "gate": {
+    "controlsRecorded": true,
+    "pathBSuccessWaitingForApproval": true,
+    "pathCSuccessWaitingForApproval": true,
+    "passed": true,
+    "caveats": [
+      "N=1 only (Q2 preferred N=3 not run — cost/time)",
+      "Small fixtures: shape/extract chunkCount=1 — H1 multi-chunk latency not stressed",
+      "F2 eCRF control from prior session still valid (0.48s / 3 rows)"
+    ]
+  }
+}

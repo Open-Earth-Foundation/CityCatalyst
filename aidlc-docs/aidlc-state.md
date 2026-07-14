@@ -1,67 +1,41 @@
 # AI-DLC State Tracking
 
-## Project Information
-- **Project Type**: Brownfield
-- **Start Date**: 2026-07-09T18:52:00Z
-- **Current Stage**: INCEPTION - Complete
-- **Document Language**: English (team lingua franca)
-- **Phase Scope**: Documentation only — no application code changes
-
-## Execution Plan Summary
-- **Inception Status**: COMPLETE (2026-07-09T20:05:00Z)
-- **Stages Completed**: Workspace Detection, Reverse Engineering, Requirements Analysis, Workflow Planning, Inception Completion Summary
-- **Stages Skipped**: User Stories, Application Design, Units Generation, all Construction stages
-- **Execution Plan**: `aidlc-docs/inception/plans/execution-plan.md`
-- **Handoff Document**: `aidlc-docs/inception/plans/inception-completion-summary.md`
-
-## Workspace State
-- **Existing Code**: Yes
-- **Reverse Engineering Artifacts**: Approved 2026-07-09T19:38:00Z
-- **Workspace Root**: /home/davi/Área de trabalho/projects/open-earth/CityCatalyst
-
-## Code Location Rules
-- **Application Code**: Workspace root (NEVER in aidlc-docs/)
-- **Documentation**: aidlc-docs/ only
-- **Documentation Language**: English for all AI-DLC artifacts
+## Active Task Cycle
+- **Task**: GHGI Upload AI Path B/C optimization MVP
+- **Current Stage**: **COMPLETE** — Construction closed 2026-07-14
+- **Completion summary**: `aidlc-docs/construction/construction-completion-summary.md`
 
 ## Extension Configuration
 
-| Extension | Enabled | Decided At | Notes |
-|-----------|---------|------------|-------|
-| Security Baseline | Deferred | Requirements Analysis | Re-evaluate when implementation begins |
-| Resiliency Baseline | Deferred | Requirements Analysis | Re-evaluate when implementation begins |
-| Property-Based Testing | Deferred | Requirements Analysis | Re-evaluate when implementation begins |
+| Extension | Enabled | Notes |
+|-----------|---------|-------|
+| Security Baseline | Yes | Full |
+| Resiliency Baseline | Yes | Directional |
+| Property-Based Testing | Yes (Partial) | PBT-02/03/07/08/09 |
 
 ## Stage Progress
 
-### INCEPTION PHASE
-- [x] Workspace Detection - Completed 2026-07-09T18:52:00Z
-- [x] Reverse Engineering - Completed and approved 2026-07-09T19:38:00Z
-- [x] Requirements Analysis - Completed and approved 2026-07-09T19:54:00Z
-- [x] User Stories - Skipped (documentation-only)
-- [x] Workflow Planning - Completed 2026-07-09T19:54:00Z
-- [x] Inception Completion Summary - Completed 2026-07-09T20:05:00Z
-- [x] Application Design - Skipped
-- [x] Units Generation - Skipped
+- [x] Baseline gate PASSED
+- [x] Optimization MVP Requirements Approved
+- [x] Workflow Planning Approved
+- [x] Construction **U1** Path B call reduction
+- [x] Construction **U2** Shape chunks + progress + fail-closed
+- [x] Construction **U3** Path C harden + stress fixture F6
+- [x] Construction **U4** Path B progress UI (FR-O6)
+- [x] Construction **U5** Re-measure + gains (§8c)
+- [x] Construction **U6** Parallel chunk LLM (Path B + Path C)
+- [x] **Construction completion summary** written
+- [x] **Task cycle COMPLETE**
 
-### CONSTRUCTION PHASE
-- [x] Functional Design - Skipped (documentation-only)
-- [x] NFR Requirements - Skipped
-- [x] NFR Design - Skipped
-- [x] Infrastructure Design - Skipped
-- [x] Code Generation - Skipped
-- [x] Build and Test - Skipped
+## Final Verdict
+- **NFR-O1** (F3/F4 + F5 hold): **PASS**
+- **NFR-O2** (F0): **PASS**
+- **NFR-O3** (fail-closed): **PASS**
+- **F6 parallel latency**: inconclusive — OpenRouter timeouts with concurrency=3 (documented)
+- **Next**: New AI-DLC cycle only for follow-ups (see handoff checklist in completion summary)
 
-### OPERATIONS PHASE
-- [ ] Operations - Placeholder
-
-## Current Status
-- **Lifecycle Phase**: INCEPTION COMPLETE
-- **Next Action**: Define a concrete implementation task to resume AI-DLC
-- **Resume From**: Requirements Analysis (for new task) — see `inception-completion-summary.md`
-
-## Artifact Locations
-- **Handoff Summary**: `aidlc-docs/inception/plans/inception-completion-summary.md`
-- **Reverse Engineering**: `aidlc-docs/inception/reverse-engineering/`
-- **Requirements**: `aidlc-docs/inception/requirements/requirements.md`
-- **Execution Plan**: `aidlc-docs/inception/plans/execution-plan.md`
+## Key Artifacts
+- Completion: `aidlc-docs/construction/construction-completion-summary.md`
+- Gains §8c: `aidlc-docs/inception/plans/ghgi-upload-ai-baseline-measurement-plan.md`
+- Raw: `aidlc-docs/inception/plans/ghgi-upload-ai-u5-gains-raw.json`
+- Unit designs: `aidlc-docs/construction/u{1–6}-*/functional-design.md`

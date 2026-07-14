@@ -1,3 +1,8 @@
+import fs from "fs";
+
+const packageJson = fs.readFileSync(packagePath);
+const packageInfo = JSON.parse(packageJson);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,

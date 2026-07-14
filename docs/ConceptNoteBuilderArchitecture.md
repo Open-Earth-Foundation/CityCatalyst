@@ -38,7 +38,7 @@ In scope:
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
-- PDF upload ingestion using the supporting PDF converter repository.
+- PDF upload ingestion using the shared Climate Advisor Markdown converter.
 - Reuse of current CityCatalyst-to-Climate-Advisor connection for CC data.
 
 Out of scope:
@@ -58,8 +58,8 @@ workflow, following the same direction as the Stationary Energy workflow:
 2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
 3. The datateam managed CNB database stores reusable funder and funded-project
    tables alongside CNB workflow tables.
-4. PDF ingestion should use the supporting PDF converter repository to convert
-   PDFs to markdown.
+4. PDF ingestion should use the shared CA converter, reusing the applicable
+   stage-one concepts from the supporting PDF converter repository.
 5. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
@@ -161,12 +161,13 @@ flowchart LR
 | Chat threads and messages | Climate Advisor | Existing CA conversation model. |
 | Concept-note run state | datateam managed CNB database | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
 | Context bundle snapshot | datateam managed CNB database | Reusable run input/output for this workflow. |
-| Uploaded file references and selected source context | datateam managed CNB database | Needed for mid-flow ingestion, evidence review, and export. |
+| CN upload/run associations and selected source context | datateam managed CNB database | Links stable upload IDs to runs and keeps selected context for review and export. |
+| Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
 | Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
 | Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
 | Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
 | Exported DOCX/PDF file references | datateam managed CNB database | Workflow output artifacts. |
-| PDF-to-markdown conversion | Supporting PDF converter repo | Used for converting uploaded PDFs to markdown. |
+| PDF-to-markdown conversion | Climate Advisor | Runs the shared Markdown-only job and uploads the outcome; CityCatalyst verifies and records the result pointer. |
 
 ## Data Infrastructure Boundary
 
@@ -299,16 +300,13 @@ important planning rules are:
 - Keep funding lifecycle moments separate:
   - `supply`: what funding exists, one row per program/opportunity.
   - `awards`: what got funded, one row per award/funding link.
-  - `pipeline`: the ranked queue that determines funding order for routes such
-    as SRF priority lists.
-- Use four country-agnostic stored concepts: funder, funding opportunity,
-  funded project, and funded project action.
-- Connect projects/actions to funding through explicit funding links rather than
+- Use three country-agnostic stored concepts: funder, funding opportunity, and
+  funded project. Each funded project is stored as one complete entry.
+- Connect projects to funding through explicit funding links rather than
   embedding awards directly in project records.
 - Treat the finance route as document-shaping data. A competitive grant,
-  revolving-fund priority-list project, formula/block grant, green-bank loan,
-  capital-investment request, and city self-financing path each imply different
-  required document sections.
+  formula/block grant, green-bank loan, capital-investment request, and city
+  self-financing path each imply different required document sections.
 - Store funder profiles with two halves:
   - `stated`: eligibility, rubric, template, award rules, and requirements read
     from RFP/NOFO/program documents.
@@ -334,6 +332,7 @@ only so the workflow state and curated funding/reference data are easier to read
 erDiagram
     threads ||--o{ concept_note_runs : "optionally anchors"
     concept_note_runs ||--|| concept_note_context_bundles : "stores"
+    concept_note_runs ||--o{ concept_note_uploads : "has"
     concept_note_runs ||--o{ concept_note_chapters : "contains"
     concept_note_runs ||--o{ concept_note_gaps : "tracks"
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
@@ -362,6 +361,17 @@ erDiagram
         string trace_id
         timestamp created_at
         timestamp updated_at
+    }
+
+    concept_note_uploads {
+        uuid upload_id
+        uuid run_id
+        string uploaded_by_user_id
+        string filename
+        string mime_type
+        bigint size_bytes
+        string file_ref
+        timestamp created_at
     }
 
     concept_note_context_bundles {
@@ -436,6 +446,14 @@ erDiagram
     }
 ```
 
+For uploads, `upload_id` is created by the authenticated CityCatalyst upload
+route and identifies both the CC source record and its CNB run association.
+`file_ref` is only the opaque pointer returned by the CityCatalyst storage
+boundary. Filename, MIME type, size, object pointer, and object contents are
+immutable for an `upload_id`; replacement creates a new upload. Neither value
+grants access. The domain route checks the run association and current user
+permissions.
+
 ### Evidence Links
 
 `concept_note_evidence_links` are workspace review records. They connect a claim
@@ -471,14 +489,10 @@ erDiagram
     funding_opportunities ||--o{ funder_templates : "uses"
     funding_opportunities ||--o{ funder_criteria : "defines"
     funding_opportunities ||--o{ funding_links : "funds"
-    funding_opportunities ||--o{ funding_pipeline_entries : "ranks"
-    funded_projects ||--o{ funded_project_actions : "contains"
     funded_projects ||--o{ funding_links : "receives"
-    funded_project_actions ||--o{ funding_links : "funded by"
     funded_projects ||--o{ funded_project_evidence : "cites"
     source_documents ||--o{ funded_project_evidence : "supports"
     source_documents ||--o{ funder_criteria : "supports"
-    source_documents ||--o{ funding_pipeline_entries : "supports"
 
     funders {
         uuid funder_id
@@ -536,20 +550,9 @@ erDiagram
         text summary
     }
 
-    funded_project_actions {
-        uuid action_id
-        uuid funded_project_id
-        string action_type
-        string category
-        jsonb hazards
-        jsonb interventions
-        text description
-    }
-
     funding_links {
         uuid funding_link_id
         uuid funded_project_id
-        uuid action_id
         uuid opportunity_id
         numeric award_amount
         numeric requested_amount
@@ -558,18 +561,6 @@ erDiagram
         string fiscal_year
         string instrument_type
         string lifecycle_stage
-        string status
-    }
-
-    funding_pipeline_entries {
-        uuid pipeline_entry_id
-        uuid opportunity_id
-        string external_project_ref
-        string applicant_name
-        int rank
-        numeric requested_amount
-        numeric fundable_amount
-        string fiscal_year
         string status
     }
 
@@ -618,8 +609,7 @@ Required ingest outputs:
 - Template chapter schema.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
-- Funded-project records, project-action records, and funding links.
-- Pipeline entries for priority-list routes where the funding order matters.
+- Funded-project records and funding links.
 - Evidence links for each important claim.
 
 ## Similar Project Matching
@@ -661,9 +651,9 @@ flowchart TB
         ProgramGate["selected funder/opportunity scope"]
         GeographyGate["eligible geography"]
         InstrumentGate["finance route / instrument type"]
-        CategoryGate["project sector / action type"]
+        CategoryGate["project category"]
         ApplicantGate["applicant / recipient type"]
-        StatusGate["funded award or valid pipeline entry"]
+        StatusGate["funded award"]
         EvidenceGate["usable source evidence"]
     end
 
@@ -709,10 +699,10 @@ need to pass the applicable gates before it can be scored.
 | --- | --- |
 | Funder/opportunity scope | Projects from unrelated funders, programs, or opportunity families when the user selected a specific funder/opportunity. |
 | Eligible geography | Projects outside the configured geography fallback path for the opportunity, such as Minnesota, Midwest, then US. |
-| Finance route / instrument type | Examples from the wrong funding route, such as comparing a loan or SRF priority-list project against a competitive grant. |
-| Project sector / action type | Projects in unrelated sectors or action categories. |
+| Finance route / instrument type | Examples from the wrong funding route, such as comparing a loan against a competitive grant. |
+| Project category | Projects in unrelated sectors or categories. |
 | Applicant / recipient type | Awards to recipient types that do not match the user's applicant profile, such as nonprofit-only awards for a city-led project. |
-| Funded award or valid pipeline entry | Records that are not actual awards or, for priority-list routes, valid pipeline entries. |
+| Funded award | Records that are not actual awards. |
 | Usable source evidence | Records without enough source evidence to show the user why the example is relevant. |
 
 If the user project or funder profile is missing a field needed for the future
@@ -721,8 +711,41 @@ caveat and create a gap if the missing field matters for drafting.
 
 ## PDF Conversion
 
-CNB should use the supporting `Open-Earth-Foundation/PDF_converter` repository to
-convert uploaded PDFs to markdown.
+CNB uses the shared CA converter for PDF-to-Markdown. The converter reuses only
+the applicable stage-one concepts from `Open-Earth-Foundation/PDF_converter`.
+
+Each uploaded PDF has a durable `concept_note_uploads.upload_id`. CN starts OCR
+with `source_type = concept_note_upload` and `source_id = upload_id`. A run may
+contain many uploads, so `run_id`, filename, `file_ref`, and S3 keys are not
+conversion IDs. The namespaced source pair prevents collisions with inventory
+imports and selects the correct CityCatalyst authorization/storage resolver;
+the OCR behavior remains identical. The CN upload route enforces the shared
+20 MB PDF limit and the converter enforces a 10-minute overall job timeout.
+
+The converter stops after producing Markdown. Excerpt selection, indexing,
+summarization, context-bundle updates, and chapter work remain later CNB steps.
+The upload and signed-URL calls reuse the current CityCatalyst-to-CA user token
+and service-header flow; PDF conversion adds no authentication scheme.
+
+The browser sends PDF bytes only to the authenticated CityCatalyst upload route.
+After storage, CC registers the immutable upload metadata with CA; the CA upload
+route never accepts the file body. Each upload starts one asynchronous OCR job
+and is tracked independently:
+
+1. `POST .../{run_id}/uploads` verifies run access, stores the PDF, creates the
+   CC source record, calls CA to register the matching CNB association, starts
+   `concept_note_upload + upload_id`, and returns `202`.
+2. `GET .../{run_id}/uploads/{upload_id}` rechecks run access and the
+   run-to-upload binding, then maps to that pair's converter status.
+3. After that specific job succeeds, the CN orchestrator fetches its Markdown
+   and starts the separate CN excerpt/index/context work. It polls; the converter
+   never calls or continues the CN workflow. CA reports success only after CC
+   has verified the Markdown object and recorded its result pointer.
+4. Failures and retries remain file-specific, so one failed PDF does not hide or
+   overwrite another upload in the same run.
+
+This converter path accepts only `application/pdf` up to 20 MB. Other document
+types require a separate normalizer outside the PDF OCR converter.
 
 ## Document Workspace
 
@@ -999,14 +1022,14 @@ Rules:
 
 #### `concept_note_ingest_upload`
 
-Converts and indexes a user upload.
+Registers a stored upload and starts its asynchronous Markdown conversion.
 
 Input:
 
 ```json
 {
   "run_id": "uuid",
-  "file_ref": "string",
+  "upload_id": "uuid",
   "filename": "string",
   "mime_type": "string",
   "source_label": "Climate Action Plan"
@@ -1017,26 +1040,33 @@ Output:
 
 ```json
 {
-  "status": "converted",
-  "selected_sources": [
-    {
-      "label": "Climate Action Plan",
-      "excerpt": "string",
-      "source_location": "page 4"
-    }
-  ],
-  "warnings": [],
-  "extracted_summary": "string"
+  "source_ref": {
+    "source_type": "concept_note_upload",
+    "source_id": "uuid"
+  },
+  "status": "queued"
 }
 ```
 
 Rules:
 
-- Uses the supporting PDF converter repository for PDF-to-markdown conversion.
+- Requires `concept_note_uploads.run_id` to match the supplied `run_id` and
+  rechecks current run permission.
+- Accepts only an already stored, immutable PDF upload up to 20 MB.
+- Uses the shared CA PDF-to-Markdown converter.
+- Resolves the upload as `concept_note_upload + upload_id`; it never uses
+  `run_id`, filename, or the storage pointer as the conversion key.
 - Does not persist converter chunks in dedicated CNB source tables.
-- Stores selected source context in the context bundle.
-- Triggers context bundle rebuild; the UI receives the single
-  `concept_note_context_bundle_ready` event after the assembled context is ready.
+- Returns without waiting for OCR or starting later CN processing.
+
+#### `concept_note_process_converted_upload`
+
+After the file-specific converter status is `succeeded`, CN orchestration fetches
+the Markdown and performs excerpt selection, indexing, summary extraction, and
+context-bundle rebuilding. This operation verifies the same run/upload binding,
+stores only selected source context in the context bundle, and emits
+`concept_note_context_bundle_ready` after the assembled context is ready. It is
+not part of the converter and is never invoked by the converter.
 
 #### `concept_note_extract_facts_from_context`
 
@@ -1469,6 +1499,7 @@ GET  /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
 POST /v1/concept-notes/{run_id}/uploads
+GET  /v1/concept-notes/{run_id}/uploads/{upload_id}
 POST /v1/concept-notes/{run_id}/matches/refresh
 GET  /v1/concept-notes/{run_id}/document
 POST /v1/concept-notes/{run_id}/document/chapters
@@ -1487,6 +1518,7 @@ POST /api/v1/concept-notes/start
 GET  /api/v1/concept-notes/{run_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads
+GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}
 GET  /api/v1/concept-notes/{run_id}/export/{export_id}
 
 POST /api/v1/internal/ca/capabilities/city/load-context
@@ -1505,9 +1537,10 @@ file layout.
 | --- | --- | --- |
 | Workflow orchestration | Climate Advisor | Starts/resumes runs, resolves active step, scopes tools, streams responses. |
 | CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
-| Funding reference access | datateam managed CNB database | Climate Advisor reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links from CNB reference tables. |
+| Funding reference access | datateam managed CNB database | Climate Advisor reads funders, opportunities, templates, criteria, funded projects, and funding links from CNB reference tables. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
-| File ingestion | Climate Advisor | Registers uploads and uses the supporting PDF converter repository for PDF-to-markdown conversion. CNB persistence keeps only selected source context in the context bundle. |
+| Source and OCR result storage | CityCatalyst | Authenticates the user, stores source PDFs, verifies uploaded Markdown results, owns their S3 pointers, and provides exact-object signed URLs through the existing CA integration auth flow. |
+| CNB file ingestion | Climate Advisor | Registers the CN upload, starts the shared Markdown-only converter with `concept_note_upload + upload_id`, then performs later CN-specific source selection through the CNB storage contract. |
 | CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
 | CC bridge routes | CityCatalyst | Authenticated browser-facing proxy into CA workflow routes. |
 | Capability registry | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag. |
@@ -1591,7 +1624,7 @@ Minimum test surface:
 ### Phase 4: File Ingestion
 
 - Add upload registration.
-- Use the supporting PDF converter repository for PDF-to-markdown conversion.
+- Use the shared CA converter for PDF-to-Markdown.
 - Attach converted source context to the context bundle.
 - Enable mid-flow upload ingestion and evidence review through the document workspace.
 

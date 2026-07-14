@@ -57,17 +57,11 @@ export default function InviteToOrganizationTemplate({
             </Text>
           )}
           <Text>{t("invite-organization.message")}</Text>
-          <Text style={paragraph}>
-            {t("invite-organization.start-by")}
-            <strong style={bold}>
-              {t("invite-organization.setting-up-inventory")}
-            </strong>
-            {t("invite-organization.in-one-city")}
-          </Text>
           <Section
             style={{
               marginTop: "36px",
               marginBottom: "36px",
+              textTransform: "uppercase",
             }}
           >
             <Link href={url} style={urlLink}>
@@ -114,12 +108,6 @@ const greeting = {
   color: "#484848",
 };
 
-const paragraph = {
-  fontSize: "14px",
-  lineHeight: "1.4",
-  color: "#484848",
-};
-
 const urlLink = {
   fontSize: "14px",
   padding: "16px",
@@ -130,9 +118,4 @@ const urlLink = {
   display: "inline-block",
   paddingLeft: "36px",
   paddingRight: "36px",
-};
-
-const bold = {
-  fontWeight: "700",
-  color: "#484848",
 };

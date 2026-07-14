@@ -53,6 +53,9 @@ import {
 const serviceKey = "test-cc-service-key";
 const notEstimatedValueId = "58830000-0000-4000-8000-000000000501";
 const priorYearInventoryId = "58830000-0000-4000-8000-000000000502";
+const projectAdminOnlyCityId = "58830000-0000-4000-8000-000000000503";
+const projectAdminOnlyInventoryId = "58830000-0000-4000-8000-000000000504";
+const projectAdminId = "58830000-0000-4000-8000-000000000505";
 
 const serviceHeaders = {
   "X-Service-Name": "climate-advisor",
@@ -64,7 +67,12 @@ describe("GHGI inventory internal CA capability routes", () => {
   let city: City;
   let inventory: Inventory;
   let priorYearInventory: Inventory;
+  let projectAdminOnlyCity: City;
+  let projectAdminOnlyInventory: Inventory;
   let thirdPartySource: DataSourceI18n;
+  let siblingProjectId = "";
+  let siblingProjectCityId = "";
+  let siblingProjectInventoryId = "";
 
   beforeAll(async () => {
     setupTests();
@@ -111,6 +119,53 @@ describe("GHGI inventory internal CA capability routes", () => {
       globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
       year: 2023,
     });
+    projectAdminOnlyCity = await db.models.City.create({
+      cityId: projectAdminOnlyCityId,
+      name: "Project Admin Only City",
+      country: "United States of America",
+      locode: `US PAO ${randomUUID().slice(0, 8)}`,
+      projectId: testData.projectId,
+    });
+    projectAdminOnlyInventory = await db.models.Inventory.create({
+      inventoryId: projectAdminOnlyInventoryId,
+      ...baseInventory,
+      inventoryName: "ProjectAdminOnlyInventory",
+      cityId: projectAdminOnlyCity.cityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      year: 2024,
+    });
+    await db.models.ProjectAdmin.create({
+      projectAdminId,
+      projectId: testData.projectId,
+      userId: testUserID,
+    });
+    siblingProjectId = randomUUID();
+    siblingProjectCityId = randomUUID();
+    siblingProjectInventoryId = randomUUID();
+    await db.models.Project.create({
+      projectId: siblingProjectId,
+      name: "Sibling Project",
+      description: "Sibling project for project-admin scope regression",
+      organizationId: testData.organizationId,
+      cityCountLimit: 10,
+    });
+    await db.models.City.create({
+      cityId: siblingProjectCityId,
+      name: "Sibling Project City",
+      country: "United States of America",
+      locode: `US SPC ${randomUUID().slice(0, 8)}`,
+      projectId: siblingProjectId,
+    });
+    await db.models.Inventory.create({
+      inventoryId: siblingProjectInventoryId,
+      ...baseInventory,
+      inventoryName: "SiblingProjectInventory",
+      cityId: siblingProjectCityId,
+      inventoryType: InventoryTypeEnum.GPC_BASIC,
+      globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
+      year: 2024,
+    });
 
     await db.models.InventoryValue.bulkCreate(
       inventoryValuesData.map((value, index) => ({
@@ -150,6 +205,16 @@ describe("GHGI inventory internal CA capability routes", () => {
     await db.models.Inventory.destroy({
       where: { inventoryId: { [Op.in]: [inventoryId, priorYearInventoryId] } },
     });
+    await db.models.Inventory.destroy({
+      where: { inventoryId: projectAdminOnlyInventoryId },
+    });
+    await db.models.ProjectAdmin.destroy({ where: { projectAdminId } });
+    await db.models.City.destroy({ where: { cityId: projectAdminOnlyCityId } });
+    await db.models.Inventory.destroy({
+      where: { inventoryId: siblingProjectInventoryId },
+    });
+    await db.models.City.destroy({ where: { cityId: siblingProjectCityId } });
+    await db.models.Project.destroy({ where: { projectId: siblingProjectId } });
     if (thirdPartySource) {
       await db.models.DataSource.destroy({
         where: { datasourceId: thirdPartySource.datasourceId },
@@ -192,6 +257,63 @@ describe("GHGI inventory internal CA capability routes", () => {
         }),
       ]),
     );
+  });
+
+  it("treats null list filters as omitted filters", async () => {
+    const res = await listAccessibleRoute(
+      listAccessibleRequest({
+        city_query: null,
+        year: null,
+        include_all_city_years: false,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+
+    expect(payload.data.total_cities).toBeGreaterThanOrEqual(1);
+    expect(payload.data.filters).toEqual({
+      city_query: null,
+      year: null,
+      include_all_city_years: false,
+    });
+  });
+
+  it("lists project-admin inventories without direct city membership", async () => {
+    const directAssignmentCount = await db.models.CityUser.count({
+      where: { cityId: projectAdminOnlyCity.cityId, userId: testUserID },
+    });
+
+    const res = await listAccessibleRoute(listAccessibleRequest(), {
+      params: Promise.resolve({}),
+    });
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+    const matchingCity = payload.data.cities.find(
+      (candidate: { city_id: string }) =>
+        candidate.city_id === projectAdminOnlyCity.cityId,
+    );
+    const siblingProjectCity = payload.data.cities.find(
+      (candidate: { city_id: string }) =>
+        candidate.city_id === siblingProjectCityId,
+    );
+
+    expect(directAssignmentCount).toBe(0);
+    expect(matchingCity).toEqual(
+      expect.objectContaining({
+        city_id: projectAdminOnlyCity.cityId,
+        name: "Project Admin Only City",
+        inventories: expect.arrayContaining([
+          expect.objectContaining({
+            inventory_id: projectAdminOnlyInventory.inventoryId,
+            year: 2024,
+          }),
+        ]),
+      }),
+    );
+    expect(siblingProjectCity).toBeUndefined();
   });
 
   it("filters listed inventories through the permission service", async () => {

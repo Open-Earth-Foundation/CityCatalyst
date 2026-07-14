@@ -2,12 +2,16 @@
 
 This diagram illustrates the top-level data flow. Exclusion preferences are first resolved into a preview for user review. The ranking call then sends confirmed excluded action IDs, and the Hard Filter Gate prunes those user-confirmed exclusions plus legally blocked actions before scoring.
 
-Current implementation note: sector and co-benefit exclusion preview rules are deterministic. Free-text exclusion preview uses a guarded OpenAI structured-output resolver only when enabled by environment config. The Alignment block also uses `cityStrategicPreferenceOther` through LLM-based co-benefit mapping and `cityStrategicPreferenceTimeframes` through a small timeline-preference component. Prioritization currently owns its run-level artifacts in the orchestrator layer, while exclusion preview currently owns them in the API layer; if preview grows, it will likely want a matching orchestrator layer too.
+Current implementation note: exclusion preview and prioritization are separate flows. The preview flow resolves raw exclusion preferences into a reviewable proposal, while the prioritization flow consumes confirmed `excludedActionIds`. Prioritization currently owns its run-level artifacts in the orchestrator layer, while exclusion preview currently writes its artifacts from the API layer.
 
 ```mermaid
 graph TD
   CityData[(City Data)]
-  ActionData[(Action Data)]
+  ActionPathways[(Action Pathways Data)]
+  LegalData[(Legal Assessments)]
+  PolicyScores[(Action Policy Scores)]
+  MitigationFeasibility[(Mitigation Feasibility Scores)]
+  FinancialFeasibility[(Financial Feasibility Scores)]
 
   ExclusionPrefs[Exclusion Preferences]
   Preview[Exclusion Preview]
@@ -23,11 +27,12 @@ graph TD
   WeightedSum[Weighted Sum]
   FinalList((Final Prioritized Action List))
 
-  ActionData --> Preview
+  ActionPathways --> Preview
   ExclusionPrefs --> Preview
   Preview --> Confirmed
   CityData --> HardFilter
-  ActionData --> HardFilter
+  ActionPathways --> HardFilter
+  LegalData --> HardFilter
   Confirmed --> HardFilter
 
   HardFilter -- fails --> Discard
@@ -36,6 +41,13 @@ graph TD
   Valid --> Impact
   Valid --> Alignment
   Valid --> Feasibility
+
+  CityData --> Impact
+  ActionPathways --> Impact
+  PolicyScores --> Alignment
+  LegalData --> Feasibility
+  MitigationFeasibility --> Feasibility
+  FinancialFeasibility --> Feasibility
 
   Impact --> WeightedSum
   Alignment --> WeightedSum

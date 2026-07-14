@@ -142,9 +142,9 @@
   "change-to-admin": "Changer en admin",
   "user-removed": "Utilisateur supprimé avec succès",
   "role-update-success-toast-title": "Rôle mis à jour avec succès",
+  "updating-role": "Mise à jour du rôle...",
   "frozen": "Gelé",
   "already-registered-admin": "{{email}} est déjà un administrateur enregistré",
-  "user-already-org-admin": "L'utilisateur est déjà un administrateur d'organisation",
   "error-invite": "Erreur d'invitation",
   "modules": "Modules",
   "ghg-inventories": "Inventaires GES",
@@ -307,5 +307,6 @@
   "status-early-access": "Accès Anticipé",
   "status-beta": "Bêta",
   "status-active": "Actif",
-  "select-status": "Sélectionnez un statut"
+  "select-status": "Sélectionnez un statut",
+  "go-back": "Retourner"
 }

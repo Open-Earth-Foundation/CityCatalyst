@@ -1,7 +1,6 @@
 {
-  "ask-ai-expert": "Pergunte a um Especialista em IA",
   "ai-expert": "Especialista em IA",
-  "ask-ai": "Pergunte à IA",
+  "ask-ai": "Pergunte ao Clima AI",
   "ask-assistant": "Pergunte qualquer coisa ao assistente...",
   "initial-message": "Olá! Sou Clima, sua assistente virtual. Estou aqui para guiá-lo no processo de medir e reportar com precisão as emissões de gases de efeito estufa da sua cidade. Como posso ajudá-lo hoje?",
   "regenerate": "Regenerar",
@@ -24,5 +23,7 @@
   "about-privacy-description": "Ao usar o Clima AI, você concorda com o armazenamento anônimo e análise de seus dados de conversa para melhorar a precisão e eficiência da IA.",
   "about-privacy-bold": "Nenhum dado pessoal é publicado ou usado além do treinamento do modelo.",
   "about-privacy-contact": "Para preocupações de privacidade, por favor",
-  "contact-support": "entre em contato com o suporte"
+  "contact-support": "entre em contato com o suporte",
+  "ask-clima": "Pergunte Clima",
+  "an-error-occurred": "Ocorreu um erro"
 }

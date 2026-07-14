@@ -46,10 +46,10 @@ jobs:
         working-directory: hiap-meed
         run: uv sync --frozen
 
-      - name: Run all tests
+      - name: Run non-external tests
         working-directory: hiap-meed
         run: |
-          uv run pytest -c pytest.ini
+          uv run pytest -c pytest.ini -m "not external"
 
   build:
     needs: test
@@ -109,9 +109,9 @@ jobs:
           kubectl apply -f hiap-meed/k8s/service-test.yml
 
           kubectl set env deployment/hiap-meed-test \
-            API_HOST=0.0.0.0 \
-            API_PORT=8000 \
-            LOG_LEVEL=INFO
+            OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_MEED_TEST}} \
+            AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP_MEED_DEV}} \
+            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP_MEED_DEV}}
 
           kubectl rollout restart deployment hiap-meed-test -n default
           kubectl rollout status deployment/hiap-meed-test -n default

@@ -5,7 +5,12 @@ metadata:
   labels:
     app: cc-web
 spec:
-  replicas: 1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: cc-web
@@ -55,10 +60,10 @@ spec:
               value: "gpt-4o-mini"
           resources:
             requests:
-              memory: "512Mi"
+              memory: "1Gi"
               cpu: "500m"
             limits:
-              memory: "1024Mi"
+              memory: "2Gi"
               cpu: "1000m"
           livenessProbe:
             httpGet:
@@ -67,6 +72,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 6
+            initialDelaySeconds: 5
           readinessProbe:
             httpGet:
               path: /api/v0/check/health
@@ -74,6 +80,7 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 10
             failureThreshold: 6
+            initialDelaySeconds: 5
           startupProbe:
             httpGet:
               path: /api/v0/check/liveness
@@ -81,3 +88,4 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 60
             periodSeconds: 10
+            initialDelaySeconds: 5

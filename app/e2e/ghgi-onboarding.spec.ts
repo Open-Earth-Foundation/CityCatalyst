@@ -11,25 +11,18 @@ test("Inventory Onboarding", async ({ page }) => {
     //   Verify the title of the page is correct
     await expect(page).toHaveTitle(/CityCatalyst/i);
 
-    const startPageTitle = page.getByTestId(/start-page-title/i);
-    await expect(startPageTitle).toHaveText("Create Inventory");
-
     //   Check that the main heading is present and has the correct text
     const mainHeading = page.getByTestId(/start-page-heading/i);
-    await expect(mainHeading).toHaveText(/Create your GHG Inventory/i);
+    await expect(mainHeading).toHaveText(/Select how to create a GHG emission inventory/i);
 
-    //   Check that the description is present and has the correct text
-    const description = page.getByTestId(/start-page-description/i);
-    await expect(description).toHaveText(
-      /In this step, configure your city's GHG emissions inventory by selecting the inventory year, setting the target, and adding contextual data such as population./i,
-    );
+    //   Select "Create a new inventory" and continue
+    const createOption = page.getByTestId("create-inventory-option");
+    await expect(createOption).toBeVisible();
+    await createOption.click();
 
-    //   Verify the "Start Inventory" button is present and clickable
-    const startButton = page.getByTestId("start-inventory-button");
-    await expect(startButton).toBeVisible();
-
-    //   Click the "Start Inventory" button
-    await startButton.click();
+    const continueButton = page.getByTestId("continue-button");
+    await expect(continueButton).toBeEnabled();
+    await continueButton.click();
   }
   /** "Set Inventory Details step displays correctly" */
   {
@@ -186,6 +179,24 @@ test("Inventory Onboarding", async ({ page }) => {
     const continueButton = page.getByRole("button", { name: /Continue/i });
 
     // Click the "Continue" button
+    await continueButton.click();
+  }
+
+  /** "Third-party data step displays and user can proceed" */
+  {
+    const thirdPartyStep = page.getByTestId("third-party-data-step");
+    await expect(thirdPartyStep).toBeVisible({ timeout: 10000 });
+
+    await expect(
+      page.getByText(
+        /Would you like to fill your inventory third-party data/i,
+      ),
+    ).toBeVisible();
+
+    await page.getByTestId("third-party-data-choice-no").click();
+
+    const continueButton = page.getByRole("button", { name: /Continue/i });
+    await expect(continueButton).toBeEnabled();
     await continueButton.click();
   }
 

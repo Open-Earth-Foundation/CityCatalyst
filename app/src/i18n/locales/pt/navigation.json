@@ -4,5 +4,8 @@
   "cities": "cidades",
   "settings": "Configurações",
   "account-settings": "Configurações da Conta",
-  "account-frozen-warning-text": "Sua conta está congelada. Por favor, entre em contato com um administrador ou com <bold>{{ email }}</bold> para reativá-la"
+  "account-frozen-warning-text": "Sua conta está congelada. Por favor, entre em contato com um administrador ou com <bold>{{ email }}</bold> para reativá-la",
+  "page-title-ghg-inventories": "Inventários de GEI",
+  "page-title-hiap": "Ações & Planos",
+  "page-title-dashboard": "Inventários de GEI"
 }

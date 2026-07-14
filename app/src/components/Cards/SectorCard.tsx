@@ -3,6 +3,7 @@ import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
 import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import NextLink from "next/link";
 
 import { useState } from "react";
@@ -11,13 +12,16 @@ import {
   clamp,
   convertSectorReferenceNumberToNumber,
   formatPercent,
+  getParamValueRequired,
 } from "@/util/helpers";
 import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
-// import { AddIcon } from "@chakra-ui/icons";
 import { InventoryType, InventoryTypeEnum, ISector } from "@/util/constants";
 import { BsPlus } from "react-icons/bs";
-import { usePathname } from "next/navigation";
+import { MdAutoAwesome } from "react-icons/md";
+import { useParams, usePathname } from "next/navigation";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { useTranslation } from "@/i18n/client";
 
 import {
   AccordionItem,
@@ -31,15 +35,24 @@ export function SectorCard({
   sector,
   t,
   inventory,
+  numberFormat,
 }: {
   sectorProgress?: SectorProgress;
   sector: ISector;
   t: TFunction;
   inventory: InventoryResponse;
+  numberFormat?: string;
 }) {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
   const pathname = usePathname();
+  const { t: tAgentic } = useTranslation(lng, "stationary-energy-agentic");
   const [isAccordionOpen, setAccordionOpen] = useState(false);
   const toggleAccordion = () => setAccordionOpen(!isAccordionOpen);
+  const showStationaryEnergyAgenticCta =
+    sector.name === "stationary-energy" &&
+    hasFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) &&
+    hasFeatureFlag(FeatureFlags.STATIONARY_ENERGY_AGENTIC);
 
   let totalProgress = 0,
     thirdPartyProgress = 0,
@@ -53,7 +66,12 @@ export function SectorCard({
     uploadedProgress = clamp(sectorProgress.uploaded / sectorProgress.total);
     reasonNEProgress = clamp(sectorProgress.reasonNE / sectorProgress.total);
     reasonNOProgress = clamp(sectorProgress.reasonNO / sectorProgress.total);
-    totalProgress = clamp(thirdPartyProgress + uploadedProgress + reasonNEProgress + reasonNOProgress);
+    totalProgress = clamp(
+      thirdPartyProgress +
+        uploadedProgress +
+        reasonNEProgress +
+        reasonNOProgress,
+    );
   }
   /*** Data ***/
   const {
@@ -120,7 +138,7 @@ export function SectorCard({
                 {(sectorScopes || [])?.join(", ") || t("none")}
               </Heading>
             </Box>
-            <Box>
+            <Box display="flex" flexDirection="column" gap={3}>
               <NextLink href={`${pathname}/data/${sector.number}`}>
                 <Button
                   variant="outline"
@@ -137,6 +155,30 @@ export function SectorCard({
                   </Text>
                 </Button>
               </NextLink>
+              {showStationaryEnergyAgenticCta && (
+                <NextLink href={`${pathname}/draft/stationary-energy`}>
+                  <Tooltip
+                    content={tAgentic("sector-card-draft-with-agent-tooltip")}
+                    showArrow
+                    positioning={{ placement: "top" }}
+                  >
+                    <Button
+                      data-testid="stationary-energy-agentic-cta"
+                      variant="solid"
+                      w="256px"
+                      h="48px"
+                      py="16px"
+                      gap={2}
+                      ml={2}
+                    >
+                      <MdAutoAwesome />
+                      <Text fontFamily="heading" fontSize="button.md">
+                        {tAgentic("sector-card-draft-with-agent")}
+                      </Text>
+                    </Button>
+                  </Tooltip>
+                </NextLink>
+              )}
             </Box>
           </Box>
           <Box
@@ -147,9 +189,20 @@ export function SectorCard({
             gap={6}
           >
             <SegmentedProgress
-              values={[thirdPartyProgress, uploadedProgress, reasonNEProgress, reasonNOProgress]}
-              colors={["interactive.connected", "interactive.tertiary", "interactive.control", "striped"]}
+              values={[
+                thirdPartyProgress,
+                uploadedProgress,
+                reasonNEProgress,
+                reasonNOProgress,
+              ]}
+              colors={[
+                "interactive.connected",
+                "interactive.tertiary",
+                "interactive.control",
+                "striped",
+              ]}
               height={2}
+              numberFormat={numberFormat}
             />
             <Text
               fontFamily="heading"

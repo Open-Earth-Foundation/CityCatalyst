@@ -1,6 +1,4 @@
-// only render map on the client
 import dynamic from "next/dynamic";
-import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import type {
   CityWithProjectDataResponse,
@@ -11,18 +9,31 @@ import { useMemo } from "react";
 import { Box, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import {
-  MdArrowOutward,
+  MdChevronRight,
   MdGroup,
   MdInfoOutline,
   MdOutlineAspectRatio,
 } from "react-icons/md";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
+import {
+  formatNumber,
+  getShortenNumberUnit,
+  shortenNumber,
+} from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { useTranslation } from "@/i18n/client";
+import { HeatIcon } from "../icons";
+import {
+  BreadcrumbCurrentLink,
+  BreadcrumbLink,
+  BreadcrumbRoot,
+} from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
+import { NumberFormatEnum } from "@/util/enums";
 
+// only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
@@ -34,6 +45,7 @@ interface HeroProps {
   population?: PopulationAttributes | null;
   lng: string;
   city?: CityWithProjectDataResponse | undefined;
+  numberFormat?: string;
 }
 
 export function Hero({
@@ -45,8 +57,10 @@ export function Hero({
   population,
   lng,
   city,
+  numberFormat,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
+  const pathname = usePathname();
   const activeCity = inventory?.city?.name ?? city?.name;
   const activeProject = (() => {
     const projectName = inventory?.city?.project?.name ?? city?.project?.name;
@@ -72,15 +86,60 @@ export function Hero({
     [cityData?.population, population?.population, population?.year],
   );
 
+  const moduleLabel = useMemo(() => {
+    if (pathname.includes("/HIAP")) return t("breadcrumb-hiap");
+    if (pathname.includes("/dashboard")) return t("dashboard");
+    return t("ghg-inventories");
+  }, [pathname, t]);
+
+  const cityId = inventory?.cityId ?? city?.cityId;
+  const breadcrumbsHomeHref = cityId ? `/${lng}/cities/${cityId}` : `/${lng}`;
+
   return (
-    <Box bg="content.alternative" w="full" h="491px" pt="150px" px={8}>
-      <Box display="flex" mx="auto" maxW="full" w="1090px">
+    <Box bg="content.alternative" w="full" h="491px" pt="80px" px={8}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        gap="24px"
+        mx="auto"
+        maxW="full"
+        w="1090px"
+      >
+        <Box>
+          <BreadcrumbRoot
+            separator={
+              <Icon as={MdChevronRight} boxSize={4} color="base.light" />
+            }
+            separatorGap="8px"
+            fontFamily="body"
+          >
+            <BreadcrumbLink href={breadcrumbsHomeHref} asChild>
+              <Link href={breadcrumbsHomeHref} color="base.light">
+                <Text
+                  fontSize="body.md"
+                  color="base.light"
+                  lineHeight="20px"
+                  _hover={{ textDecoration: "underline" }}
+                  textUnderlineOffset="8px"
+                >
+                  {t("citycatalyst")}
+                </Text>
+              </Link>
+            </BreadcrumbLink>
+            <BreadcrumbCurrentLink>
+              <Text fontSize="body.md" color="border.neutral">
+                {moduleLabel}
+              </Text>
+            </BreadcrumbCurrentLink>
+          </BreadcrumbRoot>
+        </Box>
         <Box
           w="full"
           h="240px"
           display="flex"
           flexDirection="column"
           justifyContent="center"
+          pt="36px"
         >
           <Box display="flex" h="240px">
             <Box
@@ -98,16 +157,17 @@ export function Hero({
               >
                 {!inventory ? t("welcome") : null}
               </Text>
+
               <Box display="flex" flexDirection="column" gap={2}>
                 {!isPublic &&
                 hasFeatureFlag(FeatureFlags.PROJECT_OVERVIEW_ENABLED) ? (
                   <Link
                     href={`/public/project/${inventory?.city?.project?.projectId}`}
                   >
-                    <ProjectTitle t={t} activeProject={activeProject} />
+                    <ProjectTitle activeProject={activeProject} />
                   </Link>
                 ) : (
-                  <ProjectTitle t={t} activeProject={activeProject} />
+                  <ProjectTitle activeProject={activeProject} />
                 )}
                 <Box display="flex" alignItems="center" gap={4}>
                   {inventory?.city || city ? (
@@ -138,11 +198,12 @@ export function Hero({
                 </Box>
               </Box>
               <Box display="flex" gap={8} mt="24px">
-                <Box display="flex" alignItems="baseline" gap={3}>
+                <Box display="flex" gap={3}>
                   <Icon
-                    as={MdArrowOutward}
+                    as={HeatIcon}
                     boxSize={6}
-                    fill="sentiment.negativeDefault"
+                    fill="background.overlay"
+                    mt={1}
                   />
                   <Box>
                     <Box display="flex" gap={1}>
@@ -187,8 +248,13 @@ export function Hero({
                     </Text>
                   </Box>
                 </Box>
-                <Box display="flex" alignItems="baseline" gap={3}>
-                  <Icon as={MdGroup} boxSize={6} fill="background.overlay" />
+                <Box display="flex" gap={3}>
+                  <Icon
+                    as={MdGroup}
+                    boxSize={6}
+                    fill="background.overlay"
+                    mt={1}
+                  />
                   <Box>
                     <Box display="flex" gap={1}>
                       {population?.population ? (
@@ -199,7 +265,7 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {shortenNumber(population.population)}
+                          {shortenNumber(population.population, numberFormat)}
                           <Text as="span" fontSize="16px">
                             {population?.population
                               ? getShortenNumberUnit(population.population)
@@ -253,11 +319,12 @@ export function Hero({
                     </Text>
                   </Box>
                 </Box>
-                <Box display="flex" alignItems="baseline" gap={3}>
+                <Box display="flex" gap={3}>
                   <Icon
                     as={MdOutlineAspectRatio}
                     boxSize={6}
                     fill="background.overlay"
+                    mt={1}
                   />
                   <Box>
                     <Box display="flex" gap={1}>
@@ -280,7 +347,10 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {Math.round(inventory?.city.area!).toLocaleString()}
+                          {formatNumber(
+                            Math.round(inventory?.city.area!),
+                            numberFormat,
+                          )}
                           {/* eslint-disable-next-line i18next/no-literal-string */}
                           <Text as="span" fontSize="16px">
                             km<sup>2</sup>
@@ -334,10 +404,8 @@ export function Hero({
 }
 
 function ProjectTitle({
-  t,
   activeProject,
 }: {
-  t: TFunction;
   activeProject: string | undefined;
 }) {
   return (

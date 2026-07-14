@@ -1,17 +1,16 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import { MdArrowBack, MdArrowForward } from "react-icons/md";
-import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
+import { MdArrowBack, MdArrowForward, MdWarning } from "react-icons/md";
+import { Box, HStack, Icon, Text, useSteps } from "@chakra-ui/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import React, { use, useState, useEffect, useRef, useCallback } from "react";
+import React, { use, useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
-import ValidationResultsStep from "@/components/steps/GHGI/import/validation-results-step";
-import MappingColumnsStep from "@/components/steps/GHGI/import/mapping-columns-step";
+import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
@@ -19,6 +18,7 @@ import { logger } from "@/services/logger";
 import type { ImportStatusResponse } from "@/util/types";
 import { usePollUntil } from "@/hooks/usePollUntil";
 import { TFunction } from "i18next";
+import { useAppDispatch } from "@/lib/hooks";
 
 /** If errorLog starts with "i18n:", return t(key); else return errorLog or fallback. */
 function resolveErrorMessage(
@@ -46,9 +46,23 @@ function ImportButton({
   onImport: () => void;
   t: TFunction;
 }) {
+  const dispatch = useAppDispatch();
   const [approveImport, { isLoading: isImporting }] =
     api.useApproveImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+
+  /** Invalidate inventory-related caches so the GHGI page shows fresh totalEmissions. */
+  const invalidateInventoryCache = () => {
+    dispatch(
+      api.util.invalidateTags([
+        "Inventory",
+        "InventoryProgress",
+        "InventoryValue",
+        "ReportResults",
+        "YearlyReportResults",
+      ]),
+    );
+  };
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -72,6 +86,7 @@ function ImportButton({
         return { done: false };
       },
       onSuccess: () => {
+        invalidateInventoryCache();
         makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
       },
@@ -109,6 +124,7 @@ function ImportButton({
       }
 
       if ((result as { importStatus?: string }).importStatus === "completed") {
+        invalidateInventoryCache();
         makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
         return;
@@ -166,8 +182,7 @@ export default function ImportPage(props: {
 
   const steps = [
     { title: t("upload-file-step") },
-    { title: t("validation-results-step") },
-    { title: t("mapping-columns-step") },
+    { title: t("inventory-mapping-step") },
     { title: t("review-confirm-step") },
   ];
 
@@ -224,9 +239,42 @@ export default function ImportPage(props: {
   const [interpretImport, { isLoading: isInterpreting }] =
     api.useInterpretImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
+  const { data: mappingStepData } = api.useGetImportStatusQuery(
+    { cityId, inventoryId: inventoryId ?? "", importedFileId: importedFileId ?? "" },
+    { skip: !importedFileId || !inventoryId },
+  );
   const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
     skip: !inventoryId,
   });
+  const { data: inventoryProgress } = api.useGetInventoryProgressQuery(
+    inventoryId ?? "",
+    { skip: !inventoryId },
+  );
+
+  // Check if the inventory already contains data (any InventoryValue records)
+  const inventoryHasData = useMemo(() => {
+    if (!inventoryProgress?.totalProgress) return false;
+    const { thirdParty, uploaded, reasonNE, reasonNO } =
+      inventoryProgress.totalProgress;
+    return thirdParty + uploaded + reasonNE + reasonNO > 0;
+  }, [inventoryProgress]);
+
+  const canContinueMapping = useMemo(() => {
+    const cols = mappingStepData?.columnMappings?.columns ?? [];
+    const reqMappings = mappingStepData?.columnMappings?.requiredMappings ?? [];
+    if (cols.length === 0 || reqMappings.length === 0) return false;
+    const MANDATORY = new Set(["gpcRefNo", "sector", "subsector", "activityAmount"]);
+    const keyForLabel = (label: string | null) =>
+      label ? (reqMappings.find((r) => r.label === label)?.key ?? "") : "";
+    const effectiveKey = (col: { columnName: string; interpretedAs: string | null }) =>
+      col.columnName in mappingOverrides
+        ? mappingOverrides[col.columnName]
+        : keyForLabel(col.interpretedAs);
+    const isMandatory = (col: { columnName: string; interpretedAs: string | null }) =>
+      MANDATORY.has(keyForLabel(col.interpretedAs)) ||
+      MANDATORY.has(mappingOverrides[col.columnName] ?? "");
+    return cols.filter(isMandatory).every((col) => effectiveKey(col) !== "");
+  }, [mappingStepData, mappingOverrides]);
 
   // Reset year-mismatch toast when the user switches to a different import
   useEffect(() => {
@@ -423,10 +471,12 @@ export default function ImportPage(props: {
         setTimeout(() => goToNextStep(), 150);
       }
     } catch (error: any) {
-      makeErrorToast(
-        "Upload failed",
-        error?.data?.message || error?.message || "Failed to upload file",
-      );
+      const message =
+        error?.data?.error?.message ||
+        error?.data?.message ||
+        error?.message ||
+        t("failed-to-upload-file");
+      makeErrorToast(t("upload-failed"), message);
     }
   };
 
@@ -571,6 +621,16 @@ export default function ImportPage(props: {
     setPendingNavigation(null);
   };
 
+  useEffect(() => {
+    if (!inventoryId) {
+      router.replace(`/${lng}/cities/${cityId}/GHGI/onboarding`);
+    }
+  }, [inventoryId, router, lng, cityId]);
+
+  if (!inventoryId) {
+    return null;
+  }
+
   return (
     <>
       <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
@@ -613,10 +673,35 @@ export default function ImportPage(props: {
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
                   <Box w="full" display="flex" flexDirection="column" gap="24px">
+                    {inventoryHasData && (
+                      <HStack
+                        gap={3}
+                        px={4}
+                        py={3}
+                        bg="orange.50"
+                        border="1px solid"
+                        borderColor="orange.200"
+                        borderRadius="md"
+                        align="flex-start"
+                      >
+                        <Icon as={MdWarning} boxSize={5} color="orange.500" mt="2px" />
+                        <Box>
+                          <Text fontWeight="semibold" color="orange.800" fontSize="sm">
+                            {t("inventory-already-has-data-title")}
+                          </Text>
+                          <Text color="orange.700" fontSize="sm" mt={1}>
+                            {t("inventory-already-has-data-description", {
+                              year: inventoryYear,
+                            })}
+                          </Text>
+                        </Box>
+                      </HStack>
+                    )}
                     <UploadFileStep
                       t={t}
+                      cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
-                      onFileUpload={handleFileUpload}
+                      onFileUpload={inventoryHasData ? () => {} : handleFileUpload}
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
@@ -730,12 +815,20 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <ValidationResultsStep
+                  <InventoryMappingStep
                     t={t}
                     cityId={cityId}
+                    cityName={inventory?.city?.name}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    onContinue={handleContinue}
+                    mappingOverrides={mappingOverrides}
+                    onMappingChange={(columnName, mappedKey) => {
+                      setMappingOverrides((prev) => ({
+                        ...prev,
+                        [columnName]: mappedKey,
+                      }));
+                    }}
+                    canContinue={canContinueMapping}
                   />
                 </motion.div>
               )}
@@ -747,38 +840,13 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <MappingColumnsStep
-                    t={t}
-                    cityId={cityId}
-                    inventoryId={inventoryId}
-                    importedFileId={importedFileId}
-                    onContinue={handleContinue}
-                    mappingOverrides={mappingOverrides}
-                    onMappingChange={(columnName, mappedKey) => {
-                      setMappingOverrides((prev) => ({
-                        ...prev,
-                        [columnName]: mappedKey,
-                      }));
-                    }}
-                  />
-                </motion.div>
-              )}
-              {activeStep === 3 && importedFileId && inventoryId && (
-                <motion.div
-                  key="step-3"
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{ duration: 0.2, ease: "easeInOut" }}
-                >
                   <ReviewConfirmStep
                     t={t}
                     cityId={cityId}
+                    cityName={inventory?.city?.name}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    onImport={() => {
-                      // This is no longer used but kept for interface compatibility
-                    }}
+                    onImport={() => {}}
                   />
                 </motion.div>
               )}
@@ -819,6 +887,7 @@ export default function ImportPage(props: {
                   }
                   h="64px"
                   disabled={
+                    inventoryHasData ||
                     !uploadedFile ||
                     !importedFileId ||
                     (pdfPendingExtraction && (isExtracting || isExtractInProgress)) ||
@@ -849,7 +918,7 @@ export default function ImportPage(props: {
                   px="24px"
                   onClick={handleContinue}
                   h="64px"
-                  disabled={fileYearMismatch}
+                  disabled={fileYearMismatch || !canContinueMapping}
                 >
                   <Text
                     fontFamily="button.md"
@@ -861,26 +930,7 @@ export default function ImportPage(props: {
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
-              {activeStep === 2 && (
-                <Button
-                  w="auto"
-                  gap="8px"
-                  py="16px"
-                  px="24px"
-                  onClick={handleContinue}
-                  h="64px"
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep === 3 && importedFileId && inventoryId && (
+              {activeStep === 2 && importedFileId && inventoryId && (
                 <ImportButton
                   cityId={cityId}
                   inventoryId={inventoryId}

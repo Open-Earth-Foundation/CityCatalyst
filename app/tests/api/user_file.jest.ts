@@ -162,7 +162,7 @@ describe.skip("UserFile API", () => {
     const res = await createUserFile(req, {
       params: Promise.resolve({ city: testCityID }),
     });
-    expect(res.status).toBe(400);
+    await expectStatusCode(res, 400);
   });
 
   it("should find all user files", async () => {
@@ -216,7 +216,7 @@ describe.skip("UserFile API", () => {
       }),
     });
 
-    expect(res.status).toBe(404);
+    await expectStatusCode(res, 404);
   });
 
   it("should delete user file", async () => {
@@ -238,7 +238,7 @@ describe.skip("UserFile API", () => {
     const res = await createUserFile(req, {
       params: Promise.resolve({ user: testUserID, city: testCityID }),
     });
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const { data } = await res.json();
     const deletRequest = mockRequest();
     const deleteResponse = await deleteUserfile(deletRequest, {
@@ -251,7 +251,7 @@ describe.skip("UserFile API", () => {
 
     const { deleted } = await deleteResponse.json();
     expect(deleted).toBe(true);
-    expect(deleteResponse.status).toBe(200);
+    await expectStatusCode(deleteResponse, 200);
   });
 
   it("should not delete a non-existent user file", async () => {
@@ -264,6 +264,6 @@ describe.skip("UserFile API", () => {
       }),
     });
 
-    expect(deleteResponse.status).toBe(404);
+    await expectStatusCode(deleteResponse, 404);
   });
 });

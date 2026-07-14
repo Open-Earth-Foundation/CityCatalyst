@@ -55,8 +55,8 @@ const statusKeyMap: Record<string, string> = {
 
 const stageKeyMap: Record<string, string> = {
   "assess-&-analyze": "stage-assess-and-analyze",
-  "plan": "stage-plan",
-  "implement": "stage-implement",
+  plan: "stage-plan",
+  implement: "stage-implement",
   "monitor-evaluate-&-report": "stage-monitor-evaluate-and-report",
 };
 
@@ -91,11 +91,7 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
 
   return (
     <>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
+      <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Heading
             fontSize="headline.sm"
@@ -162,7 +158,9 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
                     {item.type}
                   </Tag>
                 </Table.Cell>
-                <Table.Cell>{t(stageKeyMap[item.stage] || item.stage)}</Table.Cell>
+                <Table.Cell>
+                  {t(stageKeyMap[item.stage] || item.stage)}
+                </Table.Cell>
                 <Table.Cell>
                   <Tag
                     size="lg"
@@ -195,7 +193,7 @@ const ManageModulesList = ({ lng }: { lng: string }) => {
                 <Table.Cell>
                   {item.type === "POC" && (
                     <MenuRoot>
-                      <MenuTrigger>
+                      <MenuTrigger asChild>
                         <IconButton
                           aria-label="more-icon"
                           variant="ghost"

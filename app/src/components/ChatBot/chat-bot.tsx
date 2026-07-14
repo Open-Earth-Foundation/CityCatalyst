@@ -9,16 +9,20 @@ import { ChatMessageList } from "./ChatMessageList";
 import { ChatSuggestions } from "./ChatSuggestions";
 import { ChatInput } from "./ChatInput";
 
+export interface ChatBotProps {
+  userName?: string;
+  inputRef?: React.Ref<HTMLTextAreaElement>;
+  t: TFunction;
+  inventoryId?: string;
+  contextSuggestions?: { preview: string; message: string }[] | null;
+}
+
 export default function ChatBot({
   inputRef,
   t,
   inventoryId,
-}: {
-  userName?: string;
-  inputRef?: React.Ref<HTMLTextAreaElement>;
-  t: TFunction;
-  inventoryId: string;
-}) {
+  contextSuggestions,
+}: ChatBotProps) {
   const {
     userInput,
     setUserInput,
@@ -31,12 +35,12 @@ export default function ChatBot({
     stopGeneration,
   } = useChat({ inventoryId, t });
 
-  const suggestions = createSuggestions(t);
+  const suggestions = contextSuggestions ?? createSuggestions(t);
 
   return (
-    <Box display="flex" flexDirection="column" w="full" h="stretch">
-      <ChatMessageList 
-        messages={messages} 
+    <Box display="flex" flexDirection="column" w="full" flex="1" minH={0}>
+      <ChatMessageList
+        messages={messages}
         isGenerating={isGenerating}
         assistantStartedResponding={assistantStartedResponding}
       />

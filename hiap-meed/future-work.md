@@ -1,4 +1,4 @@
-# Only add information to this file that was clearly stated. Do not invent or assume future implementation work.
+﻿# Only add information to this file that was clearly stated. Do not invent or assume future implementation work.
 
 # Future work (HIAP-MEED)
 
@@ -39,39 +39,23 @@ Source: Notion "How Legal Signals, Policy Signals, and Socioeconomic Indicators 
 
 ## Post-ranking explanations (new v1 stage)
 
-- **Current (v1)**: optional LLM explanations are generated after ranking from implemented in-memory evidence (impact/alignment/feasibility/hard-filter).
+- **Current (v1)**: optional LLM explanations are generated after ranking from implemented in-memory evidence (impact/alignment/feasibility/hard-filter), canonically in English, with optional stateless translation into requested non-English languages.
 - **Current limitations**:
-  - explanations do not yet receive dedicated co-benefit mapping artifacts such as resolved preferred co-benefits or unmappable fragments for `cityStrategicPreferenceOther`; they rely on downstream alignment evidence plus the raw request context instead.
-  - explanations currently return a single `explanation` string per action, so `requestedLanguages` is handled with a temporary first-language-wins rule instead of true multilingual output.
+  - explanations do not yet receive richer alignment-specific UI summaries beyond the current resolved preferred co-benefits and matched preferred co-benefits carried in standard evidence.
 - **Expectation**: explanations should explicitly avoid inventing reasoning for these unimplemented signals until their scoring/evidence pipelines exist.
-- **Future work**: redesign the ranked-action explanation response contract and generation flow to support one request returning multiple localized explanation values per action.
+- **Future work**: consider adding an in-memory, process-local translation cache keyed by canonical explanation text, source language, target language, translation model, and prompt version to reduce repeated translation token usage without introducing persistent state.
 
-## Replace `cityStrategicPreferenceOther` free-text mapping with direct co-benefit input
-
-- **Current**:
-  - the ranking request still uses `cityStrategicPreferenceOther` as free text
-  - the Alignment block maps that free text into the allowed co-benefit taxonomy using an OpenAI step
-  - this is a transitional implementation, not the preferred long-term request contract
-- **Future**:
-  - the frontend should send the city's preferred co-benefits directly
-  - those values should already match the current supported co-benefit taxonomy
-  - the Alignment block should use those supplied values directly instead of calling the LLM for this mapping step
-- **Why this matters**:
-  - removes avoidable LLM dependence from a core ranking input
-  - makes the city preference contract more explicit and deterministic
-  - keeps frontend and backend aligned on one shared co-benefit taxonomy
-
-## Replace mock data clients with real upstream API calls
+## Replace remaining mock data clients with real upstream API calls
 
 - **Current**: the pipeline defaults to mock (file-backed) data. The `Api*` data clients exist but intentionally raise `NotImplementedError` so misconfiguration fails fast.
 - **Future**: implement synchronous HTTP clients for upstream data and switch to `HIAP_MEED_*_DATA_SOURCE=api` in deployment.
 - **Where**:
   - `hiap-meed/app/services/data_clients.py`
     - `ApiCityDataApiClient.get_city(locode)`
-    - `ApiActionDataApiClient.list_actions()`
-    - `ApiLegalDataApiClient.get_action_legal_requirements(locode)`
-    - `ApiPolicySignalsDataApiClient.get_action_policy_signals(locode)`
+    - `ApiActionPathwaysDataApiClient.list_actions()`
+    - action policy scores now use `ApiActionPolicyScoresDataApiClient.get_action_policy_scores(locode)`
 - **Notes**:
   - keep responses validated through Pydantic models in `app/modules/prioritizer/models.py`
   - define base URLs / auth via environment variables (avoid hardcoding)
   - keep error behavior explicit (timeouts, non-200s, malformed payloads)
+

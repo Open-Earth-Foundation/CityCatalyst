@@ -4,23 +4,11 @@ import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useMemo } from "react";
-import {
-  Box,
-  Heading,
-  Icon,
-  Spinner,
-  Text,
-  HStack,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Icon, Spinner, HStack, VStack, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
-import { MdGroup, MdInfoOutline, MdOutlineAspectRatio } from "react-icons/md";
-import { Tooltip } from "@/components/ui/tooltip";
-import {
-  formatEmissions,
-  getShortenNumberUnit,
-  shortenNumber,
-} from "@/util/helpers";
+import { MdOutlineAspectRatio } from "react-icons/md";
+import { InfoTooltip } from "@/components/InfoTooltip";
+import { formatEmissions, formatNumber } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { CityWithProjectDataResponse, InventoryResponse } from "@/util/types";
@@ -28,38 +16,39 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { DisplayMedium } from "@/components/package/Texts/Display";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { FiArrowUpRight } from "react-icons/fi";
+import { HeatIcon } from "../icons";
 
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 interface HeroProps {
   city: CityWithProjectDataResponse;
   ghgiCityData?: InventoryResponse;
-  year: number;
   isPublic: boolean;
   isLoading: boolean;
   t: TFunction;
   population?: PopulationAttributes;
   hideMap?: boolean;
+  numberFormat?: string;
 }
 
 export function Hero({
   city,
   ghgiCityData,
-  year,
   isLoading: isInventoryLoading,
   isPublic,
   population,
   t,
   hideMap = false,
+  numberFormat,
 }: HeroProps) {
   const { data: cityData } = useGetOCCityDataQuery(city?.locode!, {
     skip: !city?.locode,
   });
 
-  const formattedEmissions = ghgiCityData?.totalEmissions
-    ? formatEmissions(ghgiCityData.totalEmissions)
-    : { value: t("n-a"), unit: "" };
+  const formattedEmissions =
+    ghgiCityData?.totalEmissions != null
+      ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
+      : { value: t("no-data"), unit: "" };
 
   const popWithDS = useMemo(
     () =>
@@ -111,11 +100,12 @@ export function Hero({
             <HStack gap={8} align="start">
               {/* Total co2 emissions */}
               <VStack align="start" gap={2}>
-                <HStack gap={2} align="baseline">
+                <HStack gap={2} align="center">
                   <Icon
-                    as={FiArrowUpRight}
+                    as={HeatIcon}
                     boxSize={6}
-                    color="sentiment.negativeDefault"
+                    fill="content.tertiary"
+                    mt={-1}
                   />
                   <HeadlineSmall
                     fontSize="2xl"
@@ -136,37 +126,53 @@ export function Hero({
                         </HeadlineSmall>
                       </>
                     ) : (
-                      t("n-a")
+                      t("no-data")
                     )}
                   </HeadlineSmall>
-                  <Tooltip
-                    content={
-                      <>
-                        {t("total-emissions-in-year", {
-                          year: ghgiCityData?.year,
-                        })}
-                      </>
+                  <InfoTooltip
+                    contentProps={
+                      ghgiCityData?.totalEmissions == null
+                        ? {
+                            bg: "content.secondary",
+                            borderRadius: "minimal",
+                            boxShadow: "shadow-light-md",
+                          }
+                        : undefined
                     }
-                  >
-                    <Icon
-                      as={MdInfoOutline}
-                      boxSize={4}
-                      color="content.secondary"
-                      cursor="pointer"
-                    />
-                  </Tooltip>
+                    content={
+                      ghgiCityData?.totalEmissions != null
+                        ? t("total-emissions-in-year", { year: ghgiCityData?.year })
+                        : (
+                          <Text
+                            color="white"
+                            textAlign="center"
+                            fontFamily="body"
+                            fontSize="xs"
+                            fontWeight="medium"
+                            lineHeight="16px"
+                          >
+                            {t("no-data-tooltip-line1")}
+                            <br />
+                            {t("no-data-tooltip-line2")}
+                          </Text>
+                        )
+                    }
+                  />
                 </HStack>
                 <BodyMedium color="content.tertiary">
-                  {t("total-emissions-in-year", { year: ghgiCityData?.year })}
+                  {ghgiCityData?.year
+                    ? t("total-emissions-in-year", { year: ghgiCityData.year })
+                    : t("total-emissions")}
                 </BodyMedium>
               </VStack>
               {/* Land Area */}
               <VStack align="start" gap={2}>
-                <HStack gap={2} align="baseline">
+                <HStack gap={2} align="center">
                   <Icon
                     as={MdOutlineAspectRatio}
                     boxSize={5}
-                    color="content.primary"
+                    color="content.tertiary"
+                    mt={-1}
                   />
                   <HeadlineSmall
                     fontSize="2xl"
@@ -176,7 +182,7 @@ export function Hero({
                   >
                     {city.area && city.area > 0 ? (
                       <>
-                        {Math.round(city.area).toLocaleString()}
+                        {formatNumber(Math.round(city.area), numberFormat)}
                         <HeadlineSmall
                           as="span"
                           fontSize="lg"
@@ -187,25 +193,42 @@ export function Hero({
                         </HeadlineSmall>
                       </>
                     ) : (
-                      t("n-a")
+                      t("no-data")
                     )}
                   </HeadlineSmall>
-                  <Tooltip
-                    content={
-                      <>
-                        {t("source-open-climate")}
-                        <br />
-                        {t("population-year", { year: population?.year })}
-                      </>
+                  <InfoTooltip
+                    contentProps={
+                      !(city.area && city.area > 0)
+                        ? {
+                            bg: "content.secondary",
+                            borderRadius: "minimal",
+                            boxShadow: "shadow-light-md",
+                          }
+                        : undefined
                     }
-                  >
-                    <Icon
-                      as={MdInfoOutline}
-                      boxSize={4}
-                      color="content.secondary"
-                      cursor="pointer"
-                    />
-                  </Tooltip>
+                    content={
+                      city.area && city.area > 0 ? (
+                        <>
+                          {t("source-open-climate")}
+                          <br />
+                          {t("population-year", { year: population?.year })}
+                        </>
+                      ) : (
+                        <Text
+                          color="white"
+                          textAlign="center"
+                          fontFamily="body"
+                          fontSize="xs"
+                          fontWeight="medium"
+                          lineHeight="16px"
+                        >
+                          {t("no-data-tooltip-line1")}
+                          <br />
+                          {t("no-data-tooltip-line2")}
+                        </Text>
+                      )
+                    }
+                  />
                 </HStack>
                 <BodyMedium color="content.tertiary">
                   {t("total-land-area")}

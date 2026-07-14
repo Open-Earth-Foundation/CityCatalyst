@@ -1,62 +1,60 @@
 # Climate Advisor Service
 
-Climate Advisor (CA) is a standalone FastAPI microservice that powers the conversational experience for CityCatalyst (CC). The service lives under `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
+Climate Advisor (CA) is a standalone FastAPI microservice that powers the
+conversational experience for CityCatalyst (CC). The service lives under
+`climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
-- **Agentic AI**: Uses OpenAI's Agents SDK with OpenRouter for flexible LLM routing
-- **Persistent Threads & Messages**: PostgreSQL-backed conversation history
+- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible chat
+  client; OpenRouter is the default router and direct OpenAI chat endpoints are
+  also supported
+- **Persistent Threads And Messages**: PostgreSQL-backed conversation history
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
-  - Climate knowledge base search (vector RAG)
-  - CityCatalyst inventory API queries
-- **Token Management**: JWT token refresh and caching for CityCatalyst API access
-- **Streaming Responses**: Server-Sent Events (SSE) for real-time message delivery
-- **Observable**: Optional LangSmith integration for tracing and monitoring
+  - General chat tools: climate knowledge search plus CityCatalyst inventory
+    tools (`inventory_list_accessible`, `inventory_status_overview`,
+    `inventory_emissions_context`, and temporary legacy
+    `get_all_datasources`)
+  - Pre-draft Stationary Energy chat tool (`stationary_energy_start_draft`)
+    available only before a draft run is active
+  - Stationary Energy draft review tools scoped to an active CA-owned draft run
+- **Token Management**: JWT token refresh and caching for CityCatalyst API
+  access
+- **Streaming Responses**: Server-Sent Events (SSE) for real-time message
+  delivery
+- **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
+  OpenAI trace logging
 
 ## Current Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                   CityCatalyst App                       │
-│                   (Next.js + React)                      │
-│                                                           │
-│  POST /api/v0/chat/threads         (create thread)       │
-│  POST /api/v0/chat/messages        (send message)        │
-└────────────────────────┬────────────────────────────────┘
-                         │ HTTP/JSON
-                         │ (with JWT token)
-┌────────────────────────▼────────────────────────────────┐
-│         Climate Advisor Service (FastAPI)               │
-│                                                           │
-│  ┌─────────────────────────────────────────────────┐   │
-│  │  API Endpoints (v1)                             │   │
-│  │  POST /v1/threads          (create thread)      │   │
-│  │  POST /v1/messages         (stream response)    │   │
-│  └─────────────────────────────────────────────────┘   │
-│                         │                               │
-│  ┌──────────────┬───────▼────────┬──────────────────┐  │
-│  │              │                │                  │   │
-│  ▼              ▼                ▼                  ▼   │
-│ Thread      Message          Agent Service      Tools  │
-│ Service     Service          (Agents SDK)              │
-│              │                  │          ┌──────┬───┐│
-│              │                  │          │      │   ││
-│              │                  ▼          ▼      ▼   ││
-│              │            ┌──────────────────────┐   ││
-│              │            │ Tool Execution:      │   ││
-│              │            │ - Climate Vector     │   ││
-│              │            │ - CC Inventory API   │   ││
-│              │            └──────────────────────┘   ││
-│              │                  │                    ││
-│              └──────────────────┼────────────────────┘│
-│                                 │                      │
-└─────────────────────────────────┼──────────────────────┘
-                                  │
-                    ┌─────────────┼──────────────┐
-                    │             │              │
-                    ▼             ▼              ▼
-              PostgreSQL    OpenRouter API  CityCatalyst
-              (History)     (LLM Routing)   (Inventory)
-```
+Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
+
+1. General chat
+   - Composes `prompts.core` with `prompts.chat`
+   - Always exposes `climate_vector_search`
+   - Adds CityCatalyst inventory tools only when the request has token, user,
+     and thread scope
+2. Stationary Energy review chat
+   - Activates when the request or thread context carries
+     `stationary_energy_draft_run_id`
+   - Loads the composed `prompts.core + prompts.stationary_energy_review`
+     instructions, then appends the persisted draft snapshot as
+     `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON` inside a `<context>...</context>`
+     block
+   - Composes `prompts.core` with `prompts.stationary_energy_review`
+   - Registers only scoped review tools that stage, preview, rollback, and save
+     draft-review choices, including notation-key choices
+
+At runtime:
+
+- `ThreadService` and `ThreadResolver` own chat-thread lifecycle.
+- `TokenHandler` loads and refreshes CityCatalyst tokens.
+- `StreamingHandler` loads pruned history, optionally injects Stationary Energy
+  draft context and `ui_context`, runs the agent, emits SSE events, and
+  persists assistant messages.
+- `AgentService` chooses the model and builds the tool pack for the current
+  request.
+- PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
+  workflow state.
 
 ## Workflow
 
@@ -91,11 +89,11 @@ Content-Type: application/json
 
 **Processing:**
 
-- ThreadService creates a UUID-based thread
-- Stores thread with user_id, inventory_id, and context (JSONB)
-- Returns thread_id for client use
+- `ThreadService` creates a UUID-based thread
+- Stores thread with `user_id`, `inventory_id`, and `context` (`JSONB`)
+- Returns `thread_id` for later `/v1/messages` calls
 
-### 2. Send Message & Stream Response
+### 2. Send Message And Stream Response
 
 **Client Request:**
 
@@ -112,19 +110,22 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-4o"  # Optional model override
+    "model": "openai/gpt-5.4-mini"
   }
 }
 ```
 
+If `thread_id` is omitted, Climate Advisor creates a new thread. If `thread_id`
+is supplied, it must already exist and belong to the requesting user.
+
 **Server Response (SSE Stream):**
 
-```
+```text
 event: message
 data: {"content": "The top climate risks..."}
 
-event: tool_use
-data: {"name": "climate_vector_search", "arguments": {"query": "climate risks San Francisco"}}
+event: tool_result
+data: {"name": "climate_vector_search", "status": "executing", "arguments": {"question": "climate risks San Francisco"}}
 
 event: message
 data: {"content": "Based on the analysis..."}
@@ -135,59 +136,119 @@ data: {}
 
 **Processing Pipeline:**
 
-1. **Thread Resolution**: If no thread_id provided, creates new thread with context
-2. **Token Management**: Loads CC access token from payload context or thread context
-3. **Message Persistence**: Stores user message to database
-4. **Agent Execution**:
-   - AgentService creates agent with configured model
-   - Loads conversation history (last N messages)
-   - Runs agent with user message
-   - Agent may invoke tools (climate search, inventory API)
-   - Streams response tokens as SSE events
-5. **Response Persistence**: After streaming completes, stores assistant message with tool usage
+1. **Thread Resolution**
+   - If no `thread_id` is provided, creates a new thread with context
+   - If `thread_id` is provided, validates that the thread exists and belongs to
+     the user
+2. **Token Management**
+   - Loads the CityCatalyst access token from request context or thread context
+   - Refreshes it through CityCatalyst when needed
+3. **Context Loading**
+   - Loads pruned conversation history from PostgreSQL
+   - If a `stationary_energy_draft_run_id` is active, loads the persisted draft
+     snapshot plus request-scoped `ui_context`
+   - For Stationary Energy review chat, the first model input is the composed
+     `prompts.core + prompts.stationary_energy_review` instruction text
+     followed by the draft snapshot in `<context>...</context>`
+4. **Message Persistence**
+   - Stores the user message in PostgreSQL
+5. **Agent Execution**
+   - `AgentService` creates the agent with the configured model
+   - Registers the correct tool pack for the active workflow
+   - Runs the agent with the user message and any loaded context
+   - Streams response tokens and tool outputs as SSE events
+6. **Response Persistence**
+   - After streaming completes, stores the assistant message with tool usage
 
-### 3. Tool Invocation
+### 3. Tool Packs
 
-**Tools Available:**
+**Available outside active Stationary Energy review chat**
 
-1. **climate_vector_search** - Semantic search over climate knowledge base
+- `climate_vector_search`
+  - Semantic search over the internal climate knowledge base
+  - Used for general climate-science, accounting, policy, and standards
+    questions
 
-   - Query: Natural language question
-   - Returns: Top-K relevant document chunks with scores
-   - Configuration: top_k=5, min_score=0.6 (in llm_config.yaml)
+**Added for CityCatalyst inventory chat**
 
-2. **cc_inventory_query** - Query CityCatalyst inventory APIs
-   - Automatically refreshes JWT token using CityCatalyst token endpoint
-   - Supports inventory data fetching based on payload structure
-   - Returns formatted inventory data or error responses
+- `inventory_list_accessible`
+  - Lists all accessible city/year inventories, or filters by city and year.
+  - Requires name, type, and GWP disambiguation when one city/year has multiple
+    inventories.
+- `inventory_status_overview`
+  - Summarizes selected-inventory metadata, completion, and filled/missing
+    sector state.
+- `inventory_emissions_context`
+  - Summarizes selected-inventory total emissions, sector shares, top emitters,
+    and source mix.
+- `get_all_datasources`
+  - Temporary legacy datasource tool used only after an inventory is selected.
 
-**Tool Execution Flow:**
+These tools use the scoped bearer token, refresh it if needed, and keep raw
+CityCatalyst IDs internal to tool chaining rather than user-facing responses.
+When city/year is ambiguous, the prompt asks the user to choose by inventory
+name, type, and GWP before calling detail tools.
 
-```
-User Message
-    ↓
-Agent (Agents SDK)
-    ├─ Analyzes message
-    ├─ Decides if tool needed?
-    │   └─ YES: Tool name + arguments
-    │   └─ NO: Direct response
-    ↓
-Tool Invocation (if applicable)
-    ├─ climate_vector_search
-    │   ├─ Generate query embedding
-    │   ├─ Vector search in pgvector
-    │   └─ Return matched documents
-    │
-    └─ cc_inventory_query
-        ├─ Load CC token
-        ├─ HTTP call to CityCatalyst API
-        └─ Return formatted data
-    ↓
-Agent Continue (with tool result)
-    ├─ Incorporate tool output in response
-    ├─ Generate final answer
-    └─ Stream to client (SSE)
-```
+**Added for pre-draft Stationary Energy chat**
+
+- `stationary_energy_start_draft`
+
+This tool is registered only when the Stationary Energy draft surface is active
+and no draft run is already under review. It starts deterministic draft
+generation from the scoped city and inventory, then the browser loads the new
+draft for review.
+
+**Added for active Stationary Energy draft review chat**
+
+- `stationary_energy_list_review_options`
+- `stationary_energy_list_notation_keys`
+- `stationary_energy_accept_one`
+- `stationary_energy_stage_notation_key`
+- `stationary_energy_accept_multiple`
+- `stationary_energy_accept_all_recommended`
+- `stationary_energy_request_bulk_review_confirmation`
+- `stationary_energy_request_bulk_notation_confirmation`
+- `stationary_energy_apply_bulk_notation_choices`
+- `stationary_energy_request_all_recommended_confirmation`
+- `stationary_energy_request_staged_source_change_confirmation`
+- `stationary_energy_request_staged_sources_rollback_confirmation`
+- `stationary_energy_rollback_staged_sources`
+- `stationary_energy_rollback_staged_notation_keys`
+- `stationary_energy_save_review_draft`
+- `stationary_energy_request_inventory_save_confirmation`
+
+These tools operate on CA-owned persisted draft state and return `tool_result`
+payloads that may include review-specific `ui_event` values for the CityCatalyst
+browser UI.
+
+### 4. Stationary Energy Review Chat
+
+When a request is scoped to an active `stationary_energy_draft_run_id`:
+
+1. `StreamingHandler` loads the persisted CA draft snapshot, including
+   `source_candidates`, `proposals`, `review_decisions`, and active
+   `staged_review_selections`
+2. Request-scoped UI state such as focused row, confirmed bulk choices, and
+   confirmed rollback choices is attached as `ui_context`
+3. `AgentService` uses `prompts.stationary_energy_review` as the active
+   instructions and registers only the scoped review tools
+4. Review tools stage temporary selections first, then save them into durable
+   `review_decisions` only when the user asks to save the reviewed draft
+5. Notation-key tools use the same staged-first boundary. They list eligible
+   Stationary Energy rows and the allowed settable keys (`NO`, `NE`, `IE`,
+   `C`), stage or roll back notation choices in CA state, and never write
+   directly to inventory from chat
+6. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
+   returns the confirmation payload but does not write the inventory directly
+
+Stationary Energy `tool_result` payloads may include these `ui_event` values:
+
+- `stationary_energy_review_state_changed`
+- `stationary_energy_review_bulk_confirmation_requested`
+- `stationary_energy_review_change_confirmation_requested`
+- `stationary_energy_review_rollback_confirmation_requested`
+- `stationary_energy_inventory_save_confirmation_requested`
+- `stationary_energy_draft_started`
 
 ## Local Development
 
@@ -195,19 +256,18 @@ Agent Continue (with tool result)
 
 - Python 3.11+
 - PostgreSQL 15+ (via Docker recommended)
-- pip / venv
+- `uv`
 
-### 1. Clone and Setup
+### 1. Clone And Setup
 
 ```bash
 cd climate-advisor
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv sync --locked --group dev
 ```
 
 ### 2. Configure Environment
 
-Create `.env` in `climate-advisor/` directory:
+Create `.env` in `climate-advisor/`:
 
 ```bash
 # Required
@@ -221,10 +281,10 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climat
 CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
-OPENAI_API_KEY=your-openai-api-key  # For embeddings
-LANGSMITH_API_KEY=your-langsmith-key  # If tracing enabled
+OPENAI_API_KEY=your-openai-api-key
+LANGSMITH_API_KEY=your-langsmith-key
 
-# Optional - CityCatalyst Integration
+# Optional - CityCatalyst integration
 CC_BASE_URL=http://localhost:3000
 ```
 
@@ -237,8 +297,11 @@ cd climate-advisor
 docker compose up -d postgres
 ```
 
-If you use this compose-based PostgreSQL setup and run the CA service on your host
-(not in Docker), use:
+Make sure Docker Desktop (or another Docker daemon) is running before invoking
+`docker compose`.
+
+If you use this compose-based PostgreSQL setup and run the CA service on your
+host (not in Docker), use:
 
 ```bash
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
@@ -260,22 +323,19 @@ docker run --name ca-postgres \
 docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
-### 4. Install Dependencies & Setup Database
+### 4. Install Dependencies And Setup Database
 
 ```bash
-cd climate-advisor/service
-pip install -r requirements.txt
-
-# Run database migrations
-cd ..
-python scripts/setup_database.py
+cd climate-advisor
+uv sync --locked --group dev
+uv run python scripts/setup_database.py
 ```
 
-### 5. Run the Service
+### 5. Run The Service
 
 ```bash
-cd climate-advisor/service
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+cd climate-advisor
+uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 
 ### 6. Verify Setup
@@ -289,18 +349,75 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
 ### LLM Configuration
 
-All LLM-related settings are centralized in (`llm_config.yaml`)
+All non-secret LLM settings are centralized in `llm_config.yaml`, including the
+orchestrator and agentic-flow model settings, provider base URLs, retry and
+timeout settings, and Stationary Energy review chat-context prompt budgets.
+Stationary Energy draft proposals are generated deterministically from bounded
+CityCatalyst context, not by an LLM prompt. The environment is only for secrets
+such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
+
+Prompt paths are also configured in `llm_config.yaml`:
+
+- `prompts.core` is the shared Clima base prompt used by every workflow
+- `prompts.chat` is the workflow prompt for general Climate Advisor chat
+- `prompts.stationary_energy_review` is the workflow prompt for active
+  Stationary Energy draft review chat
+
+At runtime, CA composes the final system instructions as:
+
+- general chat: `prompts.core + prompts.chat`
+- Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
+
+Workflow prompt `<tools>` sections load shared tool-policy fragments with
+`{{ include: ... }}` directives. Exact tool argument contracts come from the
+registered runtime tool definitions rather than duplicated prompt text.
+Each configured prompt file remains schema-complete with `<role>`, `<task>`,
+`<input>`, and `<output>` blocks; runtime composition wraps the workflow prompt
+inside `<additional_instructions>`.
+
+Some prompt files use reusable fragments with
+`{{ include: tools/example.md }}` directives. Includes are resolved relative to
+the including prompt first and then against the configured prompt search roots.
+
+### Stationary Energy Tool Message Localization
+
+Stationary Energy review tools return localized-message metadata instead of
+English display strings. Tool results set `message_key` to a stable key from
+CityCatalyst's `stationary-energy-agentic.json` namespace and `message_params`
+to simple interpolation values such as counts or statuses.
+
+Climate Advisor does not translate those messages directly because it is a
+backend service. It does not own CityCatalyst locale files, the active browser
+language, or client-side fallback behavior. The boundary is:
+
+- Climate Advisor owns tool outcome semantics
+- CityCatalyst owns user-facing copy and locale rendering
 
 ### Environment Variables
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
-- `CA_PORT` - Server port (default: 8080) - note - there is issue when running any app inside of the docker container the localhost is within the container network be aware of that and adjust this same as CA_DATBASE_URL
-- `CA_LOG_LEVEL` - Logging level: info|debug (default: info)
-- `CA_CORS_ORIGINS` - CORS allowed origins (default: \*)
-- `OPENAI_API_KEY` - OpenAI API key (for embeddings & traces)
-- `LANGSMITH_API_KEY` - LangSmith API key (if tracing enabled)
-- `CC_BASE_URL` - CityCatalyst base URL (for inventory API & token refresh)
+- `CA_PORT` - Server port (default: `8080`)
+- `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
+- `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
+- `OPENAI_API_KEY` - OpenAI API key for embeddings
+- `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
+- `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
+- `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
+- `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
+  `https://mlflow-dev.openearth.dev`
+- `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
+- `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
+  default `clima`
+- `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
+  match the shared HIAP-MEED fail-open tuning
+- `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
+- `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR` - MLflow retry backoff factor; use `1`
+- `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER` - MLflow retry jitter; use `0`
+- `GIT_PYTHON_REFRESH` - Set to `quiet` so service runtimes without `git` do
+  not emit GitPython warnings during MLflow initialization
+- `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables MLflow async logging when set to
+  `true`
 
 ## Database Schema
 
@@ -313,24 +430,15 @@ CREATE TABLE threads (
   thread_id UUID PRIMARY KEY,
   user_id VARCHAR(255) NOT NULL INDEX,
   inventory_id VARCHAR(255),
-  context JSONB,  -- Stores context, tokens, metadata
+  context JSONB,
   title VARCHAR(255),
-  created_at TIMESTAMP WITH TIMEZONE DEFAULT NOW(),
-  last_updated TIMESTAMP WITH TIMEZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-**context** field structure:
-
-```json
-{
-  "access_token": "eyJ...",
-  "expires_at": "2025-01-01T12:00:00Z",
-  "issued_at": "2025-01-01T10:00:00Z",
-  "cc_access_token": "...",
-  "custom_data": "..."
-}
-```
+Typical `context` fields include access-token metadata plus workflow-scoping
+data such as a persisted `stationary_energy_draft_run_id`.
 
 ### Message Table
 
@@ -342,30 +450,34 @@ CREATE TABLE messages (
   thread_id UUID FOREIGN KEY,
   text TEXT NOT NULL,
   role ENUM('user', 'assistant'),
-  tools_used JSONB,  -- Tracks tool invocations
-  created_at TIMESTAMP WITH TIMEZONE DEFAULT NOW()
+  tools_used JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 ```
 
-**tools_used** field structure:
+`tools_used` stores tool invocation metadata for audit and debugging. The LLM
+history path may prune older tool payloads before a run, but the DB rows keep
+the full saved metadata.
 
-```json
-[
-  {
-    "name": "climate_vector_search",
-    "status": "success",
-    "arguments": { "query": "climate risks" },
-    "results": [
-      {
-        "filename": "GPC_Full_MASTER_RW_v7.pdf",
-        "chunk_index": 42,
-        "score": 0.85,
-        "content": "..."
-      }
-    ]
-  }
-]
-```
+### Stationary Energy Draft Tables
+
+Climate Advisor also persists CA-owned Stationary Energy draft workflow state:
+
+- `stationary_energy_draft_runs`
+  - One persisted draft workflow, optionally linked back to a chat thread
+- `stationary_energy_draft_source_candidates`
+  - Candidate datasources and normalized source rows captured for the draft
+- `stationary_energy_draft_proposals`
+  - Per-row proposed values plus recommended and alternate candidate references
+- `stationary_energy_review_decisions`
+  - Durable saved review decisions with versioning, commit status, and optional
+    notation-key metadata
+- `stationary_energy_staged_review_selections`
+  - Active temporary chat-staged source or notation-key selections awaiting
+    save, change, or rollback
+
+`StreamingHandler` loads this state into chat context when the request is
+scoped to an active `stationary_energy_draft_run_id`.
 
 ### DocumentEmbedding Table
 
@@ -378,13 +490,12 @@ CREATE TABLE document_embeddings (
   chunk_index INT,
   chunk_size INT,
   content TEXT,
-  embedding_vector VECTOR(3072),  -- OpenAI text-embedding-3-large
+  embedding_vector VECTOR(3072),
   model_name VARCHAR(100),
   file_path VARCHAR(500),
-  created_at TIMESTAMP WITH TIMEZONE DEFAULT NOW()
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Index for fast similarity search
 CREATE INDEX ix_document_embeddings_vector
 ON document_embeddings
 USING ivfflat (embedding_vector vector_cosine_ops)
@@ -396,13 +507,13 @@ WITH (lists = 100);
 ### 1. Populate Vector Database
 
 ```bash
-cd climate-advisor/vector_db
+cd climate-advisor
 
 # Add PDF files to `files/` directory
-cp /path/to/documents/*.pdf files/
+cp /path/to/documents/*.pdf vector_db/files/
 
 # Process PDFs and upload embeddings
-python upload_to_db.py --directory files
+uv run python vector_db/upload_to_db.py --directory vector_db/files
 ```
 
 ### 2. Vector Search Configuration
@@ -472,7 +583,7 @@ Content-Type: application/json
 }
 ```
 
-### Send Message & Stream Response
+### Send Message And Stream Response
 
 ```http
 POST /v1/messages
@@ -483,18 +594,21 @@ Content-Type: application/json
   "content": "What are climate risks?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inv-456",
-  "options": { "model": "openai/gpt-4o" }
+  "options": { "model": "openai/gpt-5.4-mini" }
 }
 ```
 
-**Response (200, text/event-stream):**
+When calling `/v1/messages` directly, create the thread first via `/v1/threads`
+or omit `thread_id` and let the service start a new conversation.
 
-```
+**Response (200, `text/event-stream`):**
+
+```text
 event: message
 data: {"content": "Climate risks include..."}
 
-event: tool_use
-data: {"name": "climate_vector_search", "arguments": {...}}
+event: tool_result
+data: {"name": "climate_vector_search", "status": "executing", "arguments": {...}}
 
 event: done
 data: {}
@@ -504,61 +618,69 @@ data: {}
 
 ### Token Management
 
-1. **Token from Request**: Client includes JWT in payload context
-2. **Token from Thread**: Service loads token from existing thread context
-3. **Token Refresh**: If token expires, service calls CityCatalyst token endpoint
-4. **Token Persistence**: Valid tokens stored in thread context JSONB
+1. **Token from request**: Client includes JWT in payload context
+2. **Token from thread**: Service loads token from existing thread context
+3. **Token refresh**: If token expires, service calls the CityCatalyst token
+   endpoint
+4. **Token persistence**: Valid tokens are stored in thread context JSONB
 
 ### Inventory API Access
 
-The `cc_inventory_query` tool:
+The default Clima inventory tool pack exposes:
 
-- Constructs requests to CityCatalyst inventory endpoints
-- Automatically includes JWT in Authorization header
-- Handles token refresh if needed
-- Returns formatted inventory data to agent
+- `inventory_list_accessible`
+- `inventory_status_overview`
+- `inventory_emissions_context`
+- `get_all_datasources` as the temporary legacy datasource lookup
 
-**Example Flow:**
+These tools:
 
-```
-User: "What emissions are reported in my inventory?"
-  ↓
-Agent calls: cc_inventory_query(inventory_id="inv-456")
-  ↓
-Tool loads token from thread context
-  ↓
-HTTP GET https://localhost:3000/api/v0/inventory/emissions?inventory_id=inv-456
-    Authorization: Bearer <JWT>
-  ↓
-Response: { "emissions": {...} }
-  ↓
-Agent incorporates data into response
-```
+- construct requests to CityCatalyst inventory capability endpoints
+- automatically include the scoped JWT in the `Authorization` header
+- refresh and persist the token when needed
+- return compact, read-only inventory context to the agent
+- require inventory name, type, and GWP disambiguation when city/year is not
+  unique
+
+### Stationary Energy Draft Review Boundary
+
+The Stationary Energy review tool pack uses the same scoped CityCatalyst token
+for draft-save flows, but the ownership split is:
+
+- Climate Advisor owns pre-commit draft state, staged review selections, and
+  saved review decisions, including notation-key choices
+- CityCatalyst owns the final user-facing inventory-write confirmation and
+  commit flow
+- The agent can list notation-key targets and stage `NO`, `NE`, `IE`, or `C`
+  choices, but committed notation-key writes happen only after the reviewed
+  draft is saved and the existing inventory-save confirmation is approved
 
 ## Testing
 
 ### Run All Tests
 
 ```bash
-cd climate-advisor/service
-pytest tests/ -v
+cd climate-advisor
+uv run --directory service pytest tests/ -v
 ```
 
 ### Run Specific Test
 
 ```bash
-pytest tests/test_e2e_conversation.py -v
+uv run --directory service pytest tests/test_e2e_conversation.py -v
 ```
 
-### Quick Streaming Test
+### Prompt Flow Smoke Test
 
 ```bash
-python climate-advisor/scripts/test_service_stream.py http://localhost:8080
+uv run --directory service python -m scripts.run_ca_e2e
 ```
 
 ## Docker Deployment (Local Testing)
 
-This section is for local development/testing. It builds the Climate Advisor image from your local working tree so your unpushed code changes are included.
+This section is for local development and testing. It builds the Climate
+Advisor image from your local working tree so your unpushed code changes are
+included.
 
 ### Build Image (Local Source)
 
@@ -576,7 +698,7 @@ docker run --rm \
   climate-advisor:dev
 ```
 
-### Docker Compose (with PostgreSQL)
+### Docker Compose (With PostgreSQL)
 
 Use the committed compose file at `climate-advisor/docker-compose.yml`:
 
@@ -595,17 +717,75 @@ docker compose down
 
 Notes:
 
-- The compose setup uses `pgvector/pgvector:pg15` for PostgreSQL with vector support.
-- The app image/tag used for compose is local (`climate-advisor:dev`) and built from your local source.
-- The compose service is configured with `pull_policy: never` to avoid pulling remote images during local testing.
-- `.env.example` defaults `CA_DATABASE_URL` to `localhost:5433` to avoid conflict with CityCatalyst's local PostgreSQL on `5432`.
-- PostgreSQL is published on `localhost:5433` in compose to avoid conflicts with CityCatalyst's local PostgreSQL on `5432`.
-- Inside the compose network, Climate Advisor still connects to PostgreSQL on `postgres:5432`.
-- Because of this network difference, compose sets `CA_DATABASE_URL` explicitly in `docker-compose.yml`.
-- For local Docker testing against a host-running CityCatalyst app, compose overrides `CC_BASE_URL` to `http://host.docker.internal:3000`.
-- The compose service runs Alembic migrations automatically on startup before launching Uvicorn.
+- The compose setup uses `pgvector/pgvector:pg15` for PostgreSQL with vector
+  support
+- The app image and tag used for compose are local (`climate-advisor:dev`) and
+  built from your local source
+- The compose service is configured with `pull_policy: never` to avoid pulling
+  remote images during local testing
+- `.env.example` defaults `CA_DATABASE_URL` to `localhost:5433` to avoid
+  conflict with CityCatalyst's local PostgreSQL on `5432`
+- PostgreSQL is published on `localhost:5433` in compose to avoid conflicts
+  with CityCatalyst's local PostgreSQL on `5432`
+- Inside the compose network, Climate Advisor still connects to PostgreSQL on
+  `postgres:5432`
+- Because of this network difference, compose sets `CA_DATABASE_URL`
+  explicitly in `docker-compose.yml`
+- For local Docker testing against a host-running CityCatalyst app, compose
+  overrides `CC_BASE_URL` to `http://host.docker.internal:3000`
+- The compose service runs Alembic migrations automatically on startup before
+  launching Uvicorn
 
 ## Observability
+
+### MLflow Integration
+
+Climate Advisor can log to the same deployed MLflow instance used by
+HIAP-MEED. The split is experiment-based between services, and tag-based inside
+Climate Advisor:
+
+- `hiap-meed` remains the existing HIAP-MEED experiment
+- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+  chat, Stationary Energy draft, review, save, background generation, and
+  draft-context chat runs
+
+Each run includes tags such as `service`, `environment`, `workflow`,
+`prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
+`stationary_energy_draft_run_id` when present. Full debug artifacts are logged
+with bearer tokens, API keys, JWTs, and secrets redacted.
+
+Each streamed `/v1/messages` model turn emits one MLflow trace. Climate Advisor
+also assigns the active trace session to the CA `thread_id`, so MLflow's
+session grouping shows all turns from the same UI conversation together while
+still preserving per-turn trace detail.
+
+The shared MLflow variables match HIAP-MEED where deployment needs explicit
+configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
+`MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`, the
+`MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
+`MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
+separated by MLflow tags such as `workflow` and `context_mode`; active
+Stationary Energy draft chat is tagged `prompt_name=stationary_energy_review`,
+while general chat is tagged `prompt_name=chat`. MLflow request previews for
+active Stationary Energy turns show the composed shared core plus Stationary
+Energy workflow prompt first, followed by the draft JSON context in
+`<context>...</context>`. Other operational defaults such as the MLflow
+`Created by` service identity are handled in code.
+
+GitHub Actions deployments can override the experiment name through the
+repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
+because the value is a non-sensitive experiment name. The Kubernetes manifests
+still keep the same default so direct `kubectl apply` deployments work without
+GitHub.
+
+Before enabling MLflow in an environment:
+
+1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
+2. Confirm or create the experiment named `clima`.
+3. Set the MLflow environment variables documented above in `.env` or the
+   Kubernetes deployment.
+4. If the MLflow server later requires authentication, provide MLflow auth
+   variables through Kubernetes secrets rather than configmaps.
 
 ### LangSmith Integration
 
@@ -613,10 +793,13 @@ Enable tracing to monitor agent executions, tool usage, and performance:
 
 1. **Get API Key**: https://smith.langchain.com/
 2. **Set Environment Variable**:
+
    ```bash
    export LANGSMITH_API_KEY=your_api_key
    ```
-3. **Enable in Config** (`llm_config.yaml`):
+
+3. **Enable In Config** (`llm_config.yaml`):
+
    ```yaml
    observability:
      langsmith:
@@ -627,23 +810,40 @@ Enable tracing to monitor agent executions, tool usage, and performance:
 
 ### Request Logging
 
-Each request includes a unique request ID (X-Request-Id header) for tracing:
+Each request includes a unique request ID (`X-Request-Id`) for tracing:
 
-```
+```text
 2025-01-29 10:15:32 - app.routes.messages - INFO - POST /messages - user_id=user-123, thread_id=550e8400..., content_length=42
 ```
 
+Stationary Energy context chat also uses workflow-specific trace metadata so it
+can be separated from general conversation traffic.
+
 ## Troubleshooting
+
+### `uv sync` TLS Or Certificate Errors On Windows
+
+If `uv sync --locked --group dev` fails with `invalid peer certificate:
+UnknownIssuer` and your shell is exporting `SSL_CERT_FILE` from Anaconda,
+clear that variable for the current shell and retry:
+
+```powershell
+Remove-Item Env:SSL_CERT_FILE -ErrorAction SilentlyContinue
+uv sync --locked --group dev --native-tls
+```
 
 ### Database Connection Issues
 
+If `docker compose up -d postgres` fails before creating the container, confirm
+that Docker Desktop is running and `docker version` shows both client and
+server sections.
+
 ```bash
 # Test connection
-python -c "from app.db.session import get_session_factory; print('OK')"
+uv run --directory service python -c "from app.db.session import get_session_factory; print('OK')"
 
 # Check migrations
-cd service
-alembic current
+uv run --directory service python -m alembic current
 ```
 
 ### Vector Search Not Working
@@ -662,18 +862,30 @@ Enable debug logging:
 
 ```bash
 export CA_LOG_LEVEL=debug
-uvicorn app.main:app --reload
+uv run --directory service uvicorn app.main:app --reload
 ```
 
-Check token handler logs for CC_BASE_URL and token endpoint issues.
+Check token-handler logs for `CC_BASE_URL` and token-endpoint issues.
+
+### LangSmith SSL Warnings During Local Tests
+
+If the test suite passes but LangSmith emits post-run SSL warnings because the
+local machine cannot validate `api.smith.langchain.com`, disable tracing for
+the current shell while running tests:
+
+```powershell
+Remove-Item Env:LANGSMITH_API_KEY -ErrorAction SilentlyContinue
+$env:LANGSMITH_TRACING = "false"
+uv run --directory service pytest tests/ -v
+```
 
 ## Contributing
 
 1. Create a feature branch: `git checkout -b feature/my-feature`
 2. Make changes and add tests
-3. Run `pytest` to ensure tests pass
+3. Run `cd climate-advisor && uv run --directory service pytest tests/ -v`
 4. Submit a pull request
 
 ## License
 
-See LICENSE.md for details.
+See `LICENSE.md` for details.

@@ -1,0 +1,59 @@
+/**
+ * @swagger
+ * /api/v1/stationary-energy-drafts/resume:
+ *   get:
+ *     tags:
+ *       - stationary-energy-drafts
+ *     operationId: resumeStationaryEnergyDraft
+ *     summary: Resume the latest active Stationary Energy draft for the current user.
+ *     description: Returns the latest resumable Stationary Energy draft for the authenticated user in the provided city and inventory scope.
+ *     responses:
+ *       200:
+ *         description: Latest resumable draft retrieved successfully.
+ *       400:
+ *         description: Invalid query parameters.
+ *       401:
+ *         description: User authentication required.
+ */
+
+import createHttpError from "http-errors";
+import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import {
+  callClimateAdvisor,
+  getClimateAdvisorRequestId,
+} from "@/backend/agentic/ghgi/stationary-energy/ca";
+import { requireStationaryEnergyAgenticEnabled } from "@/backend/agentic/ghgi/stationary-energy/auth";
+import { apiHandler } from "@/util/api";
+
+const querySchema = z.object({
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
+});
+
+export const GET = apiHandler(async (req, { session, searchParams }) => {
+  requireStationaryEnergyAgenticEnabled();
+
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("User authentication required");
+  }
+
+  const query = querySchema.parse(searchParams);
+  const params = new URLSearchParams({
+    user_id: session.user.id,
+    city_id: query.city_id,
+    inventory_id: query.inventory_id,
+    sector_code: "stationary_energy",
+  });
+  const response = await callClimateAdvisor({
+    path: `/v1/stationary-energy-drafts/resume?${params.toString()}`,
+    method: "GET",
+    tokenUserID: session.user.id,
+    inventoryId: query.inventory_id,
+    requestId: getClimateAdvisorRequestId(req),
+  });
+
+  const payload = await response.json();
+  return NextResponse.json(payload, { status: response.status });
+});

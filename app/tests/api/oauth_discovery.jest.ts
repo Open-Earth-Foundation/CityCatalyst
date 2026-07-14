@@ -4,7 +4,7 @@ import { db } from "@/models";
 
 import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
-import { mockRequest, setupTests } from "../helpers";
+import { expectStatusCode, mockRequest, setupTests } from "../helpers";
 
 import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
@@ -30,7 +30,7 @@ describe("OAuth 2.0 Authorization Server Metadata", () => {
     it("should return a JSON object", async () => {
       const req = mockRequest();
       const res = await getMetadata(req, { params: Promise.resolve({}) });
-      expect(res.status).toEqual(200);
+      await expectStatusCode(res, 200);
       expect(res.headers.get("Content-Type")).toEqual("application/json");
       metadata = await res.json();
       expect(typeof metadata).toBe("object");

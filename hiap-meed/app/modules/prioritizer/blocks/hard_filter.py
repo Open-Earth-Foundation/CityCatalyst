@@ -4,11 +4,9 @@ from __future__ import annotations
 
 from app.modules.prioritizer.internal_models import (
     Action,
-    LegalRequirementRecord,
+    LegalAssessmentRecord,
     HardFilterResult,
 )
-
-HARD_REQUIREMENT_STRENGTHS = {"mandatory", "required"}
 
 
 def _apply_confirmed_exclusion_filter(
@@ -52,75 +50,70 @@ def _apply_legal_hard_filter(
     *,
     actions: list[Action],
     evidence: dict[str, dict[str, object]],
-    legal_requirements_by_action_id: dict[str, list[LegalRequirementRecord]] | None,
+    legal_assessments_by_action_id: dict[str, LegalAssessmentRecord] | None,
 ) -> tuple[list[Action], list[Action]]:
     """
-    Apply legal hard-requirement filtering to currently eligible actions.
+    Apply category-based legal filtering to currently eligible actions.
 
     Rules:
-    - Hard requirements are those with strength `mandatory` or `required`.
-    - Discard action when any hard requirement is `not_aligned`.
-    - Keep action when hard requirements are all `aligns` or `no_evidence`.
+    - Discard action when `verdict_category == blocked`.
+    - Keep action when category is missing or any non-blocking value.
     """
-
-    # Treat missing legal payload as "no hard legal requirements configured".
-    if legal_requirements_by_action_id is None:
-        legal_requirements_by_action_id = {}
+    if legal_assessments_by_action_id is None:
+        legal_assessments_by_action_id = {}
 
     valid_actions: list[Action] = []
     discarded_legal: list[Action] = []
 
     for action in actions:
         # Reuse hard-filter evidence so the caller gets one combined trace per action.
-        action_evidence = evidence.setdefault(
-            action.action_id, {"discard_reason": None}
+        action_evidence = evidence.setdefault(action.action_id, {"discard_reason": None})
+        assessment = legal_assessments_by_action_id.get(action.action_id)
+        if assessment is None:
+            action_evidence["legal_assessment_present"] = False
+            action_evidence["legal_verdict_category"] = None
+            action_evidence["legal_hard_filter_blocked"] = False
+            valid_actions.append(action)
+            continue
+
+        verdict_category = (
+            assessment.verdict_category.strip().lower()
+            if isinstance(assessment.verdict_category, str)
+            and assessment.verdict_category.strip()
+            else None
         )
-        requirements = legal_requirements_by_action_id.get(action.action_id, [])
-        # Hard gate only evaluates mandatory/required strengths.
-        hard_requirements = [
-            requirement
-            for requirement in requirements
-            if requirement.strength.lower() in HARD_REQUIREMENT_STRENGTHS
-        ]
+        action_evidence["legal_assessment_present"] = True
+        action_evidence["legal_verdict_category"] = verdict_category
+        action_evidence["legal_verdict_score"] = assessment.verdict_score
+        action_evidence["legal_hard_filter_blocked"] = verdict_category == "blocked"
+        action_evidence["legal_assessment_summary"] = {
+            "country_code": assessment.country_code,
+            "gpc_sector": assessment.gpc_sector,
+            "ownership_category": assessment.ownership_category,
+            "ownership_score": assessment.ownership_score,
+            "ownership_description": assessment.ownership_description,
+            "ownership_description_es": assessment.ownership_description_i18n.get("es"),
+            "restrictions_category": assessment.restrictions_category,
+            "restrictions_score": assessment.restrictions_score,
+            "restrictions_description": assessment.restrictions_description,
+            "restrictions_description_es": (
+                assessment.restrictions_description_i18n.get("es")
+            ),
+            "legal_justification": (
+                assessment.legal_justification_i18n.get("es")
+                or assessment.legal_justification
+            ),
+            "legal_justification_en": assessment.legal_justification_i18n.get("en"),
+            "legal_references": list(assessment.legal_references),
+            "analysis_date": assessment.analysis_date,
+            "generation_method": assessment.generation_method,
+        }
 
-        failed_requirements: list[dict[str, object]] = []
-        unknown_requirements: list[dict[str, object]] = []
-
-        # Split hard requirements into blocking failures and non-blocking unknowns
-        for requirement in hard_requirements:
-            requirement_summary = {
-                "signal_code": requirement.signal_code,
-                "signal_name": requirement.signal_name,
-                "strength": requirement.strength,
-                "alignment_status": requirement.alignment_status,
-                "operator": requirement.operator,
-                "required_value": requirement.required_value,
-                "legal_signal_value": requirement.legal_signal_value,
-                "evidence_ids": list(requirement.evidence_ids),
-                "evidence_count": requirement.evidence_count,
-                "location_scope": requirement.location_scope,
-                "location_name": requirement.location_name,
-            }
-            alignment_status = requirement.alignment_status.lower()
-            if alignment_status == "not_aligned":
-                failed_requirements.append(requirement_summary)
-            elif alignment_status == "no_evidence":
-                unknown_requirements.append(requirement_summary)
-
-        # Always expose summary counters for observability and UI status labels.
-        action_evidence["hard_requirements_checked_count"] = len(hard_requirements)
-        action_evidence["hard_requirements_failed_count"] = len(failed_requirements)
-        action_evidence["hard_requirements_unknown_count"] = len(unknown_requirements)
-        action_evidence["unknown_requirements"] = unknown_requirements
-
-        # Any failed hard requirement blocks the action from scoring.
-        if failed_requirements:
-            action_evidence["discard_reason"] = "legal_hard_requirement_failed"
-            action_evidence["failed_requirements"] = failed_requirements
+        if verdict_category == "blocked":
+            action_evidence["discard_reason"] = "legal_verdict_blocked"
             discarded_legal.append(action)
             continue
 
-        # Actions with no hard failures continue to scoring.
         valid_actions.append(action)
 
     return valid_actions, discarded_legal
@@ -129,9 +122,7 @@ def _apply_legal_hard_filter(
 def run(
     actions: list[Action],
     excluded_action_ids: list[str] | None = None,
-    legal_requirements_by_action_id: (
-        dict[str, list[LegalRequirementRecord]] | None
-    ) = None,
+    legal_assessments_by_action_id: dict[str, LegalAssessmentRecord] | None = None,
 ) -> HardFilterResult:
     """
     Filter out ineligible actions before scoring.
@@ -151,7 +142,7 @@ def run(
     valid_actions, discarded_legal = _apply_legal_hard_filter(
         actions=valid_actions,
         evidence=evidence,
-        legal_requirements_by_action_id=legal_requirements_by_action_id,
+        legal_assessments_by_action_id=legal_assessments_by_action_id,
     )
 
     return HardFilterResult(

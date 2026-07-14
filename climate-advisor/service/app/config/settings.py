@@ -4,7 +4,7 @@ Climate Advisor Configuration Module
 This module is responsible for loading and orchestrating all configuration for the Climate Advisor service.
 It serves as the integration layer between multiple configuration sources:
 
-1. LLM Configuration (llm_config.yaml): Models, prompts, generation parameters, API settings
+1. LLM Configuration (llm_config.yaml): Models, prompts, and API settings
 2. Environment Variables (.env): Sensitive data, deployment-specific overrides
 3. Application Defaults: Fallback values for optional settings
 
@@ -19,7 +19,7 @@ Key Components:
 Usage:
     from app.config import get_settings
     settings = get_settings()
-    # Access LLM config: settings.llm.models.default
+    # Access LLM config: settings.llm.models.orchestrator.name
     # Access app config: settings.port, settings.database_url
 """
 
@@ -112,76 +112,159 @@ def _parse_int(value: Optional[str], default: Optional[int]) -> Optional[int]:
         return default
 
 
-class ModelConfig(BaseModel):
+class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    default_temperature: float
-
-
-class GenerationDefaults(BaseModel):
     temperature: float
-    top_p: Optional[float] = None
-    frequency_penalty: Optional[float] = None
-    presence_penalty: Optional[float] = None
 
 
-class GenerationLimits(BaseModel):
-    temperature: Optional[Dict[str, float]] = None
-    top_p: Optional[Dict[str, float]] = None
-    frequency_penalty: Optional[Dict[str, float]] = None
-    presence_penalty: Optional[Dict[str, float]] = None
+class ModelsConfig(BaseModel):
+    orchestrator: RoleModelConfig
+    agentic_flow: Optional[RoleModelConfig] = None
+
+
+class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
+    max_prompt_tokens: Optional[int] = 150000
+    max_normalized_rows_per_candidate: Optional[int] = 5
+    include_source_data: Optional[bool] = False
+
+
+class StationaryEnergyPromptBudgetConfig(BaseModel):
+    chat_context: StationaryEnergyPromptBudgetFlowConfig = Field(
+        default_factory=StationaryEnergyPromptBudgetFlowConfig,
+    )
+
+
+class PromptBudgetConfig(BaseModel):
+    tokenizer_encoding: str = "o200k_base"
+    stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
+        default_factory=StationaryEnergyPromptBudgetConfig,
+    )
 
 
 class GenerationConfig(BaseModel):
-    defaults: GenerationDefaults
-    limits: Optional[GenerationLimits] = None
+    prompt_budget: PromptBudgetConfig = Field(
+        default_factory=PromptBudgetConfig,
+    )
 
 
 class PromptsConfig(BaseModel):
-    default: str
-    inventory_context: Optional[str] = None
-    data_analysis: Optional[str] = None
+    """Configured prompt entry points and include-aware prompt loading."""
+
+    core: str
+    chat: str
+    stationary_energy_review: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
-        from pathlib import Path
-
-        # Get the prompt file path from config
         prompt_path = getattr(self, prompt_type)
         if not prompt_path:
             raise ValueError(f"Prompt type '{prompt_type}' not configured")
 
-        # Build search roots dynamically to handle both development and containerized environments
+        search_roots = self._prompt_search_roots()
+        full_path = self._find_prompt_path(prompt_path, search_roots)
+        return self._read_prompt_file(full_path, search_roots, set()).strip()
+
+    def compose_prompt(self, workflow_prompt_type: str) -> str:
+        """Compose the shared core prompt with one workflow-specific prompt."""
+        if workflow_prompt_type not in {"chat", "stationary_energy_review"}:
+            raise ValueError(
+                "Workflow prompt type must be 'chat' or 'stationary_energy_review'"
+            )
+
+        core_prompt = self.get_prompt("core").strip()
+        workflow_prompt = self.get_prompt(workflow_prompt_type).strip()
+        return (
+            f"{core_prompt}\n\n"
+            "<additional_instructions>\n"
+            f"{workflow_prompt}\n"
+            "</additional_instructions>"
+        ).strip()
+
+    @staticmethod
+    def _prompt_search_roots() -> list[Path]:
+        """Build search roots for development and containerized environments."""
         search_roots = [
             Path.cwd(),  # Container root or current working directory
             Path(__file__).resolve().parents[3],  # climate-advisor/
         ]
 
-        # Dynamically search up the directory tree for the repository root
-        # without assuming a fixed depth (which fails in some environments)
         current = Path(__file__).resolve()
-        for _ in range(10):  # Limit iterations to prevent infinite loops
+        for _ in range(10):
             current = current.parent
             if (current / "llm_config.yaml").exists():
-                # Found the climate-advisor directory
                 search_roots.append(current)
                 break
 
-        full_path = None
-        for root in search_roots:
-            candidate = root / prompt_path
-            if candidate.exists():
-                full_path = candidate
-                break
+        return search_roots
 
-        if full_path is None or not full_path.exists():
-            raise FileNotFoundError(
-                f"Prompt file not found: {Path.cwd() / prompt_path}"
+    @staticmethod
+    def _find_prompt_path(
+        prompt_path: str,
+        search_roots: list[Path],
+        *,
+        relative_to: Optional[Path] = None,
+    ) -> Path:
+        """Resolve a prompt path from include-relative and configured roots."""
+        candidates: list[Path] = []
+        path = Path(prompt_path)
+        if relative_to is not None:
+            candidates.append(relative_to / path)
+        candidates.extend(root / path for root in search_roots)
+
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+
+        raise FileNotFoundError(f"Prompt file not found: {Path.cwd() / prompt_path}")
+
+    @classmethod
+    def _read_prompt_file(
+        cls,
+        prompt_path: Path,
+        search_roots: list[Path],
+        seen: set[Path],
+    ) -> str:
+        """Read a prompt file and recursively expand include directives."""
+        # Guard against include cycles before reading nested prompt files.
+        resolved_path = prompt_path.resolve()
+        if resolved_path in seen:
+            raise ValueError(f"Recursive prompt include detected: {resolved_path}")
+
+        seen.add(resolved_path)
+        content = resolved_path.read_text(encoding="utf-8")
+        resolved_lines: list[str] = []
+
+        # Expand include directives in-place so configured prompts stay composable.
+        for line in content.splitlines():
+            include_path = cls._parse_include_directive(line)
+            if include_path is None:
+                resolved_lines.append(line)
+                continue
+
+            included_path = cls._find_prompt_path(
+                include_path,
+                search_roots,
+                relative_to=resolved_path.parent,
+            )
+            resolved_lines.append(
+                cls._read_prompt_file(included_path, search_roots, seen)
             )
 
-        with open(full_path, "r", encoding="utf-8") as f:
-            return f.read().strip()
+        # Remove this file from the recursion stack before returning to callers.
+        seen.remove(resolved_path)
+        return "\n".join(resolved_lines)
+
+    @staticmethod
+    def _parse_include_directive(line: str) -> Optional[str]:
+        """Extract the path from a prompt include directive line."""
+        stripped = line.strip()
+        if not (stripped.startswith("{{ include:") and stripped.endswith("}}")):
+            return None
+
+        include_path = stripped[len("{{ include:") : -2].strip()
+        return include_path.strip("\"'")
 
 
 class OpenRouterConfig(BaseModel):
@@ -241,7 +324,6 @@ class FeaturesConfig(BaseModel):
     streaming_enabled: Optional[bool] = None
     dynamic_model_selection: Optional[bool] = None
     dynamic_parameters: Optional[bool] = None
-    inventory_context_injection: Optional[bool] = None
 
 
 class LoggingConfig(BaseModel):
@@ -268,8 +350,8 @@ class CacheConfig(BaseModel):
 
 
 class LLMConfig(BaseModel):
-    models: Dict[str, Any]
-    generation: GenerationConfig
+    models: ModelsConfig
+    generation: GenerationConfig = Field(default_factory=GenerationConfig)
     prompts: PromptsConfig
     api: APIConfig
     conversation: Optional[ConversationConfig] = ConversationConfig()
@@ -303,14 +385,15 @@ class Settings(BaseModel):
     port: int = int(os.getenv("CA_PORT", "8080"))
     log_level: str = os.getenv("CA_LOG_LEVEL", "info")
     cors_origins: List[str] = []
+    ca_feature_flags: str = os.getenv("CA_FEATURE_FLAGS", "")
 
     # LLM Configuration (loaded from YAML)
     llm: LLMConfig
 
-    # OpenRouter configuration (kept for backward compatibility)
+    # OpenRouter credentials come from env; non-secret routing/model config lives in llm_config.yaml.
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
-    openrouter_base_url: str | None = None  # Will be overridden by LLM config
-    openrouter_model: str | None = None  # Will be overridden by LLM config
+    openrouter_base_url: str | None = None
+    openrouter_model: str | None = None
 
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
@@ -348,13 +431,9 @@ class Settings(BaseModel):
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
 
     def model_post_init(self, __context: Any) -> None:
-        """Override OpenRouter settings with LLM config values."""
-        # Override with LLM config values, allowing env vars to take precedence
-        if self.openrouter_base_url is None:
-            self.openrouter_base_url = self.llm.api.openrouter.base_url
-
-        if self.openrouter_model is None:
-            self.openrouter_model = self.llm.models.get("default", "openrouter/auto")
+        """Load non-secret OpenRouter and observability settings from llm_config.yaml."""
+        self.openrouter_base_url = self.llm.api.openrouter.base_url
+        self.openrouter_model = self.llm.models.orchestrator.name
 
         # LangSmith configuration: ONLY API key from .env, everything else from llm_config.yaml
         # No silent fallbacks - configuration must be explicit
@@ -391,7 +470,7 @@ class Settings(BaseModel):
                 self.langsmith_tracing_enabled = False
                 return
 
-            # Surface configuration to the expected environment variables for LangSmith/LangChain SDKs
+            # Surface configuration for LangSmith plus retained LANGCHAIN_* compatibility aliases.
             os.environ.setdefault("LANGSMITH_TRACING_V2", "true")
             os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
 

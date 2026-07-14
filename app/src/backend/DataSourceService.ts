@@ -6,11 +6,12 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import { SubSector } from "@/models/SubSector";
-import { DataSourceActivityDataRecord } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { DataSourceActivityDataRecord } from "@/components/GHGI/data-step/types";
 import { InventoryValue } from "@/models/InventoryValue";
 import { Publisher } from "@/models/Publisher";
 import { Scope } from "@/models/Scope";
 import { SubCategory } from "@/models/SubCategory";
+import { Sector } from "@/models/Sector";
 import { logger } from "@/services/logger";
 import { findClosestYear, PopulationEntry } from "@/util/helpers";
 import { PopulationAttributes } from "@/models/Population";
@@ -47,6 +48,36 @@ export const populationScalingRetrievalMethods = [
 ];
 
 export default class DataSourceService {
+  private static getCatalogueSourceInclude() {
+    return [
+      {
+        model: DataSource,
+        as: "dataSources",
+        include: [
+          { model: Scope, as: "scopes" },
+          { model: Publisher, as: "publisher" },
+          {
+            model: SubSector,
+            as: "subSector",
+            include: [{ model: Sector, as: "sector" }],
+          },
+          {
+            model: SubCategory,
+            as: "subCategory",
+            include: [
+              {
+                model: SubSector,
+                as: "subsector",
+                include: [{ model: Sector, as: "sector" }],
+              },
+              { model: Scope, as: "scope" },
+            ],
+          },
+        ],
+      },
+    ];
+  }
+
   private static getSourceInclude(inventoryId: string) {
     return [
       {
@@ -73,6 +104,39 @@ export default class DataSourceService {
         ],
       },
     ];
+  }
+
+  /** Full datasource catalogue without inventory value joins (for preview). */
+  public static async findAllCatalogueSources(): Promise<DataSource[]> {
+    const include = DataSourceService.getCatalogueSourceInclude();
+    const seen = new Set<string>();
+    const sources: DataSource[] = [];
+
+    const addUnique = (list: DataSource[] | undefined) => {
+      for (const source of list ?? []) {
+        if (!source.datasourceId || seen.has(source.datasourceId)) {
+          continue;
+        }
+        seen.add(source.datasourceId);
+        sources.push(source);
+      }
+    };
+
+    const sectors = await db.models.Sector.findAll({ include });
+    const subSectors = await db.models.SubSector.findAll({ include });
+    const subCategories = await db.models.SubCategory.findAll({ include });
+
+    for (const sector of sectors) {
+      addUnique(sector.dataSources);
+    }
+    for (const subSector of subSectors) {
+      addUnique(subSector.dataSources);
+    }
+    for (const subCategory of subCategories) {
+      addUnique(subCategory.dataSources);
+    }
+
+    return sources;
   }
 
   public static async findAllSources(

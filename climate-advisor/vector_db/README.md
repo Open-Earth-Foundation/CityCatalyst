@@ -75,14 +75,11 @@ docker exec ca-postgres psql -U postgres -d climateadvisor -c "CREATE EXTENSION 
 #### Run Vector Database Migration
 
 ```bash
-# Navigate to vector_db directory
-cd climate-advisor/vector_db
-
-# Run the migration using the service virtual environment
-../.venv/Scripts/python.exe -m alembic upgrade head
+# From climate-advisor/
+uv run --directory service python -m alembic upgrade head
 
 # Verify migration was successful
-../.venv/Scripts/python.exe -m alembic current
+uv run --directory service python -m alembic current
 # Should show: 20250126_120000 (head)
 ```
 
@@ -105,7 +102,8 @@ SELECT '[1,2,3]'::vector <=> '[1,2,4]'::vector as distance;
 ### 3. Process Your PDFs
 
 ```bash
-python upload_to_db.py --directory files
+cd climate-advisor
+uv run python vector_db/upload_to_db.py --directory vector_db/files
 ```
 
 ## Component Details
@@ -151,10 +149,10 @@ The vector database schema (pgvector extension and `document_embeddings` table) 
 Migrations are managed through the main service:
 
 ```bash
-# From climate-advisor/service directory
-alembic upgrade head        # Apply all migrations
-alembic current             # Show current version
-alembic history             # Show migration history
+# From climate-advisor/
+uv run --directory service python -m alembic upgrade head        # Apply all migrations
+uv run --directory service python -m alembic current             # Show current version
+uv run --directory service python -m alembic history             # Show migration history
 ```
 
 Or use the Kubernetes migration job:
@@ -168,8 +166,8 @@ kubectl create -f climate-advisor/k8s/climate-advisor-migrate.yml
 ### Basic PDF Processing
 
 ```python
-from utils.text_processing import DocumentProcessor
-from services.embedding_service import EmbeddingService
+from vector_db.utils.text_processing import DocumentProcessor
+from vector_db.services.embedding_service import EmbeddingService
 
 # Process a PDF file
 processor = DocumentProcessor(chunk_size=2000, chunk_overlap=200)
@@ -184,7 +182,7 @@ embedding_results = await embedding_service.generate_embeddings_batch(text_chunk
 ### Database Operations
 
 ```python
-from models.document import Document, DocumentChunk, DocumentEmbedding
+from vector_db.models.document import Document, DocumentChunk, DocumentEmbedding
 from sqlalchemy.ext.asyncio import AsyncSession
 
 async def store_document(session: AsyncSession, doc_data, embedding_results):
@@ -274,7 +272,7 @@ text_processing:
 
 # Document Chunking Configuration
 chunking:
-  # LangChain RecursiveCharacterTextSplitter settings
+  # Text splitter settings
   default_chunk_size: 2000 # Characters per chunk
   default_chunk_overlap: 200 # Character overlap between chunks
 
@@ -290,7 +288,7 @@ embedding_service:
 
 **Important Notes:**
 
-- Documents are automatically chunked by LangChain's `RecursiveCharacterTextSplitter` before embedding
+- Documents are automatically chunked by LangChain's recursive text splitter before embedding
 - The `max_token_limit` is used for validation only - chunks should already be under this limit
 - If you see warnings about chunks exceeding the token limit, reduce `default_chunk_size` in the config
 - Token counting is done using `tiktoken` for accurate OpenAI token calculation
@@ -317,10 +315,10 @@ To modify these values, edit `embedding_config.yml`. The configuration is loaded
 
 ```bash
 # Run the upload script with test data
-python upload_to_db.py --directory test_files
+uv run python vector_db/upload_to_db.py --directory test_files
 
 # Check database contents
-python -c "from models.document import Document; print('Models loaded successfully')"
+uv run python -c "from vector_db.models.document import Document; print('Models loaded successfully')"
 ````
 
 ## Performance Considerations
@@ -407,17 +405,17 @@ python -c "from models.document import Document; print('Models loaded successful
 
    ```bash
    # Check current version
-   ../.venv/Scripts/python.exe -m alembic current
+   uv run --directory service python -m alembic current
 
    # Force to specific version if needed
-   ../.venv/Scripts/python.exe -m alembic stamp 20250126_120000
+   uv run --directory service python -m alembic stamp 20250126_120000
    ```
 
 ### Debug Mode
 
 ```bash
 # Enable debug logging
-CA_LOG_LEVEL=debug python upload_to_db.py
+CA_LOG_LEVEL=debug uv run python vector_db/upload_to_db.py
 ```
 
 ### Clean Slate Setup
@@ -430,8 +428,8 @@ docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "DROP TABLE 
 docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "TRUNCATE TABLE alembic_version;"
 
 # 2. Re-run migration
-cd climate-advisor/vector_db
-../.venv/Scripts/python.exe -m alembic upgrade head
+cd climate-advisor
+uv run --directory service python -m alembic upgrade head
 ```
 
 ## Production Deployment
@@ -458,13 +456,13 @@ cd climate-advisor/vector_db
 3. **Run Migrations**
 
    ```bash
-   cd climate-advisor/vector_db
-   python -m alembic upgrade head
+   cd climate-advisor
+   uv run --directory service python -m alembic upgrade head
    ```
 
 4. **Verify Setup**
    ```bash
-   python -m alembic current  # Should show: 20250126_120000 (head)
+   uv run --directory service python -m alembic current  # Should show: 20250126_120000 (head)
    ```
 
 ### Migration Reproducibility
@@ -480,16 +478,16 @@ The setup is **fully reproducible** with these guarantees:
 
 ```bash
 # In your deployment pipeline
-cd climate-advisor/vector_db
+cd climate-advisor
 
 # Check if migration is needed
-python -m alembic current
+uv run --directory service python -m alembic current
 
 # Run migrations
-python -m alembic upgrade head
+uv run --directory service python -m alembic upgrade head
 
 # Verify success
-python -m alembic current | grep "20250126_120000 (head)"
+uv run --directory service python -m alembic current | grep "20250126_120000 (head)"
 ```
 
 ## Security

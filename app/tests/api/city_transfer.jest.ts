@@ -1,7 +1,12 @@
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
 import { afterAll, beforeAll, describe, expect, it, jest } from "@jest/globals";
-import { mockRequest, setupTests, testUserID } from "../helpers";
+import {
+  expectStatusCode,
+  mockRequest,
+  setupTests,
+  testUserID,
+} from "../helpers";
 import { db } from "@/models";
 import {
   CreateOrganizationRequest,
@@ -98,7 +103,7 @@ describe("City Transfer API", () => {
     });
 
     const res = await transferCity(req, emptyParams);
-    expect(res.status).toBe(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expect(data).toEqual({ success: true });
 
@@ -123,10 +128,10 @@ describe("City Transfer API", () => {
       projectId: project2.projectId,
     });
 
-    const resJSON = await transferCity(req, emptyParams);
-    const res = await resJSON.json();
-    expect(resJSON.status).toBe(404);
-    expect(res.error).toEqual({
+    const res = await transferCity(req, emptyParams);
+    await expectStatusCode(res, 404);
+    const data = await res.json();
+    expect(data.error).toEqual({
       message: "Cities not found for IDs: " + invalidCityId,
     });
   });
@@ -150,7 +155,7 @@ describe("City Transfer API", () => {
     });
 
     const res = await transferCity(req, emptyParams);
-    expect(res.status).toBe(403);
+    await expectStatusCode(res, 403);
     const data = await res.json();
     expect(data.error).toEqual({ message: "Forbidden" });
   });

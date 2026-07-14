@@ -1,5 +1,6 @@
 import { fallbackLng, languages } from "@/i18n/settings";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import { maybeRedirectLegacyInventoryUrl } from "@/util/legacy-inventory-middleware";
 import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
 import type { NextMiddlewareResult } from "next/dist/server/web/types";
@@ -131,6 +132,11 @@ export async function proxy(req: NextRequestWithAuth) {
     return NextResponse.next();
   }
 
+  const legacyInventoryRedirect = await maybeRedirectLegacyInventoryUrl(req);
+  if (legacyInventoryRedirect) {
+    return legacyInventoryRedirect;
+  }
+
   // redirect for paths that don't have lng at the start
   if (
     !languages.some((loc) => req.nextUrl.pathname.startsWith(`/${loc}`)) &&
@@ -186,8 +192,16 @@ async function next(req: NextRequestWithAuth): Promise<NextMiddlewareResult> {
     return NextResponse.next();
   }
 
-  // handle invite routes
-  if (inviteMatcher.test(basePath) && !searchParams.has("from")) {
+  // handle invite routes (org invite via onboarding page uses token + organizationId params)
+  const isOnboardingOrgInvite =
+    /^\/[a-z]{2}\/cities\/onboarding\/?$/.test(basePath) &&
+    searchParams.has("token") &&
+    searchParams.has("organizationId");
+
+  if (
+    (inviteMatcher.test(basePath) || isOnboardingOrgInvite) &&
+    !searchParams.has("from")
+  ) {
     return await withAuth(req, {
       ...config,
       pages: { signIn: "/auth/signup" },

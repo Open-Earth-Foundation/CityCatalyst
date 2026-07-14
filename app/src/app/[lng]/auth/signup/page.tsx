@@ -17,11 +17,8 @@ import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
-import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
-import { hasFeatureFlag } from "@/util/feature-flags";
-import { FeatureFlags } from "@/util/feature-flags";
 import { getHomePath } from "@/util/routes";
 
 type Inputs = {
@@ -34,10 +31,27 @@ type Inputs = {
   preferredLanguage: LANGUAGES;
 };
 
+
+const normalizeInviteEmail = (value: string | null): string =>
+  (value ?? "").replaceAll(" ", "+");
+
 export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const callbackUrlParam = searchParams.get("callbackUrl");
+  const decodedCallbackUrl = callbackUrlParam
+    ? decodeURIComponent(callbackUrlParam)
+    : "";
+  const callbackUrlSearch = decodedCallbackUrl.includes("?")
+    ? decodedCallbackUrl.split("?")[1]
+    : "";
+  const callbackParams = new URLSearchParams(callbackUrlSearch);
+  const prefilledEmail =
+    normalizeInviteEmail(searchParams.get("email")) ||
+    normalizeInviteEmail(callbackParams.get("email"));
 
   const {
     handleSubmit,
@@ -47,7 +61,8 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     watch,
   } = useForm<Inputs>({
     defaultValues: {
-      preferredLanguage: lng as LANGUAGES,
+      preferredLanguage: lng,
+      email: prefilledEmail,
     },
   });
 
@@ -55,7 +70,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
 
   const [error, setError] = useState("");
 
-  const searchParams = useSearchParams();
   let callbackUrl = searchParams.get("callbackUrl") ?? undefined;
   if (!callbackUrl || callbackUrl === "null" || callbackUrl === "undefined") {
     callbackUrl = undefined;
@@ -93,12 +107,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         setError(message);
         return;
       }
-      // can be re-enabled once the email verification required again
-      // const queryParamsString = new URLSearchParams(queryParams).toString();
-      // const callbackParam = callbackUrl ? "&" : "";
-      // const nextCallbackUrl = `/auth/check-email?email_address=${data.email}${callbackParam}${queryParamsString}`;
-      // router.push(nextCallbackUrl);
-      // automatic login after signup for simplified user flow
       const userData = (await res.json()) as any;
 
       // Track user registration
@@ -138,6 +146,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         {t("signup-details")}
       </Text>
       <form
+        noValidate
         onSubmit={handleSubmit(onSubmit)}
         style={{ gap: "16px", display: "flex", flexDirection: "column" }}
       >
@@ -172,7 +181,13 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
             })}
           />
         </Field>
-        <EmailInput register={register} error={errors.email} t={t} />
+        <EmailInput
+          register={register}
+          error={errors.email}
+          t={t}
+          disabled={Boolean(prefilledEmail)}
+          defaultValue={prefilledEmail}
+        />
         <PasswordInput
           register={register}
           error={errors.password}
@@ -188,30 +203,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           id="confirmPassword"
           shouldValidate={false}
         />
-        <Field
-          label={<LabelLarge>{t("preferred-language")}</LabelLarge>}
-          invalid={!!errors.preferredLanguage}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.preferredLanguage?.message}
-              </Text>
-            </Box>
-          }
-        >
-          <LanguageSelector
-            register={register}
-            error={errors.preferredLanguage}
-            t={t}
-            defaultValue={lng as LANGUAGES}
-          />
-        </Field>
+        <input type="hidden" {...register("preferredLanguage")} />
         <Field
           invalid={!!errors.acceptTerms}
           errorText={

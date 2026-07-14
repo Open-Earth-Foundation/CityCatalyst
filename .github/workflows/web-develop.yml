@@ -12,15 +12,19 @@ on:
     paths:
       - app/**
       - k8s/cc-migrate.yml
+      - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
   pull_request:
     paths:
       - app/**
       - k8s/cc-migrate.yml
+      - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
 
 jobs:
@@ -32,7 +36,7 @@ jobs:
       NEXTAUTH_URL: "http://localhost:3000"
       CDP_API_KEY: ${{ secrets.CDP_API_KEY_TEST }}
       CDP_MODE: "test"
-      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED"
+      NEXT_PUBLIC_FEATURE_FLAGS: "ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,JN_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC"
     defaults:
       run:
         working-directory: ./app
@@ -78,7 +82,7 @@ jobs:
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
-          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
 
@@ -447,6 +451,7 @@ jobs:
         run: |
           kubectl create -f k8s/cc-seed.yml -n default
           kubectl apply -f k8s/cc-web-deploy.yml -n default
+          kubectl apply -f k8s/cc-web-pdb.yml -n default || echo "PDB apply skipped (requires policy API permissions)"
           kubectl set env deployment/cc-web-deploy \
             SMTP_USER=${{secrets.SMTP_USER}} \
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}} \
@@ -472,7 +477,7 @@ jobs:
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,HIGHLIGHT_ENABLED" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC,HIGHLIGHT_ENABLED,NUMERICAL_FORMATS" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "ALLOWED_ORIGINS=https://citycatalyst.openearth.dev,https://www.citycatalyst.openearth.dev" \
@@ -496,6 +501,10 @@ jobs:
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
+          kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+          SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
+          CA_DEPLOYMENT_NAME=climate-advisor-dev \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh
 
   notifyDeploymentFailure:
     needs: [runTests, pushToGHCR, deployToEKS]

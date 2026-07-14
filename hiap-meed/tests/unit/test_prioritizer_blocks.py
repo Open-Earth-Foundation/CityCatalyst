@@ -1,4 +1,4 @@
-"""Unit tests for prioritizer pipeline blocks using mock API payloads."""
+﻿"""Unit tests for prioritizer pipeline blocks using mock API payloads."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ from pathlib import Path
 
 import pytest
 
+from app.modules.prioritizer.api import _extract_city_emissions_context
 from app.modules.prioritizer.blocks import (
     alignment,
     feasibility,
@@ -14,14 +15,19 @@ from app.modules.prioritizer.blocks import (
     hard_filter,
     impact,
 )
-from app.modules.prioritizer.services import co_benefit_mapping
-from app.modules.prioritizer.internal_models import Action, CityData
-from app.modules.prioritizer.models import CityApiItem
+from app.modules.prioritizer.internal_models import (
+    Action,
+    CityData,
+    CityEmissionsContext,
+)
+from app.modules.prioritizer.models import CityApiItem, FrontendCityInput
 from app.services.data_clients import (
-    MockActionDataApiClient,
+    MockActionFinancialFeasibilityScoresDataApiClient,
+    MockActionPathwaysDataApiClient,
+    MockActionMitigationFeasibilityScoresDataApiClient,
     MockCityDataApiClient,
     MockLegalDataApiClient,
-    MockPolicySignalsDataApiClient,
+    MockActionPolicyScoresDataApiClient,
 )
 
 
@@ -32,10 +38,10 @@ def _mock_data_dir() -> Path:
 
 def _load_mock_actions() -> list[Action]:
     """Load actions from the mock actions API payload."""
-    action_client = MockActionDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_api_mock.json"
+    action_client = MockActionPathwaysDataApiClient(
+        mock_file_path=_mock_data_dir() / "action_pathways_api_mock.json"
     )
-    return action_client.list_actions()
+    return action_client.list_actions().actions
 
 
 def _load_mock_city() -> CityData:
@@ -46,37 +52,57 @@ def _load_mock_city() -> CityData:
     return city_client.get_city("CL IQQ")
 
 
-def _load_mock_legal_requirements() -> dict[str, object]:
-    """Load legal requirements from the mock legal API payload."""
+def _load_mock_legal_assessments() -> dict[str, object]:
+    """Load legal assessments from the mock legal API payload."""
     legal_client = MockLegalDataApiClient(
         mock_file_path=_mock_data_dir() / "actions_legal_api_mock.json"
     )
-    return legal_client.get_action_legal_requirements(locode="CL IQQ")
+    return legal_client.get_action_legal_assessments(country_code="CL")
 
 
-def _load_mock_policy_signals() -> dict[str, object]:
-    """Load policy support signals from the mock policy-signals payload."""
-    policy_client = MockPolicySignalsDataApiClient(
-        mock_file_path=_mock_data_dir() / "actions_policy_signals_api_mock.json"
+def _load_mock_action_policy_scores() -> dict[str, object]:
+    """Load action policy scores from the mock action policy scores payload."""
+    policy_client = MockActionPolicyScoresDataApiClient(
+        mock_file_path=_mock_data_dir() / "action_policy_scores_api_mock.json"
     )
-    return policy_client.get_action_policy_signals(locode="CL IQQ")
+    return policy_client.get_action_policy_scores(locode="CL IQQ").scores_by_action_id
 
 
-def _load_city_emissions_by_gpc_ref() -> dict[str, float]:
-    """Return city emissions totals per GPC key from frontend request mock payload."""
+def _load_mock_action_mitigation_feasibility_scores() -> dict[str, object]:
+    """Load mitigation feasibility scores from the mock payload."""
+    feasibility_client = MockActionMitigationFeasibilityScoresDataApiClient(
+        mock_file_path=(
+            _mock_data_dir() / "action_mitigation_feasibility_scores_api_mock.json"
+        )
+    )
+    return feasibility_client.get_action_mitigation_feasibility_scores(
+        locode="CL ARI",
+        country_code="CL",
+    ).scores_by_action_id
+
+
+def _load_mock_action_financial_feasibility_scores() -> dict[str, object]:
+    """Load financial feasibility scores from the mock payload."""
+    feasibility_client = MockActionFinancialFeasibilityScoresDataApiClient(
+        mock_file_path=(
+            _mock_data_dir() / "action_financial_feasibility_scores_api_mock.json"
+        )
+    )
+    return feasibility_client.get_action_financial_feasibility_scores(
+        locode="CL IQQ",
+        country_code="CL",
+    ).scores_by_action_id
+
+
+def _load_city_emissions_context() -> CityEmissionsContext:
+    """Return normalized city emissions context from the frontend request mock payload."""
     request_payload = json.loads(
         (_mock_data_dir() / "prioritizer_request_mock.json").read_text(encoding="utf-8")
     )
-    city_input = request_payload["requestData"]["cityDataList"][0]
-    gpc_data = city_input["cityEmissionsData"]["gpcData"]
-
-    emissions_by_gpc_ref: dict[str, float] = {}
-    for gpc_ref, gpc_entry in gpc_data.items():
-        activities = gpc_entry.get("activities", [])
-        emissions_by_gpc_ref[gpc_ref] = sum(
-            activity.get("totalEmissions") or 0.0 for activity in activities
-        )
-    return emissions_by_gpc_ref
+    city_input = FrontendCityInput.model_validate(
+        request_payload["requestData"]["cityDataList"][0]
+    )
+    return _extract_city_emissions_context(city_input)
 
 
 def _alignment_timeframe_evidence(
@@ -93,39 +119,38 @@ def _alignment_timeframe_evidence(
                 implementation_timeline=action_timeline,
             )
         ],
-        policy_signals_by_action_id={},
+        action_policy_scores_by_action_id={},
         city_preference_sectors=[],
         city_preference_timeframes=city_preference_timeframes,
-        city_preference_other_text=None,
+        city_preference_co_benefit_keys=[],
     )
     assert result.evidence_by_action_id is not None
     return result.evidence_by_action_id["A_timeframe"]
 
 
 @pytest.mark.unit
-def test_mock_city_loader_keeps_renamed_indicator_keys() -> None:
-    """Mock city parsing preserves renamed socioeconomic indicators in raw/context."""
+def test_mock_city_loader_preserves_core_city_payload_and_context() -> None:
+    """Mock city parsing keeps core fields plus the small retained context backfill."""
     city = _load_mock_city()
 
-    assert "employment_in_transport_and_logistics" in city.raw
-    assert "electricity_access_rate" in city.raw
+    assert "population" in city.raw
+    assert "employment_construction" in city.raw
     city_context_names = {
         row["attribute_name"] for row in city.city_context if "attribute_name" in row
     }
-    assert "employment_in_transport_and_logistics" in city_context_names
-    assert "electricity_access_rate" in city_context_names
+    assert "employment_construction" in city_context_names
+    assert "unemployment_rate" in city_context_names
 
 
 @pytest.mark.unit
-def test_city_api_item_ignores_legacy_indicator_names() -> None:
-    """Legacy city indicator names are ignored so mismatches remain visible."""
+def test_city_api_item_ignores_unknown_indicator_names() -> None:
+    """City API parsing tolerates additive upstream keys we do not consume yet."""
     city = CityApiItem.model_validate(
         {
-            "comuna_name": "Iquique",
+            "city_name": "Iquique",
             "locode": "CL IQQ",
-            "countryCode": "CL",
+            "country_code": "CL",
             "region_name": "Tarapaca",
-            "comuna_code": "CL01101",
             "region_code": "CL01",
             "transport_logistics_employment": {
                 "attribute_value": 7.35,
@@ -140,59 +165,88 @@ def test_city_api_item_ignores_legacy_indicator_names() -> None:
         }
     )
 
-    assert city.employment_in_transport_and_logistics is None
-    assert city.electricity_access_rate is None
+    assert city.locode == "CL IQQ"
+    assert city.city_name == "Iquique"
 
 
 @pytest.mark.unit
 def test_hard_filter_block_with_mock_api_data() -> None:
-    """Hard filter removes known not-aligned actions from mock legal data."""
+    """Hard filter removes actions whose legal verdict category is blocked."""
     actions = _load_mock_actions()
-    legal_requirements = _load_mock_legal_requirements()
+    legal_assessments = _load_mock_legal_assessments()
 
     result = hard_filter.run(
         actions=actions,
         excluded_action_ids=[],
-        legal_requirements_by_action_id=legal_requirements,
+        legal_assessments_by_action_id=legal_assessments,
     )
 
     discarded_legal_ids = {action.action_id for action in result.discarded_legal}
-    expected_discarded_legal_ids = {"c40_0012", "c40_0034", "c40_0037", "c40_0029"}
-    assert discarded_legal_ids == expected_discarded_legal_ids
+    assert "c40_0013" in discarded_legal_ids
+    assert "c40_0012" not in discarded_legal_ids
     assert len(result.discarded_excluded) == 0
-    assert len(result.valid_actions) == len(actions) - len(expected_discarded_legal_ids)
+    assert len(result.valid_actions) == len(actions) - len(discarded_legal_ids)
 
-    assert result.evidence["c40_0012"]["discard_reason"] == "legal_hard_requirement_failed"
-    assert result.evidence["c40_0013"]["hard_requirements_unknown_count"] == 1
+    assert result.evidence["c40_0013"]["discard_reason"] == "legal_verdict_blocked"
+    blocked_summary = result.evidence["c40_0013"]["legal_assessment_summary"]
+    blocked_assessment = legal_assessments["c40_0013"]
+    assert blocked_summary["ownership_description"] == (
+        blocked_assessment.ownership_description
+    )
+    assert blocked_summary["ownership_description_es"] == (
+        blocked_assessment.ownership_description_i18n["es"]
+    )
+    assert blocked_summary["restrictions_description"] == (
+        blocked_assessment.restrictions_description
+    )
+    assert blocked_summary["restrictions_description_es"] == (
+        blocked_assessment.restrictions_description_i18n["es"]
+    )
+    assert blocked_summary["legal_justification"] == (
+        blocked_assessment.legal_justification_i18n["es"]
+    )
+    assert blocked_summary["legal_justification_en"] == (
+        blocked_assessment.legal_justification_i18n["en"]
+    )
+    assert blocked_summary["legal_references"] == blocked_assessment.legal_references
+    assert result.evidence["c40_0012"]["legal_verdict_category"] == "enabled"
+    missing_action_id = next(
+        action.action_id
+        for action in actions
+        if action.action_id not in legal_assessments
+    )
+    assert result.evidence[missing_action_id]["legal_assessment_present"] is False
 
 
 @pytest.mark.unit
 def test_impact_block_with_mock_api_data() -> None:
     """Impact block emits canonical weighted-sum scores and explainability evidence."""
     actions = _load_mock_actions()
-    city_emissions_by_gpc_ref = _load_city_emissions_by_gpc_ref()
+    city_emissions_context = _load_city_emissions_context()
 
     result = impact.run(
         actions=actions,
-        city_emissions_by_gpc_ref=city_emissions_by_gpc_ref,
+        city_emissions_context=city_emissions_context,
     )
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
     assert result.evidence_by_action_id is not None
+    assert result.metadata["matching_mode"] == "subsector_only"
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
     assert first_action_evidence["has_emissions_entry"] is True
-    assert first_action_evidence["has_any_action_gpc_ref"] is True
-    assert first_action_evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
-    assert first_action_evidence["matched_city_gpc_refs_count"] == 2
-    assert first_action_evidence["reduction_share_of_city_emissions"] > 0.0
+    assert first_action_evidence["has_any_action_subsector_key"] is True
+    assert first_action_evidence["action_subsector_keys"] == ["I.1"]
+    assert first_action_evidence["matched_city_subsector_keys_count"] == 1
+    assert first_action_evidence["matched_city_subsector_keys"] == ["I.1"]
+    assert first_action_evidence["emissions_reduction_component_score"] > 0.0
     assert first_action_evidence["impact_block_score"] == pytest.approx(
         result.score_by_action_id["c40_0010"]
     )
     assert first_action_evidence["impact_block_score"] == pytest.approx(
-        first_action_evidence["reduction_component_contribution"]
-        + first_action_evidence["timeline_component_contribution"]
+        first_action_evidence["emissions_reduction_contribution"]
+        + first_action_evidence["timeline_contribution"]
     )
 
 
@@ -205,14 +259,21 @@ def test_impact_block_rejects_unknown_impact_text_band() -> None:
             action_name="Unknown impact text action",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "extreme",
             },
         )
     ]
-
     with pytest.raises(ValueError, match="Unknown mitigation impact_text value"):
-        impact.run(actions=actions, city_emissions_by_gpc_ref={"I.1.1": 100.0})
+        impact.run(
+            actions=actions,
+            city_emissions_context=CityEmissionsContext(
+                emissions_by_subsector_key={"I.1": 100.0},
+                activity_rows=[],
+            ),
+        )
 
 
 @pytest.mark.unit
@@ -224,6 +285,8 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
             action_name="Targets high emissions",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "medium",
             },
@@ -233,6 +296,8 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
             action_name="Targets low emissions",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "II",
+                "subsector_number": [1],
                 "gpc_reference_number": ["II.1.1"],
                 "impact_text": "medium",
             },
@@ -241,33 +306,13 @@ def test_impact_block_ranks_higher_emissions_target_above_lower_target() -> None
 
     result = impact.run(
         actions=actions,
-        city_emissions_by_gpc_ref={"I.1.1": 1_000.0, "II.1.1": 100.0},
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 1_000.0, "II.1": 100.0},
+            activity_rows=[],
+        ),
     )
 
     assert result.score_by_action_id["A_high"] > result.score_by_action_id["A_low"]
-
-
-@pytest.mark.unit
-def test_impact_block_accepts_gpc_reference_number_list_shape() -> None:
-    """Impact block accepts the mock schema where gpc_reference_number is a list."""
-    action = Action(
-        action_id="A_refs",
-        action_name="Action with repeated refs",
-        implementation_timeline="5-10 years",
-        emissions={
-            "gpc_reference_number": ["I.1.1", "I.1.1", "I.1.2"],
-            "impact_text": "low",
-        },
-    )
-
-    result = impact.run(
-        actions=[action],
-        city_emissions_by_gpc_ref={"I.1.1": 10.0, "I.1.2": 5.0},
-    )
-
-    evidence = result.evidence_by_action_id["A_refs"]
-    assert evidence["action_gpc_refs"] == ["I.1.1", "I.1.2"]
-    assert evidence["matched_city_gpc_refs_count"] == 2
 
 
 @pytest.mark.unit
@@ -279,6 +324,8 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
             action_name="Fast timeline",
             implementation_timeline="<5 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "high",
             },
@@ -288,6 +335,8 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
             action_name="Slow timeline",
             implementation_timeline=">10 years",
             emissions={
+                "sector_number": "I",
+                "subsector_number": [1],
                 "gpc_reference_number": ["I.1.1"],
                 "impact_text": "high",
             },
@@ -296,27 +345,228 @@ def test_impact_block_timeline_mapping_prefers_faster_implementation() -> None:
 
     result = impact.run(
         actions=actions,
-        city_emissions_by_gpc_ref={"I.1.1": 100.0},
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0},
+            activity_rows=[],
+        ),
     )
     assert (
-        result.evidence_by_action_id["A_fast"]["timeline_score"]
-        > result.evidence_by_action_id["A_slow"]["timeline_score"]
+        result.evidence_by_action_id["A_fast"]["timeline_component_score"]
+        > result.evidence_by_action_id["A_slow"]["timeline_component_score"]
     )
     assert result.score_by_action_id["A_fast"] > result.score_by_action_id["A_slow"]
+
+
+@pytest.mark.unit
+def test_impact_block_missing_timeline_is_neutral_not_punitive() -> None:
+    """Missing impact timeline uses the neutral 0.5 fallback score."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_missing_timeline",
+                action_name="Missing timeline",
+                implementation_timeline=None,
+                emissions={
+                    "sector_number": "I",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["I.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_timeline"]
+    assert evidence["timeline_bucket_known"] is False
+    assert evidence["timeline_component_score"] == pytest.approx(0.5)
+    assert evidence["timeline_score"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_city_emissions_context_normalizes_to_true_subsector_keys() -> None:
+    """Frontend city emissions are aggregated to `sector.subsector` join keys."""
+    city_emissions_context = _load_city_emissions_context()
+
+    assert city_emissions_context.emissions_by_subsector_key["I.1"] == pytest.approx(
+        599.532 + 818452.245 + 42200.983 + 2955600.0 + 1438300.0 + 3524785.0
+    )
+    assert city_emissions_context.emissions_by_subsector_key["II.1"] == pytest.approx(
+        1943.87 + 24808.289 + 836.075
+    )
+    assert city_emissions_context.emissions_by_subsector_key["IV.1"] == pytest.approx(
+        28588.499 + 69.867
+    )
+
+
+@pytest.mark.unit
+def test_impact_block_zero_emissions_subsector_does_not_count_as_match() -> None:
+    """Impact should not match zero-emissions subsectors."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_zero_bucket",
+                action_name="Zero-emissions bucket action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "III",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["III.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"III.1": 0.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_zero_bucket"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+    assert evidence["total_reduction_amount"] == 0.0
+    assert evidence["subsector_contributors"] == []
+
+
+@pytest.mark.unit
+def test_impact_block_afolu_negative_emissions_use_absolute_magnitude() -> None:
+    """Impact should score AFOLU removals by absolute magnitude."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_afolu_negative",
+                action_name="AFOLU removals action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "V",
+                    "subsector_number": [2],
+                    "gpc_reference_number": ["V.2"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"V.2": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 1
+    assert evidence["matched_city_subsector_keys"] == ["V.2"]
+    assert evidence["total_city_emissions"] == pytest.approx(50.0)
+    assert evidence["total_reduction_amount"] == pytest.approx(40.0)
+    assert evidence["emissions_reduction_component_score"] == pytest.approx(0.8)
+    assert evidence["impact_block_score"] == pytest.approx(0.84)
+    contributor = evidence["subsector_contributors"][0]
+    assert contributor["city_emissions"] == pytest.approx(-50.0)
+    assert contributor["scoring_city_emissions_magnitude"] == pytest.approx(50.0)
+
+
+@pytest.mark.unit
+def test_impact_block_mixed_sign_inventory_stays_within_zero_to_one() -> None:
+    """Impact should include AFOLU absolute magnitude in the scoring denominator."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_positive_inventory",
+                action_name="Positive inventory action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "I",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["I.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"I.1": 100.0, "V.2": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_positive_inventory"]
+    assert evidence["matched_city_subsector_keys_count"] == 1
+    assert evidence["matched_city_subsector_keys"] == ["I.1"]
+    assert evidence["total_city_emissions"] == pytest.approx(150.0)
+    assert evidence["emissions_reduction_component_score"] == pytest.approx(80.0 / 150.0)
+    assert evidence["impact_block_score"] == pytest.approx((0.8 * (80.0 / 150.0)) + 0.2)
+
+
+@pytest.mark.unit
+def test_impact_block_non_afolu_negative_emissions_do_not_count_as_match() -> None:
+    """Impact should not match negative inventory values outside AFOLU."""
+    result = impact.run(
+        actions=[
+            Action(
+                action_id="A_non_afolu_negative",
+                action_name="Non-AFOLU negative bucket action",
+                implementation_timeline="<5 years",
+                emissions={
+                    "sector_number": "III",
+                    "subsector_number": [1],
+                    "gpc_reference_number": ["III.1.1"],
+                    "impact_text": "high",
+                },
+            )
+        ],
+        city_emissions_context=CityEmissionsContext(
+            emissions_by_subsector_key={"III.1": -50.0},
+            activity_rows=[],
+        ),
+    )
+
+    evidence = result.evidence_by_action_id["A_non_afolu_negative"]
+    assert evidence["matched_city_subsector_keys_count"] == 0
+    assert evidence["matched_city_subsector_keys"] == []
+
+
+@pytest.mark.unit
+def test_impact_block_stubbed_activity_mapping_keeps_same_scores(
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Enabling the stubbed activity-data mapping should not change Impact output."""
+    actions = _load_mock_actions()
+    city_emissions_context = _load_city_emissions_context()
+
+    with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.impact"):
+        disabled_result = impact.run(
+            actions=actions,
+            city_emissions_context=city_emissions_context,
+        )
+        monkeypatch.setenv("ACTIVITY_DATA_LEVEL_MAPPING", "true")
+        enabled_result = impact.run(
+            actions=actions,
+            city_emissions_context=city_emissions_context,
+        )
+
+    assert enabled_result.score_by_action_id == disabled_result.score_by_action_id
+    assert enabled_result.metadata["activity_data_level_mapping_enabled"] is True
+    assert enabled_result.metadata["stub_invoked"] is True
+    assert any(
+        "not implemented" in warning
+        for warning in enabled_result.metadata["warnings"]
+    )
 
 
 @pytest.mark.unit
 def test_alignment_block_with_mock_api_data() -> None:
     """Alignment block computes canonical weighted scores with policy and sectors."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Focus on local jobs and cleaner mobility",
+        city_preference_co_benefit_keys=["mobility"],
     )
 
     assert len(result.score_by_action_id) == len(actions)
@@ -324,51 +574,35 @@ def test_alignment_block_with_mock_api_data() -> None:
     assert result.evidence_by_action_id is not None
 
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["policy_component_value"] > 0.0
-    assert first_action_evidence["sector_component_value"] in {0.0, 1.0}
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["policy_component_score"] > 0.0
+    assert "policy_source_metadata" not in first_action_evidence
+    assert first_action_evidence["sector_component_score"] in {0.0, 1.0}
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
     assert first_action_evidence["alignment_score"] == pytest.approx(
         first_action_evidence["policy_contribution"]
         + first_action_evidence["sector_contribution"]
-        + first_action_evidence["other_contribution"]
+        + first_action_evidence["co_benefit_contribution"]
         + first_action_evidence["timeframe_contribution"]
     )
 
 
 @pytest.mark.unit
-def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_alignment_other_preference_component_uses_selected_co_benefit_keys() -> None:
     """Alignment other-preference score reflects selected co-benefit impacts."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
-
-    def _fake_resolve(**_: object) -> dict[str, object]:
-        return {
-            "resolved_preferred_co_benefits": ["air_quality", "housing"],
-            "unmappable_preference_fragments": ["jobs"],
-            "mapping_source": "llm",
-            "provider": "openai",
-            "model": "gpt-test",
-        }
-
-    monkeypatch.setattr(
-        co_benefit_mapping,
-        "resolve_city_preferred_co_benefits",
-        _fake_resolve,
-    )
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Cleaner air and healthier homes",
+        city_preference_co_benefit_keys=["air_quality", "housing"],
     )
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["resolved_preferred_co_benefits"] == [
+    assert first_action_evidence["scored_city_co_benefit_keys"] == [
         "air_quality",
         "housing",
     ]
@@ -376,48 +610,121 @@ def test_alignment_other_preference_component_uses_normalized_co_benefit_impacts
         "air_quality",
         "housing",
     ]
-    assert first_action_evidence["unmappable_preference_fragments"] == ["jobs"]
-    assert first_action_evidence["other_component_mapping_source"] == "llm"
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.75)
 
 
 @pytest.mark.unit
-def test_alignment_other_preference_component_is_neutral_on_mapping_fallback(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Alignment keeps the other-preference component neutral when mapping fails."""
+def test_alignment_other_preference_component_is_neutral_without_selected_keys() -> None:
+    """Alignment keeps the other-preference component neutral without selections."""
     actions = _load_mock_actions()
-    policy_signals = _load_mock_policy_signals()
-
-    def _fake_resolve(**_: object) -> dict[str, object]:
-        return {
-            "resolved_preferred_co_benefits": [],
-            "unmappable_preference_fragments": [],
-            "mapping_source": "fallback_error",
-            "provider": "openai",
-            "model": "gpt-test",
-            "warning": "parse failed",
-        }
-
-    monkeypatch.setattr(
-        co_benefit_mapping,
-        "resolve_city_preferred_co_benefits",
-        _fake_resolve,
-    )
+    action_policy_scores = _load_mock_action_policy_scores()
 
     result = alignment.run(
         actions=actions,
-        policy_signals_by_action_id=policy_signals,
+        action_policy_scores_by_action_id=action_policy_scores,
         city_preference_sectors=["stationary_energy", "transportation"],
         city_preference_timeframes=["no_preference"],
-        city_preference_other_text="Cleaner air and healthier homes",
+        city_preference_co_benefit_keys=[],
     )
 
     assert result.evidence_by_action_id is not None
     first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert first_action_evidence["resolved_preferred_co_benefits"] == []
-    assert first_action_evidence["other_component_mapping_source"] == "fallback_error"
-    assert first_action_evidence["other_component_value"] == pytest.approx(0.5)
+    assert first_action_evidence["scored_city_co_benefit_keys"] == []
+    assert first_action_evidence["co_benefit_component_score"] == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_alignment_selected_co_benefit_evidence_marks_missing_entry_as_neutral() -> None:
+    """Missing selected co-benefit entries stay neutral in evidence and say why."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_missing_key",
+                action_name="Missing key action",
+                co_benefits={},
+            )
+        ],
+        action_policy_scores_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=[],
+        city_preference_co_benefit_keys=["air_quality"],
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_key"]
+    assert evidence["co_benefit_component_score"] == pytest.approx(0.5)
+    assert evidence["matched_preferred_co_benefits"] == []
+    detail = evidence["selected_co_benefit_match_details"][0]
+    assert detail["co_benefit_key"] == "air_quality"
+    assert detail["action_has_co_benefit"] is False
+    assert detail["impact_numeric"] is None
+    assert detail["normalized_preference_score"] == pytest.approx(0.5)
+    assert detail["score_source"] == "missing_co_benefit"
+    assert detail["effect_label"] == "not_provided"
+
+
+@pytest.mark.unit
+def test_alignment_selected_co_benefit_evidence_marks_missing_numeric_as_neutral() -> None:
+    """Missing impact_numeric stays neutral in evidence and is distinct from missing key."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_missing_numeric",
+                action_name="Missing numeric action",
+                co_benefits={
+                    "air_quality": {
+                        "impact_text": "unknown",
+                        "impact_relationship": "unknown",
+                    }
+                },
+            )
+        ],
+        action_policy_scores_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=[],
+        city_preference_co_benefit_keys=["air_quality"],
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_numeric"]
+    assert evidence["co_benefit_component_score"] == pytest.approx(0.5)
+    assert evidence["matched_preferred_co_benefits"] == ["air_quality"]
+    detail = evidence["selected_co_benefit_match_details"][0]
+    assert detail["co_benefit_key"] == "air_quality"
+    assert detail["action_has_co_benefit"] is True
+    assert detail["impact_numeric"] is None
+    assert detail["normalized_preference_score"] == pytest.approx(0.5)
+    assert detail["score_source"] == "missing_impact_numeric"
+    assert detail["effect_label"] == "unknown"
+
+
+@pytest.mark.unit
+def test_alignment_selected_co_benefit_evidence_marks_real_value_source() -> None:
+    """Known co-benefit values keep their normalized score and explicit value source."""
+    result = alignment.run(
+        actions=[
+            Action(
+                action_id="A_known_numeric",
+                action_name="Known numeric action",
+                co_benefits={
+                    "air_quality": {
+                        "impact_numeric": 1,
+                        "impact_text": "beneficial",
+                        "impact_relationship": "positive",
+                    }
+                },
+            )
+        ],
+        action_policy_scores_by_action_id={},
+        city_preference_sectors=[],
+        city_preference_timeframes=[],
+        city_preference_co_benefit_keys=["air_quality"],
+    )
+
+    detail = result.evidence_by_action_id["A_known_numeric"][
+        "selected_co_benefit_match_details"
+    ][0]
+    assert detail["normalized_preference_score"] == pytest.approx(0.75)
+    assert detail["score_source"] == "derived_from_value"
+    assert detail["effect_label"] == "beneficial"
 
 
 @pytest.mark.unit
@@ -450,7 +757,7 @@ def test_alignment_timeframe_component_scores_expected_matches(
         action_timeline=action_timeline,
     )
 
-    assert evidence["timeframe_component_value"] == pytest.approx(
+    assert evidence["timeframe_component_score"] == pytest.approx(
         expected_component_value
     )
 
@@ -478,62 +785,144 @@ def test_alignment_timeframe_component_uses_best_multi_select_match(
         action_timeline=action_timeline,
     )
 
-    assert evidence["timeframe_component_value"] == pytest.approx(
+    assert evidence["timeframe_component_score"] == pytest.approx(
         expected_component_value
     )
 
 
 @pytest.mark.unit
-def test_feasibility_block_with_mock_api_data(
-    caplog: pytest.LogCaptureFixture,
-) -> None:
-    """Feasibility block computes legal+socio canonical scores and evidence."""
+def test_feasibility_block_with_mock_api_data() -> None:
+    """Feasibility block computes legal, mitigation, and financial evidence."""
     actions = _load_mock_actions()
-    city = _load_mock_city()
-    legal_requirements = _load_mock_legal_requirements()
+    legal_assessments = _load_mock_legal_assessments()
+    mitigation_feasibility_scores = _load_mock_action_mitigation_feasibility_scores()
+    financial_feasibility_scores = _load_mock_action_financial_feasibility_scores()
 
-    with caplog.at_level("WARNING", logger="app.modules.prioritizer.blocks.feasibility"):
-        result = feasibility.run(
-            actions=actions,
-            city=city,
-            legal_requirements_by_action_id=legal_requirements,
-        )
+    result = feasibility.run(
+        actions=actions,
+        legal_assessments_by_action_id=legal_assessments,
+        mitigation_feasibility_scores_by_action_id=mitigation_feasibility_scores,
+        financial_feasibility_scores_by_action_id=financial_feasibility_scores,
+    )
 
     assert len(result.score_by_action_id) == len(actions)
     assert all(0.0 <= score <= 1.0 for score in result.score_by_action_id.values())
     assert result.evidence_by_action_id is not None
-    first_action_evidence = result.evidence_by_action_id["c40_0010"]
-    assert "socioeconomic_indicator_rows" in first_action_evidence
+    first_action_evidence = result.evidence_by_action_id["c40_0034"]
     assert first_action_evidence["feasibility_score"] == pytest.approx(
-        first_action_evidence["soft_legal_contribution"]
-        + first_action_evidence["socioeconomic_indicators_contribution"]
-    )
-    first_action_rows = {
-        row["action_socioeconomic_indicator_key"]: row
-        for row in first_action_evidence["socioeconomic_indicator_rows"]
-    }
-    assert (
-        first_action_rows["employment_in_transport_and_logistics"][
-            "city_socioeconomic_bucket_label"
-        ]
-        == "low"
+        first_action_evidence["legal_contribution"]
+        + first_action_evidence["mitigation_feasibility_contribution"]
+        + first_action_evidence["financial_feasibility_contribution"]
     )
     assert (
-        first_action_rows["electricity_access_rate"][
-            "city_socioeconomic_bucket_label"
-        ]
-        == "very_low"
+        first_action_evidence["mitigation_feasibility_component_source"]
+        == "action_mitigation_feasibility_score"
     )
-    missing_indicator_messages = [
-        record.message
-        for record in caplog.records
-        if "Missing city socioeconomic indicator" in record.message
+    assert first_action_evidence["mitigation_feasibility_component_score"] == pytest.approx(0.969)
+    assert first_action_evidence["mitigation_feasibility_score_present"] is True
+    assert (
+        first_action_evidence["financial_feasibility_component_source"]
+        == "action_financial_feasibility_score"
+    )
+    assert first_action_evidence["financial_feasibility_component_score"] == pytest.approx(1.0)
+    assert first_action_evidence["financial_feasibility_score_present"] is True
+    assert first_action_evidence["financial_feasibility_route"] == "self-deliverable"
+    assert (
+        first_action_evidence["financial_feasibility_reason"]
+        == "Low-capital action the city can deliver itself."
+    )
+    assert first_action_evidence["financial_feasibility_inputs"]["finance"][
+        "fund_access"
+    ] == "direct"
+    assert first_action_evidence["financial_feasibility_links"]["detail"].endswith(
+        "/climate-finance/actions/c40_0034"
+    )
+    first_action_legal_assessment = legal_assessments["c40_0034"]
+    assert (
+        first_action_evidence["ownership_category"]
+        == first_action_legal_assessment.ownership_category
+    )
+    assert (
+        first_action_evidence["ownership_score"]
+        == first_action_legal_assessment.ownership_score
+    )
+    assert (
+        first_action_evidence["ownership_description"]
+        == first_action_legal_assessment.ownership_description
+    )
+    assert (
+        first_action_evidence["ownership_description_es"]
+        == first_action_legal_assessment.ownership_description_i18n["es"]
+    )
+    assert (
+        first_action_evidence["restrictions_category"]
+        == first_action_legal_assessment.restrictions_category
+    )
+    assert (
+        first_action_evidence["restrictions_score"]
+        == first_action_legal_assessment.restrictions_score
+    )
+    assert (
+        first_action_evidence["restrictions_description"]
+        == first_action_legal_assessment.restrictions_description
+    )
+    assert (
+        first_action_evidence["restrictions_description_es"]
+        == first_action_legal_assessment.restrictions_description_i18n["es"]
+    )
+    assert (
+        first_action_evidence["legal_justification"]
+        == first_action_legal_assessment.legal_justification_i18n["es"]
+    )
+    assert (
+        first_action_evidence["legal_justification_en"]
+        == first_action_legal_assessment.legal_justification_i18n["en"]
+    )
+    assert first_action_evidence["legal_references"] == (
+        first_action_legal_assessment.legal_references
+    )
+    missing_score_action_ids = result.metadata[
+        "missing_mitigation_feasibility_score_action_ids"
     ]
-    assert not any(
-        "employment_in_transport_and_logistics" in message
-        or "electricity_access_rate" in message
-        for message in missing_indicator_messages
+    assert isinstance(missing_score_action_ids, list)
+    assert set(missing_score_action_ids).issubset(
+        {action.action_id for action in actions}
     )
+    missing_action_id = next(
+        action.action_id
+        for action in actions
+        if action.action_id not in legal_assessments
+    )
+    missing_action_evidence = result.evidence_by_action_id[missing_action_id]
+    assert missing_action_evidence["legal_component_score"] == pytest.approx(0.5)
+    assert missing_action_evidence["legal_component_source"] == "neutral_fallback"
+    assert missing_action_evidence["legal_assessment_missing"] is True
+    assert result.metadata["missing_legal_assessment_actions_count"] > 0
+    assert missing_action_id in result.metadata["missing_legal_assessment_action_ids"]
+    assert result.metadata["neutral_legal_fallback_actions_count"] > 0
+    assert missing_action_id in result.metadata["neutral_legal_fallback_action_ids"]
+    assert result.metadata["missing_financial_feasibility_score_actions_count"] == 0
+
+
+@pytest.mark.unit
+def test_feasibility_block_missing_financial_score_uses_neutral_fallback() -> None:
+    """Missing financial feasibility rows use the neutral fallback component."""
+    result = feasibility.run(
+        actions=[Action(action_id="A_missing_finance", action_name="Missing finance")],
+        legal_assessments_by_action_id={},
+        mitigation_feasibility_scores_by_action_id={},
+        financial_feasibility_scores_by_action_id={},
+    )
+
+    evidence = result.evidence_by_action_id["A_missing_finance"]
+    assert evidence["financial_feasibility_component_score"] == pytest.approx(0.5)
+    assert evidence["financial_feasibility_component_source"] == "neutral_fallback"
+    assert evidence["financial_feasibility_score_missing"] is True
+    assert evidence["financial_feasibility_contribution"] == pytest.approx(0.165)
+    assert result.metadata["missing_financial_feasibility_score_action_ids"] == [
+        "A_missing_finance"
+    ]
+    assert result.score_by_action_id["A_missing_finance"] == pytest.approx(0.5)
 
 
 @pytest.mark.unit
@@ -620,3 +1009,4 @@ def test_final_scoring_competitive_ranks_skip_after_ties() -> None:
         top_n=4,
     )
     assert [item.rank for item in scored_actions] == [1, 2, 2, 4]
+

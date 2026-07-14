@@ -47,7 +47,7 @@
   "top-actions-for-your-city-description": "Estas são as 40 principais ações que recomendamos com base no seu inventário de GEE e dados de contexto da cidade. Você encontrará 20 ações para Mitigação e 20 para Adaptação em suas respectivas abas. É recomendado executar novamente o priorizador após qualquer atualização ou mudança relevante nos dados.",
   "actions-for-your-city-description": "Estas são as 40 principais ações que recomendamos com base no seu inventário de GEE, Avaliação de Riscos Climáticos e dados de contexto da cidade. Você encontrará 20 ações para Mitigação e 20 para Adaptação em suas respectivas abas.",
   "re-prioritize-actions": "Repriorizar ações",
-  "generated-action-plan": "gerar plano de ação",
+  "generated-action-plan": "Gerar Plano de Ação",
   "export-as-pdf": "exportar como PDF",
   "generating-pdf": "gerando PDF...",
   "subactions": "Subações",
@@ -181,5 +181,9 @@
   "selection-updated": "Seleção atualizada com sucesso",
   "selection-update-failed": "Falha ao atualizar a seleção",
   "other-available-actions": "Outras Ações Disponíveis",
-  "other-available-actions-description": "Abaixo estão ações climáticas adicionais disponíveis para a sua cidade que não foram incluídas na lista de melhores classificadas. Essas ações ainda podem ser relevantes dependendo das prioridades específicas e do contexto da sua cidade."
+  "other-available-actions-description": "Abaixo estão ações climáticas adicionais disponíveis para a sua cidade que não foram incluídas na lista de melhores classificadas. Essas ações ainda podem ser relevantes dependendo das prioridades específicas e do contexto da sua cidade.",
+  "last-update": "Última atualização",
+  "history": "História",
+  "view-more": "VER MAIS",
+  "view-less": "VER MENOS"
 }

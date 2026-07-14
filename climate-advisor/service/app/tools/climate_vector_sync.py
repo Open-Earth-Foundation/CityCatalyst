@@ -13,8 +13,8 @@ from typing import Optional
 
 from agents import function_tool
 
-from .climate_vector_tool import ClimateVectorSearchTool, ClimateToolResult
-from ..config import get_settings
+from app.tools.climate_vector_tool import ClimateVectorSearchTool, ClimateToolResult
+from app.config import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +118,8 @@ async def climate_vector_search(question: str) -> str:
     **DO NOT USE FOR:**
     - ANY CityCatalyst operational requests (listing, viewing, fetching, accessing user data)
     - Questions starting with "How do I...", "Can I...", "Show me..." related to CityCatalyst features
-    - Inventory operations - use get_user_inventories or get_inventory tools instead
+    - Inventory operations - use inventory_list_accessible, inventory_status_overview,
+      or inventory_emissions_context tools instead
     - User-specific data queries - these require the CC inventory tools
     - Product workflows or feature usage questions about CityCatalyst
 

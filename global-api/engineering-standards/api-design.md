@@ -36,8 +36,16 @@ The top-level resources in this API are:
 | `/reference` | Shared lookup tables (emission factors, formula inputs) |
 | `/ccra` | Climate Change Risk Assessment data |
 | `/catalog` | Dataset and datasource catalogue |
+| `/action-pathways` | Mitigation action pathways (per catalog release) |
+| `/action-legal-assessments` | SSG legal viability assessments per action and release (``modelled.action_legal_assessement``) |
 
 ### City sub-resources
+
+City collection endpoints:
+
+```
+/cities/search?q={query}&country_code={country_code}
+```
 
 City-scoped data hangs off `/cities/{locode}`:
 
@@ -117,6 +125,81 @@ GET /cities/{locode}/emissions
 
 ---
 
+## Response Structure and Provenance
+
+Every endpoint that returns data from a `modelled.*` fact table uses the same
+envelope: a `meta` block and a `data` array.
+
+```jsonc
+{
+  "meta": {
+    "generated_at_utc": "2026-06-25T12:00:00Z",
+    "endpoint": "GET /api/v1/climate-finance/opportunities",
+    "filters": { "...": "the query params used" },
+    "count": 95,
+    "datasources": [ /* one provenance object per source represented in data */ ]
+  },
+  "data": [
+    { "...": "fields", "datasource_name": "cl-mma-fondos" }
+  ]
+}
+```
+
+### Provenance comes from the two catalogue tables
+
+Provenance is never hand-typed into a route. It is derived from
+`modelled.publisher_datasource` (identity: who/what) and
+`modelled.dataset_release` (version: which pull). Every fact row stores a
+`release_id`, so it points at exactly one release, which points at exactly one
+datasource.
+
+`meta.datasources` lists one flat object per source actually represented in
+`data`:
+
+```jsonc
+{
+  "release_id": "…uuid…",
+  "datasource_name": "cl-mma-fondos",
+  "publisher_name": "Ministerio del Medio Ambiente",
+  "publisher_url": "https://mma.gob.cl",
+  "dataset_name": "Fondos concursables MMA",
+  "dataset_url": "https://fondos.mma.gob.cl",
+  "version_label": "v1",
+  "is_latest": true
+}
+```
+
+Each record in `data` carries only `datasource_name` (the stable slug) to map
+back to its entry in `meta.datasources` — cheaper than repeating the block on
+every row, and it works when a response spans several datasources. Other columns
+exist on the tables (`source_url`, `released_at`, `retrieved_at`, `dataset_slug`,
+`dataset_name_i18n`, `release_notes_url`, `metadata`) and can be added back to the
+block when a route needs them.
+
+### Version-resolution contract
+
+Default to the latest release; pinning is opt-in via query parameters, resolved
+in this precedence:
+
+| Param | Behaviour |
+|---|---|
+| _(none)_ | latest release of each datasource (`is_latest = true`) — the default |
+| `release_id=<uuid>` | that one exact release |
+| `version_label=<v>` | that version across the datasource(s) |
+
+### Implementation
+
+Use `db/provenance.py` rather than re-implementing the join per route:
+
+- `resolve_release_ids(session, datasource_names=, version_label=, release_id=)` — applies the contract above and returns the release ids to query.
+- `build_datasources(session, release_ids)` / `provenance_for_rows(session, rows)` — return the `meta.datasources` block.
+
+`finance_opportunities.py` is the reference implementation. An optional view,
+`sql/dataset_provenance_view.sql` (`modelled.dataset_provenance`), exposes the
+same join for ad-hoc SQL and can be joined `USING (release_id)`.
+
+---
+
 ## Spelling and Casing
 
 | Term | Convention | Notes |
@@ -126,6 +209,7 @@ GET /cities/{locode}/emissions
 | Catalog (noun) | `catalog` | American English spelling throughout |
 | GPC reference | `gpc_ref` | Shortened form acceptable in query params; full form `gpc_reference_number` in code |
 | Locode | `locode` | Lowercase throughout — this is the standard city identifier |
+| JSON response property names | `camelCase` | ``GET /action-legal-assessments``; other endpoints may still use ``snake_case`` until migrated |
 
 ---
 

@@ -8,8 +8,9 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from app.modules.prioritizer.config import (
+from app.modules.prioritizer.llm_config import (
     get_free_text_exclusion_model,
+    get_free_text_exclusion_temperature,
     is_free_text_exclusion_resolution_enabled,
 )
 from app.modules.prioritizer.internal_models import Action
@@ -165,7 +166,7 @@ def resolve_free_text_exclusions(
         client = create_openai_client()
         completion = client.chat.completions.parse(
             model=model_name,
-            temperature=0,
+            temperature=get_free_text_exclusion_temperature(),
             response_format=FreeTextExclusionBatch,
             messages=[
                 {"role": "system", "content": system_prompt},
@@ -450,7 +451,7 @@ def _build_prompt(*, excluded_actions_free_text: str, actions: list[Action]) -> 
         "actions": [_build_catalog_row(action) for action in actions],
     }
     return template.format(
-        payload_json=json.dumps(payload, ensure_ascii=True, indent=2)
+        payload_json=json.dumps(payload, ensure_ascii=False, indent=2)
     )
 
 
@@ -460,8 +461,8 @@ def _build_catalog_row(action: Action) -> dict[str, object]:
         "action_id": action.action_id,
         "action_name": action.action_name,
         "description": _truncate_catalog_description(action.description),
-        "action_category": action.action_category,
-        "action_subcategory": action.action_subcategory,
+        "intervention_type": action.intervention_type,
+        "action_role": action.action_role,
     }
 
 

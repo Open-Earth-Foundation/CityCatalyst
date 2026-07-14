@@ -35,20 +35,32 @@
  *         description: User not found.
  */
 import { db } from "@/models";
-import { LANGUAGES } from "@/util/types";
+import { LANGUAGES, Roles } from "@/util/types";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { NumberFormatEnum } from "@/util/enums";
 
 const updateUserRequest = z.object({
   name: z.string(),
   title: z.string().optional(),
   preferredLanguage: z.nativeEnum(LANGUAGES),
+  numberFormat: z.nativeEnum(NumberFormatEnum).optional(),
 });
 
 export const PATCH = apiHandler(async (_req, { params, session }) => {
   const body = updateUserRequest.parse(await _req.json());
+
+  if (
+    session?.user.id !== params.userId &&
+    session?.user.role !== Roles.Admin
+  ) {
+    throw new createHttpError.Unauthorized(
+      "Not editing the active user, access denied",
+    );
+  }
+
   let user = await db.models.User.findOne({ where: { userId: params.userId } });
 
   if (!user) {

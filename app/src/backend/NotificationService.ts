@@ -41,7 +41,10 @@ class NotificationService {
     html,
   }: EmailOptions): Promise<SendEmailResponse> {
     const mailOptions = {
-      from: process.env.SMTP_FROM_EMAIL,
+      from: {
+        name: "CityCatalyst",
+        address: process.env.SMTP_FROM_EMAIL ?? "citycatalyst@openearth.dev",
+      },
       to,
       subject,
       text,
@@ -91,7 +94,7 @@ class NotificationService {
     await NotificationService.sendEmail({
       to: process.env.ADMIN_EMAILS!,
       subject: translatedSubject,
-      text: "City Catalyst",
+      text: "CityCatalyst",
       html,
     });
   }

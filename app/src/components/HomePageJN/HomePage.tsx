@@ -48,6 +48,7 @@ import { NoModulesCard } from "./NoModulesCard";
 import { Modules } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
 import ClimaAIAssistantDisclaimerDialog from "../ChatBot/clima-ai-assistant-disclaimer-dialog";
+import { Trans } from "react-i18next";
 
 export default function HomePage({
   lng,
@@ -64,14 +65,13 @@ export default function HomePage({
   // Check if user is authenticated otherwise route to login page
   isPublic || CheckUserSession();
   const language = cookieLanguage ?? lng;
-  const { cityId, year } = useParams();
+  const { cityId } = useParams();
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
   // make sure that the inventory ID is using valid values
   let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
-  const parsedYear = parseInt(year as string);
 
   // If no city ID and no default city, redirect to cities onboarding
   useEffect(() => {
@@ -171,11 +171,11 @@ export default function HomePage({
           <Hero
             city={city}
             ghgiCityData={ghgiCityData}
-            year={parsedYear}
             isPublic={isPublic}
             isLoading={isOrgDataLoading || isCityLoading}
             t={t}
             population={population}
+            numberFormat={userInfo?.numberFormat}
           />
 
           <Box display="flex" mx="auto" w="full" maxW="1090px">
@@ -185,6 +185,7 @@ export default function HomePage({
                 lng={language}
                 organization={orgData}
                 city={city}
+                hasInventory={!!ghgiCityData}
               />
             </VStack>
           </Box>
@@ -194,7 +195,6 @@ export default function HomePage({
             maxW="1090px"
             pb="100px"
             bg="background.backgroundLight"
-            px={8}
             mx="auto"
             mt={"60px"}
           >
@@ -209,7 +209,7 @@ export default function HomePage({
             />
             {/* Accordions for stages */}
             {modulesByStage && projectModules && (
-              <AccordionRoot multiple defaultValue={stageOrder}>
+              <AccordionRoot multiple defaultValue={stageOrder} variant="plain">
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
                     // Filter out CCRA module unless feature flag is enabled
@@ -222,7 +222,7 @@ export default function HomePage({
                     return mod.stage === stage;
                   });
                   return (
-                    <AccordionItem key={stage} value={stage}>
+                    <AccordionItem key={stage} value={stage} mb={12}>
                       <AccordionItemTrigger hideIndicator>
                         <HStack justify="flex-start" align="center" w="full">
                           <Box
@@ -251,9 +251,14 @@ export default function HomePage({
                       </AccordionItemTrigger>
                       <AccordionItemContent>
                         <BodyLarge color="content.primary">
-                          {t("journey." + stage + "-description")}
+                          <Trans
+                            t={t}
+                            i18nKey={"journey." + stage + "-description"}
+                          >
+                            Description<b>Bold</b>Description
+                          </Trans>
                         </BodyLarge>
-                        <HStack mt={12} gap={6} align="stretch" flexWrap="wrap">
+                        <HStack mt={6} gap={6} align="stretch" flexWrap="wrap">
                           {modules && modules.length > 0 ? (
                             modules.map((mod) => (
                               <ModuleCard

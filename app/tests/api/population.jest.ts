@@ -1,6 +1,7 @@
 import { POST as savePopulations } from "@/app/api/v1/city/[city]/population/route";
 import { db } from "@/models";
 import {
+  expectStatusCode,
   expectToBeLooselyEqual,
   mockRequest,
   setupTests,
@@ -66,7 +67,7 @@ describe("Population API", () => {
     const res = await savePopulations(req, {
       params: Promise.resolve({ city: cityId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
     expectToBeLooselyEqual(
       data.data.cityPopulation.population,
@@ -108,7 +109,7 @@ describe("Population API", () => {
     const res = await savePopulations(req, {
       params: Promise.resolve({ city: cityId }),
     });
-    expect(res.status).toEqual(200);
+    await expectStatusCode(res, 200);
     const data = await res.json();
 
     expectToBeLooselyEqual(
@@ -150,7 +151,7 @@ describe("Population API", () => {
     const res = await savePopulations(req, {
       params: Promise.resolve({ city: cityId }),
     });
-    expect(res.status).toEqual(400);
+    await expectStatusCode(res, 400);
     const populations = await db.models.Population.findAll({
       where: { cityId, year: -1340 },
     });

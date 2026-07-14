@@ -1,6 +1,7 @@
 import { BsTruck } from "react-icons/bs";
-import { PiPlant, PiTrashLight } from "react-icons/pi";
+import { PiTrashLight } from "react-icons/pi";
 import { TbBuildingCommunity } from "react-icons/tb";
+import { LuWheat } from "react-icons/lu";
 import { IconBaseProps } from "react-icons";
 import { LiaIndustrySolid } from "react-icons/lia";
 import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
@@ -132,7 +133,7 @@ export const SECTORS: ISector[] = [
     number: 5,
     name: "afolu",
     description: "afolu-description",
-    icon: PiPlant,
+    icon: LuWheat,
     color: SectorColors.V,
     testId: "afolu-sector-card",
     inventoryTypes: {
@@ -188,13 +189,6 @@ export const getSubSectorByReferenceNumber = (referenceNumber: string) => {
   const [sectorRefNum] = referenceNumber.split(".");
   const sector = getSectorByReferenceNumber(sectorRefNum);
   return sector?.subSectors?.[referenceNumber];
-};
-
-export const REGIONALLOCALES: Record<string, string> = {
-  es: "es-ES", // Spanish (Spain)
-  en: "en-US", // English (United States)
-  pt: "pt-PT", // Portuguese (Portugal)
-  de: "de-DE", // German (Germany)
 };
 
 export const DEFAULT_PROJECT_ID = "ebe82f61-b51b-4015-90ef-8b94f86fb0b7";

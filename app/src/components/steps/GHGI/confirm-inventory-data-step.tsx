@@ -1,10 +1,10 @@
 import { CalendarIcon, DataFormatIcon } from "@/components/icons";
 import { getShortenNumberUnit, shortenNumber } from "@/util/helpers";
-import { Box, Card, Heading, Icon, Text } from "@chakra-ui/react";
+import { Box, Button, Card, Heading, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import dynamic from "next/dynamic";
 import { CircleFlag } from "react-circle-flags";
-import { MdOutlinePeopleAlt } from "react-icons/md";
+import { MdEditSquare, MdOutlinePeopleAlt } from "react-icons/md";
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
 
 export default function ConfirmStep({
@@ -14,6 +14,8 @@ export default function ConfirmStep({
   population,
   inventoryGoal,
   year,
+  setStep,
+  numberFormat,
 }: {
   cityName: String;
   t: TFunction;
@@ -21,6 +23,8 @@ export default function ConfirmStep({
   population?: number;
   inventoryGoal: string;
   year: number;
+  setStep: (step: number) => void;
+  numberFormat?: string;
 }) {
   return (
     <Box w="full">
@@ -29,7 +33,7 @@ export default function ConfirmStep({
           {t("confirm-heading")}
         </Heading>
         <Text fontSize="body.lg" color="content.tertiary">
-          {t("confirm-description")}
+          {t("confirm-inventory-description")}
         </Text>
       </Box>
       <Box w="full">
@@ -66,16 +70,9 @@ export default function ConfirmStep({
               display="flex"
               flexDir="column"
               justifyContent="space-between"
-              gap="24px"
+              gap="36px"
             >
-              <Box
-                borderBottomWidth="2px"
-                borderColor="border.overlay"
-                py="36px"
-                w="full"
-                display="flex"
-                justifyContent="space-between"
-              >
+              <Box w="full" display="flex" justifyContent="space-between">
                 <Box
                   display="flex"
                   alignItems="center"
@@ -145,13 +142,7 @@ export default function ConfirmStep({
                   </Box>
                 </Box>
               </Box>
-              <Box
-                borderBottomWidth="2px"
-                borderColor="border.overlay"
-                w="full"
-                display="flex"
-                py="36px"
-              >
+              <Box w="full" display="flex">
                 <Box
                   w="full"
                   display="flex"
@@ -179,7 +170,7 @@ export default function ConfirmStep({
                     >
                       {population ? (
                         <>
-                          {shortenNumber(population)}
+                          {shortenNumber(population, numberFormat)}
                           {getShortenNumberUnit(population)}
                         </>
                       ) : (
@@ -198,6 +189,17 @@ export default function ConfirmStep({
                     </Text>
                   </Box>
                 </Box>
+              </Box>
+              <Box
+                borderBottomWidth="2px"
+                borderColor="border.overlay"
+                w="full"
+                display="flex"
+                pb="36px"
+              >
+                <Button onClick={() => setStep(0)}>
+                  <Icon as={MdEditSquare}></Icon> {t("edit")}
+                </Button>
               </Box>
             </Box>
           </Box>

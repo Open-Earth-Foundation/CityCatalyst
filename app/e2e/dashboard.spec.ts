@@ -6,8 +6,11 @@ test.describe("Dashboard", () => {
     test("User can complete onboarding and access dashboard", async ({
       page,
     }) => {
+      test.setTimeout(180000);
+
       // Create inventory through onboarding
-      const { cityId } = await createCityAndInventoryThroughOnboarding(page);
+      const { cityId, inventoryYear } =
+        await createCityAndInventoryThroughOnboarding(page);
       await page.goto(`/en/cities/${cityId}/GHGI`);
       // Verify Dashboard
       await page.waitForLoadState("networkidle");
@@ -33,14 +36,17 @@ test.describe("Dashboard", () => {
       );
       await expect(addNewInventoryButton).toBeVisible({ timeout: 10000 });
 
-      // Filter by the expected text to handle multiple elements with the same test ID
+      // YearSelector renders one card per inventory; duplicate years are possible in E2E.
       const inventoryYearValue = page
         .getByTestId("inventory-year")
-        .filter({ hasText: "2023" });
+        .filter({ hasText: inventoryYear })
+        .first();
       await expect(inventoryYearValue).toBeVisible({ timeout: 10000 });
-      await expect(inventoryYearValue).toHaveText("2023");
+      await expect(inventoryYearValue).toHaveText(inventoryYear);
 
-      const lastInventoryUpdated = page.getByTestId("inventory-last-updated");
+      const lastInventoryUpdated = page
+        .getByTestId("inventory-last-updated")
+        .first();
       await expect(lastInventoryUpdated).toBeVisible({ timeout: 10000 });
 
       const InventoryCalculationTab = page.getByTestId(

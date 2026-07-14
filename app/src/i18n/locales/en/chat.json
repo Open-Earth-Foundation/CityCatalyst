@@ -1,7 +1,6 @@
 {
-  "ask-ai-expert": "Ask An AI Expert",
   "ai-expert": "AI Expert",
-  "ask-ai": "Ask AI",
+  "ask-ai": "Ask Clima AI",
   "ask-assistant": "Ask assistant anything...",
   "initial-message": "Hello! I'm Clima, your virtual assistant. I'm here to guide you through the process of accurately measuring and reporting your city's greenhouse gas emissions. How can I assist you today?",
   "regenerate": "Regenerate",
@@ -24,5 +23,7 @@
   "about-privacy-description": "By using Clima AI, you agree to the anonymous storage and analysis of your conversation data to improve the AI's accuracy and efficiency.",
   "about-privacy-bold": "No personal data is published or used beyond model training.",
   "about-privacy-contact": "For privacy concerns, please",
-  "contact-support": "contact support"
+  "contact-support": "contact support",
+  "ask-clima": "Ask Clima",
+  "an-error-occurred": "An error occurred"
 }

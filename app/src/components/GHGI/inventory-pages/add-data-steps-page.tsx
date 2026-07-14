@@ -1,0 +1,1629 @@
+"use client";
+
+import { SegmentedProgress } from "@/components/SegmentedProgress";
+import FileInput from "@/components/file-input";
+import {
+  CircleIcon,
+  DataCheckIcon,
+  ExcelFileIcon,
+  MissingDataIcon,
+  NoDatasourcesIcon,
+  RefreshIcon,
+} from "@/components/icons";
+import {
+  InventoryUserFileAttributes,
+  removeFile,
+} from "@/features/city/inventoryDataSlice";
+import { useTranslation } from "@/i18n/client";
+import { RootState } from "@/lib/store";
+import { api } from "@/services/api";
+import { logger } from "@/services/logger";
+import {
+  bytesToMB,
+  clamp,
+  convertKgToTonnes,
+  groupBy,
+  nameToI18NKey,
+} from "@/util/helpers";
+import { bigIntToDecimal } from "@/util/big_int";
+import type { DataSourceResponse, SectorProgress } from "@/util/types";
+
+import {
+  Badge,
+  Box,
+  Card,
+  Center,
+  Flex,
+  Grid,
+  Heading,
+  HStack,
+  Icon,
+  IconButton,
+  Link,
+  ProgressCircle,
+  SimpleGrid,
+  Spinner,
+  Stack,
+  TagLabel,
+  Text,
+  useDisclosure,
+  useSteps,
+  VStack,
+  createListCollection,
+} from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { useRouter, useParams, usePathname } from "next/navigation";
+import { forwardRef, useEffect, useState } from "react";
+import { Trans } from "react-i18next/TransWithoutContext";
+import { FiRefreshCcw, FiTarget, FiTrash2 } from "react-icons/fi";
+import {
+  MdAdd,
+  MdArrowBack,
+  MdArrowDropDown,
+  MdArrowDropUp,
+  MdCheckCircle,
+  MdCheckCircleOutline,
+  MdChevronRight,
+  MdInfoOutline,
+  MdOutlineCheckCircle,
+  MdOutlineEdit,
+  MdOutlineHomeWork,
+  MdOutlineDelete,
+  MdOutlineFactory,
+  MdOutlineLocalShipping,
+  MdRefresh,
+  MdSearch,
+  MdWarning,
+} from "react-icons/md";
+import { useDispatch, useSelector } from "react-redux";
+import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
+import { SubsectorDatasetFilterSelect } from "@/components/GHGI/inventory-pages/SubsectorDatasetFilterSelect";
+import type {
+  DataSourceWithRelations,
+  DataStep,
+  SubSectorWithRelations,
+} from "@/components/GHGI/data-step/types";
+
+import { InventoryValueAttributes } from "@/models/InventoryValue";
+import { motion } from "framer-motion";
+import { getTranslationFromDict } from "@/i18n";
+import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
+import { Button } from "@/components/ui/button";
+import {
+  BreadcrumbCurrentLink,
+  BreadcrumbLink,
+  BreadcrumbRoot,
+} from "@/components/ui/breadcrumb";
+import { Tag } from "@/components/ui/tag";
+import { TbWorldSearch } from "react-icons/tb";
+import { LuWheat } from "react-icons/lu";
+import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { getParamValueRequired } from "@/util/helpers";
+import { Tooltip } from "@/components/ui/tooltip";
+
+function getMailURI(locode?: string, sector?: string, year?: number): string {
+  const emails =
+    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    "info@openearth.org,greta@openearth.org";
+  return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
+}
+
+const kebab = (str: string) =>
+  str
+    .replaceAll(/\s+/g, "-")
+    .replaceAll(/[^0-9A-Za-z\-\_]/g, "")
+    .toLowerCase();
+
+function SearchDataSourcesPrompt({
+  t,
+  isSearching,
+  isDisabled = false,
+  onSearchClicked,
+}: {
+  t: TFunction;
+  isSearching: boolean;
+  isDisabled?: boolean;
+  onSearchClicked: () => void;
+}) {
+  return (
+    <Flex align="center" direction="column">
+      <Icon
+        as={TbWorldSearch}
+        boxSize={20}
+        color="interactive.secondary"
+        borderRadius="full"
+        p={3}
+        bgColor="background.neutral"
+        mb={6}
+      />
+      <Button
+        variant="solid"
+        loading={isSearching}
+        disabled={isDisabled}
+        loadingText={t("searching")}
+        onClick={onSearchClicked}
+        mb={2}
+        px={6}
+        h={16}
+        py={4}
+      >
+        <Icon as={MdSearch} boxSize={6} />
+        {t("search-available-datasets")}
+      </Button>
+      <Text color="content.tertiary" textAlign="center" fontSize="sm">
+        {t("wait-for-search")}
+      </Text>
+    </Flex>
+  );
+}
+
+function NoDataSourcesMessage({
+  t,
+  locode,
+  sector,
+  year,
+}: {
+  t: TFunction;
+  locode?: string;
+  sector?: string;
+  year?: number;
+}) {
+  return (
+    <Flex
+      align="center"
+      direction="column"
+      data-testid="no-data-sources-message"
+    >
+      <Box borderRadius="full" p={4} bgColor="background.neutral" mb={6}>
+        <Icon
+          as={NoDatasourcesIcon}
+          boxSize={20}
+          color="interactive.secondary"
+        />
+      </Box>
+      <Heading
+        size="lg"
+        color="interactive.secondary"
+        mb={2}
+        textAlign="center"
+      >
+        {t("no-data-sources")}
+      </Heading>
+      <Text color="content.tertiary" textAlign="center" fontSize="sm">
+        <Trans t={t} i18nKey="no-data-sources-description">
+          I<br />I
+          <Link
+            href={getMailURI(locode, sector, year)}
+            textDecoration="underline"
+            color="content.link"
+            fontWeight="bold"
+          >
+            please report this
+          </Link>
+          I
+        </Trans>
+      </Text>
+    </Flex>
+  );
+}
+
+export default function AddDataSteps() {
+  const params = useParams();
+  const lng = getParamValueRequired(params.lng);
+  const step = getParamValueRequired(params.step);
+  const inventory = getParamValueRequired(params.inventory);
+  const { t } = useTranslation(lng, "data");
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
+  const {
+    data: inventoryProgress,
+    isLoading: isInventoryProgressLoading,
+    error: inventoryProgressError,
+  } = api.useGetInventoryProgressQuery(inventory);
+  const isInventoryLoading = isUserInfoLoading || isInventoryProgressLoading;
+  const locode = inventoryProgress?.inventory.city.locode || undefined;
+  const year = inventoryProgress?.inventory.year || undefined;
+
+  const [
+    loadDataSources,
+    {
+      data,
+      isLoading: areDataSourcesLoading,
+      isFetching: areDataSourcesFetching,
+      error: dataSourcesError,
+    },
+  ] = api.useLazyGetAllDataSourcesQuery();
+
+  const [connectDataSource, { isLoading: isConnectDataSourceLoading }] =
+    api.useConnectDataSourceMutation();
+
+  const [steps, setSteps] = useState<DataStep[]>(
+    SECTORS.map((s) => ({
+      ...s,
+      connectedProgress: 0,
+      addedProgress: 0,
+      reasonNEProgress: 0,
+      reasonNOProgress: 0,
+      totalSubSectors: 0,
+      sector: null,
+      subSectors: null,
+    })),
+  );
+
+  useEffect(() => {
+    if (inventoryProgress == null) {
+      return;
+    }
+
+    const progress = inventoryProgress.sectorProgress;
+    const updatedSteps = steps.map((step) => {
+      const sectorProgress: SectorProgress | undefined = progress.find(
+        (p) => p.sector.referenceNumber === step.referenceNumber,
+      );
+      if (!sectorProgress) {
+        logger.error(
+          { referenceNumber: step.referenceNumber },
+          "No progress entry found for sector",
+        );
+        return step;
+      }
+      step.sector = sectorProgress.sector;
+      step.subSectors = sectorProgress.subSectors;
+      step.totalSubSectors = sectorProgress.total;
+      if (sectorProgress.total === 0) {
+        return step;
+      }
+      step.connectedProgress = clamp(
+        sectorProgress.thirdParty / sectorProgress.total,
+      );
+      step.addedProgress = clamp(
+        sectorProgress.uploaded / sectorProgress.total,
+      );
+      step.reasonNEProgress = clamp(
+        sectorProgress.reasonNE / sectorProgress.total,
+      );
+      step.reasonNOProgress = clamp(
+        sectorProgress.reasonNO / sectorProgress.total,
+      );
+      return step;
+    });
+    setSteps(updatedSteps);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inventoryProgress]);
+
+  const { value: activeStep, goToNextStep: goToNext } = useSteps({
+    defaultStep: Number(step) - 1,
+    count: steps.length,
+  });
+
+  const currentStep = steps[activeStep];
+
+  const inventoryDataBasePath = pathname
+    .replace(`/data/${step}`, "/data")
+    .replace(/\/$/, "");
+  const subsectorBasePath = pathname.replace(/\/$/, "");
+
+  useEffect(() => {
+    // change step param in URL without reloading
+    const newPath = location.pathname.replace(
+      /\/[0-9]+$/,
+      `/${activeStep + 1}`,
+    );
+    history.replaceState(null, "", newPath);
+  }, [activeStep]);
+
+  const totalStepCompletion = currentStep
+    ? clamp(
+      currentStep.connectedProgress +
+      currentStep.addedProgress +
+      currentStep.reasonNEProgress +
+      currentStep.reasonNOProgress,
+    )
+    : 0;
+  const formatPercentage = (percentage: number) =>
+    Math.round(percentage * 1000) / 10;
+
+  // only display data sources relevant to current sector
+  let dataSources: DataSourceResponse[] | undefined;
+  if (data) {
+    const { data: successfulSources, failedSources, removedSources } = data;
+    dataSources = successfulSources?.filter(({ source, data }) => {
+      const referenceNumber =
+        source.subCategory?.referenceNumber ||
+        source.subSector?.referenceNumber;
+      if (!data || !referenceNumber) return false;
+      const sectorReferenceNumber = referenceNumber.split(".")[0];
+
+      return sectorReferenceNumber === currentStep.referenceNumber;
+    });
+  }
+
+  const [selectedSource, setSelectedSource] =
+    useState<DataSourceWithRelations>();
+  const [selectedSourceData, setSelectedSourceData] = useState<any>();
+  const {
+    open: isSourceDrawerOpen,
+    onClose: onSourceDrawerClose,
+    onOpen: onSourceDrawerOpen,
+  } = useDisclosure();
+  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
+    setSelectedSource(source);
+    setSelectedSourceData(data);
+    onSourceDrawerOpen();
+  };
+
+  const showError = (title: string, description: string, duration?: number) => {
+    const { showErrorToast } = UseErrorToast({
+      title: t(title),
+      description: t(description),
+      duration,
+    });
+    showErrorToast();
+  };
+
+  const [connectingDataSourceId, setConnectingDataSourceId] = useState<
+    string | null
+  >(null);
+  const [newlyConnectedDataSourceIds, setNewlyConnectedDataSourceIds] =
+    useState<string[]>([]);
+  const onConnectClick = async (source: DataSourceWithRelations) => {
+    if (isSourceGpcBlocked(source)) {
+      return;
+    }
+    if (!inventoryProgress) {
+      logger.error(
+        "Tried to assign data source while inventory progress was not yet loaded!",
+      );
+      return;
+    }
+    logger.debug({ source }, "Connect source");
+    setConnectingDataSourceId(source.datasourceId);
+    try {
+      const response = await connectDataSource({
+        inventoryId: inventoryProgress?.inventory.inventoryId,
+        dataSourceIds: [source.datasourceId],
+      }).unwrap();
+
+      if (response.failed.length > 0) {
+        showError(
+          "data-source-connect-failed",
+          "data-source-connect-load-error",
+        );
+        return;
+      } else if (response.invalid.length > 0) {
+        showError(
+          "data-source-connect-failed",
+          "data-source-connect-invalid-error",
+        );
+        return;
+      }
+
+      if (response.successful.length > 0) {
+        setNewlyConnectedDataSourceIds(
+          newlyConnectedDataSourceIds.concat(response.successful),
+        );
+        onSourceDrawerClose();
+      }
+    } catch (error: any) {
+      logger.error(
+        { err: error, source: source },
+        "Failed to connect data source",
+      );
+      showError("data-source-connect-failed", error.data?.error?.message);
+    } finally {
+      setConnectingDataSourceId(null);
+      onSearchDataSourcesClicked();
+    }
+  };
+
+  function isSourceConnected(source?: DataSourceWithRelations): boolean {
+    if (!source) {
+      return false;
+    }
+    return (
+      (source.inventoryValues && source.inventoryValues.length > 0) ||
+      newlyConnectedDataSourceIds.indexOf(source.datasourceId) > -1
+    );
+  }
+
+  function getSourceGpcReferenceNumber(
+    source: DataSourceWithRelations,
+  ): string | undefined {
+    return (
+      source.subCategory?.referenceNumber ?? source.subSector?.referenceNumber
+    );
+  }
+
+  /** Third-party source cannot connect when this inventory already has data for the same GPC ref. */
+  function isSourceGpcBlocked(source: DataSourceWithRelations): boolean {
+    if (isSourceConnected(source)) {
+      return false;
+    }
+    const gpcReferenceNumber = getSourceGpcReferenceNumber(source);
+    if (!gpcReferenceNumber) {
+      return false;
+    }
+    return (
+      inventoryProgress?.inventory.inventoryValues?.some(
+        (value) => value.gpcReferenceNumber === gpcReferenceNumber,
+      ) ?? false
+    );
+  }
+
+  async function onSearchDataSourcesClicked() {
+    const { data, removedSources, failedSources } = await loadDataSources({
+      inventoryId: inventory,
+    }).unwrap();
+
+    // this is printed to debug missing data sources more easily,
+    // TODO consider putting this behind a "dev mode" flag of some kind
+    if (removedSources.length > 0) {
+      logger.info("Removed data sources");
+      logger.info({ removedSources });
+    }
+    if (failedSources.length > 0) {
+      logger.info("Failed data sources");
+      logger.info({ failedSources });
+    }
+  }
+
+  const [isDataSectionExpanded, setDataSectionExpanded] = useState(false);
+
+  const getInventoryData = useSelector(
+    (state: RootState) => state.inventoryData,
+  );
+  const dispatch = useDispatch();
+
+  const { showSuccessToast } = UseSuccessToast({
+    title: t("file-deletion-success"),
+    description: t("file-deletion-success"),
+    duration: 2000,
+  });
+
+  const [uploadedFile, setUploadedFile] = useState<File>();
+
+  const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
+
+  const handleFileSelect = async (file: File) => {
+    setOpenFileUploadDialog((v) => !v);
+  };
+
+  const sectorData = getInventoryData.sectors.filter(
+    (sector) => sector.sectorName === currentStep.name,
+  );
+
+  const [deleteUserFile, { isLoading }] = api.useDeleteUserFileMutation();
+
+  function removeSectorFile(
+    fileId: string,
+    sectorName: string,
+    cityId: string,
+  ) {
+    deleteUserFile({ fileId, cityId }).then((res: any) => {
+      if (res.error) {
+        showError(
+          "file-deletion-error",
+          "file-deletion-error-description",
+          2000,
+        );
+      } else {
+        showSuccessToast();
+        dispatch(
+          removeFile({
+            sectorName,
+            fileId,
+          }),
+        );
+      }
+    });
+  }
+
+  const [hoverStates, setHoverStates] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const [disconnectingDataSourceId, setDisconnectingDataSourceId] = useState<
+    string | null
+  >(null);
+  const [disconnectThirdPartyData, { isLoading: isDisconnectLoading }] =
+    api.useDisconnectThirdPartyDataMutation();
+
+  const onDisconnectThirdPartyData = async (
+    source: DataSourceWithRelations,
+  ) => {
+    if (isSourceConnected(source)) {
+      setDisconnectingDataSourceId(source.datasourceId);
+      await Promise.all(
+        source.inventoryValues!.map(
+          async (inventoryValue: InventoryValueAttributes) => {
+            return await disconnectThirdPartyData({
+              inventoryId: inventoryValue.inventoryId,
+              datasourceId: inventoryValue.datasourceId,
+            });
+          },
+        ),
+      );
+      // TODO show alert
+      setDisconnectingDataSourceId(null);
+      setNewlyConnectedDataSourceIds(
+        newlyConnectedDataSourceIds.filter(
+          (connectedSource) => connectedSource !== source.datasourceId,
+        ),
+      );
+      onSearchDataSourcesClicked();
+    } else {
+      logger.error("Something went wrong when disconnecting data source");
+    }
+  };
+
+  const onButtonHover = (source: DataSourceWithRelations) => {
+    setHoverStates((prev) => ({ ...prev, [source.datasourceId]: true }));
+  };
+
+  const onMouseLeave = (source: DataSourceWithRelations) => {
+    setHoverStates((prev) => ({ ...prev, [source.datasourceId]: false }));
+  };
+
+  const [scrollPosition, setScrollPosition] = useState<number>(0);
+
+  const handleScroll = () => {
+    const position = window.scrollY;
+    setScrollPosition(position);
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const MotionBox = motion.create(
+    // the display name is added below, but the linter isn't picking it up
+    // eslint-disable-next-line react/display-name
+    forwardRef<HTMLDivElement, any>((props, ref) => (
+      <Box ref={ref} {...props} />
+    )),
+  );
+  MotionBox.displayName = "MotionBox";
+
+  const scrollResizeHeaderThreshold = 50;
+  const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
+  const { isFrozenCheck } = useOrganizationContext();
+
+  const getSubsectorReferenceNumber = (subSectorId?: string): string => {
+    const subSector = currentStep.subSectors?.find(
+      (subSector) => subSector.subsectorId === subSectorId,
+    );
+    return subSector?.referenceNumber ?? "-";
+  };
+
+  const getSourceSubsectorId = (
+    source: DataSourceWithRelations,
+  ): string | undefined =>
+    source.subCategory?.subsectorId ?? source.subSector?.subsectorId;
+
+  const getSourceScopeName = (
+    source: DataSourceWithRelations,
+    subSectorId?: string,
+  ): string => {
+    const subSectorScope = currentStep.subSectors?.find(
+      (subSector) => subSector.subsectorId === subSectorId,
+    )?.scope?.scopeName;
+    return source.subCategory?.scope?.scopeName ?? subSectorScope ?? "-";
+  };
+
+  const getSubsectorLabel = (subSectorId?: string): string => {
+    if (!subSectorId) {
+      return "-";
+    }
+    const matchingSubsector = currentStep.subSectors?.find(
+      (subSector) => subSector.subsectorId === subSectorId,
+    );
+    if (!matchingSubsector) {
+      return "-";
+    }
+    return t(nameToI18NKey(matchingSubsector.subsectorName ?? ""));
+  };
+
+  const allSubsectorsValue = "all-subsectors";
+  const subsectorCollection = createListCollection({
+    items: [
+      { label: t("all-sectors"), value: allSubsectorsValue },
+      ...((currentStep.subSectors?.map((subSector) => ({
+        label: t(nameToI18NKey(subSector.subsectorName ?? "")),
+        value: subSector.subsectorId,
+      })) ?? []) as { label: string; value: string }[]),
+    ],
+  });
+  const [selectedSubsector, setSelectedSubsector] = useState<string[]>([]);
+  const selectedSubsectorId = selectedSubsector[0];
+
+  const filteredDataSources = dataSources?.filter(({ source }) => {
+    // Hide data sources that only contain notation keys (e.g. "NO" = not occurring)
+    // and no actual emissions data
+    if (source.retrievalMethod === "global_api_notation_key") {
+      return false;
+    }
+    if (!selectedSubsectorId || selectedSubsectorId === allSubsectorsValue) {
+      return true;
+    }
+    return getSourceSubsectorId(source) === selectedSubsectorId;
+  });
+
+  // Check if any data sources were excluded because they only carry notation keys
+  const hasNotationKeySources = dataSources?.some(
+    ({ source }) => source.retrievalMethod === "global_api_notation_key",
+  ) ?? false;
+
+  const visibleDataSources = filteredDataSources?.slice(
+    0,
+    isDataSectionExpanded ? filteredDataSources.length : 6,
+  );
+  const groupedBySubsector = Object.entries(
+    groupBy(
+      visibleDataSources ?? [],
+      ({ source }) => getSourceSubsectorId(source) ?? "unassigned-subsector",
+    ),
+  );
+
+  return (
+    <>
+      <Box id="top" />
+      <Box
+        position="fixed"
+        zIndex={10}
+        top={0}
+        w="full"
+        h={isExpanded ? "205px" : "400px"}
+        transition="all 50ms linear"
+        bg="white"
+        borderBottomWidth={isExpanded ? "1px" : "0px"}
+        borderColor="border.neutral"
+        pt={isExpanded ? "0px" : "115px"}
+      >
+        <Box w="1090px" mx="auto" px={4}>
+          <Box
+            w="full"
+            alignItems="center"
+            gap="16px"
+            mb="24px"
+            transition="all 50ms linear"
+            display="flex"
+          >
+            <Button
+              variant="ghost"
+              fontSize="14px"
+              color="content.link"
+              fontWeight="bold"
+              onClick={() => router.push(pathname.replace(`/data/${step}`, ""))}
+            >
+              <Icon as={MdArrowBack} boxSize={6} />
+              {t("go-back")}
+            </Button>
+            <Box borderRightWidth="1px" borderColor="border.neutral" h="24px" />
+            <Box>
+              <BreadcrumbRoot
+                gap="8px"
+                fontFamily="heading"
+                fontWeight="bold"
+                letterSpacing="widest"
+                fontSize="14px"
+                textTransform="uppercase"
+                separator={
+                  <Icon as={MdChevronRight} color="gray.500" h="24px" />
+                }
+              >
+                <BreadcrumbLink
+                  href={inventoryDataBasePath}
+                  color="content.tertiary"
+                  textDecoration="none"
+                  _hover={{
+                    textDecoration: "underline",
+                    textUnderlineOffset: "4px",
+                  }}
+                >
+                  {t("all-sectors")}
+                </BreadcrumbLink>
+
+                <BreadcrumbCurrentLink
+                  color="content.link"
+                  textDecoration="none"
+                >
+                  {t(kebab(currentStep.name || ""))}
+                </BreadcrumbCurrentLink>
+              </BreadcrumbRoot>
+            </Box>
+          </Box>
+          {/*** Sector summary section ***/}
+          <Box
+            mb={12}
+            shadow="none"
+            bg="none"
+            gap="16px"
+            flexDir="row"
+            w="full"
+            border="none"
+            px={0}
+          >
+            <Flex direction="row" w="full">
+              <Icon
+                as={currentStep.icon}
+                boxSize={8}
+                color="interactive.secondary"
+                mr={4}
+              />
+              <Box w="full" display="flex" flexDirection="column" gap={3}>
+                <Heading
+                  fontWeight="semibold"
+                  textTransform="capitalize"
+                  lineHeight="32px"
+                  mb={2}
+                  transition="all 50ms linear"
+                  fontSize={isExpanded ? "headline.sm" : "headline.md"}
+                >
+                  {t(kebab(currentStep.name))}
+                </Heading>
+                {scrollPosition <= 0 ? (
+                  <Text color="content.tertiary">
+                    {t(currentStep.description)}
+                  </Text>
+                ) : (
+                  <Box w="800px"></Box>
+                )}
+                <Text fontWeight="bold" ml={isExpanded ? "-48px" : ""}>
+                  {t("inventory-year")}: {inventoryProgress?.inventory.year} |{" "}
+                  {t("gpc-scope-required")}{" "}
+                  {inventoryProgress?.inventory.inventoryType &&
+                    getScopesForInventoryAndSector(
+                      inventoryProgress.inventory.inventoryType!,
+                      currentStep.referenceNumber,
+                    )?.join(", ")}
+                </Text>
+                <Flex direction="row" ml={isExpanded ? "-48px" : ""}>
+                  <SegmentedProgress
+                    values={[
+                      currentStep.connectedProgress,
+                      currentStep.addedProgress,
+                      currentStep.reasonNEProgress,
+                      currentStep.reasonNOProgress,
+                    ]}
+                    colors={[
+                      "interactive.connected",
+                      "interactive.tertiary",
+                      "interactive.control",
+                      "striped",
+                    ]}
+                    height={4}
+                    numberFormat={userInfo?.numberFormat}
+                  />
+                  <Heading size="sm" ml={6} mt={-1} whiteSpace="nowrap">
+                    {t("completion-percent", {
+                      progress: formatPercentage(totalStepCompletion),
+                    })}
+                  </Heading>
+                </Flex>
+                {scrollPosition <= 0 ? (
+                  <Box display="flex" flexDirection="row" gap={2}>
+                    <Badge mr={4} w="auto">
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.quaternary"
+                      />
+                      {t("data-connected-percent", {
+                        progress: formatPercentage(
+                          currentStep.connectedProgress,
+                        ),
+                      })}
+                    </Badge>
+                    <Badge w="auto">
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.tertiary"
+                      />
+                      {formatPercentage(currentStep.addedProgress)}%{" "}
+                      {t("manually-added")}
+                    </Badge>
+                    <Badge w="auto">
+                      <Icon
+                        as={CircleIcon}
+                        boxSize={6}
+                        color="interactive.control"
+                      />
+                      {formatPercentage(currentStep.reasonNEProgress)}%{" "}
+                      <Trans t={t}>not-estimated-progress</Trans>
+                    </Badge>
+                    <Badge w="auto">
+                      <Box
+                        boxSize={3}
+                        borderRadius="full"
+                        backgroundImage="repeating-linear-gradient(45deg, #D1D5DB, #D1D5DB 2px, transparent 2px, transparent 4px)"
+                      />
+                      {formatPercentage(currentStep.reasonNOProgress)}%{" "}
+                      <Trans t={t}>not-occurring</Trans>
+                    </Badge>
+                  </Box>
+                ) : (
+                  ""
+                )}
+              </Box>
+            </Flex>
+          </Box>
+        </Box>
+      </Box>
+      <Box pt={"48px"} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
+        {/*** Manual data entry section for subsectors ***/}
+        <Card.Root mb={24} mt="350px" shadow="none" border="none">
+          <Card.Body>
+            <Heading fontSize="title.lg" mb={2}>
+              {t("add-data-heading")}
+            </Heading>
+            <Text color="content.tertiary" mb={12}>
+              {t("add-data-details")}
+            </Text>
+            <Heading size="sm" mb={4}>
+              {t("select-subsector")}
+            </Heading>
+            <SimpleGrid minChildWidth="337px" gap={4}>
+              {isInventoryLoading || !currentStep.subSectors ? (
+                <Center>
+                  <Spinner size="lg" />
+                </Center>
+              ) : inventoryProgressError ? (
+                <Center>
+                  <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
+                </Center>
+              ) : (
+                currentStep.subSectors.map(
+                  (subSector: SubSectorWithRelations) => (
+                    <Card.Root
+                      data-testid="subsector-card"
+                      maxHeight="120px"
+                      w="full"
+                      height="100px"
+                      px={4}
+                      shadow="none"
+                      border="1px solid"
+                      borderColor="border.overlay"
+                      _hover={{ shadow: "xl" }}
+                      transition="all 300ms"
+                      onClick={() => {
+                        router.push(
+                          `${subsectorBasePath}/${subSector.subsectorId}?refNo=${subSector.referenceNumber}`,
+                        );
+                      }}
+                      key={subSector.subsectorId}
+                    >
+                      <HStack
+                        align="center"
+                        height="120px"
+                        justify="space-between"
+                      >
+                        {subSector.completedCount > 0 &&
+                          subSector.completedCount < subSector.totalCount ? (
+                          <ProgressCircle.Root
+                            size="xs"
+                            mr={1}
+                            value={
+                              (subSector.completedCount /
+                                subSector.totalCount) *
+                              100
+                            }
+                          >
+                            <ProgressCircle.Circle>
+                              <ProgressCircle.Track />
+                              <ProgressCircle.Range stroke="interactive.secondary" />
+                            </ProgressCircle.Circle>
+                          </ProgressCircle.Root>
+                        ) : (
+                          <Icon
+                            as={
+                              subSector.completed
+                                ? MdOutlineCheckCircle
+                                : MissingDataIcon
+                            }
+                            boxSize={10}
+                            color={
+                              subSector.completed
+                                ? "interactive.tertiary"
+                                : "sentiment.warningDefault"
+                            }
+                          />
+                        )}
+                        <Stack w="full">
+                          <Heading
+                            fontSize="label.lg"
+                            maxWidth="200px"
+                            lineClamp="2"
+                            lineHeight="20px"
+                            title={t(nameToI18NKey(subSector.subsectorName!))}
+                          >
+                            {t(nameToI18NKey(subSector.subsectorName!))}
+                          </Heading>
+                          {subSector.scope && (
+                            <Text color="content.tertiary">
+                              {t("scope")}: {subSector.scope.scopeName}
+                            </Text>
+                          )}
+                        </Stack>
+                        <IconButton
+                          bg="background.neutral"
+                          color={
+                            subSector.completed
+                              ? "interactive.tertiary"
+                              : "content.link"
+                          }
+                          aria-label={
+                            subSector.completed
+                              ? t("edit-subsector")
+                              : t("add-subsector-data")
+                          }
+                          _hover={{
+                            color: "base.light",
+                          }}
+                          variant="solid"
+                        >
+                          <Icon
+                            as={subSector.completed ? MdOutlineEdit : MdAdd}
+                            boxSize={6}
+                          />
+                        </IconButton>
+                      </HStack>
+                    </Card.Root>
+                  ),
+                )
+              )}
+            </SimpleGrid>
+          </Card.Body>
+        </Card.Root>
+        {/*** Third party data source section ***/}
+        <Card.Root mb={24} shadow="none" border="none">
+          <Card.Body>
+            <Flex
+              align="center"
+              verticalAlign="center"
+              justify="space-between"
+              mb={12}
+            >
+              <Stack>
+                <Heading fontSize="title.lg" mb={2}>
+                  {t("check-data-heading")}
+                </Heading>
+                <Text color="content.tertiary">{t("check-data-details")}</Text>
+              </Stack>
+            </Flex>
+            {dataSources && (
+              <HStack justify="space-between" py="48px">
+                <Box>
+                  <SubsectorDatasetFilterSelect
+                    collection={subsectorCollection}
+                    value={selectedSubsector}
+                    onValueChange={setSelectedSubsector}
+                    t={t}
+                  />
+                </Box>
+                <Box>
+                  <Button
+                    variant="outline"
+                    borderWidth="1px"
+                    bgColor="border.neutral"
+                    aria-label="Refresh"
+                    fontSize="button.md"
+                    w="full"
+                    h="50px"
+                    loading={areDataSourcesFetching}
+                    onClick={() =>
+                      isFrozenCheck() ? null : onSearchDataSourcesClicked()
+                    }
+                  >
+                    <Icon as={RefreshIcon} boxSize={6} />
+                    {t("refresh-datasets")}
+                  </Button>
+                </Box>
+              </HStack>
+            )}
+            {!dataSources ? (
+              <SearchDataSourcesPrompt
+                t={t}
+                isSearching={areDataSourcesLoading}
+                onSearchClicked={() =>
+                  isFrozenCheck() ? null : onSearchDataSourcesClicked()
+                }
+              />
+            ) : dataSourcesError ? (
+              <Center>
+                <Icon as={MdWarning} boxSize={8} color="semantic.danger" />
+              </Center>
+            ) : dataSources && dataSources?.length === 0 ? (
+              <NoDataSourcesMessage
+                t={t}
+                sector={currentStep.referenceNumber}
+                locode={locode}
+                year={year}
+              />
+            ) : filteredDataSources && filteredDataSources.length === 0 ? (
+              <NoDataSourcesMessage
+                t={t}
+                sector={currentStep.referenceNumber}
+                locode={locode}
+                year={year}
+              />
+            ) : (
+              <VStack align="stretch" gap={8}>
+                {groupedBySubsector.map(
+                  ([subSectorId, sourcesForSubsector]) => {
+                    const groupedByScope = Object.entries(
+                      groupBy(sourcesForSubsector, ({ source }) =>
+                        getSourceScopeName(source, subSectorId),
+                      ),
+                    );
+
+                    const subsectorReferenceNumber =
+                      getSubsectorReferenceNumber(subSectorId);
+
+                    return (
+                      <Box key={subSectorId}>
+                        <HStack
+                          justify="space-between"
+                          mb={4}
+                          color="content.tertiary"
+                          fontSize="body.md"
+                          fontWeight="normal"
+                          fontFamily="body"
+                        >
+                          <Text>
+                            {subsectorReferenceNumber}{" "}
+                            {getSubsectorLabel(subSectorId)}
+                          </Text>
+                          <Text>
+                            {sourcesForSubsector.length} {t("datasets")}
+                          </Text>
+                        </HStack>
+                        <HStack align="stretch" gap={6} w="full">
+                          {groupedByScope.map(([scopeName, scopeSources]) => (
+                            <Grid
+                              templateColumns="repeat(3, 1fr)"
+                              gap="16px"
+                              key={`${subSectorId}-${scopeName}`}
+                            >
+                              {scopeSources.map(({ source, data }) => {
+                                const isHovered =
+                                  hoverStates[source.datasourceId];
+                                return (
+                                  <Card.Root
+                                    key={source.datasourceId}
+                                    data-testid="source-card"
+                                    variant="outline"
+                                    borderWidth="1px"
+                                    borderColor={
+                                      isSourceConnected(source) &&
+                                        source.inventoryValues?.length
+                                        ? "interactive.tertiary"
+                                        : "border.overlay"
+                                    }
+                                    shadow="none"
+                                    _hover={{ shadow: "xl" }}
+                                    transition="all 300ms"
+                                    w="330px"
+                                    p="24px"
+                                    gap="4px"
+                                  >
+                                    <Card.Header
+                                      p="0"
+                                      display="flex"
+                                      flexDirection="column"
+                                      gap="0"
+                                    >
+                                      <Icon
+                                        as={
+                                          {
+                                            I: MdOutlineHomeWork,
+                                            II: MdOutlineLocalShipping,
+                                            III: MdOutlineDelete,
+                                            IV: MdOutlineFactory,
+                                            V: LuWheat,
+                                          }[
+                                          currentStep.referenceNumber
+                                          ] ?? MdOutlineHomeWork
+                                        }
+                                        boxSize={9}
+                                        color="content.tertiary-light"
+                                        mb="10px"
+                                      />
+                                      <Flex
+                                        direction="row"
+                                        align="center"
+                                        gap="8px"
+                                      >
+                                        <Badge
+                                          variant="plain"
+                                          fontSize="label.sm"
+                                          fontWeight="medium"
+                                          fontFamily="heading"
+                                          letterSpacing="widest"
+                                          bg="background.graySubtle"
+                                          color="content.secondary"
+                                          px="8px"
+                                          py="1px"
+                                          borderRadius="md"
+                                          lineHeight="1.2"
+                                          borderWidth="0"
+                                        >
+                                          {source.subCategory
+                                            ?.referenceNumber ||
+                                            source.subSector?.referenceNumber}
+                                        </Badge>
+                                        <Tooltip
+                                          showArrow
+                                          content={
+                                            source.subSector?.subsectorName
+                                          }
+                                        >
+                                          <Text
+                                            fontSize="overline"
+                                            fontWeight="bold"
+                                            color="content.primary"
+                                            textTransform="uppercase"
+                                            letterSpacing="widest"
+                                            lineHeight="24"
+                                            fontFamily="heading"
+                                            lineClamp={1}
+                                          >
+                                            {source.subSector?.subsectorName}
+                                          </Text>
+                                        </Tooltip>
+                                      </Flex>
+                                      <Heading
+                                        fontSize="title.md"
+                                        lineClamp={2}
+                                        minHeight={10}
+                                        mt="6px"
+                                        lineHeight={24}
+                                      >
+                                        {getTranslationFromDict(
+                                          source.datasetName,
+                                        )}
+                                      </Heading>
+                                      <Text fontSize="label.md" mt="4px">
+                                        {t("by-data-source")}{" "}
+                                        <Link
+                                          href={source.publisher?.url}
+                                          target="_blank"
+                                          textDecoration="underline"
+                                          color="content.link"
+                                          rel="noreferrer noopener"
+                                        >
+                                          {source.publisher?.name}
+                                        </Link>
+                                      </Text>
+                                    </Card.Header>
+                                    <Card.Body
+                                      justifyContent="space-between"
+                                      p="0"
+                                    >
+                                      <Flex
+                                        direction="row"
+                                        mb={0}
+                                        wrap="wrap"
+                                        gap={2}
+                                      >
+                                        {data?.totals?.emissions?.co2eq_100yr != null &&
+                                          data.totals.emissions.co2eq_100yr !== 0n && (
+                                            <Text
+                                              fontSize="display.sm"
+                                              fontWeight="semibold"
+                                            >
+                                              {convertKgToTonnes(
+                                                bigIntToDecimal(
+                                                  data.totals.emissions.co2eq_100yr,
+                                                ).toNumber(),
+                                              )}
+                                            </Text>
+                                          )}
+                                        <Flex
+                                          direction="row"
+                                          gap="4px"
+                                          flexWrap="wrap"
+                                        >
+                                          <Badge
+                                            fontSize={12}
+                                            borderColor="border.overlay"
+                                            flex="1"
+                                          >
+                                            <Icon
+                                              as={DataCheckIcon}
+                                              boxSize={5}
+                                              color="content.tertiary"
+                                            />
+                                            {t("data-quality")}:{" "}
+                                            {t(
+                                              "quality-" + source.dataQuality,
+                                            )}
+                                          </Badge>
+                                          {source.subCategory?.scope && (
+                                            <Badge
+                                              fontSize={12}
+                                              borderColor="border.overlay"
+                                              flex="1"
+                                            >
+                                              <Icon
+                                                as={FiTarget}
+                                                boxSize={4}
+                                                color="content.tertiary"
+                                              />
+                                              {t("scope")}:{" "}
+                                              {
+                                                source.subCategory.scope
+                                                  .scopeName
+                                              }
+                                            </Badge>
+                                          )}
+                                        </Flex>
+                                      </Flex>
+                                      <Text
+                                        textOverflow="ellipsis"
+                                        whiteSpace="nowrap"
+                                        overflow="hidden"
+                                        color="content.tertiary"
+                                        lineClamp={
+                                          isSourceConnected(source) &&
+                                            source.inventoryValues?.length
+                                            ? 0
+                                            : 4
+                                        }
+                                        maxHeight={
+                                          isSourceConnected(source) &&
+                                            source.inventoryValues?.length
+                                            ? "100px"
+                                            : "184px"
+                                        }
+                                        fontFamily="body"
+                                        fontSize="body.md"
+                                        lineHeight="20px"
+                                        fontWeight="regular"
+                                        marginTop="8px"
+                                      >
+                                        {getTranslationFromDict(
+                                          source.datasetDescription,
+                                        ) ||
+                                          getTranslationFromDict(
+                                            source.methodologyDescription,
+                                          )}
+                                      </Text>
+                                      <VStack w="full" mb="16px">
+                                        <Link
+                                          textDecoration="underline"
+                                          mt={4}
+                                          mb={2}
+                                          onClick={() =>
+                                            onSourceClick(source, data)
+                                          }
+                                          alignSelf="flex-start"
+                                          fontSize="label.lg"
+                                          fontWeight="medium"
+                                          letterSpacing="wide"
+                                        >
+                                          {t("see-more-details")}
+                                        </Link>
+                                        {isSourceConnected(source) &&
+                                          source.inventoryValues?.length ? (
+                                          <Button
+                                            variant="outline"
+                                            w="full"
+                                            h="50px"
+                                            bg={
+                                              isHovered
+                                                ? "semantic.dangerOverlay"
+                                                : "semantic.successOverlay"
+                                            }
+                                            borderColor={
+                                              isHovered
+                                                ? "semantic.danger"
+                                                : "semantic.success"
+                                            }
+                                            borderWidth="1px"
+                                            color={
+                                              isHovered
+                                                ? "semantic.danger"
+                                                : "semantic.success"
+                                            }
+                                            fontWeight="semibold"
+                                            fontSize="14px"
+                                            onClick={() =>
+                                              isFrozenCheck()
+                                                ? null
+                                                : onDisconnectThirdPartyData(
+                                                  source,
+                                                )
+                                            }
+                                            loading={
+                                              isDisconnectLoading &&
+                                              source.datasourceId ===
+                                              disconnectingDataSourceId
+                                            }
+                                            onMouseEnter={() =>
+                                              onButtonHover(source)
+                                            }
+                                            onMouseLeave={() =>
+                                              onMouseLeave(source)
+                                            }
+                                          >
+                                            <Icon as={MdCheckCircleOutline} />
+                                            {isHovered
+                                              ? t("disconnect-data")
+                                              : t("data-connected")}
+                                          </Button>
+                                        ) : isSourceGpcBlocked(source) ? (
+                                          <Tooltip
+                                            showArrow
+                                            content={t(
+                                              "data-already-added-connected",
+                                            )}
+                                          >
+                                            <Button
+                                              variant="outline"
+                                              w="full"
+                                              h="50px"
+                                              borderWidth="0"
+                                              bgColor="background.graySubtle"
+                                              disabled
+                                              color="interactive.control"
+                                              fontWeight="semibold"
+                                              fontSize="14px"
+                                            >
+                                              {t("connect-data")}
+                                              <Icon
+                                                as={MdInfoOutline}
+                                                boxSize={4}
+                                              />
+                                            </Button>
+                                          </Tooltip>
+                                        ) : (
+                                          <Button
+                                            variant="outline"
+                                            w="full"
+                                            h="50px"
+                                            borderWidth="1px"
+                                            borderColor="border.overlay"
+                                            bgColor="background.neutral"
+                                            color="interactive.secondary"
+                                            fontWeight="semibold"
+                                            fontSize="14px"
+                                            onClick={() =>
+                                              onConnectClick(source)
+                                            }
+                                            loading={
+                                              isConnectDataSourceLoading &&
+                                              source.datasourceId ===
+                                              connectingDataSourceId
+                                            }
+                                          >
+                                            {t("connect-data")}
+                                          </Button>
+                                        )}
+                                      </VStack>
+                                    </Card.Body>
+                                  </Card.Root>
+                                );
+                              })}
+                            </Grid>
+                          ))}
+                        </HStack>
+                      </Box>
+                    );
+                  },
+                )}
+              </VStack>
+            )}
+            {filteredDataSources && filteredDataSources.length > 6 && (
+              <Button
+                variant="ghost"
+                color="content.tertiary"
+                onClick={() => setDataSectionExpanded(!isDataSectionExpanded)}
+                mt={8}
+                fontWeight="normal"
+              >
+                {t(isDataSectionExpanded ? "less-datasets" : "more-datasets")}
+                <Icon
+                  boxSize={6}
+                  as={isDataSectionExpanded ? MdArrowDropUp : MdArrowDropDown}
+                />
+              </Button>
+            )}
+            {hasNotationKeySources && dataSources && dataSources.length > 0 && (
+              <HStack
+                gap={2}
+                mt={6}
+                px={4}
+                py={3}
+                bg="background.neutral"
+                borderRadius="md"
+                color="content.tertiary"
+                fontSize="body.md"
+              >
+                <Icon as={MdInfoOutline} boxSize={5} flexShrink={0} />
+                <Text>
+                  {t("notation-key-no-notice")}{" "}
+                  <Link
+                    href={pathname.replace(/\/data\/.*$/, "/manage-sectors")}
+                    target="_blank"
+                    color="content.link"
+                    textDecoration="underline"
+                    fontWeight="medium"
+                  >
+                    {t("manage-missing-sub-sectors")}
+                  </Link>
+                </Text>
+              </HStack>
+            )}
+          </Card.Body>
+        </Card.Root>
+        {/* Upload own data section */}
+        {hasFeatureFlag(FeatureFlags.UPLOAD_OWN_DATA_ENABLED) && (
+          <>
+            <Card.Root mb={24} shadow="none" border="none" w="full">
+              <Card.Body>
+                <Heading fontSize="title.lg" mb={2}>
+                  {t("upload-your-data-heading")}
+                </Heading>
+                <Text color="content.tertiary" mb={12}>
+                  {t("upload-your-data-details")}
+                </Text>
+                <Box display="flex">
+                  <Box w="full">
+                    <Box w="full">
+                      <Box mb="24px">
+                        <FileInput
+                          onFileSelect={() =>
+                            isFrozenCheck()
+                              ? null
+                              : handleFileSelect(uploadedFile!)
+                          }
+                          setUploadedFile={setUploadedFile}
+                          t={t}
+                        />
+                      </Box>
+                      <Box mb="24px">
+                        {sectorData[0]?.files.length > 0 ? (
+                          <Heading size="sm">{t("files-uploaded")}</Heading>
+                        ) : (
+                          ""
+                        )}
+                      </Box>
+                      <Box display="flex" flexDirection="column" gap="8px">
+                        {sectorData &&
+                          sectorData[0]?.files.map(
+                            (file: InventoryUserFileAttributes, i: number) => {
+                              return (
+                                <Card.Root
+                                  shadow="none"
+                                  minH="120px"
+                                  w="full"
+                                  borderWidth="1px"
+                                  borderColor="border.overlay"
+                                  borderRadius="8px"
+                                  px="16px"
+                                  py="16px"
+                                  key={i}
+                                >
+                                  <Card.Body>
+                                    <Box display="flex" gap="16px">
+                                      <Box>
+                                        <ExcelFileIcon />
+                                      </Box>
+                                      <Box
+                                        display="flex"
+                                        flexDirection="column"
+                                        justifyContent="center"
+                                        gap="8px"
+                                      >
+                                        <Heading
+                                          fontSize="lable.lg"
+                                          fontWeight="normal"
+                                          letterSpacing="wide"
+                                          truncate
+                                        >
+                                          {file.fileName}
+                                        </Heading>
+                                        <Text
+                                          fontSize="body.md"
+                                          fontWeight="normal"
+                                          color="interactive.control"
+                                        >
+                                          {bytesToMB(file.size ?? 0)}
+                                        </Text>
+                                      </Box>
+                                      <Box
+                                        color="sentiment.negativeDefault"
+                                        display="flex"
+                                        justifyContent="right"
+                                        alignItems="center"
+                                        w="full"
+                                      >
+                                        <Button
+                                          variant="ghost"
+                                          color="sentiment.negativeDefault"
+                                          onClick={() =>
+                                            removeSectorFile(
+                                              file.fileId,
+                                              sectorData[0].sectorName,
+                                              file.cityId,
+                                            )
+                                          }
+                                        >
+                                          <FiTrash2 size={24} />
+                                        </Button>
+                                      </Box>
+                                    </Box>
+                                    <Box w="full" position="relative" pl="63px">
+                                      {file.subsectors
+                                        ?.split(",")
+                                        .map((item: any) => (
+                                          <Tag
+                                            key={item}
+                                            mt={2}
+                                            mr={2}
+                                            size="md"
+                                            variant="solid"
+                                            color="content.alternative"
+                                            bg="background.neutral"
+                                            maxW="150px"
+                                          >
+                                            <TagLabel>{item}</TagLabel>
+                                          </Tag>
+                                        ))}
+                                    </Box>
+                                  </Card.Body>
+                                </Card.Root>
+                              );
+                            },
+                          )}
+                      </Box>
+                    </Box>
+                  </Box>
+                </Box>
+              </Card.Body>
+            </Card.Root>
+            {/* Add file data modal */}
+            <AddFileDataDialog
+              isOpen={openFileUploadDialog}
+              onClose={() => setOpenFileUploadDialog(false)}
+              subsectors={currentStep.subSectors}
+              onOpenChange={setOpenFileUploadDialog}
+              t={t}
+              uploadedFile={uploadedFile!}
+              currentStep={currentStep}
+              userInfo={userInfo}
+              inventory={inventory}
+            />
+          </>
+        )}
+
+        {/*** Drawers ***/}
+        <SourceDrawer
+          source={selectedSource}
+          isConnected={isSourceConnected(selectedSource)}
+          sourceData={selectedSourceData}
+          sector={{ sectorName: currentStep.sector?.sectorName ?? "" }}
+          isOpen={isSourceDrawerOpen}
+          onClose={onSourceDrawerClose}
+          onConnectClick={() => onConnectClick(selectedSource!)}
+          isConnectLoading={isConnectDataSourceLoading}
+          t={t}
+          inventoryId={inventory}
+          numberFormat={userInfo?.numberFormat}
+        />
+      </Box>
+    </>
+  );
+}

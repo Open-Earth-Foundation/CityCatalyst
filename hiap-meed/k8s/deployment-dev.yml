@@ -32,6 +32,66 @@ spec:
               value: "0.0.0.0"
             - name: API_PORT
               value: "8000"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: LOG_FILE_ENABLED
+              value: "true"
+            - name: LOG_DIR
+              value: "logs"
+            - name: LOCAL_ARTIFACTS_ENABLED
+              value: "false"
+            - name: MLFLOW_ENABLED
+              value: "true"
+            - name: MLFLOW_TRACKING_URI
+              value: "https://mlflow-dev.openearth.dev"
+            - name: MLFLOW_EXPERIMENT_NAME
+              value: "hiap-meed"
+            - name: MLFLOW_ENVIRONMENT
+              value: "dev"
+            - name: MLFLOW_HTTP_REQUEST_TIMEOUT
+              value: "3"
+            - name: MLFLOW_HTTP_REQUEST_MAX_RETRIES
+              value: "1"
+            - name: MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR
+              value: "1"
+            - name: MLFLOW_HTTP_REQUEST_BACKOFF_JITTER
+              value: "0"
+            - name: GIT_PYTHON_REFRESH
+              value: "quiet"
+            - name: MLFLOW_ASYNC_LOGGING_ENABLED
+              value: "true"
+            - name: HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED
+              value: "false"
+            - name: HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL
+              value: "gpt-5.4-mini"
+            - name: UPSTREAM_HTTP_TIMEOUT_SECONDS
+              value: "30"
+            - name: UPSTREAM_HTTP_MAX_RETRIES
+              value: "2"
+            - name: UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS
+              value: "0.5"
+            - name: CCGLOBAL_API_BASE_URL
+              value: "https://ccglobal.openearth.dev"
+            - name: HIAP_MEED_CITY_DATA_SOURCE
+              value: "api"
+            - name: HIAP_MEED_LEGAL_DATA_SOURCE
+              value: "s3"
+            - name: HIAP_MEED_LEGAL_S3_BUCKET
+              value: "test-global-api"
+            - name: HIAP_MEED_LEGAL_S3_KEY
+              value: "raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/legal-classification-v2.csv"
+            - name: HIAP_MEED_LEGAL_S3_REGION
+              value: "us-east-1"
+            - name: HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE
+              value: "api"
+            - name: HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE
+              value: "api"
+            - name: HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE
+              value: "api"
+            - name: HIAP_MEED_TOP_N
+              value: "20"
+            - name: ACTIVITY_DATA_LEVEL_MAPPING
+              value: "false"
           resources:
             requests:
               cpu: "50m"

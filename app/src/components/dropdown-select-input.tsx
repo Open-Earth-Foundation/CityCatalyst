@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Icon, Fieldset, CheckboxGroup } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp, MdClose } from "react-icons/md";
-import { SubSectorWithRelations } from "@/app/[lng]/[inventory]/data/[step]/types";
+import { SubSectorWithRelations } from "@/components/GHGI/data-step/types";
 import {
   UseFormRegister,
   UseFormSetValue,

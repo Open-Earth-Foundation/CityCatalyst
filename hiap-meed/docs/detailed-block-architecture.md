@@ -6,11 +6,11 @@
 | ------------ | ---------------------------------------------- | ------------------------------------------------ |
 | Exclusion Preview | Sector, co-benefit, and guarded free-text proposal | Implemented |
 | Hard Filter  | Confirmed exclusion by `action_id`             | Implemented                                      |
-| Hard Filter  | Legal requirement check                        | Implemented                                      |
+| Hard Filter  | Legal verdict check                            | Implemented                                      |
 | Impact       | GPC reference evidence collection              | Implemented                                      |
-| Impact       | Activity relevance × reduction band × timeline | Implemented                                      |
-| Alignment    | Policy + sector + other components             | Implemented (`other` uses LLM-based co-benefit mapping plus normalized selected co-benefit scoring) |
-| Feasibility  | Soft legal + socio-economic weighted component | Implemented                                      |
+| Impact       | Activity relevance x reduction band x timeline | Implemented                                      |
+| Alignment    | Policy + sector + other components             | Implemented (`other` uses direct co-benefit selections plus normalized selected co-benefit scoring) |
+| Feasibility  | Legal verdict score + mitigation feasibility + financial feasibility | Implemented                                      |
 | Weighted Sum | Weighted aggregation, sort, rank, `top_n`      | Implemented                                      |
 
 ---
@@ -20,7 +20,7 @@
 This block removes actions that are not eligible before any scoring happens. It applies two binary checks:
 
 1. Confirmed city exclusions
-2. Hard legal requirements (must be satisfied, otherwise remove)
+2. Legal verdict screening (`blocked` actions are removed)
 
 Biome filtering is intentionally not included yet.
 
@@ -29,10 +29,10 @@ Biome filtering is intentionally not included yet.
 - **All mitigation actions**
   - Source: `Action` (core actions list)
 - **Confirmed city exclusions**
-  - Source: frontend request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
+  - Source: caller request `excludedActionIds[]`, usually confirmed after `POST /v1/prioritize/exclusions/preview`
   - Current behavior: each matching `action_id` is discarded before legal filtering
-- **Hard legal requirements per action**
-  - Source: legal requirements client payload (mock/API), filtered to hard strengths (`mandatory|required`)
+- **Legal assessment per action**
+  - Source: legal assessments client payload (S3 by default, mock for fixtures), filtered by request `countryCode`
 
 ### Outputs
 
@@ -45,11 +45,10 @@ Biome filtering is intentionally not included yet.
 graph TD
   ActionTbl[(Action)]
   Confirmed[(Frontend excludedActionIds)]
-  ReqTbl[(ActionLegalRequirement<br/>strength = hard)]
-  SigTbl[(LegalSignal<br/>scoped to city or CL)]
+  LegalTbl[(ActionLegalAssessment<br/>country filtered)]
 
   Excl{Excluded by city?}
-  Legal{Meets hard legal requirements?}
+  Legal{Verdict category blocked?}
 
   DiscardExcl((Discarded<br/>Excluded))
   DiscardLegal((Discarded<br/>Legally blocked))
@@ -61,11 +60,10 @@ graph TD
   Excl -- Yes --> DiscardExcl
   Excl -- No --> Legal
 
-  ReqTbl -.-> Legal
-  SigTbl -.-> Legal
+  LegalTbl -.-> Legal
 
-  Legal -- No --> DiscardLegal
-  Legal -- Yes --> Valid
+  Legal -- Yes --> DiscardLegal
+  Legal -- No --> Valid
 ```
 
 ## Impact Architecture
@@ -81,7 +79,7 @@ It combines:
 ### Inputs (and where they come from)
 
 - City emissions, activity-level
-  - Source: frontend request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
+  - Source: caller request `requestData.cityDataList[].cityEmissionsData.gpcData[*].activities[*].totalEmissions`
 - Action to activity targeting (`gpc_ref` mapping)
   - Source: `Action.emissions`
 - Reduction potential band
@@ -96,7 +94,7 @@ It combines:
 - Impact scores per action
   - Output: `Impact Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Impact Evidence` (top contributing activities and multipliers)
+  - Output: `Impact Evidence` (top contributing subsectors and multipliers)
 
 Canonical score policy:
 
@@ -104,11 +102,18 @@ Canonical score policy:
 - Canonical score formula:
   - `IMPACT_SCORE = (IMPACT_WEIGHT_REDUCTION_SHARE * reduction_component) + (IMPACT_WEIGHT_TIMELINE * timeline_component)`
 - No run-relative max-normalization is applied.
+- Negative `V.*` AFOLU inventory values remain valid input data, and Impact now scores AFOLU by absolute magnitude.
+  - Subsector matching for Impact uses `abs(totalEmissions)` for AFOLU `V.*`.
+  - The reduction denominator also includes `abs(totalEmissions)` for AFOLU `V.*`.
+  - Non-AFOLU subsectors still require strictly positive city emissions.
+  - This is intentional: AFOLU removals are not ignored, but negative non-AFOLU values still do not contribute to Impact scoring.
+  - Net city emissions remain signed and can be negative; this denominator is a separate metric used only for ranking.
+  - Conceptually, the denominator measures climate-relevant scoring magnitude, not signed net city emissions.
 
 Current implementation detail:
 
-- `impact_block_score = (0.80 × reduction_share_of_city_emissions) + (0.20 × timeline_score)`
-- `reduction_share_of_city_emissions` is computed from matched action `gpc_reference_number` keys only.
+- `impact_block_score = (0.80 x reduction_share_of_city_emissions) + (0.20 x timeline_score)`
+- `reduction_share_of_city_emissions` is computed from matched action `sector.subsector` keys.
 
 ```mermaid
 graph TD
@@ -148,7 +153,7 @@ Alignment answers: **Does this action align with what the city and policy enviro
 
 It combines:
 
-- Policy signals (supports, targets, funds, constrains)
+- Action policy scores (supports, targets, funds, constrains)
 - City strategic preferences (priority sectors, timeframe preferences, and political priorities)
 
 Exclusions are handled in the Hard Filter stage, so Alignment only scores eligible actions.
@@ -156,15 +161,15 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 ### Inputs (and where they come from)
 
 - Policy support score and signals
-  - Source: `actions_policy_signals_api_mock.json` (`policy_support_score`, `policy_signals[]`)
+  - Source: `action_policy_scores_api_mock.json` (`policy_support_score`, `policy_evidence[]`)
 - City strategic preference sectors
-  - Source: frontend request `cityStrategicPreferenceSectors`
+  - Source: caller request `cityStrategicPreferenceSectors`
 - City strategic preference timeframes
-  - Source: frontend request `cityStrategicPreferenceTimeframes`
+  - Source: caller request `cityStrategicPreferenceTimeframes`
 - Action implementation timeline
   - Source: `Action.timelineForImplementation`
-- City strategic preference other text
-  - Source: frontend request `cityStrategicPreferenceOther`, mapped to allowed co-benefit keys with OpenAI structured output
+- City strategic preference co-benefit keys
+  - Source: caller request `cityStrategicPreferenceCoBenefitKeys`, validated against the allowed co-benefit taxonomy
 - Action sector mapping for city preference overlap
   - Source: `Action.emissions["sector_number"]`
 - Candidate actions (already hard-filtered)
@@ -180,8 +185,7 @@ Exclusions are handled in the Hard Filter stage, so Alignment only scores eligib
 ```mermaid
 graph TD
   Valid[(Valid Actions for Scoring)]
-  PolSig[(PolicySignal)]
-  ActPol[(ActionPolicySignal)]
+  PolicyScore[(ActionPolicyScore)]
   Pref[(CityStrategicPreferences)]
   ActionTbl[(Action)]
 
@@ -193,8 +197,7 @@ graph TD
   AlignExplain[Alignment Evidence optional]
 
   Valid --> Policy
-  PolSig -.-> Policy
-  ActPol -.-> Policy
+  PolicyScore -.-> Policy
 
   Valid --> PrefBoost
   Pref -.-> PrefBoost
@@ -215,23 +218,25 @@ Feasibility answers: **Can this city realistically implement this action?**
 
 It combines:
 
-- Legal feasibility using soft signals for boosts and penalties
-- Socio-economic fit via action-defined fit rules applied to city indicator buckets
+- Legal feasibility using the direct legal verdict score
+- Mitigation feasibility from the city-scoped action feasibility endpoint
+- Financial feasibility from the city-scoped climate-finance endpoint
 
-Hard legal requirements are enforced in the Hard Filter stage.
+Blocked legal verdicts are enforced in the Hard Filter stage.
 
 ### Inputs (and where they come from)
 
-- Legal requirement rows by action
-  - Source: `actions_legal_api_mock.json` grouped by `action_id`
-- Soft legal strengths used in scoring
-  - Source: legal requirements where `strength in {recommended, optional}`
-- Informational legal constraints (evidence only)
-  - Source: legal requirements where `strength == informational`
-- Socio-economic indicator buckets for the city
-  - Source: city indicators (`attribute_category`) from `city_api_mock.json`
-- Action socio-economic fit rules
-  - Source: `Action.socioeconomic_indicators` (`indicator_key`, `direction`, `weight`, `rationale`)
+- Legal assessment rows by action
+  - Source: `actions_legal_api_mock.json` filtered by `countryCode` and mapped by `srcActionId`
+- Legal verdict score used in scoring
+  - Source: `verdictScore`
+- Legal evidence fields
+  - Source: `ownership*`, `restrictions*`, `legalJustification*`, `legalReferences`, and timestamps
+- Mitigation feasibility scores for the city
+  - Source: `action_mitigation_feasibility_scores_api_mock.json` or the matching live endpoint, keyed by `src_action_id`
+- Financial feasibility scores for the city
+  - Source: `action_financial_feasibility_scores_api_mock.json` or `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`, keyed by `action_id`
+  - hiap-meed consumes the compact batch score, route, reason, and links; linked opportunity/project detail endpoints are not fetched in the first implementation
 - Candidate actions (already hard-filtered)
   - Source: `Valid Actions for Scoring`
 
@@ -240,33 +245,35 @@ Hard legal requirements are enforced in the Hard Filter stage.
 - Feasibility scores per action
   - Output: `Feasibility Scores` (one score per action, used in final ranking)
 - Optional trace fields
-  - Output: `Feasibility Evidence` (counts by strength/status, component values, per-indicator contributions)
+  - Output: `Feasibility Evidence` (legal, mitigation, and financial component values; contribution weights; fallback diagnostics; compact route/reason/link evidence)
 
 ```mermaid
 graph TD
   Valid[(Valid Actions for Scoring)]
-  LegSig[(LegalSignal)]
-  ActLeg[(ActionLegalRequirement)]
-  CitySoc[(CityMitigationSocioEconomicIndicatorValue)]
-  ActionTbl[(Action)]
+  LegalRows[(Action legal assessments)]
+  MitRows[(Action mitigation feasibility scores)]
+  FinRows[(Action financial feasibility scores)]
 
-  LegalSoft[Legal score]
-  SocFit[Socio-economic fit score]
+  LegalSoft[Legal verdict component<br/>weight 0.34]
+  MitFit[Mitigation feasibility component<br/>weight 0.33]
+  FinFit[Financial feasibility component<br/>weight 0.33]
 
   Combine[Feasibility Score]
   FeasOut[Feasibility Scores]
   FeasExplain[Feasibility Evidence optional]
 
   Valid --> LegalSoft
-  LegSig -.-> LegalSoft
-  ActLeg -.-> LegalSoft
+  LegalRows -.-> LegalSoft
 
-  Valid --> SocFit
-  CitySoc -.-> SocFit
-  ActionTbl -.-> SocFit
+  Valid --> MitFit
+  MitRows -.-> MitFit
+
+  Valid --> FinFit
+  FinRows -.-> FinFit
 
   LegalSoft --> Combine
-  SocFit --> Combine
+  MitFit --> Combine
+  FinFit --> Combine
 
   Combine --> FeasOut
   Combine -.-> FeasExplain
@@ -294,7 +301,11 @@ This step combines the three pillar scores into a single ranking score and produ
 ### Outputs
 
 - Final prioritized action list
-  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and optional `explanation`
+  - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and optional explanations keyed by language
+  - Explanation shape: generated explanations follow the fixed impact-driver, alignment-driver, and feasibility-driver structure while avoiding repetition of the numeric score bars
+- Feasibility diagnostics artifact
+  - Output: `012_feasibility.json` with the full grouped feasibility breakdown under `legal`, `mitigation_feasibility`, and `financial_feasibility`
+  - API contrast: `ranked_actions[].evidence_summary.feasibility` uses the same grouped top-level component keys, but only includes the compact response subset plus `feasibility_score`
 
 ```mermaid
 graph TD

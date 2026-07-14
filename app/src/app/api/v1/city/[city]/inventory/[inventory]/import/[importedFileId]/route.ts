@@ -164,7 +164,10 @@
 
 import UserService from "@/backend/UserService";
 import ImportMappingService from "@/backend/ImportMappingService";
+import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
+import FileValidatorService from "@/backend/FileValidatorService";
+import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
@@ -207,6 +210,26 @@ const EXCLUDED_COLUMN_NAMES = [
   "Emission factor - Description",
   "Emission factor - Source",
 ].map((s) => s.toLowerCase().trim());
+
+type DetectedColumnRow = {
+  columnName: string;
+  interpretedAs: string | null;
+  status: "detected" | "manual";
+  exampleValue: string | null;
+};
+
+/** Fallback when the file buffer is unavailable but column indices were stored at upload. */
+function columnsFromStoredDetection(
+  detectedColumns: Record<string, number>,
+  gpcFieldNames: Record<string, string>,
+): DetectedColumnRow[] {
+  return Object.keys(detectedColumns).map((key) => ({
+    columnName: gpcFieldNames[key] ?? key,
+    interpretedAs: gpcFieldNames[key] ?? key,
+    status: "detected" as const,
+    exampleValue: "-",
+  }));
+}
 
 export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
   if (!session) {
@@ -376,21 +399,21 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         warnings: [],
       };
     } else if (importedFile.validationResults?.detectedColumns) {
-      let detectedColumnsList: Array<{
-        columnName: string;
-        interpretedAs: string | null;
-        status: "detected" | "manual";
-        exampleValue: string | null;
-      }> = [];
+      let detectedColumnsList: DetectedColumnRow[] = [];
+      const storedDetectedColumns = importedFile.validationResults
+        .detectedColumns as Record<string, number>;
+
+      const fileBuffer =
+        await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
 
       if (
-        importedFile.data &&
+        fileBuffer &&
         (importedFile.fileType === "xlsx" || importedFile.fileType === "csv")
       ) {
         try {
           // Parse file to get actual headers and sample values (xlsx/csv only; PDF uses extracted rows)
           const parsedData = await FileParserService.parseFile(
-            importedFile.data,
+            fileBuffer,
             importedFile.fileType,
           );
 
@@ -398,17 +421,20 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             const headers = parsedData.primarySheet.headers;
             const rows = parsedData.primarySheet.rows || [];
 
+            // Re-run detection live so fixes to aliases are immediately reflected
+            // without needing to re-upload the file.
+            const liveDetectedColumns =
+              FileValidatorService.detectRequiredColumns(headers);
+
             // Build detected columns list (exclude non-required columns)
             for (const header of headers) {
               if (!header || isExcludedColumn(header)) continue;
 
-              // Find which GPC field this column maps to
+              // Find which GPC field this column maps to (live detection)
               let interpretedAs: string | null = null;
               let status: "detected" | "manual" = "manual";
 
-              for (const [key, index] of Object.entries(
-                importedFile.validationResults.detectedColumns,
-              )) {
+              for (const [key, index] of Object.entries(liveDetectedColumns)) {
                 if (headers[Number(index)] === header) {
                   interpretedAs = gpcFieldNames[key] || key;
                   status = "detected";
@@ -442,8 +468,18 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
             }
           }
         } catch (error) {
-          console.error("Failed to parse file for validation step:", error);
+          logger.error(
+            { err: error, importedFileId },
+            "Failed to parse file for validation step",
+          );
         }
+      }
+
+      if (detectedColumnsList.length === 0) {
+        detectedColumnsList = columnsFromStoredDetection(
+          storedDetectedColumns,
+          gpcFieldNames,
+        );
       }
 
       validationStepData = {
@@ -505,13 +541,15 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           mappingPreview: null,
           extractedRows: pdfExtractedRows,
         };
-      } else if (
-        importedFile.data &&
-        importedFile.validationResults?.detectedColumns
-      ) {
+      } else if (importedFile.validationResults?.detectedColumns) {
+        const reviewBuffer =
+          await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+        if (!reviewBuffer) {
+          throw new Error("Imported file buffer not available for review step");
+        }
         // xlsx/csv: Parse the file and create mapping preview
         const parsedData = await FileParserService.parseFile(
-          importedFile.data,
+          reviewBuffer,
           importedFile.fileType,
         );
 

@@ -3,31 +3,37 @@
 
 # Model Configuration
 models:
-  # Default model to use when none is specified
-  default: "openai/gpt-4.1"
-
-  # Available models with their capabilities and default parameters
-  available:
-    "openai/gpt-4.1":
-      name: "GPT-4.1"
-      default_temperature: 0.2
+  orchestrator:
+    name: "openai/gpt-5.4-mini"
+    temperature: 0.0
+    description: "Default chat model for Climate Advisor conversations."
+  agentic_flow:
+    name: "openai/gpt-5.4"
+    description: "Agentic flow model for high-context review and source selection workflows."
+    temperature: 0.0
 
 # Generation Parameters
 generation:
-  # Default parameters for text generation
-  defaults:
-    temperature: 0.1
+  # Prompt-size guardrails. The OpenRouter GPT-5.4-family route used here is
+  # counted with o200k_base unless tiktoken can resolve the concrete model.
+  prompt_budget:
+    tokenizer_encoding: "o200k_base"
+    stationary_energy:
+      chat_context:
+        max_prompt_tokens: 150000
+        max_normalized_rows_per_candidate: 3
+        include_source_data: false
 
 # System Prompts
 prompts:
-  # Default system prompt for general climate advice
-  default: "prompts/default.md"
+  # Shared core prompt composed into every workflow
+  core: "prompts/core.md"
 
-  # Prompt for inventory-specific context
-  inventory_context: "prompts/inventory_context.md"
+  # Workflow prompt for general climate and inventory chat
+  chat: "prompts/chat.md"
 
-  # Prompt for data analysis tasks
-  data_analysis: "prompts/data_analysis.md"
+  # Prompt for active Stationary Energy review chat flows
+  stationary_energy_review: "prompts/stationary_energy_review.md"
 
 # API Configuration
 api:

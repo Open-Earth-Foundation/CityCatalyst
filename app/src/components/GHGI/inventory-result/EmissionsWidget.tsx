@@ -1,0 +1,183 @@
+import { convertKgToTonnes, clamp, formatNumber } from "@/util/helpers";
+import {
+  Box,
+  Card,
+  Heading,
+  HStack,
+  Icon,
+  Stack,
+  StackSeparator,
+  Text,
+} from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { InventoryResponse } from "@/util/types";
+import { Trans } from "react-i18next/TransWithoutContext";
+import { PopulationAttributes } from "@/models/Population";
+import { HeatIcon } from "@/components/icons";
+
+import {
+  ProgressCircleRing,
+  ProgressCircleRoot,
+} from "@/components/ui/progress-circle";
+import { FiHeart } from "react-icons/fi";
+import { api } from "@/services/api";
+
+const EmissionsWidgetCard = ({
+  icon,
+  value,
+  field,
+  showProgress,
+  isLoading = false,
+  numberFormat,
+}: {
+  icon: any;
+  value?: number | undefined;
+  field: any;
+  showProgress: boolean;
+  isLoading?: boolean;
+  numberFormat?: string;
+}) => {
+  const finalValue = value
+    ? showProgress
+      ? `${formatNumber(value, numberFormat, 3)}%`
+      : convertKgToTonnes(value, numberFormat)
+    : "N/A";
+
+  return (
+    <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
+      <Stack w="full" height={"83px"}>
+        <HStack align="start">
+          {isLoading ? (
+            <ProgressCircleRoot value={null} size="sm" mr="4px">
+              <ProgressCircleRing cap="round" css={{ "--thickness": "2px" }} />
+            </ProgressCircleRoot>
+          ) : value && showProgress ? (
+            <ProgressCircleRoot
+              value={Math.round(clamp(value, 0, 100))}
+              size="sm"
+              color="interactive.secondary"
+              mr="4px"
+            >
+              <ProgressCircleRing cap="round" css={{ "--thickness": "2px" }} />
+            </ProgressCircleRoot>
+          ) : (
+            <>
+              {" "}
+              <Icon color={"red"} as={HeatIcon} boxSize={8} />
+            </>
+          )}
+          <Heading size="lg" lineClamp={3} maxWidth="200px">
+            {isLoading ? "Loading..." : finalValue}
+          </Heading>
+        </HStack>
+        <Text fontSize={"xs"} color="content.tertiary">
+          {field}
+        </Text>
+      </Stack>
+    </HStack>
+  );
+};
+
+const EmissionsWidget = ({
+  t,
+  inventory,
+  population,
+  numberFormat,
+}: {
+  t: Function & TFunction<"translation", undefined>;
+  inventory?: InventoryResponse;
+  population?: PopulationAttributes;
+  numberFormat?: string;
+}) => {
+  // Fetch country emissions data
+  const {
+    data: countryEmissions,
+    isLoading: isLoadingCountryEmissions,
+    error: countryEmissionsError,
+  } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId!, {
+    skip: !inventory?.inventoryId,
+  });
+
+  // Calculate percentage of country's emissions
+  // Inventory total is in kg, country emissions are in tonnes CO2eq
+  const percentageOfCountrysEmissions =
+    inventory?.totalEmissions && countryEmissions?.emissions
+      ? clamp(
+          (inventory.totalEmissions / (countryEmissions.emissions * 1000)) *
+            100,
+          0,
+          100,
+        )
+      : undefined;
+  const emissionsPerCapita =
+    inventory?.totalEmissions && population?.population
+      ? inventory.totalEmissions / population.population
+      : undefined;
+  const EmissionsData = [
+    {
+      id: "total-ghg-emissions-in-year",
+      field: (
+        <Trans
+          size={16}
+          i18nKey="total-ghg-emissions-in-year"
+          values={{ year: inventory?.year }}
+          t={t}
+        >
+          Total GHG Emissions in {{ year: inventory?.year }}
+        </Trans>
+      ),
+      value: inventory?.totalEmissions,
+      icon: FiHeart,
+      showProgress: false,
+      isLoading: false,
+    },
+    {
+      id: "emissions-per-capita-in-year",
+      field: (
+        <Trans
+          size={16}
+          i18nKey="emissions-per-capita-in-year"
+          values={{ year: inventory?.year }}
+          t={t}
+        ></Trans>
+      ),
+      value: emissionsPerCapita,
+      icon: FiHeart,
+      showProgress: false,
+      isLoading: false,
+    },
+    {
+      id: "% of country's emissions",
+      field: t("%-of-country's-emissions"),
+      showProgress: true,
+      value: percentageOfCountrysEmissions,
+      isLoading: isLoadingCountryEmissions,
+    },
+  ];
+  return (
+    <Box>
+      <Card.Root padding={0} height="448px" width={"353px"}>
+        <Card.Header>
+          <Heading size="sm">{t("total-emissions")}</Heading>
+        </Card.Header>
+
+        <Card.Body>
+          <Stack separator={<StackSeparator />}>
+            {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
+              <EmissionsWidgetCard
+                key={id}
+                icon={icon}
+                value={value}
+                field={field}
+                showProgress={showProgress}
+                numberFormat={numberFormat}
+              />
+            ))}
+          </Stack>
+        </Card.Body>
+      </Card.Root>
+    </Box>
+  );
+};
+
+export default EmissionsWidget;

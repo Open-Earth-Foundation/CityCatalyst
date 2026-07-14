@@ -6,6 +6,7 @@ import {
   api,
   useAddCityPopulationMutation,
   useAddInventoryMutation,
+  useConnectAllInventoryDataSourcesMutation,
   useSetUserInfoMutation,
 } from "@/services/api";
 
@@ -14,7 +15,7 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useMemo, useState } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
@@ -28,6 +29,9 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { useGetCityQuery } from "@/services/api";
+import ThirdPartyInventoryDataStep, {
+  THIRD_PARTY_DATA_FILL_YES,
+} from "@/components/steps/GHGI/set-third-party-step";
 
 type Inputs = GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
@@ -37,6 +41,7 @@ export default function OnboardingSetup(props: {
 }) {
   const { lng, cityId } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
+  const { t: tDrawer } = useTranslation(lng, "data");
   const router = useRouter();
 
   const {
@@ -52,6 +57,7 @@ export default function OnboardingSetup(props: {
   const params = useSearchParams();
 
   const projectId = params.get("project");
+  const isUploadMode = params.get("mode") === "upload";
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
@@ -88,16 +94,26 @@ export default function OnboardingSetup(props: {
     }
   }, [cityData]);
 
-  const steps = [
-    { title: t("set-inventory-details-step") },
-    { title: t("set-population-step") },
-    { title: t("confirm-step") },
-  ];
+  const steps = isUploadMode
+    ? [
+        { title: t("set-inventory-details-step") },
+        { title: t("set-population-step") },
+        { title: t("confirm-step") },
+      ]
+    : [
+        { title: t("set-inventory-details-step") },
+        { title: t("set-population-step") },
+        { title: t("set-third-party-data-step") },
+        { title: t("confirm-step") },
+      ];
+
+  const confirmStepIndex = isUploadMode ? 2 : 3;
 
   const {
     value: activeStep,
     goToNextStep,
     goToPrevStep,
+    setStep,
   } = useSteps({
     defaultStep: 0,
     count: steps.length,
@@ -105,6 +121,8 @@ export default function OnboardingSetup(props: {
 
   const [addCityPopulation] = useAddCityPopulationMutation();
   const [addInventory] = useAddInventoryMutation();
+  const [connectAllInventoryDataSources] =
+    useConnectAllInventoryDataSourcesMutation();
   const [setUserInfo] = useSetUserInfoMutation();
 
   const [data, setData] = useState<OnboardingData>({
@@ -121,6 +139,13 @@ export default function OnboardingSetup(props: {
   const { data: CCCityData } = useGetCityQuery(cityId, {
     skip: !cityId,
   });
+  const { data: userInfo } = api.useGetUserInfoQuery();
+
+  // Fetch existing inventories for this city to check for duplicate years
+  const { data: existingInventories } = api.useGetInventoriesQuery(
+    { cityId },
+    { skip: !cityId },
+  );
 
   useEffect(() => {
     if (CCCityData) {
@@ -134,10 +159,40 @@ export default function OnboardingSetup(props: {
     }
   }, [CCCityData, setValue, setOcCityData]);
 
+  // Inventory details step state
+  const [selectedYearArray, setSelectedYearArray] = useState<string[]>([]);
+  const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
+    useState("");
+  const [
+    selectedGlobalWarmingPotentialValue,
+    setSelectedGlobalWarmingPotentialValue,
+  ] = useState("");
+
+  // Check if the selected year already has an inventory
+  const selectedYear =
+    selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
+  const yearAlreadyExists = useMemo(() => {
+    if (!selectedYear || !existingInventories) return false;
+    return existingInventories.some((inv) => inv.year === selectedYear);
+  }, [selectedYear, existingInventories]);
+  const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
+    string | null
+  >(null);
+
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
     showErrorToast();
   };
+
+  // Show error toast when user selects a year that already has an inventory
+  useEffect(() => {
+    if (yearAlreadyExists && selectedYear) {
+      makeErrorToast(
+        t("inventory-year-already-exists-title"),
+        t("inventory-year-already-exists-description", { year: selectedYear }),
+      );
+    }
+  }, [yearAlreadyExists, selectedYear]);
 
   // Population data
 
@@ -203,13 +258,28 @@ export default function OnboardingSetup(props: {
         defaultInventoryId: inventory.inventoryId,
         defaultCityId: cityId,
       }).unwrap();
+
+      if (thirdPartyDataChoice === THIRD_PARTY_DATA_FILL_YES) {
+        const { errors } = await connectAllInventoryDataSources({
+          inventoryId: inventory.inventoryId,
+        }).unwrap();
+        if (errors.length > 0) {
+          logger.warn(
+            { errors, inventoryId: inventory.inventoryId },
+            "Some third-party sources failed to connect during onboarding",
+          );
+        }
+      }
+
       setConfirming(false);
-      
+
       // Check if we're in upload mode
       const mode = params.get("mode");
       if (mode === "upload") {
         // Route to import page with the newly created inventory ID
-        router.push(`/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`);
+        router.push(
+          `/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`,
+        );
       } else {
         // Default behavior: route to home page
         router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
@@ -230,6 +300,13 @@ export default function OnboardingSetup(props: {
     });
     goToNextStep();
   };
+
+  // Reset third-party choice each time the user enters that step
+  useEffect(() => {
+    if (!isUploadMode && activeStep === 2) {
+      setThirdPartyDataChoice(null);
+    }
+  }, [activeStep, isUploadMode]);
 
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
@@ -275,6 +352,16 @@ export default function OnboardingSetup(props: {
               control={control}
               setValue={setValue}
               years={years}
+              selectedYearArray={selectedYearArray}
+              setSelectedYearArray={setSelectedYearArray}
+              selectedInventoryGoalValue={selectedInventoryGoalValue}
+              selectedGlobalWarmingPotentialValue={
+                selectedGlobalWarmingPotentialValue
+              }
+              setSelectedInventoryGoalValue={setSelectedInventoryGoalValue}
+              setSelectedGlobalWarmingPotentialValue={
+                setSelectedGlobalWarmingPotentialValue
+              }
             />
           )}
           {activeStep === 1 && (
@@ -289,9 +376,25 @@ export default function OnboardingSetup(props: {
               setValue={setValue}
               watch={watch}
               ocCityData={ocCityData}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
-          {activeStep === 2 && (
+          {!isUploadMode && activeStep === 2 && (
+            <ThirdPartyInventoryDataStep
+              t={t}
+              tDrawer={tDrawer}
+              cityId={cityId}
+              year={
+                typeof data.year === "string"
+                  ? parseInt(data.year, 10)
+                  : data.year
+              }
+              inventoryType={inventoryGoal}
+              value={thirdPartyDataChoice}
+              onValueChange={setThirdPartyDataChoice}
+            />
+          )}
+          {activeStep === confirmStepIndex && (
             <ConfirmStep
               cityName={data.name}
               t={t}
@@ -303,6 +406,8 @@ export default function OnboardingSetup(props: {
               }
               inventoryGoal={inventoryGoal}
               year={data.year}
+              setStep={setStep}
+              numberFormat={userInfo?.numberFormat}
             />
           )}
         </Box>
@@ -314,7 +419,6 @@ export default function OnboardingSetup(props: {
           left={0}
           pb={8}
           px={1}
-          zIndex={9999}
           transition="all"
           data-onboarding-bottom-bar
         >
@@ -364,15 +468,33 @@ export default function OnboardingSetup(props: {
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
               )}
-              {activeStep == 2 && (
+              {!isUploadMode && activeStep == 2 && (
                 <Button
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={onConfirm}
+                  onClick={goToNextStep}
                   px="24px"
                   h="64px"
+                  disabled={!thirdPartyDataChoice}
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
+                  >
+                    {t("continue")}
+                  </Text>
+                  <MdArrowForward height="24px" width="24px" />
+                </Button>
+              )}
+              {activeStep == confirmStepIndex && (
+                <Button
+                  h={16}
+                  w="auto"
                   loading={isConfirming}
+                  px="24px"
+                  onClick={onConfirm}
                 >
                   <Text
                     fontFamily="button.md"

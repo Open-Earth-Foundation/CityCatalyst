@@ -1,5 +1,10 @@
 import { test, expect } from "@playwright/test";
-import { expectText, signup } from "./helpers";
+import {
+  expectText,
+  expectFieldInvalid,
+  signup,
+  waitForAuthFormReady,
+} from "./helpers";
 import { randomUUID } from "node:crypto";
 
 test.beforeEach(async ({ page, context }) => {
@@ -33,13 +38,14 @@ test.describe("Login page", () => {
 
   test("shows errors when entering invalid data", async ({ page }) => {
     await expectText(page, "Log In");
+    await waitForAuthFormReady(page);
 
     await page.locator('input[name="email"]').fill("testopenearthorg");
     await page.locator('input[name="password"]').fill("pas");
     await page.getByRole("button", { name: "LOG IN" }).click();
 
-    // await expect(page).toHaveURL("/en/auth/login/");
-    await expectText(page, "Please enter a valid email address");
-    await expectText(page, "Minimum length");
+    await expect(page).toHaveURL(/\/en\/auth\/login/);
+    await expectFieldInvalid(page, "email");
+    await expectFieldInvalid(page, "password");
   });
 });

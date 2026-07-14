@@ -2,7 +2,7 @@ import type {
   DataSourceWithRelations,
   InventoryValueData,
   SubSectorWithRelations,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+} from "@/components/GHGI/data-step/types";
 import type { ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
 import type { SubCategoryAttributes } from "@/models/SubCategory";
@@ -123,6 +123,7 @@ export interface UserInfoResponse {
   role: Roles;
   email?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export type DataSource = DataSourceAttributes & {
@@ -153,6 +154,12 @@ export interface ConnectDataSourceQuery {
   inventoryId: string;
   dataSourceIds: string[];
 }
+
+export type {
+  DataSourcePreviewItem,
+  DataSourcePreviewResult,
+  ConnectAllDataSourcesError,
+} from "@/backend/DataSourceConnectService";
 
 export interface ConnectDataSourceResponse {
   successful: string[];
@@ -476,6 +483,8 @@ export type CityResponse = {
   name: string;
   country: string;
   countryLocode: string;
+  region?: string;
+  regionLocode?: string;
   locode: string;
   inventories: {
     inventoryId: string;
@@ -550,6 +559,7 @@ export interface UpdateUserPayload {
   userId: string;
   title?: string;
   preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 export interface FormulaInputValuesResponse {
@@ -721,10 +731,12 @@ export interface HIAPSummary {
   mitigation: {
     id: string;
     rankedActions: HIAction[];
+    unrankedActions: HIAction[];
   };
   adaptation: {
     id: string;
     rankedActions: HIAction[];
+    unrankedActions: HIAction[];
   };
   inventoryId: string;
 }

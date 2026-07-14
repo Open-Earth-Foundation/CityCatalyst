@@ -7,6 +7,7 @@ import {
   Icon,
   Link,
   HStack,
+  Button,
 } from "@chakra-ui/react";
 import { AddCollaboratorButton } from "./AddCollaboratorButton";
 import { MdBarChart } from "react-icons/md";
@@ -19,17 +20,20 @@ import {
 import { MdArrowForward } from "react-icons/md";
 import { AllProjectsIcon } from "../icons";
 import ActionCardSmall from "./ActionCardSmall";
+import { ButtonMedium } from "../package";
 
 export function ActionCards({
   organization,
   lng,
   t,
   city,
+  hasInventory,
 }: {
   t: TFunction;
   organization: OrganizationWithThemeResponse;
   lng: string;
   city?: CityWithProjectDataResponse;
+  hasInventory?: boolean;
 }) {
   const router = useRouter();
   return (
@@ -41,54 +45,98 @@ export function ActionCards({
           gap={6}
           alignItems="stretch"
         >
-          {/* Large blue card  - Check your dashboard CTA*/}
+          {/* Large card — nudge to create inventory if none exists, else dashboard CTA */}
           <GridItem
             colSpan={1}
             rowSpan={{ base: 1, md: 2 }}
-            bg="content.link"
+            bg="base.light"
             borderRadius="lg"
             p={6}
-            color="white"
+            color="base.dark"
             display="flex"
             flexDirection="column"
             justifyContent="space-between"
             minH={0}
             h="100%"
+            borderWidth="2px"
+            borderColor="border.neutral"
           >
-            <Box>
-              <HStack>
-                <Icon as={MdBarChart} boxSize={6} mb={2} />
-                <Text fontWeight="bold" fontSize="xl">
-                  {t("check-your-dashboard")}
-                </Text>
-              </HStack>
-              <Text mt={2}>{t("check-your-dashboard-description")}</Text>
-            </Box>
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="flex-end"
-              mt={4}
-            >
-              <Link
-                href={
-                  city
-                    ? `/${lng}/cities/${city.cityId}/dashboard`
-                    : `/${lng}/organization/${organization.organizationId}/dashboard`
-                }
-                color="white"
-                fontWeight="bold"
-                _hover={{ textDecoration: "underline" }}
-              >
-                {t("go-to-dashboard-cta")}
-                <Icon as={MdArrowForward} boxSize={8} />
-              </Link>
-            </Box>
+            {hasInventory ? (
+              <>
+                <Box>
+                  <HStack alignItems="center">
+                    <Icon as={MdBarChart} boxSize={6} color="interactive.control" />
+                    <Text fontWeight="bold" fontSize="xl">
+                      {t("check-your-dashboard")}
+                    </Text>
+                  </HStack>
+                  <Text mt={2}>{t("check-your-dashboard-description")}</Text>
+                </Box>
+                <Box display="flex" alignItems="center" justifyContent="flex-end" mt={4}>
+                  <Link
+                    p={1}
+                    href={
+                      city
+                        ? `/${lng}/cities/${city.cityId}/dashboard`
+                        : `/${lng}/organization/${organization.organizationId}/dashboard`
+                    }
+                    color="base.dark"
+                    fontWeight="bold"
+                  >
+                    <Button
+                      variant="outline"
+                      borderWidth="1px"
+                      borderColor="border.neutral"
+                      borderRadius="4xl"
+                      px={6}
+                      py={2}
+                      color="base.dark"
+                      fontWeight="bold"
+                    >
+                      {t("go-to-dashboard-cta")}
+                      <Icon as={MdArrowForward} boxSize={5} color="content.link" />
+                    </Button>
+                  </Link>
+                </Box>
+              </>
+            ) : (
+              <>
+                <Box>
+                  <Text fontWeight="bold" fontSize="xl" color="content.link">
+                    {t("get-started-ghg-title")}
+                  </Text>
+                  <Text mt={2}>{t("get-started-ghg-description")}</Text>
+                </Box>
+                <Box display="flex" alignItems="center" justifyContent="flex-end" mt={4}>
+                  <Link
+                    href={
+                      city
+                        ? `/${lng}/cities/${city.cityId}/GHGI/onboarding`
+                        : `/${lng}/cities/onboarding`
+                    }
+                    color="content.link"
+                    fontWeight="bold"
+                    display="flex"
+                    alignItems="center"
+                    gap={2}
+                    textTransform="uppercase"
+                    letterSpacing="wider"
+                    fontSize="sm"
+                  >
+                    {t("launch-ghg-inventories-cta")}
+                    <Icon as={MdArrowForward} boxSize={5} />
+                  </Link>
+                </Box>
+              </>
+            )}
           </GridItem>
 
           {/* Invite colleagues card */}
           <GridItem display="flex" alignItems="center" gap={4} minH={0} p={0}>
-            <AddCollaboratorButton lng={lng} />
+            <AddCollaboratorButton
+              lng={lng}
+              organizationId={organization.organizationId}
+            />
           </GridItem>
 
           {/* All projects card */}

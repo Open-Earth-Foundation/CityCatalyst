@@ -1,27 +1,59 @@
 [
   {
-    "id": "9295ad69-72c6-4b1c-b29d-b71f7b8ba8e8",
-    "stage": "assess-and-analyze",
+    "id": "077690c6-6fa3-44e1-84b7-6d758a6a4d88",
+    "stage": "assess-&-analyze",
     "name": {
-      "en": "GHGI"
+      "de": "THG-Inventare",
+      "en": "GHG Inventories",
+      "es": "Inventarios de GEI",
+      "fr": "Inventaires de GES",
+      "pt": "Inventários de GEE"
     },
-    "description": {},
-    "tagline": {},
-    "author": "Open Earth Foundation",
-    "type": "CC",
+    "description": {
+      "de": "Erstellen Sie ein Treibhausgasemissionsinventar, das mit dem Global Protocol for Cities übereinstimmt. Laden Sie automatisch verifizierte Datensätze und führen Sie Ihr Team durch methodische Schritte, um eine solide Emissionsbasislinie zu erstellen.",
+      "en": "Create a greenhouse gas emissions inventory aligned with the Global Protocol for Cities. Automatically load verified datasets and guide your team through methodology steps to establish a solid emissions baseline.",
+      "es": "Crea un inventario de emisiones de gases de efecto invernadero alineado con el Protocolo Global para Ciudades. Carga automáticamente conjuntos de datos verificados y guía a tu equipo a través de pasos metodológicos para establecer una línea base sólida de emisiones.",
+      "fr": "Créez un inventaire des émissions de gaz à effet de serre aligné sur le Protocole Mondial pour les Villes. Chargez automatiquement des ensembles de données vérifiés et guidez votre équipe à travers les étapes méthodologiques pour établir une base d''émissions solide.",
+      "pt": "Crie um inventário de emissões de gases de efeito estufa alinhado com o Protocolo Global para Cidades. Carregue automaticamente conjuntos de dados verificados e oriente sua equipe através de passos metodológicos para estabelecer uma linha de base sólida de emissões."
+    },
+    "tagline": {
+      "de": "Hilft Städten dabei, ihre Emissionen in allen GPC-Sektoren zu messen, zu verfolgen und zu melden.",
+      "en": "Helps cities measure, track and report their emissions across GPC sectors.",
+      "es": "Ayuda a las ciudades a medir, rastrear y reportar sus emisiones en todos los sectores del GPC.",
+      "fr": "Aide les villes à mesurer, suivre et déclarer leurs émissions dans tous les secteurs du GPC.",
+      "pt": "Ajuda as cidades a medir, rastrear e reportar suas emissões em todos os setores do GPC."
+    },
+    "author": "OEF",
+    "type": "OEF",
     "status": "active",
     "url": "/GHGI"
   },
   {
-    "id": "072a53d6-cd58-4622-b4e4-4f482baa23b3",
+    "id": "9ee0e1ea-94ea-4329-b156-28d10ecd0ff8",
     "stage": "plan",
     "name": {
-      "en": "HIAP"
+      "de": "Maßnahmen & Pläne",
+      "en": "Actions & Plans",
+      "es": "Acciones y Planes",
+      "fr": "Actions et Plans",
+      "pt": "Ações e Planos"
     },
-    "description": {},
-    "tagline": {},
-    "author": "Open Earth Foundation",
-    "type": "CC",
+    "description": {
+      "de": "Identifizieren, priorisieren und sequenzieren Sie hochwirksame Minderungs- und Anpassungsmaßnahmen, die auf den Kontext Ihrer Stadt zugeschnitten sind. Erstellen Sie gemeinsam Aktionspläne, die praktisch und bereit für die Umsetzung sind.",
+      "en": "Identify, prioritize, and sequence high-impact mitigation and adaptation actions tailored to your city's context. Co-create action plans that are practical and ready for implementation.",
+      "es": "Identifica, prioriza y secuencia acciones de mitigación y adaptación de alto impacto adaptadas al contexto de tu ciudad. Co-crea planes de acción que sean prácticos y estén listos para la implementación.",
+      "fr": "Identifiez, priorisez et séquencez des actions d'atténuation et d'adaptation à fort impact adaptées au contexte de votre ville. Co-créez des plans d'action pratiques et prêts à être mis en œuvre.",
+      "pt": "Identifique, priorize e sequencie ações de mitigação e adaptação de alto impacto adaptadas ao contexto da sua cidade. Co-crie planos de ação que sejam práticos e estejam prontos para implementação."
+    },
+    "tagline": {
+      "de": "Verwandeln Sie Daten in umsetzbare Schritte und erschließen Sie die nächste Phase Ihrer Klimastrategie.",
+      "en": "Turn data into actionable steps and unlock the next phase of your climate strategy.",
+      "es": "Convierte los datos en pasos accionables y desbloquea la siguiente fase de tu estrategia climática.",
+      "fr": "Transformez les données en étapes actionnables et débloquez la prochaine phase de votre stratégie climatique.",
+      "pt": "Transforme dados em passos acionáveis e desbloqueie a próxima fase da sua estratégia climática."
+    },
+    "author": "OEF",
+    "type": "OEF",
     "status": "active",
     "url": "/HIAP"
   },
@@ -89,13 +121,25 @@
     "type": "POC",
     "stage": "implement",
     "name": {
-      "en": "NBS Project Builder"
+      "de": "NBS-Projektplaner",
+      "en": "NBS Project Builder",
+      "es": "Constructor de Proyectos NBS",
+      "fr": "Générateur de Projets NBS",
+      "pt": "Construtor de Projetos NBS"
     },
     "description": {
-      "en": "NBS Project Builder helps cities turn climate challenges into nature-based solutions. With AI-powered planning tools, geospatial risk analysis, and streamlined funder matching, cities can develop bankable sustainability projects faster."
+      "de": "Der NBS-Projektplaner hilft Städten, Klimaherausforderungen in naturbasierte Lösungen umzusetzen. Mit KI-gestützten Planungstools, geospatialer Risikoanalyse und vereinfachtem Fördermittel-Matching können Städte schneller finanzierbare Nachhaltigkeitsprojekte entwickeln.",
+      "en": "NBS Project Builder helps cities turn climate challenges into nature-based solutions. With AI-powered planning tools, geospatial risk analysis, and streamlined funder matching, cities can develop bankable sustainability projects faster.",
+      "es": "El Constructor de Proyectos NBS ayuda a las ciudades a convertir los desafíos climáticos en soluciones basadas en la naturaleza. Con herramientas de planificación impulsadas por IA, análisis de riesgos geoespaciales y emparejamiento simplificado con financiadores, las ciudades pueden desarrollar proyectos de sostenibilidad financiables más rápido.",
+      "fr": "Le Générateur de Projets NBS aide les villes à transformer les défis climatiques en solutions fondées sur la nature. Grâce à des outils de planification alimentés par l'IA, une analyse des risques géospatiaux et un appariement simplifié avec les financeurs, les villes peuvent développer plus rapidement des projets de durabilité finançables.",
+      "pt": "O Construtor de Projetos NBS ajuda as cidades a transformar desafios climáticos em soluções baseadas na natureza. Com ferramentas de planejamento com IA, análise de riscos geoespaciais e correspondência simplificada com financiadores, as cidades podem desenvolver projetos de sustentabilidade bancáveis mais rapidamente."
     },
     "tagline": {
-      "en": "From Climate Risk to Action — Powered by Nature"
+      "de": "Vom Klimarisiko zur Aktion — angetrieben von der Natur",
+      "en": "From Climate Risk to Action — Powered by Nature",
+      "es": "Del riesgo climático a la acción — impulsado por la naturaleza",
+      "fr": "Du risque climatique à l'action — propulsé par la nature",
+      "pt": "Do risco climático à ação — impulsionado pela natureza"
     },
     "author": "Open Earth Foundation",
     "status": "poc",
@@ -107,13 +151,25 @@
     "type": "POC",
     "stage": "implement",
     "name": {
-      "en": "Rooftop Solar Project Builder"
+      "de": "Dachsolar-Projektplaner",
+      "en": "Rooftop Solar Project Builder",
+      "es": "Constructor de Proyectos Solares en Tejados",
+      "fr": "Générateur de Projets Solaires en Toiture",
+      "pt": "Construtor de Projetos Solares em Telhados"
     },
     "description": {
-      "en": "Explore rooftop solar potential for municipal buildings. Select buildings on the map, analyze energy capacity and savings, and build a portfolio to plan your city's clean energy future."
+      "de": "Erkunden Sie das Dachsolar-Potenzial kommunaler Gebäude. Wählen Sie Gebäude auf der Karte aus, analysieren Sie Energiekapazität und Einsparungen und erstellen Sie ein Portfolio, um die saubere Energiezukunft Ihrer Stadt zu planen.",
+      "en": "Explore rooftop solar potential for municipal buildings. Select buildings on the map, analyze energy capacity and savings, and build a portfolio to plan your city's clean energy future.",
+      "es": "Explora el potencial solar en tejados de edificios municipales. Selecciona edificios en el mapa, analiza la capacidad energética y los ahorros, y crea un portafolio para planificar el futuro energético limpio de tu ciudad.",
+      "fr": "Explorez le potentiel solaire en toiture des bâtiments municipaux. Sélectionnez des bâtiments sur la carte, analysez la capacité énergétique et les économies, et constituez un portefeuille pour planifier l'avenir énergétique propre de votre ville.",
+      "pt": "Explore o potencial solar em telhados de edifícios municipais. Selecione edifícios no mapa, analise a capacidade energética e as economias, e monte um portfólio para planejar o futuro de energia limpa da sua cidade."
     },
     "tagline": {
-      "en": "Unlock Your City's Solar Potential"
+      "de": "Erschließen Sie das Solarpotenzial Ihrer Stadt",
+      "en": "Unlock Your City's Solar Potential",
+      "es": "Desbloquea el potencial solar de tu ciudad",
+      "fr": "Libérez le potentiel solaire de votre ville",
+      "pt": "Desbloqueie o potencial solar da sua cidade"
     },
     "author": "Open Earth Foundation",
     "status": "poc",
@@ -125,13 +181,25 @@
     "type": "POC",
     "stage": "plan",
     "name": {
-      "en": "Flourish - Inspire"
+      "de": "Flourish - Inspire",
+      "en": "Flourish - Inspire",
+      "es": "Flourish - Inspire",
+      "fr": "Flourish - Inspire",
+      "pt": "Flourish - Inspire"
     },
     "description": {
-      "en": "Flourish Inspire is a discovery platform showcasing successful climate action projects from the world. Browse by sector, funding type, or use our AI-powered Project Finder to get personalized recommendations, then export project details directly to Flourish Build to start your own implementation."
+      "de": "Flourish Inspire ist eine Entdeckungsplattform, die erfolgreiche Klimaschutzprojekte aus aller Welt präsentiert. Durchsuchen Sie nach Sektor oder Finanzierungstyp oder nutzen Sie unseren KI-gestützten Project Finder für personalisierte Empfehlungen und exportieren Sie Projektdetails direkt nach Flourish Build.",
+      "en": "Flourish Inspire is a discovery platform showcasing successful climate action projects from the world. Browse by sector, funding type, or use our AI-powered Project Finder to get personalized recommendations, then export project details directly to Flourish Build to start your own implementation.",
+      "es": "Flourish Inspire es una plataforma de descubrimiento que muestra proyectos exitosos de acción climática de todo el mundo. Explora por sector, tipo de financiamiento o usa nuestro Buscador de Proyectos con IA para obtener recomendaciones personalizadas y exporta los detalles directamente a Flourish Build.",
+      "fr": "Flourish Inspire est une plateforme de découverte présentant des projets d'action climatique réussis du monde entier. Parcourez par secteur, type de financement ou utilisez notre Project Finder alimenté par l'IA pour obtenir des recommandations personnalisées, puis exportez les détails vers Flourish Build.",
+      "pt": "Flourish Inspire é uma plataforma de descoberta que apresenta projetos bem-sucedidos de ação climática de todo o mundo. Navegue por setor, tipo de financiamento ou use nosso Localizador de Projetos com IA para recomendações personalizadas e exporte os detalhes diretamente para o Flourish Build."
     },
     "tagline": {
-      "en": "Find proven climate projects for your city"
+      "de": "Finden Sie bewährte Klimaprojekte für Ihre Stadt",
+      "en": "Find proven climate projects for your city",
+      "es": "Encuentra proyectos climáticos probados para tu ciudad",
+      "fr": "Trouvez des projets climatiques éprouvés pour votre ville",
+      "pt": "Encontre projetos climáticos comprovados para sua cidade"
     },
     "author": "Open Earth Foundation",
     "status": "poc",
@@ -143,13 +211,25 @@
     "type": "POC",
     "stage": "monitor-evaluate-&-report",
     "name": {
-      "en": "Flourish - Rate"
+      "de": "Flourish - Rate",
+      "en": "Flourish - Rate",
+      "es": "Flourish - Rate",
+      "fr": "Flourish - Rate",
+      "pt": "Flourish - Rate"
     },
     "description": {
-      "en": "Flourish Rate is an AI-powered due diligence platform that evaluates climate project proposals across seven critical assessment gates, helping city officials and investors make informed decisions with confidence."
+      "de": "Flourish Rate ist eine KI-gestützte Due-Diligence-Plattform, die Klimaprojektvorschläge an sieben kritischen Bewertungspunkten prüft und Stadtverwaltungen sowie Investoren hilft, fundierte Entscheidungen zu treffen.",
+      "en": "Flourish Rate is an AI-powered due diligence platform that evaluates climate project proposals across seven critical assessment gates, helping city officials and investors make informed decisions with confidence.",
+      "es": "Flourish Rate es una plataforma de due diligence impulsada por IA que evalúa propuestas de proyectos climáticos en siete puntos críticos de evaluación, ayudando a funcionarios e inversores a tomar decisiones informadas con confianza.",
+      "fr": "Flourish Rate est une plateforme de due diligence alimentée par l'IA qui évalue les propositions de projets climatiques selon sept points d'évaluation critiques, aidant les responsables municipaux et les investisseurs à prendre des décisions éclairées.",
+      "pt": "Flourish Rate é uma plataforma de due diligence com IA que avalia propostas de projetos climáticos em sete portões críticos de avaliação, ajudando autoridades municipais e investidores a tomar decisões informadas com confiança."
     },
     "tagline": {
-      "en": "Smart Due Diligence for Climate Finance"
+      "de": "Intelligente Due Diligence für Klimafinanzierung",
+      "en": "Smart Due Diligence for Climate Finance",
+      "es": "Due diligence inteligente para finanzas climáticas",
+      "fr": "Due diligence intelligente pour le financement climatique",
+      "pt": "Due diligence inteligente para finanças climáticas"
     },
     "author": "Open Earth Foundation",
     "status": "poc",
@@ -161,13 +241,25 @@
     "type": "POC",
     "stage": "plan",
     "name": {
-      "en": "Flourish - Build"
+      "de": "Flourish - Build",
+      "en": "Flourish - Build",
+      "es": "Flourish - Build",
+      "fr": "Flourish - Build",
+      "pt": "Flourish - Build"
     },
     "description": {
-      "en": "Transform your climate action plans into structured, investment-ready project proposals. Flourish Build guides you through defining your investment case, organizing actions and budgets, and aligning with funder requirements—all with AI-powered assistance."
+      "de": "Verwandeln Sie Ihre Klimaschutzpläne in strukturierte, investitionsreife Projektangebote. Flourish Build führt Sie durch die Definition Ihres Investitionsfalls, die Organisation von Maßnahmen und Budgets sowie die Ausrichtung an Förderanforderungen — alles mit KI-Unterstützung.",
+      "en": "Transform your climate action plans into structured, investment-ready project proposals. Flourish Build guides you through defining your investment case, organizing actions and budgets, and aligning with funder requirements—all with AI-powered assistance.",
+      "es": "Transforma tus planes de acción climática en propuestas de proyectos estructuradas y listas para inversión. Flourish Build te guía para definir tu caso de inversión, organizar acciones y presupuestos, y alinearte con los requisitos de los financiadores, todo con asistencia de IA.",
+      "fr": "Transformez vos plans d'action climatique en propositions de projets structurées et prêtes à l'investissement. Flourish Build vous guide pour définir votre dossier d'investissement, organiser actions et budgets, et vous aligner sur les exigences des financeurs — le tout avec l'aide de l'IA.",
+      "pt": "Transforme seus planos de ação climática em propostas de projetos estruturadas e prontas para investimento. O Flourish Build orienta você a definir seu caso de investimento, organizar ações e orçamentos e alinhar-se aos requisitos dos financiadores — tudo com assistência de IA."
     },
     "tagline": {
-      "en": "From Climate Ideas to Fundable Projects"
+      "de": "Von Klimaidéen zu finanzierbaren Projekten",
+      "en": "From Climate Ideas to Fundable Projects",
+      "es": "De ideas climáticas a proyectos financiables",
+      "fr": "Des idées climatiques aux projets finançables",
+      "pt": "De ideias climáticas a projetos financiáveis"
     },
     "author": "Open Earth Foundation",
     "status": "poc",
@@ -175,35 +267,29 @@
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163311.png"
   },
   {
-    "id": "f0e2722c-e895-4b27-ae8b-d1a86d25b9ef",
-    "type": "POC",
-    "stage": "assess-&-analyze",
-    "name": {
-      "en": "GHG Inventory Comparison"
-    },
-    "description": {
-      "en": "Compare your city's greenhouse gas inventory against global benchmarks and get AI-powered recommendations for emission reduction."
-    },
-    "tagline": {
-      "en": "Benchmark Your City's Emissions Against the World"
-    },
-    "author": "Open Earth Foundation",
-    "status": "poc",
-    "url": "https://cc-inventory-comparison.replit.app",
-    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163620.png"
-  },
-  {
     "id": "dca36554-d673-496e-95df-fea636ae4ba7",
     "type": "POC",
     "stage": "assess-&-analyze",
     "name": {
-      "en": "Geospatial AI Risk Map"
+      "de": "Geospatial-KI-Risikokarte",
+      "en": "Geospatial AI Risk Map",
+      "es": "Mapa de Riesgos con IA Geoespacial",
+      "fr": "Carte de Risques Géospatiale IA",
+      "pt": "Mapa de Riscos com IA Geoespacial"
     },
     "description": {
-      "en": "Query flood and landslide risks across Porto Alegre using plain language—just ask about schools, hospitals, or any infrastructure, and see results highlighted instantly on the map."
+      "de": "Abfragen Sie Hochwasser- und Erdrutschrisiken in Porto Alegre in natürlicher Sprache — fragen Sie nach Schulen, Krankenhäusern oder beliebiger Infrastruktur und sehen Sie Ergebnisse sofort auf der Karte hervorgehoben.",
+      "en": "Query flood and landslide risks across Porto Alegre using plain language—just ask about schools, hospitals, or any infrastructure, and see results highlighted instantly on the map.",
+      "es": "Consulta riesgos de inundación y deslizamientos en Porto Alegre con lenguaje natural: pregunta por escuelas, hospitales o cualquier infraestructura y ve los resultados resaltados al instante en el mapa.",
+      "fr": "Interrogez les risques d'inondation et de glissement de terrain à Porto Alegre en langage naturel — demandez des écoles, hôpitaux ou toute infrastructure et voyez les résultats mis en évidence instantanément sur la carte.",
+      "pt": "Consulte riscos de inundação e deslizamentos em Porto Alegre em linguagem natural — pergunte sobre escolas, hospitais ou qualquer infraestrutura e veja os resultados destacados instantaneamente no mapa."
     },
     "tagline": {
-      "en": "Climate Risk Intelligence at Your Fingertips"
+      "de": "Klimarisiko-Intelligenz auf Knopfdruck",
+      "en": "Climate Risk Intelligence at Your Fingertips",
+      "es": "Inteligencia de riesgo climático al alcance de tu mano",
+      "fr": "L'intelligence des risques climatiques à portée de main",
+      "pt": "Inteligência de risco climático na palma da sua mão"
     },
     "author": "Open Earth Foundation",
     "status": "poc",
@@ -215,13 +301,25 @@
     "type": "POC",
     "stage": "assess-&-analyze",
     "name": {
-      "en": "Prisma - Asset Based CCRA"
+      "de": "Prisma - Asset Based CCRA",
+      "en": "Prisma - Asset Based CCRA",
+      "es": "Prisma - CCRA Basado en Activos",
+      "fr": "Prisma - CCRA Basé sur les Actifs",
+      "pt": "Prisma - CCRA Baseado em Ativos"
     },
     "description": {
-      "en": "Understand the climate risk of your assets by location and risk level. See exactly which assets fall within high, medium, or low flood and landslide zones, with precise coordinates and instant map highlighting."
+      "de": "Verstehen Sie das Klimarisiko Ihrer Assets nach Standort und Risikoniveau. Sehen Sie genau, welche Assets in Hoch-, Mittel- oder Niedrig-Risikozonen für Überschwemmungen und Erdrutsche liegen, mit präzisen Koordinaten und sofortiger Kartenhervorhebung.",
+      "en": "Understand the climate risk of your assets by location and risk level. See exactly which assets fall within high, medium, or low flood and landslide zones, with precise coordinates and instant map highlighting.",
+      "es": "Comprende el riesgo climático de tus activos por ubicación y nivel de riesgo. Ve exactamente qué activos caen en zonas de inundación y deslizamientos de riesgo alto, medio o bajo, con coordenadas precisas y resaltado instantáneo en el mapa.",
+      "fr": "Comprenez le risque climatique de vos actifs par emplacement et niveau de risque. Voyez exactement quels actifs se trouvent dans des zones à risque élevé, moyen ou faible d'inondation et de glissement de terrain, avec des coordonnées précises et une mise en évidence instantanée sur la carte.",
+      "pt": "Compreenda o risco climático dos seus ativos por localização e nível de risco. Veja exatamente quais ativos estão em zonas de inundação e deslizamentos de risco alto, médio ou baixo, com coordenadas precisas e destaque instantâneo no mapa."
     },
     "tagline": {
-      "en": "Understand the climate risk of your assets"
+      "de": "Verstehen Sie das Klimarisiko Ihrer Assets",
+      "en": "Understand the climate risk of your assets",
+      "es": "Comprende el riesgo climático de tus activos",
+      "fr": "Comprenez le risque climatique de vos actifs",
+      "pt": "Compreenda o risco climático dos seus ativos"
     },
     "author": "Open Earth Foundation",
     "status": "poc",

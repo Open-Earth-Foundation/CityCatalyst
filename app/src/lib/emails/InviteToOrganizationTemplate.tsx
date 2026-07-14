@@ -4,9 +4,7 @@ import {
   Container,
   Font,
   Head,
-  Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -29,7 +27,6 @@ export default function InviteToOrganizationTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
       <Head>
@@ -59,69 +56,18 @@ export default function InviteToOrganizationTemplate({
               {t("invite-organization.greeting-no-name")}
             </Text>
           )}
-          <Text style={paragraph}>{t("invite-organization.message")}</Text>
-
-          <Section style={{ marginTop: "32px" }}>
-            <Text style={sectionHeading}>
-              {t("invite-organization.steps-heading")}
-            </Text>
-            <Section style={listContainer}>
-              <Text style={listItem}>
-                <span style={listNumber}>1.</span>
-                <span>
-                  {t("invite-organization.step1")
-                    .split(/<\/?1>/g)
-                    .map((text, i) =>
-                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
-                    )}
-                </span>
-              </Text>
-              <Text style={listItem}>
-                <span style={listNumber}>2.</span>
-                <span>
-                  {t("invite-organization.step2")
-                    .split(/<\/?1>/g)
-                    .map((text, i) =>
-                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
-                    )}
-                </span>
-              </Text>
-              <Text style={listItem}>
-                <span style={listNumber}>3.</span>
-                <span>
-                  {t("invite-organization.step3")
-                    .split(/<\/?1>/g)
-                    .map((text, i) =>
-                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
-                    )}
-                </span>
-              </Text>
-              <Text style={listItem}>
-                <span style={listNumber}>4.</span>
-                <span>
-                  {t("invite-organization.step4")
-                    .split(/<\/?1>/g)
-                    .map((text, i) =>
-                      i % 2 === 0 ? text : <strong key={i}>{text}</strong>,
-                    )}
-                </span>
-              </Text>
-            </Section>
-          </Section>
-
+          <Text>{t("invite-organization.message")}</Text>
           <Section
             style={{
               marginTop: "36px",
               marginBottom: "36px",
+              textTransform: "uppercase",
             }}
           >
             <Link href={url} style={urlLink}>
               {t("invite-organization.cta")}
             </Link>
           </Section>
-
-          <Hr style={{ height: "2px", background: "#EBEBEC" }} />
-          <Text style={footerText}>{t("invite-organization.footer")}</Text>
         </Container>
       </Body>
     </Html>
@@ -137,7 +83,6 @@ const main = {
 
 const container = {
   margin: "0 auto",
-  padding: "20px 48px 48px",
   width: "580px",
   borderTop: "2px solid #2351DC",
 };
@@ -163,12 +108,6 @@ const greeting = {
   color: "#484848",
 };
 
-const paragraph = {
-  fontSize: "14px",
-  lineHeight: "1.4",
-  color: "#484848",
-};
-
 const urlLink = {
   fontSize: "14px",
   padding: "16px",
@@ -179,49 +118,4 @@ const urlLink = {
   display: "inline-block",
   paddingLeft: "36px",
   paddingRight: "36px",
-};
-
-const footerText = {
-  fontSize: "12px",
-  lineHeight: "16px",
-  fontWeight: "400",
-  color: "#79797A",
-};
-
-const organizationBox = {
-  display: "flex",
-  padding: "16px",
-  alignItems: "center",
-  gap: "16px",
-  borderRadius: "8px",
-  border: "1px solid #E6E7FF",
-  margin: "32px",
-};
-
-const sectionHeading = {
-  fontSize: "16px",
-  lineHeight: "1.4",
-  fontWeight: "700",
-  color: "#484848",
-  marginBottom: "16px",
-};
-
-const listContainer = {
-  marginLeft: "0px",
-  marginTop: "16px",
-};
-
-const listItem = {
-  fontSize: "14px",
-  lineHeight: "1.6",
-  color: "#484848",
-  marginBottom: "12px",
-  display: "flex",
-  alignItems: "flex-start",
-};
-
-const listNumber = {
-  fontWeight: "700",
-  marginRight: "8px",
-  minWidth: "20px",
 };

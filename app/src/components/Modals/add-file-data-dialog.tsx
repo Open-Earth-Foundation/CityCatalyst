@@ -16,7 +16,7 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import {
   DataStep,
   SubSectorWithRelations,
-} from "@/app/[lng]/[inventory]/data/[step]/types";
+} from "@/components/GHGI/data-step/types";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { TFunction } from "i18next";

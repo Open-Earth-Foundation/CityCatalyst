@@ -18,7 +18,7 @@ import { formatEmissions } from "@/util/helpers";
 import { Box, Icon, Tabs, Text, VStack } from "@chakra-ui/react";
 import MissingInventory from "@/components/missing-inventory";
 import InventoryCalculationTab from "./InventoryCalculationTab";
-import InventoryReportTab from "../../app/[lng]/[inventory]/InventoryResultTab";
+import InventoryReportTab from "@/components/GHGI/inventory-result";
 import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "./Hero";
 import { ActionCards } from "./ActionCards";
@@ -32,7 +32,7 @@ import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
-import InventoryVersions from "@/app/[lng]/[inventory]/InventoryVersionsTab/InventoryVersions";
+import InventoryVersions from "@/components/GHGI/inventory-versions/InventoryVersions";
 
 function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
   return typeof error === "object" && error != null && "status" in error;
@@ -61,6 +61,9 @@ export default function HomePage({
     ? cityIdParam[0]
     : cityIdParam;
 
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
   function redirectToOnboarding() {
     setTimeout(() => {
       if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
@@ -80,9 +83,6 @@ export default function HomePage({
       }
     }, 0);
   }
-
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
 
   // make sure that the inventory ID is using valid values
   let inventoryIdFromParam: string | undefined;
@@ -197,9 +197,10 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const formattedEmissions = inventory?.totalEmissions
-    ? formatEmissions(inventory.totalEmissions)
-    : { value: t("N/A"), unit: "" };
+  const formattedEmissions =
+    inventory?.totalEmissions != null
+      ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
+      : { value: t("N/A"), unit: "" };
 
   const inventoriesForCurrentCity = useMemo(() => {
     if (!cityYears) return [];
@@ -216,7 +217,7 @@ export default function HomePage({
     inventoryIdFromParam!,
   );
 
-  const { isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck, organization } = useOrganizationContext();
 
   if (isUserInfoLoading) {
     return <ProgressLoader />;
@@ -252,6 +253,7 @@ export default function HomePage({
             formattedEmissions={formattedEmissions}
             lng={lng}
             population={population}
+            numberFormat={userInfo?.numberFormat}
           />
 
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">
@@ -264,6 +266,7 @@ export default function HomePage({
                   lng={language}
                   city={city}
                   inventory={inventory}
+                  organizationId={organization?.organizationId}
                 />
               )}
             </VStack>
@@ -357,6 +360,7 @@ export default function HomePage({
                         inventory={inventory}
                         inventoryProgress={inventoryProgress}
                         isInventoryProgressLoading={isInventoryProgressLoading}
+                        numberFormat={userInfo?.numberFormat}
                       />
                     </Tabs.Content>
                     <Tabs.Content value="tab-emission-inventory-results-title">

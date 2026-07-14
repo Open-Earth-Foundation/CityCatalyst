@@ -35,6 +35,7 @@ export const appTheme = createSystem(defaultConfig, {
           focusRing: { value: "{colors.brand.500}" },
         },
         content: {
+          // only render map on the client
           alternative: {
             value: {
               base: "{colors.blue_theme.contentAlternative}",
@@ -70,6 +71,9 @@ export const appTheme = createSystem(defaultConfig, {
               _light_blue_theme: "{colors.light_blue_theme.content.tertiary}",
               _violet_theme: "{colors.violet_theme.content.tertiary}",
             },
+          },
+          "tertiary-light": {
+            value: "#4B4C63",
           },
           secondary: {
             value: {
@@ -181,6 +185,28 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.background.overlay}",
             },
           },
+          /** Unselected filled radio control (zinc-200). */
+          radioUnselected: {
+            value: "#E4E4E7",
+          },
+          graySubtle: {
+            value: {
+              base: "{colors.blue_theme.background.graySubtle}",
+              _blue_theme: "{colors.blue_theme.background.graySubtle}",
+              _light_brown_theme:
+                "{colors.light_brown_theme.background.graySubtle}",
+              _dark_orange_theme:
+                "{colors.dark_orange_theme.background.graySubtle}",
+              _green_theme: "{colors.green_theme.background.graySubtle}",
+              _light_blue_theme:
+                "{colors.light_blue_theme.background.graySubtle}",
+              _violet_theme: "{colors.violet_theme.background.graySubtle}",
+            },
+          },
+          /** Disabled controls and non-interactive surfaces. */
+          backgroundDisabled: {
+            value: "#D9D9D9",
+          },
         },
         border: {
           neutral: {
@@ -239,7 +265,7 @@ export const appTheme = createSystem(defaultConfig, {
             alternative: { value: "#001EA7" },
             link: { value: "#2351DC" },
             tertiary: {
-              value: "#7A7B9A",
+              value: "#4B4C63",
             },
             secondary: {
               value: "#232640",
@@ -254,6 +280,7 @@ export const appTheme = createSystem(defaultConfig, {
             alternative: { value: "#EFFDE5" }, // #C5CBF5
             alternativeLight: { value: "#F9FAFE" },
             overlay: { value: "#C5CBF5" },
+            graySubtle: { value: "#F4F4F5" },
           },
           border: {
             neutral: { value: "#D7D8FA" },
@@ -288,6 +315,7 @@ export const appTheme = createSystem(defaultConfig, {
               value: "#FAEBB8",
             },
             neutral: { value: "#F4E8BE" },
+            graySubtle: { value: "#F4F4F5" },
           },
           border: {
             neutral: { value: "#F4E4A9" },
@@ -333,6 +361,7 @@ export const appTheme = createSystem(defaultConfig, {
               value: "#FAD9B8",
             },
             neutral: { value: "#F4D9BE" },
+            graySubtle: { value: "#F4F4F5" },
           },
         },
         green_theme: {
@@ -364,6 +393,7 @@ export const appTheme = createSystem(defaultConfig, {
               value: "#E4FAB8",
             },
             neutral: { value: "#E2F4BE" },
+            graySubtle: { value: "#F4F4F5" },
           },
           interactive: {
             secondary: { value: "#739F19" },
@@ -398,6 +428,7 @@ export const appTheme = createSystem(defaultConfig, {
               value: "#B8F8FA",
             },
             neutral: { value: "#BEF3F4" },
+            graySubtle: { value: "#F4F4F5" },
           },
           interactive: {
             secondary: { value: "#0D9EA0" },
@@ -432,6 +463,7 @@ export const appTheme = createSystem(defaultConfig, {
               value: "#E4B8FA",
             },
             neutral: { value: "#E2BEF4" },
+            graySubtle: { value: "#F4F4F5" },
           },
           interactive: {
             secondary: { value: "#A200B5" },
@@ -503,6 +535,7 @@ export const appTheme = createSystem(defaultConfig, {
           backgroundLight: { value: "#FAFAFA" },
           backgroundGreyFlat: { value: "#FAFBFE" },
           backgroundLoading: { value: "#E8EAFB" },
+          backgroundDisabled: { value: "#D9D9D9" },
         },
 
         interactive: {
@@ -527,6 +560,7 @@ export const appTheme = createSystem(defaultConfig, {
           warningOverlay: { value: "#FEF8E1" }, // stays the same
           negativeDefault: { value: "#F23D33" }, // stays the same
           negativeOverlay: { value: "#FFEAEE" }, // stays the same
+          backgroundOverlay: { value: "#E8FBEC" },
         },
 
         brandScheme: {
@@ -645,6 +679,10 @@ export const appTheme = createSystem(defaultConfig, {
           value: "0px 8px 10px -6px #0000001A, 0px 20px 25px -5px #0000001A",
         },
         "12dp": { value: "0px 25px 50px -12px #00000040" },
+        "shadow-light-md": {
+          value:
+            "0 0 1px 0 rgba(24, 24, 27, 0.30), 0 4px 8px 0 rgba(24, 24, 27, 0.10)",
+        },
       },
 
       radii: {

@@ -1,0 +1,113 @@
+{
+  "meta": {
+    "generated_at_utc": "2026-05-20T07:02:45.134187+00:00",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "scoring_rubric_version": "v0.2.0",
+    "api_context": {
+      "endpoint": "GET /api/v1/cities/{locode}/action-policy-scores",
+      "locode": "CL IQQ",
+      "city_name": "Iquique",
+      "release_id": "761236b5-4e6d-5af1-e1a2-b50eb3780fe1",
+      "top_evidence_limit": 5,
+      "src_action_id": null
+    },
+    "total_records": 3,
+    "total_evidence_items": 4,
+    "spatial_document_coverage": {
+      "location_scopes_included": [
+        "national",
+        "regional"
+      ],
+      "finest_location_scope": "regional",
+      "caveat": "Policy support scores use documents at national, regional level only."
+    }
+  },
+  "scores": [
+    {
+      "src_action_id": "c40_0010",
+      "policy_support_score": 0.82,
+      "policy_support_category": "strong",
+      "best_relevance": "high",
+      "n_findings": 8,
+      "n_docs": 3,
+      "sum_strength": 4.2,
+      "policy_evidence": [
+        {
+          "evidence_rank": 1,
+          "signal_type": "action",
+          "signal_relation": "commits",
+          "signal_strength": "high",
+          "document_name": "Plan de Accion Regional de Cambio Climatico",
+          "document_type": "parcc",
+          "doc_relevance": "high",
+          "explicitness": "explicit",
+          "page": 12,
+          "evidence_strength": 0.7,
+          "evidence_text": "Implementar medidas de eficiencia energetica en edificios publicos."
+        },
+        {
+          "evidence_rank": 2,
+          "signal_type": "funding",
+          "signal_relation": "funds",
+          "signal_strength": "medium",
+          "document_name": "Estrategia Climaticia Nacional",
+          "document_type": "national_strategy",
+          "doc_relevance": "medium",
+          "explicitness": "explicit",
+          "page": 45,
+          "evidence_strength": 0.5,
+          "evidence_text": "Financiamiento para programas de eficiencia energetica."
+        }
+      ]
+    },
+    {
+      "src_action_id": "c40_0012",
+      "policy_support_score": 0.55,
+      "policy_support_category": "moderate",
+      "best_relevance": "medium",
+      "n_findings": 3,
+      "n_docs": 2,
+      "sum_strength": 1.9,
+      "policy_evidence": [
+        {
+          "evidence_rank": 1,
+          "signal_type": "governance",
+          "signal_relation": "assigns",
+          "signal_strength": "medium",
+          "document_name": "Plan Regional de Transporte",
+          "document_type": "regional_plan",
+          "doc_relevance": "medium",
+          "explicitness": "explicit",
+          "page": 31,
+          "evidence_strength": 0.4,
+          "evidence_text": "Coordinar medidas de movilidad urbana sostenible."
+        }
+      ]
+    },
+    {
+      "src_action_id": "c40_0013",
+      "policy_support_score": 0.25,
+      "policy_support_category": "weak",
+      "best_relevance": "low",
+      "n_findings": 1,
+      "n_docs": 1,
+      "sum_strength": 0.4,
+      "policy_evidence": [
+        {
+          "evidence_rank": 1,
+          "signal_type": "action",
+          "signal_relation": "mentions",
+          "signal_strength": "low",
+          "document_name": "Documento Nacional de Politica Climaticia",
+          "document_type": "national_policy",
+          "doc_relevance": "low",
+          "explicitness": "implicit",
+          "page": 88,
+          "evidence_strength": 0.2,
+          "evidence_text": "Referencias generales a mejoras de infraestructura."
+        }
+      ]
+    }
+  ]
+}

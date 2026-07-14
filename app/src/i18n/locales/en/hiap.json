@@ -68,7 +68,7 @@
   "actions-for-your-city-description": "These are the top 40 actions we recommend based on your GHG inventory, Climate Risk Assessment, and City Context data. You will find 20 actions for Mitigation and 20 for Adaptation in their respective tabs.",
   "citycatalyst-actions-title": "citycatalyst actions",
   "re-prioritize-actions": "Re-prioritize actions",
-  "generated-action-plan": "generate action plan",
+  "generated-action-plan": "Generate Action Plan",
   "export-as-csv": "Export as CSV",
   "export-as-pdf": "Export as PDF",
   "generating-pdf": "generating pdf...",
@@ -182,5 +182,8 @@
       "generated-on": "Generated on"
     }
   },
-  "history": "History"
+  "history": "History",
+  "last-update": "Last update",
+  "view-more": "VIEW MORE",
+  "view-less": "VIEW LESS"
 }

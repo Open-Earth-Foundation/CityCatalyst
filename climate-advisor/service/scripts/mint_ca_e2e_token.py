@@ -1,11 +1,11 @@
 """
 Mint a CityCatalyst JWT token for CA E2E runs and optionally write it to .env.
 
-Usage (from climate-advisor/service directory, with venv activated):
-  python -m scripts.mint_ca_e2e_token --user-id <user_id>
+Usage (from climate-advisor/):
+  uv run --directory service python -m scripts.mint_ca_e2e_token --user-id <user_id>
 
-Or from project root:
-  cd climate-advisor/service && python -m scripts.mint_ca_e2e_token --user-id <user_id>
+Equivalent command from the service directory:
+  uv run python -m scripts.mint_ca_e2e_token --user-id <user_id>
 
 Optional flags:
   --env-path   Path to the .env file to update (default: climate-advisor/.env)

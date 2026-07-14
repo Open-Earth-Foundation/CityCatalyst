@@ -116,14 +116,6 @@
  *                     description: Emissions factor with complete metadata and associated data sources
  *       400:
  *         description: Invalid parameters (e.g., both inventoryId and regionLocode provided).
- *     examples:
- *       application/json:
- *         inventoryId: "550e8400-e29b-41d4-a716-446655440000"
- *         referenceNumber: "1.1.1"
- *         methodologyId: "550e8400-e29b-41d4-a716-446655440001"
- *         metadata:
- *           sector: "Energy"
- *           category: "Fuel Combustion"
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";

@@ -245,11 +245,6 @@ const applySourcesRequest = z.object({
  *                       description: Data sources removed due to applicability filtering
  *       404:
  *         description: Inventory or sources not found.
- *     examples:
- *       application/json:
- *         dataSourceIds:
- *           - "550e8400-e29b-41d4-a716-446655440000"
- *           - "550e8400-e29b-41d4-a716-446655440001"
  */
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {

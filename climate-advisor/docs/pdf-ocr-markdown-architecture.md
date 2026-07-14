@@ -99,41 +99,24 @@ downloadable. Any later use of that Markdown belongs to the caller.
 
 ## Source Identity
 
-Every source is identified by a namespaced pair:
+Each PDF uses a namespaced source pair:
 
 | `source_type`         | `source_id`                      | Resolver access check                       |
 | --------------------- | -------------------------------- | ------------------------------------------- |
 | `inventory_import`    | `ImportedInventoryFile.id`       | Imported file plus current inventory access |
 | `concept_note_upload` | `concept_note_uploads.upload_id` | CC source record plus project/city access   |
 
-`source_type` selects a CityCatalyst resolver that checks access and locates the
-source object. It does not select a model, prompt, post-processing step, queue,
-or result format. Both types run through exactly the same PDF-to-Markdown code.
+`source_type` selects the CityCatalyst resolver that authorizes access and finds
+the source PDF. It never changes the OCR behavior or Markdown result.
 
-For a Concept Note PDF, the authenticated CC upload route creates two records
-with the same `upload_id`: a CC stored-file record owns the immutable S3 pointer,
-metadata, uploader, and project/city access scope; the CNB upload record owns the
-association to `run_id`. The CN domain route verifies the run association before
-calling CA, while later signed-URL grants use the CC record and current CC
-permissions. This avoids giving CityCatalyst direct access to the CNB database.
-The legacy `UserFile` model is not reused.
-
-The distinction rules are:
-
-- `(source_type, source_id)` is unique in the OCR job table.
-- The same pair reuses its existing job. The same UUID under another type is a
-  different source.
-- Each PDF in a Concept Note run gets its own `upload_id`; `run_id`, filename,
-  S3 key, and file hash are never conversion keys.
-- Replacing or re-uploading a file creates a new source ID. An explicit retry
-  keeps the same pair and increments only the attempt number.
-- Inventory and Concept Note parent IDs remain in their owning records. CA does
-  not branch on them or store them as conversion identity.
-- Supported source types are validated by an application resolver registry, so
-  a future caller adds a resolver without changing the OCR pipeline.
-- Browser-facing inventory and Concept Note routes set the source type
-  server-side and translate their natural domain IDs to the pair. A browser does
-  not gain access by choosing another source type or guessing an ID.
+- `(source_type, source_id)` uniquely identifies one CA job. The same UUID under
+  another source type is a different source.
+- Each upload receives a new source ID. A retry keeps the same pair and creates
+  a new attempt.
+- For Concept Notes, the CC stored-file record owns the S3 pointer and access;
+  the CNB upload record links the same `upload_id` to the run.
+- Browser routes set `source_type` server-side. New source types add a CC
+  resolver without changing the shared PDF-to-Markdown pipeline.
 
 ## API and Authentication
 
@@ -221,70 +204,47 @@ Recommended page separator:
 
 ## Persistence and Recovery
 
-CityCatalyst owns all physical S3 pointers. For inventory sources, the pointer is
-the existing `ImportedInventoryFile.s3Key`; Concept Note sources use the CC
-stored-file record. CA's `pdf_ocr_jobs` contains one row per
-`(source_type, source_id)` and stores:
+1. **CityCatalyst stores the source PDF.** Inventory imports reuse
+   `ImportedInventoryFile.s3Key`; Concept Note uploads reuse the CC stored-file
+   record. CityCatalyst remains the owner of every physical S3 pointer.
 
-- source type and source ID
-- canonical filename, size, and content type
-- immutable creator user ID for audit and the user ID authorized for the current
-  attempt
-- status, model, page count, and the successful attempt number
-- sanitized error code and message
-- attempt count
-- lease owner, lease expiry, and heartbeat time
-- created, started, completed, and updated timestamps
+2. **CA creates or reuses one job.** `pdf_ocr_jobs` has one unique row per
+   `(source_type, source_id)`. An atomic insert-on-conflict prevents duplicate
+   jobs when starts arrive together. The row stores file metadata, status,
+   attempts, model/page information, sanitized errors, lease data, audit user
+   IDs, and timestamps. It never stores S3 keys, tokens, signed URLs, or
+   cross-database foreign keys.
 
-The CA database enforces uniqueness on `(source_type, source_id)`. `source_type`
-is text validated by the application registry rather than a PostgreSQL enum.
-There are no cross-database foreign keys and no stored S3 keys, bearer tokens, or
-signed URLs in CA. Job creation uses an atomic insert-on-conflict so simultaneous
-starts cannot create duplicate conversions. A start or retry sets the
-current-attempt user only after CityCatalyst validates that user. Workers use
-that user with the existing token-refresh flow. This allows an authorized
-collaborator to retry a shared source after the creator loses access; neither
-stored user ID is authorization by itself.
+3. **CityCatalyst authorizes each start or retry.** CA records the validated
+   current-attempt user so the worker can use the existing token-refresh flow.
+   The creator user remains only for audit; neither user ID grants access by
+   itself.
 
-The CC database stores each verified result in `PdfOcrResult`:
+4. **The CA dispatcher claims and processes the job.** It uses
+   `FOR UPDATE SKIP LOCKED`, a ten-minute lease, and a heartbeat every 60
+   seconds. Chunk files are temporary, are not resumable, and require no chunk
+   table or Kubernetes persistent volume.
 
-- source type and source ID
-- attempt number
-- result S3 key
-- content type, byte size, and optional S3 ETag
-- created and expiry timestamps
+5. **CA uploads the final Markdown to the existing CityCatalyst bucket.**
+   Development and test reuse `citycatalyst-files`; production reuses
+   `citycatalyst-files-prod`. CityCatalyst derives and validates the result key:
 
-Its primary key is `(source_type, source_id, attempt_number)`, and the result S3
-key is unique. This table is the authoritative result catalog; CA keeps only the
-job and successful attempt number. Result completion is idempotent: repeating it
-for the same verified object returns the existing row, while conflicting object
-metadata is rejected.
+   ```text
+   pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md
+   ```
 
-The dispatcher claims rows using PostgreSQL row locking with
-`FOR UPDATE SKIP LOCKED`. A running job has a ten-minute lease that is extended
-every 60 seconds. If the pod stops, the restarted CA process reclaims expired
-leases and restarts the whole conversion attempt.
+6. **CityCatalyst verifies and registers the result.** `PdfOcrResult` stores the
+   source pair, attempt number, result S3 key, content type, byte size, optional
+   S3 ETag, and creation/expiry timestamps. Its primary key is
+   `(source_type, source_id, attempt_number)`, and the result key is unique. CA
+   retains only the job and successful attempt number. Repeating completion for
+   the same verified object returns the existing row; conflicting metadata is
+   rejected.
 
-Chunk files are not durable resume artifacts, and there is no chunk table. This
-keeps recovery simple and avoids a persistent volume.
-
-Final Markdown reuses the existing CityCatalyst S3 bucket under a dedicated
-result prefix such as:
-
-```text
-pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md
-```
-
-CityCatalyst derives and validates this key from the source pair and attempt.
-CA never accepts or stores a caller-selected storage key.
-
-There is no new CA-owned bucket. Development and test reuse
-`citycatalyst-files`, while production reuses `citycatalyst-files-prod`. The
-CC database stores the source and result pointers, not their contents.
-
-The initial retention period is 14 days and is recorded on the CC result row.
-Expired or unexpectedly missing results return `410 Gone` and may be regenerated
-while the source PDF still exists.
+7. **Recovery and expiry remain simple.** After a pod restart, CA reclaims an
+   expired lease and restarts the full conversion attempt. Results expire after
+   14 days; an expired or missing result returns `410 Gone` and can be generated
+   again while the source PDF still exists.
 
 ## New Database Fields
 
@@ -617,20 +577,15 @@ configuration, not to CA's model/worker configuration.
 
 ## Failures and Retries
 
-Retry individual Mistral requests for `429`, transient `5xx`, timeouts, and
-connection resets, using exponential backoff with jitter and `Retry-After` when
-available.
+Each job has a 10-minute limit and at most three job/Mistral attempts.
 
-Retry transient signed-URL, result-upload, and result-registration failures. If
-the upload succeeded but the response was lost, the idempotent CC completion
-call recovers the existing result instead of running OCR again.
+- Retry only Mistral `429`/`5xx`/timeout failures and temporary signed-URL,
+  Markdown-upload, or result-registration failures.
+- Never retry PDF validation or Mistral authentication failures.
+- If result registration is interrupted after upload, repeat CC registration;
+  do not rerun successful OCR.
 
-Do not retry invalid, encrypted, corrupt, oversized, over-page-limit, or
-unsupported PDFs. Provider authentication failure is an operator alert, not a
-document retry.
-
-The overall 10-minute timeout includes download, validation, OCR, merge, and
-result upload. User-facing responses use stable codes such as:
+Return only these stable error codes:
 
 - `file_too_large`
 - `too_many_pages`

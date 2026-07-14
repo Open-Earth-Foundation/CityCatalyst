@@ -41,6 +41,7 @@
     "i18n:update": "for lang in de es pt; do node scripts/update-translation.js $lang; done",
     "bulk:create-inventories": "tsx scripts/create-bulk-inventories.ts",
     "bulk:connect-inventories": "tsx scripts/connect-bulk-inventories.ts",
+    "openapi:build": "tsx scripts/build-swagger-doc.ts",
     "openapi:lint": "spectral lint public/openapi-spec.json"
   },
   "dependencies": {

@@ -80,6 +80,30 @@ published to the GitHub Container Registry. Branch-based promotion: `develop` �
 `main` → test, version tags (`vX.Y.Z`) → production. See [`.github/workflows/`](./.github/workflows)
 and [`k8s/`](./k8s).
 
+## Testing email flows locally
+
+The app sends transactional emails (invitations, password resets, etc.) via SMTP. For local development, use [Ethereal Email](https://ethereal.email/) — a fake SMTP service that captures outgoing emails without delivering them.
+
+**Setup:**
+
+1. Go to [https://ethereal.email/](https://ethereal.email/) and click **"Create Ethereal Account"** to get a free test inbox
+2. Copy the generated credentials into your `app/.env`:
+
+```env
+SMTP_HOST="smtp.ethereal.email"
+SMTP_PORT="587"
+SMTP_USER="your.generated.user@ethereal.email"
+SMTP_PASSWORD="your-generated-password"
+SMTP_FROM_EMAIL="your.generated.user@ethereal.email"
+```
+
+> The `app/env.example` already has these keys pre-filled — just replace the values with your own Ethereal credentials.
+
+3. Trigger an email flow in the app (e.g. invite a collaborator, request a password reset)
+4. Open [https://ethereal.email/messages](https://ethereal.email/messages), log in with your credentials, and the captured email will appear there
+
+No emails will reach real inboxes while Ethereal credentials are active.
+
 ## Documentation
 
 - [App README & developer setup](./app#citycatalyst)

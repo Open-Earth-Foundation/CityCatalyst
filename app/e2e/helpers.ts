@@ -200,7 +200,13 @@ async function walkCitiesOnboardingWizard(
     await continueButton.click();
   }
 
-  // Step 3: third-party data — opt out for speed/determinism
+  // Step 3: invite collaborators — skip for speed/determinism
+  await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
+    timeout: 15000,
+  });
+  await page.getByRole("button", { name: /Skip this step/i }).click();
+
+  // Step 4: third-party data — opt out for speed/determinism
   await completeThirdPartyDataOnboardingStep(page, "no", {
     waitForInventoryUrl: true,
   });

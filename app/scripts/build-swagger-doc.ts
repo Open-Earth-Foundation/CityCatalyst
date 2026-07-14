@@ -17,7 +17,7 @@ function generateOpenAPISpec() {
     console.error = () => {};
     console.log = () => {};
 
-    const spec: Record<string, any> = createSwaggerSpec({
+    const spec = createSwaggerSpec({
       apiFolder: "src/app/api/v1",
       definition: {
         openapi: "3.0.0",
@@ -271,9 +271,11 @@ function generateOpenAPISpec() {
     fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
 
     console.log(`✅ OpenAPI spec generated: ${outputPath}`);
-    console.log(
-      `📊 Found ${Object.keys(spec.paths || {}).length} API endpoints`,
-    );
+    const keyCount = Object.keys(
+      (spec as unknown as Record<string, object>).paths || {},
+    ).length;
+
+    console.log(`📊 Found ${keyCount} API endpoints`);
 
     return spec;
   } catch (error) {

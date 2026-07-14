@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { Trans } from "react-i18next";
 import {
   Box,
   Text,
@@ -80,20 +81,24 @@ export function ActionCards({
                   lineHeight="24"
                   letterSpacing="wide"
                 >
-                  {t("no-inventory-description-before")}
-                  <Link
-                    href="mailto:info@openearth.org"
-                    color="content.link"
-                    fontFamily="body"
-                    fontSize="body.lg"
-                    fontWeight="normal"
-                    lineHeight="24"
-                    letterSpacing="wide"
-                    textDecoration="underline"
-                  >
-                    info@openearth.org
-                  </Link>
-                  {t("no-inventory-description-after")}
+                  <Trans
+                    t={t}
+                    i18nKey="no-inventory-description"
+                    components={{
+                      emailLink: (
+                        <Link
+                          href="mailto:info@openearth.org"
+                          color="content.link"
+                          fontFamily="body"
+                          fontSize="body.lg"
+                          fontWeight="normal"
+                          lineHeight="24"
+                          letterSpacing="wide"
+                          textDecoration="underline"
+                        />
+                      ),
+                    }}
+                  />
                 </Text>
               </Box>
             ) : hasInventory ? (

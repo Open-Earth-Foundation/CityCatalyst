@@ -204,15 +204,19 @@ export default function HomePage({
               letterSpacing="wide"
               color="base.dark"
             >
-              {t("no-city-description-before")}
-              <Link
-                href="mailto:info@openearth.org"
-                color="content.link"
-                textDecoration="underline"
-              >
-                info@openearth.org
-              </Link>
-              {t("no-city-description-after")}
+              <Trans
+                t={t}
+                i18nKey="no-city-description"
+                components={{
+                  emailLink: (
+                    <Link
+                      href="mailto:info@openearth.org"
+                      color="content.link"
+                      textDecoration="underline"
+                    />
+                  ),
+                }}
+              />
             </Text>
           </Box>
         </Box>
@@ -232,7 +236,7 @@ export default function HomePage({
         <>
           <Hero
             city={city}
-            hasInventory={!!ghgiCityData}
+            ghgiCityData={ghgiCityData}
             isPublic={isPublic}
             isLoading={isOrgDataLoading || isCityLoading}
             t={t}
@@ -247,7 +251,7 @@ export default function HomePage({
                 lng={language}
                 organization={orgData}
                 city={city}
-                hasInventory={!!ghgiCityData}
+                ghgiCityData={ghgiCityData}
               />
             </VStack>
           </Box>

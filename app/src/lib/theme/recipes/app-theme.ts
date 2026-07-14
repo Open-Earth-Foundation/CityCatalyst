@@ -679,6 +679,10 @@ export const appTheme = createSystem(defaultConfig, {
           value: "0px 8px 10px -6px #0000001A, 0px 20px 25px -5px #0000001A",
         },
         "12dp": { value: "0px 25px 50px -12px #00000040" },
+        "shadow-light-md": {
+          value:
+            "0 0 1px 0 rgba(24, 24, 27, 0.30), 0 4px 8px 0 rgba(24, 24, 27, 0.10)",
+        },
       },
 
       radii: {

@@ -81,6 +81,7 @@ jobs:
       - name: Setup Environment Variables
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
+          echo "GLOBAL_API_URL=https://ccglobal.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
@@ -93,9 +94,6 @@ jobs:
         run: |
           npm run openapi:build
           npm run openapi:lint
-
-      # - name: Run Cypress tests
-      #   run: npm run cy:test
 
       - name: Restore previous coverage
         uses: actions/cache@v4

@@ -59,7 +59,11 @@ jobs:
       - name: Setup Environment Variables
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" >> .env.local
-          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env.local
+          echo "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" >> .env.local && \
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.network" >> .env.local && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env.local && \
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env.local && \
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env.local
 
       - name: Run NextJS build
         run: npm run build

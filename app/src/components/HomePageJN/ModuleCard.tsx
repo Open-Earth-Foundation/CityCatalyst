@@ -142,7 +142,7 @@ export function ModuleCard({
         </VStack>
         <BodySmall lineClamp={1}>{t("by", { author: author })}</BodySmall>
         <Card.Description as="div">
-          <BodyMedium lineClamp={2}>
+          <BodyMedium >
             {getTranslationInLanguage(tagline)}
           </BodyMedium>
         </Card.Description>

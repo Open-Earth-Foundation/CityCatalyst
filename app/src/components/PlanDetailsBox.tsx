@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "@/i18n/client";
-import { Box, Link } from "@chakra-ui/react";
+import { Box, chakra, Link } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleMedium } from "@/components/package/Texts/Title";
@@ -58,9 +58,9 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
       <BodyLarge color="content.tertiary">
         {t("contact-us-to-upgrade")}{" "}
         <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}>
-          <BodyLarge color="content.link">
+          <chakra.span color="content.link">
             {process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
-          </BodyLarge>
+          </chakra.span>
         </Link>
       </BodyLarge>
     </Box>

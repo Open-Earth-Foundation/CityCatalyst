@@ -19,7 +19,7 @@ const Equation = ({ equation }: { equation: IEquation }) => (
   <>
     <BodyLarge>{equation?.label}</BodyLarge>
     <VStack alignItems={"center"}>
-      <LatexEquation formula={`$${equation.formula}$`} />
+      <LatexEquation formula={equation.formula} />
     </VStack>
   </>
 );

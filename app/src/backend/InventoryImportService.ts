@@ -582,7 +582,16 @@ export default class InventoryImportService {
                 row.activityDataSource?.trim() ||
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
-                activityData["data-source"] = dataSource;
+                let sourceFieldName = "data-source";
+                if ((methodology as any)?.["extra-fields"]) {
+                  const methodSourceField = (methodology as any)["extra-fields"].find(
+                    (f: any) => f.id.includes("-source") && f.type === "text",
+                  );
+                  if (methodSourceField) {
+                    sourceFieldName = methodSourceField.id;
+                  }
+                }
+                activityData[sourceFieldName] = dataSource;
               }
 
               // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
@@ -598,6 +607,10 @@ export default class InventoryImportService {
                 activityData.n2o_amount = n2oVal;
                 activityData.n2o_unit = "units-tonnes";
               }
+
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
+              );
 
               // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
               if (groupByField) {

@@ -44,6 +44,7 @@ import { Op } from "sequelize";
 import { logger } from "@/services/logger";
 import { InviteStatus } from "@/util/types";
 import { NextResponse } from "next/server";
+import { ProjectAdmin } from "@/models/ProjectAdmin";
 
 export const PATCH = apiHandler(async (req, { params, session }) => {
   logger.info({
@@ -65,6 +66,8 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const tokenContent = {
     email: (verifiedToken as JwtPayload).email,
     cities: (verifiedToken as JwtPayload).cities,
+    role: (verifiedToken as JwtPayload).role as "admin" | "collaborator" | undefined,
+    projectId: (verifiedToken as JwtPayload).projectId as string | undefined,
   };
 
   const difference = (setA: string[], setB: string[]) =>
@@ -106,38 +109,61 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw createHttpError.InternalServerError("Configuration error");
   }
   const failedInvites: { cityId: string }[] = [];
-  await Promise.all(
-    invites.map(async (invite) => {
-      const [cityUser, created] = await db.models.CityUser.findOrCreate({
-        where: {
-          cityId: invite.cityId,
-          userId: session.user.id,
-        },
-        defaults: {
-          cityUserId: randomUUID(),
-          cityId: invite.cityId!,
-          userId: session.user.id,
-        },
-      });
-      logger.info(
-        {
-          cityId: invite.cityId,
-          userId: session.user.id,
-          cityUserId: cityUser.cityUserId,
-          created,
-        },
-        created
-          ? "[UserInviteAccept] Created CityUser"
-          : "[UserInviteAccept] CityUser already exists; continuing accept",
-      );
-      await invite.update({
-        status: InviteStatus.ACCEPTED,
+
+  if (tokenContent.role === "admin" && tokenContent.projectId) {
+    const [projectAdmin, created] = await ProjectAdmin.findOrCreate({
+      where: { projectId: tokenContent.projectId, userId: session.user.id },
+      defaults: {
+        projectAdminId: randomUUID(),
+        projectId: tokenContent.projectId,
         userId: session.user.id,
-      });
-      logger.info({ cityId: invite.cityId }, "[UserInviteAccept] Updated invite status to ACCEPTED");
-      return cityUser;
-    }),
-  );
+      },
+    });
+    logger.info(
+      { projectId: tokenContent.projectId, userId: session.user.id, created },
+      created
+        ? "[UserInviteAccept] Created ProjectAdmin"
+        : "[UserInviteAccept] ProjectAdmin already exists; continuing accept",
+    );
+    await Promise.all(
+      invites.map((invite) =>
+        invite.update({ status: InviteStatus.ACCEPTED, userId: session.user.id }),
+      ),
+    );
+  } else {
+    await Promise.all(
+      invites.map(async (invite) => {
+        const [cityUser, created] = await db.models.CityUser.findOrCreate({
+          where: {
+            cityId: invite.cityId,
+            userId: session.user.id,
+          },
+          defaults: {
+            cityUserId: randomUUID(),
+            cityId: invite.cityId!,
+            userId: session.user.id,
+          },
+        });
+        logger.info(
+          {
+            cityId: invite.cityId,
+            userId: session.user.id,
+            cityUserId: cityUser.cityUserId,
+            created,
+          },
+          created
+            ? "[UserInviteAccept] Created CityUser"
+            : "[UserInviteAccept] CityUser already exists; continuing accept",
+        );
+        await invite.update({
+          status: InviteStatus.ACCEPTED,
+          userId: session.user.id,
+        });
+        logger.info({ cityId: invite.cityId }, "[UserInviteAccept] Updated invite status to ACCEPTED");
+        return cityUser;
+      }),
+    );
+  }
 
   const user = await db.models.User.findByPk(session.user.id);
   if (!user) {

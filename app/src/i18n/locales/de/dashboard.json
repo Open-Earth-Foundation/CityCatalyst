@@ -170,6 +170,8 @@
   "invite-error-toast-title": "Etwas ist schief gelaufen",
   "invite-error-toast-description": "Beim Senden Ihrer Einladungen ist ein Fehler aufgetreten",
   "invite-error-toast-text": "Beim Senden Ihrer Einladungen ist ein Fehler aufgetreten",
+  "cancel": "Abbrechen",
+  "send-invites-action": "Einladungen senden",
   "afolu-other-agriculture": "Andere Landwirtschaft",
   "afolu-livestock": "Vieh",
   "afolu-land": "Land",

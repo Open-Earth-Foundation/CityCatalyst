@@ -7,6 +7,9 @@ import { LiaIndustrySolid } from "react-icons/lia";
 import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
 import { logger } from "@/services/logger";
 
+// eslint-disable-next-line i18next/no-literal-string
+export const SUPPORT_EMAIL = "info@openearth.org";
+
 export const maxPopulationYearDifference = 5;
 
 export type InventoryType = "gpc_basic" | "gpc_basic_plus";

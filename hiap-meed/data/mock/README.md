@@ -79,6 +79,38 @@ This includes:
 `meta.apiContext.endpoint` reflects the translation route:
 - `POST /v1/explanations/translate`
 
+# output_plan_request_mock.json:
+
+This is a mock request for the output-plan report API.
+It simulates the frontend sending one selected ranked action together with the
+stored prioritization snapshot from local storage or, later, CityCatalyst
+database persistence.
+
+This payload shape is modeled by:
+- `CityActionReportApiRequest` (envelope)
+- `CityActionReportRequestData` (`requestData`)
+- `CityActionPrioritizationSnapshot` (`requestData.prioritizationSnapshot`)
+
+It includes:
+
+- one city locode: `CL IQQ`
+- one selected action ID: `icare_0040`
+- one requested report language: `en`
+- `debugContextOnly: true`, so the endpoint returns deterministic chapters
+  without calling the output-plan LLM
+- the source `/v1/prioritize` request snapshot
+- the generated `/v1/prioritize` response snapshot using the checked-in mock
+  city, action, legal, policy, mitigation-feasibility, and
+  financial-feasibility payloads
+
+The embedded prioritization snapshot sets `createExplanations` to `true` and
+uses a stored `/v1/prioritize` response with generated English explanations.
+The mock can still be posted locally in `debugContextOnly` mode without calling
+the output-plan LLM.
+
+`meta.apiContext.endpoint` reflects the report route:
+- `POST /v1/reports/output-plan`
+
 # city_api_mock.json:
 
 This is a mock response from the city context data API.

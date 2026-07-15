@@ -1,6 +1,11 @@
 import { Box, Grid, HStack, Icon } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { Control, Controller, UseFormSetValue } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldValues,
+  UseFormSetValue,
+} from "react-hook-form";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import { Field } from "@/components/ui/field";
 import { MdWarning } from "react-icons/md";
@@ -12,7 +17,7 @@ import {
 
 interface DirectMeasureSectionProps {
   t: TFunction;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   errors: Record<string, any>;
   isDirectMeasure: boolean;
   setValue: UseFormSetValue<any>;

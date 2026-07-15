@@ -144,7 +144,7 @@
     "sequelize-cli": "^6.6.5",
     "ts-jest": "^29.4.11",
     "tsx": "^4.21.0",
-    "typescript": "6.0.3"
+    "typescript": "^6.0.3"
   },
   "engines": {
     "node": "^22.21.1"

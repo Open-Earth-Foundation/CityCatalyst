@@ -11,9 +11,10 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `city_fit`
 - `title` (string): chapter title
 - `language` (string): requested report language
-- `facts.city` (object): city name, locode, country, region, population, city context, and source metadata when available
-- `facts.preferences` (object): selected sectors, timeframes, co-benefits, exclusions, and weights when available
-- `facts.score` (object): ranking and feasibility/alignment/impact score facts when available
+- `facts.action` (object): selected action ID and name. Use this as the chapter subject.
+- `facts.ranking` (object): selected-action rank, returned action count, and feasibility score
+- `facts.city_context` (array): only city indicator rows referenced by selected-action fit evidence
+- `facts.mitigation_feasibility` (object or null): curated mitigation-feasibility fields for the selected action, including action score, dimension scores, and supporting/limiting local conditions
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
 
@@ -26,7 +27,7 @@ Use the shared OutputPlanChapterResponse contract:
 - `markdown` (string): 2-4 concise paragraphs or bullets explaining why the action fits the city and what local constraints remain.
 - `limitations` (array of strings): relevant city-fit limitations.
 
-Do not infer local political support, implementation capacity, infrastructure status, or socioeconomic conditions beyond the supplied facts.
+Use `facts.action.name` as the action being assessed. Do not rename the action from feasibility taxonomy or indicator labels. Do not infer local political support, implementation capacity, infrastructure status, or socioeconomic conditions beyond the supplied facts.
 </output>
 
 <example_output>

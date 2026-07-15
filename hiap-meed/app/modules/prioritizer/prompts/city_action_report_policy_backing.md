@@ -11,8 +11,8 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `policy_backing`
 - `title` (string): chapter title
 - `language` (string): requested report language
-- `facts.policy_score` (object or null): policy component score, policy evidence count, evidence rows, and source metadata when available
-- `facts.score` (object): alignment score and related ranking signals when available
+- `facts.policy_score` (object or null): selected-action policy component score, evidence count, evidence rows, and support category when available
+- `facts.ranking` (object): selected-action rank, returned action count, and alignment score
 - `facts.action` (object): action identifiers and action pathway facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant

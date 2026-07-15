@@ -11,7 +11,7 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `sources_assumptions`
 - `title` (string): chapter title
 - `language` (string): requested report language
-- `facts.source_metadata` (object): source metadata for ranking snapshot and live enrichment sources when available
+- `facts.source_summary` (object): user-facing source categories, selected-action ranking summary, and live-enrichment availability
 - `facts.limitations` (array): report-level limitations
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
@@ -25,7 +25,7 @@ Use the shared OutputPlanChapterResponse contract:
 - `markdown` (string): concise bullets grouped by source categories, assumptions, and limitations.
 - `limitations` (array of strings): relevant evidence limitations.
 
-Use user-facing source categories and input `source_refs`; do not treat diagnostic metadata, artifact locations, endpoints, request identifiers, or implementation names as citations. Do not claim staleness was evaluated unless `facts` explicitly says it was.
+Use user-facing source categories and input `source_refs`; do not treat diagnostic metadata, artifact locations, endpoints, local paths, URLs, request identifiers, or implementation names as citations. Do not claim staleness was evaluated unless `facts` explicitly says it was.
 </output>
 
 <example_output>

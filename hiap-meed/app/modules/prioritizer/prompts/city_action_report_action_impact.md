@@ -11,9 +11,9 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `action_impact`
 - `title` (string): chapter title
 - `language` (string): requested report language
-- `facts.score` (object): impact score, final score, and other pillar scores when available
-- `facts.action` (object): action name, emissions references, intervention summary, outcome summary, co-benefits, and implementation timeline when available
-- `facts.city` (object): city identifiers and display facts when available
+- `facts.action` (object): selected action ID, name, emissions references, intervention summary, outcome summary, co-benefits, and implementation timeline when available
+- `facts.ranking` (object): selected-action rank, returned action count, impact score, and final score
+- `facts.impact_evidence` (object): selected-action impact evidence from the ranking snapshot
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
 

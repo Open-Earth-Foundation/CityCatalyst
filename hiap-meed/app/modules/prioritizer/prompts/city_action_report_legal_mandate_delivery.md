@@ -11,8 +11,8 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `legal_mandate_delivery`
 - `title` (string): chapter title
 - `language` (string): requested report language
-- `facts.legal` (object or null): legal verdict, ownership, restrictions, justifications, references, and source metadata when available
-- `facts.score` (object): feasibility and legal component score facts when available
+- `facts.legal` (object or null): selected-action legal verdict, ownership, restrictions, justifications, and references when available
+- `facts.ranking` (object): selected-action feasibility and legal component score facts when available
 - `facts.action` (object): selected action facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant

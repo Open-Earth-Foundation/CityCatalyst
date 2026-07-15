@@ -103,9 +103,10 @@ It includes:
   city, action, legal, policy, mitigation-feasibility, and
   financial-feasibility payloads
 
-The embedded prioritization snapshot sets `createExplanations` to `false` so
-the mock can be regenerated and posted locally without an OpenAI key. The
-ranking evidence is still present for the selected action.
+The embedded prioritization snapshot sets `createExplanations` to `true` and
+uses a stored `/v1/prioritize` response with generated English explanations.
+The mock can still be posted locally in `debugContextOnly` mode without calling
+the output-plan LLM.
 
 `meta.apiContext.endpoint` reflects the report route:
 - `POST /v1/reports/output-plan`

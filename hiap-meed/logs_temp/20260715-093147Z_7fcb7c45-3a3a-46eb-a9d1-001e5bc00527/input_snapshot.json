@@ -5,7 +5,8 @@
     "backendConsumer": "hiap-meed",
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
-      "endpoint": "POST /v1/reports/output-plan"
+      "endpoint": "POST /v1/reports/output-plan",
+      "locodes": []
     },
     "totalRecords": 1
   },
@@ -13,7 +14,6 @@
     "locode": "CL IQQ",
     "actionId": "icare_0040",
     "language": "en",
-    "debugContextOnly": false,
     "prioritizationSnapshot": {
       "request": {
         "meta": {
@@ -23,12 +23,16 @@
           "upstreamProvider": "city_catalyst_frontend",
           "apiContext": {
             "endpoint": "POST /v1/prioritize",
-            "locodes": ["CL IQQ"]
+            "locodes": [
+              "CL IQQ"
+            ]
           },
           "totalRecords": 1
         },
         "requestData": {
-          "requestedLanguages": ["en"],
+          "requestedLanguages": [
+            "en"
+          ],
           "topN": 20,
           "createExplanations": true,
           "cityDataList": [
@@ -36,14 +40,21 @@
               "locode": "CL IQQ",
               "countryCode": "CL",
               "populationSize": 125000,
-              "excludedActionIds": ["c40_0029"],
+              "excludedActionIds": [
+                "c40_0029"
+              ],
               "weightsOverride": {
                 "impact": 0.5,
                 "alignment": 0.3,
                 "feasibility": 0.2
               },
-              "cityStrategicPreferenceSectors": ["transportation"],
-              "cityStrategicPreferenceTimeframes": ["short", "medium"],
+              "cityStrategicPreferenceSectors": [
+                "transportation"
+              ],
+              "cityStrategicPreferenceTimeframes": [
+                "short",
+                "medium"
+              ],
               "cityStrategicPreferenceCoBenefitKeys": [
                 "air_quality",
                 "mobility"
@@ -55,31 +66,31 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Kerosene (paraffin)",
                         "totalEmissions": 599.532,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": 8352484.555,
                         "activityUnit": "MJ",
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Kerosene (paraffin)"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Natural gas",
                         "totalEmissions": 818452.245,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": 14280609148.0,
                         "activityUnit": "MJ",
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Natural gas"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Wood or wood waste",
                         "totalEmissions": 42200.983,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": 360130991.6,
                         "activityUnit": "MJ",
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Wood or wood waste"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -87,31 +98,31 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Electricity use in single family home",
                         "totalEmissions": 2955600.0,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": "Mock data",
-                        "notationKey": null,
-                        "activityType": "Electricity use in single family home"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Heating in multi family home",
                         "totalEmissions": 1438300.0,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": "Mock data",
-                        "notationKey": null,
-                        "activityType": "Heating in multi family home"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "All energy usage types in informal housing",
                         "totalEmissions": 3524785.0,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": "Mock data",
-                        "notationKey": null,
-                        "activityType": "All energy usage types in informal housing"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -123,31 +134,31 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Biodiesels (Single unit truck)",
                         "totalEmissions": 1943.87,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": 27028397.55,
                         "activityUnit": "MJ",
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Biodiesels (Single unit truck)"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Diesel oil (Single unit truck)",
                         "totalEmissions": 24808.289,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": 347138314.3,
                         "activityUnit": "MJ",
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Diesel oil (Single unit truck)"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Gas oil (Single unit truck)",
                         "totalEmissions": 836.075,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": 11395082.09,
                         "activityUnit": "MJ",
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Gas oil (Single unit truck)"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -163,22 +174,22 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Domestic wastewater",
                         "totalEmissions": 144817.556,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Domestic wastewater"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Industrial wastewater",
                         "totalEmissions": 91786.748,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Industrial wastewater"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -186,22 +197,22 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Chemical",
                         "totalEmissions": 28588.499,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Chemical"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Mineral",
                         "totalEmissions": 69.867,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Mineral"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -209,13 +220,13 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Non energy products from fuels and solvent use",
                         "totalEmissions": 3508.957,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Non energy products from fuels and solvent use"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -223,22 +234,22 @@
                     "notationKey": null,
                     "activities": [
                       {
+                        "activityType": "Buffalo",
                         "totalEmissions": 0.489,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Buffalo"
+                        "notationKey": null
                       },
                       {
+                        "activityType": "Cattle",
                         "totalEmissions": 129.168,
                         "totalEmissionsUnit": "t CO2e",
                         "activityValue": null,
                         "activityUnit": null,
                         "dataSource": null,
-                        "notationKey": null,
-                        "activityType": "Cattle"
+                        "notationKey": null
                       }
                     ]
                   },
@@ -2115,6 +2126,7 @@
             "metadata": {
               "locode": "CL IQQ",
               "internal_request_id": "3a08c2a9-74b2-4b2a-a606-6a876262b77a",
+              "frontend_request_id": null,
               "counts": {
                 "total_actions": 102,
                 "valid_actions": 82,
@@ -2157,11 +2169,8 @@
               "hard_filter_evidence_by_action_id": {
                 "icare_0001": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -2178,22 +2187,23 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0002": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": false,
                   "legal_verdict_category": null,
+                  "legal_assessment_summary": null,
+                  "confirmed_exclusion": false,
                   "legal_hard_filter_blocked": false
                 },
                 "icare_0006": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2216,15 +2226,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0008": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2247,15 +2257,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0009": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2278,15 +2288,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0010": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.66,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2309,15 +2319,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.66,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0012": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2340,15 +2350,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0015": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2371,15 +2381,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0016": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2402,15 +2412,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0023": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2431,15 +2441,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0024": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2462,15 +2472,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0025": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.16,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2493,15 +2503,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.16,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0026": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2523,15 +2533,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0027": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.84,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2554,15 +2564,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.84,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0028": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2585,15 +2595,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0031": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2615,15 +2625,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0033": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2646,15 +2656,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0034": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -2671,15 +2681,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0035": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.16,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2701,15 +2711,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.16,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0040": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2732,15 +2742,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0045": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -2757,15 +2767,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0049": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -2788,15 +2798,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0050": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -2813,15 +2823,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0053": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -2844,15 +2854,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0064": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -2874,15 +2884,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0069": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -2899,15 +2909,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0071": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -2924,15 +2934,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0072": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -2949,15 +2959,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0074": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -2974,15 +2984,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0076": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -2999,15 +3009,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0078": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -3024,15 +3034,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0079": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -3049,15 +3059,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0082": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -3074,15 +3084,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0099": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3099,15 +3109,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0101": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3124,15 +3134,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0104": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3155,15 +3165,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0105": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3185,15 +3195,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0110": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3216,15 +3226,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0111": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3248,15 +3258,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0117": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.16,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -3279,15 +3289,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.16,
+                  "legal_hard_filter_blocked": true
                 },
                 "icare_0120": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3310,15 +3320,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0121": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -3342,15 +3352,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0122": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3373,15 +3383,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0127": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3398,15 +3408,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0128": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3423,15 +3433,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0131": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3448,15 +3458,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0132": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3473,15 +3483,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0137": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3504,15 +3514,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "icare_0139": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -3536,15 +3546,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0010": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3567,15 +3577,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0012": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3598,15 +3608,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0013": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.16,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3629,15 +3639,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.16,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0015": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.16,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3660,15 +3670,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.16,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0016": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3691,15 +3701,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0017": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "enabled",
-                  "legal_verdict_score": 1.0,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3722,15 +3732,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 1.0,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0018": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.16,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -3753,15 +3763,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.16,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0023": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -3784,15 +3794,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0025": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -3815,20 +3825,23 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0029": {
                   "discard_reason": "user_excluded",
+                  "legal_assessment_present": null,
+                  "legal_verdict_category": null,
+                  "legal_assessment_summary": null,
                   "matched_excluded_action_id": "c40_0029",
                   "confirmed_exclusion": true
                 },
                 "c40_0034": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3850,15 +3863,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0035": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.84,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3879,15 +3892,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.84,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0036": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.0,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3909,15 +3922,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.0,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0037": {
                   "discard_reason": "legal_verdict_blocked",
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "blocked",
-                  "legal_verdict_score": 0.34,
-                  "legal_hard_filter_blocked": true,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3940,15 +3953,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.34,
+                  "legal_hard_filter_blocked": true
                 },
                 "c40_0040": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "waste",
@@ -3971,15 +3984,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0042": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -3996,15 +4009,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "c40_0071": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -4027,15 +4040,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0001": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -4059,15 +4072,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0023": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4084,15 +4097,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0024": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4109,15 +4122,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0025": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4134,15 +4147,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0026": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4159,15 +4172,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0028": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4184,15 +4197,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0031": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4209,15 +4222,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0033": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4234,15 +4247,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0034": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4259,15 +4272,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0037": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4284,15 +4297,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0038": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4309,15 +4322,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0039": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4334,15 +4347,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0040": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4359,15 +4372,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0041": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4384,15 +4397,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0042": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4409,15 +4422,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0043": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4434,15 +4447,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0045": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4459,15 +4472,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0049": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4484,15 +4497,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0050": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4509,15 +4522,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0052": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4534,15 +4547,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0053": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4559,15 +4572,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0054": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4584,15 +4597,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0055": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4609,15 +4622,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0056": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4634,15 +4647,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0057": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4659,15 +4672,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0060": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4684,15 +4697,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0062": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4709,15 +4722,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0064": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4734,15 +4747,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0067": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4759,15 +4772,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0068": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4784,15 +4797,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0069": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4809,15 +4822,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0070": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4834,15 +4847,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0071": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "afolu",
@@ -4859,15 +4872,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0074": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": "conditional",
-                  "legal_verdict_score": 0.5,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "stationary_energy",
@@ -4890,15 +4903,15 @@
                     ],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": 0.5,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0076": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "ippu",
@@ -4915,15 +4928,15 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 },
                 "ipcc_0105": {
                   "discard_reason": null,
-                  "confirmed_exclusion": false,
                   "legal_assessment_present": true,
                   "legal_verdict_category": null,
-                  "legal_verdict_score": null,
-                  "legal_hard_filter_blocked": false,
                   "legal_assessment_summary": {
                     "country_code": "CL",
                     "gpc_sector": "transportation",
@@ -4940,7 +4953,10 @@
                     "legal_references": [],
                     "analysis_date": "2026-04-30",
                     "generation_method": "expert review"
-                  }
+                  },
+                  "confirmed_exclusion": false,
+                  "legal_verdict_score": null,
+                  "legal_hard_filter_blocked": false
                 }
               }
             },
@@ -4949,6 +4965,7 @@
         ]
       },
       "storedAtUtc": "2026-07-14T00:00:00Z"
-    }
+    },
+    "debugContextOnly": false
   }
 }

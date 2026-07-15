@@ -190,11 +190,9 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 <Table.Cell textAlign="end" truncate>
                   {/*Direct measure entries are collected in tonnes by default*/}
                   {convertKgToTonnes(
-                    activity?.activityData?.co2_amount != null
-                      ? activity?.activityData?.co2_unit === "units-tonnes"
-                        ? activity?.activityData?.co2_amount * 1000
-                        : activity?.activityData?.co2_amount
-                      : activity?.co2eq ?? 0,
+                    activity?.activityData?.co2_unit === "units-tonnes"
+                      ? activity?.activityData?.co2_amount * 1000
+                      : activity?.activityData?.co2_amount,
                     numberFormat,
                     "CO2e",
                   )}

@@ -608,14 +608,6 @@ export default class InventoryImportService {
                 activityData.n2o_unit = "units-tonnes";
               }
 
-              // Fallback: when no per-gas breakdown is available but totalCO2e exists,
-              // store totalCO2e as co2_amount so the frontend table displays the value
-              // instead of showing 0 for all gas columns.
-              if (!hasAnyGas && totalCO2e && totalCO2e > 0) {
-                activityData.co2_amount = totalCO2e;
-                activityData.co2_unit = "units-tonnes";
-              }
-
               console.log(
                 `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
               );

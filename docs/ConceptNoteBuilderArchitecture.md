@@ -210,6 +210,155 @@ The diagrams below describe the logical storage shape the workflow needs. They
 are contract requirements for integration, not a decision that the Climate
 Advisor service owns the database infrastructure or migrations.
 
+## Tables and Data Placement
+
+PDF ingestion spans two PostgreSQL databases and the existing CC S3 bucket. The
+same `upload_id` identifies a Concept Note source across the boundary, but there
+is no database foreign key between CC PostgreSQL and the datateam managed CNB
+database.
+
+```mermaid
+flowchart LR
+    subgraph CCDB["CityCatalyst PostgreSQL"]
+        Inventory["ImportedInventoryFile<br/>(existing inventory source)"]
+        CNUpload["ConceptNoteUpload<br/>(new CNB source record)"]
+        OCR["PdfOcrJob<br/>(new shared OCR job)"]
+    end
+
+    subgraph CCS3["Existing CityCatalyst S3"]
+        Source["Immutable source PDF"]
+        Markdown["Authoritative combined Markdown"]
+    end
+
+    subgraph CNBDB["datateam managed CNB database"]
+        Run["concept_note_runs"]
+        Received["concept_note_uploads<br/>(optional CA ingest record)"]
+    end
+
+    Inventory -.->|"inventory_import + id"| OCR
+    CNUpload -.->|"concept_note_upload + upload_id"| OCR
+    CNUpload --> Source
+    OCR --> Markdown
+    Run --> Received
+    Markdown -.->|"optional API delivery using upload_id"| Received
+```
+
+### CityCatalyst PostgreSQL
+
+CC adds two tables for the shared conversion path. They are owned and migrated
+with the CityCatalyst application.
+
+#### `ConceptNoteUpload`
+
+This table is the authoritative CC source record for a Concept Note PDF. It is
+separate from the datateam database's `concept_note_uploads` table and from the
+existing CC `UserFile` model.
+
+```text
+upload_id              uuid primary key
+run_id                 uuid not null
+user_id                uuid not null
+city_id                uuid not null
+project_id             uuid null
+filename               string not null
+source_label           string null
+mime_type              string not null
+size_bytes             bigint not null
+source_s3_key          string not null
+source_sha256          string not null
+created_at             timestamp not null
+deleted_at             timestamp null
+```
+
+Rules:
+
+- `run_id` is an integration identifier, not a foreign key into another
+  database.
+- `upload_id` is immutable and is reused as `PdfOcrJob.source_id`.
+- The source PDF is immutable. Replacing it creates a new `upload_id`.
+- The row stores the authoritative source pointer and permission scope, but no
+  OCR status or Markdown bytes.
+- Source deletion and OCR-result retention follow the same CC file lifecycle.
+
+#### `PdfOcrJob`
+
+This is the durable CC queue and result catalog shared by inventory imports and
+Concept Note uploads. It has one logical row per `(source_type, source_id)` and
+has no public job identifier.
+
+```text
+source_type            string not null
+source_id              uuid not null
+status                 string not null
+attempt_count          integer not null
+run_after              timestamp null
+model                  string null
+page_count              integer null
+result_s3_key           string null
+result_size_bytes       bigint null
+result_sha256           string null
+lease_owner             string null
+lease_expires_at        timestamp null
+heartbeat_at            timestamp null
+started_at              timestamp null
+completed_at            timestamp null
+error_code              string null
+error_message           string null
+delivery_target         string null
+delivery_status         string null
+delivery_attempt_count  integer not null
+delivery_run_after      timestamp null
+delivered_at            timestamp null
+delivery_error_code     string null
+delivery_error_message  string null
+created_at              timestamp not null
+updated_at              timestamp not null
+unique                  (source_type, source_id)
+```
+
+Rules:
+
+- `source_type = inventory_import` resolves `source_id` through the existing
+  `ImportedInventoryFile` table.
+- `source_type = concept_note_upload` resolves `source_id` through
+  `ConceptNoteUpload.upload_id`.
+- Because the source relationship is polymorphic, `source_id` is resolved and
+  authorized by application code rather than a database foreign key.
+- OCR state, retries, leases, and result metadata are independent from optional
+  CA delivery state. Retrying delivery does not increment `attempt_count` or
+  call Mistral again.
+- PDF and Markdown bytes stay in S3. The table stores pointers and metadata only.
+
+The existing `ImportedInventoryFile.importStatus` remains the user-facing GHGI
+import lifecycle. It does not replace `PdfOcrJob`: the current `extract` route
+will create or reuse the shared OCR row, and successful OCR will pass the stored
+Markdown to `InventoryExtractionService` before the import advances to
+`waiting_for_approval`.
+
+### Existing CityCatalyst S3
+
+| Object | Authoritative pointer | Lifecycle |
+| --- | --- | --- |
+| Inventory source PDF | `ImportedInventoryFile.s3Key` | Existing inventory import lifecycle. |
+| Concept Note source PDF | `ConceptNoteUpload.source_s3_key` | Concept Note upload lifecycle in CC. |
+| Combined Markdown | `PdfOcrJob.result_s3_key` | Same lifecycle as its immutable source. |
+
+The combined Markdown key follows
+`pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md`.
+
+### Datateam Managed CNB Database
+
+The `concept_note_uploads` table in the CNB workflow diagram is created only when
+CC optionally delivers completed Markdown to CA. It stores the received
+Markdown, its digest and page count, and downstream ingest state. It stores no
+source/result S3 key, Mistral configuration, OCR attempt, lease, or authoritative
+artifact pointer.
+
+`concept_note_uploads.upload_id` equals `ConceptNoteUpload.upload_id`, while
+`concept_note_uploads.run_id` associates the received Markdown with the CNB run.
+Those values are checked through API and repository contracts; they do not form
+cross-database foreign keys.
+
 ## Workflow Steps
 
 Each workflow step should map to a scoped context loader and scoped tool pack.
@@ -308,6 +457,55 @@ Recommended high-level shape:
 }
 ```
 
+## CityCatalyst Data Landscape
+
+The context bundle should use the available CityCatalyst data as bounded
+summaries. Coverage and source formats vary by city, so the workflow must not
+assume that every selected city has complete GHGI or CCRA data.
+
+### GHGI
+
+Amanda confirmed that GHGI data exists for Minnesota cities, but coverage is not
+complete. Not every city is available, and some cities report only selected
+sectors. Cities also use their own reporting structures, so the available data
+must be mapped into the CityCatalyst/GPC structure before it can be used as
+consistent concept-note context.
+
+Once the first target cities are selected, Amanda can confirm the exact GHGI
+coverage for each city, including available years, covered sectors, missing
+sectors, source format, and required mapping work.
+
+### CCRA and Minnesota GreenStep
+
+Minnesota cities may have risk-assessment material and reported sustainability
+actions that can contribute to CCRA context. These sources must be reviewed for
+the selected cities before they are treated as structured CityCatalyst data.
+
+[Minnesota GreenStep Cities & Tribal Nations](https://greenstep.pca.state.mn.us/)
+is a voluntary sustainability and quality-of-life program built around 29
+optional best practices and more than 180 actions. It gives cities a menu of
+actions they can choose to pursue and records implementation at one-, two-, or
+three-star levels. The
+[Climate Adaptation and Community Resilience best practice](https://greenstep.pca.state.mn.us/bp-detail/81730)
+includes actions covering extreme-weather preparedness, integration of climate
+resilience into planning and budgeting, community resilience, and private-sector
+risk reduction. Individual GreenStep actions can also reference risk-assessment
+methods; for example, the
+[water and wastewater resilience action](https://greenstep.pca.state.mn.us/bp-action-detail/81918)
+uses CREAT or a similar assessment to evaluate climate risk to infrastructure.
+
+GreenStep therefore provides potentially useful evidence about city actions,
+plans, and resilience work, but it should not be assumed to be a complete or
+standardized CCRA dataset. For each selected city, the workflow should review:
+
+- available risk assessments and their hazard, exposure, vulnerability, and
+  scoring structure;
+- GreenStep actions, their implementation status, and supporting evidence;
+- overlap between GreenStep actions and actions already stored in CityCatalyst;
+- missing risks, sectors, populations, infrastructure, or geographic coverage;
+  and
+- whether the records are current enough to use in the concept note.
+
 ## Database Model
 
 ### Data Planning Constraints From Global Data
@@ -369,8 +567,8 @@ erDiagram
         string user_id
         string city_id
         string project_id
-        string funder_id
-        string selected_funding_record_id
+        uuid funder_id
+        uuid selected_funding_record_id
         string status
         string workflow_step
         jsonb context_summary
@@ -423,7 +621,6 @@ erDiagram
         int position
         string status
         bool required
-        bool deleted
         bool user_locked
         timestamp created_at
         timestamp updated_at
@@ -443,7 +640,6 @@ erDiagram
     concept_note_evidence_links {
         uuid evidence_link_id
         uuid chapter_id
-        uuid revision_id
         string selected_source_label
         string source_location
         string claim_ref
@@ -453,7 +649,7 @@ erDiagram
     concept_note_matched_projects {
         uuid match_id
         uuid run_id
-        string funding_record_id
+        uuid funding_record_id
         string decision
         text fit_rationale
         jsonb evidence
@@ -468,6 +664,19 @@ erDiagram
         string status
     }
 ```
+
+Within the CNB database, funding references use the same UUID type as their
+source records:
+
+- `concept_note_runs.funder_id` references `funders.funder_id`.
+- `concept_note_runs.selected_funding_record_id` references
+  `funding_records.funding_record_id`.
+- `concept_note_matched_projects.funding_record_id` references
+  `funding_records.funding_record_id`.
+
+`concept_note_chapter_revisions` enforces a unique
+`(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
+revision.
 
 For uploads, `upload_id` is created by the authenticated CityCatalyst upload
 route and identifies the immutable CC source record. When CNB needs the source,
@@ -485,7 +694,8 @@ pointer.
 ### Evidence Links
 
 `concept_note_evidence_links` are workspace review records. They connect a claim
-in a specific chapter revision to the selected source context that supports it.
+in a chapter to the selected source context that supports it. Revisions remain
+the chapter history and do not own evidence links.
 
 They do not store source documents or converter chunks. The supporting context
 lives in the context bundle, and the evidence link records the user-facing source
@@ -831,13 +1041,15 @@ Chapter fields should support the editable document surface:
 - `run_id`
 - `template_section_id`
 - `title`
-- `body_markdown`
 - `position`
 - `status`: `empty`, `draft`, `needs_review`, `ready`, `deleted`
 - `required`
 - `user_locked`
-- `deleted`
-- `latest_revision_id`
+
+`concept_note_chapters` stores chapter metadata only. Chapter Markdown is stored
+only in `concept_note_chapter_revisions.body_markdown`. The current chapter body
+is the full Markdown body from the revision with the highest `revision_number`
+for that chapter; it is not duplicated on the chapter row.
 
 Revision fields should support history and conflict handling:
 
@@ -850,6 +1062,10 @@ Revision fields should support history and conflict handling:
 - `body_markdown`
 - `patch_summary`
 - `created_at`
+
+Every revision stores the complete `body_markdown`, including revisions created
+for non-text chapter operations, so any historical chapter state can be
+reconstructed without reading Markdown from `concept_note_chapters`.
 
 ## Document Tool Deep Dive
 
@@ -886,8 +1102,8 @@ Input:
   "user_id": "string",
   "city_id": "string",
   "project_id": "string",
-  "funder_id": "string",
-  "selected_funding_record_id": "string",
+  "funder_id": "uuid",
+  "selected_funding_record_id": "uuid",
   "thread_id": "uuid|null"
 }
 ```
@@ -1143,7 +1359,6 @@ Output:
       "position": 3,
       "status": "draft",
       "required": true,
-      "deleted": false,
       "user_locked": false,
       "latest_revision_id": "uuid"
     }
@@ -1151,10 +1366,14 @@ Output:
 }
 ```
 
+`latest_revision_id` in this response is derived from the revision with the
+highest `revision_number`; it is not stored on `concept_note_chapters`.
+
 ### `document_get_chapter`
 
 Returns one chapter with current text, revision metadata, evidence review state,
-gaps, and template requirements.
+gaps, and template requirements. Current text is read from the revision with the
+highest `revision_number`; no Markdown body is read from the chapter row.
 
 ### `document_add_chapter`
 
@@ -1228,7 +1447,7 @@ Output:
 ```json
 {
   "chapter_id": "uuid",
-  "deleted": true,
+  "status": "deleted",
   "revision_id": "uuid",
   "restore_available": true
 }
@@ -1238,10 +1457,10 @@ Rules:
 
 - Use soft delete only. Do not hard-delete chapter rows.
 - Create a revision with `change_type=delete_chapter`.
-- Preserve previous text for restore.
+- Preserve the previous text and non-deleted chapter status for restore.
 - Re-number visible chapters transactionally.
 - If the chapter is required by the funder template, do not delete silently.
-  Instead mark it as `deleted=true` and create or update a gap explaining why a
+  Instead set `status=deleted` and create or update a gap explaining why a
   required section is intentionally skipped.
 - If the chapter has user-authored text, require explicit user confirmation.
 
@@ -1261,7 +1480,8 @@ Restores a soft-deleted chapter.
 
 Rules:
 
-- Clears `deleted`.
+- Restores the previous non-deleted chapter `status` recorded by the delete
+  revision.
 - Restores position or inserts at a requested position.
 - Adds a `restore_chapter` revision.
 - Reopens any gaps that were closed only because the chapter was deleted.
@@ -1650,57 +1870,6 @@ Minimum test surface:
   available.
 - SSE event shape tests for document updates.
 
-## Implementation Phases
-
-### Phase 1: Durable Document Workspace
-
-- Integrate with datateam managed CNB database contracts for runs, context
-  bundles, chapters, revisions, gaps, and evidence links.
-- Add document tools:
-  - list chapters
-  - get chapter
-  - add chapter
-  - delete chapter
-  - restore chapter
-  - edit chapter text
-  - link evidence
-  - flag gap
-- Add a minimal CC page with chat plus document workspace.
-
-### Phase 2: Context Bundle and CC Context
-
-- Add run start/resume/status.
-- Add context bundle service.
-- Add CC capability wrappers for city, project, GHGI, CCRA, and HIAP summaries.
-- Persist context snapshots for audit and resume.
-
-### Phase 3: CNB Reference Tables and Matching
-
-- Stand up funder/profile/template/project schema.
-- Add curated ingest scripts.
-- Add reference tools and LLM-agent similar-project matching.
-- Persist matched examples and show them in the document workflow.
-
-### Phase 4: File Ingestion
-
-- Add authenticated CC upload registration and the durable CC OCR job.
-- Process PDFs in the CC Kubernetes CronJob, call Mistral, validate the Markdown
-  shape, and store the authoritative `.md` and digest in CC.
-- Add the optional CC-to-CA Markdown handoff with idempotent delivery and
-  independent delivery retries.
-- Durably register received Markdown in CA before excerpt selection, indexing,
-  summarization, and context-bundle updates.
-- Attach selected source context, not CC storage pointers, to the context bundle.
-- Enable mid-flow upload ingestion and evidence review through the document workspace.
-
-### Phase 5: Export
-
-- Add export preflight.
-- Add DOCX export generation.
-- Add PDF export generation.
-- Store export file refs.
-- Add retry and failure reporting.
-
 ## Open Questions
 
 - Which funder and instrument type are the first release target?
@@ -1710,3 +1879,9 @@ Minimum test surface:
   appendices/internal notes?
 - What source license rules apply to the Minnesota funded-project corpus?
 - Which matching weights are NLC-approved hard gates versus soft signals?
+- For the selected cities, which GHGI years and sectors are available, what is
+  missing, and which city-specific reports require mapping into the
+  CityCatalyst/GPC structure?
+- Should available risk assessments and GreenStep actions be transformed into
+  the current CityCatalyst CCRA/action format, or remain source evidence that is
+  summarized only inside the context bundle?

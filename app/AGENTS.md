@@ -414,32 +414,4 @@ CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
 
 ---
 
-## Available Skills (`.cursor/skills/`)
-
-Skills are invoked in Cursor or Claude Code by describing what you want to do. The AI matches your intent to the skill automatically.
-
-| Skill | Invoke by saying… |
-|-------|-------------------|
-| `add-rtk-endpoint` | "add a new RTK Query endpoint for X" |
-| `create-api-endpoint` | "create a new API endpoint for X" |
-| `create-component` | "create a new component for X" |
-| `create-migration` | "add a migration to create table X / add column Y" |
-| `create-ticket` | "create a ticket for X" / "write a story for X" |
-| `docs-after-change` | "update the docs after this change" *(also runs automatically)* |
-| `full-feature` | "build the full feature for X end-to-end" |
-| `k8s-health-audit` | "run a Kubernetes health audit on the dev cluster" |
-| `k8s-readonly-query` | "check why pod X is failing" |
-| `non-tech-contribute` | "I want to change some copy but I don't know how to code" |
-| `pr-review-gate` | "review PR 123" / "do a review of PR #X" |
-| `prompt-schema-authoring` | "create a prompt file for X" |
-| `pull-request-standards` | "open a PR for the current branch" / "create a PR" |
-| `refine-ticket` | "refine ticket ON-123" / "break down this story technically" |
-| `repo-doc-audit` | "audit the repo documentation" |
-| `script-quality-gate` | "check this script follows project conventions" |
-| `simplify-after-change` | "simplify the code after this change" *(also runs automatically)* |
-
-To browse all skills: `ls .cursor/skills/`
-
----
-
 _This file is for agentic coding agents. Follow these rules for consistency and reliability._

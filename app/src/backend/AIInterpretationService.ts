@@ -3,6 +3,8 @@
  * (target field id → column index) so ECRFImportService can process the file.
  * For key-value format (column headers = composite e.g. residential_buildings_scope_1),
  * shapes the table into GPC rows via LLM so no extra code steps are needed.
+ * For FormatAdapter long-tidy / wide-year / multi-sheet files, the interpret route may
+ * skip interpretTabular (see shouldSkipInterpretForAdapter) and shape only — fewer LLM calls.
  * Uses the same prompt structure as PDF extraction (Path C): <role>, <task>, <input>, <output>, <taxonomy>, <example_output>.
  * Embeds the same GPC schema (sector/subsector hierarchy and name mappings) so the LLM knows what to look for.
  */
@@ -116,6 +118,30 @@ export type InterpretationTargetField =
 /** LLM returns mapping from target field id to 0-based column index. */
 export interface ColumnMappingResponse {
   mapping: Partial<Record<InterpretationTargetField, number>>;
+}
+
+/**
+ * Adapter types that FormatAdapterService already flattens into a tidy table.
+ * These almost never satisfy eCRF column mapping after interpretTabular, so Path B
+ * can skip the mapping LLM call and go straight to shapeTableToRows (fewer round-trips).
+ */
+const ADAPTER_TYPES_SKIP_INTERPRET = new Set([
+  "long-tidy",
+  "wide-year",
+  "multi-sheet",
+]);
+
+/**
+ * Returns true when Path B should skip interpretTabular and shape only.
+ * CIRIS / key-value / unknown / near-ecrf keep the interpret-first flow.
+ *
+ * @param adapterType - Value stored on the import from FormatAdapterService detection
+ */
+export function shouldSkipInterpretForAdapter(
+  adapterType: string | null | undefined,
+): boolean {
+  if (!adapterType) return false;
+  return ADAPTER_TYPES_SKIP_INTERPRET.has(adapterType);
 }
 
 /**

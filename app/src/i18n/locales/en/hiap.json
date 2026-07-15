@@ -124,7 +124,8 @@
     "ghg_reduction": "GHG Reduction",
     "climate_resilience": "Climate Resilience"
   },
-  "top-actions-tip": "Your top actions list is based on your current inventory progress. We recommend completing it before using this module.",
+  "top-actions-tip-mitigation": "Your top actions list is based on your current inventory progress. We recommend completing it before using this module.",
+  "top-actions-tip-adaptation": "Your top actions list is based on your current Climate Risk Assessment. We recommend completing it before using this module.",
   "climate-actions-title": "Climate actions",
   "actions": "Actions",
   "open-cc-actions": "Open CC Actions",

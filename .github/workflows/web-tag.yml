@@ -260,6 +260,24 @@ jobs:
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    if: ${{ !contains(github.ref, '-') }}
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/prod/cc-prod-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-prod \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

@@ -23,7 +23,12 @@ data and configuration, not by rebuilding the workflow.
   knowledge-source, and concept-note patterns.
 - The CityCatalyst global-data concept-note-builder research page, especially
   its funder and funding reference data.
-- The supporting PDF converter repository for PDF-to-markdown conversion.
+- The
+  [CC ↔ CA Markdown output schema contract](../climate-advisor/docs/cc_ca_markdown_output_schema_contract.md)
+  for Markdown shape requirements only.
+- The
+  [CityCatalyst PDF OCR architecture](../climate-advisor/docs/pdf-ocr-markdown-architecture.md)
+  for converter ownership and the optional CA handoff.
 
 ## Scope
 
@@ -37,13 +42,13 @@ In scope:
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
-- PDF upload ingestion using the shared Climate Advisor Markdown converter.
+- PDF upload ingestion using the shared CityCatalyst Markdown converter.
 - Reuse of current CityCatalyst-to-Climate-Advisor connection for CC data.
 
 Out of scope:
 
 - Redesigning the CC data connection.
-- Planning the internals of `Open-Earth-Foundation/PDF_converter`.
+- Using `Open-Earth-Foundation/PDF_converter` as a runtime service.
 - Multi-funder discovery in the first release.
 - Submitting grants or applications to external funder portals.
 - A new broad agent microservice outside Climate Advisor.
@@ -57,8 +62,8 @@ workflow, following the same direction as the Stationary Energy workflow:
 2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
 3. The datateam managed CNB database stores reusable funder and funded-project
    tables alongside CNB workflow tables.
-4. PDF ingestion should use the shared CA converter, reusing the applicable
-   stage-one concepts from the supporting PDF converter repository.
+4. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
+   optionally passes the completed Markdown to CA for CNB ingestion.
 5. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
@@ -69,12 +74,18 @@ flowchart TB
     subgraph CC["CityCatalyst"]
         CCUI
         CCBridge["CNB bridge routes"]
+        CCUpload["Authenticated upload routes"]
+        CCOCR["Durable PDF OCR service"]
         CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, HIAP"]
-        CCData[("CC DB")]
+        CCData[("CC PostgreSQL")]
     end
+
+    CCFiles[("Existing CC S3<br/>source PDFs + Markdown")]
+    Mistral["Mistral OCR"]
 
     subgraph CA["Climate Advisor service"]
         CARoutes["CNB workflow routes<br/>start, status, messages, export"]
+        MarkdownIngress["Optional Markdown ingest"]
         Stream["StreamingHandler"]
         Agent["AgentService<br/>scoped CNB prompt + tools"]
         CNBService["ConceptNoteWorkflowService"]
@@ -90,9 +101,17 @@ flowchart TB
 
     ContextBundle["Context bundle<br/>CC context + funder criteria<br/>funded projects + uploads"]
     OpenRouter["OpenRouter"]
-    ObjectStore["Object/file storage<br/>uploads + DOCX/PDF exports"]
+    ExportStore["Object/file storage<br/>DOCX/PDF exports"]
 
     CCUI --> CCBridge
+    CCUI --> CCUpload
+    CCUpload --> CCFiles
+    CCUpload --> CCOCR
+    CCOCR --> Mistral
+    Mistral --> CCOCR
+    CCOCR --> CCFiles
+    CCOCR -. "when CNB needs it" .-> MarkdownIngress
+    MarkdownIngress --> CNBService
     CCBridge --> CARoutes
     CARoutes --> Stream
     Stream --> Agent
@@ -109,7 +128,7 @@ flowchart TB
     ContextService --> ContextBundle
     ContextBundle --> Agent
     ContextBundle --> DocService
-    DocService --> ObjectStore
+    DocService --> ExportStore
     Agent --> OpenRouter
 ```
 
@@ -143,7 +162,8 @@ flowchart LR
     Review --> Revise["Revise chapters"]
     Revise --> Export["Generate DOCX/PDF export"]
 
-    Upload["User uploads files<br/>any time"] --> Ingest["Convert + ingest"]
+    Upload["User uploads files<br/>any time"] --> Convert["CC converts PDF<br/>and stores Markdown"]
+    Convert --> Ingest["Optionally pass .md to CA"]
     Ingest --> Context
     Ingest --> Draft
 
@@ -160,13 +180,14 @@ flowchart LR
 | Chat threads and messages | Climate Advisor | Existing CA conversation model. |
 | Concept-note run state | datateam managed CNB database | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
 | Context bundle snapshot | datateam managed CNB database | Reusable run input/output for this workflow. |
-| CN upload/run associations and selected source context | datateam managed CNB database | Links stable upload IDs to runs and keeps selected context for review and export. |
+| CN upload/run associations, received Markdown, and selected source context | datateam managed CNB database | Registers the optional Markdown handoff and keeps selected context for review and export. |
 | Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
 | Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
 | Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
 | Funding opportunities and funded projects | datateam managed CNB database | Shared funding records distinguished by `is_opportunity`. |
 | Exported DOCX/PDF file references | datateam managed CNB database | Workflow output artifacts. |
-| PDF-to-markdown conversion | Climate Advisor | Runs the shared Markdown-only job and uploads the outcome; CityCatalyst verifies and records the result pointer. |
+| PDF-to-Markdown conversion | CityCatalyst | Owns Mistral OCR, queueing, retries, validation, authoritative storage, and result pointers. |
+| Optional Markdown handoff | CityCatalyst → Climate Advisor | CC sends the completed `.md` only when a CA workflow needs it; CA never participates in OCR. |
 
 ## Data Infrastructure Boundary
 
@@ -181,7 +202,7 @@ through stable contracts:
 - typed read/write clients or repositories for CNB run and document state
 - typed reference-data clients for funders, funding records, templates,
   criteria, and evidence
-- stable file references for uploads and exports
+- stable CC-created upload IDs and CNB export file references
 - source labels/locations and evidence link records for workspace review and
   audit trails
 
@@ -197,7 +218,7 @@ The active step decides which tools are available.
 ```mermaid
 flowchart TB
     Start([Start]) --> Scope["selecting_scope"]
-    Scope --> Ingest["ingesting_user_files<br/>deterministic conversion"]
+    Scope --> Ingest["ingesting_user_files<br/>receive + process Markdown"]
     Ingest --> Funder["profiling_funder"]
     Funder --> Match["matching_examples"]
     Match --> Context["assembling_context<br/>build context bundle"]
@@ -207,7 +228,7 @@ flowchart TB
     Edit --> Draft
     Draft --> Complete([completed])
 
-    IngestNote["Full uploads are converted and stored.<br/>Only selected source excerpts enter the context bundle."]
+    IngestNote["CC owns PDF conversion and Markdown storage.<br/>CA receives .md only when needed; selected excerpts enter the context bundle."]
     ContextNote["Context bundle combines CC data,<br/>selected source excerpts, funder rubric/template,<br/>and matched funded projects."]
     Ingest -.-> IngestNote
     Context -.-> ContextNote
@@ -218,7 +239,7 @@ flowchart TB
 | Step | Main context | Enabled tool groups |
 | --- | --- | --- |
 | `selecting_scope` | user, city, project candidates | workflow control, CC project reads |
-| `ingesting_user_files` | uploaded file refs, deterministic converter status, candidate source excerpts | deterministic document ingest tools; no LLM |
+| `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts | deterministic document ingest operations; no LLM |
 | `profiling_funder` | selected funder, template, criteria | CNB reference table tools |
 | `matching_examples` | project profile, funder profile, project KB filters | matching tools |
 | `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | internal `ContextBundleService`; no agent tools |
@@ -364,9 +385,15 @@ erDiagram
         uuid run_id
         string uploaded_by_user_id
         string filename
-        string mime_type
-        bigint size_bytes
-        string file_ref
+        string source_label
+        text markdown_text
+        string markdown_sha256
+        int page_count
+        string ingest_status
+        string ingest_error_code
+        timestamp ingest_started_at
+        timestamp ingest_completed_at
+        timestamp received_at
         timestamp created_at
     }
 
@@ -443,12 +470,17 @@ erDiagram
 ```
 
 For uploads, `upload_id` is created by the authenticated CityCatalyst upload
-route and identifies both the CC source record and its CNB run association.
-`file_ref` is only the opaque pointer returned by the CityCatalyst storage
-boundary. Filename, MIME type, size, object pointer, and object contents are
-immutable for an `upload_id`; replacement creates a new upload. Neither value
-grants access. The domain route checks the run association and current user
-permissions.
+route and identifies the immutable CC source record. When CNB needs the source,
+CA first receives that ID with the completed Markdown, verifies current run
+permission, and creates or reuses the CNB run association. An upload ID already
+bound to another run is rejected.
+
+CA stores the received `markdown_text`, its verified `markdown_sha256`, page
+count, source label, and downstream `ingest_status`. These values are immutable
+for an `upload_id`; replacement creates a new upload. This copy makes CA ingest
+restart-safe, but the CC S3 object and CC result pointer remain authoritative.
+CNB storage never receives a source/result S3 key, signed URL, or opaque CC file
+pointer.
 
 ### Evidence Links
 
@@ -690,43 +722,66 @@ If the user project or funder profile is missing a field needed for the future
 scoring concept, the workflow should not invent it. It should record a match
 caveat and create a gap if the missing field matters for drafting.
 
-## PDF Conversion
+## PDF Conversion and Optional Markdown Handoff
 
-CNB uses the shared CA converter for PDF-to-Markdown. The converter reuses only
-the applicable stage-one concepts from `Open-Earth-Foundation/PDF_converter`.
+CityCatalyst owns the shared PDF-to-Markdown converter. CC owns source-file
+authorization and storage, the durable OCR queue, Mistral requests, retries,
+ordered page merge, schema validation, and the authoritative Markdown artifact.
+The converter does not depend on CA or
+`Open-Earth-Foundation/PDF_converter` at runtime.
 
-Each uploaded PDF has a durable `concept_note_uploads.upload_id`. CN starts OCR
-with `source_type = concept_note_upload` and `source_id = upload_id`. A run may
-contain many uploads, so `run_id`, filename, `file_ref`, and S3 keys are not
-conversion IDs. The namespaced source pair prevents collisions with inventory
-imports and selects the correct CityCatalyst authorization/storage resolver;
-the OCR behavior remains identical. The CN upload route enforces the shared
-20 MB PDF limit and the converter enforces a 10-minute overall job timeout.
+The converted artifact follows the Markdown-shape requirements in the unchanged
+[CC ↔ CA Markdown output schema contract](../climate-advisor/docs/cc_ca_markdown_output_schema_contract.md):
 
-The converter stops after producing Markdown. Excerpt selection, indexing,
-summarization, context-bundle updates, and chapter work remain later CNB steps.
-The upload and signed-URL calls reuse the current CityCatalyst-to-CA user token
-and service-header flow; PDF conversion adds no authentication scheme.
+- all pages are merged in source order into one UTF-8 Markdown document;
+- tables retain Markdown structure, exact headers, aligned rows and columns,
+  captions, totals, units, scale, and year context;
+- source rows are not merged, dropped, aggregated, or reordered;
+- GPC references, scopes, gas columns, and activity fields are retained when
+  present; and
+- narrative sections remain available for CNB evidence and context selection.
 
-The browser sends PDF bytes only to the authenticated CityCatalyst upload route.
-After storage, CC registers the immutable upload metadata with CA; the CA upload
-route never accepts the file body. Each upload starts one asynchronous OCR job
-and is tracked independently:
+The schema document defines output shape only for this architecture. Runtime
+ownership follows the CC-owned converter architecture. Neither the converter nor
+the schema contract causes CA to participate in OCR.
 
-1. `POST .../{run_id}/uploads` verifies run access, stores the PDF, creates the
-   CC source record, calls CA to register the matching CNB association, starts
-   `concept_note_upload + upload_id`, and returns `202`.
-2. `GET .../{run_id}/uploads/{upload_id}` rechecks run access and the
-   run-to-upload binding, then maps to that pair's converter status.
-3. After that specific job succeeds, the CN orchestrator fetches its Markdown
-   and starts the separate CN excerpt/index/context work. It polls; the converter
-   never calls or continues the CN workflow. CA reports success only after CC
-   has verified the Markdown object and recorded its result pointer.
-4. Failures and retries remain file-specific, so one failed PDF does not hide or
-   overwrite another upload in the same run.
+Each PDF has a durable CC-created `upload_id`. CC converts it internally with
+`source_type = concept_note_upload` and `source_id = upload_id`. A run may
+contain many uploads, so `run_id`, filename, and S3 keys are not conversion
+identities. The upload route enforces the shared 20 MB PDF limit, and the CC
+processor enforces the ten-minute job timeout.
 
-This converter path accepts only `application/pdf` up to 20 MB. Other document
-types require a separate normalizer outside the PDF OCR converter.
+The browser sends PDF bytes only to the authenticated CC upload route. CA never
+receives the source PDF, S3 credentials, S3 keys, signed result URLs, Mistral
+configuration, or OCR retry instructions.
+
+Each upload is handled independently:
+
+1. `POST .../{run_id}/uploads` verifies run access, stores the PDF in CC,
+   creates the immutable CC source record, creates or reuses the CC OCR job, and
+   returns `202`.
+2. The CC processor converts the PDF, validates the Markdown shape, stores the
+   authoritative `.md` in CC S3, and records its pointer and SHA-256 digest in
+   CC PostgreSQL.
+3. CC marks OCR `succeeded`. Conversion is complete even if CA is unavailable.
+4. When CNB needs the document, CC optionally calls
+   `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the
+   Markdown, filename, source label, page count, and digest. It uses the existing
+   CC-issued user-scoped bearer token.
+5. CA rechecks run permission, rejects an upload ID already bound to another
+   run, validates the digest, durably registers the Markdown, and returns `202`.
+6. CA then performs excerpt selection, indexing, summarization, and context
+   bundle rebuilding. These steps are not part of conversion.
+7. A failed OCR retry may call Mistral again. A failed CA handoff retries the
+   stored Markdown only and never repeats successful OCR.
+
+Repeated handoff with the same upload and digest is idempotent. A different
+digest for the same immutable upload returns
+`409 markdown_identity_conflict`. One failed file never hides or overwrites
+another upload in the same run.
+
+Other document types require a separate CC normalizer before they can enter the
+optional CA Markdown-ingest boundary.
 
 ## Document Workspace
 
@@ -808,11 +863,14 @@ preflight and generation routes.
 | Group | Purpose | Writes CNB storage | Calls CC | Calls CNB reference tables |
 | --- | --- | --- | --- | --- |
 | Workflow tools | start, resume, retry | yes | no | no |
-| Ingest tools | convert uploads, prepare candidate source excerpts | yes | no | no |
 | Reference tools | funder profile, template, criteria | no | no | yes |
 | Matching tools | find and explain similar projects | yes | no | yes |
 | Document tools | chapters, text, evidence, gaps | yes | no | optional |
 | Export button actions | preflight and generate DOCX/PDF | yes | no | no |
+
+Markdown receipt and downstream source processing are deterministic service
+operations. They are not agent tools and do not give CA any conversion
+capability.
 
 ### Workflow Tools
 
@@ -999,21 +1057,23 @@ Rules:
 - Persist selected matches in `concept_note_matched_projects`.
 - Return rationale, evidence, and caveats.
 
-### Ingest Tools
+### Markdown Ingest Operations
 
-#### `concept_note_ingest_upload`
+#### `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown`
 
-Registers a stored upload and starts its asynchronous Markdown conversion.
+Optionally receives completed Markdown from CityCatalyst after CC has finished
+and persisted PDF conversion. This is a service-to-service handoff, not an LLM
+tool and not an OCR trigger.
 
 Input:
 
 ```json
 {
-  "run_id": "uuid",
-  "upload_id": "uuid",
+  "markdown": "# Completed CC-produced Markdown",
   "filename": "string",
-  "mime_type": "string",
-  "source_label": "Climate Action Plan"
+  "source_label": "Climate Action Plan",
+  "page_count": 12,
+  "sha256": "lowercase-hex-digest"
 }
 ```
 
@@ -1021,33 +1081,35 @@ Output:
 
 ```json
 {
-  "source_ref": {
-    "source_type": "concept_note_upload",
-    "source_id": "uuid"
-  },
-  "status": "queued"
+  "upload_id": "uuid",
+  "status": "processing"
 }
 ```
 
 Rules:
 
-- Requires `concept_note_uploads.run_id` to match the supplied `run_id` and
-  rechecks current run permission.
-- Accepts only an already stored, immutable PDF upload up to 20 MB.
-- Uses the shared CA PDF-to-Markdown converter.
-- Resolves the upload as `concept_note_upload + upload_id`; it never uses
-  `run_id`, filename, or the storage pointer as the conversion key.
-- Does not persist converter chunks in dedicated CNB source tables.
-- Returns without waiting for OCR or starting later CN processing.
+- Uses the existing CC-issued user-scoped bearer authentication and rechecks
+  current run permission.
+- Rejects an `upload_id` already associated with another run.
+- Validates the supplied SHA-256 digest before durably registering the Markdown.
+- Requires the completed Markdown to satisfy the CC-to-CA output schema contract
+  before CNB source processing begins.
+- Returns `202 Accepted` only after CA durably registers the Markdown for
+  downstream processing.
+- Repeated delivery of the same immutable upload and digest is idempotent. A
+  different digest for the same upload returns
+  `409 markdown_identity_conflict`.
+- Receives no source PDF, S3 key, signed URL, Mistral configuration, or CC OCR
+  status and never writes CC conversion state.
 
-#### `concept_note_process_converted_upload`
+#### `concept_note_process_markdown`
 
-After the file-specific converter status is `succeeded`, CN orchestration fetches
-the Markdown and performs excerpt selection, indexing, summary extraction, and
-context-bundle rebuilding. This operation verifies the same run/upload binding,
-stores only selected source context in the context bundle, and emits
-`concept_note_context_bundle_ready` after the assembled context is ready. It is
-not part of the converter and is never invoked by the converter.
+After CA has registered the optional handoff, CN orchestration performs excerpt
+selection, indexing, summary extraction, and context-bundle rebuilding. This
+operation verifies the same run/upload binding, stores selected source context
+in the context bundle, and emits `concept_note_context_bundle_ready` after the
+assembled context is ready. It is downstream of conversion and can be retried
+without calling CityCatalyst OCR or Mistral.
 
 #### `concept_note_extract_facts_from_context`
 
@@ -1382,7 +1444,6 @@ Example registry rows:
 
 | Capability id | Step | Operation | Writes | Confirmation |
 | --- | --- | --- | --- | --- |
-| `concept_note.upload.ingest` | `ingesting_user_files` | workflow | context bundle selected sources | no |
 | `concept_note.funder.get_profile` | `profiling_funder` | query | no | no |
 | `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches | no |
 | `concept_note.document.add_chapter` | `drafting_document` | command | CNB document | sometimes |
@@ -1392,6 +1453,8 @@ Example registry rows:
 
 Export preflight, DOCX generation, and PDF generation are button-triggered route
 actions. They are not registered in the scoped agent tool registry.
+Markdown receipt and processing are deterministic backend operations and are
+also excluded from the agent capability registry.
 
 ## Prompt Model
 
@@ -1479,7 +1542,7 @@ POST /v1/concept-notes/start
 GET  /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
-POST /v1/concept-notes/{run_id}/uploads
+POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown
 GET  /v1/concept-notes/{run_id}/uploads/{upload_id}
 POST /v1/concept-notes/{run_id}/matches/refresh
 GET  /v1/concept-notes/{run_id}/document
@@ -1500,7 +1563,10 @@ GET  /api/v1/concept-notes/{run_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads
 GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}
+POST /api/v1/concept-notes/{run_id}/uploads/{upload_id}/retry
 GET  /api/v1/concept-notes/{run_id}/export/{export_id}
+
+POST /api/v1/cron/process-pdf-ocr-jobs
 
 POST /api/v1/internal/ca/capabilities/city/load-context
 POST /api/v1/internal/ca/capabilities/project/load-context
@@ -1520,8 +1586,9 @@ file layout.
 | CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
 | Funding reference access | datateam managed CNB database | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables. |
 | Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
-| Source and OCR result storage | CityCatalyst | Authenticates the user, stores source PDFs, verifies uploaded Markdown results, owns their S3 pointers, and provides exact-object signed URLs through the existing CA integration auth flow. |
-| CNB file ingestion | Climate Advisor | Registers the CN upload, starts the shared Markdown-only converter with `concept_note_upload + upload_id`, then performs later CN-specific source selection through the CNB storage contract. |
+| Source and OCR result storage | CityCatalyst | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result pointers. No storage pointer or signed result URL is handed to CA. |
+| PDF-to-Markdown execution | CityCatalyst | Owns the PostgreSQL queue, Kubernetes CronJob processor, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery. |
+| CNB Markdown ingestion | Climate Advisor | Optionally accepts completed Markdown, durably registers its digest and metadata, then performs CN-specific excerpt selection, indexing, summarization, and context-bundle updates. It owns no OCR state. |
 | CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
 | CC bridge routes | CityCatalyst | Authenticated browser-facing proxy into CA workflow routes. |
 | Capability registry | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag. |
@@ -1533,7 +1600,9 @@ file layout.
 | --- | --- | --- |
 | CC context unavailable | Show missing CityCatalyst context and continue with uploads/interview. | Persist blocker and retry option. |
 | Funder profile missing | Block drafting against a real template. | Mark `profiling_funder` blocked. |
-| Converter failed | Show file-specific failure. | Keep upload ref and allow retry. |
+| `cc_ocr_failed` | Show that CC could not convert the specific source. | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA. |
+| `ca_markdown_ingest_failed` | Show that conversion succeeded but CNB could not ingest the Markdown yet. | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral. |
+| `markdown_identity_conflict` | Show that the immutable upload cannot be replaced. | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact. |
 | Similar projects weak | Continue but show caveat. | Persist match caveats. |
 | Chapter edit conflict | Ask user to confirm current text. | Return structured conflict. |
 | Required chapter deleted | Warn at export preflight. | Keep soft-deleted row and gap. |
@@ -1566,7 +1635,17 @@ Minimum test surface:
 - Source-link preservation tests when editing text.
 - Matching tests for candidate retrieval, LLM decision output, fit rationale,
   evidence, and caveats.
-- PDF ingestion tests with success, warning, and failure payloads.
+- Markdown contract fixtures covering multi-page order, table headers and
+  alignment, units, years, totals, numeric values, and retained narrative.
+- CC OCR tests covering upload authorization, durable job claims, lease recovery,
+  three-attempt transient retries, ordered page merge, result persistence, and
+  the 20 MB limit.
+- CC-to-CA Markdown handoff contract tests covering authentication, digest
+  verification, `202` durable registration, same-digest idempotency, and
+  different-digest `409` conflicts.
+- Failure tests distinguishing `cc_ocr_failed` from
+  `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
+  repeat successful OCR.
 - Prompt/tool registration tests proving only the active step's tools are
   available.
 - SSE event shape tests for document updates.
@@ -1604,9 +1683,14 @@ Minimum test surface:
 
 ### Phase 4: File Ingestion
 
-- Add upload registration.
-- Use the shared CA converter for PDF-to-Markdown.
-- Attach converted source context to the context bundle.
+- Add authenticated CC upload registration and the durable CC OCR job.
+- Process PDFs in the CC Kubernetes CronJob, call Mistral, validate the Markdown
+  shape, and store the authoritative `.md` and digest in CC.
+- Add the optional CC-to-CA Markdown handoff with idempotent delivery and
+  independent delivery retries.
+- Durably register received Markdown in CA before excerpt selection, indexing,
+  summarization, and context-bundle updates.
+- Attach selected source context, not CC storage pointers, to the context bundle.
 - Enable mid-flow upload ingestion and evidence review through the document workspace.
 
 ### Phase 5: Export

@@ -1,661 +1,376 @@
-# Climate Advisor PDF OCR to Markdown Architecture
+# CityCatalyst PDF OCR to Markdown Architecture
 
 Status: Draft
 
-Last updated: 2026-07-14
+Last updated: 2026-07-15
 
 ## Decision Summary
 
-Climate Advisor (CA) will provide one shared CityCatalyst PDF-to-Markdown
-converter using Mistral OCR. It supports inventory imports first and uses the
-same contract for Concept Note uploads. The first version uses the existing CA
-pod and adds no separate OCR worker, Kubernetes workload, persistent volume, or
-public upload endpoint.
+CityCatalyst (CC) owns the shared PDF-to-Markdown conversion capability. CC
+authenticates the user, stores the source PDF, queues and runs Mistral OCR,
+validates and stores the final Markdown, reports status, and retries failures.
+Climate Advisor (CA) is not required for conversion.
+
+The completed `.md` artifact can be consumed in two ways:
+
+- CC can use it directly, for example as input to inventory extraction.
+- CC can optionally pass it to CA when a CA workflow such as Concept Note
+  Builder needs document context.
 
 The key decisions are:
 
-- CityCatalyst authenticates the user and owns the source upload/storage
-  boundary. The existing inventory upload path is reused; the Concept Note
-  upload route will use the same storage boundary. CA never becomes the durable
-  owner of the source PDF.
-- CA accepts work asynchronously and stores job state in its own PostgreSQL
-  database.
-- The public conversion key is the pair `(source_type, source_id)`. There is no
-  second OCR job ID and no hash-based idempotency scheme.
-- The existing CA process runs at most two PDF jobs concurrently.
-- CA PostgreSQL stores only OCR job state and source metadata, never PDF, chunk,
-  Markdown, or S3-key contents.
-- During conversion, CA downloads a temporary working copy and creates chunks on
-  the pod's ephemeral filesystem. They are deleted after each attempt.
-- Final Markdown is stored under `pdf-ocr/results/` in the existing
-  CityCatalyst S3 setup. CityCatalyst gives CA a short-lived signed PUT URL for
-  the exact result object. CA uploads the Markdown itself but has no persistent
-  S3 credentials or bucket permissions. CityCatalyst verifies the uploaded
-  object and stores the authoritative result S3 key in the CC database.
-- CA stops after producing Markdown. It does not extract rows, map schemas,
-  validate business data, or trigger another workflow.
+- Source PDFs and final Markdown reuse the existing CC S3 setup.
+- OCR job state and the authoritative result pointer live in CC PostgreSQL.
+- The internal conversion key is `(source_type, source_id)`; there is no second
+  public OCR job ID.
+- A CC-owned PostgreSQL queue and Kubernetes CronJob provide durable processing
+  and restart recovery.
+- CC runs no more than two Mistral conversions concurrently.
+- CC stores a successful Markdown artifact before any consumer is invoked.
+- Delivery to CA is optional, consumer-specific, and independently retryable.
+  A CA failure never causes successful OCR to run again.
+- The MVP accepts `application/pdf` files up to 20 MB.
 
-The MVP supports PDFs up to 20 MB. The inventory-import endpoint already
-enforces this limit, and the Concept Note upload route must enforce the same
-limit. A later increase must be coordinated across upload and conversion paths.
+## Relationship to the Markdown Schema Contract
+
+[cc_ca_markdown_output_schema_contract.md](cc_ca_markdown_output_schema_contract.md)
+is used as the source of truth for the required Markdown shape: ordered pages,
+structured tables, headers, aligned rows and columns, captions, units, years,
+totals, numeric values, and retained source context.
+
+This architecture does not use that document to assign runtime ownership. The
+converter ownership, queue, storage, and optional consumer handoff are defined
+here. The schema contract remains unchanged.
 
 ## Scope
 
 Included:
 
-- PDF validation, page-range chunking, Mistral OCR, ordered Markdown merging,
-  result storage, retries, and status reporting.
-- A durable PostgreSQL queue that survives pod restarts.
-- Two active conversions with one Mistral request per conversion.
+- PDF validation and storage through existing CC upload paths.
+- Durable CC queueing, leases, retries, and status-only reporting.
+- Mistral OCR and ordered page-to-Markdown assembly.
+- Contract validation and authoritative Markdown storage in CC.
+- Direct CC consumption of completed Markdown.
+- Optional delivery of completed Markdown to CA.
 
 Excluded:
 
-- Vision refinement, image descriptions, structured extraction, schema mapping,
-  database loading, callbacks, and workflow continuation.
-- Page, chunk, percentage, or stage progress in the public API.
-- A separate OCR pod, Deployment, Service, HPA, PV, or PVC.
-- Multiple CA replicas or Uvicorn workers before a distributed OCR limiter
-  exists.
+- Inventory row extraction, schema mapping, approval, or database import.
+- CNB excerpt selection, indexing, context assembly, drafting, or export.
+- Public page, chunk, stage, or percentage progress.
+- A browser-to-CA PDF upload or OCR route.
+- A CA OCR queue, dispatcher, worker, Mistral secret, or S3 capability.
+- DOCX, spreadsheet, image, or HTML normalization.
 
 ## System Flow
 
 ```mermaid
 flowchart LR
-    User["User"] --> CC["CityCatalyst upload"]
-    CC --> Source["Existing CityCatalyst S3<br/>source PDF"]
-    CC --> Start["CA start endpoint"]
-    Start --> Queue[("PostgreSQL OCR queue")]
-    Queue --> Worker["Existing CA pod\nmaximum 2 active jobs"]
-    CC --> SourceURL["Short-lived signed GET URL"]
-    SourceURL --> Worker
-    SourceURL -. authorizes read .-> Source
-    Worker --> Temp["Ephemeral PDF and chunks"]
-    Temp --> Mistral["Mistral OCR"]
-    Mistral --> Merge["Page-ordered Markdown merge"]
-    CC --> ResultAccess["Short-lived signed result URLs"]
-    Merge --> ResultAccess
-    ResultAccess -. writes or reads .-> Results["Existing CityCatalyst S3<br/>pdf-ocr/results/"]
-    Worker --> Register["CC verifies + registers result"]
-    Register --> ResultRecord[("CC PostgreSQL<br/>result pointer")]
-    CC --> Status["Status and Markdown endpoints"]
-    Status --> Queue
-    Status --> ResultAccess
+    User["City user"] --> Upload["Authenticated CC upload route"]
+
+    subgraph CC["CityCatalyst"]
+        Upload --> SourceRecord["CC source record"]
+        SourceRecord --> Job[("CC PostgreSQL<br/>OCR job")]
+        Cron["Kubernetes CronJob"] --> Processor["CC OCR processor<br/>maximum 2 active jobs"]
+        Job --> Processor
+        Processor --> Merge["Validate and merge<br/>ordered Markdown"]
+        Merge --> ResultRecord["CC result pointer<br/>digest + metadata"]
+        ResultRecord --> DirectConsumer["Optional CC consumer"]
+        ResultRecord --> Delivery["Optional CA delivery"]
+    end
+
+    SourceRecord --> Source[("Existing CC S3<br/>source PDF")]
+    Processor --> Mistral["Mistral OCR"]
+    Mistral --> Merge
+    Merge --> Result[("Existing CC S3<br/>final .md artifact")]
+    Result --> ResultRecord
+    Delivery -. "only when requested" .-> CA["Climate Advisor<br/>Markdown ingest"]
 ```
 
-## Service Boundary
+The conversion is complete when CC has stored the Markdown and persisted its
+result metadata. Consumer processing is not part of OCR completion.
 
-| Component                | Responsibility                                                          |
-| ------------------------ | ----------------------------------------------------------------------- |
-| CityCatalyst             | Authorization, source/result pointers, S3 access, and signed URLs.      |
-| CA API                   | CC-proxied start, status, retry, and Markdown endpoints.                 |
-| CA dispatcher            | Queue claiming, validation, OCR, retries, merge, upload, and cleanup.   |
-| CC PostgreSQL            | Source records and the authoritative final Markdown S3 pointer.         |
-| CA PostgreSQL            | Durable job status, attempts, leases, timestamps, and sanitized errors. |
-| Existing CityCatalyst S3 | Durable source PDFs and final Markdown artifacts in separate prefixes.  |
-| Mistral                  | PDF page OCR and Markdown generation.                                   |
+## Ownership Boundary
 
-The conversion is complete when status is `succeeded` and the Markdown is
-downloadable. Any later use of that Markdown belongs to the caller.
+| Component | Responsibility |
+| --- | --- |
+| CC domain routes | Authenticate the user, authorize the source, upload the PDF, and expose status/retry actions. |
+| CC OCR service | Create or reuse jobs, call Mistral, merge and validate Markdown, store the result, and dispatch optional consumers. |
+| CC PostgreSQL | Store source records, durable OCR state, leases, attempts, result pointers, and optional-delivery state. |
+| Existing CC S3 | Store authoritative source PDFs and Markdown artifacts. |
+| Kubernetes CronJob | Invoke the internal CC job processor. |
+| Mistral OCR | Produce page-level Markdown from the source PDF. |
+| Climate Advisor | Optionally accept a completed `.md` artifact for a CA workflow; it does not participate in OCR. |
+
+CA owns no OCR status, Mistral configuration, result S3 pointer, or conversion
+retry policy. CC can complete conversion while CA is unavailable.
 
 ## Source Identity
 
-Each PDF uses a namespaced source pair:
+The shared converter supports namespaced source pairs:
 
-| `source_type`         | `source_id`                      | Resolver access check                       |
-| --------------------- | -------------------------------- | ------------------------------------------- |
-| `inventory_import`    | `ImportedInventoryFile.id`       | Imported file plus current inventory access |
-| `concept_note_upload` | `concept_note_uploads.upload_id` | CC source record plus project/city access   |
+| `source_type` | `source_id` | Source resolver |
+| --- | --- | --- |
+| `inventory_import` | `ImportedInventoryFile.id` | Existing inventory import record and `s3Key`. |
+| `concept_note_upload` | CC-created upload ID | CC stored-file record linked to the authorized CNB run. |
 
-`source_type` selects the CityCatalyst resolver that authorizes access and finds
-the source PDF. It never changes the OCR behavior or Markdown result.
+Rules:
 
-- `(source_type, source_id)` uniquely identifies one CA job. The same UUID under
-  another source type is a different source.
-- Each upload receives a new source ID. A retry keeps the same pair and creates
-  a new attempt.
-- For Concept Notes, the CC stored-file record owns the S3 pointer and access;
-  the CNB upload record links the same `upload_id` to the run.
-- Browser routes set `source_type` server-side. New source types add a CC
-  resolver without changing the shared PDF-to-Markdown pipeline.
+- `(source_type, source_id)` uniquely identifies one logical conversion.
+- The source pair is internal; browser routes continue using domain IDs.
+- Repeated start requests reuse the existing job.
+- Replacing a source creates a new source ID. Retrying keeps the same pair and
+  increments `attempt_count`.
+- CC reads filename, MIME type, size, and S3 pointer from its authoritative
+  source record.
+- A deleted, replaced, or unauthorized source is never rebound to an old job.
 
 ## API and Authentication
 
-OCR introduces no new authentication method, token type, API key, or
-browser-to-CA path:
+The browser calls CityCatalyst only. There is no public generic OCR API and no
+browser-to-CA conversion path.
 
-- The browser continues to call authenticated, domain-specific CityCatalyst
-  routes only.
-- CityCatalyst reuses the current CA integration: it obtains the existing
-  user-scoped JWT through `POST /api/v1/internal/ca/user-token` using
-  `X-CA-Service-Key`, then calls CA with `Authorization: Bearer <token>`.
-- CA requests storage URLs with the same bearer plus the existing
-  `X-Service-Name: climate-advisor` and `X-Service-Key` headers.
-- CityCatalyst rechecks current user access and signs only the exact source or
-  result object. Signed URLs authorize one S3 operation; they are not a new
-  application-authentication scheme.
+### CC domain routes
 
-| Endpoint                                                                                              | Purpose                                                          |
-| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `POST /v1/pdf-ocr/jobs`                                                                               | Create or reuse a conversion; returns `202 Accepted`.             |
-| `GET /v1/pdf-ocr/jobs/{source_type}/{source_id}`                                                       | Return status and sanitized failure details.                      |
-| `POST /v1/pdf-ocr/jobs/{source_type}/{source_id}/retry`                                                | Explicitly retry a failed or expired conversion.                  |
-| `GET /v1/pdf-ocr/jobs/{source_type}/{source_id}/markdown`                                              | Return `text/markdown` after success.                             |
-| `POST /api/v1/internal/ca/capabilities/pdf-ocr/{source_type}/{source_id}/source-url`                    | Issue a fresh signed GET URL for the authorized source object.    |
-| `POST /api/v1/internal/ca/capabilities/pdf-ocr/{source_type}/{source_id}/result-url`                    | Issue a signed PUT or GET URL for the derived result object.      |
-| `POST /api/v1/internal/ca/capabilities/pdf-ocr/{source_type}/{source_id}/result-complete`               | Verify the uploaded object and persist its CC-owned result record. |
+| Endpoint | Purpose |
+| --- | --- |
+| `POST /api/v1/city/{city}/inventory/{inventory}/import/{importedFileId}/extract` | Authorize the inventory PDF and create or reuse OCR work. |
+| `GET /api/v1/city/{city}/inventory/{inventory}/import/{importedFileId}` | Return the existing import/OCR status. |
+| `POST /api/v1/concept-notes/{run_id}/uploads` | Authorize, validate, store, and enqueue a CNB source PDF. |
+| `GET /api/v1/concept-notes/{run_id}/uploads/{upload_id}` | Return file-specific OCR and optional-delivery status. |
+| `POST /api/v1/concept-notes/{run_id}/uploads/{upload_id}/retry` | Retry failed OCR or retry only the optional handoff. |
 
-The result-URL request contains only `operation` (`put` or `get`) and
-`attempt_number`. CityCatalyst derives the exact object key. After a PUT, CA
-calls `result-complete`; CityCatalyst checks that exact object in S3 before
-storing its key. A GET is issued only for a registered result. No request
-accepts a raw S3 key.
-
-The start request carries `source_type`, `source_id`, and the requesting user
-ID needed by the existing token-refresh flow. It does not contain PDF bytes,
-S3 keys, signed URLs, or business-specific post-processing instructions. Before
-accepting a new job, CA uses the current bearer to obtain canonical filename,
-size, and content-type metadata from the CityCatalyst source resolver.
-
-Public status values are:
+Internal OCR states are:
 
 - `queued`
 - `running`
 - `succeeded`
 - `failed`
-- `expired`
 
-Status responses include `source_type`, `source_id`, status, timestamps, and a
-stable sanitized error when relevant. They do not expose storage keys, signed
-URLs, or progress details.
+No page or percentage counters are exposed.
 
-Repeated start requests for the same pair return the existing job. An explicit
-retry may requeue a `failed` or `expired` job while the source still exists. If
-canonical source metadata differs for an existing pair, CA returns
-`409 source_identity_conflict` instead of silently rebinding the job.
+### Internal processor route
+
+The CC Kubernetes CronJob calls:
+
+```http
+POST /api/v1/cron/process-pdf-ocr-jobs
+Authorization: Bearer <CC_CRON_JOB_API_KEY>
+```
+
+The route is internal to the cluster, validates the existing cron secret, and
+claims at most two jobs. The CronJob uses `concurrencyPolicy: Forbid`.
+
+### Optional CA Markdown endpoint
+
+When a workflow requires CA, CC uses the existing CC-to-CA user-scoped token
+flow and calls:
+
+```http
+POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown
+Authorization: Bearer <CC-issued user-scoped token>
+Content-Type: application/json
+```
+
+```json
+{
+  "markdown": "<!-- page: 1 -->\n# Climate Action Plan\n...",
+  "filename": "climate-action-plan.pdf",
+  "source_label": "Climate Action Plan",
+  "page_count": 42,
+  "sha256": "64-character-lowercase-hex-digest"
+}
+```
+
+CA returns `202 Accepted` after durably registering the Markdown for its
+workflow. Repeating the same upload and digest is idempotent. A different digest
+for the same immutable upload returns `409 markdown_identity_conflict`.
+
+This endpoint is an optional consumer interface, not part of OCR completion.
+The request contains no PDF bytes, S3 key, signed result URL, Mistral settings,
+or OCR instructions.
 
 ## Processing
 
-1. A domain-specific CityCatalyst route verifies access and maps the file to a
-   supported `(source_type, source_id)` pair.
-2. CA validates the pair through the CityCatalyst resolver, creates or reuses
-   the PostgreSQL job, and returns immediately.
-3. The in-process dispatcher claims jobs while one of its two slots is free.
-4. The task refreshes the existing user-scoped token when needed, obtains a
-   fresh signed GET URL from CityCatalyst, and streams the PDF to temporary disk.
-5. CA validates the PDF signature, size, page count, encryption, and readability.
-6. CA creates ordered page-range chunks under `/tmp/pdf-ocr`.
-7. Each active job sends one Mistral request at a time; the process-wide limit is
-   two requests.
-8. Returned chunk Markdown is written to temporary files and merged in page
-   order with clear page separators.
-9. CA obtains a signed PUT URL and uploads the final Markdown directly to the
-   derived result object.
-10. CA calls CityCatalyst to complete the result. CityCatalyst verifies the
-    object, stores the result S3 key in the CC database, and confirms completion.
-    Only then does CA mark its job `succeeded`.
-11. Temporary files are removed in `finally`, including after failure or
-    shutdown.
+1. A CC domain route authenticates the user, checks access, validates
+   `application/pdf` and the 20 MB limit, and stores the source in existing CC
+   S3.
+2. CC creates or reuses the OCR row for `(source_type, source_id)` and returns
+   without waiting for conversion.
+3. The CronJob calls the CC processor. The processor claims at most two due jobs
+   using `FOR UPDATE SKIP LOCKED` and establishes leases.
+4. CC re-resolves the source record and validates its identity and metadata.
+5. CC creates an attempt-scoped URL for the exact source object and calls
+   [Mistral OCR](https://docs.mistral.ai/api/endpoint/ocr).
+6. CC validates the response, orders pages by source index, and rejects missing
+   or duplicate pages.
+7. CC combines the page Markdown with stable `<!-- page: N -->` separators. It
+   preserves table continuity and never inserts a separator inside a row.
+8. CC validates the combined document against the Markdown schema contract,
+   calculates its SHA-256 digest, and stores the `.md` object.
+9. CC persists the result pointer, digest, byte size, page count, model, and
+   completion timestamp, then marks OCR `succeeded`.
+10. CC invokes the configured consumer, if any. Inventory can remain inside CC;
+    CNB can request optional Markdown delivery to CA.
+11. Temporary state and attempt-scoped URLs are discarded.
 
-Recommended page separator:
+## Markdown Output Requirements
 
-```markdown
-<!-- page: 12 -->
-```
+The converter produces one UTF-8 Markdown document containing all pages in
+source order. It applies the unchanged schema contract as an output-quality
+check.
 
-## Persistence and Recovery
+Required behavior:
 
-1. **CityCatalyst stores the source PDF.** Inventory imports reuse
-   `ImportedInventoryFile.s3Key`; Concept Note uploads reuse the CC stored-file
-   record. CityCatalyst remains the owner of every physical S3 pointer.
+- Tables use Markdown table syntax with exact headers and aligned values.
+- Captions, titles, row and column order, totals, subtotals, units, scale, and
+  year context are retained.
+- Numeric values remain digits and follow the contract's separator rules.
+- GPC references, scopes, gas columns, activity types, amounts, methods, and
+  source labels are retained when present.
+- Narrative sections remain available for consumers such as CNB.
+- CC does not aggregate, deduplicate, drop, classify, or semantically rewrite
+  source rows during conversion.
 
-2. **CA creates or reuses one job.** `pdf_ocr_jobs` has one unique row per
-   `(source_type, source_id)`. An atomic insert-on-conflict prevents duplicate
-   jobs when starts arrive together. The row stores file metadata, status,
-   attempts, model/page information, sanitized errors, lease data, audit user
-   IDs, and timestamps. It never stores S3 keys, tokens, signed URLs, or
-   cross-database foreign keys.
+The output contract's `ExtractedRow[]` is a downstream CC consumer shape. The
+OCR service does not produce that JSON or perform inventory business mapping.
 
-3. **CityCatalyst authorizes each start or retry.** CA records the validated
-   current-attempt user so the worker can use the existing token-refresh flow.
-   The creator user remains only for audit; neither user ID grants access by
-   itself.
+## Persistence
 
-4. **The CA dispatcher claims and processes the job.** It uses
-   `FOR UPDATE SKIP LOCKED`, a ten-minute lease, and a heartbeat every 60
-   seconds. Chunk files are temporary, are not resumable, and require no chunk
-   table or Kubernetes persistent volume.
+### Source records
 
-5. **CA uploads the final Markdown to the existing CityCatalyst bucket.**
-   Development and test reuse `citycatalyst-files`; production reuses
-   `citycatalyst-files-prod`. CityCatalyst derives and validates the result key:
+- Inventory imports continue to use `ImportedInventoryFile.s3Key`.
+- Concept Note uploads use a CC stored-file record linked to the run and current
+  permission scope.
+- Source objects are immutable; replacement creates a new source ID.
 
-   ```text
-   pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md
-   ```
+### `PdfOcrJob`
 
-6. **CityCatalyst verifies and registers the result.** `PdfOcrResult` stores the
-   source pair, attempt number, result S3 key, content type, byte size, optional
-   S3 ETag, and creation/expiry timestamps. Its primary key is
-   `(source_type, source_id, attempt_number)`, and the result key is unique. CA
-   retains only the job and successful attempt number. Repeating completion for
-   the same verified object returns the existing row; conflicting metadata is
-   rejected.
-
-7. **Recovery and expiry remain simple.** After a pod restart, CA reclaims an
-   expired lease and restarts the full conversion attempt. Results expire after
-   14 days; an expired or missing result returns `410 Gone` and can be generated
-   again while the source PDF still exists.
-
-## New Database Fields
-
-Only the following tables and fields are introduced for PDF OCR and Concept Note
-upload integration.
-
-### CityCatalyst Database
-
-`StoredFile`:
+One logical CC row exists per source pair:
 
 ```text
 source_type
 source_id
-city_id
-uploaded_by_user_id
-original_file_name
-content_type
-size_bytes
-s3_key
-created
-last_updated
-```
-
-`PdfOcrResult`:
-
-```text
-source_type
-source_id
-attempt_number
-result_s3_key
-content_type
-size_bytes
-etag
-created_at
-expires_at
-```
-
-### Climate Advisor Database
-
-`pdf_ocr_jobs`:
-
-```text
-source_type
-source_id
-source_filename
-source_size_bytes
-source_content_type
-created_by_user_id
-attempt_requested_by_user_id
 status
+attempt_count
+run_after
 model
 page_count
-attempt_count
-queued_at
-run_after
-started_at
-completed_at
+result_s3_key
+result_size_bytes
+result_sha256
 lease_owner
 lease_expires_at
 heartbeat_at
-error_code
-error_message
-created_at
-updated_at
-```
-
-### Concept Note Builder Database
-
-Workflow and document tables:
-
-`concept_note_runs`:
-
-```text
-run_id
-thread_id
-user_id
-city_id
-project_id
-funder_id
-selected_funding_record_id
-status
-workflow_step
-context_summary
-permission_summary
-trace_id
-created_at
-updated_at
-```
-
-`concept_note_uploads`:
-
-```text
-upload_id
-run_id
-uploaded_by_user_id
-source_label
-filename
-mime_type
-size_bytes
-created_at
-```
-
-`concept_note_upload_processing`:
-
-```text
-upload_id
-status
-attempt_count
-error_code
-error_message
 started_at
 completed_at
-updated_at
-```
-
-`concept_note_context_bundles`:
-
-```text
-run_id
-context_bundle
+error_code
+error_message
+delivery_target
+delivery_status
+delivery_attempt_count
+delivery_run_after
+delivered_at
+delivery_error_code
+delivery_error_message
 created_at
 updated_at
 ```
 
-`concept_note_gaps`:
+The unique key is `(source_type, source_id)`. `delivery_target` is null when no
+external consumer is required. For CNB it is `climate_advisor` and
+`delivery_status` is `pending`, `delivering`, `delivered`, or `failed`.
+
+The row stores no PDF bytes, Markdown bytes, signed URLs, access tokens, or CA
+workflow state.
+
+### Result object
+
+CC derives the key:
 
 ```text
-gap_id
-run_id
-chapter_id
-field_key
-severity
-reason
-status
-created_at
+pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md
 ```
 
-`concept_note_chapters`:
+The result is authoritative only after both S3 storage and the CC database
+update succeed. It follows the lifecycle of the source file. Callers never
+provide raw S3 keys.
 
-```text
-chapter_id
-run_id
-template_section_id
-title
-body_markdown
-position
-status
-required
-user_locked
-deleted
-latest_revision_id
-created_at
-updated_at
-```
+## Queue, Concurrency, and Recovery
 
-`concept_note_chapter_revisions`:
-
-```text
-revision_id
-chapter_id
-revision_number
-author_type
-change_type
-body_markdown
-patch_summary
-created_at
-```
-
-`concept_note_evidence_links`:
-
-```text
-evidence_link_id
-chapter_id
-revision_id
-selected_source_label
-source_location
-claim_ref
-quote_or_summary
-```
-
-`concept_note_matched_projects`:
-
-```text
-match_id
-run_id
-funding_record_id
-decision
-fit_rationale
-evidence
-caveats
-```
-
-`concept_note_exports`:
-
-```text
-export_id
-run_id
-file_type
-file_ref
-status
-```
-
-Funding-reference tables:
-
-`funders`:
-
-```text
-funder_id
-name
-funder_type
-country
-region
-profile
-```
-
-`funding_records`:
-
-```text
-funding_record_id
-funder_id
-is_opportunity
-name
-applicant_name
-city
-state_region
-country
-category
-hazards
-interventions
-finance_route
-instrument_type
-region_scope
-min_award
-max_award
-award_amount
-currency
-award_year
-status
-summary
-```
-
-`is_opportunity = true` identifies programme/application opportunities;
-`false` identifies complete funded-project examples. Templates and criteria
-reference only opportunity records.
-
-`funder_templates`:
-
-```text
-template_id
-funding_record_id
-template_name
-output_format
-chapter_schema
-required_fields
-```
-
-`funder_criteria`:
-
-```text
-criterion_id
-funding_record_id
-criterion_type
-label
-requirement_text
-weight
-hard_gate
-normalized_rule
-```
-
-`source_documents`:
-
-```text
-source_document_id
-source_type
-url
-title
-license_status
-content_hash
-fetched_at
-```
-
-`funding_record_evidence`:
-
-```text
-evidence_id
-funding_record_id
-source_document_id
-claim
-quote_or_summary
-source_map
-```
-
-CA-owned `threads` and `messages` are referenced by CNB where needed but are not
-duplicated in the CNB database.
-
-No new fields are required on the existing `ImportedInventoryFile`, CA
-`threads`, or CA `messages` tables.
-
-## Configuration
-
-Behavior settings belong in `climate-advisor/llm_config.yaml`:
-
-```yaml
-pdf_ocr:
-  enabled: true
-  model: "mistral-ocr-latest"
-  max_file_mb: 20
-  max_pages: 500
-  chunk_target_mb: 15
-  chunk_max_pages: 50
-  max_active_jobs: 2
-  chunk_concurrency_per_job: 1
-  global_mistral_concurrency: 2
-  max_job_attempts: 3
-  max_chunk_attempts: 3
-  lease_duration_seconds: 600
-  lease_heartbeat_seconds: 60
-  job_timeout_minutes: 10
-  mistral_request_timeout_seconds: 180
-  source_download_timeout_seconds: 120
-```
-
-`MISTRAL_API_KEY` remains in the CA runtime environment. OCR reuses the existing
-`CC_SERVICE_API_KEY`/`CC_API_KEY` secret and user-scoped JWT flow; it adds no auth
-secret. S3 credentials stay with CityCatalyst. CA accesses only the exact source
-or result object authorized by each short-lived signed URL.
-
-Result retention belongs to the CityCatalyst result record and S3 lifecycle
-configuration, not to CA's model/worker configuration.
+- The CronJob schedule is `* * * * *` with overlapping runs forbidden.
+- Each run claims and processes no more than two OCR jobs.
+- Database leases prevent duplicate work across CC web replicas.
+- Claims use `FOR UPDATE SKIP LOCKED`.
+- Leases last ten minutes and receive a heartbeat every 60 seconds.
+- After an expired lease, the next processor restarts the attempt from the
+  stored source PDF.
+- One Mistral request is active per job and no more than two globally.
+- No page/chunk state or public progress is persisted in the MVP.
 
 ## Failures and Retries
 
-Each job has a 10-minute limit and at most three job/Mistral attempts.
+OCR allows at most three attempts with bounded backoff.
 
-- Retry only Mistral `429`/`5xx`/timeout failures and temporary signed-URL,
-  Markdown-upload, or result-registration failures.
-- Never retry PDF validation or Mistral authentication failures.
-- If result registration is interrupted after upload, repeat CC registration;
-  do not rerun successful OCR.
+| Failure | Behavior |
+| --- | --- |
+| Invalid MIME, signature, size, encryption, or unreadable PDF | Fail permanently with a sanitized validation code. |
+| Missing, deleted, or changed source | Fail permanently; never rebind the job. |
+| Mistral authentication failure | Fail without automatic retry and alert operations. |
+| Mistral `429`, `5xx`, or timeout | Retry while attempts remain. |
+| Empty, malformed, or incomplete Markdown response | Retry while attempts remain, then fail. |
+| CC result storage or metadata update failure | Retry finalization safely. |
+| Optional CA delivery unavailable | Keep OCR `succeeded`; retry from stored Markdown only. |
+| CA digest conflict | Stop delivery retries and surface `markdown_identity_conflict`. |
 
-Return only these stable error codes:
+Retrying optional delivery never increments the OCR attempt count and never
+calls Mistral again.
 
-- `file_too_large`
-- `too_many_pages`
-- `encrypted_pdf`
-- `corrupt_pdf`
-- `source_unavailable`
-- `ocr_provider_rate_limited`
-- `ocr_provider_failed`
-- `job_timeout`
-- `result_missing`
-- `result_registration_failed`
+## Configuration
 
-Raw provider messages are kept out of API responses.
-
-## Concurrency and Kubernetes
-
-The MVP requires:
-
-- one existing CA pod
-- one Uvicorn process
-- two active PDF jobs
-- one active Mistral request per job
-- two Mistral requests globally
-
-All source types share the same FIFO queue and two execution slots; source type
-does not change priority or conversion behavior. If five PDFs arrive together,
-two run and three stay queued. Completing either running job frees a slot for
-the next queued job.
-
-No new Kubernetes workload, persistent volume, or S3 secret is needed. The
-existing CA Deployment needs the OCR secret/configuration, sufficient resources,
-and shutdown grace.
-
-Initial resource target:
+CC secret:
 
 ```text
-cpu request: 500m
-memory request: 1Gi
-ephemeral storage request: 2Gi
-terminationGracePeriodSeconds: 240
+MISTRAL_API_KEY
 ```
 
-On `SIGTERM`, CA stops claiming jobs, finishes only work that fits within the
-remaining grace period, releases unfinished leases, and deletes temporary files.
+CC non-secret runtime configuration:
 
-Two concurrent 20 MB PDFs must be benchmarked against CA chat/API latency and
-memory use before production enablement. Do not increase concurrency or CA
-replicas before implementing a distributed limiter.
+```text
+MISTRAL_OCR_MODEL=mistral-ocr-latest
+PDF_OCR_MAX_FILE_MB=20
+PDF_OCR_MAX_CONCURRENCY=2
+PDF_OCR_MAX_ATTEMPTS=3
+PDF_OCR_JOB_TIMEOUT_SECONDS=600
+PDF_OCR_REQUEST_TIMEOUT_SECONDS=180
+PDF_OCR_CRON_BATCH_SIZE=2
+```
+
+No OCR setting or Mistral secret is added to CA. Consumer-specific CA endpoint
+configuration is separate from converter configuration.
 
 ## Security and Observability
 
-- Do not log service tokens, signed URLs, raw PDFs, full Markdown, storage keys,
-  or raw provider responses.
-- Logs may include source type/ID, status transitions, durations, page and chunk
-  counts, attempt numbers, and sanitized error codes.
-- Metrics should cover queue depth/age, active jobs, duration, failures, retries,
-  Mistral `429`s, lease recovery, and missing results.
-- A `succeeded` state must always correspond to a readable Markdown artifact.
+- CC rechecks access at upload, status, retry, result consumption, and optional
+  CA delivery.
+- Mistral receives only an attempt-scoped URL for the exact source object.
+- Signed URLs, tokens, PDF contents, Markdown contents, S3 keys, and secrets are
+  never logged.
+- Logs may include source type/ID, attempt, status, page count, duration, result
+  size, digest prefix, and sanitized error code.
+- Metrics cover queue depth and age, active work, Mistral latency and rate
+  limits, retries, lease recovery, output size, and optional delivery failures.
+- OCR success always corresponds to a readable CC-owned Markdown artifact.
 
-## `PDF_converter` Reuse Boundary
+## Acceptance Scenarios
 
-Reuse the useful stage-one concepts from
-`Open-Earth-Foundation/PDF_converter`:
-
-- Mistral OCR client behavior
-- page or page-range OCR
-- bounded provider concurrency
-- deterministic page-order merging
-- clear page separators
-
-Do not copy its CLI assumptions, permanent local-output contract, vision agents,
-structured extraction, mapping, database loading, or storage/retry behavior that
-bypasses CA's job state.
+1. An inventory PDF converts entirely within CC and the resulting Markdown can
+   be passed directly to `InventoryExtractionService`.
+2. A CNB PDF converts through the same CC service, after which CC optionally
+   sends the stored `.md` content to CA.
+3. CC completes OCR successfully while CA is unavailable.
+4. A later CA delivery retry uses the stored digest without another Mistral call.
+5. Duplicate start or CronJob requests reuse one source-pair job.
+6. A multi-page inventory table retains its headers, rows, units, years, totals,
+   and source order.
+7. CA has no OCR table, dispatcher, worker, Mistral secret, or S3 permission.

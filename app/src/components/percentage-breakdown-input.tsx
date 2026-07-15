@@ -2,8 +2,8 @@
 
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@/components/ui/radio";
-import React, { FC, useEffect, useMemo } from "react";
-import { Control, FieldError, useWatch } from "react-hook-form";
+import { FC, useEffect, useMemo } from "react";
+import { Control, FieldError, FieldValues, useWatch } from "react-hook-form";
 import {
   ClinicalWasteIcon,
   FoodIcon,
@@ -58,7 +58,7 @@ interface FormInputProps {
   label: string;
   tooltipInfo?: string;
   value?: string | null | undefined;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   isDisabled?: boolean;
   error: FieldError | undefined;
   setError: Function;

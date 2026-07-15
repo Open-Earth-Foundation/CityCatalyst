@@ -14,6 +14,9 @@ models:
   explanation_translations:
     name: "gpt-5.4-mini"
     temperature: 0.0
+  output_plan:
+    name: "gpt-5.4-mini"
+    temperature: 0.0
 
 features:
   free_text_exclusions_enabled: true

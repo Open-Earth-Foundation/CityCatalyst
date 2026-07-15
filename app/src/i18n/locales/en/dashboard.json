@@ -175,6 +175,8 @@
   "invite-error-toast-title": "Something went wrong",
   "invite-error-toast-description": "There was an error sending your invitations",
   "invite-error-toast-text": "There was an error sending your invitations",
+  "cancel": "Cancel",
+  "send-invites-action": "Send invites",
   "afolu-other-agriculture": "Other agriculture",
   "afolu-livestock": "Live stock",
   "afolu-land": "Land",
@@ -314,5 +316,9 @@
   "legend": "Legend",
   "citycatalyst": "CityCatalyst",
   "breadcrumb-hiap": "Actions & Plans",
-  "start-here": "Start here"
+  "start-here": "Start here",
+  "no-inventory-title": "No greenhouse gas inventory has been created yet",
+  "no-inventory-description": "Contact your administrator to create an inventory so you can start contributing. Or reach out to <emailLink>{{supportEmail}}</emailLink> if you think this is a mistake.",
+  "no-city-title": "Seems like your project doesn't have a city created yet",
+  "no-city-description": "Contact your administrator or reach out to <emailLink>{{supportEmail}}</emailLink> if you think this is a mistake."
 }

@@ -1,0 +1,74 @@
+<role>
+You write the Snapshot chapter for a City Action Report.
+</role>
+
+<task>
+Summarize the selected action, city, rank, score signals, and key tension in concise Markdown.
+</task>
+
+<input>
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
+- `key` (string): must be `snapshot`
+- `title` (string): chapter title
+- `language` (string): requested report language
+- `facts.city` (object): city name, locode, country, and region facts when available
+- `facts.action` (object): selected action ID and name
+- `facts.ranking` (object): selected-action rank, returned action count, final score, pillar scores, and explanation text when available
+- `source_refs` (array): source keys available to cite in `source_refs`
+- `limitations` (array): chapter limitations to carry forward when relevant
+
+Runtime input:
+{
+  "key": "snapshot",
+  "title": "Snapshot",
+  "language": "en",
+  "facts": {
+    "city": {
+      "locode": "CL IQQ",
+      "name": "Iquique",
+      "region": "Tarapacá",
+      "country_code": "CL",
+      "population_size": 196709
+    },
+    "action": {
+      "action_id": "icare_0040",
+      "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+    },
+    "ranking": {
+      "rank": 8,
+      "final_score": 0.4764567293028953,
+      "impact_score": 0.2547734586057905,
+      "alignment_score": 0.5750000000000001,
+      "feasibility_score": 0.88285,
+      "returned_action_count": 20,
+      "explanation_language": "en",
+      "explanation": "Residential buildings account for 97% of the city's inventory, so this action has a strong impact driver. It is backed by the Plan de Mitigación Sector Energía, matches both air quality and mobility, and fits the city's medium timeframe preference, but it does not match the city's selected priority sector. Financial feasibility is a caveat because capacity is the constraint, not money, and technical assistance is needed."
+    }
+  },
+  "source_refs": [
+    "ranking_snapshot",
+    "city",
+    "action_pathways"
+  ],
+  "limitations": [
+    "Comparable project evidence is not available in the supplied context.",
+    "City-level quantified emissions reductions are not available for this action in the supplied context."
+  ]
+}
+</input>
+
+<output>
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 short paragraphs or bullets. Include the selected city, action, rank/score signals, and the main evidence tension.
+- `limitations` (array of strings): relevant limitations, especially missing track-record data.
+
+Do not claim comparable project counts, implementation status, or city-level per-action emissions unless explicitly present in `facts`.
+</output>
+
+<example_output>
+{
+  "markdown": "The selected action ranks highly for the city because the supplied prioritization snapshot shows strong overall score signals across impact, alignment, and feasibility. The available evidence supports discussing why the action fits the city, but it does not provide a quantified implementation track record.\n\nThe main tension is that ranking evidence and live source context are available, while comparable project counts and city-specific abatement estimates are not available in this report input.",
+  "source_refs": ["ranking_snapshot", "city"],
+  "limitations": ["Comparable project counts are not available in the supplied context."]
+}
+</example_output>

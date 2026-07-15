@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import Cookies from "js-cookie";
@@ -14,10 +14,13 @@ import {
   useGetProjectModulesQuery,
 } from "@/services/api";
 import { CheckUserSession } from "@/util/check-user-session";
+import { Roles } from "@/util/types";
 import {
   Box,
   HStack,
   Image,
+  Link,
+  Text,
   VStack,
   Separator,
   Accordion,
@@ -45,9 +48,8 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
-import { Modules } from "@/util/constants";
+import { Modules, SUPPORT_EMAIL } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
-import ClimaAIAssistantDisclaimerDialog from "../ChatBot/clima-ai-assistant-disclaimer-dialog";
 import { Trans } from "react-i18next";
 
 export default function HomePage({
@@ -70,15 +72,17 @@ export default function HomePage({
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
 
+  const isCollaboratorRole = userInfo?.role === Roles.User;
+
   // make sure that the inventory ID is using valid values
   let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
 
-  // If no city ID and no default city, redirect to cities onboarding
+  // If no city ID and no default city: redirect admins to onboarding, show empty state for collaborators
   useEffect(() => {
-    if (!isUserInfoLoading && !cityIdFromParam) {
+    if (!isUserInfoLoading && !cityIdFromParam && !isCollaboratorRole) {
       router.push(`/${lng}/cities/onboarding`);
     }
-  }, [isUserInfoLoading, cityIdFromParam, lng, router]);
+  }, [isUserInfoLoading, cityIdFromParam, isCollaboratorRole, lng, router]);
 
   // query API data
   // TODO maybe rework this logic into one RTK query:
@@ -159,6 +163,69 @@ export default function HomePage({
     return <ProgressLoader />;
   }
 
+  // Collaborator with no city assigned yet — show empty state
+  if (isCollaboratorRole && !cityIdFromParam) {
+    return (
+      <>
+        <Box
+          display="flex"
+          flexDirection={{ base: "column", md: "row" }}
+          alignItems="center"
+          justifyContent="center"
+          gap={6}
+          maxW="1090px"
+          mx="auto"
+          py="166px"
+          px="64px"
+          minH="60vh"
+        >
+          <Image
+            src="/assets/city-inventory-illustration.svg"
+            alt=""
+            w="458px"
+            h="394px"
+          />
+          <Box flex={1}>
+            <Text
+              fontFamily="heading"
+              fontWeight="semibold"
+              fontSize="display.sm"
+              lineHeight="44"
+              color="content.alternative"
+              mb={3}
+            >
+              {t("no-city-title")}
+            </Text>
+            <Text
+              fontFamily="body"
+              fontSize="body.lg"
+              fontWeight="normal"
+              lineHeight="24"
+              letterSpacing="wide"
+              color="base.dark"
+            >
+              <Trans
+                t={t}
+                i18nKey="no-city-description"
+                values={{ supportEmail: SUPPORT_EMAIL }}
+                components={{
+                  emailLink: (
+                    <Link
+                      href={`mailto:${SUPPORT_EMAIL}`}
+                      color="content.link"
+                      textDecoration="underline"
+                    />
+                  ),
+                }}
+              />
+            </Text>
+          </Box>
+        </Box>
+        <Footer lng={language} />
+      </>
+    );
+  }
+
   // If city doesn't exist, don't render (will redirect)
   if (!shouldRenderCity) {
     return null;
@@ -185,7 +252,7 @@ export default function HomePage({
                 lng={language}
                 organization={orgData}
                 city={city}
-                hasInventory={!!ghgiCityData}
+                ghgiCityData={ghgiCityData}
               />
             </VStack>
           </Box>

@@ -296,6 +296,8 @@
   "chat-suggestion-ar6-2-message": "¿Cuáles son las preguntas clave y las conclusiones abordadas en el informe AR6 del IPCC?",
   "chat-suggestion-ar6-3": "¿Cómo ha mejorado la ciencia del clima desde el AR5?",
   "chat-suggestion-ar6-3-message": "¿Cómo ha mejorado nuestra comprensión del cambio climático desde AR5 hasta AR6?",
+  "file-formats-list": ".CSV, .XLSX y .PDF",
+  "max-file-size-value": "20MB",
   "invite-collaborators-step": "Invitar colaboradores",
   "email": "Correo electrónico",
   "invite-collaborators-info": "Presiona enter entre cada correo electrónico para agregar miembros.",

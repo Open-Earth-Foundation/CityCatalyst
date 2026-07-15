@@ -645,7 +645,7 @@ export const appTheme = createSystem(defaultConfig, {
       },
 
       letterSpacings: {
-        normal: { value: 0 },
+        normal: { value: "0px" },
         wide: { value: "0.5px" },
         wider: { value: "1.25px" },
         widest: { value: "1.5px" },

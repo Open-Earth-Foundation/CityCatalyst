@@ -450,7 +450,7 @@ export default function OnboardingSetup(props: {
             />
           )}
           {!isUploadMode && activeStep === inviteCollaboratorsStepIndex && (
-            <InviteCollaboratorsStep ref={inviteStepRef} t={t} />
+            <InviteCollaboratorsStep ref={inviteStepRef} lng={lng} />
           )}
           {!isUploadMode && activeStep === thirdPartyStepIndex && (
             <ThirdPartyInventoryDataStep

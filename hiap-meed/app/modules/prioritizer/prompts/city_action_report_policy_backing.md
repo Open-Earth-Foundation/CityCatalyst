@@ -7,7 +7,7 @@ Describe policy support using supplied policy scores, evidence counts, and polic
 </task>
 
 <input>
-Input is one JSON object matching ReportChapterInput:
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
 - `key` (string): must be `policy_backing`
 - `title` (string): chapter title
 - `language` (string): requested report language
@@ -16,16 +16,14 @@ Input is one JSON object matching ReportChapterInput:
 - `facts.action` (object): action identifiers and action pathway facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
-- `unsupported_claims` (array): claims that must not be made
 
 Runtime input:
 {chapter_input_json}
 </input>
 
 <output>
-Return only a structured OutputPlanChapterResponse object:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining whether policy evidence supports the action. Do not add a duplicate H1.
-- `source_refs` (array of strings): source keys actually used, copied from input `source_refs`.
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining whether policy evidence supports the action.
 - `limitations` (array of strings): relevant policy-evidence limitations.
 
 Do not quote, name, or cite policy text unless it appears in `facts.policy_score.policy_evidence`. If policy evidence is missing, state that the report cannot confirm policy backing from the supplied context.

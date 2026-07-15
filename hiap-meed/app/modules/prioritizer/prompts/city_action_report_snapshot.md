@@ -7,7 +7,7 @@ Summarize the selected action, city, rank, score signals, and key tension in con
 </task>
 
 <input>
-Input is one JSON object matching ReportChapterInput:
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
 - `key` (string): must be `snapshot`
 - `title` (string): chapter title
 - `language` (string): requested report language
@@ -17,17 +17,15 @@ Input is one JSON object matching ReportChapterInput:
 - `facts.limitations` (array): report-level limitations
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
-- `unsupported_claims` (array): claims that must not be made
 
 Runtime input:
 {chapter_input_json}
 </input>
 
 <output>
-Return only a structured OutputPlanChapterResponse object:
-- `markdown` (string): 2-4 short paragraphs or bullets. Include the selected city, action, rank/score signals, and the main evidence tension. Do not add a duplicate H1.
-- `source_refs` (array of strings): source keys actually used, copied from input `source_refs`.
-- `limitations` (array of strings): relevant limitations, especially missing/deferred track-record data.
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 short paragraphs or bullets. Include the selected city, action, rank/score signals, and the main evidence tension.
+- `limitations` (array of strings): relevant limitations, especially missing track-record data.
 
 Do not claim comparable project counts, implementation status, or city-level per-action emissions unless explicitly present in `facts`.
 </output>

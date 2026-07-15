@@ -114,7 +114,7 @@ This lets the report use the same ranking basis as the prioritization result whi
 
 The request must include `locode`, `actionId`, and `language` in `requestData` because these are domain inputs, not metadata. The `meta` envelope should stay aligned with existing caller metadata where possible: `requestId`, `generatedAtUtc`, `backendConsumer`, `upstreamProvider`, `apiContext.endpoint`, and `totalRecords`. The current `/v1/prioritize` request uses `apiContext.locodes` because it can carry multiple cities in `requestData.cityDataList`; the output-plan request is intentionally single-city, so `locode` belongs in `requestData`.
 
-The backend should validate that `locode` matches the selected city in the supplied prioritization snapshot, that `actionId` exists in the supplied ranking for that city, and that `language` is compatible with the original prioritization request's `requestedLanguages` where that field is present.
+The backend should validate that `locode` matches the selected city in the supplied prioritization snapshot and that `actionId` exists in the supplied ranking for that city. The requested report `language` is an output choice. If it was not part of the original prioritization request's `requestedLanguages`, the backend should keep a limitation/warning note rather than reject the request.
 
 If `locode`, `actionId`, `language`, or the required prioritization snapshot is missing or malformed, the backend should reject the request with a clear 4xx response instead of falling back to a current-data-only report.
 
@@ -131,7 +131,8 @@ The backend should:
 - define a strict `CityActionReportApiRequest`
 - require one `locode`, one `actionId`, one `language`, and a full `prioritizationSnapshot`
 - validate that the selected action exists in the supplied ranking
-- validate that the supplied snapshot and response refer to the same locode, requested languages, ranking run, and action where those fields are present
+- validate that the supplied snapshot and response refer to the same locode, ranking run, and action where those fields are present
+- warn, but do not reject, when the requested report language was not part of the original prioritization request's `requestedLanguages`
 - reject missing or malformed snapshots with a clear 4xx error
 - build a normalized internal `ReportContext` so frontend snapshot replay and future CityCatalyst database snapshots feed the same report-generation pipeline
 
@@ -561,6 +562,7 @@ Validation rules:
   - `report_context.json`
   - `llm/<chapter>_prompt.txt`
   - `llm/<chapter>_io.json`
+  - `output_plan.md`
   - `response_full.json`
   - `manifest.json`
 
@@ -603,7 +605,7 @@ Resolved decisions:
 - `hiap-meed` returns immediate outputs only and does not persist generated reports as product data.
 - Later persistence belongs in CityCatalyst's database, not in `hiap-meed`.
 - The response is JSON with ordered chapters and Markdown chapter bodies.
-- Report language follows `requestedLanguages`; the backend should validate the requested report language against the snapshot where possible.
+- Report language is an output choice; if it differs from the original prioritization `requestedLanguages`, the backend should include a limitation/warning note rather than reject the request.
 - Comparable actions/projects are deferred. When the future endpoint exists, the report endpoint should query it live as additional context.
 - Policy backing should start with a minimal evidence-grounded version.
 - User-edited assumptions are a frontend concern; the backend only validates and uses the request it receives.
@@ -640,6 +642,8 @@ The frontend code is outside this repository, but the report endpoint depends on
 2. The snapshot should contain the full `/v1/prioritize` response, the full `/v1/prioritize` request, emissions profile, city data, preferences, weights, exclusions, requested languages, original `topN`, generated timestamps, and request IDs.
 3. When the user generates a report, send the stored snapshot plus one `actionId` and one `language` to `POST /v1/reports/output-plan`.
 4. If the user selects multiple actions, call the endpoint separately for each action.
-5. Do not reconstruct the snapshot by live-querying current frontend state unless the UX clearly says the report is based on current data, not the earlier prioritization.
-6. Track whether inputs changed after the stored prioritization snapshot. The exact staleness warning is deferred, but the frontend should eventually warn if agreed metadata shows divergence.
-7. Keep the backend contract stateless from the frontend perspective: the backend receives report inputs in the request and can query additional source data where needed, but it should not depend on browser storage, CityCatalyst storage, or a specific frontend persistence implementation.
+5. Render only `chapters[].markdown` as the user-facing report body. The concatenated `output_plan.md` artifact is the same reader-facing content for QA and export checks.
+6. Treat response metadata, `source_context`, chapter `limitations`, local artifacts, and MLflow artifacts as diagnostic/source-status data unless product explicitly approves specific copy for the UI.
+7. Do not reconstruct the snapshot by live-querying current frontend state unless the UX clearly says the report is based on current data, not the earlier prioritization.
+8. Track whether inputs changed after the stored prioritization snapshot. The exact staleness warning is deferred, but the frontend should eventually warn if agreed metadata shows divergence.
+9. Keep the backend contract stateless from the frontend perspective: the backend receives report inputs in the request and can query additional source data where needed, but it should not depend on browser storage, CityCatalyst storage, or a specific frontend persistence implementation.

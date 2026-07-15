@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from app.modules.prioritizer.models import CityActionReportApiResponse
 from app.utils.artifacts import ArtifactWriter
 
 
@@ -27,6 +28,37 @@ def write_output_plan_llm_artifacts(
                     prompt_text,
                 )
     artifact_writer.write_run_file("llm/output_plan_io.json", llm_io)
+
+
+def build_output_plan_markdown(response: CityActionReportApiResponse) -> str:
+    """Build a reader-friendly Markdown document from generated report chapters."""
+    parts = [
+        f"# Output Plan: {response.action_id}",
+        "",
+        f"- City: {response.locode}",
+        f"- Action ID: {response.action_id}",
+        f"- Language: {response.language}",
+        "",
+    ]
+    for chapter in response.chapters:
+        chapter_markdown = chapter.markdown.strip()
+        if not chapter_markdown:
+            continue
+        if not chapter_markdown.startswith("#"):
+            parts.extend([f"## {chapter.title}", "", chapter_markdown, ""])
+            continue
+        parts.extend([chapter_markdown, ""])
+    return "\n".join(parts).rstrip() + "\n"
+
+
+def write_output_plan_markdown_artifact(
+    *, artifact_writer: ArtifactWriter, response: CityActionReportApiResponse
+) -> None:
+    """Write the concatenated Markdown report artifact for local files and MLflow."""
+    artifact_writer.write_run_text_file(
+        "output_plan.md",
+        build_output_plan_markdown(response),
+    )
 
 
 def write_city_action_report_error_artifacts(

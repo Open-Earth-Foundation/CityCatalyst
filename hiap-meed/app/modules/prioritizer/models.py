@@ -1749,7 +1749,7 @@ class CityActionReportChapter(BaseModel):
     )
     limitations: list[str] = Field(
         default_factory=list,
-        description="Chapter-specific limitations or intentionally deferred items.",
+        description="Chapter-specific diagnostic limitations for source-status handling.",
     )
 
 
@@ -1797,7 +1797,7 @@ class CityActionReportMetadata(BaseModel):
     )
     limitations: list[str] = Field(
         default_factory=list,
-        description="Report-level limitations and deferred data notes.",
+        description="Report-level diagnostic limitations for source-status handling.",
     )
 
 

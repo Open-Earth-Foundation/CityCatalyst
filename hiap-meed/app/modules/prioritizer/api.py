@@ -31,6 +31,7 @@ from app.modules.prioritizer.orchestrator import run_prioritization
 from app.modules.prioritizer.report_artifacts import (
     write_city_action_report_error_artifacts,
     write_output_plan_llm_artifacts,
+    write_output_plan_markdown_artifact,
 )
 from app.modules.prioritizer.report_context import build_chapter_inputs
 from app.modules.prioritizer.services.report_context_enrichment import (
@@ -688,6 +689,10 @@ def generate_output_plan(
                 ),
             )
             response_payload = response.model_dump(mode="json")
+            write_output_plan_markdown_artifact(
+                artifact_writer=artifact_writer,
+                response=response,
+            )
             artifact_writer.write_event(
                 "city_action_report.completed",
                 {
@@ -711,6 +716,7 @@ def generate_output_plan(
                         "report_context": "report_context.json",
                         "chapter_inputs": "chapter_inputs.json",
                         "output_plan_llm_io": "llm/output_plan_io.json",
+                        "output_plan_markdown": "output_plan.md",
                         "response_full": "response_full.json",
                     },
                 }

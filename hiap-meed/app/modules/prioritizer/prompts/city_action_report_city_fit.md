@@ -7,7 +7,7 @@ Explain supporting and limiting local conditions using only supplied city facts,
 </task>
 
 <input>
-Input is one JSON object matching ReportChapterInput:
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
 - `key` (string): must be `city_fit`
 - `title` (string): chapter title
 - `language` (string): requested report language
@@ -16,16 +16,14 @@ Input is one JSON object matching ReportChapterInput:
 - `facts.score` (object): ranking and feasibility/alignment/impact score facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
-- `unsupported_claims` (array): claims that must not be made
 
 Runtime input:
 {chapter_input_json}
 </input>
 
 <output>
-Return only a structured OutputPlanChapterResponse object:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining why the action fits the city and what local constraints remain. Do not add a duplicate H1.
-- `source_refs` (array of strings): source keys actually used, copied from input `source_refs`.
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining why the action fits the city and what local constraints remain.
 - `limitations` (array of strings): relevant city-fit limitations.
 
 Do not infer local political support, implementation capacity, infrastructure status, or socioeconomic conditions beyond the supplied facts.

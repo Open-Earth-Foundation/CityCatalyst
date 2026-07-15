@@ -194,6 +194,33 @@ def test_report_context_warns_when_language_was_not_in_source_request() -> None:
     )
 
 
+def test_report_context_limitations_are_reader_safe() -> None:
+    """Report limitations should avoid backend implementation details."""
+    context = build_report_context(
+        request=_report_request(),
+        action=Action(action_id="A_1", action_name="Bus electrification"),
+        city=CityData(
+            city_name="Santiago",
+            locode="CL-SCL",
+            country_code="CL",
+            region_name="Metropolitana",
+            region_code="RM",
+        ),
+        policy_score=None,
+        legal_assessment=None,
+        mitigation_feasibility=None,
+        financial_feasibility=None,
+        source_metadata={"city": {"source": "test"}},
+    )
+
+    limitations_text = " ".join(context.limitations)
+
+    assert "dedicated endpoint" not in limitations_text
+    assert "first implementation" not in limitations_text
+    assert "product must define" not in limitations_text
+    assert "Comparable project evidence is not available" in limitations_text
+
+
 def test_report_request_normalizes_boundary_values() -> None:
     """Request DTO validation should normalize simple report boundary values."""
     request = _report_request(action_id=" A_1 ", language=" EN ", locode=" cl-scl ")

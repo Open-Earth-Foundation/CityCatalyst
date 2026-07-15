@@ -164,10 +164,10 @@ def _build_report_limitations(
 ) -> list[str]:
     """Return report-level limitations for sparse-but-valid enrichment records."""
     limitations: list[str] = [
-        "Staleness checks are not fully implemented; product must define comparison rules and warning behavior.",
-        "Comparable actions/projects are deferred until a dedicated endpoint exists.",
-        "Per-action city-level tCO2e estimates are not available in the first implementation.",
-        "Permit and SEIA applicability are out of scope unless new legal data is added.",
+        "Snapshot-to-live source staleness was not evaluated for this report.",
+        "Comparable project evidence is not available in the supplied context.",
+        "City-level quantified emissions reductions are not available for this action in the supplied context.",
+        "Permit and SEIA applicability are not available in the supplied legal context.",
     ]
     requested_languages = {
         language.strip().lower()
@@ -177,7 +177,7 @@ def _build_report_limitations(
     report_language = request.requestData.language.strip().lower()
     if requested_languages and report_language not in requested_languages:
         limitations.append(
-            "The requested report language was not part of the source prioritization requestedLanguages; the report is generated directly in the requested language from the supplied snapshot and live enrichment context."
+            "The requested report language was not part of the source prioritization languages; the report is generated directly in the requested language from the supplied snapshot and live enrichment context."
         )
     if policy_score is None:
         limitations.append("No live policy score row was available for the selected action.")
@@ -369,7 +369,7 @@ def _build_financing_pathway_input(context: ReportContext) -> ReportChapterInput
         context=context,
         facts={"financial": financial, "legal": _optional_legal_facts(context)},
         notion_coverage=["funding outlook", "funding route", "suggested pathway"],
-        notion_deferred=["comparable actions/projects endpoint", "named reachable funds when absent"],
+        notion_deferred=["comparable project evidence", "named reachable funds when absent"],
         unsupported_claims=["Do not invent named funds or precedents."],
     )
 

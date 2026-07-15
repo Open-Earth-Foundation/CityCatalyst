@@ -7,7 +7,7 @@ Explain the action's qualitative mitigation potential, ranking impact signal, co
 </task>
 
 <input>
-Input is one JSON object matching ReportChapterInput:
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
 - `key` (string): must be `action_impact`
 - `title` (string): chapter title
 - `language` (string): requested report language
@@ -16,16 +16,14 @@ Input is one JSON object matching ReportChapterInput:
 - `facts.city` (object): city identifiers and display facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
-- `unsupported_claims` (array): claims that must not be made
 
 Runtime input:
 {chapter_input_json}
 </input>
 
 <output>
-Return only a structured OutputPlanChapterResponse object:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining qualitative impact and co-benefits. Do not add a duplicate H1.
-- `source_refs` (array of strings): source keys actually used, copied from input `source_refs`.
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining qualitative impact and co-benefits.
 - `limitations` (array of strings): relevant impact-estimation limitations.
 
 Do not provide city-level per-action tCO2e estimates, annual reductions, or quantified benefits unless explicitly present in `facts`.

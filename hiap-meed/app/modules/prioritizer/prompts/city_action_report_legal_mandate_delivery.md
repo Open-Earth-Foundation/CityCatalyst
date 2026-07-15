@@ -7,7 +7,7 @@ Explain legal verdict, ownership, restrictions, and delivery implications from s
 </task>
 
 <input>
-Input is one JSON object matching ReportChapterInput:
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
 - `key` (string): must be `legal_mandate_delivery`
 - `title` (string): chapter title
 - `language` (string): requested report language
@@ -16,16 +16,14 @@ Input is one JSON object matching ReportChapterInput:
 - `facts.action` (object): selected action facts when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
-- `unsupported_claims` (array): claims that must not be made
 
 Runtime input:
 {chapter_input_json}
 </input>
 
 <output>
-Return only a structured OutputPlanChapterResponse object:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining legal mandate and delivery implications. Do not add a duplicate H1.
-- `source_refs` (array of strings): source keys actually used, copied from input `source_refs`.
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining legal mandate and delivery implications.
 - `limitations` (array of strings): relevant legal-data limitations.
 
 Do not soften a blocked verdict. Do not make permit, SEIA, ownership, restriction, or legal-authority claims unless those facts are explicitly present. If legal facts are missing, state that legal mandate cannot be confirmed from the supplied context.

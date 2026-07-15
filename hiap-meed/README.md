@@ -298,6 +298,8 @@ The endpoint validates that the requested city and action exist in the supplied 
 
 The backend uses the supplied prioritization snapshot as the ranking basis and refetches additional city/action/policy/legal/feasibility data where the prioritize response does not carry enough detail for report writing. A report request still produces exactly one action plan; multiple plans should be requested as separate calls so each selected action gets isolated LLM context.
 
+Frontend-facing content is limited to `chapters[].markdown` and the concatenated `output_plan.md` artifact. Response metadata, chapter `limitations`, `source_context`, `chapter_inputs.json`, `report_context.json`, and MLflow artifacts are diagnostic/source-status surfaces; they can support frontend state, QA, and logging, but should not be rendered as report prose unless product explicitly approves a field and copy.
+
 Freshness note: ranking replay is exact only when the frontend or CityCatalyst stores the input snapshot used for prioritization. If a report is generated from live data after the user changed inputs or upstream sources changed, the report may no longer match the original ranking run. Product/frontend should define staleness checks and warnings for changed data after prioritization; the backend exposes source metadata but does not persist or own that UX decision.
 
 ### 5. Call the prioritization endpoint
@@ -743,8 +745,9 @@ What each local request run folder contains:
 - Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
 - Output-plan report request folders additionally include:
   - `report_context.json`: normalized context for the selected city/action report
-  - `chapter_inputs.json`: the isolated per-chapter inputs sent to report generation
+  - `chapter_inputs.json`: the isolated per-chapter inputs retained for diagnostics, including internal guardrails not rendered as report prose
   - `llm/output_plan_io.json`: output-plan LLM request/response diagnostics, or a skipped marker when `debugContextOnly=true`
+  - `output_plan.md`: reader-friendly Markdown with all returned chapters concatenated in response order
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
 - Exclusion preview step-detail artifacts keep the city-level diagnostics, including:
@@ -845,3 +848,7 @@ From the `hiap-meed` directory:
 ```bash
 uv run pytest -c pytest.ini
 ```
+
+Pytest forces `MLFLOW_ENABLED=false` during test collection so local or CI test
+runs do not write hosted MLflow runs even if the surrounding shell has MLflow
+enabled.

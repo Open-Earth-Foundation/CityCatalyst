@@ -171,11 +171,25 @@ def _build_chapter_prompt(chapter_input: ReportChapterInput) -> str:
     template = _read_chapter_prompt(chapter_input.key)
     return template.format(
         chapter_input_json=json.dumps(
-            chapter_input.model_dump(mode="json"),
+            _model_visible_chapter_input(chapter_input),
             ensure_ascii=False,
             indent=2,
         )
     )
+
+
+def _model_visible_chapter_input(chapter_input: ReportChapterInput) -> dict[str, object]:
+    """
+    Return chapter input fields that are appropriate for user-facing prose.
+
+    Internal planning and guardrail fields stay in diagnostics artifacts, but
+    the LLM should not see them as content it might summarize into Markdown.
+    """
+    payload = chapter_input.model_dump(mode="json")
+    payload.pop("notion_coverage", None)
+    payload.pop("notion_deferred", None)
+    payload.pop("unsupported_claims", None)
+    return payload
 
 
 def _read_system_prompt() -> str:

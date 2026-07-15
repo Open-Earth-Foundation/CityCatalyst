@@ -7,7 +7,7 @@ Explain funding route, financing constraints, precedent-data limits, and conserv
 </task>
 
 <input>
-Input is one JSON object matching ReportChapterInput:
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
 - `key` (string): must be `financing_precedents_pathway`
 - `title` (string): chapter title
 - `language` (string): requested report language
@@ -17,20 +17,17 @@ Input is one JSON object matching ReportChapterInput:
 - `facts.score` (object): feasibility score and ranking signals when available
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
-- `notion_deferred` (array): deferred template fields, especially precedents or track record data
-- `unsupported_claims` (array): claims that must not be made
 
 Runtime input:
 {chapter_input_json}
 </input>
 
 <output>
-Return only a structured OutputPlanChapterResponse object:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining finance route, constraints, and next steps. Do not add a duplicate H1.
-- `source_refs` (array of strings): source keys actually used, copied from input `source_refs`.
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining finance route, constraints, and next steps.
 - `limitations` (array of strings): relevant finance and precedent-data limitations.
 
-Do not invent named funds, links, budgets, comparable projects, precedent counts, or procurement steps. Mention precedent or track-record data only as unavailable/deferred unless explicitly present in `facts`.
+Do not invent named funds, links, budgets, comparable projects, precedent counts, or procurement steps. Mention precedent or track-record data only as unavailable unless explicitly present in `facts`.
 </output>
 
 <example_output>

@@ -1058,6 +1058,7 @@
   "classification-name-settlements-converted-to-other-land": "Établissements convertis en autre terrain",
   "land-source": "Source",
   "aggregate-sources-activity-type": "Type d'activité",
+  "aggregate-sources-source": "Source",
   "activity-type-biomass-burning": "Combustion de biomasse",
   "activity-type-liming": "Chaulage",
   "activity-type-urea-application": "Application d'urée",

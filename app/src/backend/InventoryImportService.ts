@@ -582,7 +582,16 @@ export default class InventoryImportService {
                 row.activityDataSource?.trim() ||
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
-                activityData["data-source"] = dataSource;
+                let sourceFieldName = "data-source";
+                if (methodology?.["extra-fields"]) {
+                  const methodSourceField = methodology["extra-fields"].find(
+                    (f: any) => f.id.includes("-source") && f.type === "text",
+                  );
+                  if (methodSourceField) {
+                    sourceFieldName = methodSourceField.id;
+                  }
+                }
+                activityData[sourceFieldName] = dataSource;
               }
 
               // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)

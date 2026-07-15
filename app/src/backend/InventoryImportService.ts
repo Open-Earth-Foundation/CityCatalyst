@@ -616,6 +616,10 @@ export default class InventoryImportService {
                 activityData.co2_unit = "units-tonnes";
               }
 
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
+              );
+
               // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
               if (groupByField) {
                 if (groupByDefaultValue) {

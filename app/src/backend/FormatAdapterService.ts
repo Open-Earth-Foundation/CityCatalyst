@@ -195,9 +195,12 @@ export default class FormatAdapterService {
       "activity_units",
       "activity data - unit",
     ]);
-    const co2Idx = this.col(h, ["co2 emissions", "co2"]);
-    const ch4Idx = this.col(h, ["ch4 emissions", "ch4"]);
-    const n2oIdx = this.col(h, ["n2o emissions", "n2o"]);
+    const co2Idx = this.col(h, ["ghgs (metric tonnes co2e) - co2", "co2 emissions", "- co2"]);
+    const ch4Idx = this.col(h, ["ghgs (metric tonnes co2e) - ch4", "ch4 emissions", "- ch4"]);
+    const n2oIdx = this.col(h, ["ghgs (metric tonnes co2e) - n2o", "n2o emissions", "- n2o"]);
+    console.log(
+      `[FormatAdapter near-ecrf] Gas column indices: co2=${co2Idx}, ch4=${ch4Idx}, n2o=${n2oIdx}, totalEm=${totalEmIdx}. Headers: ${h.join(" | ")}`,
+    );
     const scopeIdx = this.col(h, ["scope"]);
     const sourceIdx = this.col(h, [
       "data source name",

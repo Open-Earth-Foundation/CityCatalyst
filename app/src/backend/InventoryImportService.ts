@@ -583,8 +583,8 @@ export default class InventoryImportService {
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
                 let sourceFieldName = "data-source";
-                if (methodology?.["extra-fields"]) {
-                  const methodSourceField = methodology["extra-fields"].find(
+                if ((methodology as any)?.["extra-fields"]) {
+                  const methodSourceField = (methodology as any)["extra-fields"].find(
                     (f: any) => f.id.includes("-source") && f.type === "text",
                   );
                   if (methodSourceField) {

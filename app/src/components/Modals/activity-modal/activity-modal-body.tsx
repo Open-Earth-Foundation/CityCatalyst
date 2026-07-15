@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TFunction } from "i18next";
 import {
   Control,
+  FieldValues,
   UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
@@ -26,7 +27,7 @@ interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
   watch: Function;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   submit: () => void;
   fields: ExtraField[];
   hideEmissionFactors?: boolean;
@@ -282,7 +283,7 @@ const ActivityModalBody = ({
           methodology={methodology}
           selectedActivity={selectedActivity}
         />
-        
+
         <DynamicFieldsSection
           t={t}
           register={register}
@@ -297,7 +298,7 @@ const ActivityModalBody = ({
           inventoryId={inventoryId}
           methodologyId={methodology.id}
         />
-        
+
         <ActivityDataSection
           t={t}
           register={register}
@@ -310,7 +311,7 @@ const ActivityModalBody = ({
           emissionsFactorTypes={emissionsFactorTypes}
           isDirectMeasure={isDirectMeasure}
         />
-        
+
         <DirectMeasureSection
           t={t}
           control={control}
@@ -318,7 +319,7 @@ const ActivityModalBody = ({
           isDirectMeasure={isDirectMeasure}
           setValue={setValue}
         />
-        
+
         <EmissionFactorsSection
           t={t}
           control={control}
@@ -329,7 +330,7 @@ const ActivityModalBody = ({
           emissionFactorUnits={emissionFactorUnits}
           areEmissionFactorsLoading={areEmissionFactorsLoading}
         />
-        
+
         <DataQualitySection
           t={t}
           register={register}

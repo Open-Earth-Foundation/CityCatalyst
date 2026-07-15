@@ -1,7 +1,12 @@
 import { api } from "@/services/api";
 import { ExtraField } from "@/util/form-schema";
 import { useMemo } from "react";
-import { Control, UseFormSetValue, useWatch } from "react-hook-form";
+import {
+  Control,
+  UseFormSetValue,
+  useWatch,
+  FieldValues,
+} from "react-hook-form";
 import { EmissionsFactorResponse } from "@/util/types";
 import { getTranslationFromDict } from "@/i18n";
 import { uniqBy } from "lodash";
@@ -88,7 +93,7 @@ const useEmissionFactors = ({
   referenceNumber: string;
   methodologyId: string;
   inventoryId: string;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   fields: ExtraField[];
   setValue: UseFormSetValue<any>;
 }) => {

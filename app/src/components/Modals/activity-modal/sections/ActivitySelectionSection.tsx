@@ -1,12 +1,12 @@
 import { HStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { Control, useController } from "react-hook-form";
+import { Control, FieldValues, useController } from "react-hook-form";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import { Methodology, SuggestedActivity } from "@/util/form-schema";
 import { Field } from "@/components/ui/field";
 interface ActivitySelectionSectionProps {
   t: TFunction;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   methodology: Methodology;
   selectedActivity?: SuggestedActivity;
 }
@@ -55,3 +55,4 @@ export const ActivitySelectionSection = ({
     </HStack>
   );
 };
+

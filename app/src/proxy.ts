@@ -50,7 +50,7 @@ const excludedApi = [
   /^\/api\/v1\/chat\//,
 ];
 
-export async function middleware(req: NextRequestWithAuth) {
+export async function proxy(req: NextRequestWithAuth) {
   // Handle Content-Type for static files
   if (req.nextUrl.pathname === "/robots.txt") {
     const response = NextResponse.next();

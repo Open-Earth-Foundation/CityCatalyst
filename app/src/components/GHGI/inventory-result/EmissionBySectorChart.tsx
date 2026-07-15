@@ -140,7 +140,7 @@ function CustomCombinedBarLayer<D extends BarDatum>({
         const handleMouseEnter = (e: React.MouseEvent) => {
           setFocusedBar(combinedPoint.data.year);
           showTooltipFromEvent(
-            customTooltip(combinedPoint) as React.ReactElement<any>,
+            customTooltip(combinedPoint) as React.ReactElement,
             e,
             "right",
           );
@@ -148,7 +148,7 @@ function CustomCombinedBarLayer<D extends BarDatum>({
         const handleMouseMove = (e: React.MouseEvent) => {
           setFocusedBar(combinedPoint.data.year);
           showTooltipFromEvent(
-            customTooltip(combinedPoint) as React.ReactElement<any>,
+            customTooltip(combinedPoint) as React.ReactElement,
             e,
             "right",
           );

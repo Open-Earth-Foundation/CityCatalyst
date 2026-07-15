@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 import { Trans } from "react-i18next";
+import { SUPPORT_EMAIL } from "@/util/constants";
 import {
   Box,
   Text,
@@ -85,10 +86,11 @@ export function ActionCards({
                   <Trans
                     t={t}
                     i18nKey="no-inventory-description"
+                    values={{ supportEmail: SUPPORT_EMAIL }}
                     components={{
                       emailLink: (
                         <Link
-                          href="mailto:info@openearth.org"
+                          href={`mailto:${SUPPORT_EMAIL}`}
                           color="content.link"
                           fontFamily="body"
                           fontSize="body.lg"

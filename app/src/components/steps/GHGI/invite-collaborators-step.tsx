@@ -31,7 +31,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MdInfoOutline } from "react-icons/md";
-import type { TFunction } from "i18next";
+import { useTranslation } from "@/i18n/client";
 import { useGetUserProjectsQuery, useGetUserAccessStatusQuery, useInviteUsersMutation } from "@/services/api";
 import { z } from "zod";
 
@@ -46,8 +46,9 @@ export interface InviteCollaboratorsStepRef {
 
 const InviteCollaboratorsStep = forwardRef<
   InviteCollaboratorsStepRef,
-  { t: TFunction; onValidityChange?: (canSubmit: boolean) => void }
->(({ t, onValidityChange }, ref) => {
+  { lng: string; onValidityChange?: (canSubmit: boolean) => void }
+>(({ lng, onValidityChange }, ref) => {
+  const { t } = useTranslation(lng, "onboarding");
   const [emailInput, setEmailInput] = useState("");
   const [emailError, setEmailError] = useState("");
   const [selectedRole, setSelectedRole] = useState<"admin" | "collaborator">(
@@ -93,6 +94,14 @@ const InviteCollaboratorsStep = forwardRef<
     );
   }, [projectsData, selectedProject]);
 
+  useEffect(() => {
+    if (selectedRole === "admin" && cityData.length > 0) {
+      setSelectedCities(cityData.map((c) => c.cityId));
+    } else if (selectedRole === "collaborator") {
+      setSelectedCities([]);
+    }
+  }, [selectedRole, cityData]);
+
   const validateEmail = (email: string) =>
     z.string().email().safeParse(email).success;
 
@@ -120,16 +129,17 @@ const InviteCollaboratorsStep = forwardRef<
 
   useImperativeHandle(ref, () => ({
     sendInvites: async () => {
-      if (!invitedMembers.length || !selectedCities.length) return;
+      if (!invitedMembers.length || !selectedProject.length) return;
       await inviteUsers({
+        projectId: selectedProject[0],
         cityIds: selectedCities,
-        emails: invitedMembers.map((m) => m.email),
+        invites: invitedMembers.map((m) => ({ email: m.email, role: m.role })),
       }).unwrap();
     },
   }));
 
   return (
-    <Box w="720px" display="flex" flexDirection="column" gap={8} data-testid="invite-collaborators-step">
+    <Box w="full" display="flex" flexDirection="column" gap={8} data-testid="invite-collaborators-step">
       <Box>
         <Heading
           fontSize="headline.lg"
@@ -350,6 +360,14 @@ const InviteCollaboratorsStep = forwardRef<
             px={6}
             py={4}
           >
+            {selectedRole === "admin" && (
+              <HStack mb={4}>
+                <Icon as={MdInfoOutline} color="interactive.secondary" boxSize={4} />
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("invite-collaborators-admin-cities-info")}
+                </Text>
+              </HStack>
+            )}
             <Checkbox
               checked={
                 cityData.length > 0 &&
@@ -362,6 +380,7 @@ const InviteCollaboratorsStep = forwardRef<
                   setSelectedCities(cityData.map((c) => c.cityId));
                 }
               }}
+              disabled={selectedRole === "admin"}
               mb={4}
             >
               <Text
@@ -391,6 +410,7 @@ const InviteCollaboratorsStep = forwardRef<
                     key={cityId}
                     checked={selectedCities.includes(cityId)}
                     onChange={() => handleCityToggle(cityId)}
+                    disabled={selectedRole === "admin"}
                   >
                     <Text
                       color="content.secondary"

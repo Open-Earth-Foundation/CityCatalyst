@@ -48,7 +48,7 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
-import { Modules } from "@/util/constants";
+import { Modules, SUPPORT_EMAIL } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
 import { Trans } from "react-i18next";
 
@@ -180,7 +180,7 @@ export default function HomePage({
           minH="60vh"
         >
           <Image
-            src="/assets/no-city-empty-state.svg"
+            src="/assets/city-inventory-illustration.svg"
             alt=""
             maxW="320px"
             w="full"
@@ -207,10 +207,11 @@ export default function HomePage({
               <Trans
                 t={t}
                 i18nKey="no-city-description"
+                values={{ supportEmail: SUPPORT_EMAIL }}
                 components={{
                   emailLink: (
                     <Link
-                      href="mailto:info@openearth.org"
+                      href={`mailto:${SUPPORT_EMAIL}`}
                       color="content.link"
                       textDecoration="underline"
                     />

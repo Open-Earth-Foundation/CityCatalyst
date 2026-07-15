@@ -30,19 +30,18 @@ const AddCollaboratorsDialog = ({
   onOpen?: () => void;
   organizationId?: string;
 }) => {
-  const { t } = useTranslation(lng, "onboarding");
-  const { t: tDashboard } = useTranslation(lng, "dashboard");
+  const { t } = useTranslation(lng, "dashboard");
   const stepRef = useRef<InviteCollaboratorsStepRef>(null);
   const [canSubmit, setCanSubmit] = useState(false);
 
   const { showSuccessToast } = UseSuccessToast({
-    title: tDashboard("invite-success-toast-title"),
-    description: tDashboard("invite-success-toast-description"),
+    title: t("invite-success-toast-title"),
+    description: t("invite-success-toast-description"),
   });
 
   const { showErrorToast } = UseErrorToast({
-    title: tDashboard("invite-error-toast-title"),
-    description: tDashboard("invite-error-toast-description"),
+    title: t("invite-error-toast-title"),
+    description: t("invite-error-toast-description"),
   });
 
   const handleSend = async () => {
@@ -57,7 +56,7 @@ const AddCollaboratorsDialog = ({
 
   return (
     <DialogRoot open={isOpen} onOpenChange={onClose} onExitComplete={onClose}>
-      <DialogContent minW="680px" maxH="90vh" overflowY="auto" marginTop="2%" p={0}>
+      <DialogContent w="720px" maxH="90vh" overflowY="auto" marginTop="2%" p={0}>
         <DialogHeader
           display="flex"
           justifyContent="start"
@@ -73,12 +72,12 @@ const AddCollaboratorsDialog = ({
         >
           <HStack>
             <MdPersonAdd fontSize="32px" />
-            <HeadlineSmall text={tDashboard("invite-collaborators")} />
+            <HeadlineSmall text={t("invite-collaborators")} />
           </HStack>
         </DialogHeader>
         <DialogCloseTrigger mt="2" color="interactive.control" mr="2" />
         <DialogBody p={6}>
-          <InviteCollaboratorsStep ref={stepRef} t={t} onValidityChange={setCanSubmit} />
+          <InviteCollaboratorsStep ref={stepRef} lng={lng} onValidityChange={setCanSubmit} />
         </DialogBody>
         <DialogFooter
           paddingX={6}
@@ -89,12 +88,12 @@ const AddCollaboratorsDialog = ({
         >
           <Button variant="outline" onClick={onClose}>
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {tDashboard("cancel")}
+              {t("cancel")}
             </Text>
           </Button>
           <Button onClick={handleSend} disabled={!canSubmit}>
             <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {tDashboard("send-invites-action")}
+              {t("send-invites-action")}
             </Text>
           </Button>
         </DialogFooter>

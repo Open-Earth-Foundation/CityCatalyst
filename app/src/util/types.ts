@@ -298,8 +298,9 @@ export interface AcceptInviteRequest {
 }
 
 export interface UsersInvitesRequest {
+  projectId: string;
   cityIds: string[];
-  emails: string[];
+  invites: { email: string; role: "admin" | "collaborator" }[];
 }
 
 export interface UsersInvitesResponse {

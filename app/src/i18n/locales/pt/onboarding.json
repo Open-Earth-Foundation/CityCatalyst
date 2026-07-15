@@ -10,6 +10,7 @@
   "invite-collaborators-email-placeholder": "Digite um e-mail para adicionar membros.",
   "invite-collaborators-select-cities": "Selecionar cidades",
   "invite-collaborators-all-cities": "Todas as cidades",
+  "invite-collaborators-admin-cities-info": "Os administradores do projeto têm acesso a todas as cidades do projeto.",
   "add-member": "Adicionar membro",
   "admin": "Administrador",
   "collaborator": "Colaborador",

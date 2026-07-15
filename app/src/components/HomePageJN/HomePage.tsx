@@ -176,16 +176,16 @@ export default function HomePage({
           maxW="1090px"
           mx="auto"
           py="166px"
-          pl="191px"
+          px="64px"
           minH="60vh"
         >
           <Image
             src="/assets/city-inventory-illustration.svg"
             alt=""
-            maxW="320px"
-            w="full"
+            w="458px"
+            h="394px"
           />
-          <Box maxW="420px">
+          <Box flex={1}>
             <Text
               fontFamily="heading"
               fontWeight="semibold"

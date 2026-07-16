@@ -859,6 +859,7 @@
   "external-dataset-integrated": "Externer Datensatz integriert",
   "external-dataset-description": "Externer Datensatz integriert Emissionsdaten von externen Anbietern direkt in Ihr Treibhausgas-Emissionsinventar",
   "disconnected-data-source": "Getrennte Datenquelle",
+  "disconnect-data-source-error": "Fehler beim Trennen der Datenquelle",
   "methane-commitment-solid-waste-inboundary-methodology": "Methan-Verpflichtung",
   "methane-commitment-solid-waste-inboundary-methodology-description": "Es berechnet Deponieemissionen basierend auf der Menge an Abfall, die in einem bestimmten Jahr entsorgt wird, unabhängig davon, wann die Emissionen tatsächlich auftreten (Abfallbehandlung in der Stadt)",
   "first-order-of-decay-solid-waste-inboundary-methodology": "Erster Ordnungszerfall",

@@ -60,13 +60,19 @@ jobs:
       - name: Setup Environment Variables
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" >> .env.local
-          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env.local
+          echo "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" >> .env.local && \
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.network" >> .env.local && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env.local && \
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env.local && \
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env.local
 
       - name: Run NextJS build
         run: npm run build
 
       - name: Lint the OpenAPI spec
-        run: npm run openapi:lint
+        run: |
+          npm run openapi:build
+          npm run openapi:lint
 
       - name: Restore previous coverage
         uses: actions/cache@v4
@@ -276,6 +282,23 @@ jobs:
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-test-web-deploy -n default
           kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/test/cc-test-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-test \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

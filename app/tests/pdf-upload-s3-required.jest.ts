@@ -1,7 +1,11 @@
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 
 jest.unstable_mockModule("@/backend/UserService", () => ({
-  default: { findUserInventory: jest.fn<any>().mockResolvedValue({}) },
+  default: {
+    findUserInventory: jest
+      .fn<() => Promise<Record<string, never>>>()
+      .mockResolvedValue({}),
+  },
 }));
 jest.unstable_mockModule("@/backend/FileValidatorService", () => ({
   default: {
@@ -38,7 +42,7 @@ jest.unstable_mockModule("@/services/logger", () => ({
   logger: { warn: jest.fn(), info: jest.fn(), error: jest.fn() },
 }));
 
-let uploadHandler: any;
+let uploadHandler: typeof import("@/app/api/v1/city/[city]/inventory/[inventory]/import/route").POST;
 beforeAll(async () => {
   ({ POST: uploadHandler } = await import(
     "@/app/api/v1/city/[city]/inventory/[inventory]/import/route"

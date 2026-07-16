@@ -170,6 +170,8 @@
   "invite-error-toast-title": "Algo deu errado",
   "invite-error-toast-description": "Houve um erro ao enviar seus convites",
   "invite-error-toast-text": "Houve um erro ao enviar seus convites",
+  "cancel": "Cancelar",
+  "send-invites-action": "Enviar convites",
   "afolu-other-agriculture": "Outra agricultura",
   "afolu-livestock": "Gado",
   "afolu-land": "Terra",
@@ -315,5 +317,9 @@
   "selected": "selecionado",
   "unselected": "não selecionado",
   "name": "Nome",
-  "rank": "Classificação"
+  "rank": "Classificação",
+  "no-inventory-title": "Ainda não foi criado nenhum inventário de gases de efeito estufa",
+  "no-inventory-description": "Entre em contato com seu administrador para criar um inventário e começar a contribuir. Ou entre em contato com <emailLink>{{supportEmail}}</emailLink> se você acha que isso é um erro.",
+  "no-city-title": "Parece que seu projeto ainda não tem uma cidade criada",
+  "no-city-description": "Entre em contato com seu administrador ou procure <emailLink>{{supportEmail}}</emailLink> se você acha que isso é um erro."
 }

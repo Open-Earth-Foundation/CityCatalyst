@@ -22,7 +22,8 @@ export const useModuleAccessLayout = ({
   // Skip module access check when JN_ENABLED feature flag is OFF
   // Also skip for main module pages (when there's no inventory parameter)
   // These pages typically just redirect to specific inventories
-  const shouldCheckAccess = hasFeatureFlag(FeatureFlags.JN_ENABLED) && !!inventory;
+  const shouldCheckAccess =
+    hasFeatureFlag(FeatureFlags.JN_ENABLED) && !!inventory;
 
   const { hasAccess } = useModuleAccess({
     cityId,

@@ -8,9 +8,10 @@ import {
 } from "@jest/globals";
 import { NextRequest } from "next/server";
 
-const processOcr = jest.fn<any>();
-const processDeliveries = jest.fn<any>();
-const initialize = jest.fn<any>();
+const processOcr =
+  jest.fn<() => Promise<{ claimed: number; resumed: number }>>();
+const processDeliveries = jest.fn<() => Promise<number>>();
+const initialize = jest.fn<() => Promise<void>>();
 
 jest.unstable_mockModule("@/models", () => ({
   db: { initialized: false, initialize },

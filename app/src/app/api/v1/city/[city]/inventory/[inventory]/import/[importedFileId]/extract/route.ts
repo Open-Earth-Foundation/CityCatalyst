@@ -1,3 +1,50 @@
+/**
+ * @swagger
+ * /api/v1/city/{city}/inventory/{inventory}/import/{importedFileId}/extract:
+ *   post:
+ *     tags:
+ *       - city
+ *       - inventory
+ *       - import
+ *     operationId: extractInventoryFromPdf
+ *     summary: Queue durable OCR and AI extraction for an uploaded PDF.
+ *     description: |
+ *       Returns 202 Accepted after creating or reusing a durable PDF OCR job.
+ *       A Kubernetes CronJob performs Mistral OCR and downstream row extraction.
+ *       Poll GET .../import/{importedFileId} until importStatus is
+ *       waiting_for_approval or failed. PDF sources must be stored in S3.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: inventory
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: path
+ *         name: importedFileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       202:
+ *         description: Extraction queued; poll the import resource for completion.
+ *       400:
+ *         description: File is not a PDF or is not ready for extraction.
+ *       401:
+ *         description: Unauthorized.
+ *       404:
+ *         description: Import file not found or access denied.
+ *       503:
+ *         description: PDF OCR storage is not configured.
+ */
+
 import UserService from "@/backend/UserService";
 import { enqueueInventoryPdfOcr } from "@/backend/PdfOcrService";
 import { db } from "@/models";

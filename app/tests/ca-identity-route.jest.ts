@@ -11,7 +11,7 @@ jest.unstable_mockModule("@/util/api", () => ({
   apiHandler: (handler: unknown) => handler,
 }));
 
-let identityHandler: any;
+let identityHandler: typeof import("@/app/api/v1/internal/ca/auth/identity/route").POST;
 beforeAll(async () => {
   ({ POST: identityHandler } = await import(
     "@/app/api/v1/internal/ca/auth/identity/route"

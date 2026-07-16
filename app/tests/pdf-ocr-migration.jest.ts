@@ -7,10 +7,18 @@ const migration = require("../migrations/20260716000000-create-pdf-ocr-job.cjs")
 describe("PdfOcrJob migration", () => {
   it("creates the composite queue schema and all due-work indexes, then drops it", async () => {
     const queryInterface = {
-      createTable: jest.fn<any>().mockResolvedValue(undefined),
-      addConstraint: jest.fn<any>().mockResolvedValue(undefined),
-      addIndex: jest.fn<any>().mockResolvedValue(undefined),
-      dropTable: jest.fn<any>().mockResolvedValue(undefined),
+      createTable: jest
+        .fn<(...args: unknown[]) => Promise<void>>()
+        .mockResolvedValue(undefined),
+      addConstraint: jest
+        .fn<(...args: unknown[]) => Promise<void>>()
+        .mockResolvedValue(undefined),
+      addIndex: jest
+        .fn<(...args: unknown[]) => Promise<void>>()
+        .mockResolvedValue(undefined),
+      dropTable: jest
+        .fn<(...args: unknown[]) => Promise<void>>()
+        .mockResolvedValue(undefined),
     };
     const scalar = (name: string) => jest.fn(() => name);
     const Sequelize = {

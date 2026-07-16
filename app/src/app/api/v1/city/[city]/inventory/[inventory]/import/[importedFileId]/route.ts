@@ -359,7 +359,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
   const pdfExtractedRows = Array.isArray(
     importedFile.mappingConfiguration?.rows,
   )
-    ? (importedFile.mappingConfiguration.rows as any[])
+    ? (importedFile.mappingConfiguration.rows as Record<string, unknown>[])
     : [];
 
   if (currentStep >= 2) {
@@ -392,7 +392,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
           if (exampleValue != null && exampleValue.length > 50)
             exampleValue = exampleValue.substring(0, 50);
           const hasMultipleValues = pdfExtractedRows.some(
-            (r: any) => r[key] != null && r[key] !== "" && r[key] !== raw,
+            (row) => row[key] != null && row[key] !== "" && row[key] !== raw,
           );
           if (exampleValue && hasMultipleValues) {
             exampleValue = exampleValue + " (and others)";

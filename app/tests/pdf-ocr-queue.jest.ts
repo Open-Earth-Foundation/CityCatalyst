@@ -7,15 +7,23 @@ import {
   jest,
 } from "@jest/globals";
 
-const findOrCreate = jest.fn<any>();
-const findOne = jest.fn<any>();
-const findAll = jest.fn<any>();
-const transaction = jest.fn<any>();
-const importedFindByPk = jest.fn<any>();
-const inventoryFindByPk = jest.fn<any>();
-const getTextFile = jest.fn<any>();
-const extractRows = jest.fn<any>();
-const convertPdfUrlToMarkdown = jest.fn<any>();
+type AsyncMock = (...args: unknown[]) => Promise<unknown>;
+type MockTransaction = { LOCK: { UPDATE: string } };
+
+const findOrCreate = jest.fn<AsyncMock>();
+const findOne = jest.fn<AsyncMock>();
+const findAll = jest.fn<AsyncMock>();
+const transaction =
+  jest.fn<
+    (
+      callback: (transaction: MockTransaction) => Promise<unknown>,
+    ) => Promise<unknown>
+  >();
+const importedFindByPk = jest.fn<AsyncMock>();
+const inventoryFindByPk = jest.fn<AsyncMock>();
+const getTextFile = jest.fn<AsyncMock>();
+const extractRows = jest.fn<AsyncMock>();
+const convertPdfUrlToMarkdown = jest.fn<AsyncMock>();
 
 jest.unstable_mockModule("@/models", () => ({
   db: {
@@ -68,8 +76,10 @@ describe("PdfOcrJob queue", () => {
     findOrCreate.mockResolvedValue([job, false]);
     const importedFile = {
       id: "11111111-1111-4111-8111-111111111111",
-      update: jest.fn<any>().mockResolvedValue(undefined),
-    } as any;
+      update: jest
+        .fn<(values: Record<string, unknown>) => Promise<void>>()
+        .mockResolvedValue(undefined),
+    } as unknown as Parameters<typeof enqueueInventoryPdfOcr>[0];
     await expect(enqueueInventoryPdfOcr(importedFile)).resolves.toBe(job);
     expect(findOrCreate).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -85,10 +95,14 @@ describe("PdfOcrJob queue", () => {
     const jobs = [0, 1].map(() => ({
       attemptCount: 0,
       startedAt: null,
-      update: jest.fn<any>().mockResolvedValue(undefined),
+      update: jest
+        .fn<
+          (values: Record<string, unknown>, options?: unknown) => Promise<void>
+        >()
+        .mockResolvedValue(undefined),
     }));
     findAll.mockResolvedValue(jobs);
-    transaction.mockImplementation(async (callback: any) =>
+    transaction.mockImplementation(async (callback) =>
       callback({ LOCK: { UPDATE: "UPDATE" } }),
     );
     await expect(claimPdfOcrJobs("worker-1")).resolves.toEqual(jobs);
@@ -128,15 +142,18 @@ describe("PdfOcrJob queue", () => {
       inventoryId: "inventory-id",
       importStatus: "extracting",
       mappingConfiguration: {},
-      update: jest.fn<any>().mockImplementation(async (values: any) => {
-        Object.assign(importedFile, values);
-      }),
+      update: jest.fn<(values: Record<string, unknown>) => Promise<void>>(),
     };
+    importedFile.update.mockImplementation(async (values) => {
+      Object.assign(importedFile, values);
+    });
     const job = {
       sourceId: "source-id",
       status: "succeeded",
       resultS3Key: "result.md",
-    } as any;
+    } as unknown as Parameters<
+      typeof extractInventoryRowsFromStoredMarkdown
+    >[0];
     importedFindByPk.mockResolvedValue(importedFile);
     inventoryFindByPk.mockResolvedValue({ year: 2024 });
     getTextFile.mockResolvedValue(

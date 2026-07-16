@@ -6,9 +6,10 @@ import {
   it,
   jest,
 } from "@jest/globals";
+import type { PdfOcrJob } from "@/models/PdfOcrJob";
 
-const getTextFile = jest.fn<any>();
-const issueToken = jest.fn<any>();
+const getTextFile = jest.fn<() => Promise<string>>();
+const issueToken = jest.fn<() => Promise<{ access_token: string }>>();
 
 jest.unstable_mockModule("@/models", () => ({
   db: { models: { PdfOcrJob: { findAll: jest.fn() } } },
@@ -31,7 +32,7 @@ const job = {
   resultS3Key: "result.md",
   resultSha256: "a".repeat(64),
   pageCount: 1,
-} as any;
+} as PdfOcrJob;
 const source = {
   runId: "11111111-1111-4111-8111-111111111111",
   uploadId: "22222222-2222-4222-8222-222222222222",

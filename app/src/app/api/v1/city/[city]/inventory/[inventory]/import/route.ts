@@ -341,7 +341,6 @@ export const POST = apiHandler(
       );
     }
     const file = formData?.get("file") as unknown as File;
-    const useAIInterpretationPath = formData?.get("pathB") === "true";
 
     if (!file) {
       throw new createHttpError.BadRequest(

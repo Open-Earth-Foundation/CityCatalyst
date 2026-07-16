@@ -193,6 +193,14 @@ async function walkCitiesOnboardingWizard(
   }
 
   {
+    // Wait for any "year already exists" error toast to clear before clicking
+    // (toast appears when CI environment has a prior inventory for this year)
+    await page
+      .getByText(/already exists for this city/i)
+      .first()
+      .waitFor({ state: "hidden", timeout: 12000 })
+      .catch(() => {});
+
     const continueButton = page
       .getByRole("button", { name: /^Continue$/ })
       .last();

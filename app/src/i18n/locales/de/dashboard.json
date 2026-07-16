@@ -316,5 +316,9 @@
   "selected": "ausgewählt",
   "unselected": "nicht ausgewählt",
   "name": "Name",
-  "rank": "Rang"
+  "rank": "Rang",
+  "no-inventory-title": "Es wurde noch kein Treibhausgasinventar erstellt",
+  "no-inventory-description": "Wenden Sie sich an Ihren Administrator, um ein Inventar zu erstellen, damit Sie beginnen können, beizutragen. Oder wenden Sie sich an <emailLink>{{supportEmail}}</emailLink>, wenn Sie glauben, dass dies ein Fehler ist.",
+  "no-city-title": "Es scheint, als ob für Ihr Projekt noch keine Stadt erstellt wurde",
+  "no-city-description": "Wenden Sie sich an Ihren Administrator oder kontaktieren Sie <emailLink>{{supportEmail}}</emailLink>, wenn Sie denken, dass dies ein Fehler ist."
 }

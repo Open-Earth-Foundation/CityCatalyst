@@ -191,6 +191,8 @@
   "review-confirm-description": "<0>Veuillez <1>vérifier soigneusement tous les champs</1> et confirmer l'importation, car vous ne pourrez pas la modifier ultérieurement.</0>",
   "import-summary": "Résumé de l'importation",
   "source-file": "Fichier source",
+  "file-name": "Nom du fichier",
+  "edit-mapping": "Modifier le mappage",
   "format-detected": "Format détecté",
   "rows-found": "Lignes trouvées",
   "fields-found": "Champs trouvés",

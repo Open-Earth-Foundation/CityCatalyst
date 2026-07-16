@@ -136,7 +136,7 @@ export default function ReviewConfirmStep({
               <Text fontSize="headline.sm" fontWeight="bold">{importSummary.sourceFile}</Text>
               <Text fontSize="body.sm" color="content.tertiary">{t("file-name")}</Text>
             </VStack>
-          </Box>``
+          </Box>
           <Button p="24px" >
             <Icon as={EditIconOutlineSquare} />
             {t('edit-mapping')}

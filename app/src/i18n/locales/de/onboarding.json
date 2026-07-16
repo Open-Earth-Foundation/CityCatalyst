@@ -192,6 +192,8 @@
   "review-confirm-description": "<0>Bitte <1>überprüfen Sie alle Felder sorgfältig</1> und bestätigen Sie den Upload, da Sie ihn später nicht mehr ändern können.</0>",
   "import-summary": "Importübersicht",
   "source-file": "Quelldatei",
+  "file-name": "Dateiname",
+  "edit-mapping": "Zuordnung bearbeiten",
   "format-detected": "Format erkannt",
   "rows-found": "Zeilen gefunden",
   "fields-found": "Gefundene Felder",

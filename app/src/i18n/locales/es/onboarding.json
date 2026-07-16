@@ -193,6 +193,8 @@
   "review-confirm-description": "<0>Por favor, <1>revise cuidadosamente todos los campos</1> y confirme la carga, ya que no podrá modificarla más adelante.</0>",
   "import-summary": "Resumen de Importación",
   "source-file": "Archivo fuente",
+  "file-name": "Nombre del archivo",
+  "edit-mapping": "Editar mapeo",
   "format-detected": "Formato detectado",
   "rows-found": "Filas encontradas",
   "fields-found": "Campos encontrados",

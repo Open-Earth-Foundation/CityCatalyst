@@ -124,7 +124,12 @@ async def ingest_concept_note_markdown(
         code = (
             "invalid_bearer_token" if status_code == 401 else "cc_identity_unavailable"
         )
-        return problem(status_code, code, str(exc))
+        message = (
+            "Bearer token is invalid or expired"
+            if status_code == 401
+            else "Identity service is temporarily unavailable"
+        )
+        return problem(status_code, code, message)
 
     try:
         await repository.register_markdown(
@@ -134,6 +139,8 @@ async def ingest_concept_note_markdown(
             payload=payload,
         )
     except ConceptNoteMarkdownRepositoryError as exc:
-        return problem(exc.status_code, exc.code, str(exc))
+        return problem(
+            exc.status_code, exc.code, "Unable to register markdown at this time"
+        )
 
     return ConceptNoteMarkdownResponse(upload_id=upload_id)

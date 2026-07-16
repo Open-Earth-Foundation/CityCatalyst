@@ -982,6 +982,12 @@ export default class UserService {
       projectId: null,
     };
 
+    const user = await db.models.User.findOne({ where: { userId } });
+    if (user?.role === Roles.Admin) {
+      responseObject.isOrgOwner = true;
+      return responseObject;
+    }
+
     const orgOwner = await db.models.OrganizationAdmin.findOne({
       where: { userId },
     });

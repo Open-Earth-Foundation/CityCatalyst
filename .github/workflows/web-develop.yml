@@ -502,16 +502,34 @@ jobs:
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-dev \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh
 
   notifyDeploymentFailure:
-    needs: [runTests, pushToGHCR, deployToEKS]
+    needs: [runTests, pushToGHCR, deployToEKS, ccCaPostDeploySmoke]
     runs-on: ubuntu-latest
     if: |
       always() &&
-      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') &&
+      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure' || needs.ccCaPostDeploySmoke.result == 'failure') &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/develop'
 
@@ -527,6 +545,8 @@ jobs:
             echo "stage=Docker Build" >> $GITHUB_OUTPUT
           elif [ "${{ needs.deployToEKS.result }}" == "failure" ]; then
             echo "stage=Deployment" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.ccCaPostDeploySmoke.result }}" == "failure" ]; then
+            echo "stage=CA/CC post-deploy smoke" >> $GITHUB_OUTPUT
           fi
 
       - name: Notify Slack - Deployment Failure

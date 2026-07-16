@@ -56,6 +56,7 @@ import {
   shapeKeyValueToRows,
   shapeTableToRows,
   shapeTableToRowsForCIRIS,
+  shouldSkipInterpretForAdapter,
 } from "@/backend/AIInterpretationService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -65,6 +66,11 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
+import { planTableShapeChunks } from "@/backend/tableShapeChunking";
+import {
+  getLlmChunkConcurrency,
+  mapPool,
+} from "@/backend/asyncPool";
 
 /** Allow time for sync validation only; interpretation runs in background. */
 export const maxDuration = 30;
@@ -95,24 +101,37 @@ function serializeSheet(sheet: ParsedSheet, maxRows = 30, offset = 0): string {
   return lines.join("\n");
 }
 
-/** Max number of chunks to send to the LLM for table shaping (avoids runaway calls). */
-const MAX_TABLE_SHAPE_CHUNKS = 15;
-
-/** Build serialized chunks of the primary sheet for chunked table-shape extraction. Each chunk has header + up to chunkSize rows. */
+/**
+ * Build serialized chunks of the primary sheet for chunked table-shape extraction.
+ * Uses an adaptive max chunk count so medium sheets are covered; plan.truncated when capped.
+ */
 function getTableShapeChunks(
   parsedData: ParsedFileData,
   chunkSize: number,
-): string[] {
+): {
+  chunks: string[];
+  plan: ReturnType<typeof planTableShapeChunks>;
+} {
   const sheet = parsedData.primarySheet;
-  if (!sheet || sheet.headers.length === 0 || !sheet.rows.length) return [];
+  if (!sheet || sheet.headers.length === 0 || !sheet.rows.length) {
+    return {
+      chunks: [],
+      plan: planTableShapeChunks(0, chunkSize),
+    };
+  }
 
   const totalRows = sheet.rows.length;
+  const plan = planTableShapeChunks(totalRows, chunkSize);
   const chunks: string[] = [];
-  for (let offset = 0; offset < totalRows && chunks.length < MAX_TABLE_SHAPE_CHUNKS; offset += chunkSize) {
+  for (
+    let offset = 0;
+    offset < totalRows && chunks.length < plan.maxChunks;
+    offset += chunkSize
+  ) {
     const content = serializeSheet(sheet, chunkSize, offset);
     if (content.split("\n").length > 1) chunks.push(content); // header + at least one row
   }
-  return chunks;
+  return { chunks, plan };
 }
 
 /** Serialize all sheets for LLM (column detection only). Limit applies per sheet; when we later shape the table (non-eCRF path), we use chunked extraction via getTableShapeChunks. */
@@ -151,6 +170,8 @@ type InterpretBackgroundPayload = {
   keyValueFormat: boolean;
   /** When true, use CIRIS prompt and full ECRF-like schema; extract all rows. */
   isCIRIS: boolean;
+  /** Format adapter used at upload (if any); drives skip-interpret optimization. */
+  adapterType?: AdapterType | null;
   parsedData: ParsedFileData;
   /**
    * Past approved mapping for this city × header fingerprint (if any).
@@ -174,6 +195,7 @@ async function runInterpretationInBackground(
     targetCity,
     keyValueFormat,
     isCIRIS,
+    adapterType,
     parsedData,
     pastMapping,
   } = payload;
@@ -240,42 +262,116 @@ async function runInterpretationInBackground(
       return;
     }
 
-    let detectedColumns: Record<string, number>;
-    try {
-      detectedColumns = await interpretTabular(documentContent, {
-        targetYear,
-        targetCity,
-      });
-    } catch (err) {
-      if (err instanceof LLMError) {
-        const msg =
-          err.code === LLMErrorCode.BAD_REQUEST
-            ? err.message || "Document content could not be processed"
-            : err.message || "AI interpretation failed";
-        await setFailed(msg);
+    // Adapter-normalized tidy tables rarely match eCRF mapping; skip interpretTabular
+    // and shape directly (one fewer LLM round-trip on Path B long-tidy / wide-year).
+    const skipInterpret =
+      !isCIRIS && shouldSkipInterpretForAdapter(adapterType);
+
+    let detectedColumns: Record<string, number> = {};
+    if (!skipInterpret) {
+      try {
+        detectedColumns = await interpretTabular(documentContent, {
+          targetYear,
+          targetCity,
+        });
+      } catch (err) {
+        if (err instanceof LLMError) {
+          const msg =
+            err.code === LLMErrorCode.BAD_REQUEST
+              ? err.message || "Document content could not be processed"
+              : err.message || "AI interpretation failed";
+          await setFailed(msg);
+          return;
+        }
+        await setFailed(err instanceof Error ? err.message : "Unknown error");
         return;
       }
-      await setFailed(err instanceof Error ? err.message : "Unknown error");
-      return;
+    } else {
+      logger.info(
+        { importedFileId, adapterType },
+        "Skipping interpretTabular; adapter-normalized file uses shape-only Path B",
+      );
     }
 
-    if (!detectedColumnsMatchECRFStructure(detectedColumns)) {
+    if (
+      skipInterpret ||
+      !detectedColumnsMatchECRFStructure(detectedColumns)
+    ) {
       const chunkSize = isCIRIS ? 200 : 100;
-      const chunks = getTableShapeChunks(parsedData, chunkSize);
+      const { chunks, plan } = getTableShapeChunks(parsedData, chunkSize);
       const shapeOptions = { targetYear, targetCity, pastMapping };
+
+      if (
+        (parsedData.primarySheet?.rows.length ?? 0) > 0 &&
+        chunks.length === 0
+      ) {
+        await setFailed(
+          "Table could not be split into shape chunks; check sheet headers and rows",
+        );
+        return;
+      }
+
+      if (plan.truncated) {
+        logger.warn(
+          {
+            importedFileId,
+            totalRows: plan.totalRows,
+            coveredRows: plan.coveredRows,
+            maxChunks: plan.maxChunks,
+            chunksNeeded: plan.chunksNeeded,
+          },
+          "Path B shape truncated: rows beyond absolute chunk cap will be omitted",
+        );
+      }
 
       let shapedRows: Awaited<ReturnType<typeof shapeTableToRows>> = [];
       try {
         if (chunks.length > 0) {
-          for (let i = 0; i < chunks.length; i++) {
-            const chunkContent = chunks[i];
-            const rows = isCIRIS
-              ? await shapeTableToRowsForCIRIS(chunkContent, shapeOptions)
-              : await shapeTableToRows(chunkContent, shapeOptions);
-            shapedRows.push(...rows);
-          }
+          // Serialize progress DB writes so parallel completions do not clobber mappingConfiguration.
+          let progressWriteChain: Promise<void> = Promise.resolve();
+          const enqueueProgressUpdate = (
+            completedCount: number,
+            total: number,
+          ) => {
+            progressWriteChain = progressWriteChain.then(async () => {
+              await importedFile.update({
+                mappingConfiguration: {
+                  ...(importedFile.mappingConfiguration || {}),
+                  extractionProgress: {
+                    current: completedCount,
+                    total,
+                  },
+                  shapeTruncated: plan.truncated || undefined,
+                  shapeCoveredRows: plan.coveredRows,
+                  shapeTotalRows: plan.totalRows,
+                },
+                lastUpdated: new Date(),
+              });
+            });
+            return progressWriteChain;
+          };
+
+          const concurrency = getLlmChunkConcurrency();
+          const perChunkRows = await mapPool(
+            chunks,
+            concurrency,
+            async (chunkContent) =>
+              isCIRIS
+                ? shapeTableToRowsForCIRIS(chunkContent, shapeOptions)
+                : shapeTableToRows(chunkContent, shapeOptions),
+            async (completedCount, total) => {
+              await enqueueProgressUpdate(completedCount, total);
+            },
+          );
+          shapedRows = perChunkRows.flat();
           logger.debug(
-            { importedFileId, chunkCount: chunks.length, totalShapedRows: shapedRows.length },
+            {
+              importedFileId,
+              chunkCount: chunks.length,
+              concurrency,
+              totalShapedRows: shapedRows.length,
+              truncated: plan.truncated,
+            },
             "Table shape chunks merged",
           );
 
@@ -335,11 +431,20 @@ async function runInterpretationInBackground(
         return;
       }
       const validationResults = importedFile.validationResults ?? {};
+      const existingWarnings = Array.isArray(validationResults.warnings)
+        ? validationResults.warnings
+        : [];
+      const truncationWarning = plan.truncated
+        ? `Shape truncated: processed ${plan.coveredRows} of ${plan.totalRows} rows (max ${plan.maxChunks} chunks × ${plan.chunkSize} rows). Re-split the file or raise ABSOLUTE_MAX_TABLE_SHAPE_CHUNKS.`
+        : null;
       await importedFile.update({
         importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
         validationResults: {
           ...validationResults,
           keyValueShaped: true,
+          warnings: truncationWarning
+            ? [...existingWarnings, truncationWarning]
+            : existingWarnings,
           processingResults: {
             rowCount: shapedRows.length,
             validRowCount: shapedRows.length,
@@ -349,6 +454,10 @@ async function runInterpretationInBackground(
         mappingConfiguration: {
           keyValueShaped: true,
           rows: shapedRows,
+          extractionProgress: undefined,
+          shapeTruncated: plan.truncated || undefined,
+          shapeCoveredRows: plan.coveredRows,
+          shapeTotalRows: plan.totalRows,
         },
         lastUpdated: new Date(),
       });
@@ -654,6 +763,7 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     targetCity,
     keyValueFormat,
     isCIRIS,
+    adapterType: adapterType ?? null,
     parsedData: effectiveParsedData,
     pastMapping,
   }).catch((err) =>

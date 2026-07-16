@@ -31,8 +31,8 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MdInfoOutline } from "react-icons/md";
-import type { TFunction } from "i18next";
-import { useGetUserProjectsQuery, useInviteUsersMutation } from "@/services/api";
+import { useTranslation } from "@/i18n/client";
+import { useGetUserProjectsQuery, useGetUserAccessStatusQuery, useInviteUsersMutation } from "@/services/api";
 import { z } from "zod";
 
 interface InvitedMember {
@@ -46,8 +46,9 @@ export interface InviteCollaboratorsStepRef {
 
 const InviteCollaboratorsStep = forwardRef<
   InviteCollaboratorsStepRef,
-  { t: TFunction }
->(({ t }, ref) => {
+  { lng: string; onValidityChange?: (canSubmit: boolean) => void }
+>(({ lng, onValidityChange }, ref) => {
+  const { t } = useTranslation(lng, "onboarding");
   const [emailInput, setEmailInput] = useState("");
   const [emailError, setEmailError] = useState("");
   const [selectedRole, setSelectedRole] = useState<"admin" | "collaborator">(
@@ -63,8 +64,15 @@ const InviteCollaboratorsStep = forwardRef<
     }
   }, [invitedMembers.length]);
 
+  useEffect(() => {
+    onValidityChange?.(invitedMembers.length > 0 && selectedProject.length > 0);
+  }, [invitedMembers.length, selectedProject.length, onValidityChange]);
+
   const { data: projectsData } = useGetUserProjectsQuery({});
+  const { data: accessStatus } = useGetUserAccessStatusQuery({});
   const [inviteUsers] = useInviteUsersMutation();
+
+  const isCollaborator = accessStatus?.isCollaborator && !accessStatus?.isOrgOwner && !accessStatus?.isProjectAdmin;
 
   const projectCollection = useMemo(
     () =>
@@ -85,6 +93,14 @@ const InviteCollaboratorsStep = forwardRef<
       project?.cities.map((c) => ({ cityId: c.cityId, name: c.name })) ?? []
     );
   }, [projectsData, selectedProject]);
+
+  useEffect(() => {
+    if (selectedRole === "admin" && cityData.length > 0) {
+      setSelectedCities(cityData.map((c) => c.cityId));
+    } else if (selectedRole === "collaborator") {
+      setSelectedCities([]);
+    }
+  }, [selectedRole, cityData]);
 
   const validateEmail = (email: string) =>
     z.string().email().safeParse(email).success;
@@ -113,16 +129,17 @@ const InviteCollaboratorsStep = forwardRef<
 
   useImperativeHandle(ref, () => ({
     sendInvites: async () => {
-      if (!invitedMembers.length || !selectedCities.length) return;
+      if (!invitedMembers.length || !selectedProject.length) return;
       await inviteUsers({
+        projectId: selectedProject[0],
         cityIds: selectedCities,
-        emails: invitedMembers.map((m) => m.email),
+        invites: invitedMembers.map((m) => ({ email: m.email, role: m.role })),
       }).unwrap();
     },
   }));
 
   return (
-    <Box w="720px" display="flex" flexDirection="column" gap={8} data-testid="invite-collaborators-step">
+    <Box w="full" display="flex" flexDirection="column" gap={8} data-testid="invite-collaborators-step">
       <Box>
         <Heading
           fontSize="headline.lg"
@@ -212,31 +229,33 @@ const InviteCollaboratorsStep = forwardRef<
               onKeyDown={(e) => e.key === "Enter" && addMember()}
               placeholder={t("invite-collaborators-email-placeholder")}
             />
-            <chakra.select
-              value={selectedRole}
-              onChange={(e) =>
-                setSelectedRole(e.target.value as "admin" | "collaborator")
-              }
-              bg="background.neutral"
-              border="none"
-              borderRadius="md"
-              ps={2}
-              pe={1}
-              mx={2}
-              h="28px"
-              color="content.secondary"
-              fontFamily="body"
-              fontSize="body.sm"
-              fontWeight="normal"
-              lineHeight="16px"
-              letterSpacing="0.5px"
-              cursor="pointer"
-              flexShrink={0}
-              _focus={{ outline: "none", boxShadow: "none" }}
-            >
-              <option value="collaborator">{t("collaborator")}</option>
-              <option value="admin">{t("admin")}</option>
-            </chakra.select>
+            {!isCollaborator && (
+              <chakra.select
+                value={selectedRole}
+                onChange={(e) =>
+                  setSelectedRole(e.target.value as "admin" | "collaborator")
+                }
+                bg="background.neutral"
+                border="none"
+                borderRadius="md"
+                ps={2}
+                pe={1}
+                mx={2}
+                h="28px"
+                color="content.secondary"
+                fontFamily="body"
+                fontSize="body.sm"
+                fontWeight="normal"
+                lineHeight="16px"
+                letterSpacing="0.5px"
+                cursor="pointer"
+                flexShrink={0}
+                _focus={{ outline: "none", boxShadow: "none" }}
+              >
+                <option value="collaborator">{t("collaborator")}</option>
+                <option value="admin">{t("admin")}</option>
+              </chakra.select>
+            )}
           </Box>
           <Button
             onClick={addMember}
@@ -341,6 +360,14 @@ const InviteCollaboratorsStep = forwardRef<
             px={6}
             py={4}
           >
+            {selectedRole === "admin" && (
+              <HStack mb={4}>
+                <Icon as={MdInfoOutline} color="interactive.secondary" boxSize={4} />
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("invite-collaborators-admin-cities-info")}
+                </Text>
+              </HStack>
+            )}
             <Checkbox
               checked={
                 cityData.length > 0 &&
@@ -353,6 +380,7 @@ const InviteCollaboratorsStep = forwardRef<
                   setSelectedCities(cityData.map((c) => c.cityId));
                 }
               }}
+              disabled={selectedRole === "admin"}
               mb={4}
             >
               <Text
@@ -382,6 +410,7 @@ const InviteCollaboratorsStep = forwardRef<
                     key={cityId}
                     checked={selectedCities.includes(cityId)}
                     onChange={() => handleCityToggle(cityId)}
+                    disabled={selectedRole === "admin"}
                   >
                     <Text
                       color="content.secondary"

@@ -27,6 +27,7 @@ interface ReviewConfirmStepProps {
   inventoryId: string;
   importedFileId: string;
   onImport: () => void;
+  onEditMapping?: () => void;
 }
 
 export default function ReviewConfirmStep({
@@ -35,6 +36,7 @@ export default function ReviewConfirmStep({
   cityName,
   importedFileId,
   onImport,
+  onEditMapping,
   inventoryId,
 }: ReviewConfirmStepProps) {
   const { data, isLoading } = api.useGetImportStatusQuery(
@@ -140,7 +142,7 @@ export default function ReviewConfirmStep({
               <Text fontSize="body.sm" color="content.tertiary">{t("file-name")}</Text>
             </VStack>
           </Box>
-          <Button p="24px" >
+          <Button p="24px" onClick={onEditMapping}>
             <Icon as={EditIconOutlineSquare} />
             {t('edit-mapping')}
           </Button>

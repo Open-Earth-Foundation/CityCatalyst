@@ -880,6 +880,7 @@ export default function ImportPage(props: {
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     onImport={() => { }}
+                    onEditMapping={goToPrevStep}
                   />
                 </motion.div>
               )}

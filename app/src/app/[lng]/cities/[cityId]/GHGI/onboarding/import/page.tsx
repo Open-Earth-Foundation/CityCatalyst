@@ -965,16 +965,48 @@ export default function ImportPage(props: {
                 </Button>
               )}
               {activeStep === 2 && importedFileId && inventoryId && (
-                <ImportButton
-                  cityId={cityId}
-                  inventoryId={inventoryId}
-                  importedFileId={importedFileId}
-                  mappingOverrides={mappingOverrides}
-                  onImport={() => {
-                    router.push(`/${lng}/cities/${cityId}/GHGI`);
-                  }}
-                  t={t}
-                />
+                <HStack gap="16px">
+                  <Button
+                    variant="outline"
+                    minW="171px"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    h="64px"
+                    onClick={() => {
+                      handleNavigation(() => {
+                        setUploadedFile(null);
+                        setImportedFileId(null);
+                        setLastImportStatus(null);
+                        setPdfPendingExtraction(false);
+                        setTabularPendingInterpretation(false);
+                        setIsExtractInProgress(false);
+                        setIsInterpretInProgress(false);
+                        setMappingOverrides({});
+                        setExtractionProgress(null);
+                        setStep(0);
+                      });
+                    }}
+                  >
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("cancel")}
+                    </Text>
+                  </Button>
+                  <ImportButton
+                    cityId={cityId}
+                    inventoryId={inventoryId}
+                    importedFileId={importedFileId}
+                    mappingOverrides={mappingOverrides}
+                    onImport={() => {
+                      router.push(`/${lng}/cities/${cityId}/GHGI`);
+                    }}
+                    t={t}
+                  />
+                </HStack>
               )}
             </Box>
           </Box>

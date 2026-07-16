@@ -1,8 +1,11 @@
 import { createHash, randomUUID } from "node:crypto";
-import { Op } from "sequelize";
+import { literal, Op } from "sequelize";
 import { db } from "@/models";
-import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
-import type { PdfOcrJob } from "@/models/PdfOcrJob";
+import type {
+  ImportedInventoryFile,
+  ImportedInventoryFileAttributes,
+} from "@/models/ImportedInventoryFile";
+import type { PdfOcrJob, PdfOcrStatus } from "@/models/PdfOcrJob";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   convertPdfUrlToMarkdown,
@@ -68,11 +71,15 @@ export async function claimPdfOcrJobs(owner: string): Promise<PdfOcrJob[]> {
           {
             status: "running",
             attemptCount: { [Op.lt]: config.maxAttempts },
-            leaseExpiresAt: { [Op.lt]: now },
+            leaseExpiresAt: { [Op.lte]: now },
           },
         ],
       },
-      order: [["runAfter", "ASC"]],
+      order: [
+        ["runAfter", "ASC NULLS FIRST"],
+        ["leaseExpiresAt", "ASC NULLS LAST"],
+        ["createdAt", "ASC"],
+      ],
       limit: Math.min(config.batchSize, config.concurrency),
       transaction,
       lock: transaction.LOCK.UPDATE,
@@ -99,10 +106,65 @@ export async function claimPdfOcrJobs(owner: string): Promise<PdfOcrJob[]> {
   });
 }
 
-async function heartbeat(job: PdfOcrJob, owner: string): Promise<void> {
+export async function claimInventoryExtractionJobs(
+  owner: string,
+): Promise<PdfOcrJob[]> {
+  if (!db.sequelize) throw new Error("Database not initialized");
   const config = getPdfOcrConfig();
   const now = new Date();
-  await db.models.PdfOcrJob.update(
+  return db.sequelize.transaction(async (transaction) => {
+    // Reuse the durable OCR job lease for Markdown-to-rows extraction so
+    // overlapping cron runs cannot process the same result twice. Import
+    // status is user-visible workflow state, not an atomic worker claim.
+    const jobs = await db.models.PdfOcrJob.findAll({
+      where: {
+        sourceType: SOURCE_TYPE,
+        sourceId: {
+          // Filter import eligibility before LIMIT so unrelated unfinished
+          // imports cannot hide later OCR results that are ready to extract.
+          [Op.in]: literal(`(
+            SELECT "id"
+            FROM "public"."ImportedInventoryFile"
+            WHERE "file_type" = 'pdf'
+              AND "import_status" = '${ImportStatusEnum.EXTRACTING}'
+          )`),
+        },
+        status: "succeeded",
+        resultS3Key: { [Op.ne]: null },
+        [Op.or]: [{ leaseOwner: null }, { leaseExpiresAt: { [Op.lt]: now } }],
+      },
+      order: [
+        ["completedAt", "ASC"],
+        ["sourceId", "ASC"],
+      ],
+      limit: config.batchSize,
+      transaction,
+      lock: transaction.LOCK.UPDATE,
+      skipLocked: true,
+    });
+    const leaseExpiresAt = new Date(now.getTime() + config.leaseSeconds * 1000);
+    for (const job of jobs) {
+      await job.update(
+        {
+          leaseOwner: owner,
+          leaseExpiresAt,
+          heartbeatAt: now,
+        },
+        { transaction },
+      );
+    }
+    return jobs;
+  });
+}
+
+async function heartbeat(
+  job: PdfOcrJob,
+  owner: string,
+  status: PdfOcrStatus,
+): Promise<boolean> {
+  const config = getPdfOcrConfig();
+  const now = new Date();
+  const [updated] = await db.models.PdfOcrJob.update(
     {
       heartbeatAt: now,
       leaseExpiresAt: new Date(now.getTime() + config.leaseSeconds * 1000),
@@ -111,11 +173,12 @@ async function heartbeat(job: PdfOcrJob, owner: string): Promise<void> {
       where: {
         sourceType: job.sourceType,
         sourceId: job.sourceId,
-        status: "running",
+        status,
         leaseOwner: owner,
       },
     },
   );
+  return updated === 1;
 }
 
 async function validateSource(
@@ -260,7 +323,7 @@ async function runOcrJob(job: PdfOcrJob, owner: string): Promise<void> {
   const config = getPdfOcrConfig();
   const heartbeatTimer = setInterval(
     () =>
-      heartbeat(job, owner).catch((error) =>
+      heartbeat(job, owner, "running").catch((error) =>
         logger.error({ error }, "PDF OCR heartbeat failed"),
       ),
     config.heartbeatSeconds * 1000,
@@ -276,18 +339,82 @@ async function runOcrJob(job: PdfOcrJob, owner: string): Promise<void> {
   }
 }
 
+async function releaseInventoryExtractionLease(
+  job: PdfOcrJob,
+  owner: string,
+): Promise<boolean> {
+  const [updated] = await db.models.PdfOcrJob.update(
+    {
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      heartbeatAt: null,
+    },
+    {
+      where: {
+        sourceType: job.sourceType,
+        sourceId: job.sourceId,
+        status: "succeeded",
+        leaseOwner: owner,
+      },
+    },
+  );
+  return updated === 1;
+}
+
+async function finalizeInventoryExtraction(
+  job: PdfOcrJob,
+  owner: string,
+  values: Partial<ImportedInventoryFileAttributes>,
+): Promise<boolean> {
+  if (!db.sequelize) throw new Error("Database not initialized");
+  return db.sequelize.transaction(async (transaction) => {
+    const [released] = await db.models.PdfOcrJob.update(
+      {
+        leaseOwner: null,
+        leaseExpiresAt: null,
+        heartbeatAt: null,
+      },
+      {
+        where: {
+          sourceType: job.sourceType,
+          sourceId: job.sourceId,
+          status: "succeeded",
+          leaseOwner: owner,
+        },
+        transaction,
+      },
+    );
+    if (released !== 1) return false;
+
+    const [updated] = await db.models.ImportedInventoryFile.update(values, {
+      where: {
+        id: job.sourceId,
+        importStatus: ImportStatusEnum.EXTRACTING,
+      },
+      transaction,
+    });
+    return updated === 1;
+  });
+}
+
 export async function extractInventoryRowsFromStoredMarkdown(
   job: PdfOcrJob,
+  owner: string,
 ): Promise<void> {
-  if (job.status !== "succeeded" || !job.resultS3Key) return;
+  if (job.status !== "succeeded" || !job.resultS3Key) {
+    await releaseInventoryExtractionLease(job, owner);
+    return;
+  }
   const importedFile = await db.models.ImportedInventoryFile.findByPk(
     job.sourceId,
   );
   if (
     !importedFile ||
     importedFile.importStatus !== ImportStatusEnum.EXTRACTING
-  )
+  ) {
+    await releaseInventoryExtractionLease(job, owner);
     return;
+  }
   try {
     const inventory = await db.models.Inventory.findByPk(
       importedFile.inventoryId,
@@ -302,6 +429,8 @@ export async function extractInventoryRowsFromStoredMarkdown(
     const rows = await extractInventoryRowsFromDocument(markdown, {
       targetYear,
       onChunkProgress: async (current, total) => {
+        const renewed = await heartbeat(job, owner, "succeeded");
+        if (!renewed) throw new Error("PDF extraction lease was lost");
         await importedFile.update({
           mappingConfiguration: {
             ...(importedFile.mappingConfiguration || {}),
@@ -312,7 +441,7 @@ export async function extractInventoryRowsFromStoredMarkdown(
     });
     if (!rows.length)
       throw new Error("PDF does not contain extractable inventory data");
-    await importedFile.update({
+    const finalized = await finalizeInventoryExtraction(job, owner, {
       importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
       mappingConfiguration: {
         ...(importedFile.mappingConfiguration || {}),
@@ -323,16 +452,48 @@ export async function extractInventoryRowsFromStoredMarkdown(
       errorLog: null,
       lastUpdated: new Date(),
     });
+    if (!finalized) {
+      logger.warn(
+        { sourceId: job.sourceId },
+        "Inventory extraction lease was lost before completion",
+      );
+    }
   } catch (error) {
     logger.warn(
       { error, sourceId: job.sourceId },
       "Inventory extraction from OCR Markdown failed",
     );
-    await importedFile.update({
+    const finalized = await finalizeInventoryExtraction(job, owner, {
       importStatus: ImportStatusEnum.FAILED,
       errorLog: sanitizedMessage(error),
       lastUpdated: new Date(),
     });
+    if (!finalized) {
+      logger.warn(
+        { sourceId: job.sourceId },
+        "Inventory extraction lease was lost before failure registration",
+      );
+    }
+  }
+}
+
+async function runInventoryExtractionJob(
+  job: PdfOcrJob,
+  owner: string,
+): Promise<void> {
+  const config = getPdfOcrConfig();
+  const heartbeatTimer = setInterval(
+    () =>
+      heartbeat(job, owner, "succeeded").catch((error) =>
+        logger.error({ error }, "PDF extraction heartbeat failed"),
+      ),
+    config.heartbeatSeconds * 1000,
+  );
+  heartbeatTimer.unref();
+  try {
+    await extractInventoryRowsFromStoredMarkdown(job, owner);
+  } finally {
+    clearInterval(heartbeatTimer);
   }
 }
 
@@ -372,23 +533,13 @@ export async function processPdfOcrJobs() {
   const jobs = await claimPdfOcrJobs(owner);
   await Promise.all(jobs.map((job) => runOcrJob(job, owner)));
 
-  const extractingImports = await db.models.ImportedInventoryFile.findAll({
-    attributes: ["id"],
-    where: { fileType: "pdf", importStatus: ImportStatusEnum.EXTRACTING },
-    order: [["lastUpdated", "ASC"]],
-    limit: config.batchSize,
-  });
-  const successfulJobs = extractingImports.length
-    ? await db.models.PdfOcrJob.findAll({
-        where: {
-          sourceType: SOURCE_TYPE,
-          sourceId: { [Op.in]: extractingImports.map((item) => item.id) },
-          status: "succeeded",
-        },
-        order: [["completedAt", "ASC"]],
-      })
-    : [];
-  await Promise.all(successfulJobs.map(extractInventoryRowsFromStoredMarkdown));
+  const extractionOwner = `pdf-extraction-${randomUUID()}`;
+  const successfulJobs = await claimInventoryExtractionJobs(extractionOwner);
+  await Promise.all(
+    successfulJobs.map((job) =>
+      runInventoryExtractionJob(job, extractionOwner),
+    ),
+  );
   return {
     claimed: jobs.length,
     resumed: successfulJobs.length,

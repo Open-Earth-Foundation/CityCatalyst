@@ -16,6 +16,7 @@ from app.routes.threads import router as threads_router
 from app.routes.messages import router as messages_router
 from app.routes.dev_inventory import router as dev_inventory_router
 from app.routes.stationary_energy_drafts import router as stationary_energy_drafts_router
+from app.routes.concept_note_markdown import router as concept_note_markdown_router
 from app.middleware.request_context import RequestContextMiddleware, get_request_id
 import logging
 
@@ -84,6 +85,7 @@ def get_app() -> FastAPI:
     app.include_router(messages_router, prefix="/v1")
     app.include_router(dev_inventory_router, prefix="/v1")
     app.include_router(stationary_energy_drafts_router, prefix="/v1")
+    app.include_router(concept_note_markdown_router, prefix="/v1")
 
     # Static playground for manual testing
     static_dir = Path(__file__).resolve().parent / "static"

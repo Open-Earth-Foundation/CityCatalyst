@@ -110,28 +110,51 @@ async function runUploadProcessingInBackground(
   const importedFile = await db.models.ImportedInventoryFile.findOne({
     where: { id: importedFileId, inventoryId, cityId },
   });
-  if (!importedFile || importedFile.importStatus !== ImportStatusEnum.PROCESSING) {
-    logger.warn({ importedFileId, inventoryId, cityId }, "Upload background: file not found or not PROCESSING");
+  if (
+    !importedFile ||
+    importedFile.importStatus !== ImportStatusEnum.PROCESSING
+  ) {
+    logger.warn(
+      { importedFileId, inventoryId, cityId },
+      "Upload background: file not found or not PROCESSING",
+    );
     return;
   }
 
-  const originalFileName = (importedFile.originalFileName as string) || "upload";
+  const originalFileName =
+    (importedFile.originalFileName as string) || "upload";
   const fileType = importedFile.fileType as "xlsx" | "csv";
 
   let buffer: Buffer;
   if (importedFile.s3Key) {
     try {
-      buffer = await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+      buffer = await InventoryFileStorageService.getFileBuffer(
+        importedFile.s3Key,
+      );
     } catch (err) {
-      logger.error({ err, importedFileId, s3Key: importedFile.s3Key }, "Upload background: failed to fetch file from S3");
-      await importedFile.update({ importStatus: ImportStatusEnum.FAILED, errorLog: "Could not retrieve uploaded file from storage.", lastUpdated: new Date() });
+      logger.error(
+        { err, importedFileId, s3Key: importedFile.s3Key },
+        "Upload background: failed to fetch file from S3",
+      );
+      await importedFile.update({
+        importStatus: ImportStatusEnum.FAILED,
+        errorLog: "Could not retrieve uploaded file from storage.",
+        lastUpdated: new Date(),
+      });
       return;
     }
   } else if (importedFile.data && Buffer.isBuffer(importedFile.data)) {
     buffer = importedFile.data as Buffer;
   } else {
-    logger.error({ importedFileId }, "Upload background: neither s3Key nor data buffer found on importedFile");
-    await importedFile.update({ importStatus: ImportStatusEnum.FAILED, errorLog: "File reference missing; please re-upload.", lastUpdated: new Date() });
+    logger.error(
+      { importedFileId },
+      "Upload background: neither s3Key nor data buffer found on importedFile",
+    );
+    await importedFile.update({
+      importStatus: ImportStatusEnum.FAILED,
+      errorLog: "File reference missing; please re-upload.",
+      lastUpdated: new Date(),
+    });
     return;
   }
 
@@ -148,10 +171,17 @@ async function runUploadProcessingInBackground(
   };
 
   try {
-    const validationResult = await FileValidatorService.validateFileStructure(file);
-    const isTabular = validationResult.fileType === "xlsx" || validationResult.fileType === "csv";
+    const validationResult =
+      await FileValidatorService.validateFileStructure(file);
+    const isTabular =
+      validationResult.fileType === "xlsx" ||
+      validationResult.fileType === "csv";
     if (!isTabular) {
-      await setFailed(validationResult.errors?.length ? validationResult.errors.join("; ") : "File validation failed");
+      await setFailed(
+        validationResult.errors?.length
+          ? validationResult.errors.join("; ")
+          : "File validation failed",
+      );
       return;
     }
 
@@ -169,7 +199,9 @@ async function runUploadProcessingInBackground(
           : undefined;
       const rows = FormatAdapterService.toExtractedRows(parsedData, targetYear);
       if (rows.length === 0) {
-        await setFailed("Adapter D: no data rows could be extracted from this file");
+        await setFailed(
+          "Adapter D: no data rows could be extracted from this file",
+        );
         return;
       }
       await importedFile.update({
@@ -196,7 +228,9 @@ async function runUploadProcessingInBackground(
     // ── Adapters A/B/C: normalize, then hand off to AI interpretation (Path B) ──
     const usePathB =
       !!validationResult.adapterType ||
-      !FileValidatorService.hasDistinctRequiredECRFColumns(validationResult.detectedColumns || {}) ||
+      !FileValidatorService.hasDistinctRequiredECRFColumns(
+        validationResult.detectedColumns || {},
+      ) ||
       !!validationResult.isCIRIS ||
       !!validationResult.isBIOMATEC;
 
@@ -231,7 +265,9 @@ async function runUploadProcessingInBackground(
     // eCRF path: require valid structure
     if (!validationResult.isValid) {
       await setFailed(
-        validationResult.errors?.length ? validationResult.errors.join("; ") : "File validation failed",
+        validationResult.errors?.length
+          ? validationResult.errors.join("; ")
+          : "File validation failed",
       );
       return;
     }
@@ -245,7 +281,10 @@ async function runUploadProcessingInBackground(
       importStatus: ImportStatusEnum.WAITING_FOR_APPROVAL,
       validationResults: {
         errors: validationResult.errors,
-        warnings: [...(validationResult.warnings || []), ...importResult.warnings],
+        warnings: [
+          ...(validationResult.warnings || []),
+          ...importResult.warnings,
+        ],
         detectedColumns: validationResult.detectedColumns,
         inferredYearFromFile: importResult.inferredYearFromFile,
         processingResults: {
@@ -274,7 +313,10 @@ async function runUploadProcessingInBackground(
       "Tabular upload (eCRF) processed, waiting for approval",
     );
   } catch (error) {
-    logger.error({ err: error, importedFileId: importedFile.id }, "Upload background processing failed");
+    logger.error(
+      { err: error, importedFileId: importedFile.id },
+      "Upload background processing failed",
+    );
     await setFailed(error instanceof Error ? error.message : "Unknown error");
   }
 }
@@ -310,12 +352,21 @@ export const POST = apiHandler(
     const basicValidation = FileValidatorService.validateFile(file);
     if (!basicValidation.isValid || !basicValidation.fileType) {
       throw new createHttpError.BadRequest(
-        basicValidation.errors?.length ? basicValidation.errors.join(", ") : "File validation failed",
+        basicValidation.errors?.length
+          ? basicValidation.errors.join(", ")
+          : "File validation failed",
       );
     }
 
     const isPdf = basicValidation.fileType === "pdf";
-    const isTabular = basicValidation.fileType === "xlsx" || basicValidation.fileType === "csv";
+    const isTabular =
+      basicValidation.fileType === "xlsx" || basicValidation.fileType === "csv";
+
+    if (isPdf && !isS3Configured()) {
+      throw new createHttpError.ServiceUnavailable(
+        "PDF uploads require S3-backed storage for OCR",
+      );
+    }
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const originalFileName = file.name;
@@ -338,7 +389,10 @@ export const POST = apiHandler(
           mimeType,
         );
       } catch (err) {
-        logger.error({ err, cityId, inventoryId, fileName }, "Failed to upload file to S3");
+        logger.error(
+          { err, cityId, inventoryId, fileName },
+          "Failed to upload file to S3",
+        );
         throw new createHttpError.InternalServerError(
           "Failed to store uploaded file. Please try again.",
         );
@@ -364,10 +418,16 @@ export const POST = apiHandler(
         data: dataBuffer,
         originalFileName,
         importStatus: ImportStatusEnum.PENDING_AI_EXTRACTION,
-        validationResults: { errors: basicValidation.errors, warnings: basicValidation.warnings },
+        validationResults: {
+          errors: basicValidation.errors,
+          warnings: basicValidation.warnings,
+        },
       });
       logger.info(
-        { importedFileId: importedFile.id, storageMode: s3Key ? "s3" : "bytea" },
+        {
+          importedFileId: importedFile.id,
+          storageMode: s3Key ? "s3" : "bytea",
+        },
         "PDF uploaded, pending AI extraction",
       );
       return NextResponse.json(
@@ -398,15 +458,23 @@ export const POST = apiHandler(
         importStatus: ImportStatusEnum.PROCESSING,
         validationResults: null,
       });
-      runUploadProcessingInBackground(cityId, inventoryId, importedFile.id).catch((err) =>
-        logger.error({ err, importedFileId: importedFile.id }, "Upload background failed"),
+      runUploadProcessingInBackground(
+        cityId,
+        inventoryId,
+        importedFile.id,
+      ).catch((err) =>
+        logger.error(
+          { err, importedFileId: importedFile.id },
+          "Upload background failed",
+        ),
       );
       return NextResponse.json(
         {
           data: {
             accepted: true,
             id: importedFile.id,
-            message: "Upload accepted; poll GET import status until importStatus is pending_ai_interpretation, waiting_for_approval, or failed.",
+            message:
+              "Upload accepted; poll GET import status until importStatus is pending_ai_interpretation, waiting_for_approval, or failed.",
           },
         },
         { status: 202 },

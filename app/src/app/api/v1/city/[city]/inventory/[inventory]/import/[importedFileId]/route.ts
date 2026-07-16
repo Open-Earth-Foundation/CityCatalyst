@@ -56,6 +56,18 @@
  *                       type: integer
  *                       enum: [1, 2, 3, 4]
  *                       description: Current step in the 4-step workflow
+ *                     pdfOcr:
+ *                       type: object
+ *                       nullable: true
+ *                       description: Sanitized OCR status for PDF imports only.
+ *                       properties:
+ *                         status:
+ *                           type: string
+ *                           enum: [queued, running, succeeded, failed]
+ *                         errorCode:
+ *                           type: string
+ *                         canRetry:
+ *                           type: boolean
  *                     fileInfo:
  *                       type: object
  *                       description: Step 1 - Basic file information
@@ -167,6 +179,7 @@ import ImportMappingService from "@/backend/ImportMappingService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import FileValidatorService from "@/backend/FileValidatorService";
+import { getInventoryPdfOcrStatus } from "@/backend/PdfOcrService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -366,7 +379,8 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         if (typeof raw === "boolean") return raw ? "TRUE" : "FALSE";
         if (typeof raw === "object") {
           const o = raw as Record<string, unknown>;
-          if (typeof o.error === "string" && o.error) return `#${o.error.toUpperCase()}!`;
+          if (typeof o.error === "string" && o.error)
+            return `#${o.error.toUpperCase()}!`;
           if (o.result !== undefined) return toDisplayValue(o.result);
         }
         return null;
@@ -404,7 +418,9 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         .detectedColumns as Record<string, number>;
 
       const fileBuffer =
-        await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+        await InventoryFileStorageService.resolveImportedFileBuffer(
+          importedFile,
+        );
 
       if (
         fileBuffer &&
@@ -543,7 +559,9 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         };
       } else if (importedFile.validationResults?.detectedColumns) {
         const reviewBuffer =
-          await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+          await InventoryFileStorageService.resolveImportedFileBuffer(
+            importedFile,
+          );
         if (!reviewBuffer) {
           throw new Error("Imported file buffer not available for review step");
         }
@@ -591,13 +609,23 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     }
   }
 
-  const legacyValidation = importedFile.validationResults as { inferredYearFromFile?: number } | null;
+  const legacyValidation = importedFile.validationResults as {
+    inferredYearFromFile?: number;
+  } | null;
+  const pdfOcr =
+    importedFile.fileType === "pdf"
+      ? await getInventoryPdfOcrStatus(
+          importedFile.id,
+          importedFile.importStatus,
+        )
+      : null;
 
   // Return response structured by step
   return NextResponse.json({
     data: {
       id: importedFile.id,
       importStatus: importedFile.importStatus,
+      ...(pdfOcr ? { pdfOcr } : {}),
       currentStep,
       // Step 1: Upload (basic file info)
       fileInfo: {

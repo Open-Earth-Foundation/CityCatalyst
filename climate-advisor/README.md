@@ -403,6 +403,11 @@ language, or client-side fallback behavior. The boundary is:
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
 - `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
+- `CC_API_KEY` - Service credential used when CA asks CC to validate the
+  CC-issued user bearer token
+- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Complete JSON request-body limit for the
+  optional CC-to-CA Markdown ingest endpoint (default `20971520`, independently
+  enforced from the CC source-PDF limit)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -418,6 +423,15 @@ language, or client-side fallback behavior. The boundary is:
   not emit GitPython warnings during MLflow initialization
 - `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables MLflow async logging when set to
   `true`
+
+### CC-produced Concept Note Markdown baseline
+
+`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` validates the
+CC-issued user token through CC, recomputes SHA-256, verifies contiguous page
+markers, and delegates atomic run/upload registration to a repository
+interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
+the datateam repository adapter is configured, the production provider returns
+`503 cnb_storage_unavailable`; contract tests inject an in-memory repository.
 
 ## Database Schema
 

@@ -12,6 +12,11 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { api } from "@/services/api";
+import { Trans } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { MdEdit, MdEditSquare, MdOutlineModeEdit } from "react-icons/md";
+import { BiEdit } from "react-icons/bi";
+import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -116,11 +121,28 @@ export default function ReviewConfirmStep({
             {cityName}
           </Text>
         )}
-        <Heading size="lg">{t("review-confirm-heading")}</Heading>
-        <Text fontSize="body.lg" color="content.tertiary">
-          {t("review-confirm-description")}
-        </Text>
+        <Heading size="lg" fontSize="display.sm">{t("review-confirm-heading")}</Heading>
+        <Trans i18nKey="review-confirm-description" t={t}>
+          <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
+            Please <Text as="span" fontWeight="bold">carefully review all fields</Text>and confirm the upload since you won&apos;t be able to modify it later on.
+          </Text>
+        </Trans>
       </Box>
+      <VStack>
+        <HStack justifyContent="space-between" alignItems="flex-start" w="full">
+          <Box display="flex" alignItems="flex-start" gap="4px">
+            <Icon as={ConfirmDocumentIcon} w={8} h={8} />
+            <VStack alignItems='flex-start' gap="4px">
+              <Text fontSize="headline.sm" fontWeight="bold">{importSummary.sourceFile}</Text>
+              <Text fontSize="body.sm" color="content.tertiary">{t("file-name")}</Text>
+            </VStack>
+          </Box>``
+          <Button p="24px" >
+            <Icon as={EditIconOutlineSquare} />
+            {t('edit-mapping')}
+          </Button>
+        </HStack>
+      </VStack>
 
       <HStack gap="24px" alignItems="flex-start" mb={8}>
         <Card.Root

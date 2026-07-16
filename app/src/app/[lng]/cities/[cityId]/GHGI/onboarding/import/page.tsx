@@ -288,7 +288,7 @@ export default function ImportPage(props: {
       : null;
   const fileYear =
     lastImportStatus?.inferredYearFromFile != null &&
-    Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
+      Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
       ? Number(lastImportStatus.inferredYearFromFile)
       : null;
   const fileYearMismatch =
@@ -456,7 +456,7 @@ export default function ImportPage(props: {
       setImportedFileId(result.id);
       setPdfPendingExtraction(
         (result as { importStatus?: string; fileType?: string }).importStatus === "pending_ai_extraction" ||
-          (result as { fileType?: string }).fileType === "pdf",
+        (result as { fileType?: string }).fileType === "pdf",
       );
       setTabularPendingInterpretation(
         (result as { importStatus?: string }).importStatus === "pending_ai_interpretation",
@@ -711,7 +711,7 @@ export default function ImportPage(props: {
                       t={t}
                       cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
-                      onFileUpload={inventoryHasData ? () => {} : handleFileUpload}
+                      onFileUpload={inventoryHasData ? () => { } : handleFileUpload}
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
@@ -720,9 +720,9 @@ export default function ImportPage(props: {
                         <Text fontSize="sm" color="content.tertiary" mb={2}>
                           {extractionProgress && extractionProgress.total > 1
                             ? t("extracting-chunk-progress", {
-                                current: extractionProgress.current,
-                                total: extractionProgress.total,
-                              })
+                              current: extractionProgress.current,
+                              total: extractionProgress.total,
+                            })
                             : t("breaking-into-chunks")}
                         </Text>
                         {extractionProgress && extractionProgress.total > 1 ? (
@@ -781,9 +781,9 @@ export default function ImportPage(props: {
                         <Text fontSize="sm" color="content.tertiary" mb={2}>
                           {extractionProgress && extractionProgress.total > 1
                             ? t("interpreting-chunk-progress", {
-                                current: extractionProgress.current,
-                                total: extractionProgress.total,
-                              })
+                              current: extractionProgress.current,
+                              total: extractionProgress.total,
+                            })
                             : t("interpreting-file-description")}
                         </Text>
                         {extractionProgress && extractionProgress.total > 1 ? (
@@ -879,7 +879,7 @@ export default function ImportPage(props: {
                     cityName={inventory?.city?.name}
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
-                    onImport={() => {}}
+                    onImport={() => { }}
                   />
                 </motion.div>
               )}

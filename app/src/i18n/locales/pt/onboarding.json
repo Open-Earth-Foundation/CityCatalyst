@@ -189,7 +189,7 @@
   "map-to": "Mapear Para",
   "select-mapping": "Selecionar mapeamento",
   "review-confirm-heading": "Revisar e confirmar",
-  "review-confirm-description": "Revise o resumo da importação antes de finalizar.",
+  "review-confirm-description": "<0>Por favor, <1>revise cuidadosamente todos os campos</1> e confirme o envio, pois não será possível modificá-lo posteriormente.</0>",
   "import-summary": "Resumo da Importação",
   "source-file": "Arquivo fonte",
   "format-detected": "Formato detectado",

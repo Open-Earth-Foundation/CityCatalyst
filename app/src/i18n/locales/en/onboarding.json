@@ -203,7 +203,7 @@
   "map-to": "Map To",
   "select-mapping": "Select mapping",
   "review-confirm-heading": "Review and confirm",
-  "review-confirm-description": "Review the import summary before finalizing.",
+  "review-confirm-description": "<0>Please <1>carefully review all fields</1> and confirm the upload since you won't be able to modify it later on.</0>",
   "import-summary": "Import Summary",
   "source-file": "Source file",
   "format-detected": "Format detected",

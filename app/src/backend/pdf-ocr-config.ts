@@ -1,4 +1,4 @@
-import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "./InventoryImportFileLimits";
+import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "@/backend/inventory-import-file-limits";
 
 function positiveInteger(name: string, fallback: number): number {
   const value = Number(process.env[name]);

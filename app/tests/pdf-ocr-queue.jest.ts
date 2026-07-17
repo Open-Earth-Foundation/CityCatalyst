@@ -142,7 +142,7 @@ describe("PdfOcrJob queue", () => {
     expect(options.order).toEqual([
       ["runAfter", "ASC NULLS FIRST"],
       ["leaseExpiresAt", "ASC NULLS LAST"],
-      ["createdAt", "ASC"],
+      ["created", "ASC"],
     ]);
     const candidates = options.where[Op.or] as Array<{
       status: string;

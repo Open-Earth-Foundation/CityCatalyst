@@ -4,7 +4,7 @@ import {
   mergeMistralPages,
   MistralOcrError,
 } from "@/backend/MistralOcrService";
-import { getPdfOcrRetryDelayMs } from "@/backend/PdfOcrConfig";
+import { getPdfOcrRetryDelayMs } from "@/backend/pdf-ocr-config";
 
 describe("Mistral OCR Markdown conversion", () => {
   afterEach(() => {

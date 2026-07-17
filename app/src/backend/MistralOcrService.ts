@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { getPdfOcrConfig } from "@/backend/PdfOcrConfig";
+import { getPdfOcrConfig } from "@/backend/pdf-ocr-config";
 
 const responseSchema = z.object({
   model: z.string().optional(),

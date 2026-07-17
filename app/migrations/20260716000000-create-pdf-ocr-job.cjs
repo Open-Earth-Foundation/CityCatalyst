@@ -4,6 +4,12 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("PdfOcrJob", {
+      id: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: Sequelize.UUIDV4,
+      },
       source_type: { type: Sequelize.STRING(64), allowNull: false },
       source_id: { type: Sequelize.UUID, allowNull: false },
       status: {
@@ -40,12 +46,12 @@ module.exports = {
       delivered_at: { type: Sequelize.DATE, allowNull: true },
       delivery_error_code: { type: Sequelize.STRING(128), allowNull: true },
       delivery_error_message: { type: Sequelize.TEXT, allowNull: true },
-      created_at: {
+      created: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.fn("NOW"),
       },
-      updated_at: {
+      last_updated: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.fn("NOW"),
@@ -54,8 +60,8 @@ module.exports = {
 
     await queryInterface.addConstraint("PdfOcrJob", {
       fields: ["source_type", "source_id"],
-      type: "primary key",
-      name: "PdfOcrJob_pkey",
+      type: "unique",
+      name: "PdfOcrJob_source_identity_key",
     });
     await queryInterface.addConstraint("PdfOcrJob", {
       fields: ["source_type"],

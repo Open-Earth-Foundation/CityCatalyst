@@ -11,7 +11,10 @@ import {
   convertPdfUrlToMarkdown,
   MistralOcrError,
 } from "@/backend/MistralOcrService";
-import { getPdfOcrConfig, getPdfOcrRetryDelayMs } from "@/backend/PdfOcrConfig";
+import {
+  getPdfOcrConfig,
+  getPdfOcrRetryDelayMs,
+} from "@/backend/pdf-ocr-config";
 import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
 import { logger } from "@/services/logger";
@@ -78,7 +81,7 @@ export async function claimPdfOcrJobs(owner: string): Promise<PdfOcrJob[]> {
       order: [
         ["runAfter", "ASC NULLS FIRST"],
         ["leaseExpiresAt", "ASC NULLS LAST"],
-        ["createdAt", "ASC"],
+        ["created", "ASC"],
       ],
       limit: Math.min(config.batchSize, config.concurrency),
       transaction,

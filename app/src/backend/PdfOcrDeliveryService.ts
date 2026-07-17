@@ -8,7 +8,7 @@ import {
   requireServiceEnv,
 } from "@/backend/climate-advisor-connection";
 import { logger } from "@/services/logger";
-import { getPdfOcrConfig } from "@/backend/PdfOcrConfig";
+import { getPdfOcrConfig } from "@/backend/pdf-ocr-config";
 
 export type PdfOcrDeliverySource = {
   runId: string;

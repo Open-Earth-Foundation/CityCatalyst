@@ -24,10 +24,11 @@ jest.unstable_mockModule("@/backend/PdfOcrDeliveryService", () => ({
   resolvePdfOcrDeliverySource: jest.fn(),
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
-  logger: { error: jest.fn() },
+  logger: { error: jest.fn(), info: jest.fn(), warn: jest.fn() },
 }));
 
 let POST: typeof import("@/app/api/v1/cron/process-pdf-ocr-jobs/route").POST;
+const routeContext = { params: Promise.resolve({}) };
 
 beforeAll(async () => {
   ({ POST } = await import("@/app/api/v1/cron/process-pdf-ocr-jobs/route"));
@@ -49,7 +50,7 @@ describe("PDF OCR cron authentication", () => {
         headers: authorization ? { Authorization: authorization } : {},
       },
     );
-    expect((await POST(request)).status).toBe(401);
+    expect((await POST(request, routeContext)).status).toBe(401);
     expect(processOcr).not.toHaveBeenCalled();
   });
 
@@ -61,7 +62,7 @@ describe("PDF OCR cron authentication", () => {
         headers: { Authorization: "Bearer cron-secret" },
       },
     );
-    const response = await POST(request);
+    const response = await POST(request, routeContext);
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       claimed: 2,

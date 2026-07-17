@@ -24,6 +24,7 @@ describe("PdfOcrJob migration", () => {
     const Sequelize = {
       STRING: scalar("STRING"),
       UUID: "UUID",
+      UUIDV4: "UUIDV4",
       INTEGER: "INTEGER",
       DATE: "DATE",
       BIGINT: "BIGINT",
@@ -36,18 +37,26 @@ describe("PdfOcrJob migration", () => {
     expect(queryInterface.createTable).toHaveBeenCalledWith(
       "PdfOcrJob",
       expect.objectContaining({
+        id: expect.objectContaining({
+          allowNull: false,
+          primaryKey: true,
+          defaultValue: "UUIDV4",
+        }),
         source_type: expect.objectContaining({ allowNull: false }),
         source_id: expect.objectContaining({ allowNull: false }),
         lease_expires_at: expect.anything(),
         result_s3_key: expect.anything(),
         delivery_status: expect.anything(),
+        created: expect.anything(),
+        last_updated: expect.anything(),
       }),
     );
     expect(queryInterface.addConstraint).toHaveBeenCalledWith(
       "PdfOcrJob",
       expect.objectContaining({
         fields: ["source_type", "source_id"],
-        type: "primary key",
+        type: "unique",
+        name: "PdfOcrJob_source_identity_key",
       }),
     );
     const indexNames = queryInterface.addIndex.mock.calls.map(

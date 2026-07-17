@@ -1,10 +1,15 @@
 import createHttpError from "http-errors";
-import FileParserService, { type ParsedFileData } from "./FileParserService";
-import FormatAdapterService, { type AdapterType } from "./FormatAdapterService";
+
+import FileParserService, {
+  type ParsedFileData,
+} from "@/backend/FileParserService";
+import FormatAdapterService, {
+  type AdapterType,
+} from "@/backend/FormatAdapterService";
 import {
   INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES,
   INVENTORY_IMPORT_MAX_FILE_SIZE_MB,
-} from "./InventoryImportFileLimits";
+} from "@/backend/inventory-import-file-limits";
 
 export const MAX_FILE_SIZE_MB = INVENTORY_IMPORT_MAX_FILE_SIZE_MB;
 export const MAX_FILE_SIZE = INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES;

@@ -1,28 +1,29 @@
-import "@/util/big_int_json";
-
-import { AppSession, Auth } from "@/lib/auth";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
-import { ZodError } from "zod";
-import { H } from "@/lib/highlight";
-
+import jwt from "jsonwebtoken";
 import OpenAI from "openai";
-
-import { db } from "@/models";
-import { hasServerFeatureFlag } from "@/util/feature-flags";
+import { NextRequest, NextResponse } from "next/server";
 import { ValidationError } from "sequelize";
+import { ZodError } from "zod";
+
+import "@/util/big_int_json";
+import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
+import { AppSession, Auth } from "@/lib/auth";
+import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { ManualInputValidationError } from "@/lib/custom-errors/manual-input-error";
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
-import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
-import { logger } from "@/services/logger";
-import { Organization } from "@/models/Organization";
-import { Roles } from "@/util/types";
-import jwt from "jsonwebtoken";
-import { FeatureFlags, hasFeatureFlag } from "./feature-flags";
-import { RateLimiter } from "./rate-limiter";
-import { OAuthClient } from "@/models/OAuthClient";
+import { H } from "@/lib/highlight";
+import { db } from "@/models";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
+import { OAuthClient } from "@/models/OAuthClient";
+import { Organization } from "@/models/Organization";
+import { logger } from "@/services/logger";
+import {
+  FeatureFlags,
+  hasFeatureFlag,
+  hasServerFeatureFlag,
+} from "@/util/feature-flags";
+import { RateLimiter } from "@/util/rate-limiter";
+import { Roles } from "@/util/types";
 
 interface BearerTokenPayload {
   sub: string;
@@ -51,6 +52,15 @@ export type NextHandler = (
     searchParams: Record<string, string>;
   },
 ) => Promise<ApiResponse>;
+
+export type ApiRequestAuthenticator = (
+  req: NextRequest,
+) => AppSession | null | Promise<AppSession | null>;
+
+export interface ApiHandlerOptions {
+  /** Use for endpoints with dedicated authentication that still need the standard API lifecycle. */
+  authenticateRequest?: ApiRequestAuthenticator;
+}
 
 // TODO extend this to other endpoints that need to skip the frozen check
 const shouldSkipFrozenCheckForPublicInventory = async (
@@ -91,7 +101,7 @@ const organizationContextCheck = async ({
     urlPath.includes("invites") ||
     urlPath.includes("invitations") ||
     (await shouldSkipFrozenCheckForPublicInventory(req, urlPath));
-  let userIsOEFAdmin = session?.user.role === Roles.Admin;
+  const userIsOEFAdmin = session?.user.role === Roles.Admin;
   const isEditMethod = ["PUT", "PATCH", "DELETE", "POST"].includes(req.method);
 
   let organizationData: Organization | null | undefined = null;
@@ -266,7 +276,10 @@ async function validateServiceCredentials(
   return true;
 }
 
-export function apiHandler(handler: NextHandler) {
+export function apiHandler(
+  handler: NextHandler,
+  options: ApiHandlerOptions = {},
+) {
   return async (
     req: NextRequest,
     props: { params: Promise<Record<string, string>> },
@@ -305,116 +318,122 @@ export function apiHandler(handler: NextHandler) {
         await db.initialize();
       }
 
-      const authorization = req.headers.get("Authorization");
-      const serviceName = req.headers.get("X-Service-Name");
-      const serviceKey = req.headers.get("X-Service-Key");
-
-      if (authorization) {
-        const match = authorization.match(/^Bearer\s+(.*)$/);
-        if (!match) {
-          throw new createHttpError.BadRequest(
-            "Malformed Authorization header",
-          );
-        }
-        const bearerToken = match[1];
-
-        // Check if it's a Personal Access Token
-        if (isPATToken(bearerToken)) {
-          const url = new URL(req.url);
-          const { session: patSession } = await validatePAT(
-            bearerToken,
-            req.method,
-            url.pathname,
-          );
-          session = patSession;
-        } else {
-          // Existing JWT/OAuth validation
-          const token = getBearerToken(authorization);
-          if (!token) {
-            throw new createHttpError.Unauthorized(
-              "Invalid or expired access token",
-            );
-          }
-
-          const origin = process.env.HOST || new URL(req.url).origin;
-          if (token.aud !== origin) {
-            throw new createHttpError.Unauthorized("Wrong server for token");
-          }
-
-          // Check if this is service-to-service authentication
-          if (serviceName && serviceKey) {
-            // Validate service credentials
-            const isValidService = await validateServiceCredentials(
-              serviceName,
-              serviceKey,
-            );
-            if (!isValidService) {
-              throw new createHttpError.Unauthorized(
-                "Invalid service credentials",
-              );
-            }
-            if (
-              token.iss !== "climate-advisor-service" ||
-              token.issued_by !== "climate-advisor-service"
-            ) {
-              throw new createHttpError.Unauthorized(
-                "Invalid service token issuer",
-              );
-            }
-
-            // For service tokens, we only need basic JWT validation (no OAuth checks)
-            session = await makeServiceUserSession(token);
-            logger.debug(
-              {
-                user_id: token.sub,
-                service_name: serviceName,
-                endpoint: new URL(req.url).pathname,
-              },
-              "Service-to-service token validated",
-            );
-          } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-            // OAuth validation path for regular client tokens
-            const client = await OAuthClient.findByPk(token.client_id);
-            if (!client) {
-              throw new createHttpError.Unauthorized("Invalid client");
-            }
-            if (!token.scope) {
-              throw new createHttpError.Unauthorized("Token missing scope");
-            }
-            const scopes = token.scope.split(" ");
-            if (
-              ["GET", "HEAD"].includes(req.method) &&
-              !scopes.includes("read")
-            ) {
-              throw new createHttpError.Unauthorized("No read scope available");
-            }
-            if (
-              ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
-              !scopes.includes("write")
-            ) {
-              throw new createHttpError.Unauthorized(
-                "No write scope available",
-              );
-            }
-            const authz = await OAuthClientAuthz.findOne({
-              where: {
-                clientId: token.client_id,
-                userId: token.sub,
-              },
-            });
-            if (!authz) {
-              throw new createHttpError.Unauthorized("Authorization revoked");
-            }
-            await authz.update({ lastUsed: new Date() });
-            session = await makeOAuthUserSession(token);
-          } else {
-            throw new createHttpError.Unauthorized(
-              "OAuth not enabled and no service credentials provided",
-            );
-          }
-        }
+      if (options.authenticateRequest) {
+        session = await options.authenticateRequest(req);
       } else {
-        session = await Auth.getServerSession();
+        const authorization = req.headers.get("Authorization");
+        const serviceName = req.headers.get("X-Service-Name");
+        const serviceKey = req.headers.get("X-Service-Key");
+
+        if (authorization) {
+          const match = authorization.match(/^Bearer\s+(.*)$/);
+          if (!match) {
+            throw new createHttpError.BadRequest(
+              "Malformed Authorization header",
+            );
+          }
+          const bearerToken = match[1];
+
+          // Check if it's a Personal Access Token
+          if (isPATToken(bearerToken)) {
+            const url = new URL(req.url);
+            const { session: patSession } = await validatePAT(
+              bearerToken,
+              req.method,
+              url.pathname,
+            );
+            session = patSession;
+          } else {
+            // Existing JWT/OAuth validation
+            const token = getBearerToken(authorization);
+            if (!token) {
+              throw new createHttpError.Unauthorized(
+                "Invalid or expired access token",
+              );
+            }
+
+            const origin = process.env.HOST || new URL(req.url).origin;
+            if (token.aud !== origin) {
+              throw new createHttpError.Unauthorized("Wrong server for token");
+            }
+
+            // Check if this is service-to-service authentication
+            if (serviceName && serviceKey) {
+              // Validate service credentials
+              const isValidService = await validateServiceCredentials(
+                serviceName,
+                serviceKey,
+              );
+              if (!isValidService) {
+                throw new createHttpError.Unauthorized(
+                  "Invalid service credentials",
+                );
+              }
+              if (
+                token.iss !== "climate-advisor-service" ||
+                token.issued_by !== "climate-advisor-service"
+              ) {
+                throw new createHttpError.Unauthorized(
+                  "Invalid service token issuer",
+                );
+              }
+
+              // For service tokens, we only need basic JWT validation (no OAuth checks)
+              session = await makeServiceUserSession(token);
+              logger.debug(
+                {
+                  user_id: token.sub,
+                  service_name: serviceName,
+                  endpoint: new URL(req.url).pathname,
+                },
+                "Service-to-service token validated",
+              );
+            } else if (hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
+              // OAuth validation path for regular client tokens
+              const client = await OAuthClient.findByPk(token.client_id);
+              if (!client) {
+                throw new createHttpError.Unauthorized("Invalid client");
+              }
+              if (!token.scope) {
+                throw new createHttpError.Unauthorized("Token missing scope");
+              }
+              const scopes = token.scope.split(" ");
+              if (
+                ["GET", "HEAD"].includes(req.method) &&
+                !scopes.includes("read")
+              ) {
+                throw new createHttpError.Unauthorized(
+                  "No read scope available",
+                );
+              }
+              if (
+                ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
+                !scopes.includes("write")
+              ) {
+                throw new createHttpError.Unauthorized(
+                  "No write scope available",
+                );
+              }
+              const authz = await OAuthClientAuthz.findOne({
+                where: {
+                  clientId: token.client_id,
+                  userId: token.sub,
+                },
+              });
+              if (!authz) {
+                throw new createHttpError.Unauthorized("Authorization revoked");
+              }
+              await authz.update({ lastUsed: new Date() });
+              session = await makeOAuthUserSession(token);
+            } else {
+              throw new createHttpError.Unauthorized(
+                "OAuth not enabled and no service credentials provided",
+              );
+            }
+          }
+        } else {
+          session = await Auth.getServerSession();
+        }
       }
 
       const orgContextCheckResult = await organizationContextCheck({
@@ -437,7 +456,7 @@ export function apiHandler(handler: NextHandler) {
       result = await handler(req, context);
     } catch (err) {
       error = err as Error;
-      result = errorHandler(err, req);
+      result = errorHandler(err);
     }
 
     const record = {
@@ -462,8 +481,7 @@ export function apiHandler(handler: NextHandler) {
   };
 }
 
-function errorHandler(err: unknown, _req: NextRequest) {
-  // TODO log structured request info like route here
+function errorHandler(err: unknown) {
   logger.error(err);
   if (err instanceof ManualInputValidationError) {
     return NextResponse.json(
@@ -482,12 +500,13 @@ function errorHandler(err: unknown, _req: NextRequest) {
   ) {
     return NextResponse.json(err.data, { status: 409 });
   } else if (createHttpError.isHttpError(err) && err.expose) {
+    const details = err as typeof err & { code?: unknown; data?: unknown };
     return NextResponse.json(
       {
         error: {
           message: err.message,
-          code: (err as any).code || undefined,
-          data: (err as any).data || undefined,
+          code: details.code || undefined,
+          data: details.data || undefined,
         },
       },
       { status: err.statusCode },
@@ -514,12 +533,7 @@ function errorHandler(err: unknown, _req: NextRequest) {
     const { name, status, headers, message } = err;
     return NextResponse.json({ name, status, headers, message }, { status });
   } else {
-    let errorMessage = "Unknown error";
-    if ((err as Object).hasOwnProperty("message")) {
-      errorMessage = (err as Error).message;
-    } else if (err instanceof Error) {
-      errorMessage = (err as Object).toString();
-    }
+    const errorMessage = err instanceof Error ? err.message : String(err);
     return NextResponse.json(
       { error: { message: "Internal server error", error: errorMessage } },
       { status: 500 },

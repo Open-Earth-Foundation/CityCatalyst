@@ -24,6 +24,7 @@ export const PDF_OCR_DELIVERY_STATUSES = [
 export type PdfOcrDeliveryStatus = (typeof PDF_OCR_DELIVERY_STATUSES)[number];
 
 export interface PdfOcrJobAttributes {
+  id: string;
   sourceType: PdfOcrSourceType;
   sourceId: string;
   status: PdfOcrStatus;
@@ -48,12 +49,13 @@ export interface PdfOcrJobAttributes {
   deliveredAt?: Date | null;
   deliveryErrorCode?: string | null;
   deliveryErrorMessage?: string | null;
-  createdAt?: Date;
-  updatedAt?: Date;
+  created?: Date;
+  lastUpdated?: Date;
 }
 
 export type PdfOcrJobCreationAttributes = Optional<
   PdfOcrJobAttributes,
+  | "id"
   | "status"
   | "attemptCount"
   | "runAfter"
@@ -76,14 +78,15 @@ export type PdfOcrJobCreationAttributes = Optional<
   | "deliveredAt"
   | "deliveryErrorCode"
   | "deliveryErrorMessage"
-  | "createdAt"
-  | "updatedAt"
+  | "created"
+  | "lastUpdated"
 >;
 
 export class PdfOcrJob
   extends Model<PdfOcrJobAttributes, PdfOcrJobCreationAttributes>
   implements PdfOcrJobAttributes
 {
+  declare id: string;
   declare sourceType: PdfOcrSourceType;
   declare sourceId: string;
   declare status: PdfOcrStatus;
@@ -108,23 +111,27 @@ export class PdfOcrJob
   declare deliveredAt?: Date | null;
   declare deliveryErrorCode?: string | null;
   declare deliveryErrorMessage?: string | null;
-  declare createdAt?: Date;
-  declare updatedAt?: Date;
+  declare created?: Date;
+  declare lastUpdated?: Date;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof PdfOcrJob {
     return PdfOcrJob.init(
       {
+        id: {
+          type: DataTypes.UUID,
+          allowNull: false,
+          primaryKey: true,
+          defaultValue: DataTypes.UUIDV4,
+        },
         sourceType: {
           type: DataTypes.STRING(64),
           allowNull: false,
-          primaryKey: true,
           field: "source_type",
           validate: { isIn: [PDF_OCR_SOURCE_TYPES] },
         },
         sourceId: {
           type: DataTypes.UUID,
           allowNull: false,
-          primaryKey: true,
           field: "source_id",
         },
         status: {
@@ -238,17 +245,17 @@ export class PdfOcrJob
           allowNull: true,
           field: "delivery_error_message",
         },
-        createdAt: {
+        created: {
           type: DataTypes.DATE,
           allowNull: false,
           defaultValue: DataTypes.NOW,
-          field: "created_at",
+          field: "created",
         },
-        updatedAt: {
+        lastUpdated: {
           type: DataTypes.DATE,
           allowNull: false,
           defaultValue: DataTypes.NOW,
-          field: "updated_at",
+          field: "last_updated",
         },
       },
       {
@@ -256,8 +263,30 @@ export class PdfOcrJob
         tableName: "PdfOcrJob",
         schema: "public",
         timestamps: true,
-        createdAt: "createdAt",
-        updatedAt: "updatedAt",
+        createdAt: "created",
+        updatedAt: "last_updated",
+        indexes: [
+          {
+            name: "PdfOcrJob_source_identity_key",
+            unique: true,
+            fields: [{ name: "source_type" }, { name: "source_id" }],
+          },
+          {
+            name: "idx_pdf_ocr_job_due",
+            fields: [{ name: "status" }, { name: "run_after" }],
+          },
+          {
+            name: "idx_pdf_ocr_job_lease",
+            fields: [{ name: "status" }, { name: "lease_expires_at" }],
+          },
+          {
+            name: "idx_pdf_ocr_job_delivery_due",
+            fields: [
+              { name: "delivery_status" },
+              { name: "delivery_run_after" },
+            ],
+          },
+        ],
       },
     );
   }

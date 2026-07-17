@@ -6,8 +6,8 @@ import FileValidatorService, {
 import {
   INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES,
   INVENTORY_IMPORT_MAX_FILE_SIZE_MB,
-} from "@/backend/InventoryImportFileLimits";
-import { getPdfOcrConfig } from "@/backend/PdfOcrConfig";
+} from "@/backend/inventory-import-file-limits";
+import { getPdfOcrConfig } from "@/backend/pdf-ocr-config";
 
 describe("PDF source size limit", () => {
   it("shares one 20 MiB boundary across upload validation and OCR processing", () => {

@@ -189,7 +189,7 @@
   "map-to": "Zuordnen Zu",
   "select-mapping": "Auswahlzuordnung",
   "review-confirm-heading": "Überprüfen und bestätigen",
-  "review-confirm-description": "<0>Bitte <1>überprüfen Sie alle Felder sorgfältig</1> und bestätigen Sie den Upload, da Sie ihn später nicht mehr ändern können.</0>",
+  "review-confirm-description": "Bitte <0>überprüfen Sie alle Felder sorgfältig</0> und bestätigen Sie den Upload, da Sie ihn später nicht mehr ändern können.",
   "import-summary": "Importübersicht",
   "source-file": "Quelldatei",
   "file-name": "Dateiname",

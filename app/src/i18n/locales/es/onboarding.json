@@ -190,7 +190,7 @@
   "map-to": "Mapear A",
   "select-mapping": "Seleccionar mapeo",
   "review-confirm-heading": "Revisa y confirma",
-  "review-confirm-description": "<0>Por favor, <1>revise cuidadosamente todos los campos</1> y confirme la carga, ya que no podrá modificarla más adelante.</0>",
+  "review-confirm-description": "Por favor, <0>revise cuidadosamente todos los campos</0> y confirme la carga, ya que no podrá modificarla más adelante.",
   "import-summary": "Resumen de Importación",
   "source-file": "Archivo fuente",
   "file-name": "Nombre del archivo",

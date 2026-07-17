@@ -188,7 +188,7 @@
   "map-to": "Cartographier À",
   "select-mapping": "Sélectionner le mappage",
   "review-confirm-heading": "Examiner et confirmer",
-  "review-confirm-description": "<0>Veuillez <1>vérifier soigneusement tous les champs</1> et confirmer l'importation, car vous ne pourrez pas la modifier ultérieurement.</0>",
+  "review-confirm-description": "Veuillez <0>vérifier soigneusement tous les champs</0> et confirmer l'importation, car vous ne pourrez pas la modifier ultérieurement.",
   "import-summary": "Résumé de l'importation",
   "source-file": "Fichier source",
   "file-name": "Nom du fichier",

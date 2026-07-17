@@ -127,11 +127,11 @@ export default function ReviewConfirmStep({
           </Text>
         )}
         <Heading size="lg" fontSize="display.sm">{t("review-confirm-heading")}</Heading>
-        <Trans i18nKey="review-confirm-description" t={t}>
-          <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
-            Please <Text as="span" fontWeight="bold">carefully review all fields</Text>and confirm the upload since you won&apos;t be able to modify it later on.
-          </Text>
-        </Trans>
+        <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
+          <Trans i18nKey="review-confirm-description" t={t}>
+            Please <Text as="span" fontWeight="bold">carefully review all fields</Text> and confirm the upload since you won&apos;t be able to modify it later on.
+          </Trans>
+        </Text>
       </Box>
       <VStack gap="32px" shadow="sm" borderRadius="8px" p="24px" mb="32px">
         <HStack justifyContent="space-between" alignItems="flex-start" w="full">

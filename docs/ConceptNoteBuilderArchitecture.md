@@ -23,10 +23,6 @@ data and configuration, not by rebuilding the workflow.
   knowledge-source, and concept-note patterns.
 - The CityCatalyst global-data concept-note-builder research page, especially
   its funder and funding reference data.
-- The
-  [CityCatalyst PDF OCR architecture](../climate-advisor/docs/pdf-ocr-markdown-architecture.md)
-  for converter ownership, Markdown output requirements, and the optional CA
-  handoff.
 
 ## Scope
 
@@ -946,8 +942,7 @@ ordered page merge, schema validation, and the authoritative Markdown artifact.
 The converter does not depend on CA or
 `Open-Earth-Foundation/PDF_converter` at runtime.
 
-The converted artifact follows the Markdown-shape requirements in the
-[CityCatalyst PDF OCR architecture](../climate-advisor/docs/pdf-ocr-markdown-architecture.md#markdown-output-requirements):
+The converted artifact follows these Markdown-shape requirements:
 
 - all pages are merged in source order into one UTF-8 Markdown document;
 - tables retain Markdown structure, exact headers, aligned rows and columns,
@@ -1323,7 +1318,7 @@ Rules:
 - Rejects an `upload_id` already associated with another run.
 - Validates the supplied SHA-256 digest before durably registering the Markdown.
 - Requires the completed Markdown to satisfy the
-  [CC Markdown output requirements](../climate-advisor/docs/pdf-ocr-markdown-architecture.md#markdown-output-requirements)
+  [Markdown-shape requirements](#pdf-conversion-and-optional-markdown-handoff)
   before CNB source processing begins.
 - Returns `202 Accepted` only after CA durably registers the Markdown for
   downstream processing.

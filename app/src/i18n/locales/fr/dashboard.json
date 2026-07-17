@@ -316,5 +316,9 @@
   "selected": "sélectionné",
   "unselected": "non sélectionné",
   "name": "Nom",
-  "rank": "Rang"
+  "rank": "Rang",
+  "no-inventory-title": "Aucun inventaire de gaz à effet de serre n'a encore été créé",
+  "no-inventory-description": "Contactez votre administrateur pour créer un inventaire afin de pouvoir commencer à contribuer. Ou contactez <emailLink>{{supportEmail}}</emailLink> si vous pensez que c'est une erreur.",
+  "no-city-title": "On dirait que votre projet n'a pas encore de ville créée",
+  "no-city-description": "Contactez votre administrateur ou envoyez un message à <emailLink>{{supportEmail}}</emailLink> si vous pensez que c'est une erreur."
 }

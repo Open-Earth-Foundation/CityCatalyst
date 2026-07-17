@@ -23,8 +23,8 @@ The key decisions are:
 - OCR job state and the authoritative result pointer live in CC PostgreSQL.
 - The internal conversion key is `(source_type, source_id)`; there is no second
   public OCR job ID.
-- A CC-owned PostgreSQL queue and Kubernetes CronJob provide durable processing
-  and restart recovery.
+- A CC-owned PostgreSQL queue and authenticated processor route provide durable
+  processing and restart recovery.
 - CC runs no more than two Mistral conversions concurrently.
 - CC stores a successful Markdown artifact before any consumer is invoked.
 - Delivery to CA is optional, consumer-specific, and independently retryable.
@@ -65,7 +65,7 @@ flowchart LR
     subgraph CC["CityCatalyst"]
         Upload --> SourceRecord["CC source record"]
         SourceRecord --> Job[("CC PostgreSQL<br/>OCR job")]
-        Cron["Kubernetes CronJob"] --> Processor["CC OCR processor<br/>maximum 2 active jobs"]
+        Scheduler["Deployment-managed scheduler"] --> Processor["CC OCR processor<br/>maximum 2 active jobs"]
         Job --> Processor
         Processor --> Merge["Validate and merge<br/>ordered Markdown"]
         Merge --> ResultRecord["CC result pointer<br/>digest + metadata"]
@@ -92,7 +92,7 @@ result metadata. Consumer processing is not part of OCR completion.
 | CC OCR service     | Create or reuse jobs, call Mistral, merge and validate Markdown, store the result, and dispatch optional consumers. |
 | CC PostgreSQL      | Store source records, durable OCR state, leases, attempts, result pointers, and optional-delivery state.            |
 | Existing CC S3     | Store authoritative source PDFs and Markdown artifacts.                                                             |
-| Kubernetes CronJob | Invoke the internal CC job processor.                                                                               |
+| External scheduler | Invoke the internal CC job processor; deployment wiring is outside this change.                                     |
 | Mistral OCR        | Produce page-level Markdown from the source PDF.                                                                    |
 | Climate Advisor    | Optionally accept a completed `.md` artifact for a CA workflow; it does not participate in OCR.                     |
 
@@ -146,15 +146,15 @@ No page or percentage counters are exposed.
 
 ### Internal processor route
 
-The CC Kubernetes CronJob calls:
+A deployment-managed scheduler calls:
 
 ```http
 POST /api/v1/cron/process-pdf-ocr-jobs
 Authorization: Bearer <CC_CRON_JOB_API_KEY>
 ```
 
-The route is internal to the cluster, validates the existing cron secret, and
-claims at most two jobs. The CronJob uses `concurrencyPolicy: Forbid`.
+The route validates the existing cron secret and claims at most two jobs. The
+deployment layer owns invocation timing and overlap policy.
 
 ### Optional CA Markdown endpoint
 
@@ -200,8 +200,8 @@ maximum page count.
    upload limit, and stores the source in existing CC S3.
 2. CC creates or reuses the OCR row for `(source_type, source_id)` and returns
    without waiting for conversion.
-3. The CronJob calls the CC processor. The processor claims at most two due jobs
-   using `FOR UPDATE SKIP LOCKED` and establishes leases.
+3. The external scheduler calls the CC processor. The processor claims at most
+   two due jobs using `FOR UPDATE SKIP LOCKED` and establishes leases.
 4. CC re-resolves the source record and validates its identity and metadata.
 5. CC creates an attempt-scoped URL for the exact source object and calls
    [Mistral OCR](https://docs.mistral.ai/api/endpoint/ocr).
@@ -316,8 +316,9 @@ provide raw S3 keys.
 
 ## Queue, Concurrency, and Recovery
 
-- The CronJob schedule is `* * * * *` with overlapping runs forbidden.
-- Each run claims and processes no more than two OCR jobs.
+- Scheduler deployment configuration is outside this change.
+- Each authenticated processor invocation claims and processes no more than two
+  OCR jobs.
 - Database leases prevent duplicate work across CC web replicas.
 - Claims use `FOR UPDATE SKIP LOCKED`.
 - Leases last ten minutes and receive a heartbeat every 60 seconds.
@@ -391,7 +392,7 @@ configuration is separate from converter configuration.
    PDF can use the same CC service and optional CA delivery contract.
 3. CC completes OCR successfully while CA is unavailable.
 4. A later CA delivery retry uses the stored digest without another Mistral call.
-5. Duplicate start or CronJob requests reuse one source-pair job.
+5. Duplicate start or processor requests reuse one source-pair job.
 6. A multi-page inventory table retains its headers, rows, units, years, totals,
    and source order.
 7. CA has no OCR table, dispatcher, worker, Mistral secret, or S3 permission.

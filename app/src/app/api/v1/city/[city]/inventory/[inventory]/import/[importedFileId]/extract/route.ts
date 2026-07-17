@@ -10,7 +10,7 @@
  *     summary: Queue durable OCR and AI extraction for an uploaded PDF.
  *     description: |
  *       Returns 202 Accepted after creating or reusing a durable PDF OCR job.
- *       A Kubernetes CronJob performs Mistral OCR and downstream row extraction.
+ *       A deployment-managed scheduler performs Mistral OCR and downstream row extraction.
  *       Poll GET .../import/{importedFileId} until importStatus is
  *       waiting_for_approval or failed. PDF sources must be stored in S3.
  *     parameters:
@@ -54,7 +54,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-/** Queue-only endpoint; the Kubernetes CronJob performs OCR and row extraction. */
+/** Queue-only endpoint; a deployment-managed scheduler triggers processing. */
 export const maxDuration = 30;
 
 export const POST = apiHandler(async (_req, { session, params }) => {

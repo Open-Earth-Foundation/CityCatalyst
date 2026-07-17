@@ -14,7 +14,6 @@ on:
       - k8s/test/cc-test-ca-smoke-fixture.yml
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test-web.yml
-      - k8s/test/cc-test-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-test.yml
     branches: ["main"]
@@ -240,7 +239,6 @@ jobs:
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_TEST}} \
-            MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_TEST}} \
             "OPENAI_ASSISTANT_ID=asst_4if8qn6W8Vlxwbf2cuyH8OFU" \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
@@ -277,9 +275,6 @@ jobs:
           kubectl set env cronjob/citycatalyst-test-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
-          kubectl apply -f k8s/test/cc-test-process-pdf-ocr-jobs.yml -n default
-          kubectl set env cronjob/citycatalyst-test-process-pdf-ocr-jobs \
-            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-test-web-deploy -n default
           kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=300s
 

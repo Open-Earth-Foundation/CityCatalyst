@@ -85,7 +85,8 @@ const ExternalDataSection = ({
         duration: 5000,
       });
       onDisconnect?.(inventoryValue.datasourceId!);
-    } catch (_err) {
+    } catch (err) {
+      console.error("Failed to disconnect data source:", err);
       toaster.create({
         title: t("disconnect-data-source-error"),
         type: "error",

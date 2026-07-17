@@ -55,14 +55,14 @@ export const ActivityDataSection = ({
         label={<Text truncate>{t(title)}</Text>}
         flex="2"
       >
-        <HStack>
+        <HStack w="full">
           <FormattedNumberInput
             control={control}
             name={`activity.${title}`}
             defaultValue="0"
             t={t}
             miniAddon
-            minWidth="300px"
+            w="full"
             flex={2}
           />
           {(units?.length as number) > 0 && (

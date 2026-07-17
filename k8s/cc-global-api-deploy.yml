@@ -43,7 +43,7 @@ spec:
                 value: "True"
             initialDelaySeconds: 10
             periodSeconds: 10
-            timeoutSeconds: 5
+            timeoutSeconds: 15
             failureThreshold: 3
           readinessProbe:
             httpGet:
@@ -54,7 +54,7 @@ spec:
                 value: "True"
             initialDelaySeconds: 5
             periodSeconds: 10
-            timeoutSeconds: 5
+            timeoutSeconds: 15
             failureThreshold: 3
           startupProbe:
             httpGet:
@@ -65,5 +65,5 @@ spec:
                 value: "True"
             initialDelaySeconds: 10
             periodSeconds: 5
-            timeoutSeconds: 5
+            timeoutSeconds: 15
             failureThreshold: 60

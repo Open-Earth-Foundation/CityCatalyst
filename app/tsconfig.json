@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext", "ES2023"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,11 +20,9 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     },
-    "baseUrl": "."
+    "rootDir": "."
   },
   "include": [
     "next-env.d.ts",
@@ -39,10 +33,5 @@
     ".next/dev/types/**/*.ts",
     ".next/dev/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "e2e/**/*",
-    "tests/**/*",
-    "playwright.config.ts"
-  ]
+  "exclude": ["node_modules", "e2e/**/*", "tests/**/*", "playwright.config.ts"]
 }

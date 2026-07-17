@@ -18,9 +18,20 @@ if str(app_dir) not in sys.path:
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-# Provide dummy OPENAI_API_KEY for tests if missing or empty (CI may set empty string)
-if not os.getenv("OPENAI_API_KEY"):
-    os.environ["OPENAI_API_KEY"] = "sk-test"
+# Provide dummy OpenAI / LangSmith config for tests if missing (CI sets real values)
+_TEST_ENV_DEFAULTS = {
+    "OPENAI_API_KEY": "sk-test",
+    "OPENAI_MODEL_NAME_EXPLANATIONS": "gpt-test",
+    "OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION": "gpt-test",
+    "OPENAI_MODEL_NAME_PLAN_CREATOR": "gpt-test",
+    "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY": "gpt-test",
+    "OPENAI_MODEL_NAME_PLAN_TRANSLATION": "gpt-test",
+    "LANGCHAIN_PROJECT_NAME_PRIORITIZER": "hiap-test-prioritizer",
+    "LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION": "hiap-test-plan-translation",
+}
+for _env_key, _env_value in _TEST_ENV_DEFAULTS.items():
+    if not os.getenv(_env_key):
+        os.environ[_env_key] = _env_value
 
 # Import the FastAPI app from main (unqualified), matching production layout
 import main  # type: ignore

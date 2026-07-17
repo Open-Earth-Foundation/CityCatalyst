@@ -107,8 +107,9 @@ require `AWS_FILE_UPLOAD_S3_BUCKET_ID`, `AWS_FILE_UPLOAD_REGION`, and AWS
 credentials because Mistral receives a short-lived presigned URL. Set
 `MISTRAL_API_KEY` and `CC_CRON_JOB_API_KEY`; the processor endpoint is invoked
 every minute by `k8s/cc-process-pdf-ocr-jobs.yml`. CSV/XLSX imports retain the
-local BYTEA fallback. See `env.example` for timeout, lease, concurrency, model,
-and 20 MiB source-PDF defaults.
+local BYTEA fallback. Source PDFs have one fixed 20 MB product limit
+(`20 * 1024 * 1024` bytes) shared by the upload validator and OCR worker. See
+`env.example` for timeout, lease, concurrency, and model configuration.
 
 ## Running
 

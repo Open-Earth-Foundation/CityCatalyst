@@ -1,10 +1,13 @@
 import createHttpError from "http-errors";
 import FileParserService, { type ParsedFileData } from "./FileParserService";
 import FormatAdapterService, { type AdapterType } from "./FormatAdapterService";
+import {
+  INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES,
+  INVENTORY_IMPORT_MAX_FILE_SIZE_MB,
+} from "./InventoryImportFileLimits";
 
-// File size limit: 20MB (in bytes)
-export const MAX_FILE_SIZE_MB = 20;
-export const MAX_FILE_SIZE = MAX_FILE_SIZE_MB * 1024 * 1024;
+export const MAX_FILE_SIZE_MB = INVENTORY_IMPORT_MAX_FILE_SIZE_MB;
+export const MAX_FILE_SIZE = INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES;
 
 // Accepted file formats for inventory import (xlsx/csv = eCRF; pdf = Path C AI extraction)
 export const ACCEPTED_FILE_FORMATS = ["xlsx", "csv", "pdf"] as const;

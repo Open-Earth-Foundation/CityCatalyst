@@ -1,4 +1,4 @@
-const DEFAULT_MAX_FILE_BYTES = 20 * 1024 * 1024;
+import { INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES } from "./InventoryImportFileLimits";
 
 function positiveInteger(name: string, fallback: number): number {
   const value = Number(process.env[name]);
@@ -8,10 +8,7 @@ function positiveInteger(name: string, fallback: number): number {
 export function getPdfOcrConfig() {
   return {
     model: process.env.MISTRAL_OCR_MODEL || "mistral-ocr-latest",
-    maxFileBytes: positiveInteger(
-      "PDF_OCR_MAX_FILE_BYTES",
-      DEFAULT_MAX_FILE_BYTES,
-    ),
+    maxSourcePdfBytes: INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES,
     batchSize: positiveInteger("PDF_OCR_BATCH_SIZE", 2),
     concurrency: positiveInteger("PDF_OCR_CONCURRENCY", 2),
     maxAttempts: positiveInteger("PDF_OCR_MAX_ATTEMPTS", 3),
@@ -21,7 +18,7 @@ export function getPdfOcrConfig() {
     presignedUrlSeconds: positiveInteger("PDF_OCR_PRESIGNED_URL_SECONDS", 600),
     caMarkdownRequestMaxBytes: positiveInteger(
       "CA_MARKDOWN_DELIVERY_MAX_BYTES",
-      DEFAULT_MAX_FILE_BYTES,
+      20 * 1024 * 1024,
     ),
     caDeliveryTimeoutMs: positiveInteger(
       "CA_MARKDOWN_DELIVERY_TIMEOUT_MS",

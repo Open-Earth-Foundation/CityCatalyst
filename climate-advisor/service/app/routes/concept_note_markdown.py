@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import re
 from collections.abc import AsyncIterator
 from uuid import UUID
@@ -48,16 +47,36 @@ def problem(status_code: int, code: str, message: str) -> JSONResponse:
     )
 
 
+async def read_limited_body(request: Request, max_bytes: int) -> bytes | None:
+    """Stream a request body, returning ``None`` once the byte limit is exceeded."""
+    body = bytearray()
+    async for chunk in request.stream():
+        if len(body) + len(chunk) > max_bytes:
+            return None
+        body.extend(chunk)
+    return bytes(body)
+
+
 def validate_markdown(payload: ConceptNoteMarkdownRequest) -> str | None:
     """Validate digest, page markers, page count, and non-empty content."""
+    # Validate the immutable artifact identity.
     digest = hashlib.sha256(payload.markdown.encode("utf-8")).hexdigest()
     if digest != payload.sha256:
         return "markdown_digest_mismatch"
-    markers = [int(value) for value in PAGE_MARKER.findall(payload.markdown)]
-    if markers != list(
-        range(1, payload.page_count + 1)
-    ) or not payload.markdown.lstrip().startswith("<!-- page: 1 -->"):
+
+    # Validate ordered page markers without allocating an expected page range.
+    if not payload.markdown.lstrip().startswith("<!-- page: 1 -->"):
         return "invalid_markdown_pages"
+    marker_count = 0
+    for marker_count, match in enumerate(
+        PAGE_MARKER.finditer(payload.markdown), start=1
+    ):
+        if int(match.group(1)) != marker_count:
+            return "invalid_markdown_pages"
+    if marker_count != payload.page_count:
+        return "invalid_markdown_pages"
+
+    # Require content beyond the page separators.
     content = PAGE_MARKER.sub("", payload.markdown)
     if not content.strip():
         return "empty_markdown"
@@ -90,33 +109,23 @@ async def ingest_concept_note_markdown(
         )
 
     settings = get_settings()
+    max_bytes = settings.cnb_markdown_request_max_bytes
     content_length = request.headers.get("Content-Length")
     if content_length:
         try:
-            if int(content_length) > settings.cnb_markdown_request_max_bytes:
-                return problem(
-                    413,
-                    "markdown_request_too_large",
-                    "JSON request exceeds the configured maximum",
-                )
+            declared_size = int(content_length)
         except ValueError:
             return problem(400, "invalid_content_length", "Content-Length is invalid")
-    body = await request.body()
-    if len(body) > settings.cnb_markdown_request_max_bytes:
-        return problem(
-            413,
-            "markdown_request_too_large",
-            "JSON request exceeds the configured maximum",
-        )
-    try:
-        payload = ConceptNoteMarkdownRequest.model_validate(json.loads(body))
-    except (json.JSONDecodeError, UnicodeDecodeError, ValidationError):
-        return problem(422, "invalid_markdown_payload", "Markdown payload is invalid")
+        if declared_size < 0:
+            return problem(400, "invalid_content_length", "Content-Length is invalid")
+        if declared_size > max_bytes:
+            return problem(
+                413,
+                "markdown_request_too_large",
+                "JSON request exceeds the configured maximum",
+            )
 
-    validation_error = validate_markdown(payload)
-    if validation_error:
-        return problem(422, validation_error, "Markdown validation failed")
-
+    # Authenticate before consuming, parsing, or hashing the request body.
     try:
         user_id = await cc_client.validate_user_identity(authorization[7:].strip())
     except CityCatalystClientError as exc:
@@ -130,6 +139,23 @@ async def ingest_concept_note_markdown(
             else "Identity service is temporarily unavailable"
         )
         return problem(status_code, code, message)
+
+    # Enforce the limit while consuming bodies without a trustworthy size header.
+    body = await read_limited_body(request, max_bytes)
+    if body is None:
+        return problem(
+            413,
+            "markdown_request_too_large",
+            "JSON request exceeds the configured maximum",
+        )
+    try:
+        payload = ConceptNoteMarkdownRequest.model_validate_json(body)
+    except ValidationError:
+        return problem(422, "invalid_markdown_payload", "Markdown payload is invalid")
+
+    validation_error = validate_markdown(payload)
+    if validation_error:
+        return problem(422, validation_error, "Markdown validation failed")
 
     try:
         await repository.register_markdown(

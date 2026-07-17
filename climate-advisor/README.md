@@ -406,8 +406,8 @@ language, or client-side fallback behavior. The boundary is:
 - `CC_API_KEY` - Service credential used when CA asks CC to validate the
   CC-issued user bearer token
 - `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Complete JSON request-body limit for the
-  optional CC-to-CA Markdown ingest endpoint (default `20971520`, independently
-  enforced from the CC source-PDF limit)
+  optional CC-to-CA Markdown ingest endpoint (default `20971520`; this is an
+  operational body guard, not a source-PDF or page-count acceptance limit)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -427,8 +427,10 @@ language, or client-side fallback behavior. The boundary is:
 ### CC-produced Concept Note Markdown baseline
 
 `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` validates the
-CC-issued user token through CC, recomputes SHA-256, verifies contiguous page
-markers, and delegates atomic run/upload registration to a repository
+CC-issued user token through CC before consuming the request, streams the body
+up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`, recomputes SHA-256, verifies contiguous
+page markers and their positive metadata count without imposing a page-count
+limit, and delegates atomic run/upload registration to a repository
 interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
 the datateam repository adapter is configured, the production provider returns
 `503 cnb_storage_unavailable`; contract tests inject an in-memory repository.

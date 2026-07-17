@@ -29,8 +29,10 @@ The key decisions are:
 - CC stores a successful Markdown artifact before any consumer is invoked.
 - Delivery to CA is optional, consumer-specific, and independently retryable.
   A CA failure never causes successful OCR to run again.
-- The source-PDF upload and CA JSON request-body limits both default to 20 MiB,
-  but they are independently configured and enforced boundaries.
+- Every CC upload and worker path enforces one shared 20 MB source-PDF limit
+  (`20 * 1024 * 1024` bytes). It has no per-environment override.
+- PDF acceptance is never calculated from page count. `page_count` is result
+  metadata checked against the Markdown markers, not an acceptance limit.
 
 ## Scope
 
@@ -183,16 +185,19 @@ This endpoint is an optional consumer interface, not part of OCR completion.
 The request contains no PDF bytes, S3 key, signed result URL, Mistral settings,
 or OCR instructions.
 
-The MVP handoff sends the full Markdown inline. CA enforces a separately
-configured 20 MiB maximum over the complete serialized JSON request. CC applies
-the same delivery ceiling before sending. This limit is independent from the
-20 MiB source-PDF upload boundary.
+The MVP handoff sends the full Markdown inline. CA validates the CC-issued user
+token before consuming the request and streams only up to its separately
+configured JSON request-body safety limit. CC applies the matching delivery
+guard before sending. This operational safeguard does not define source-PDF or
+page-count acceptance. PDF acceptance uses only the shared 20 MB source limit;
+`page_count` must be positive and match the ordered Markdown markers, with no
+maximum page count.
 
 ## Processing
 
 1. A CC domain route authenticates the user, checks access, validates
-   `application/pdf` and the 20 MB source-PDF upload limit, and stores the source
-   in existing CC S3.
+   `application/pdf` and the shared 20 MB (`20 * 1024 * 1024` bytes) source-PDF
+   upload limit, and stores the source in existing CC S3.
 2. CC creates or reuses the OCR row for `(source_type, source_id)` and returns
    without waiting for conversion.
 3. The CronJob calls the CC processor. The processor claims at most two due jobs
@@ -351,7 +356,6 @@ CC non-secret runtime configuration:
 
 ```text
 MISTRAL_OCR_MODEL=mistral-ocr-latest
-PDF_OCR_MAX_FILE_BYTES=20971520
 PDF_OCR_BATCH_SIZE=2
 PDF_OCR_CONCURRENCY=2
 PDF_OCR_MAX_ATTEMPTS=3

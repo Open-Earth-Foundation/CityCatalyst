@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from collections.abc import Iterable
 from uuid import UUID, uuid4
 
 import pytest
@@ -65,13 +66,15 @@ class FakeMarkdownRepository(ConceptNoteMarkdownRepository):
         self.uploads[upload_id] = (run_id, payload.sha256)
 
 
-def payload(markdown: str = "<!-- page: 1 -->\n# Plan") -> dict[str, object]:
+def payload(
+    markdown: str = "<!-- page: 1 -->\n# Plan", page_count: int = 1
+) -> dict[str, object]:
     """Build a valid request with a digest over the exact UTF-8 Markdown."""
     return {
         "markdown": markdown,
         "filename": "plan.pdf",
         "source_label": "Climate Action Plan",
-        "page_count": 1,
+        "page_count": page_count,
         "sha256": hashlib.sha256(markdown.encode()).hexdigest(),
     }
 
@@ -100,10 +103,45 @@ def post(
     )
 
 
+def post_stream(
+    client: TestClient,
+    run_id: UUID,
+    upload_id: UUID,
+    chunks: Iterable[bytes],
+    token: str = "owner-user",
+):
+    """Post a lazily consumed JSON byte stream without a Content-Length header."""
+    return client.post(
+        f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown",
+        content=chunks,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+    )
+
+
 def test_missing_and_invalid_bearer_token(ingest_client) -> None:
     client, _, run_id = ingest_client
     assert post(client, run_id, uuid4(), payload(), token="").status_code == 401
     assert post(client, run_id, uuid4(), payload(), token="invalid").status_code == 401
+
+
+def test_invalid_bearer_is_rejected_before_stream_consumption(ingest_client) -> None:
+    client, _, run_id = ingest_client
+    consumed_chunks: list[bytes] = []
+
+    def body_chunks() -> Iterable[bytes]:
+        chunk = b"untrusted request body"
+        consumed_chunks.append(chunk)
+        yield chunk
+
+    response = post_stream(
+        client, run_id, uuid4(), body_chunks(), token="invalid"
+    )
+
+    assert response.status_code == 401
+    assert consumed_chunks == []
 
 
 def test_owner_missing_run_and_upload_binding(ingest_client) -> None:
@@ -146,6 +184,12 @@ def test_page_and_body_size_validation(ingest_client) -> None:
         post(client, run_id, uuid4(), invalid_pages).json()["code"]
         == "invalid_markdown_pages"
     )
+    mismatched_count = payload()
+    mismatched_count["page_count"] = 2
+    assert (
+        post(client, run_id, uuid4(), mismatched_count).json()["code"]
+        == "invalid_markdown_pages"
+    )
 
     settings = get_settings()
     original_limit = settings.cnb_markdown_request_max_bytes
@@ -156,6 +200,44 @@ def test_page_and_body_size_validation(ingest_client) -> None:
         assert response.json()["code"] == "markdown_request_too_large"
     finally:
         settings.cnb_markdown_request_max_bytes = original_limit
+
+
+def test_page_count_has_no_acceptance_cap(ingest_client) -> None:
+    client, _, run_id = ingest_client
+    page_count = 1_001
+    markdown = "\n".join(
+        f"<!-- page: {page_number} -->\nPage {page_number}"
+        for page_number in range(1, page_count + 1)
+    )
+
+    response = post(
+        client,
+        run_id,
+        uuid4(),
+        payload(markdown=markdown, page_count=page_count),
+    )
+
+    assert response.status_code == 202
+
+
+def test_chunked_body_without_content_length_is_bounded(ingest_client) -> None:
+    client, _, run_id = ingest_client
+    settings = get_settings()
+    original_limit = settings.cnb_markdown_request_max_bytes
+    settings.cnb_markdown_request_max_bytes = 8
+    try:
+        response = post_stream(
+            client,
+            run_id,
+            uuid4(),
+            iter((b"12345", b"67890")),
+        )
+    finally:
+        settings.cnb_markdown_request_max_bytes = original_limit
+
+    assert "Content-Length" not in response.request.headers
+    assert response.status_code == 413
+    assert response.json()["code"] == "markdown_request_too_large"
 
 
 def test_unavailable_production_repository_returns_503() -> None:

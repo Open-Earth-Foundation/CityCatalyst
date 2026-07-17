@@ -966,6 +966,8 @@ contain many uploads, so `run_id`, filename, and S3 keys are not conversion
 identities. The upload route enforces the shared 20 MB source-PDF upload limit,
 and the CC processor enforces the ten-minute job timeout. The 20 MB limit does
 not apply to the resulting Markdown artifact or the optional CA request body.
+There is no page-count acceptance limit. `page_count` remains result metadata
+validated against the ordered Markdown page markers.
 
 The browser sends PDF bytes only to the authenticated CC upload route. CA never
 receives the source PDF, S3 credentials, S3 keys, signed result URLs, Mistral
@@ -1300,9 +1302,10 @@ Input:
 ```
 
 The MVP handoff sends the full Markdown inline. CA enforces a separately
-configured 20 MiB cap over the complete JSON request, and CC rejects oversized
-serialized deliveries before sending. This remains independent from the 20 MiB
-CC source-PDF upload limit.
+configured JSON request-body safety limit, and CC rejects deliveries above the
+matching configured guard before sending. This operational safeguard does not
+define source-PDF size or page-count acceptance; the shared 20 MB source-PDF
+limit remains the only document acceptance limit.
 
 Output:
 

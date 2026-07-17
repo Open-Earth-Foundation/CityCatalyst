@@ -191,13 +191,13 @@ async function validateSource(
       "PDF source is not stored in S3",
     );
   }
-  if (Number(importedFile.fileSize) > config.maxFileBytes) {
+  if (Number(importedFile.fileSize) > config.maxSourcePdfBytes) {
     throw new PdfSourceError("pdf_too_large", "PDF exceeds the OCR size limit");
   }
   const metadata = await InventoryFileStorageService.getFileMetadata(
     importedFile.s3Key,
   );
-  if (Number(metadata.ContentLength || 0) > config.maxFileBytes) {
+  if (Number(metadata.ContentLength || 0) > config.maxSourcePdfBytes) {
     throw new PdfSourceError("pdf_too_large", "PDF exceeds the OCR size limit");
   }
   if (metadata.ContentType && metadata.ContentType !== "application/pdf") {

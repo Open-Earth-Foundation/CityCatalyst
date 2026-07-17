@@ -198,9 +198,9 @@ export default function HomePage({
   );
 
   const formattedEmissions =
-    inventory?.totalEmissions != null
+    inventory?.totalEmissions
       ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
-      : { value: t("N/A"), unit: "" };
+      : { value: t("no-data-for-inventory-yet"), unit: "" };
 
   const inventoriesForCurrentCity = useMemo(() => {
     if (!cityYears) return [];

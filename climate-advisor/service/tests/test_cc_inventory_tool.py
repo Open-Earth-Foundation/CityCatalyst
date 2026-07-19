@@ -6,14 +6,15 @@ import unittest
 from app.services.citycatalyst_client import (
     CityCatalystClientError,
 )
-from app.tools.cc_inventory_tool import CCInventoryTool, CCInventoryToolResult
-from app.tools.cc_inventory_wrappers import build_cc_inventory_tools
+from app.tools.cc_inventory_tool import CCInventoryTool
+from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from agents.tool import ToolContext
 
 
 class _StubClient:
     def __init__(self) -> None:
         self.inventory_response: dict | None = None
+        self.datasources_response: dict | None = None
         self.inventory_error: Exception | None = None
         self.tokens_used: list[str | None] = []
 
@@ -23,6 +24,15 @@ class _StubClient:
         self.tokens_used.append(kwargs.get("token"))
         assert self.inventory_response is not None
         return self.inventory_response
+
+    async def get_inventory_datasources(
+        self, *args, **kwargs
+    ) -> dict:  # type: ignore[override]
+        if self.inventory_error:
+            raise self.inventory_error
+        self.tokens_used.append(kwargs.get("token"))
+        assert self.datasources_response is not None
+        return self.datasources_response
 
     async def close(self) -> None:  # pragma: no cover - compatibility shim
         return None
@@ -77,53 +87,66 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.success)
         self.assertEqual(result.error_code, "cc_error")
 
-    async def test_inventory_wrappers_return_serialized_success(self) -> None:
+    async def test_datasource_wrapper_returns_serialized_success(self) -> None:
         stub_client = _StubClient()
-        stub_client.inventory_response = {
-            "data": {"inventoryId": "inv-10"}
+        stub_client.datasources_response = {
+            "data": {
+                "successfulSources": [
+                    {
+                        "datasourceName": "Source A",
+                        "sourceType": "third_party",
+                    }
+                ]
+            }
         }
         inventory_tool = CCInventoryTool(client=stub_client)
-        tools, token_ref = build_cc_inventory_tools(
+        tools, token_ref = build_cc_datasource_tools(
             inventory_tool=inventory_tool,
             access_token="initial-token",
             user_id="user-xyz",
             thread_id="thread-xyz",
         )
 
-        get_inventory_tool = next((t for t in tools if getattr(t, "name", None) == "get_inventory"), None)
-        self.assertIsNotNone(get_inventory_tool, "get_inventory tool not found in tools list")
+        datasource_tool = next(
+            (t for t in tools if getattr(t, "name", None) == "get_all_datasources"),
+            None,
+        )
+        self.assertIsNotNone(
+            datasource_tool, "get_all_datasources tool not found in tools list"
+        )
         ctx = ToolContext(
             context=None,
             tool_call_id="test-call",
             tool_name="test_tool",
             tool_arguments={"inventory_id": "inv-10"}
         )
-        output = await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
+        output = await datasource_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-10"}),
         )
         data = json.loads(output)
+        self.assertEqual(data["action"], "get_all_datasources")
         self.assertTrue(data["success"])
-        self.assertEqual(data["data"]["data"]["inventoryId"], "inv-10")
+        self.assertEqual(data["data"]["data"][0]["datasourceName"], "Source A")
         self.assertEqual(token_ref["value"], "initial-token")
 
-    async def test_inventory_wrappers_handle_missing_arguments(self) -> None:
+    async def test_datasource_wrapper_handles_missing_arguments(self) -> None:
         stub_client = _StubClient()
         inventory_tool = CCInventoryTool(client=stub_client)
-        tools, _ = build_cc_inventory_tools(
+        tools, _ = build_cc_datasource_tools(
             inventory_tool=inventory_tool,
             access_token="token",
             user_id="user",
             thread_id="thread",
         )
-        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        datasource_tool = tools[0]
         ctx = ToolContext(
             context=None,
             tool_call_id="test-call",
             tool_name="test_tool",
             tool_arguments={"inventory_id": ""}
         )
-        output = await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
+        output = await datasource_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": ""}),
         )
@@ -131,57 +154,57 @@ class CCInventoryToolTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(data["success"])
         self.assertEqual(data["error_code"], "invalid_arguments")
 
-    async def test_inventory_wrappers_use_latest_token(self) -> None:
+    async def test_datasource_wrapper_uses_latest_token(self) -> None:
         stub_client = _StubClient()
-        stub_client.inventory_response = {
-            "data": {"inventoryId": "inv-11"}
+        stub_client.datasources_response = {
+            "data": {"successfulSources": []}
         }
         inventory_tool = CCInventoryTool(client=stub_client)
-        tools, token_ref = build_cc_inventory_tools(
+        tools, token_ref = build_cc_datasource_tools(
             inventory_tool=inventory_tool,
             access_token="first-token",
             user_id="user",
             thread_id="thread",
         )
-        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        datasource_tool = tools[0]
         ctx = ToolContext(
             context=None,
             tool_call_id="test-call",
             tool_name="test_tool",
             tool_arguments={"inventory_id": "inv-11"}
         )
-        await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
+        await datasource_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-11"}),
         )
         stub_client.tokens_used.clear()
         token_ref["value"] = "updated-token"
-        await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
+        await datasource_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-11"}),
         )
         self.assertIn("updated-token", stub_client.tokens_used)
 
-    async def test_inventory_wrappers_missing_token(self) -> None:
+    async def test_datasource_wrapper_missing_token(self) -> None:
         stub_client = _StubClient()
-        stub_client.inventory_response = {
-            "data": {"inventoryId": "inv-12"}
+        stub_client.datasources_response = {
+            "data": {"successfulSources": []}
         }
         inventory_tool = CCInventoryTool(client=stub_client)
-        tools, _ = build_cc_inventory_tools(
+        tools, _ = build_cc_datasource_tools(
             inventory_tool=inventory_tool,
             access_token=None,
             user_id="user",
             thread_id="thread",
         )
-        get_inventory_tool = tools[1]  # get_inventory is the second tool
+        datasource_tool = tools[0]
         ctx = ToolContext(
             context=None,
             tool_call_id="test-call",
             tool_name="test_tool",
             tool_arguments={"inventory_id": "inv-12"}
         )
-        output = await get_inventory_tool.on_invoke_tool(  # type: ignore[attr-defined]
+        output = await datasource_tool.on_invoke_tool(  # type: ignore[attr-defined]
             ctx,
             json.dumps({"inventory_id": "inv-12"}),
         )

@@ -1,7 +1,6 @@
 import { toaster } from "@/components/ui/toaster";
 import {
   Box,
-  Field,
   FieldRoot,
   Fieldset,
   Heading,
@@ -9,8 +8,6 @@ import {
   Table,
   VStack,
   HStack,
-  CheckboxGroup,
-  Checkbox,
 } from "@chakra-ui/react";
 import {
   AccordionItem,
@@ -43,8 +40,7 @@ import {
   HighImpactActionRankingStatus,
   LANGUAGES,
 } from "@/util/types";
-import { Checkbox as CCCheckbox } from "@/components/ui/checkbox";
-
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface BulkHiapPrioritizationTabContentProps {
   t: TFunction;
@@ -522,20 +518,16 @@ const BulkHiapPrioritizationTabContent: FC<
                 {t("select-languages-for-climate-actions")}
               </BodySmall>
               <VStack align="flex-start" gap="8px">
-                {Object.values(LANGUAGES).map((lang, index) => (
-                  <Checkbox.Root
+                {Object.values(LANGUAGES).map((lang) => (
+                  <Checkbox
                     key={lang}
                     checked={selectedLanguages.includes(lang)}
                     onCheckedChange={(e) => {
                       handleLanguageToggle(lang, e.checked as boolean);
                     }}
                   >
-                    <Checkbox.HiddenInput />
-                    <Checkbox.Control>
-                      <Checkbox.Indicator />
-                    </Checkbox.Control>
-                    <Checkbox.Label>{lang}</Checkbox.Label>
-                  </Checkbox.Root>
+                    {lang}
+                  </Checkbox>
                 ))}
               </VStack>
             </Box>
@@ -690,12 +682,7 @@ const BulkHiapPrioritizationTabContent: FC<
                                     }
                                   }}
                                 >
-                                  <Checkbox.Root checked={isSelected}>
-                                    <Checkbox.HiddenInput />
-                                    <Checkbox.Control>
-                                      <Checkbox.Indicator />
-                                    </Checkbox.Control>
-                                  </Checkbox.Root>
+                                  <Checkbox checked={isSelected} />
                                 </Box>
                               )}
                               <BodyMedium fontWeight="semibold">
@@ -827,7 +814,7 @@ const BulkHiapPrioritizationTabContent: FC<
                                       {hasFailures && (
                                         <Table.Cell>
                                           {isFailedCity && (
-                                            <CCCheckbox
+                                            <Checkbox
                                               checked={isMarkedForExclusion}
                                               onCheckedChange={() =>
                                                 handleToggleCityExclusion(

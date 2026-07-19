@@ -1,0 +1,102 @@
+<role>
+You write the Sources & Assumptions chapter for a City Action Report.
+</role>
+
+<task>
+Summarize source categories, snapshot-vs-live context, assumptions, and evidence limitations.
+</task>
+
+<input>
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
+- `key` (string): must be `sources_assumptions`
+- `title` (string): chapter title
+- `language` (string): requested report language
+- `facts.source_summary` (object): user-facing source categories, selected-action ranking summary, and live-enrichment availability
+- `facts.limitations` (array): report-level limitations
+- `source_refs` (array): source keys available to cite in `source_refs`
+- `limitations` (array): chapter limitations to carry forward when relevant
+
+Runtime input:
+{
+  "key": "sources_assumptions",
+  "title": "Where The Information Comes From",
+  "language": "en",
+  "facts": {
+    "source_summary": {
+      "ranking_snapshot": {
+        "locode": "CL IQQ",
+        "selected_action_id": "icare_0040",
+        "rank": 8,
+        "returned_action_count": 20,
+        "requested_languages": [
+          "en"
+        ]
+      },
+      "live_enrichment_sources": [
+        {
+          "source_ref": "city",
+          "available": true
+        },
+        {
+          "source_ref": "action_pathways",
+          "available": true
+        },
+        {
+          "source_ref": "policy_scores",
+          "available": true
+        },
+        {
+          "source_ref": "legal",
+          "available": true
+        },
+        {
+          "source_ref": "mitigation_feasibility",
+          "available": true
+        },
+        {
+          "source_ref": "financial_feasibility",
+          "available": true
+        }
+      ],
+      "staleness_evaluated": false
+    },
+    "limitations": [
+      "Snapshot-to-live source staleness was not evaluated for this report.",
+      "Comparable project evidence is not available in the supplied context.",
+      "City-level quantified emissions reductions are not available for this action in the supplied context.",
+      "Permit and SEIA applicability are not available in the supplied legal context."
+    ]
+  },
+  "source_refs": [
+    "ranking_snapshot",
+    "city",
+    "action_pathways",
+    "policy_scores",
+    "legal",
+    "mitigation_feasibility",
+    "financial_feasibility"
+  ],
+  "limitations": [
+    "Snapshot-to-live source staleness was not evaluated for this report.",
+    "Comparable project evidence is not available in the supplied context.",
+    "City-level quantified emissions reductions are not available for this action in the supplied context.",
+    "Permit and SEIA applicability are not available in the supplied legal context."
+  ]
+}
+</input>
+
+<output>
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): concise bullets grouped by source categories, assumptions, and limitations.
+- `limitations` (array of strings): relevant evidence limitations.
+
+Use user-facing source categories and input `source_refs`; do not treat diagnostic metadata, artifact locations, endpoints, local paths, URLs, request identifiers, or implementation names as citations. Do not claim staleness was evaluated unless `facts` explicitly says it was.
+</output>
+
+<example_output>
+{
+  "markdown": "- Ranking context: based on the supplied prioritization snapshot.\n- Additional context: based on live backend source data where available.\n- Assumptions and limits: the report should not claim unsupported emissions reductions, legal approvals, named funds, or comparable project counts when those fields are absent.",
+  "source_refs": ["ranking_snapshot", "city", "action_pathways"],
+  "limitations": ["Staleness comparison was not evaluated in the supplied context."]
+}
+</example_output>

@@ -5,7 +5,13 @@ import { useDisclosure } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import ActionCardSmall from "./ActionCardSmall";
 
-export function AddCollaboratorButton({ lng }: { lng: string }) {
+export function AddCollaboratorButton({
+  lng,
+  organizationId,
+}: {
+  lng: string;
+  organizationId?: string;
+}) {
   const {
     open: isModalOpen,
     setOpen: setIsModalOpen,
@@ -20,6 +26,7 @@ export function AddCollaboratorButton({ lng }: { lng: string }) {
         isOpen={isModalOpen}
         onClose={onModalClose}
         onOpen={onModalOpen}
+        organizationId={organizationId}
       />
       <ActionCardSmall
         onClick={onModalOpen}

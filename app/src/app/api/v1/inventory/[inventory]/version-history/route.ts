@@ -14,7 +14,7 @@ import { VersionHistoryEntry } from "@/util/types";
 
 const validModules = ["ghgi", "hiap"];
 
-function findSubCategory(subCategoryId: string): SubCategory {
+function findSubCategory(subCategoryId: string): SubCategory | undefined {
   const subCategories = Inventory_Sector_Hierarchy.flatMap((sector) =>
     sector.subSectors.flatMap((subSector) => subSector.subCategories),
   );
@@ -23,11 +23,11 @@ function findSubCategory(subCategoryId: string): SubCategory {
   );
 
   if (!subCategory) {
-    logger.error(
+    logger.warn(
       { subCategoryId },
-      "Sub-category not found for version history!",
+      "Sub-category not found for version history, skipping.",
     );
-    throw new createHttpError.NotFound("sub-category-not-found");
+    return undefined;
   }
 
   return subCategory;

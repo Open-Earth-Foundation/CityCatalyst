@@ -18,6 +18,8 @@ on:
       - climate-advisor/k8s/migrate-dev.yml
       - climate-advisor/k8s/service-dev.yml
       - climate-advisor/k8s/db-configmap-dev.yml
+      - k8s/cc-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-develop.yml
   push:
     paths:
@@ -30,6 +32,8 @@ on:
       - climate-advisor/k8s/migrate-dev.yml
       - climate-advisor/k8s/service-dev.yml
       - climate-advisor/k8s/db-configmap-dev.yml
+      - k8s/cc-ca-smoke-fixture.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
 jobs:
@@ -180,3 +184,26 @@ jobs:
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-dev -n default
+
+          kubectl rollout status deployment/climate-advisor-dev -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
+          SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
+          CA_DEPLOYMENT_NAME=climate-advisor-dev \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh

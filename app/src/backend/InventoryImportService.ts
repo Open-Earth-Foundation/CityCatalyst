@@ -379,7 +379,7 @@ export default class InventoryImportService {
           const hierarchyEntry = MANUAL_INPUT_HIERARCHY[row.gpcRefNo];
 
           // Default to Direct Measure when methodology is missing or not mapped
-          const finalMethodology =
+          const resolvedMethodology =
             mappedMethodology ||
             (row.methodology?.toLowerCase().includes("direct") &&
             row.methodology?.toLowerCase().includes("measure")
@@ -388,11 +388,24 @@ export default class InventoryImportService {
             row.methodology ||
             hierarchyEntry?.directMeasure?.id;
 
+          // Normalize: when the resolved methodology is a directMeasure variant,
+          // store "direct-measure" so the frontend lookup (which normalizes IDs
+          // containing "direct-measure" to just "direct-measure") can find the match.
+          const finalMethodology =
+            resolvedMethodology?.includes("direct-measure")
+              ? "direct-measure"
+              : resolvedMethodology;
+
           let inventoryValue;
           if (existingValue) {
+            // Accumulate co2eq when multiple rows share the same GPC reference
+            const accumulatedCo2eq =
+              existingValue.co2eq != null
+                ? BigInt(existingValue.co2eq) + co2eqBigInt
+                : co2eqBigInt;
             // Update existing value with emissions (clear notation keys if present)
             inventoryValue = await existingValue.update({
-              co2eq: co2eqBigInt,
+              co2eq: accumulatedCo2eq,
               co2eqYears: 100, // Default value
               unavailableReason: undefined,
               unavailableExplanation: undefined,
@@ -502,12 +515,25 @@ export default class InventoryImportService {
                 "activities" in methodology &&
                 methodology.activities?.[0]
               ) {
+                // Methodology with activities array: read from activities[0]
                 const activity = methodology.activities[0];
                 groupByField = activity["group-by"];
 
                 // Find the exclusive option for the group-by field
                 if (groupByField && activity["extra-fields"]) {
                   const groupByFieldDef = activity["extra-fields"].find(
+                    (f: any) => f.id === groupByField && f.exclusive,
+                  );
+                  if (groupByFieldDef?.exclusive) {
+                    groupByDefaultValue = groupByFieldDef.exclusive;
+                  }
+                }
+              } else if (methodology && "group-by" in methodology) {
+                // DirectMeasure: group-by and extra-fields are at the top level
+                groupByField = (methodology as any)["group-by"];
+
+                if (groupByField && methodology["extra-fields"]) {
+                  const groupByFieldDef = methodology["extra-fields"].find(
                     (f: any) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
@@ -556,7 +582,16 @@ export default class InventoryImportService {
                 row.activityDataSource?.trim() ||
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
-                activityData["data-source"] = dataSource;
+                let sourceFieldName = "data-source";
+                if ((methodology as any)?.["extra-fields"]) {
+                  const methodSourceField = (methodology as any)["extra-fields"].find(
+                    (f: any) => f.id.includes("-source") && f.type === "text",
+                  );
+                  if (methodSourceField) {
+                    sourceFieldName = methodSourceField.id;
+                  }
+                }
+                activityData[sourceFieldName] = dataSource;
               }
 
               // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
@@ -572,6 +607,10 @@ export default class InventoryImportService {
                 activityData.n2o_amount = n2oVal;
                 activityData.n2o_unit = "units-tonnes";
               }
+
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
+              );
 
               // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
               if (groupByField) {

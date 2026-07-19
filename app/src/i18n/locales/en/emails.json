@@ -1,7 +1,7 @@
 {
   "project-deleted": {
-    "subject": "City Catalyst - Project Deletion",
-    "preview": "CityCatalyst: Project Deleted",
+    "subject": "Project Deletion",
+    "preview": "Project Deleted",
     "brand": "CityCatalyst",
     "title": "Project deleted on {{organizationName}} account",
     "greeting": "Hi {{name}},",
@@ -10,8 +10,8 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "role-updated": {
-    "subject": "City Catalyst - Role Updated",
-    "preview": "CityCatalyst: Role Update",
+    "subject": "Role Updated",
+    "preview": "Role Update",
     "brand": "CityCatalyst",
     "title": "Your role has been updated",
     "greeting": "Hi {{email}},",
@@ -20,7 +20,7 @@
     "footer": "CityCatalyst is a platform powered by the Open Earth Foundation."
   },
   "welcome": {
-    "subject": "City Catalyst - User Registration",
+    "subject": "User Registration",
     "greeting": "Welcome to City Catalyst, {{name}}!",
     "message": "Thank you for joining City Catalyst. We're excited to have you on board and help you make a positive impact on your city's sustainability journey.",
     "cta": "Get Started",
@@ -28,8 +28,8 @@
     "brand": "CityCatalyst"
   },
   "reset-password": {
-    "subject": "City Catalyst - Reset Your Password",
-    "preview": "CityCatalyst: Reset your password",
+    "subject": "Reset Your Password",
+    "preview": "Reset your password",
     "brand": "CityCatalyst",
     "title": "Forgot your password?",
     "message": "Reset it by clicking the button below:",
@@ -38,8 +38,8 @@
     "footer": "If you didn't request this, you can safely ignore this email."
   },
   "invite": {
-    "subject": "City Catalyst - City Invitation",
-    "preview": "CityCatalyst: City Invitation",
+    "subject": "City Invitation",
+    "preview": "City Invitation",
     "brand": "CityCatalyst",
     "title": "You've Been Invited to Join City Catalyst",
     "greeting": "Hello {{name}},",
@@ -49,8 +49,8 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "project-created": {
-    "subject": "City Catalyst - Project Creation",
-    "preview": "CityCatalyst: Project Added",
+    "subject": "Project Creation",
+    "preview": "Project Added",
     "brand": "CityCatalyst",
     "title": "Project added to {{organizationName}} account",
     "greeting": "Hi {{name}},",
@@ -59,7 +59,7 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "account-frozen": {
-    "subject": "City Catalyst - Account Frozen",
+    "subject": "Account Frozen",
     "preview": "City Catalyst: Account Frozen",
     "brand": "CityCatalyst",
     "title": "Your Account Has Been Frozen",
@@ -81,8 +81,8 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "account-unfrozen": {
-    "subject": "City Catalyst - Account Activated",
-    "preview": "CityCatalyst: Account Activated",
+    "subject": "Account Activated",
+    "preview": "Account Activated",
     "brand": "CityCatalyst",
     "title": "Your Account Has Been Activated",
     "greeting": "Hi {{name}},",
@@ -92,7 +92,7 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "city-slot-changed": {
-    "subject": "City Catalyst - City Slots Changed",
+    "subject": "City Slots Changed",
     "title": "City Slot Limit Changed in {{organizationName}}",
     "greeting": "Hello {{name}},",
     "message": "The city slot limit for project '{{projectName}}' has been changed to {{cityCount}}.",
@@ -102,7 +102,7 @@
   },
   "admin-notification": {
     "subject": "CityCatalyst File Upload",
-    "preview": "CityCatalyst: File Upload",
+    "preview": "File Upload",
     "brand": "CityCatalyst",
     "title": "{{userName}} From {{cityName}} Uploaded New Files For Review",
     "greeting": "Hi {{adminNames}},",
@@ -111,18 +111,20 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "invite-multiple": {
-    "subject": "CityCatalyst: City Invitation",
+    "subject": "City Invitation",
     "title": "You've been granted access",
     "brand": "CityCatalyst",
     "greeting": "Hi {{email}},",
-    "message": "You have been granted access to {{citiesCount}} cities:",
+    "message": "You have been granted access to {{citiesCount}}:",
+    "this-city": "this city",
+    "these-cities": "these cities",
     "cta": "JOIN NOW",
     "expiry": "This invite will remain valid for the next 30 days or until claimed, whichever happens first.",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "remove-multiple-cities": {
-    "subject": "City Catalyst - Access Removed",
-    "preview": "CityCatalyst: Access Removed",
+    "subject": "Access Removed",
+    "preview": "Access Removed",
     "brand": "CityCatalyst",
     "title": "Changes to Access",
     "greeting": "Hi {{email}},",
@@ -140,24 +142,13 @@
     "title": "Join Your Team In CityCatalyst",
     "greeting": "Hi {{name}},",
     "greeting-no-name": "Hi,",
-    "message": "Welcome to CityCatalyst! Your free trial is now live -  and we’re excited to have you onboard.",
-    "message-prefix": "Welcome to CityCatalyst! Your ",
-    "message-free-trial": "free trial",
-    "message-suffix": " is now live and we're excited to have you onboard.",
-    "start-by": "Start by ",
-    "setting-up-inventory": "setting up your first inventory",
-    "in-one-city": " in one city of your choice.",
-    "steps-heading": "Here's what you can do right now",
-    "step1": "<1>Set up your first inventory</1> - You can start with one city during this trial.",
-    "step2": "<1>Invite collaborators</1> - Work as a team to build and review your data.",
-    "step3": "<1>Explore key features</1> - From building your GHG inventory to customize your logo and colors.",
-    "step4": "<1>Ask AI</1> - Our Climate Assistant is ready to answer your questions and support you in the process of reviewing suggested impact actions.",
-    "cta": "Join your team",
+    "message": "Welcome to CityCatalyst! We’re excited to have you onboard.",
+    "cta": "JOIN YOUR TEAM",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "role-update": {
-    "subject": "City Catalyst - Role Updated",
-    "preview": "CityCatalyst: Role Update",
+    "subject": "Role Updated",
+    "preview": "Role Update",
     "brand": "CityCatalyst",
     "title": "Your role has been updated",
     "greeting": "Hi {{email}},",
@@ -166,7 +157,7 @@
     "footer": "CityCatalyst is a platform powered by the Open Earth Foundation."
   },
   "cities-added": {
-    "subject": "City Catalyst - Cities Added",
+    "subject": "Cities Added",
     "preview": "Cities Added to Project",
     "title": "Cities Added to Project",
     "greeting": "Hello {{name}},",
@@ -177,24 +168,23 @@
     "brand": "CityCatalyst"
   },
   "admin-invite-accepted": {
-    "subject": "Welcome to CityCatalyst! 🎉 let’s get started. ",
-    "preview": "Welcome to CityCatalyst! 🎉 let’s get started. ",
+    "subject": "Welcome to CityCatalyst! 🎉 let’s get started.",
+    "preview": "Welcome to CityCatalyst! 🎉 let’s get started.",
     "brand": "CityCatalyst",
     "title": "Welcome to CityCatalyst!",
     "greeting": "Hi {{name}},",
-    "message": "We’re excited to have you onboard. Here’s how to make the most of your 1 month Free Trial: ",
-    "step1": "Create your first city project (trial includes 1 city)",
-    "step2": "Invite collaborators from your team or partners",
+    "message": "We’re happy to have you onboard. Here’s how to get the most out of CityCatalyst:",
+    "step1": "Create your first city project",
+    "step2": "Invite your team members as collaborators",
     "step3": "Customize your workspace with your logo and colors",
-    "step4": "Customize your workspace with your logo and colors",
     "footer-1": "Need a hand? We’re here to help, please reach out to citycatalyst@openearth.org with questions!",
     "footer-2": "Let’s make local climate data work harder, together.",
     "footer-3": "The CityCatalyst Team",
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "hiap-ranking-ready": {
-    "subject": "CityCatalyst - HIAP Ranking Ready",
-    "preview": "CityCatalyst: HIAP Ranking Ready",
+    "subject": "HIAP Ranking Ready",
+    "preview": "HIAP Ranking Ready",
     "brand": "CityCatalyst",
     "title": "Your mitigation actions are ready!",
     "cta": "Got to your actions",
@@ -205,8 +195,8 @@
     "footer": "Open Earth Foundation is a nonprofit public benefit corporation from California, USA. EIN: 85-3261449"
   },
   "action-plan-ready": {
-    "subject": "CityCatalyst - Action Plan Ready",
-    "preview": "CityCatalyst: Your climate action plan is ready!",
+    "subject": "Action Plan Ready",
+    "preview": "Your climate action plan is ready!",
     "brand": "CityCatalyst",
     "title": "Your climate action plan is ready!",
     "greeting": "Hi {{name}},",

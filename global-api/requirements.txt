@@ -1,7 +1,7 @@
 aiohttp==3.14.*
 alembic==1.18.4
 black==26.5.1
-fastapi==0.136.1
+fastapi==0.138.0
 flake8==7.3.0
 fsspec==2026.*
 geopandas>=0.12,<1.2
@@ -14,7 +14,7 @@ pytest==9.1.1
 scipy==1.17.*
 shapely==2.1.2
 SQLAlchemy==2.0.51
-tqdm==4.67.*
+tqdm==4.68.*
 uvicorn==0.49.0
 xarray==2026.*
 geojson==3.2.*

@@ -117,6 +117,8 @@ export class ProjectService {
             inventories: city.inventories as any,
             country: city.country as string,
             countryLocode: city.countryLocode as string,
+            region: city.region as string,
+            regionLocode: city.regionLocode as string,
             locode: city.locode as string,
           })),
         })),
@@ -133,6 +135,8 @@ export class ProjectService {
             inventories: city.inventories as any,
             country: city.country as string,
             countryLocode: city.countryLocode as string,
+            region: city.region as string,
+            regionLocode: city.regionLocode as string,
             locode: city.locode as string,
           })),
         })),
@@ -158,6 +162,11 @@ export class ProjectService {
             name: cityUserAsocc.city.name as string,
             cityId: cityUserAsocc.city.cityId as string,
             inventories: cityUserAsocc.city.inventories as any,
+            country: cityUserAsocc.city.country as string,
+            countryLocode: cityUserAsocc.city.countryLocode as string,
+            region: cityUserAsocc.city.region as string,
+            regionLocode: cityUserAsocc.city.regionLocode as string,
+            locode: cityUserAsocc.city.locode as string,
           };
           if (!existingProject) {
             acc[projectId] = {

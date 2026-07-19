@@ -562,6 +562,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         const fieldMappings: Array<{
           sourceColumn: string;
           mappedField: string;
+          sampleValue?: string | null;
         }> = [];
 
         if (validationStepData?.columns) {
@@ -570,6 +571,7 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
               fieldMappings.push({
                 sourceColumn: col.columnName,
                 mappedField: col.interpretedAs,
+                sampleValue: col.exampleValue || null,
               });
             }
           }

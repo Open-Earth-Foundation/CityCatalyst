@@ -20,8 +20,13 @@ import {
   buildFocusedDecisionStatePayload,
   buildStationaryEnergyChatRequest,
   resolveInventorySaveConfirmationRequest,
+  resolveStationaryEnergyStartDraftFailureMessage,
   resolveStationaryEnergyToolMessage,
 } from "@/components/StationaryEnergyDraft/stationary-energy-chat-controller-helpers";
+import {
+  draftRunStatusLabel,
+  formatDraftRunUpdatedAt,
+} from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel-format";
 
 function draftFixture(): DraftStatusResponse {
   return {
@@ -137,6 +142,44 @@ function draftFixture(): DraftStatusResponse {
 }
 
 describe("Stationary Energy draft flow", () => {
+  it("resolves draft list status labels through translation keys", () => {
+    const t = ((key: string) => key) as Parameters<
+      typeof draftRunStatusLabel
+    >[0];
+
+    expect(draftRunStatusLabel(t, "resolving_scope")).toBe(
+      "artifact-draft-status-resolving-scope",
+    );
+    expect(draftRunStatusLabel(t, "loading_context")).toBe(
+      "artifact-draft-status-loading-context",
+    );
+    expect(draftRunStatusLabel(t, "partially_saved")).toBe(
+      "artifact-draft-status-partially-saved",
+    );
+    expect(draftRunStatusLabel(t, "future_backend_status")).toBe(
+      "artifact-draft-status-unknown",
+    );
+  });
+
+  it("formats draft list timestamps with the active route locale", () => {
+    const value = "2026-02-03T04:05:00.000Z";
+    const expected = new Intl.DateTimeFormat("fr", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(value));
+
+    const t = ((key: string) => key) as Parameters<
+      typeof formatDraftRunUpdatedAt
+    >[0];
+
+    expect(formatDraftRunUpdatedAt(t, value, "fr")).toBe(expected);
+    expect(formatDraftRunUpdatedAt(t, "invalid timestamp", "fr")).toBe(
+      "drafts-panel-updated-at-unavailable",
+    );
+  });
+
   it("resolves Stationary Energy tool messages from translation keys only", () => {
     const t = ((key: string, params?: Record<string, unknown>) =>
       `${key}:${JSON.stringify(params ?? {})}`) as Parameters<
@@ -164,6 +207,37 @@ describe("Stationary Energy draft flow", () => {
         "tool-message-generic-summary",
       ),
     ).toBe("tool-message-generic-summary:{}");
+  });
+
+  it("resolves chat start-draft tool failures to retryable user copy", () => {
+    const t = ((key: string, params?: Record<string, unknown>) =>
+      `${key}:${JSON.stringify(params ?? {})}`) as Parameters<
+      typeof resolveStationaryEnergyStartDraftFailureMessage
+    >[0];
+
+    expect(
+      resolveStationaryEnergyStartDraftFailureMessage(t, {
+        ui_event: "stationary_energy_draft_started",
+        success: false,
+        message_key: "tool-error-generic",
+      }),
+    ).toBe("error-failed-to-start-stationary-energy-draft-retry:{}");
+
+    expect(
+      resolveStationaryEnergyStartDraftFailureMessage(t, {
+        ui_event: "stationary_energy_draft_started",
+        success: false,
+        message_key: "tool-error-specific-start",
+        message_params: { status: 401 },
+      }),
+    ).toBe('tool-error-specific-start:{"status":401}');
+
+    expect(
+      resolveStationaryEnergyStartDraftFailureMessage(t, {
+        ui_event: "stationary_energy_draft_started",
+        success: true,
+      }),
+    ).toBeNull();
   });
 
   it("derives stages from draft and explicit review progress", () => {
@@ -324,6 +398,50 @@ describe("Stationary Energy draft flow", () => {
         note: undefined,
       },
     ]);
+  });
+
+  it("allows inventory save when a staged notation key is the only committable decision", () => {
+    const draft = draftFixture();
+    draft.staged_review_selections = [
+      {
+        selection_id: "selection-notation",
+        draft_run_id: "draft-1",
+        proposal_id: "proposal-gap",
+        user_id: "user-1",
+        action: "set_notation_key",
+        notation_key: "NO",
+        unavailable_reason: "no-occurrance",
+        unavailable_explanation: "No activity occurs in scope.",
+        status: "active",
+      },
+    ];
+    const decisionState = buildInitialDecisionState(draft);
+
+    expect(
+      canSaveToInventory({
+        draftState: draft,
+        resolvedProposalIds: new Set(["proposal-gap"]),
+        decisionState,
+      }),
+    ).toBe(true);
+
+    expect(
+      buildInventorySaveReviewDecisionPayload({
+        draftState: draft,
+        decisionState,
+        resolvedProposalIds: new Set(["proposal-gap"]),
+      }).find((decision) => decision.proposal_id === "proposal-gap"),
+    ).toEqual({
+      proposal_id: "proposal-gap",
+      action: "set_notation_key",
+      selected_source_id: undefined,
+      manual_value: undefined,
+      manual_unit: undefined,
+      notation_key: "NO",
+      unavailable_reason: "no-occurrance",
+      unavailable_explanation: "No activity occurs in scope.",
+      note: undefined,
+    });
   });
 
   it("preserves persisted review decisions for unresolved rows during partial inventory save", () => {
@@ -774,6 +892,7 @@ describe("Stationary Energy draft flow", () => {
       decisionReviewContext,
       decisionState,
       focusedProposalId: "proposal-conflict",
+      resolvedProposalIds: new Set(["proposal-conflict"]),
     });
     const request = buildStationaryEnergyChatRequest({
       cityId: "city-1",
@@ -842,6 +961,69 @@ describe("Stationary Energy draft flow", () => {
           decisionReviewContext.length,
       }),
     );
+  });
+
+  it("builds pre-draft chat requests with Stationary Energy surface context", () => {
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "draft the empty rows",
+      decisionReviewContext: [],
+      draftState: null,
+      inventoryId: "inventory-1",
+      threadId: "thread-1",
+    });
+
+    expect(request).toEqual(
+      expect.objectContaining({
+        threadId: "thread-1",
+        content: "draft the empty rows",
+        inventory_id: "inventory-1",
+        context: {
+          city_id: "city-1",
+          inventory_id: "inventory-1",
+          stationary_energy_interaction_mode: "free_text",
+        },
+        options: {
+          stationary_energy_interaction_mode: "free_text",
+          stationary_energy_ui_surfaces: ["chat_text"],
+        },
+      }),
+    );
+    expect(request.context).not.toHaveProperty(
+      "stationary_energy_draft_run_id",
+    );
+  });
+
+  it("does not send hidden default source choices as focused chat selections", () => {
+    const draft = draftFixture();
+    const decisionReviewContext = buildDecisionReviewContext({
+      draftState: draft,
+      resolvedProposalIds: new Set(),
+    });
+    const decisionState = buildInitialDecisionState(draft);
+    const focusedDecisionState = buildFocusedDecisionStatePayload({
+      decisionReviewContext,
+      decisionState,
+      focusedProposalId: "proposal-conflict",
+      resolvedProposalIds: new Set(),
+    });
+
+    const request = buildStationaryEnergyChatRequest({
+      cityId: "city-1",
+      content: "save just that one",
+      decisionReviewContext,
+      draftState: draft,
+      focusedDecisionState,
+      focusedProposalId: "proposal-conflict",
+      inventoryId: "inventory-1",
+      threadId: "thread-1",
+    });
+
+    expect(focusedDecisionState).toBeUndefined();
+    expect(
+      (request.context as Record<string, unknown>)
+        .stationary_energy_focused_decision_state,
+    ).toBeUndefined();
   });
 
   it("blocks inventory confirmation cards when save is not currently allowed", () => {

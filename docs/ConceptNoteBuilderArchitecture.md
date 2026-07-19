@@ -598,6 +598,12 @@ erDiagram
 The ingest pipeline should turn curated research into stable records with
 provenance, not just embeddings.
 
+The first implementation of funder and program research is specified in
+[ConceptNoteBuilderFunderResearchPipeline.md](ConceptNoteBuilderFunderResearchPipeline.md).
+Its review artifact groups one selected funding opportunity and its funder
+context into a single dossier. The later approved-data importer owns any mapping
+from that aggregate into the logical reference tables below.
+
 ```mermaid
 flowchart LR
     Sources["NOFOs, program pages,<br/>award lists, reports,<br/>template docs"] --> Fetch["Fetch or upload source"]
@@ -615,7 +621,7 @@ Required ingest outputs:
 - Source document record with URL, title, date, license status, and hash.
 - Funder record and funding opportunity record, including route, instrument,
   geography, live status, and award-size ranges.
-- Template chapter schema.
+- Template chapter schema when an application template is available.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
 - Funded-project records, project-action records, and funding links.

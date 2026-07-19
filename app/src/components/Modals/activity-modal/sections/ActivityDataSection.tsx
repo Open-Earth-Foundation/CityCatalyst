@@ -3,6 +3,7 @@ import { TFunction } from "i18next";
 import {
   Control,
   Controller,
+  FieldValues,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -20,7 +21,7 @@ import { BodyMedium } from "@/components/package/Texts/Body";
 interface ActivityDataSectionProps {
   t: TFunction;
   register: UseFormRegister<any>;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   errors: Record<string, any>;
   setValue: UseFormSetValue<any>;
   title: string;
@@ -55,14 +56,14 @@ export const ActivityDataSection = ({
         label={<Text truncate>{t(title)}</Text>}
         flex="2"
       >
-        <HStack>
+        <HStack w="full">
           <FormattedNumberInput
             control={control}
             name={`activity.${title}`}
             defaultValue="0"
             t={t}
             miniAddon
-            minWidth="300px"
+            w="full"
             flex={2}
           />
           {(units?.length as number) > 0 && (

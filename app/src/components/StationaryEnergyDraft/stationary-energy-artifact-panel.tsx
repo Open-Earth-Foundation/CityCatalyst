@@ -9,18 +9,11 @@ import {
   Icon,
   Text,
   VStack,
-  chakra,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { useParams } from "next/navigation";
-import { useEffect, useRef } from "react";
-import {
-  MdAdd,
-  MdCheckCircle,
-  MdExpandMore,
-  MdRefresh,
-  MdSave,
-} from "react-icons/md";
+import { useRef } from "react";
+import { MdCheckCircle, MdRefresh, MdSave } from "react-icons/md";
 
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -30,7 +23,6 @@ import type {
   DraftCounts,
   DraftStage,
 } from "@/components/StationaryEnergyDraft/flow";
-import type { DraftListItem } from "@/components/StationaryEnergyDraft/types";
 import type {
   StationaryEnergyChatArtifactControllerActions,
   StationaryEnergyChatArtifactControllerState,
@@ -45,9 +37,6 @@ export type ArtifactPanelProps = {
     | "requestSaveToInventoryConfirmation"
     | "saveDraft"
     | "saveToInventory"
-    | "selectDraft"
-    | "setFocusedProposal"
-    | "startDraftFromArtifact"
   >;
   cityName: string;
   inventoryYear: string | number;
@@ -55,13 +44,9 @@ export type ArtifactPanelProps = {
   squared?: boolean;
   state: Pick<
     StationaryEnergyChatArtifactControllerState,
-    | "activeDraftRunId"
-    | "focusedProposalId"
     | "canPersistDraftReview"
     | "canSaveToInventory"
     | "counts"
-    | "draftListLoading"
-    | "draftRuns"
     | "draftStatus"
     | "hasDraft"
     | "hasSourceBackedProposals"
@@ -71,46 +56,6 @@ export type ArtifactPanelProps = {
     | "unresolvedCount"
   >;
 };
-
-function draftRunStatusLabel(t: TFunction, status: string): string {
-  if (status === "reviewed") {
-    return t("artifact-draft-status-reviewed");
-  }
-  if (status === "ready") {
-    return t("artifact-draft-status-ready");
-  }
-  if (status === "failed") {
-    return t("artifact-draft-status-failed");
-  }
-  return status.replaceAll("_", " ");
-}
-
-function formatDraftRunUpdatedAt(value: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(date);
-}
-
-function draftRunOptionLabel(t: TFunction, draftRun: DraftListItem): string {
-  const reviewLabel =
-    draftRun.reviewable_proposal_count > 0
-      ? `${draftRun.resolved_review_count}/${draftRun.reviewable_proposal_count}`
-      : null;
-  return [
-    draftRunStatusLabel(t, draftRun.status),
-    reviewLabel,
-    formatDraftRunUpdatedAt(draftRun.updated_at),
-  ]
-    .filter(Boolean)
-    .join(" · ");
-}
 
 function stageChip(
   t: TFunction,
@@ -481,17 +426,6 @@ export function ArtifactPanel({
   const lng = getParamValueRequired(params.lng);
   const { t } = useTranslation(lng, "stationary-energy-agentic");
   const rowsScrollRef = useRef<HTMLDivElement | null>(null);
-  const focusedProposalId = state.focusedProposalId;
-  // Keep the focused row visible as the user steps through reviews.
-  useEffect(() => {
-    if (!focusedProposalId) {
-      return;
-    }
-    const target = rowsScrollRef.current?.querySelector<HTMLElement>(
-      `[data-row-id="${CSS.escape(focusedProposalId)}"]`,
-    );
-    target?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [focusedProposalId]);
   const draftedCount = state.rows.filter((row) =>
     ["done", "manual"].includes(row.state),
   ).length;
@@ -500,17 +434,8 @@ export function ArtifactPanel({
       ? Math.round((draftedCount / state.rows.length) * 100)
       : 0;
   const chip = stageChip(t, state.stage, state.draftStatus);
-  const activeDraftRun = state.draftRuns.find(
-    (draftRun) => draftRun.draft_run_id === state.activeDraftRunId,
-  );
   const currentActionRow =
-    state.rows.find(
-      (row) =>
-        row.id === state.focusedProposalId &&
-        ["done", "manual"].includes(row.state),
-    ) ??
-    state.rows.find((row) => ["done", "manual"].includes(row.state)) ??
-    null;
+    state.rows.find((row) => ["done", "manual"].includes(row.state)) ?? null;
 
   return (
     <Box
@@ -555,77 +480,6 @@ export function ArtifactPanel({
               </Text>
             </Box>
           </HStack>
-
-          <Flex gap="s" align="center">
-            {state.draftRuns.length > 0 ? (
-              <Box position="relative" flex="1 1 auto" minW={0}>
-                <chakra.select
-                  value={state.activeDraftRunId ?? ""}
-                  onChange={(event) => {
-                    if (event.target.value) {
-                      actions.selectDraft(event.target.value);
-                    }
-                  }}
-                  disabled={state.draftListLoading}
-                  aria-label={t("artifact-drafts-saved")}
-                  title={
-                    activeDraftRun
-                      ? draftRunOptionLabel(t, activeDraftRun)
-                      : undefined
-                  }
-                  appearance="none"
-                  w="full"
-                  minH="40px"
-                  pl="s"
-                  pr="xl"
-                  fontSize="label.md"
-                  whiteSpace="nowrap"
-                  overflow="hidden"
-                  textOverflow="ellipsis"
-                  borderWidth="1px"
-                  borderColor="border.overlay"
-                  borderRadius="rounded"
-                  bg="base.light"
-                  color="content.primary"
-                  cursor="pointer"
-                >
-                  {!state.activeDraftRunId ? (
-                    <option value="">{t("artifact-select-saved-draft")}</option>
-                  ) : null}
-                  {state.draftRuns.map((draftRun) => (
-                    <option
-                      key={draftRun.draft_run_id}
-                      value={draftRun.draft_run_id}
-                    >
-                      {draftRunOptionLabel(t, draftRun)}
-                    </option>
-                  ))}
-                </chakra.select>
-                <Icon
-                  as={MdExpandMore}
-                  position="absolute"
-                  right="s"
-                  top="50%"
-                  transform="translateY(-50%)"
-                  pointerEvents="none"
-                  color="content.secondary"
-                  boxSize="20px"
-                />
-              </Box>
-            ) : (
-              <Box flex="1 1 auto" />
-            )}
-            <Button
-              borderRadius={FLOW_BUTTON_RADIUS}
-              loading={state.loadingAction === "start"}
-              onClick={actions.startDraftFromArtifact}
-              gap="xs"
-              flexShrink={0}
-            >
-              <MdAdd />
-              {t("artifact-new-draft")}
-            </Button>
-          </Flex>
 
           <Box>
             <Flex justify="space-between" align="center" gap="m" mb="s">
@@ -700,12 +554,6 @@ export function ArtifactPanel({
               <ArtifactRowView
                 key={row.id}
                 row={row}
-                selected={row.id === state.focusedProposalId}
-                onSelect={
-                  row.id.startsWith("placeholder-")
-                    ? undefined
-                    : () => actions.setFocusedProposal(row.id)
-                }
                 drafting={
                   state.stage === "drafting" && state.loadingAction === "start"
                 }
@@ -755,16 +603,6 @@ export function ArtifactPanel({
             <MdRefresh />
             {t("artifact-refresh")}
           </Button>
-          {state.stage === "start" ? (
-            <Button
-              data-testid="start-draft-button"
-              borderRadius={FLOW_BUTTON_RADIUS}
-              loading={state.loadingAction === "start"}
-              onClick={actions.startDraftFromArtifact}
-            >
-              {t("artifact-start-draft")}
-            </Button>
-          ) : null}
           {state.stage !== "start" && state.canPersistDraftReview ? (
             <Button
               data-testid="save-review-draft-button"

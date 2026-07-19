@@ -7,7 +7,7 @@
  *       - sources
  *     operationId: getDatasourceInventoryId
  *     summary: List applicable data sources and fetched data for an inventory.
- *     description: Finds candidate sources for the inventory, filters by applicability, and fetches data (including population scaling). No explicit authentication is enforced here in code; adjust middleware if needed. Returns { data: successfulSources[], removedSources, failedSources }.
+ *     description: "Finds candidate sources for the inventory, filters by applicability, and fetches data (including population scaling). No explicit authentication is enforced here in code; adjust middleware if needed. Returns { data: successfulSources[], removedSources, failedSources }."
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -161,7 +161,7 @@ const applySourcesRequest = z.object({
  *       - sources
  *     operationId: postDatasourceInventoryid
  *     summary: Apply selected data sources to an inventory and persist values.
- *     description: Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns '{' data: { successful[], failed[], invalid[], issues{}, removedSources[] } '}'.
+ *     description: "Downloads and applies the specified data sources to the inventory (creating/updating inventory values). No explicit authentication is enforced in this handler in code. Returns '{' data: { successful[], failed[], invalid[], issues{}, removedSources[] } '}'."
  *     parameters:
  *       - in: path
  *         name: inventoryId
@@ -245,11 +245,6 @@ const applySourcesRequest = z.object({
  *                       description: Data sources removed due to applicability filtering
  *       404:
  *         description: Inventory or sources not found.
- *     examples:
- *       application/json:
- *         dataSourceIds:
- *           - "550e8400-e29b-41d4-a716-446655440000"
- *           - "550e8400-e29b-41d4-a716-446655440001"
  */
 export const POST = apiHandler(
   async (req: NextRequest, { params, session }) => {

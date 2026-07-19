@@ -39,6 +39,7 @@ export function useResourceValidation({
 
   useEffect(() => {
     if (isLoading) return;
+    if (!resourceId) return; // No resource ID — let the caller decide what to show
 
     // If resource doesn't exist or user doesn't have access, redirect appropriately
     if (resourceError || !resourceData) {
@@ -69,6 +70,7 @@ export function useResourceValidation({
       }
     }
   }, [
+    resourceId,
     resourceError,
     resourceData,
     userInfo,

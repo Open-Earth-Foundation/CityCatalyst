@@ -342,6 +342,99 @@ describe("Stationary Energy draft routes", () => {
     );
   });
 
+  it("normalizes service URL slashes for token issuance and CA calls", async () => {
+    process.env.HOST = "https://configured.example/";
+    process.env.CA_BASE_URL = "http://ca.example/";
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          draft_run_id: TEST_DRAFT_RUN_ID,
+        }),
+      );
+
+    const response = await startDraft(
+      makeRequest(
+        "https://request-origin.example/api/v1/stationary-energy-drafts/start",
+        "POST",
+        {
+          city_id: TEST_CITY_ID,
+          inventory_id: TEST_INVENTORY_ID,
+          user_id: "client-supplied-user-id",
+        },
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(201);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://configured.example/api/v1/internal/ca/user-token/",
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe(
+      "http://ca.example/v1/stationary-energy-drafts/start",
+    );
+
+    const [, tokenRequest] = fetchMock.mock.calls[0] ?? [];
+    const [, caRequest] = fetchMock.mock.calls[1] ?? [];
+    expect(JSON.parse(String(tokenRequest?.body))).toEqual({
+      inventory_id: TEST_INVENTORY_ID,
+      user_id: TEST_USER_ID,
+    });
+    expect(JSON.parse(String(caRequest?.body))).toEqual(
+      expect.objectContaining({
+        inventory_id: TEST_INVENTORY_ID,
+        user_id: TEST_USER_ID,
+      }),
+    );
+  });
+
+  it("rejects malformed token payloads before calling Climate Advisor", async () => {
+    const malformedPayloads = [
+      {},
+      { access_token: null, expires_in: 3600, token_type: "Bearer" },
+      { access_token: "token-123", expires_in: 3600, token_type: "Basic" },
+      { access_token: "token-123", token_type: "Bearer" },
+      { access_token: "token-123", expires_in: 0, token_type: "Bearer" },
+      { access_token: "token-123", expires_in: -1, token_type: "Bearer" },
+      { access_token: "token-123", expires_in: "3600", token_type: "Bearer" },
+    ];
+
+    for (const malformedPayload of malformedPayloads) {
+      const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+      fetchMock.mockResolvedValueOnce(jsonResponse(malformedPayload));
+
+      const response = await startDraft(
+        makeRequest(
+          "http://localhost:3000/api/v1/stationary-energy-drafts/start",
+          "POST",
+          {
+            city_id: TEST_CITY_ID,
+            inventory_id: TEST_INVENTORY_ID,
+          },
+        ),
+        { params: Promise.resolve({}) },
+      );
+
+      expect(response.status).toBe(502);
+      await expect(response.json()).resolves.toEqual({
+        error: {
+          code: undefined,
+          data: undefined,
+          message: "Invalid CA token response",
+        },
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      fetchMock.mockClear();
+    }
+  });
+
   it("preserves JSON token-issuance errors from the shared CA helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(

@@ -17,7 +17,9 @@ from app.services.stationary_energy.stationary_energy_review_models import (
     MessageParamValue,
     StationaryEnergyAgentReviewChoiceInput,
     StationaryEnergyAgentReviewToolResult,
+    StationaryEnergyNotationKeyChoiceInput,
 )
+from app.tools.inventory_context_tools import build_inventory_context_tools
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,22 @@ def build_stationary_energy_review_tools(
 ) -> Sequence[object]:
     """Create scoped Stationary Energy review tools for one draft run."""
     draft_uuid = UUID(str(draft_run_id))
+
+    async def _resolve_inventory_scope() -> tuple[str, str]:
+        """Resolve the CityCatalyst inventory scope owned by this draft run."""
+        # Load the CA-owned draft row so the LLM never supplies scope ids.
+        async with session_factory() as session:
+            service = StationaryEnergyAgentReviewService(session)
+            draft_run = await service.repository.get_draft_run_for_user(
+                draft_uuid,
+                user_id,
+            )
+            if draft_run is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail="Stationary Energy draft run not found",
+                )
+            return draft_run.city_id, draft_run.inventory_id
 
     async def _run_tool(
         action: str,
@@ -109,6 +127,34 @@ def build_stationary_energy_review_tools(
         )
 
     @function_tool
+    async def stationary_energy_list_notation_keys() -> str:
+        """List eligible Stationary Energy notation-key rows and allowed notation keys.
+
+        Use this before setting notation keys. It returns current notation-key
+        state plus the exact allowed_notation_keys list. Only choose notation
+        keys from that returned list: NO, NE, IE, or C. NA is display-only and
+        must not be staged by the agent.
+        """
+
+        token = token_ref.get("value")
+        if not token:
+            return _error_payload(
+                action="stationary_energy_list_notation_keys",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-missing-token",
+                error_code="missing_token",
+            )
+
+        return await _run_tool(
+            "stationary_energy_list_notation_keys",
+            lambda service: service.list_notation_keys(
+                draft_run_id=draft_uuid,
+                user_id=user_id,
+                authorization=f"Bearer {token}",
+            ),
+        )
+
+    @function_tool
     async def stationary_energy_accept_one(
         proposal_id: str,
         candidate_id: Optional[str] = None,
@@ -155,6 +201,64 @@ def build_stationary_energy_review_tools(
                 draft_run_id=draft_uuid,
                 user_id=user_id,
                 choice=choice,
+            ),
+        )
+
+    @function_tool
+    async def stationary_energy_stage_notation_key(
+        notation_key: str,
+        unavailable_explanation: str,
+        proposal_id: Optional[str] = None,
+        target_id: Optional[str] = None,
+        rationale: Optional[str] = None,
+    ) -> str:
+        """Stage one notation-key choice for one eligible Stationary Energy row.
+
+        Args:
+            notation_key: One of the allowed notation keys from
+                stationary_energy_list_notation_keys: NO, NE, IE, or C.
+            unavailable_explanation: Short explanation for why the row is
+                unavailable or outside scope.
+            proposal_id: Optional exact proposal id from the active draft.
+            target_id: Optional exact notation target id returned by
+                stationary_energy_list_notation_keys.
+            rationale: Optional reason shown in audit/UI output.
+
+        This writes only CA staged review state and replaces any active staged
+        notation-key choice for the same target/proposal.
+        """
+
+        token = token_ref.get("value")
+        if not token:
+            return _error_payload(
+                action="stationary_energy_stage_notation_key",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-missing-token",
+                error_code="missing_token",
+            )
+        try:
+            choice = StationaryEnergyNotationKeyChoiceInput(
+                proposal_id=UUID(str(proposal_id)) if proposal_id else None,
+                target_id=target_id,
+                notation_key=notation_key,  # type: ignore[arg-type]
+                unavailable_explanation=unavailable_explanation,
+                rationale=rationale,
+            )
+        except (ValueError, ValidationError):
+            return _error_payload(
+                action="stationary_energy_stage_notation_key",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-invalid-notation-choice",
+                error_code="invalid_arguments",
+            )
+
+        return await _run_tool(
+            "stationary_energy_stage_notation_key",
+            lambda service: service.stage_notation_key(
+                draft_run_id=draft_uuid,
+                user_id=user_id,
+                choice=choice,
+                authorization=f"Bearer {token}",
             ),
         )
 
@@ -257,6 +361,102 @@ def build_stationary_energy_review_tools(
                 draft_run_id=draft_uuid,
                 user_id=user_id,
                 choices=parsed_choices,
+            ),
+        )
+
+    @function_tool
+    async def stationary_energy_request_bulk_notation_confirmation(
+        choices: list[StationaryEnergyNotationKeyChoiceInput],
+    ) -> str:
+        """Ask the UI to confirm multiple notation-key choices before staging.
+
+        Args:
+            choices: Proposed notation-key choices. Each object must include
+                proposal_id or target_id, notation_key from allowed_notation_keys,
+                and unavailable_explanation.
+
+        This validates choices and returns a confirmation card payload only. It
+        does not stage choices or write inventory data.
+        """
+
+        token = token_ref.get("value")
+        if not token:
+            return _error_payload(
+                action="stationary_energy_request_bulk_notation_confirmation",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-missing-token",
+                error_code="missing_token",
+            )
+        try:
+            parsed_choices = [
+                (
+                    choice
+                    if isinstance(choice, StationaryEnergyNotationKeyChoiceInput)
+                    else StationaryEnergyNotationKeyChoiceInput.model_validate(choice)
+                )
+                for choice in choices
+            ]
+        except (ValueError, ValidationError):
+            return _error_payload(
+                action="stationary_energy_request_bulk_notation_confirmation",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-invalid-notation-choices",
+                error_code="invalid_arguments",
+            )
+
+        return await _run_tool(
+            "stationary_energy_request_bulk_notation_confirmation",
+            lambda service: service.preview_notation_choices(
+                draft_run_id=draft_uuid,
+                user_id=user_id,
+                choices=parsed_choices,
+                authorization=f"Bearer {token}",
+            ),
+        )
+
+    @function_tool
+    async def stationary_energy_apply_bulk_notation_choices(
+        choices: list[StationaryEnergyNotationKeyChoiceInput],
+    ) -> str:
+        """Stage notation-key choices after the UI confirmation card is approved.
+
+        Use this only after the user approves the confirmation card and the
+        confirmed notation choices are present in runtime context. It writes CA
+        staged review state only, never committed inventory data.
+        """
+
+        token = token_ref.get("value")
+        if not token:
+            return _error_payload(
+                action="stationary_energy_apply_bulk_notation_choices",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-missing-token",
+                error_code="missing_token",
+            )
+        try:
+            parsed_choices = [
+                (
+                    choice
+                    if isinstance(choice, StationaryEnergyNotationKeyChoiceInput)
+                    else StationaryEnergyNotationKeyChoiceInput.model_validate(choice)
+                )
+                for choice in choices
+            ]
+        except (ValueError, ValidationError):
+            return _error_payload(
+                action="stationary_energy_apply_bulk_notation_choices",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-invalid-notation-choices",
+                error_code="invalid_arguments",
+            )
+
+        return await _run_tool(
+            "stationary_energy_apply_bulk_notation_choices",
+            lambda service: service.apply_notation_choices(
+                draft_run_id=draft_uuid,
+                user_id=user_id,
+                choices=parsed_choices,
+                authorization=f"Bearer {token}",
             ),
         )
 
@@ -389,6 +589,43 @@ def build_stationary_energy_review_tools(
         )
 
     @function_tool
+    async def stationary_energy_rollback_staged_notation_keys(
+        proposal_ids: Optional[list[str]] = None,
+        target_ids: Optional[list[str]] = None,
+    ) -> str:
+        """Roll back active staged notation-key choices without inventory writes.
+
+        Args:
+            proposal_ids: Optional proposal ids to roll back.
+            target_ids: Optional notation target ids to roll back. Omit both
+                proposal_ids and target_ids to roll back all active staged
+                notation-key choices.
+
+        This only removes active staged notation-key choices. It does not affect
+        saved review decisions or committed inventory data.
+        """
+
+        try:
+            parsed_proposal_ids = _parse_optional_uuid_list(proposal_ids)
+        except ValueError:
+            return _error_payload(
+                action="stationary_energy_rollback_staged_notation_keys",
+                draft_run_id=draft_uuid,
+                message_key="tool-error-invalid-proposal-ids",
+                error_code="invalid_arguments",
+            )
+
+        return await _run_tool(
+            "stationary_energy_rollback_staged_notation_keys",
+            lambda service: service.rollback_staged_notation_keys(
+                draft_run_id=draft_uuid,
+                user_id=user_id,
+                proposal_ids=parsed_proposal_ids,
+                target_ids=target_ids,
+            ),
+        )
+
+    @function_tool
     async def stationary_energy_save_review_draft() -> str:
         """Persist the staged Stationary Energy review choices as a saved Clima draft.
 
@@ -435,10 +672,19 @@ def build_stationary_energy_review_tools(
                     draft_run_id=draft_uuid,
                     user_id=user_id,
                 )
+                summary = await service.inventory_save_confirmation_summary(
+                    draft_run_id=draft_uuid,
+                    user_id=user_id,
+                )
                 result = StationaryEnergyInventoryConfirmationToolResult(
                     success=True,
                     draft_run_id=draft_uuid,
-                    message_key="tool-message-inventory-save-confirm",
+                    message_key=(
+                        "tool-message-inventory-save-confirm-with-notation"
+                        if summary["notation"] > 0
+                        else "tool-message-inventory-save-confirm"
+                    ),
+                    message_params=summary if summary["notation"] > 0 else {},
                 )
                 # Return only confirmation metadata; inventory writes stay in CC.
                 logger.info(
@@ -461,16 +707,28 @@ def build_stationary_energy_review_tools(
                 error_code=f"http_{exc.status_code}",
             ).model_dump_json()
 
+    inventory_context_tools = build_inventory_context_tools(
+        resolve_scope=_resolve_inventory_scope,
+        user_id=user_id,
+        token_ref=token_ref,
+    )
+
     return [
+        *inventory_context_tools,
         stationary_energy_list_review_options,
+        stationary_energy_list_notation_keys,
         stationary_energy_accept_one,
+        stationary_energy_stage_notation_key,
         stationary_energy_accept_multiple,
         stationary_energy_accept_all_recommended,
         stationary_energy_request_bulk_review_confirmation,
+        stationary_energy_request_bulk_notation_confirmation,
+        stationary_energy_apply_bulk_notation_choices,
         stationary_energy_request_all_recommended_confirmation,
         stationary_energy_request_staged_source_change_confirmation,
         stationary_energy_request_staged_sources_rollback_confirmation,
         stationary_energy_rollback_staged_sources,
+        stationary_energy_rollback_staged_notation_keys,
         stationary_energy_save_review_draft,
         stationary_energy_request_inventory_save_confirmation,
     ]

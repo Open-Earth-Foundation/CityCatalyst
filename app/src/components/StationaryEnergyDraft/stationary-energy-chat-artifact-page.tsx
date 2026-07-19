@@ -15,6 +15,7 @@ import { AskAiIcon } from "@/components/icons";
 import ProgressLoader from "@/components/ProgressLoader";
 import { ArtifactPanel } from "@/components/StationaryEnergyDraft/stationary-energy-artifact-panel";
 import { ClimaChatPanel } from "@/components/StationaryEnergyDraft/stationary-energy-chat-artifact-panels";
+import { StationaryEnergyDraftsPanel } from "@/components/StationaryEnergyDraft/stationary-energy-drafts-panel";
 import type { DraftStage } from "@/components/StationaryEnergyDraft/flow";
 import { useStationaryEnergyChatArtifactController } from "@/components/StationaryEnergyDraft/use-stationary-energy-chat-artifact-controller";
 import { useTranslation } from "@/i18n/client";
@@ -45,6 +46,7 @@ export function StationaryEnergyChatArtifactPage({
       skip: !inventoryId,
     });
   const [progressPanelOpen, setProgressPanelOpen] = useState(true);
+  const [draftsPanelOpen, setDraftsPanelOpen] = useState(true);
   const controller = useStationaryEnergyChatArtifactController({
     cityId,
     featureEnabled,
@@ -196,6 +198,103 @@ export function StationaryEnergyChatArtifactPage({
             display={{ base: "block", xl: "flex" }}
             alignItems="stretch"
           >
+            <Box
+              display={{ base: "none", xl: "block" }}
+              position="relative"
+              flex={{
+                base: undefined,
+                xl: draftsPanelOpen ? "0 0 280px" : "0 0 0px",
+              }}
+              w={{
+                base: undefined,
+                xl: draftsPanelOpen ? "280px" : "0px",
+              }}
+              h="full"
+              minH={0}
+              overflow="visible"
+              transition="flex-basis 220ms ease, width 220ms ease"
+              zIndex={4}
+            >
+              <Box
+                h="full"
+                minH={0}
+                overflow="hidden"
+                pointerEvents={draftsPanelOpen ? "auto" : "none"}
+                aria-hidden={!draftsPanelOpen}
+              >
+                <StationaryEnergyDraftsPanel actions={actions} state={state} />
+              </Box>
+              <Flex
+                position="absolute"
+                right="-44px"
+                top="50%"
+                transform="translateY(-50%)"
+                flexDir="column"
+                align="stretch"
+                gap={2}
+                zIndex={5}
+              >
+                <chakra.button
+                  type="button"
+                  aria-label={
+                    draftsPanelOpen
+                      ? t("artifact-panel-collapse")
+                      : t("drafts-panel-title")
+                  }
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  w="44px"
+                  h="56px"
+                  borderWidth="1px"
+                  borderColor="border.neutral"
+                  borderLeftWidth={0}
+                  borderRightRadius="rounded-xl"
+                  bg="base.light"
+                  color="content.primary"
+                  onClick={() => setDraftsPanelOpen((open) => !open)}
+                >
+                  <Icon
+                    as={draftsPanelOpen ? MdChevronLeft : MdChevronRight}
+                    boxSize={7}
+                  />
+                </chakra.button>
+              </Flex>
+            </Box>
+
+            <Box display={{ base: "block", xl: "none" }} px={3} pt={4}>
+              <chakra.button
+                type="button"
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                w="full"
+                px={4}
+                py={3}
+                borderWidth="1px"
+                borderColor="border.neutral"
+                borderRadius="rounded-xl"
+                bg="base.light"
+                color="content.primary"
+                fontFamily="heading"
+                fontWeight="semibold"
+                onClick={() => setDraftsPanelOpen((open) => !open)}
+              >
+                {t("drafts-panel-title")}
+                <Text color="interactive.tertiary">
+                  {state.draftRuns.length}
+                </Text>
+              </chakra.button>
+              {draftsPanelOpen ? (
+                <Box mt={3}>
+                  <StationaryEnergyDraftsPanel
+                    actions={actions}
+                    state={state}
+                  />
+                </Box>
+              ) : null}
+            </Box>
+
             <Box
               h={{ base: "auto", xl: "full" }}
               minH={0}

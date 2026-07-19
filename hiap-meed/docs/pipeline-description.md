@@ -387,24 +387,30 @@ From the action catalog:
 
 - `actions[].actionId`
 
-From the legal assessments file:
+From the S3 legal classification CSV after the adapter maps it into the internal legal record contract:
 
-- `[].srcActionId`
-- `[].verdictCategory`
-- `[].verdictScore`
+- `[].action_id`
+- `[].verdict_category`
+- `[].verdict_score`
 
 Supporting legal fields that are returned as evidence, but do not drive the actual yes/no decision:
 
-- `[].ownershipCategory`
-- `[].ownershipScore`
-- `[].restrictionsCategory`
-- `[].restrictionsScore`
-- `[].ownershipDescriptionI18n`
-- `[].restrictionsDescriptionI18n`
-- `[].legalJustificationI18n`
-- `[].legalReferences`
-- `[].analysisDate`
-- `[].generationMethod`
+- `[].ownership_category`
+- `[].ownership_score`
+- `[].restrictions_category`
+- `[].restrictions_score`
+- `[].ownership_description_i18n`
+- `[].restrictions_description_i18n`
+- `[].legal_justification_i18n`
+- `[].legal_references`
+- `[].analysis_date`
+- `[].generation_method`
+
+The runtime CSV source is configured with `HIAP_MEED_LEGAL_S3_BUCKET` and
+`HIAP_MEED_LEGAL_S3_KEY`. Its flat columns such as `action_id`,
+`legal_reference_1` through `legal_reference_6`, and bilingual description
+columns are normalized in `app/services/action_legal_assessments_s3.py` before
+the scoring blocks see the data.
 
 ### 4.2 Logic
 
@@ -895,21 +901,21 @@ It combines:
 
 ### 7.1 Inputs
 
-From the legal assessments file:
+From the S3 legal classification CSV after the adapter maps it into the internal legal record contract:
 
-- `[].srcActionId`
-- `[].verdictCategory`
-- `[].verdictScore`
+- `[].action_id`
+- `[].verdict_category`
+- `[].verdict_score`
 
 Fields returned mainly as evidence:
 
-- `[].ownershipCategory`
-- `[].ownershipScore`
-- `[].restrictionsCategory`
-- `[].restrictionsScore`
-- `[].legalReferences`
-- `[].analysisDate`
-- `[].generationMethod`
+- `[].ownership_category`
+- `[].ownership_score`
+- `[].restrictions_category`
+- `[].restrictions_score`
+- `[].legal_references`
+- `[].analysis_date`
+- `[].generation_method`
 
 From the mitigation feasibility scores endpoint:
 
@@ -1053,8 +1059,14 @@ Key evidence fields in `012_feasibility.json` are grouped per component:
   - `verdict_score_missing`
   - `ownership_category`
   - `ownership_score`
+  - `ownership_description`
+  - `ownership_description_es`
   - `restrictions_category`
   - `restrictions_score`
+  - `restrictions_description`
+  - `restrictions_description_es`
+  - `legal_justification`
+  - `legal_justification_en`
   - `analysis_date`
   - `generation_method`
   - `references`
@@ -1189,9 +1201,15 @@ For each ranked action, the output includes:
 Important current behavior:
 
 - `evidence_summary.feasibility` keeps `feasibility_score` at the top level and groups detailed component evidence under `legal`, `mitigation_feasibility`, and `financial_feasibility`
+- `evidence_summary.feasibility.legal` includes the public legal authority/restriction categories and scores, plain-language ownership and restriction descriptions in English and Spanish, legal justification in Spanish and English, and normalized legal reference strings from the S3 legal classification source when a row is available.
 - `explanations` is `{}` unless `requestData.createExplanations=true` and the explanation call succeeds
 - Explanations are generated only after ranking is finished; they do not change scores or ranks
-- The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks
+- The explanation stage uses the ranked actions plus curated evidence from the Impact, Alignment, and Feasibility blocks.
+- The curated explanation payload follows a fixed three-slot structure:
+  1. impact driver from the top matched inventory subsector/share,
+  2. alignment driver from policy and city-selected priorities,
+  3. the single weakest feasibility component, or a supportive feasibility reason when feasibility is not a constraint.
+- The generated text should explain why the ranking looks the way it does without repeating the numeric score bars already present in the response.
 - The explanation stage returns explanation texts keyed by language code per action.
 - The canonical explanation language is `en`.
 - Requested non-English explanation languages are produced by translating the canonical English explanation after ranking.
@@ -1213,6 +1231,16 @@ Key metadata includes:
 - `counts.discarded_legal`
 - `counts.ranked_actions`
 - `hard_filter_evidence_by_action_id`
+
+The response also includes top-level `removed_actions` beside `ranked_actions`.
+This is the frontend-facing list for actions removed before scoring. For legally
+blocked actions, each item uses `removal_source = legal_hard_filter` and includes
+a `legal` object with the verdict, public ownership and restriction
+categories/scores, English and Spanish ownership and restriction descriptions,
+Spanish and English legal justification, and normalized legal reference strings
+from the legal classification source. The metadata
+`hard_filter_evidence_by_action_id` map remains available as the diagnostic
+hard-filter trace.
 
 ## 9. How the Final Ranked List Is Created
 

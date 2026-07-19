@@ -185,6 +185,94 @@ describe("Chat routes", () => {
     );
   });
 
+  it("normalizes configured service URL slashes when creating a CA thread", async () => {
+    process.env.HOST = "https://configured.example/";
+    process.env.CA_BASE_URL = "http://ca.example/";
+    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+    fetchMock
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: "token-123",
+          expires_in: 3600,
+          token_type: "Bearer",
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse(
+          {
+            thread_id: "thread-1",
+          },
+          { status: 201 },
+        ),
+      );
+
+    const response = await postChatThread(
+      makeRequest(
+        "https://request-origin.example/api/v1/chat/threads",
+        "POST",
+        {
+          inventory_id: testInventoryId,
+          user_id: "client-supplied-user-id",
+        },
+      ),
+      { params: Promise.resolve({}) },
+    );
+
+    expect(response.status).toBe(200);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      "https://configured.example/api/v1/internal/ca/user-token/",
+    );
+    expect(fetchMock.mock.calls[1]?.[0]).toBe("http://ca.example/v1/threads");
+
+    const [, tokenRequest] = fetchMock.mock.calls[0] ?? [];
+    const [, threadRequest] = fetchMock.mock.calls[1] ?? [];
+    expect(JSON.parse(String(tokenRequest?.body))).toEqual({
+      inventory_id: testInventoryId,
+      user_id: testUserID,
+    });
+    expect(JSON.parse(String(threadRequest?.body))).toEqual(
+      expect.objectContaining({
+        inventory_id: testInventoryId,
+        user_id: testUserID,
+      }),
+    );
+  });
+
+  it("rejects malformed token payloads before creating a CA thread", async () => {
+    const malformedPayloads = [
+      {},
+      { access_token: null, expires_in: 3600, token_type: "Bearer" },
+      { access_token: "token-123", expires_in: 3600, token_type: "Basic" },
+      { access_token: "token-123", token_type: "Bearer" },
+      { access_token: "token-123", expires_in: 0, token_type: "Bearer" },
+      { access_token: "token-123", expires_in: -1, token_type: "Bearer" },
+      { access_token: "token-123", expires_in: "3600", token_type: "Bearer" },
+    ];
+
+    for (const malformedPayload of malformedPayloads) {
+      const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
+      fetchMock.mockResolvedValueOnce(jsonResponse(malformedPayload));
+
+      const response = await postChatThread(
+        makeRequest("http://localhost:3000/api/v1/chat/threads", "POST", {
+          inventory_id: testInventoryId,
+        }),
+        { params: Promise.resolve({}) },
+      );
+
+      expect(response.status).toBe(502);
+      await expect(response.json()).resolves.toEqual({
+        error: {
+          code: undefined,
+          data: undefined,
+          message: "Invalid CA token response",
+        },
+      });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      fetchMock.mockClear();
+    }
+  });
+
   it("preserves JSON token-issuance errors when creating a CA thread", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(

@@ -58,6 +58,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const user = await db.models.User.findOne({ where: { email } });
 
   const transaction = await db.sequelize!.transaction();
+  let committed = false;
   try {
     if (user) {
       // Step 1: Promote to OrganizationAdmin
@@ -125,17 +126,22 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       });
 
       await transaction.commit();
+      committed = true;
 
-      // Send role upgrade email after successful commit
-      await EmailService.sendRoleUpdateNotification({
-        email,
-        brandInformation: {
-          color: org.theme.primaryColor,
-          logoUrl: org.logoUrl as string,
-        },
-        organizationName: org.name as string,
-        user,
-      });
+      // Send role upgrade email after successful commit (non-fatal)
+      try {
+        await EmailService.sendRoleUpdateNotification({
+          email,
+          brandInformation: {
+            color: org.theme?.primaryColor,
+            logoUrl: org.logoUrl as string,
+          },
+          organizationName: org.name as string,
+          user,
+        });
+      } catch (emailErr) {
+        logger.error({ err: emailErr, email }, "Failed to send role update notification email (role was updated successfully)");
+      }
 
       return NextResponse.json({ success: true });
     }
@@ -190,8 +196,12 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     }
 
     await transaction.commit();
+    committed = true;
 
-    const emailSent = await EmailService.sendOrganizationInvitationEmail(
+    // Send invite email after successful commit (non-fatal).
+    // sendOrganizationInvitationEmail returns { success, inviteUrl }; the object
+    // is always truthy, so we must check `.success` to detect delivery failures.
+    const emailResult = await EmailService.sendOrganizationInvitationEmail(
       {
         email,
         organizationId,
@@ -201,14 +211,22 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
       null,
     );
 
-    if (!emailSent) {
-      logger.error({ email }, "Failed to send org invite email");
-      throw createHttpError.InternalServerError("email-error");
+    if (!emailResult.success) {
+      logger.error(
+        { email },
+        "Failed to send org invite email (invite was created successfully)",
+      );
+      return NextResponse.json(
+        { success: true, emailSent: false },
+        { status: 200 },
+      );
     }
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    await transaction.rollback();
+    if (!committed) {
+      await transaction.rollback();
+    }
     logger.error(err, "Transaction failed in PATCH /organization/:id/role");
     throw err;
   }

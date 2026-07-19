@@ -119,7 +119,8 @@
   "stationary-energy": "Stationäre Energie",
   "waste": "Abfall",
   "low": "Niedrig",
-  "top-actions-tip": "Ihre Top-Aktionsliste basiert auf Ihrem aktuellen Inventar-Fortschritt. Wir empfehlen, es vor der Verwendung dieses Moduls zu vervollständigen.",
+  "top-actions-tip-mitigation": "Ihre Top-Aktionsliste basiert auf Ihrem aktuellen Inventar-Fortschritt. Wir empfehlen, es vor der Verwendung dieses Moduls zu vervollständigen.",
+  "top-actions-tip-adaptation": "Ihre Top-Aktionsliste basiert auf Ihrer aktuellen Klimarisikobewertung. Wir empfehlen, sie vor der Verwendung dieses Moduls zu vervollständigen.",
   "climate-actions-title": "Klimaschutzmaßnahmen",
   "actions": "Maßnahmen",
   "open-cc-actions": "Öffne CC-Aktionen",
@@ -182,5 +183,9 @@
   "selection-updated": "Auswahl erfolgreich aktualisiert",
   "selection-update-failed": "Aktualisierung der Auswahl fehlgeschlagen",
   "other-available-actions": "Andere verfügbare Aktionen",
-  "other-available-actions-description": "Unten sind zusätzliche Klimaschutzmaßnahmen für Ihre Stadt aufgeführt, die nicht in der Top-Rangliste enthalten waren. Diese Maßnahmen können je nach den spezifischen Prioritäten und dem Kontext Ihrer Stadt immer noch relevant sein."
+  "other-available-actions-description": "Unten sind zusätzliche Klimaschutzmaßnahmen für Ihre Stadt aufgeführt, die nicht in der Top-Rangliste enthalten waren. Diese Maßnahmen können je nach den spezifischen Prioritäten und dem Kontext Ihrer Stadt immer noch relevant sein.",
+  "last-update": "Letztes Update",
+  "history": "Versionsverlauf",
+  "view-more": "MEHR ANSEHEN",
+  "view-less": "WENIGER ANZEIGEN"
 }

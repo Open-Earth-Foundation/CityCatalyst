@@ -1,17 +1,14 @@
 "use client";
 
 import { NavigationBar } from "@/components/navigation-bar";
-import { toaster, Toaster } from "@/components/ui/toaster";
-import { Box } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 import { Roles } from "@/util/types";
-import React, { useEffect, use } from "react";
+import React, { use } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { useTranslation } from "@/i18n/client";
 import { useSession } from "next-auth/react";
+import HeadingText from "@/components/heading-text";
+import { Button } from "@/components/ui/button";
 
 export default function AdminLayout(props: {
   children: React.ReactNode;
@@ -23,18 +20,9 @@ export default function AdminLayout(props: {
   const router = useRouter();
   const { data } = useSession();
 
-  useEffect(() => {
-    if (data?.user?.role !== Roles.Admin) {
-      toaster.error({
-        title: t("not-authorized"),
-      });
-      const REDIRECT_DELAY_MS = 2000;
-      setTimeout(() => {
-        const fallbackPath = `/${lng}`;
-        router.push(fallbackPath);
-      }, REDIRECT_DELAY_MS);
-    }
-  }, [data, router, lng, t]);
+  const handleGoBack = () => {
+    router.push(`/${lng}`);
+  };
 
   return (
     <Box
@@ -44,7 +32,6 @@ export default function AdminLayout(props: {
       bg="background.backgroundLight"
     >
       <NavigationBar lng={lng} />
-      <Toaster />
       <Box w="full" h="full">
         {data?.user?.role === Roles.Admin ? (
           children
@@ -54,18 +41,13 @@ export default function AdminLayout(props: {
             alignItems="center"
             justifyContent="center"
             w="full"
+            h={600}
+            py={12}
           >
-            <Box
-              w="full"
-              py={12}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <ProgressCircleRoot value={null}>
-                <ProgressCircleRing cap="round" />
-              </ProgressCircleRoot>
-            </Box>
+            <VStack spaceY="4">
+              <HeadingText title={t("not-authorized")} />
+              <Button onClick={handleGoBack}>{t("go-back")}</Button>
+            </VStack>
           </Box>
         )}
       </Box>

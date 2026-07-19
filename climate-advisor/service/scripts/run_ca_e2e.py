@@ -1,8 +1,8 @@
 """
 Run Climate Advisor E2E prompt flow without pytest and save results to disk.
 
-Usage (from climate-advisor/):
-  uv run --directory service python -m scripts.run_ca_e2e
+Usage (from project root):
+  uv run --directory climate-advisor/service python -m scripts.run_ca_e2e
 
 Optional flags:
   --prompts     Path to the JSON prompt file (default: tests/fixtures/ca_e2e_prompts.json)
@@ -215,32 +215,33 @@ def _find_tool_invocation(tools_used: List[Dict[str, Any]], name: str) -> Option
 
 def _extract_inventory_meta(tools_used: List[Dict[str, Any]]) -> Dict[str, str]:
     """Extract inventory id and city name hints from tool outputs for later prompts."""
-    for tool_name in ("city_inventory_search", "get_user_inventories"):
-        tool = _find_tool_invocation(tools_used, tool_name)
-        if not tool:
+    tool = _find_tool_invocation(tools_used, "inventory_list_accessible")
+    if not tool:
+        return {}
+
+    payload = tool.get("result_json")
+    if not isinstance(payload, dict):
+        return {}
+
+    data = payload.get("data")
+    if not isinstance(data, dict):
+        return {}
+
+    cities = data.get("cities")
+    if not isinstance(cities, list):
+        return {}
+
+    for city in cities:
+        if not isinstance(city, dict):
             continue
-
-        payload = tool.get("result_json")
-        if not isinstance(payload, dict):
+        city_name = city.get("name")
+        inventories = city.get("inventories")
+        if not isinstance(inventories, list):
             continue
-
-        data = payload.get("data")
-        if isinstance(data, dict):
-            inventory_list = data.get("data")
-        else:
-            inventory_list = data
-
-        if not isinstance(inventory_list, list):
-            continue
-
-        for inventory in inventory_list:
+        for inventory in inventories:
             if not isinstance(inventory, dict):
                 continue
-            inventory_id = inventory.get("inventoryId") or inventory.get("id")
-            city_name = None
-            city = inventory.get("city")
-            if isinstance(city, dict):
-                city_name = city.get("name")
+            inventory_id = inventory.get("inventory_id")
             meta: Dict[str, str] = {}
             if inventory_id:
                 meta["inventory_id"] = inventory_id
@@ -276,8 +277,8 @@ def _env_override(name: str) -> Optional[str]:
     return value
 
 
-def main() -> int:
-    """Run the configured CA prompt cases and persist their responses to disk."""
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for the CA E2E prompt runner."""
     parser = argparse.ArgumentParser(
         description="Run CA E2E prompts and save responses.",
     )
@@ -308,8 +309,12 @@ def main() -> int:
         action="store_true",
         help="Include raw SSE events in the output JSON.",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
+
+def main() -> int:
+    """Run the configured CA prompt cases and persist their responses to disk."""
+    args = parse_args()
     required_env = [
         "CA_DATABASE_URL",
         "OPENROUTER_API_KEY",

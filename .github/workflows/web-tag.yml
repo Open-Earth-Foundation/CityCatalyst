@@ -13,12 +13,15 @@ on:
       - k8s/prod/cc-prod-seed.yml
       - k8s/prod/cc-prod-sync-catalogue.yml
       - k8s/prod/cc-prod-create-admin.yml
+      - k8s/prod/cc-prod-ca-smoke-fixture.yml
       - k8s/cc-web.yml
       - k8s/prod/cc-prod-seed.yml
       - k8s/prod/cc-prod-sync-catalogue.yml
       - k8s/prod/cc-prod-create-admin.yml
+      - k8s/prod/cc-prod-ca-smoke-fixture.yml
       - k8s/cc-web.yml
       - k8s/cc-web-deploy.yml
+      - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-tag.yml
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -62,11 +65,22 @@ jobs:
           npm run sync-catalogue
           npm run sync-emissions-factors
 
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst.io" >> .env && \
+          echo "GLOBAL_API_URL=https://api.citycatalyst.io" >> .env && \
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.network" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
+
       - name: Run NextJS build
         run: npm run build
 
       - name: Lint the OpenAPI spec
-        run: npm run openapi:lint
+        run: |
+          npm run openapi:build
+          npm run openapi:lint
 
       - name: Run API tests
         run: npm run api:test
@@ -226,7 +240,7 @@ jobs:
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED, CA_SERVICE_INTEGRATION" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=production" \
@@ -238,10 +252,32 @@ jobs:
             "AWS_ACCESS_KEY_ID"=${{secrets.AWS_ACCESS_KEY_ID_PROD}} \
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID_PROD}} \
-            CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
+          CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
+          kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    if: ${{ !contains(github.ref, '-') }}
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
+          SMOKE_FIXTURE_MANIFEST=k8s/prod/cc-prod-ca-smoke-fixture.yml \
+          CA_DEPLOYMENT_NAME=climate-advisor-prod \
+          bash .github/scripts/cc-ca-post-deploy-smoke.sh

@@ -152,8 +152,8 @@ class GenerationConfig(BaseModel):
 class PromptsConfig(BaseModel):
     """Configured prompt entry points and include-aware prompt loading."""
 
-    default: str
-    inventory_context: Optional[str] = None
+    core: str
+    chat: str
     stationary_energy_review: Optional[str] = None
 
     def get_prompt(self, prompt_type: str) -> str:
@@ -165,6 +165,22 @@ class PromptsConfig(BaseModel):
         search_roots = self._prompt_search_roots()
         full_path = self._find_prompt_path(prompt_path, search_roots)
         return self._read_prompt_file(full_path, search_roots, set()).strip()
+
+    def compose_prompt(self, workflow_prompt_type: str) -> str:
+        """Compose the shared core prompt with one workflow-specific prompt."""
+        if workflow_prompt_type not in {"chat", "stationary_energy_review"}:
+            raise ValueError(
+                "Workflow prompt type must be 'chat' or 'stationary_energy_review'"
+            )
+
+        core_prompt = self.get_prompt("core").strip()
+        workflow_prompt = self.get_prompt(workflow_prompt_type).strip()
+        return (
+            f"{core_prompt}\n\n"
+            "<additional_instructions>\n"
+            f"{workflow_prompt}\n"
+            "</additional_instructions>"
+        ).strip()
 
     @staticmethod
     def _prompt_search_roots() -> list[Path]:
@@ -308,7 +324,6 @@ class FeaturesConfig(BaseModel):
     streaming_enabled: Optional[bool] = None
     dynamic_model_selection: Optional[bool] = None
     dynamic_parameters: Optional[bool] = None
-    inventory_context_injection: Optional[bool] = None
 
 
 class LoggingConfig(BaseModel):

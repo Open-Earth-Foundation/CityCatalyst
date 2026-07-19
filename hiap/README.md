@@ -36,7 +36,7 @@ flowchart LR
   FE["Client application"] -->|HTTP| API["FastAPI app (app/main.py)"]
   API --> Routes["API routes: prioritizer, plan-creator, plan-creator-legacy"]
   Routes --> Tasks["Async execution and in-memory task storage"]
-  Routes --> CC["CityCatalyst Global APIs (ccglobal.openearth.dev)"]
+  Routes --> CC["CityCatalyst Global API (CCGLOBAL_API_BASE_URL)"]
   Routes --> LLM["OpenAI provider (optional by endpoint)"]
   RunSh["Docker startup: app/run.sh"] -->|starts| API
   RunSh -. downloads artefacts .-> S3["AWS S3 bucket (vector stores and JSON artefacts)"]
@@ -49,7 +49,7 @@ flowchart LR
 ### Prerequisites
 
 - **Python 3.12+**
-- Internet access to `ccglobal.openearth.dev` (HIAP fetches actions/context/CCRA data at runtime)
+- Internet access to the configured Global API host (defaults to `ccglobal.openearth.dev`)
 
 ### 1) Create `.env`
 
@@ -100,6 +100,9 @@ The service loads `.env` at startup (see `app/main.py`). The variables below com
 - **FastAPI runtime**
   - **`API_HOST`**: Host to bind to (default is `0.0.0.0`).
   - **`API_PORT`**: Port to bind to (default is `8000`).
+
+- **Upstream Global API**
+  - **`CCGLOBAL_API_BASE_URL`**: Base URL for actions, city context, and CCRA data. Defaults to `https://ccglobal.openearth.dev`. Production uses `https://api.citycatalyst.io`.
 
 - **Docker startup behavior**
   - **`HIAP_SKIP_S3_DOWNLOADS`**: Set to `true` (or `1`) to skip S3 downloads in `app/run.sh` and start the API immediately.
@@ -201,9 +204,11 @@ If `HIAP_SKIP_S3_DOWNLOADS=true` and no local vector stores are present under `a
 
 ## What upstream data HIAP uses
 
-- **Actions**: `https://ccglobal.openearth.dev/api/v0/climate_actions`
-- **City context**: `https://ccglobal.openearth.dev/api/v0/city_context/city/{locode}`
-- **CCRA**: `https://ccglobal.openearth.dev/api/v0/ccra/risk_assessment/city/{locode}/{scenario}`
+All Global API URLs are built from `CCGLOBAL_API_BASE_URL` (default: `https://ccglobal.openearth.dev`).
+
+- **Actions**: `{CCGLOBAL_API_BASE_URL}/api/v0/climate_actions`
+- **City context**: `{CCGLOBAL_API_BASE_URL}/api/v0/city_context/city/{locode}`
+- **CCRA**: `{CCGLOBAL_API_BASE_URL}/api/v0/ccra/risk_assessment/city/{locode}/{scenario}`
 - **LLM (optional per endpoint)**: OpenAI via env vars in `.env`
 - **S3 artefacts (Docker startup + some scripts)**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`
 
@@ -218,7 +223,7 @@ pytest
 To skip long-running scenarios:
 
 ```bash
-pytest -m "not slow"
+pytest -m "not external"
 ```
 
 ## Optional: “cap off” artefacts

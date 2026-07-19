@@ -1075,6 +1075,7 @@
   "classification-name-settlements-converted-to-other-land": "Siedlungen umgewandelt in anderes Land",
   "land-source": "Quelle",
   "aggregate-sources-activity-type": "Aktivitätstyp",
+  "aggregate-sources-source": "Quelle",
   "activity-type-biomass-burning": "Biomasseverbrennung",
   "activity-type-liming": "Kalkung",
   "activity-type-urea-application": "Harnstoffanwendung",

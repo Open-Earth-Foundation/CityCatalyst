@@ -19,6 +19,7 @@ class ModelsConfig(BaseModel):
     free_text_exclusions: RoleModelConfig
     explanations: RoleModelConfig
     explanation_translations: RoleModelConfig
+    output_plan: RoleModelConfig
 
 
 class FeaturesConfig(BaseModel):

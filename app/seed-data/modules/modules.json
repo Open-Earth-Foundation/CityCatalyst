@@ -267,36 +267,6 @@
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163311.png"
   },
   {
-    "id": "f0e2722c-e895-4b27-ae8b-d1a86d25b9ef",
-    "type": "POC",
-    "stage": "assess-&-analyze",
-    "name": {
-      "de": "THG-Inventarvergleich",
-      "en": "GHG Inventory Comparison",
-      "es": "Comparación de Inventarios de GEI",
-      "fr": "Comparaison d'Inventaires de GES",
-      "pt": "Comparação de Inventários de GEE"
-    },
-    "description": {
-      "de": "Vergleichen Sie das Treibhausgasinventar Ihrer Stadt mit globalen Benchmarks und erhalten Sie KI-gestützte Empfehlungen zur Emissionsreduktion.",
-      "en": "Compare your city's greenhouse gas inventory against global benchmarks and get AI-powered recommendations for emission reduction.",
-      "es": "Compara el inventario de gases de efecto invernadero de tu ciudad con referencias globales y obtén recomendaciones impulsadas por IA para reducir emisiones.",
-      "fr": "Comparez l'inventaire de gaz à effet de serre de votre ville aux références mondiales et obtenez des recommandations alimentées par l'IA pour réduire les émissions.",
-      "pt": "Compare o inventário de gases de efeito estufa da sua cidade com referências globais e obtenha recomendações com IA para redução de emissões."
-    },
-    "tagline": {
-      "de": "Vergleichen Sie die Emissionen Ihrer Stadt mit der Welt",
-      "en": "Benchmark Your City's Emissions Against the World",
-      "es": "Compara las emisiones de tu ciudad con el mundo",
-      "fr": "Comparez les émissions de votre ville au reste du monde",
-      "pt": "Compare as emissões da sua cidade com o mundo"
-    },
-    "author": "Open Earth Foundation",
-    "status": "poc",
-    "url": "https://cc-inventory-comparison.replit.app",
-    "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-163620.png"
-  },
-  {
     "id": "dca36554-d673-496e-95df-fea636ae4ba7",
     "type": "POC",
     "stage": "assess-&-analyze",

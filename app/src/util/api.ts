@@ -27,6 +27,8 @@ import { isPATToken, validatePAT } from "@/lib/auth/access-token-validator";
 interface BearerTokenPayload {
   sub: string;
   aud: string;
+  iss?: string;
+  issued_by?: string;
   iat: number;
   exp?: number;
   client_id?: string;
@@ -184,13 +186,19 @@ function getBearerToken(header: string): BearerTokenPayload {
     logger.error("Need to assign VERIFICATION_TOKEN_SECRET in env!");
     throw createHttpError.InternalServerError("Configuration error");
   }
-  return jwt.verify(
-    match[1],
-    process.env.VERIFICATION_TOKEN_SECRET,
-  ) as BearerTokenPayload;
+  try {
+    return jwt.verify(
+      match[1],
+      process.env.VERIFICATION_TOKEN_SECRET,
+    ) as BearerTokenPayload;
+  } catch {
+    throw new createHttpError.Unauthorized("Invalid or expired access token");
+  }
 }
 
-async function makeOAuthUserSession(token: BearerTokenPayload): Promise<AppSession> {
+async function makeOAuthUserSession(
+  token: BearerTokenPayload,
+): Promise<AppSession> {
   const userId = token.sub;
   const user = await db.models.User.findOne({ where: { userId } });
   if (!user) {
@@ -208,8 +216,13 @@ async function makeOAuthUserSession(token: BearerTokenPayload): Promise<AppSessi
   };
 }
 
-async function makeServiceUserSession(token: BearerTokenPayload): Promise<AppSession> {
+async function makeServiceUserSession(
+  token: BearerTokenPayload,
+): Promise<AppSession> {
   const userId = token.sub;
+  if (!userId) {
+    throw new createHttpError.Unauthorized("Service token missing subject");
+  }
   const user = await db.models.User.findOne({ where: { userId } });
   if (!user) {
     throw new createHttpError.Unauthorized(`User not found for service token`);
@@ -299,14 +312,20 @@ export function apiHandler(handler: NextHandler) {
       if (authorization) {
         const match = authorization.match(/^Bearer\s+(.*)$/);
         if (!match) {
-          throw new createHttpError.BadRequest("Malformed Authorization header");
+          throw new createHttpError.BadRequest(
+            "Malformed Authorization header",
+          );
         }
         const bearerToken = match[1];
 
         // Check if it's a Personal Access Token
         if (isPATToken(bearerToken)) {
           const url = new URL(req.url);
-          const { session: patSession } = await validatePAT(bearerToken, req.method, url.pathname);
+          const { session: patSession } = await validatePAT(
+            bearerToken,
+            req.method,
+            url.pathname,
+          );
           session = patSession;
         } else {
           // Existing JWT/OAuth validation
@@ -332,6 +351,14 @@ export function apiHandler(handler: NextHandler) {
             if (!isValidService) {
               throw new createHttpError.Unauthorized(
                 "Invalid service credentials",
+              );
+            }
+            if (
+              token.iss !== "climate-advisor-service" ||
+              token.issued_by !== "climate-advisor-service"
+            ) {
+              throw new createHttpError.Unauthorized(
+                "Invalid service token issuer",
               );
             }
 
@@ -365,7 +392,9 @@ export function apiHandler(handler: NextHandler) {
               ["PUT", "PATCH", "POST", "DELETE"].includes(req.method) &&
               !scopes.includes("write")
             ) {
-              throw new createHttpError.Unauthorized("No write scope available");
+              throw new createHttpError.Unauthorized(
+                "No write scope available",
+              );
             }
             const authz = await OAuthClientAuthz.findOne({
               where: {

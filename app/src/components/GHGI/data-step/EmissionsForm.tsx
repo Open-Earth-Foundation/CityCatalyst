@@ -1,7 +1,6 @@
 import {
   Box,
   Heading,
-  HStack,
   Icon,
   Select,
   Textarea,
@@ -10,7 +9,7 @@ import {
 import { ActivityDataTab } from "./ActivityDataTab";
 import { DirectMeasureForm } from "./DirectMeasureForm";
 import type { TFunction } from "i18next";
-import { Control, useController } from "react-hook-form";
+import { Control, useController, FieldValues } from "react-hook-form";
 import { resolve } from "@/util/helpers";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 import { MdInfoOutline } from "react-icons/md";
@@ -33,7 +32,7 @@ export function EmissionsForm({
   t: TFunction;
   register: Function;
   errors: Record<string, any>;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   prefix?: string;
   watch: Function;
   setValue: Function;

@@ -11,6 +11,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.modules.prioritizer.scoring_config import resolve_top_n
 from app.modules.prioritizer.internal_models import CityActivityRow, CityEmissionsContext
 from app.modules.prioritizer.models import (
+    CityActionReportApiRequest,
+    CityActionReportApiResponse,
+    CityActionReportMetadata,
+    CityActionReportSourceContext,
     ExplanationTranslationApiRequest,
     ExplanationTranslationApiResponse,
     ExplanationTranslationResult,
@@ -24,6 +28,18 @@ from app.modules.prioritizer.models import (
     PrioritizerApiResponse,
 )
 from app.modules.prioritizer.orchestrator import run_prioritization
+from app.modules.prioritizer.report_artifacts import (
+    write_city_action_report_error_artifacts,
+    write_output_plan_llm_artifacts,
+    write_output_plan_markdown_artifact,
+)
+from app.modules.prioritizer.report_context import build_chapter_inputs
+from app.modules.prioritizer.services.report_context_enrichment import (
+    build_report_context_with_live_enrichment,
+)
+from app.modules.prioritizer.services.report_generation import (
+    generate_output_plan_chapters,
+)
 from app.modules.prioritizer.utils.subsector_mapping import (
     normalize_gpc_reference_to_subsector_key,
 )
@@ -37,6 +53,7 @@ from app.services.data_clients import (
     ApiActionMitigationFeasibilityScoresDataApiClient,
     ApiCityDataApiClient,
     ApiLegalDataApiClient,
+    S3LegalDataApiClient,
     ApiActionPolicyScoresDataApiClient,
     MockActionFinancialFeasibilityScoresDataApiClient,
     MockActionPathwaysDataApiClient,
@@ -156,7 +173,7 @@ def _mlflow_source_params() -> dict[str, str]:
     """Return the active source-config params logged on MLflow request runs."""
     return {
         "city_data_source": os.getenv("HIAP_MEED_CITY_DATA_SOURCE", "api"),
-        "legal_data_source": os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "api"),
+        "legal_data_source": os.getenv("HIAP_MEED_LEGAL_DATA_SOURCE", "s3"),
         "action_pathways_data_source": os.getenv(
             "HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE", "api"
         ),
@@ -385,7 +402,9 @@ def prioritize(
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
         get_action_pathways_data_api_client
     ),
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient = Depends(
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ) = Depends(
         get_legal_data_api_client
     ),
     action_policy_scores_data_api_client: (
@@ -474,6 +493,7 @@ def prioritize(
                         locode=city_input.locode,
                         ranked_action_ids=per_city_result.ranked_action_ids,
                         ranked_actions=per_city_result.ranked_actions,
+                        removed_actions=per_city_result.removed_actions,
                         metadata=per_city_result.metadata,
                         warnings=per_city_result.warnings,
                     )
@@ -517,6 +537,240 @@ def prioritize(
             ) from error
         except Exception as error:
             logger.exception("Prioritization failed request_id=%s", request_trace_id)
+            raise HTTPException(
+                status_code=500,
+                detail=_error_payload(request_trace_id, "Internal server error"),
+            ) from error
+
+
+@router.post(
+    "/v1/reports/output-plan",
+    response_model=CityActionReportApiResponse,
+    summary="Generate one City Action Report output plan",
+    description=(
+        "Generates one JSON-with-Markdown-chapters output plan for one selected "
+        "ranked action. The endpoint is stateless: callers must provide the "
+        "original prioritization request/response snapshot plus one locode, "
+        "one actionId, and one language."
+    ),
+    responses={
+        200: {"description": "Output plan generated for the selected action."},
+        422: {"description": "Validation error in request or prioritization snapshot."},
+        500: {"description": "Internal server error while generating the output plan."},
+    },
+)
+def generate_output_plan(
+    request: CityActionReportApiRequest,
+    city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient = Depends(
+        get_city_data_api_client
+    ),
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
+        get_action_pathways_data_api_client
+    ),
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ) = Depends(get_legal_data_api_client),
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
+    ) = Depends(get_action_policy_scores_data_api_client),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
+    ) = Depends(get_action_mitigation_feasibility_scores_data_api_client),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
+    ) = Depends(get_action_financial_feasibility_scores_data_api_client),
+) -> CityActionReportApiResponse:
+    """
+    Generate one stateless output plan from a prioritization snapshot.
+
+    The route validates that the selected city/action belong to the supplied
+    snapshot, refetches live source context, then generates isolated report
+    chapters in the requested language for that single action.
+    """
+    request_trace_id = request.meta.requestId
+    internal_request_id = uuid4()
+    internal_request_id_str = str(internal_request_id)
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="city_action_report",
+    )
+
+    with start_run(
+        run_name="city_action_report_request",
+        tags={
+            "service": "hiap-meed",
+            "environment": _mlflow_environment_tag(),
+            "request_kind": "city_action_report",
+            "endpoint": "/v1/reports/output-plan",
+            "frontend_request_id": request_trace_id,
+            "internal_request_id": internal_request_id_str,
+            "backend_consumer": request.meta.backendConsumer,
+            "upstream_provider": request.meta.upstreamProvider,
+            "locode": request.requestData.locode,
+            "action_id": request.requestData.actionId,
+            "language": request.requestData.language,
+        },
+        params={
+            **_mlflow_source_params(),
+            "total_records": request.meta.totalRecords,
+            "debug_context_only": int(request.requestData.debugContextOnly),
+        },
+    ):
+        try:
+            logger.info(
+                "City action report request received frontend_request_id=%s internal_request_id=%s locode=%s action_id=%s language=%s debug_context_only=%s",
+                request_trace_id,
+                internal_request_id_str,
+                request.requestData.locode,
+                request.requestData.actionId,
+                request.requestData.language,
+                request.requestData.debugContextOnly,
+            )
+            artifact_writer.write_run_file(
+                "input_snapshot.json",
+                request.model_dump(mode="json"),
+            )
+
+            # Step 1: validate snapshot and enrich the selected action context.
+            report_context = build_report_context_with_live_enrichment(
+                request=request,
+                city_data_api_client=city_data_api_client,
+                action_pathways_data_api_client=action_pathways_data_api_client,
+                legal_data_api_client=legal_data_api_client,
+                action_policy_scores_data_api_client=action_policy_scores_data_api_client,
+                action_mitigation_feasibility_scores_data_api_client=(
+                    action_mitigation_feasibility_scores_data_api_client
+                ),
+                action_financial_feasibility_scores_data_api_client=(
+                    action_financial_feasibility_scores_data_api_client
+                ),
+            )
+            chapter_inputs = build_chapter_inputs(report_context)
+            artifact_writer.write_run_file(
+                "report_context.json",
+                report_context.model_dump(mode="json"),
+            )
+            artifact_writer.write_run_file(
+                "chapter_inputs.json",
+                [chapter.model_dump(mode="json") for chapter in chapter_inputs],
+            )
+
+            # Step 2: generate one isolated Markdown body per chapter.
+            generation_result = generate_output_plan_chapters(
+                chapter_inputs=chapter_inputs,
+                use_llm=not request.requestData.debugContextOnly,
+            )
+            write_output_plan_llm_artifacts(
+                artifact_writer=artifact_writer,
+                llm_io=generation_result.llm_io,
+            )
+
+            response = CityActionReportApiResponse(
+                locode=report_context.locode,
+                action_id=report_context.action_id,
+                language=report_context.language,
+                chapters=generation_result.chapters,
+                metadata=CityActionReportMetadata(
+                    frontend_request_id=request_trace_id,
+                    internal_request_id=internal_request_id_str,
+                    source_prioritization_request_id=(
+                        report_context.prioritization_request.meta.requestId
+                    ),
+                    source_context=CityActionReportSourceContext(
+                        staleness_notes=[
+                            "Ranking-specific context came from the frontend snapshot. Additional report context was fetched live by the backend.",
+                            "Staleness checks require product-defined comparison rules and are not fully implemented in this first slice.",
+                        ],
+                    ),
+                    required_sources_ok=True,
+                    limitations=report_context.limitations,
+                ),
+            )
+            response_payload = response.model_dump(mode="json")
+            write_output_plan_markdown_artifact(
+                artifact_writer=artifact_writer,
+                response=response,
+            )
+            artifact_writer.write_event(
+                "city_action_report.completed",
+                {
+                    "locode": response.locode,
+                    "action_id": response.action_id,
+                    "language": response.language,
+                    "chapters": len(response.chapters),
+                    "debug_context_only": request.requestData.debugContextOnly,
+                },
+            )
+            artifact_writer.write_run_file("response_full.json", response_payload)
+            artifact_writer.write_manifest(
+                {
+                    "counts": {
+                        "chapters": len(response.chapters),
+                        "limitations": len(response.metadata.limitations),
+                    },
+                    "artifact_pointers": {
+                        "summary_events": "summary.jsonl",
+                        "input_snapshot": "input_snapshot.json",
+                        "report_context": "report_context.json",
+                        "chapter_inputs": "chapter_inputs.json",
+                        "output_plan_llm_io": "llm/output_plan_io.json",
+                        "output_plan_markdown": "output_plan.md",
+                        "response_full": "response_full.json",
+                    },
+                }
+            )
+            log_metrics(
+                {
+                    "chapters": len(response.chapters),
+                    "limitations": len(response.metadata.limitations),
+                }
+            )
+            return response
+        except ValueError as error:
+            logger.warning(
+                "Invalid city action report request request_id=%s error=%s",
+                request_trace_id,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="validation_error",
+                error_message=str(error),
+            )
+            raise HTTPException(
+                status_code=422,
+                detail=_error_payload(request_trace_id, str(error)),
+            ) from error
+        except UpstreamApiError as error:
+            logger.warning(
+                "City action report upstream dependency failed request_id=%s status_code=%s error=%s",
+                request_trace_id,
+                error.status_code,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="upstream_api_error",
+                error_message=error.message,
+                status_code=error.status_code,
+            )
+            raise HTTPException(
+                status_code=error.status_code,
+                detail=_upstream_error_payload(request_trace_id, error),
+            ) from error
+        except Exception as error:
+            logger.exception("City action report failed request_id=%s", request_trace_id)
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="internal_error",
+                error_message=str(error),
+                status_code=500,
+            )
             raise HTTPException(
                 status_code=500,
                 detail=_error_payload(request_trace_id, "Internal server error"),
@@ -720,7 +974,9 @@ def _run_for_city_input(
     requested_top_n: int | None,
     city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient,
     action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient,
-    legal_data_api_client: MockLegalDataApiClient | ApiLegalDataApiClient,
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ),
     action_policy_scores_data_api_client: (
         MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
     ),

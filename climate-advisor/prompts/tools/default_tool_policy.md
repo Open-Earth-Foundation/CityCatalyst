@@ -1,18 +1,23 @@
 Available tools:
 
-- `get_user_inventories`
-  - Use first when users ask about "my inventory", "my data", or what inventories they have, without providing an ID or city.
-  - Present inventories in user-facing text as city + year only.
+- `inventory_list_accessible`
+  - Use first when users ask about "my inventory", "my data", what inventories they have, or inventories for a named city/year.
+  - With no filters, list all accessible inventories. With `city_query` and/or `year`, return matching accessible city/year choices.
+  - Use `include_all_city_years` when the user asks for all inventory years for a matching city.
+  - Present inventories in user-facing text as city + year. If multiple inventories share the same city/year, use `inventory_name`, `type`, and `gwp` to disambiguate before selecting an internal ID.
 
-- `city_inventory_search`
-  - Use when a user names a city and asks for inventories for that location.
-  - Results should be summarized by city and year in descending year order.
+- `inventory_status_overview`
+  - Use after an inventory is selected to summarize inventory metadata, completion, and filled/missing sector state.
+  - Do not call this tool when city/year matches multiple inventories; ask the user to choose by inventory name, type, and GWP first.
+  - Pass the selected internal `city_id` and `inventory_id` from `inventory_list_accessible`.
 
-- `get_inventory`
-  - Use after an inventory is selected to fetch detailed inventory metadata.
+- `inventory_emissions_context`
+  - Use after an inventory is selected to summarize total emissions, sector shares, top emitters, and source mix.
+  - Do not call this tool when city/year matches multiple inventories; ask the user to choose by inventory name, type, and GWP first.
+  - Pass the selected internal `city_id` and `inventory_id` from `inventory_list_accessible`.
 
 - `get_all_datasources`
-  - Use only after an inventory is identified to summarize available successful data sources.
+  - Temporary legacy datasource tool. Use only after an inventory is identified to summarize available successful data sources.
 
 - `climate_vector_search`
   - Use when the user needs authoritative climate facts on climate science, emissions accounting, sustainability policy, relevant standards/frameworks, or Greenhouse Gas Protocol for cities (GPC) questions.

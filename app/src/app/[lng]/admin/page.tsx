@@ -127,10 +127,10 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       if (inviteResponse.inviteUrls) {
         const inviteUrls = Object.values(inviteResponse.inviteUrls);
         if (inviteUrls.length > 0) {
-          const urlsText = inviteUrls.join('\n');
+          const urlsText = inviteUrls.join("\n");
           navigator.clipboard.writeText(urlsText).catch(() => {
             // Fallback if clipboard API fails
-            console.warn('Failed to copy to clipboard');
+            console.warn("Failed to copy to clipboard");
           });
         }
       }
@@ -301,7 +301,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                   filterProperty={"status"}
                   filterOptions={[
                     { label: t("accepted"), value: "accepted" },
-                    { label: t("invite-sent"), value: "invite sent" }
+                    { label: t("invite-sent"), value: "invite sent" },
                   ]}
                   data={[...orgData].reverse()}
                   title={t("manage-oef-clients")}
@@ -321,7 +321,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
                       <Table.Cell> {renderStatusTag(item.status)}</Table.Cell>
                       <Table.Cell>
                         <MenuRoot>
-                          <MenuTrigger>
+                          <MenuTrigger asChild>
                             <IconButton
                               data-testid="activity-more-icon"
                               aria-label="more-icon"

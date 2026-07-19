@@ -6,6 +6,10 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
+import {
+  getLlmChunkConcurrency,
+  mapPool,
+} from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
@@ -291,15 +295,22 @@ export async function extractInventoryRowsFromDocument(
       "Extraction using chunks to avoid timeout",
     );
     const segmentPrefix = yearInstruction + SEGMENT_PROMPT_PREFIX;
-    const perChunkRows: ExtractedRow[][] = [];
     const onProgress = options?.onChunkProgress;
-    for (let i = 0; i < chunks.length; i++) {
-      const rows = await extractSegment(chunks[i], segmentPrefix, true);
-      perChunkRows.push(rows);
-      if (onProgress) {
-        await Promise.resolve(onProgress(i + 1, chunks.length));
-      }
-    }
+    const concurrency = getLlmChunkConcurrency();
+    const perChunkRows = await mapPool(
+      chunks,
+      concurrency,
+      async (chunk) => extractSegment(chunk, segmentPrefix, true),
+      async (completedCount, total) => {
+        if (onProgress) {
+          await Promise.resolve(onProgress(completedCount, total));
+        }
+      },
+    );
+    logger.info(
+      { chunkCount: chunks.length, concurrency },
+      "Extraction chunks merged (parallel pool)",
+    );
     allRows = mergeAndDedupeRows(perChunkRows);
   }
 
@@ -339,8 +350,13 @@ export async function extractInventoryRowsFromDocument(
 
 /**
  * Split content into overlapping chunks so no row is cut in the middle.
+ * Exported for unit tests and measurement of multi-chunk Path C thresholds.
+ *
+ * @param content - Full document text
+ * @param chunkSize - Max characters per chunk
+ * @param overlap - Characters reused at the start of the next chunk
  */
-function splitIntoChunks(
+export function splitIntoChunks(
   content: string,
   chunkSize: number,
   overlap: number,
@@ -356,10 +372,16 @@ function splitIntoChunks(
   return chunks;
 }
 
+/** Path C chunking thresholds used by extractInventoryRowsFromDocument. */
+export const PATH_C_CHUNK_THRESHOLD = CHUNK_THRESHOLD;
+export const PATH_C_CHUNK_SIZE = CHUNK_SIZE;
+export const PATH_C_CHUNK_OVERLAP = CHUNK_OVERLAP;
+
 /**
  * Dedupe rows from multiple chunks (overlap can produce duplicates). Use a simple key.
+ * Exported for unit tests.
  */
-function mergeAndDedupeRows(perChunkRows: ExtractedRow[][]): ExtractedRow[] {
+export function mergeAndDedupeRows(perChunkRows: ExtractedRow[][]): ExtractedRow[] {
   const seen = new Set<string>();
   const out: ExtractedRow[] = [];
   for (const rows of perChunkRows) {

@@ -42,7 +42,9 @@ import SettingsSkeleton from "../Skeletons/settings-skeleton";
 import { clamp } from "@/util/helpers";
 
 // Component to fetch and display inventory progress
-const InventoryProgressCell: FC<{ inventoryId: string }> = ({ inventoryId }) => {
+const InventoryProgressCell: FC<{ inventoryId: string }> = ({
+  inventoryId,
+}) => {
   const { data: inventoryProgress, isLoading } =
     api.useGetInventoryProgressQuery(inventoryId);
 
@@ -180,7 +182,10 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
         }
       })
       .catch((error) => {
-        logger.error({ err: error, inventoryId }, "Failed to download inventory CSV");
+        logger.error(
+          { err: error, inventoryId },
+          "Failed to download inventory CSV",
+        );
         toaster.create({
           description: t("download-failed"),
           type: "error",
@@ -501,7 +506,7 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                             </Table.Cell>
                             <Table.Cell align="right">
                               <Popover.Root lazyMount>
-                                <PopoverTrigger>
+                                <PopoverTrigger asChild>
                                   <IconButton
                                     aria-label="action-button"
                                     variant="ghost"
@@ -540,7 +545,9 @@ const MyInventoriesTab: FC<MyInventoriesTabProps> = ({
                                           color: "white",
                                         }}
                                         onClick={() =>
-                                          handleDownloadCSV(inventory.inventoryId)
+                                          handleDownloadCSV(
+                                            inventory.inventoryId,
+                                          )
                                         }
                                       >
                                         <MdOutlineFileDownload size={24} />

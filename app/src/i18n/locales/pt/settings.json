@@ -212,5 +212,12 @@
   "token-deleted-success": "Token excluído com sucesso",
   "token-delete-error": "Falha ao excluir o token",
   "copied-to-clipboard": "Copiado para a área de transferência",
-  "green_theme": "Verde"
+  "green_theme": "Verde",
+  "select-theme": "Selecione o tema...",
+  "numerical-formats": "Formatos numéricos",
+  "numerical-formats-required": "É necessário o formato numérico",
+  "comma-and-dot": "Vírgula e ponto (ex.: 1,000,000.50)",
+  "dot-and-comma": "Ponto e vírgula (ex.: 1.000.000,50)",
+  "space-and-comma": "Espaço e vírgula (ex.: 1 000 000,50)",
+  "apostrophe-and-dot": "Apóstrofo e ponto (por exemplo: 1’000’000.50)"
 }

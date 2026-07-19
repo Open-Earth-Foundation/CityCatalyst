@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from app.models.stationary_energy_drafts import ReviewDecisionResponse
 
@@ -22,10 +22,31 @@ class StationaryEnergyAgentReviewChoiceInput(BaseModel):
     rationale: str | None = None
 
 
+AllowedStationaryEnergyNotationKey = Literal["NO", "NE", "IE", "C"]
+
+
+class StationaryEnergyNotationKeyChoiceInput(BaseModel):
+    """User or model-selected notation key for one draft proposal."""
+
+    proposal_id: UUID | None = None
+    target_id: str | None = None
+    notation_key: AllowedStationaryEnergyNotationKey
+    unavailable_explanation: str
+    rationale: str | None = None
+
+    @model_validator(mode="after")
+    def validate_target_reference(self) -> "StationaryEnergyNotationKeyChoiceInput":
+        """Require a proposal id or CC notation target id."""
+        if self.proposal_id is None and not self.target_id:
+            raise ValueError("proposal_id or target_id is required")
+        return self
+
+
 AgentReviewChoiceAction = Literal[
     "accept",
     "override_source",
     "override_manual",
+    "set_notation_key",
     "leave_draft",
     "rollback_staged",
 ]
@@ -38,15 +59,51 @@ class StationaryEnergyAgentReviewChoice(BaseModel):
     action: AgentReviewChoiceAction
     selected_source_id: str | None = None
     selected_candidate_id: UUID | None = None
+    target_id: str | None = None
     source_label: str | None = None
+    source_short_label: str | None = None
+    source_meta: str | None = None
+    value: str | None = None
     target_label: str
+    notation_key: str | None = None
+    unavailable_reason: str | None = None
+    unavailable_explanation: str | None = None
     rationale: str | None = None
+
+
+class StationaryEnergyNotationKeyTarget(BaseModel):
+    """Notation-key target available to the active Stationary Energy review."""
+
+    proposal_id: UUID | None = None
+    target_id: str
+    target_label: str
+    target_ref: dict[str, object] = Field(default_factory=dict)
+    current_notation_key: dict[str, object] | None = None
+    staged_choice: StationaryEnergyAgentReviewChoice | None = None
+    saved_choice: StationaryEnergyAgentReviewChoice | None = None
+
+
+class StationaryEnergyNotationKeyListToolResult(BaseModel):
+    """Tool response listing notation-key options and eligible targets."""
+
+    success: bool
+    action: str = "stationary_energy_list_notation_keys"
+    ui_event: None = None
+    draft_run_id: UUID
+    allowed_notation_keys: list[dict[str, object]] = Field(default_factory=list)
+    targets: list[StationaryEnergyNotationKeyTarget] = Field(default_factory=list)
+    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = Field(
+        default_factory=list
+    )
+    message_key: str | None = None
+    message_params: dict[str, MessageParamValue] = Field(default_factory=dict)
 
 
 class StationaryEnergyAgentReviewBlockedChoice(BaseModel):
     """Choice that cannot be staged plus the valid alternatives."""
 
     proposal_id: UUID | None = None
+    target_id: str | None = None
     reason: str
     available_options: list[dict[str, object]] = Field(default_factory=list)
 

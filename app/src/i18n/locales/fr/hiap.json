@@ -47,7 +47,7 @@
   "top-actions-for-your-city-description": "Voici les 40 principales actions que nous recommandons basées sur votre inventaire GES et les données de contexte de votre ville. Vous trouverez 20 actions pour l'Atténuation et 20 pour l'Adaptation dans leurs onglets respectifs. Il est recommandé de relancer le priorisateur après toute mise à jour ou modification pertinente des données.",
   "actions-for-your-city-description": "Voici les 40 principales actions que nous recommandons basées sur votre inventaire GES, l'Évaluation des Risques Climatiques et les données de contexte de votre ville. Vous trouverez 20 actions pour l'Atténuation et 20 pour l'Adaptation dans leurs onglets respectifs.",
   "re-prioritize-actions": "Reprioriser les actions",
-  "generated-action-plan": "générer plan d'action",
+  "generated-action-plan": "Générer Plan d'Action",
   "export-as-pdf": "exporter en PDF",
   "generating-pdf": "génération du PDF...",
   "subactions": "Sous-actions",
@@ -118,7 +118,8 @@
   "stationary-energy": "Énergie stationnaire",
   "waste": "Déchets",
   "low": "Faible",
-  "top-actions-tip": "Votre liste d'actions principales est basée sur l'avancement actuel de votre inventaire. Nous recommandons de le compléter avant d'utiliser ce module.",
+  "top-actions-tip-mitigation": "Votre liste d'actions principales est basée sur l'avancement actuel de votre inventaire. Nous recommandons de le compléter avant d'utiliser ce module.",
+  "top-actions-tip-adaptation": "Votre liste d'actions principales est basée sur votre Évaluation des Risques Climatiques actuelle. Nous recommandons de la compléter avant d'utiliser ce module.",
   "climate-actions-title": "Actions climatiques",
   "actions": "Actions",
   "open-cc-actions": "Actions CC Ouvertes",
@@ -181,5 +182,9 @@
   "selection-updated": "Sélection mise à jour avec succès",
   "selection-update-failed": "Échec de la mise à jour de la sélection",
   "other-available-actions": "Autres Actions Disponibles",
-  "other-available-actions-description": "Voici d'autres actions climatiques disponibles pour votre ville qui n'ont pas été incluses dans la liste des actions les mieux classées. Ces actions peuvent toujours être pertinentes en fonction des priorités spécifiques et du contexte de votre ville."
+  "other-available-actions-description": "Voici d'autres actions climatiques disponibles pour votre ville qui n'ont pas été incluses dans la liste des actions les mieux classées. Ces actions peuvent toujours être pertinentes en fonction des priorités spécifiques et du contexte de votre ville.",
+  "last-update": "Dernière mise à jour",
+  "history": "Histoire",
+  "view-more": "VOIR PLUS",
+  "view-less": "VOIR MOINS"
 }

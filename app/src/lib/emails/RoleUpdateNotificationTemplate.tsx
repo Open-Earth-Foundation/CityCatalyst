@@ -26,8 +26,8 @@ export function RoleUpdateNotificationTemplate({
   email: string;
   organizationName: string;
   brandInformation?: {
-    color: string;
-    logoUrl: string;
+    color?: string;
+    logoUrl?: string;
   };
   language?: string;
 }) {

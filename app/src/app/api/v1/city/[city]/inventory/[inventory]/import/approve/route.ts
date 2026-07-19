@@ -306,10 +306,31 @@ async function runApproveImportInBackground(args: {
           row.activityType?.trim() ||
           row.category?.trim() ||
           undefined;
-        const gpcRefNo =
+        let gpcRefNo =
           row.gpcRefNo?.trim() ||
           resolveGpcRefNo(sector, subsector, activityHint) ||
           null;
+        // Fallback: if the right side of " > " didn't resolve, try the left side
+        // e.g. "On-road > Other/uncategorized" → split gives subsector="Other/uncategorized" (fails)
+        //       → retry with left part "On-road" (resolves to on-road-transportation)
+        if (!gpcRefNo) {
+          const rawSub = row.subsector?.trim() ?? "";
+          if (rawSub.includes(" > ")) {
+            const leftPart = rawSub.split(" > ")[0].trim();
+            if (leftPart && leftPart !== subsector) {
+              gpcRefNo = resolveGpcRefNo(sector, leftPart, activityHint);
+            }
+          }
+          if (!gpcRefNo) {
+            const rawSec = row.sector?.trim() ?? "";
+            if (rawSec.includes(" > ")) {
+              const leftPart = rawSec.split(" > ")[0].trim();
+              if (leftPart && leftPart !== sector) {
+                gpcRefNo = resolveGpcRefNo(leftPart, subsector, activityHint);
+              }
+            }
+          }
+        }
 
         if (!gpcRefNo) {
           errors.push(
@@ -573,6 +594,17 @@ export const POST = apiHandler(
     if (importedFile.importStatus !== ImportStatusEnum.WAITING_FOR_APPROVAL) {
       throw new createHttpError.BadRequest(
         `Cannot approve import with status: ${importedFile.importStatus}. Expected status: ${ImportStatusEnum.WAITING_FOR_APPROVAL}`,
+      );
+    }
+
+    // Check if this inventory already contains data (InventoryValue records)
+    // to prevent duplicate imports
+    const existingValueCount = await db.models.InventoryValue.count({
+      where: { inventoryId },
+    });
+    if (existingValueCount > 0) {
+      throw new createHttpError.Conflict(
+        "This inventory already contains data. Clear existing data before importing again.",
       );
     }
 

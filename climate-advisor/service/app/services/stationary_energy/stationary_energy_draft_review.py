@@ -17,6 +17,13 @@ from app.utils.stationary_energy_context import (
     stationary_energy_scope_matches_target,
 )
 
+ALLOWED_NOTATION_KEY_REASONS = {
+    "NO": "no-occurrance",
+    "NE": "not-estimated",
+    "IE": "included-elsewhere",
+    "C": "confidential-information",
+}
+
 
 def latest_review_decisions(
     decisions: list[StationaryEnergyReviewDecision],
@@ -125,6 +132,30 @@ def validate_review_action(
             status_code=400,
             detail="manual_unit is required for override_manual",
         )
+    if decision_input.action == "set_notation_key":
+        notation_key = (decision_input.notation_key or "").strip().upper()
+        unavailable_explanation = (
+            decision_input.unavailable_explanation or ""
+        ).strip()
+        if notation_key not in ALLOWED_NOTATION_KEY_REASONS:
+            raise HTTPException(
+                status_code=400,
+                detail="notation_key must be one of NO, NE, IE, or C",
+            )
+        if not unavailable_explanation:
+            raise HTTPException(
+                status_code=400,
+                detail="unavailable_explanation is required for set_notation_key",
+            )
+        if (
+            decision_input.unavailable_reason
+            and decision_input.unavailable_reason
+            != ALLOWED_NOTATION_KEY_REASONS[notation_key]
+        ):
+            raise HTTPException(
+                status_code=400,
+                detail="unavailable_reason does not match notation_key",
+            )
 
 
 def validate_complete_review_decisions(
@@ -219,6 +250,13 @@ def build_review_decisions(
                 ),
                 manual_value=decision_input.manual_value,
                 manual_unit=decision_input.manual_unit,
+                notation_key=normalized_notation_key(decision_input),
+                unavailable_reason=normalized_unavailable_reason(decision_input),
+                unavailable_explanation=(
+                    decision_input.unavailable_explanation.strip()
+                    if decision_input.unavailable_explanation
+                    else None
+                ),
                 note=decision_input.note,
                 commit_status=commit_status_for_action(decision_input.action),
                 commit_response=commit_response_for_action(decision_input.action),
@@ -231,14 +269,14 @@ def build_review_decisions(
 
 def commit_status_for_action(action: str) -> str:
     """Map a review action to its initial save/commit status."""
-    if action in {"accept", "override_source", "override_manual"}:
+    if action in {"accept", "override_source", "override_manual", "set_notation_key"}:
         return "pending_cc_commit"
     return "not_applicable"
 
 
 def commit_response_for_action(action: str) -> dict[str, Any] | None:
     """Build the initial commit response placeholder for review actions."""
-    if action in {"accept", "override_source", "override_manual"}:
+    if action in {"accept", "override_source", "override_manual", "set_notation_key"}:
         return {
             "state": "pending",
             "reason": "Awaiting the CC save step for final inventory commit.",
@@ -255,6 +293,7 @@ def apply_proposal_status(
         "accept": "accepted",
         "override_source": "overridden",
         "override_manual": "overridden",
+        "set_notation_key": "overridden",
         "leave_draft": "left_draft",
     }
     proposal.status = status_by_action[action]
@@ -289,13 +328,29 @@ def selected_candidate_id_for_storage(
     return selected_candidate.candidate_id if selected_candidate else None
 
 
+def normalized_notation_key(decision_input: ReviewDecisionInput) -> str | None:
+    """Return the normalized settable notation key for a review decision."""
+    if decision_input.action != "set_notation_key" or not decision_input.notation_key:
+        return None
+    return decision_input.notation_key.strip().upper()
+
+
+def normalized_unavailable_reason(decision_input: ReviewDecisionInput) -> str | None:
+    """Return the CC unavailable-reason value for a notation-key decision."""
+    notation_key = normalized_notation_key(decision_input)
+    if notation_key is None:
+        return None
+    return ALLOWED_NOTATION_KEY_REASONS.get(notation_key)
+
+
 def build_commit_rows(
     *,
     pending_decisions: list[StationaryEnergyReviewDecision],
     proposal_by_id: dict[UUID, StationaryEnergyDraftProposal],
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     """Build the CityCatalyst commit payload rows and any local failure results."""
     rows: list[dict[str, Any]] = []
+    notation_rows: list[dict[str, Any]] = []
     local_results: list[dict[str, Any]] = []
     for decision in pending_decisions:
         proposal = proposal_by_id.get(decision.proposal_id)
@@ -305,6 +360,51 @@ def build_commit_rows(
                     decision=decision,
                     reason="Proposal snapshot is missing from this draft run.",
                 )
+            )
+            continue
+
+        if decision.action == "set_notation_key":
+            if decision.notation_key not in ALLOWED_NOTATION_KEY_REASONS:
+                local_results.append(
+                    local_failed_commit_result(
+                        decision=decision,
+                        reason="Notation key must be one of NO, NE, IE, or C.",
+                    )
+                )
+                continue
+            if not decision.unavailable_explanation:
+                local_results.append(
+                    local_failed_commit_result(
+                        decision=decision,
+                        reason=(
+                            "Notation-key decision is missing "
+                            "unavailable_explanation."
+                        ),
+                    )
+                )
+                continue
+            target_id = notation_target_id(proposal.target_ref or {})
+            if not target_id:
+                local_results.append(
+                    local_failed_commit_result(
+                        decision=decision,
+                        reason=(
+                            "Notation-key decision is missing a Stationary "
+                            "Energy target id."
+                        ),
+                    )
+                )
+                continue
+
+            notation_rows.append(
+                {
+                    "proposal_id": str(decision.proposal_id),
+                    "decision_version": decision.decision_version,
+                    "target_id": target_id,
+                    "target_ref": proposal.target_ref or {},
+                    "notation_key": decision.notation_key,
+                    "unavailable_explanation": decision.unavailable_explanation,
+                }
             )
             continue
 
@@ -362,7 +462,16 @@ def build_commit_rows(
                 "selected_source_id": selected_source_id,
             }
         )
-    return rows, local_results
+    return rows, notation_rows, local_results
+
+
+def notation_target_id(target_ref: dict[str, Any]) -> str | None:
+    """Return the CC notation-key target id for a Stationary Energy proposal."""
+    for key in ("subcategory_id", "subsector_id"):
+        value = target_ref.get(key)
+        if isinstance(value, str) and value.strip():
+            return value
+    return None
 
 
 def commit_result_key(result: dict[str, Any]) -> tuple[str, int] | None:
@@ -387,6 +496,8 @@ def local_failed_commit_result(
         "proposal_id": str(decision.proposal_id),
         "decision_version": decision.decision_version,
         "selected_source_id": decision.selected_source_id,
+        "notation_key": decision.notation_key,
+        "unavailable_reason": decision.unavailable_reason,
         "status": "failed",
         "error": reason,
     }

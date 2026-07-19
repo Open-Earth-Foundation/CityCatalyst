@@ -18,7 +18,21 @@ export function ChatSuggestions({
   disabled = false,
 }: ChatSuggestionsProps) {
   return (
-    <Box display="flex" flexDir="row" gap={2} whiteSpace="nowrap" pb="3" overflowX="auto" flexShrink={0}>
+    <Box
+      display="flex"
+      flexDir="row"
+      gap={2}
+      whiteSpace="nowrap"
+      pb="3"
+      overflowX="auto"
+      flexShrink={0}
+      // Keep horizontal scrolling but hide the scrollbar across browsers.
+      css={{
+        scrollbarWidth: "none",
+        msOverflowStyle: "none",
+        "&::-webkit-scrollbar": { display: "none" },
+      }}
+    >
       {suggestions.map((suggestion, i) => (
         <Button
           key={i}

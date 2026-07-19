@@ -83,6 +83,7 @@ logger = logging.getLogger(__name__)
 
 LOAD_CONTEXT_CAPABILITY = "ghgi.stationary_energy.load_context"
 COMMIT_ACCEPTED_CAPABILITY = "ghgi.stationary_energy.commit_accepted"
+COMMIT_NOTATION_KEYS_CAPABILITY = "ghgi.stationary_energy.commit_notation_keys"
 RESUME_EXCLUDED_STATUSES = {"saved", "partially_saved", "no_changes", "failed"}
 GENERATION_IN_PROGRESS_STATUSES = {"resolving_scope", "loading_context", "generating"}
 
@@ -311,7 +312,7 @@ class StationaryEnergyDraftService:
                 trace_id=trace_id,
             )
 
-            token = await self._ensure_user_token(
+            token = await self.ensure_user_token(
                 user_id=user_id,
                 thread_id=thread_id,
                 token=token,
@@ -966,7 +967,7 @@ class StationaryEnergyDraftService:
                 detail="Draft has no review decisions to save",
             )
 
-        token = await self._ensure_user_token(
+        token = await self.ensure_user_token(
             user_id=payload.user_id,
             thread_id=draft_run.thread_id,
             token=token,
@@ -1001,10 +1002,15 @@ class StationaryEnergyDraftService:
         proposal_by_id = {
             proposal.proposal_id: proposal for proposal in draft_run.proposals
         }
-        rows, local_results = build_commit_rows(
+        rows, notation_rows, local_results = build_commit_rows(
             pending_decisions=pending_decisions,
             proposal_by_id=proposal_by_id,
         )
+        if notation_rows and COMMIT_NOTATION_KEYS_CAPABILITY not in allowed_capabilities:
+            raise HTTPException(
+                status_code=403,
+                detail="Stationary Energy notation-key save is not allowed for this draft",
+            )
 
         cc_results: list[dict[str, Any]] = []
         if rows:
@@ -1039,8 +1045,48 @@ class StationaryEnergyDraftService:
                 )
             cc_results = [result for result in raw_results if isinstance(result, dict)]
 
+        notation_results: list[dict[str, Any]] = []
+        if notation_rows:
+            notation_payload = {
+                "draft_run_id": str(draft_run.draft_run_id),
+                "user_id": payload.user_id,
+                "city_id": draft_run.city_id,
+                "inventory_id": draft_run.inventory_id,
+                "rows": notation_rows,
+            }
+            log_json_artifact(
+                "save/cc_notation_commit_payload.json",
+                notation_payload,
+            )
+            notation_response = (
+                await self.cc_client.commit_stationary_energy_notation_keys(
+                    request_payload=notation_payload,
+                    token=token,
+                )
+            )
+            log_json_artifact(
+                "save/cc_notation_commit_response.json",
+                notation_response,
+            )
+            raw_notation_results = (
+                notation_response.get("results")
+                if isinstance(notation_response, dict)
+                else None
+            )
+            if not isinstance(raw_notation_results, list):
+                raise HTTPException(
+                    status_code=502,
+                    detail=(
+                        "CityCatalyst notation-key save response did not "
+                        "include commit results"
+                    ),
+                )
+            notation_results = [
+                result for result in raw_notation_results if isinstance(result, dict)
+            ]
+
         results_by_key: dict[tuple[str, int], dict[str, Any]] = {}
-        for result in [*cc_results, *local_results]:
+        for result in [*cc_results, *notation_results, *local_results]:
             key = commit_result_key(result)
             if key is not None:
                 results_by_key[key] = result
@@ -1201,7 +1247,7 @@ class StationaryEnergyDraftService:
                 ) from exc
             raise
 
-    async def _ensure_user_token(
+    async def ensure_user_token(
         self,
         *,
         user_id: str,
@@ -1318,7 +1364,7 @@ class StationaryEnergyDraftService:
         )
 
         try:
-            token = await self._ensure_user_token(
+            token = await self.ensure_user_token(
                 user_id=draft_run.user_id,
                 thread_id=draft_run.thread_id,
                 token=extract_bearer_token(authorization),

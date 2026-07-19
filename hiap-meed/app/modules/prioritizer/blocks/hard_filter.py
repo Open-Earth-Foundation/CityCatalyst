@@ -91,8 +91,20 @@ def _apply_legal_hard_filter(
             "gpc_sector": assessment.gpc_sector,
             "ownership_category": assessment.ownership_category,
             "ownership_score": assessment.ownership_score,
+            "ownership_description": assessment.ownership_description,
+            "ownership_description_es": assessment.ownership_description_i18n.get("es"),
             "restrictions_category": assessment.restrictions_category,
             "restrictions_score": assessment.restrictions_score,
+            "restrictions_description": assessment.restrictions_description,
+            "restrictions_description_es": (
+                assessment.restrictions_description_i18n.get("es")
+            ),
+            "legal_justification": (
+                assessment.legal_justification_i18n.get("es")
+                or assessment.legal_justification
+            ),
+            "legal_justification_en": assessment.legal_justification_i18n.get("en"),
+            "legal_references": list(assessment.legal_references),
             "analysis_date": assessment.analysis_date,
             "generation_method": assessment.generation_method,
         }

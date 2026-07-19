@@ -298,8 +298,9 @@ export interface AcceptInviteRequest {
 }
 
 export interface UsersInvitesRequest {
+  projectId: string;
   cityIds: string[];
-  emails: string[];
+  invites: { email: string; role: "admin" | "collaborator" }[];
 }
 
 export interface UsersInvitesResponse {
@@ -483,6 +484,8 @@ export type CityResponse = {
   name: string;
   country: string;
   countryLocode: string;
+  region?: string;
+  regionLocode?: string;
   locode: string;
   inventories: {
     inventoryId: string;
@@ -932,6 +935,14 @@ export interface ImportStatusResponse {
   reviewData: ReviewData | null;
   /** Year inferred from file data (eCRF); used to check match with inventory target year. */
   inferredYearFromFile?: number;
+  /**
+   * Full mapping payload from the imported file (Path B/C).
+   * Includes `extractionProgress` while AI chunk work is in flight.
+   */
+  mappingConfiguration?: {
+    extractionProgress?: { current: number; total?: number };
+    [key: string]: unknown;
+  } | null;
   rowCount: number;
   processedRowCount: number;
   errorLog: string | null;

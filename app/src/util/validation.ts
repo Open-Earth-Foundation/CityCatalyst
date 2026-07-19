@@ -184,8 +184,12 @@ export const AcceptOrganizationInvite = z.object({
 });
 
 export const CreateUsersInvite = z.object({
-  emails: z.array(z.string().email()),
+  projectId: z.string().uuid(),
   cityIds: z.array(z.string()),
+  invites: z.array(z.object({
+    email: z.string().email(),
+    role: z.enum(["admin", "collaborator"]),
+  })),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;

@@ -1,8 +1,9 @@
 import { Box, Icon, NativeSelectRoot, Text } from "@chakra-ui/react";
-import React, { FC, use, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Control,
   Controller,
+  FieldValues,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -22,7 +23,7 @@ interface BuildingTypeSelectInputProps {
   errors: Record<string, any>;
   t: TFunction;
   selectedActivity?: SuggestedActivity;
-  control: Control<Inputs, any>;
+  control: Control<FieldValues, any>;
   multiselect?: boolean;
   required?: boolean;
   setValue: UseFormSetValue<Inputs>;

@@ -197,9 +197,10 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const formattedEmissions = inventory?.totalEmissions
-    ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
-    : { value: t("N/A"), unit: "" };
+  const formattedEmissions =
+    inventory?.totalEmissions != null
+      ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
+      : { value: t("N/A"), unit: "" };
 
   const inventoriesForCurrentCity = useMemo(() => {
     if (!cityYears) return [];
@@ -216,7 +217,7 @@ export default function HomePage({
     inventoryIdFromParam!,
   );
 
-  const { isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck, organization } = useOrganizationContext();
 
   if (isUserInfoLoading) {
     return <ProgressLoader />;
@@ -265,6 +266,7 @@ export default function HomePage({
                   lng={language}
                   city={city}
                   inventory={inventory}
+                  organizationId={organization?.organizationId}
                 />
               )}
             </VStack>

@@ -6,6 +6,7 @@ from typing import Any
 
 STATIONARY_ENERGY_UI_EVENTS = frozenset(
     {
+        "stationary_energy_draft_started",
         "stationary_energy_review_state_changed",
         "stationary_energy_review_bulk_confirmation_requested",
         "stationary_energy_review_change_confirmation_requested",

@@ -112,7 +112,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Not signed in");
   }
   const inviteRequest = CreateUsersInvite.parse(await req.json());
-  const { emails, cityIds } = inviteRequest;
+  const { invites, cityIds, projectId } = inviteRequest;
 
   // if the user is not an OEF admin, we want to make sure they have access to the city they are people inviting to
   if (!(session.user.role === Roles.Admin)) {
@@ -218,11 +218,11 @@ export const POST = apiHandler(async (req, { params, session }) => {
   const failedInvites: { email: string; cityIds: string[] }[] = [];
 
   await Promise.all(
-    emails.map(async (email) => {
+    invites.map(async ({ email, role }) => {
       const inviteData = { email, cityIds };
       try {
         const invitationCode = jwt.sign(
-          { email: email, reason: "invite", cities: cityIds },
+          { email, reason: "invite", cities: cityIds, role, projectId },
           process.env.VERIFICATION_TOKEN_SECRET!,
           {
             expiresIn: "30d",

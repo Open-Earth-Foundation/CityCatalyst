@@ -142,6 +142,7 @@
   "change-to-admin": "Wechseln zu Admin",
   "user-removed": "Benutzer erfolgreich entfernt",
   "role-update-success-toast-title": "Rolle erfolgreich aktualisiert",
+  "updating-role": "Rolle wird aktualisiert...",
   "frozen": "Eingefroren",
   "already-registered-admin": "{{email}} ist bereits ein registrierter Administrator",
   "error-invite": "Einladungsfehler",
@@ -306,5 +307,6 @@
   "status-early-access": "Frühzeitiger Zugang",
   "status-beta": "Beta",
   "status-active": "Aktiv",
-  "select-status": "Wählen Sie einen Status"
+  "select-status": "Wählen Sie einen Status",
+  "go-back": "Geh zurück"
 }

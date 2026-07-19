@@ -14,7 +14,7 @@ const BUCKET = process.env.AWS_FILE_UPLOAD_S3_BUCKET_ID;
 const REGION = process.env.AWS_FILE_UPLOAD_REGION ?? "us-east-1";
 
 function getS3Client(): S3Client {
-  return new S3Client({ region: REGION });
+  return new S3Client({ region: REGION, followRegionRedirects: true });
 }
 
 /** Returns true when the S3 bucket is configured (production). Falls back to BYTEA in dev when false. */

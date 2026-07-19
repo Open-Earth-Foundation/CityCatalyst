@@ -20,6 +20,7 @@ import {
   IconButton,
   Table as ChakraTable,
   Icon,
+  Spinner,
 } from "@chakra-ui/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -111,6 +112,9 @@ export function HiapTab({
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [showUnrankedActions, setShowUnrankedActions] = useState(true);
   const [isShowingHistory, setIsShowingHistory] = useState(false);
+  const [updatingActionId, setUpdatingActionId] = useState<string | null>(null);
+  const [updatingAllRanked, setUpdatingAllRanked] = useState(false);
+  const [updatingAllUnranked, setUpdatingAllUnranked] = useState(false);
 
   // HIAP Query State
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
@@ -269,6 +273,23 @@ export function HiapTab({
         ? updaterOrValue(rowSelection)
         : updaterOrValue;
 
+    // Determine what was toggled to show the row loader
+    const oldKeys = Object.keys(rowSelection).filter((id) => rowSelection[id]);
+    const newKeys = Object.keys(newRowSelection).filter(
+      (id) => newRowSelection[id],
+    );
+
+    const toggledIds = [
+      ...oldKeys.filter((id) => !newRowSelection[id]),
+      ...newKeys.filter((id) => !rowSelection[id]),
+    ];
+
+    if (toggledIds.length === 1) {
+      setUpdatingActionId(toggledIds[0]);
+    } else if (toggledIds.length > 1) {
+      setUpdatingAllRanked(true);
+    }
+
     // Show loading toast
     const loadingToastId = toaster.create({
       title: t("updating-selection"),
@@ -328,6 +349,9 @@ export function HiapTab({
         type: "error",
       });
       logger.error(error, "Failed to update selection");
+    } finally {
+      setUpdatingActionId(null);
+      setUpdatingAllRanked(false);
     }
   };
 
@@ -342,6 +366,26 @@ export function HiapTab({
       typeof updaterOrValue === "function"
         ? updaterOrValue(unrankedRowSelection)
         : updaterOrValue;
+
+    // Determine what was toggled to show the row loader
+    const oldKeys = Object.keys(unrankedRowSelection).filter(
+      (id) => unrankedRowSelection[id],
+    );
+    const newKeys = Object.keys(newUnrankedRowSelection).filter(
+      (id) => newUnrankedRowSelection[id],
+    );
+
+    const toggledIds = [
+      ...oldKeys.filter((id) => !newUnrankedRowSelection[id]),
+      ...newKeys.filter((id) => !unrankedRowSelection[id]),
+    ];
+
+    if (toggledIds.length === 1) {
+      const rawId = toggledIds[0].replace("unranked-", "");
+      setUpdatingActionId(rawId);
+    } else if (toggledIds.length > 1) {
+      setUpdatingAllUnranked(true);
+    }
 
     // Show loading toast
     const loadingToastId = toaster.create({
@@ -402,6 +446,9 @@ export function HiapTab({
         type: "error",
       });
       logger.error(error, "Failed to update unranked selection");
+    } finally {
+      setUpdatingActionId(null);
+      setUpdatingAllUnranked(false);
     }
   };
 
@@ -411,19 +458,62 @@ export function HiapTab({
         ? [
             {
               id: "select",
-              header: ({ table }: { table: TanStackTable<HIAction> }) => (
-                <Checkbox
-                  checked={table.getIsAllRowsSelected()}
-                  onChange={table.getToggleAllRowsSelectedHandler()}
-                />
-              ),
-              cell: ({ row }: { row: Row<HIAction> }) => (
-                <Checkbox
-                  checked={row.getIsSelected()}
-                  disabled={!row.getCanSelect()}
-                  onChange={row.getToggleSelectedHandler()}
-                />
-              ),
+              header: ({ table }: { table: TanStackTable<HIAction> }) => {
+                if (updatingAllRanked) {
+                  return (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="left"
+                      w="18px"
+                      h="18px"
+                    >
+                      <Spinner size="xs" color="content.link" />
+                    </Box>
+                  );
+                }
+                return (
+                  <Checkbox
+                    checked={
+                      table.getIsAllRowsSelected()
+                        ? true
+                        : table.getIsSomeRowsSelected()
+                          ? "indeterminate"
+                          : false
+                    }
+                    disabled={isUpdatingSelection}
+                    onCheckedChange={({ checked }) =>
+                      table.toggleAllRowsSelected(checked === true)
+                    }
+                  />
+                );
+              },
+              cell: ({ row }: { row: Row<HIAction> }) => {
+                const isThisActionUpdating =
+                  updatingActionId === row.original.id;
+                if (isThisActionUpdating) {
+                  return (
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="left"
+                      w="18px"
+                      h="18px"
+                    >
+                      <Spinner size="xs" color="content.link" />
+                    </Box>
+                  );
+                }
+                return (
+                  <Checkbox
+                    checked={row.getIsSelected()}
+                    disabled={!row.getCanSelect() || isUpdatingSelection}
+                    onCheckedChange={({ checked }) =>
+                      row.toggleSelected(checked === true)
+                    }
+                  />
+                );
+              },
               enableSorting: false,
               enableHiding: false,
             },
@@ -549,7 +639,14 @@ export function HiapTab({
         ),
       },
     ],
-    [isSelectionMode, t, isAdaptation],
+    [
+      isSelectionMode,
+      t,
+      isAdaptation,
+      updatingActionId,
+      updatingAllRanked,
+      isUpdatingSelection,
+    ],
   );
 
   // Columns for unranked actions table
@@ -557,19 +654,61 @@ export function HiapTab({
     // Selection column (only shown in selection mode)
     const selectionColumn = {
       id: "select",
-      header: ({ table }: { table: TanStackTable<HIAction> }) => (
-        <Checkbox
-          checked={table.getIsAllRowsSelected()}
-          onChange={table.getToggleAllRowsSelectedHandler()}
-        />
-      ),
-      cell: ({ row }: { row: Row<HIAction> }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          disabled={!row.getCanSelect()}
-          onChange={row.getToggleSelectedHandler()}
-        />
-      ),
+      header: ({ table }: { table: TanStackTable<HIAction> }) => {
+        if (updatingAllUnranked) {
+          return (
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="left"
+              w="18px"
+              h="18px"
+            >
+              <Spinner size="xs" color="content.link" />
+            </Box>
+          );
+        }
+        return (
+          <Checkbox
+            checked={
+              table.getIsAllRowsSelected()
+                ? true
+                : table.getIsSomeRowsSelected()
+                  ? "indeterminate"
+                  : false
+            }
+            disabled={isUpdatingSelection}
+            onCheckedChange={({ checked }) =>
+              table.toggleAllRowsSelected(checked === true)
+            }
+          />
+        );
+      },
+      cell: ({ row }: { row: Row<HIAction> }) => {
+        const isThisActionUpdating = updatingActionId === row.original.id;
+        if (isThisActionUpdating) {
+          return (
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="left"
+              w="18px"
+              h="18px"
+            >
+              <Spinner size="xs" color="content.link" />
+            </Box>
+          );
+        }
+        return (
+          <Checkbox
+            checked={row.getIsSelected()}
+            disabled={!row.getCanSelect() || isUpdatingSelection}
+            onCheckedChange={({ checked }) =>
+              row.toggleSelected(checked === true)
+            }
+          />
+        );
+      },
       enableSorting: false,
       enableHiding: false,
     };
@@ -696,7 +835,14 @@ export function HiapTab({
       ...typeSpecificColumns,
       actionsColumn,
     ];
-  }, [isSelectionMode, isAdaptation, t]);
+  }, [
+    isSelectionMode,
+    isAdaptation,
+    t,
+    updatingActionId,
+    updatingAllUnranked,
+    isUpdatingSelection,
+  ]);
 
   const table = useReactTable({
     data: actions,
@@ -800,6 +946,7 @@ export function HiapTab({
       <PrintableActionPlanPDF
         actions={toExport}
         t={t}
+        lng={lng}
         cityName={cityData?.name || cityData?.locode}
       />,
     ).toBlob();
@@ -978,7 +1125,7 @@ export function HiapTab({
               variant="ghost"
               p="4px"
               onClick={() => setIsShowingHistory(!isShowingHistory)}
-              color={isShowingHistory ? "content.link" : "content.tertiary"}
+              color={isShowingHistory ? "content.link" : "interactive.control"}
             >
               <Icon as={MdHistory} />
               <Text>{t("history")}</Text>

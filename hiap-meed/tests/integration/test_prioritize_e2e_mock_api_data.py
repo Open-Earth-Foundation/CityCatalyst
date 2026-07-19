@@ -90,6 +90,7 @@ def test_prioritize_e2e_with_mock_api_payloads(
 
         ranked_action_ids = result["ranked_action_ids"]
         ranked_actions = result["ranked_actions"]
+        removed_actions = result["removed_actions"]
 
         assert result["locode"] == "CL IQQ"
         assert metadata["weights"] == {"impact": 0.5, "alignment": 0.3, "feasibility": 0.2}
@@ -103,6 +104,10 @@ def test_prioritize_e2e_with_mock_api_payloads(
         )
         assert metadata["counts"]["ranked_actions"] == 20
         assert len(ranked_actions) == 20
+        assert len(removed_actions) == (
+            metadata["counts"]["discarded_excluded"]
+            + metadata["counts"]["discarded_legal"]
+        )
         discarded_legal_action_ids = set(
             metadata["hard_filter_evidence_by_action_id"].keys()
         )
@@ -132,6 +137,28 @@ def test_prioritize_e2e_with_mock_api_payloads(
             feasibility_summary["financial_feasibility"]["route"],
             str,
         )
+        legal_summary = feasibility_summary["legal"]
+        assert {
+            "ownership_category",
+            "ownership_score",
+            "ownership_description",
+            "ownership_description_es",
+            "restrictions_category",
+            "restrictions_score",
+            "restrictions_description",
+            "restrictions_description_es",
+            "legal_justification",
+            "legal_justification_en",
+            "legal_references",
+        }.issubset(legal_summary.keys())
+        assert isinstance(legal_summary["ownership_description"], str)
+        assert isinstance(legal_summary["ownership_description_es"], str)
+        assert isinstance(legal_summary["restrictions_description"], str)
+        assert isinstance(legal_summary["restrictions_description_es"], str)
+        assert isinstance(legal_summary["legal_justification"], str)
+        assert isinstance(legal_summary["legal_justification_en"], str)
+        assert isinstance(legal_summary["legal_references"], list)
+        assert legal_summary["legal_references"]
 
         blocked_evidence = metadata["hard_filter_evidence_by_action_id"]["c40_0013"]
         missing_evidence_rows = [
@@ -141,6 +168,55 @@ def test_prioritize_e2e_with_mock_api_payloads(
         ]
         assert blocked_evidence["discard_reason"] == "legal_verdict_blocked"
         assert blocked_evidence["legal_verdict_category"] == "blocked"
+        blocked_legal_summary = blocked_evidence["legal_assessment_summary"]
+        assert {
+            "ownership_description",
+            "ownership_description_es",
+            "restrictions_description",
+            "restrictions_description_es",
+            "legal_justification",
+            "legal_justification_en",
+            "legal_references",
+        }.issubset(blocked_legal_summary.keys())
+        assert isinstance(blocked_legal_summary["ownership_description"], str)
+        assert isinstance(blocked_legal_summary["ownership_description_es"], str)
+        assert isinstance(blocked_legal_summary["restrictions_description"], str)
+        assert isinstance(blocked_legal_summary["restrictions_description_es"], str)
+        assert isinstance(blocked_legal_summary["legal_justification"], str)
+        assert isinstance(blocked_legal_summary["legal_justification_en"], str)
+        assert isinstance(blocked_legal_summary["legal_references"], list)
+        assert blocked_legal_summary["legal_references"]
+        removed_blocked_action = next(
+            item for item in removed_actions if item["action_id"] == "c40_0013"
+        )
+        assert removed_blocked_action["removal_reason"] == "legal_verdict_blocked"
+        assert removed_blocked_action["removal_source"] == "legal_hard_filter"
+        assert isinstance(removed_blocked_action["action_name"], str)
+        assert removed_blocked_action["legal"]["verdict_category"] == "blocked"
+        assert removed_blocked_action["legal"]["verdict_score"] == pytest.approx(
+            blocked_evidence["legal_verdict_score"]
+        )
+        assert removed_blocked_action["legal"]["ownership_description"] == (
+            blocked_legal_summary["ownership_description"]
+        )
+        assert removed_blocked_action["legal"]["ownership_description_es"] == (
+            blocked_legal_summary["ownership_description_es"]
+        )
+        assert removed_blocked_action["legal"]["restrictions_description"] == (
+            blocked_legal_summary["restrictions_description"]
+        )
+        assert removed_blocked_action["legal"]["restrictions_description_es"] == (
+            blocked_legal_summary["restrictions_description_es"]
+        )
+        assert removed_blocked_action["legal"]["legal_justification"] == (
+            blocked_legal_summary["legal_justification"]
+        )
+        assert removed_blocked_action["legal"]["legal_justification_en"] == (
+            blocked_legal_summary["legal_justification_en"]
+        )
+        assert removed_blocked_action["legal"]["legal_references"] == (
+            blocked_legal_summary["legal_references"]
+        )
         assert missing_evidence_rows
 
         # Verify artifact naming and full-response persistence.

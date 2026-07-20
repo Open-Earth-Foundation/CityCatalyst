@@ -46,6 +46,7 @@ def run_funding_opportunity_research(
     openai_client: OpenAI | None = None,
 ) -> FundingOpportunityResearchBundle:
     """Run one bounded research workflow and write its local review artifacts."""
+    # Prepare validated configuration, run identity, and reproducibility metadata.
     settings = get_settings()
     validate_credentials(settings)
 
@@ -59,6 +60,7 @@ def run_funding_opportunity_research(
     started_at = datetime.now(timezone.utc)
     started_clock = time.monotonic()
 
+    # Create the model client once and track whether this function owns its lifecycle.
     openai_config = settings.llm.api.openai
     owns_openai_client = openai_client is None
     research_client = openai_client or OpenAI(
@@ -68,6 +70,7 @@ def run_funding_opportunity_research(
     firecrawl: FirecrawlClient | None = None
 
     try:
+        # Record the full workflow under one best-effort observability run.
         with start_run(
             run_name=f"cnb-funding-research-{run_id}",
             experiment_name=climate_advisor_experiment_name(),
@@ -97,12 +100,15 @@ def run_funding_opportunity_research(
             trace: list[AgentTurn] = []
             bootstrap_gaps: list[ResearchGap] = []
 
+            # Capture authoritative seeds before allowing model-selected discovery.
             seed_sources = scrape_seed_sources(
                 request=request,
                 firecrawl=firecrawl,
                 trace=trace,
                 gaps=bootstrap_gaps,
             )
+
+            # Execute the bounded model/tool loop using the configured prompt contract.
             outcome = run_agent_loop(
                 request=request,
                 seed_sources=seed_sources,
@@ -113,6 +119,8 @@ def run_funding_opportunity_research(
                 reasoning_effort=model_config.reasoning_effort,
                 prompt=prompt,
             )
+
+            # Assemble provenance, persist review artifacts, and emit run metrics.
             run_metadata = build_run_metadata(
                 request=request,
                 outcome=outcome,
@@ -143,6 +151,7 @@ def run_funding_opportunity_research(
             )
             return bundle
     finally:
+        # Close only provider clients owned by this workflow.
         if firecrawl is not None:
             firecrawl.close()
         if owns_openai_client:

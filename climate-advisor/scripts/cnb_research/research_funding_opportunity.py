@@ -1,5 +1,5 @@
 """
-Brief: Research one known funding program with GPT-5.6 Terra and Firecrawl.
+Brief: Research one known funding program with the configured model and Firecrawl.
 
 Inputs:
 - CLI args:
@@ -37,14 +37,6 @@ from pathlib import Path
 import sys
 
 from pydantic import ValidationError
-
-# Top-level scripts import reusable application code from the service package.
-SERVICE_DIRECTORY = Path(__file__).resolve().parents[2] / "service"
-if str(SERVICE_DIRECTORY) not in sys.path:
-    sys.path.insert(0, str(SERVICE_DIRECTORY))
-
-from app.models.cnb_research import FundingOpportunityResearchRequest
-from app.services.cnb_research_service import run_funding_opportunity_research
 
 logger = logging.getLogger(__name__)
 
@@ -84,13 +76,22 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     """Validate the manifest, run research, and report the artifact directory."""
+    # Step 1: parse CLI options and configure process-level logging.
     args = parse_args()
     logging.basicConfig(
         level=getattr(logging, args.log_level),
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
 
-    # Step 1: validate the authoritative request before making external calls.
+    # Step 2: expose the service package only for this CLI process.
+    service_directory = Path(__file__).resolve().parents[2] / "service"
+    if str(service_directory) not in sys.path:
+        sys.path.insert(0, str(service_directory))
+
+    from app.models.cnb_research import FundingOpportunityResearchRequest
+    from app.services.cnb_research_service import run_funding_opportunity_research
+
+    # Step 3: validate the authoritative request before making external calls.
     try:
         manifest = json.loads(args.input.read_text(encoding="utf-8"))
         request = FundingOpportunityResearchRequest.model_validate(manifest)
@@ -98,7 +99,7 @@ def main() -> None:
         logger.error("Invalid research manifest %s: %s", args.input, exc)
         raise SystemExit(2) from exc
 
-    # Step 2: run the isolated research workflow; it owns provider lifecycles.
+    # Step 4: run the isolated research workflow; it owns provider lifecycles.
     try:
         bundle = run_funding_opportunity_research(
             request,

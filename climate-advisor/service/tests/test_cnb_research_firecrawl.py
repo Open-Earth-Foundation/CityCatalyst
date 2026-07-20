@@ -56,6 +56,8 @@ def test_firecrawl_client_searches_extracts_and_writes_snapshots(
     client = FirecrawlClient(
         api_key="test-key",
         run_directory=tmp_path,
+        base_url="https://api.firecrawl.dev/v2",
+        timeout_seconds=120,
         http_client=http_client,
     )
 

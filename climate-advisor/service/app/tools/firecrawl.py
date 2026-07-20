@@ -112,8 +112,8 @@ class FirecrawlClient:
         *,
         api_key: str,
         run_directory: Path,
-        base_url: str = "https://api.firecrawl.dev/v2",
-        timeout_seconds: float = 120.0,
+        base_url: str,
+        timeout_seconds: float,
         http_client: httpx.Client | None = None,
     ) -> None:
         """Configure authenticated Firecrawl access and the run snapshot directory."""
@@ -246,6 +246,7 @@ class FirecrawlClient:
 
     def _post(self, endpoint: str, payload: dict[str, JsonValue]) -> dict[str, JsonValue]:
         """Send one Firecrawl request and normalize safe error messages."""
+        # Convert transport failures into the tool's stable error contract.
         try:
             response = self._client.post(f"{self.base_url}/{endpoint}", json=payload)
         except httpx.HTTPError as exc:
@@ -253,6 +254,7 @@ class FirecrawlClient:
                 f"Firecrawl {endpoint} request failed: {exc}"
             ) from exc
 
+        # Surface provider error details without exposing request credentials.
         if response.is_error:
             message = response.reason_phrase
             try:
@@ -265,6 +267,7 @@ class FirecrawlClient:
                 f"Firecrawl {endpoint} returned HTTP {response.status_code}: {message}"
             )
 
+        # Validate the success envelope before returning provider data.
         body = response.json()
         if not isinstance(body, dict) or body.get("success") is False:
             raise FirecrawlError(
@@ -287,10 +290,12 @@ class FirecrawlClient:
         data: dict[str, JsonValue],
     ) -> CapturedSource:
         """Write or refresh the stable local snapshot for one canonical URL."""
+        # Require source Markdown before deriving any provenance metadata.
         markdown = data.get("markdown")
         if not isinstance(markdown, str) or not markdown.strip():
             raise FirecrawlError(f"Firecrawl returned no Markdown for {url}")
 
+        # Derive canonical identity from the source URL and captured content.
         metadata = data.get("metadata")
         metadata_dict = metadata if isinstance(metadata, dict) else {}
         canonical_url = str(

@@ -41,6 +41,7 @@ def build_research_bundle(
     bootstrap_gaps: list[ResearchGap],
 ) -> FundingOpportunityResearchBundle:
     """Assemble the code-owned bundle envelope and enforce provenance rules."""
+    # Convert model-facing types and restore caller-owned seed values.
     opportunity = convert_agent_opportunity(result)
     conflicts = [
         ResearchConflict(
@@ -61,6 +62,7 @@ def build_research_bundle(
         assessments=result.source_assessments,
     )
 
+    # Retain only evidence backed by sources captured in this run.
     source_refs = {source.source_ref for source in sources}
     evidence: list[FieldEvidence] = []
     evidence_gaps: list[ResearchGap] = []
@@ -78,11 +80,13 @@ def build_research_bundle(
             )
         )
 
+    # Remove conflict links to evidence that failed provenance validation.
     conflicts, conflict_evidence_gaps = retain_conflict_evidence(
         conflicts=conflicts,
         evidence=evidence,
     )
 
+    # Merge explicit and derived gaps before creating the pending-review envelope.
     gaps = deduplicate_gaps(
         [
             *bootstrap_gaps,
@@ -118,10 +122,12 @@ def retain_conflict_evidence(
     evidence: list[FieldEvidence],
 ) -> tuple[list[ResearchConflict], list[ResearchGap]]:
     """Remove conflict links to evidence rejected by current-run provenance checks."""
+    # Build the allowed evidence set once for all conflict records.
     retained_refs = {item.evidence_ref for item in evidence}
     validated_conflicts: list[ResearchConflict] = []
     gaps: list[ResearchGap] = []
     for conflict in conflicts:
+        # Preserve valid links and turn every rejected link into a review gap.
         valid_refs = [
             evidence_ref
             for evidence_ref in conflict.evidence_refs
@@ -148,6 +154,7 @@ def convert_agent_opportunity(
     result: FundingOpportunityResearchResult,
 ) -> FundingOpportunityResearchDraft:
     """Convert strict model types into the richer architecture bundle types."""
+    # Separate nested values that require conversion into final bundle models.
     agent_opportunity = result.opportunity
     opportunity_data = agent_opportunity.model_dump(
         exclude={
@@ -159,6 +166,8 @@ def convert_agent_opportunity(
             "pipeline_entries",
         }
     )
+
+    # Convert strict output records into the richer review-facing representations.
     profile = FunderProfileDraft(
         stated={fact.key: fact.value for fact in agent_opportunity.funder_profile.stated},
         derived={fact.key: fact.value for fact in agent_opportunity.funder_profile.derived},
@@ -201,6 +210,7 @@ def preserve_authoritative_seeds(
     conflicts: list[ResearchConflict],
 ) -> FundingOpportunityResearchDraft:
     """Restore request seeds and retain model-proposed replacements as conflicts."""
+    # Compare each immutable request seed with the model-proposed value.
     checks = {
         "opportunity.funder_name": (opportunity.funder_name, request.funder_name),
         "opportunity.funder_url": (
@@ -228,6 +238,7 @@ def preserve_authoritative_seeds(
             )
         )
 
+    # Restore the authoritative seeds after recording every disagreement.
     return opportunity.model_copy(
         update={
             "funder_name": request.funder_name,
@@ -244,6 +255,7 @@ def build_sources(
     assessments: list[SourceDocumentAssessment],
 ) -> tuple[list[SourceDocumentDraft], list[ResearchGap]]:
     """Merge model classifications with code-derived source provenance."""
+    # Reject assessments for sources that were not captured during this run.
     assessment_by_ref = {item.source_ref: item for item in assessments}
     captured_refs = {item.source_ref for item in captured_sources}
     gaps = [
@@ -255,6 +267,7 @@ def build_sources(
         if assessment.source_ref not in captured_refs
     ]
 
+    # Combine code-owned capture metadata with optional model classifications.
     sources: list[SourceDocumentDraft] = []
     for captured in captured_sources:
         assessment = assessment_by_ref.get(captured.source_ref)
@@ -310,6 +323,7 @@ def add_evidence_coverage_gaps(
     gaps: list[ResearchGap],
 ) -> list[ResearchGap]:
     """Flag populated material fields that do not have source evidence."""
+    # Derive uncovered material paths without duplicating existing gaps.
     evidence_paths = {item.target_path for item in evidence}
     existing_gap_paths = {item.target_path for item in gaps}
     additions = [
@@ -337,6 +351,7 @@ def material_paths(
     opportunity: FundingOpportunityResearchDraft,
 ) -> Iterable[str]:
     """Yield populated non-seed leaf paths using stable temporary references."""
+    # Exclude caller-owned seeds and use stable record identifiers in paths.
     seed_paths = {
         "opportunity.funder_name",
         "opportunity.funder_url",
@@ -356,6 +371,7 @@ def material_paths(
 
     def walk(value: JsonValue, path: str) -> Iterable[str]:
         """Recursively yield evidence paths for populated JSON values."""
+        # Descend through objects while excluding seed and identity fields.
         if isinstance(value, dict):
             for key, item in value.items():
                 child_path = f"{path}.{key}"
@@ -363,6 +379,8 @@ def material_paths(
                     continue
                 yield from walk(item, child_path)
             return
+
+        # Treat primitive lists as one field and structured lists as records.
         if isinstance(value, list):
             if not value:
                 return
@@ -379,6 +397,8 @@ def material_paths(
                             break
                 yield from walk(item, f"{path}[{token}]")
             return
+
+        # Emit only populated scalar leaves.
         if value is not None and value != "":
             yield path
 

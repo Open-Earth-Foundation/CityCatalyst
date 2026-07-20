@@ -96,7 +96,7 @@ def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
         duration_seconds=1,
         max_turns=1,
         turns_used=1,
-        termination_reason="model_completed",
+        termination_reason="coverage_complete",
     )
     captured = CapturedSource(
         source_ref="source-current-content",

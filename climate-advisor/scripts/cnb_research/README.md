@@ -12,7 +12,8 @@ scripts/cnb_research/
 |-- research_funding_opportunity.py
 |-- review.html                    # Static human-review workspace
 |-- review.css
-`-- review.js
+|-- review.js
+`-- review.test.cjs               # Review path-mapping regression tests
 
 output/cnb_research/
 |-- 9023c3d6-8581-4e7b-91d1-b65db544559b/
@@ -58,6 +59,12 @@ Each `<run_id>/` contains:
 - `agent_trace.jsonl`
 - `sources/<source_ref>.md`
 
+Each source reference is derived from the canonical URL and captured Markdown
+hash. Evidence resumed from a prior filled object is retained only when the
+current run captures the same source identity; otherwise the evidence is
+dropped and the bundle records a review gap. Model output also rejects duplicate
+record identifiers and project, action, or conflict links to missing records.
+
 `research_bundle.json` is the only JSON file to open for review. It embeds the
 original request and run metadata, including the model, reasoning effort,
 prompt SHA-256, timing, turn use, termination reason, and MLflow run ID. The
@@ -89,6 +96,12 @@ ungrouped decimal values, and retain numeric meaning in the saved update.
 
 Evidence, gaps, and conflicts whose target paths do not map to an editable
 dossier field remain visible in an `Other evidence and issues` section.
+
+Run the review path-mapping regression tests from `climate-advisor/` with:
+
+```powershell
+node --test scripts/cnb_research/review.test.cjs
+```
 
 `Save update` downloads `<run_id>.review-update.json`. The update contains
 source-bundle hashes when browser crypto is available,

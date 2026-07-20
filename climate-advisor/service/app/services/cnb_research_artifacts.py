@@ -14,6 +14,7 @@ def write_research_artifacts(
     bundle: FundingOpportunityResearchBundle,
 ) -> None:
     """Write one canonical JSON bundle plus the trace and Markdown review."""
+    # Persist the canonical machine-readable bundle first.
     (run_directory / "research_bundle.json").write_text(
         json.dumps(
             bundle.model_dump(mode="json"),
@@ -23,6 +24,8 @@ def write_research_artifacts(
         + "\n",
         encoding="utf-8",
     )
+
+    # Write the audit trace and human-readable review beside the bundle.
     trace_text = "".join(
         f"{json.dumps(turn.model_dump(mode='json'), ensure_ascii=False)}\n"
         for turn in bundle.agent_trace
@@ -39,6 +42,7 @@ def write_research_artifacts(
 
 def render_review(bundle: FundingOpportunityResearchBundle) -> str:
     """Render a concise human review view from the canonical bundle."""
+    # Build the run summary and full opportunity dossier.
     lines = [
         f"# Funding Opportunity Research: {bundle.opportunity.program_name}",
         "",
@@ -73,6 +77,8 @@ def render_review(bundle: FundingOpportunityResearchBundle) -> str:
         "## Sources",
         "",
     ]
+
+    # Render source provenance before issues and field-level evidence.
     if bundle.sources:
         for source in bundle.sources:
             title = source.title or source.source_ref
@@ -84,6 +90,7 @@ def render_review(bundle: FundingOpportunityResearchBundle) -> str:
     else:
         lines.append("No source snapshots were captured.")
 
+    # Render unresolved gaps and competing sourced values.
     lines.extend(["", "## Gaps", ""])
     if bundle.gaps:
         lines.extend(
@@ -103,6 +110,7 @@ def render_review(bundle: FundingOpportunityResearchBundle) -> str:
     else:
         lines.append("No conflicts reported.")
 
+    # Finish with the evidence retained for individual dossier fields.
     lines.extend(["", "## Field evidence", ""])
     if bundle.evidence:
         for evidence in bundle.evidence:

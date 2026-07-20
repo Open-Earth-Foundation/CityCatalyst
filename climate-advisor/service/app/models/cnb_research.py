@@ -513,7 +513,6 @@ class ResearchRunMetadata(ResearchModel):
     termination_reason: Literal[
         "coverage_complete",
         "turn_limit",
-        "model_completed",
     ]
     mlflow_run_id: str | None = None
 

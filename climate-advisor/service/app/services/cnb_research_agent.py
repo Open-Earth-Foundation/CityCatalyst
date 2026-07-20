@@ -54,6 +54,7 @@ def scrape_seed_sources(
     gaps: list[ResearchGap],
 ) -> list[dict[str, JsonValue]]:
     """Scrape authoritative funder, program, and optional template URLs."""
+    # Build the deterministic seed set supplied by the caller.
     seeds = [
         ("funder", str(request.funder_url)),
         ("program", str(request.program_url)),
@@ -61,6 +62,7 @@ def scrape_seed_sources(
     if request.application_template_url is not None:
         seeds.append(("application_template", str(request.application_template_url)))
 
+    # Capture every seed outcome in both the model input and the audit trace.
     results: list[dict[str, JsonValue]] = []
     for label, url in seeds:
         try:
@@ -100,6 +102,7 @@ def run_agent_loop(
     prompt: str,
 ) -> AgentLoopOutcome:
     """Run model-selected Firecrawl turns followed by one explicit gap audit."""
+    # Initialize the validated working dossier and first-turn payload.
     current_filled_object = request.current_filled_object or empty_result(request)
     missing_data = find_missing_data(current_filled_object, request=request)
     current_input: str | list[dict[str, JsonValue]] = json.dumps(
@@ -126,6 +129,7 @@ def run_agent_loop(
     previous_response_id: str | None = None
     finalizing_for_coverage = False
 
+    # Run bounded discovery turns, reserving the last turn for a no-tools audit.
     for turn_number in range(1, request.max_turns + 1):
         is_final_audit = finalizing_for_coverage or turn_number == request.max_turns
         if previous_response_id is not None:
@@ -140,6 +144,7 @@ def run_agent_loop(
                 )
             )
 
+        # Build the Responses API request from code-owned turn state.
         request_kwargs: dict[str, object] = {
             "model": model_name,
             "reasoning": {"effort": reasoning_effort},
@@ -167,6 +172,7 @@ def run_agent_loop(
             item for item in response.output if item.type == "function_call"
         ]
 
+        # Accept structured checkpoints and decide whether another turn is useful.
         if not tool_calls:
             if response.output_parsed is None:
                 raise RuntimeError(
@@ -211,6 +217,7 @@ def run_agent_loop(
             current_input = []
             continue
 
+        # Execute model-selected tools and return their outputs on the next turn.
         tool_outputs = execute_tool_calls(
             tool_calls=tool_calls,
             turn_number=turn_number,
@@ -248,6 +255,7 @@ def execute_tool_calls(
     """Execute the model-selected Firecrawl calls and retain concise trace rows."""
     tool_outputs: list[dict[str, JsonValue]] = []
     for tool_call in tool_calls:
+        # Decode and dispatch one explicitly registered tool call.
         arguments = json.loads(tool_call.arguments)
         try:
             tool_result = execute_firecrawl_tool(
@@ -259,6 +267,7 @@ def execute_tool_calls(
             logger.warning("Research tool %s failed: %s", tool_call.name, exc)
             tool_result = {"error": str(exc)}
 
+        # Retain a compact trace row and the matching Responses API output.
         trace.append(
             AgentTurn(
                 turn=turn_number,
@@ -286,6 +295,7 @@ def turn_context_message(
     final_audit: bool,
 ) -> dict[str, JsonValue]:
     """Build the explicit progress, missing-data, and remaining-turn reminder."""
+    # Derive the code-owned budget and final-audit instruction.
     budget = turn_budget(
         turn_number=turn_number,
         max_turns=max_turns,
@@ -297,6 +307,8 @@ def turn_context_message(
         if final_audit
         else ""
     )
+
+    # Render the current dossier state as one user-context message.
     content = (
         "<current_filled_object>\n"
         f"{current_filled_object.model_dump_json(indent=2)}\n"
@@ -360,6 +372,8 @@ def find_missing_data(
     """List unresolved coverage targets; this does not judge factual correctness."""
     opportunity = result.opportunity
     missing: list[str] = []
+
+    # Check the core scalar opportunity fields.
     scalar_targets = (
         ("opportunity.funder_type", opportunity.funder_type),
         ("opportunity.funder_region", opportunity.funder_region),
@@ -373,6 +387,7 @@ def find_missing_data(
         if not value and not gap_covers(result, target_path):
             missing.append(f"Resolve {target_path} or record a precise gap.")
 
+    # Require a template decision and both eligibility and selection coverage.
     if (
         opportunity.application_template is None
         and not gap_covers(result, "opportunity.application_template")
@@ -398,6 +413,7 @@ def find_missing_data(
         ) and not gap_covers(result, "opportunity.criteria.selection"):
             missing.append("Find selection/evaluation criteria or record a gap.")
 
+    # Require one deep funded-project chain and explicit monetary facts.
     if not opportunity.funded_projects and not gap_covers(
         result, "opportunity.funded_projects"
     ):
@@ -417,6 +433,7 @@ def find_missing_data(
             "year, status, and project/action linkage, or record a gap."
         )
 
+    # Confirm that authoritative guidance and funded-project sources were captured.
     source_types = [item.source_type.lower() for item in result.source_assessments]
     source_roles = (
         (
@@ -435,6 +452,7 @@ def find_missing_data(
             if not gap_covers(result, target_path):
                 missing.append(instruction)
 
+    # Require retained evidence unless the absence is itself an explicit gap.
     if not result.evidence and not gap_covers(result, "evidence"):
         missing.append("Retain field evidence for populated non-seed facts.")
     return missing
@@ -443,6 +461,8 @@ def find_missing_data(
 def has_deep_project(result: FundingOpportunityResearchResult) -> bool:
     """Return whether one project has both an action and funding relationship."""
     opportunity = result.opportunity
+
+    # Precompute project and action references used by funding relationships.
     action_projects = {item.project_ref for item in opportunity.funded_project_actions}
     funding_projects = {
         item.project_ref for item in opportunity.funding_links if item.project_ref
@@ -450,6 +470,8 @@ def has_deep_project(result: FundingOpportunityResearchResult) -> bool:
     funded_action_refs = {
         item.action_ref for item in opportunity.funding_links if item.action_ref
     }
+
+    # Accept either project-level funding or funding attached to one project action.
     for project in opportunity.funded_projects:
         project_actions = {
             action.action_ref

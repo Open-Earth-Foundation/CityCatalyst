@@ -6,7 +6,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, HttpUrl, JsonValue
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, JsonValue, model_validator
 
 
 FinancialAmountKind = Literal[
@@ -20,6 +20,19 @@ FinancialAmountKind = Literal[
     "disbursed_financing",
     "other",
 ]
+
+
+def _ensure_unique(values: list[str], field_name: str) -> None:
+    """Reject duplicate model-generated identifiers before they reach review."""
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for value in values:
+        if value in seen:
+            duplicates.add(value)
+        seen.add(value)
+    if duplicates:
+        duplicate_list = ", ".join(sorted(duplicates))
+        raise ValueError(f"{field_name} values must be unique: {duplicate_list}")
 
 
 class ResearchModel(BaseModel):
@@ -250,6 +263,13 @@ class FunderProfileResearchResult(ResearchModel):
     stated: list[FunderProfileFact] = Field(default_factory=list)
     derived: list[FunderProfileFact] = Field(default_factory=list)
 
+    @model_validator(mode="after")
+    def validate_unique_keys(self) -> "FunderProfileResearchResult":
+        """Prevent dictionary conversion from silently replacing profile facts."""
+        _ensure_unique([item.key for item in self.stated], "funder_profile.stated.key")
+        _ensure_unique([item.key for item in self.derived], "funder_profile.derived.key")
+        return self
+
 
 class FunderCriterionResearchResult(ResearchModel):
     """Strict model-facing criterion with a textual normalized rule."""
@@ -272,6 +292,15 @@ class FunderTemplateResearchResult(ResearchModel):
     output_format: str | None = None
     chapter_schema: list[TemplateChapterDraft] = Field(default_factory=list)
     required_fields: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_unique_chapter_refs(self) -> "FunderTemplateResearchResult":
+        """Keep application-template chapter paths unambiguous for review."""
+        _ensure_unique(
+            [item.chapter_ref for item in self.chapter_schema],
+            "application_template.chapter_ref",
+        )
+        return self
 
 
 class FundingLinkResearchResult(ResearchModel):
@@ -353,6 +382,70 @@ class FundingOpportunityResearchAgentDraft(ResearchModel):
         default_factory=list
     )
 
+    @model_validator(mode="after")
+    def validate_record_references(self) -> "FundingOpportunityResearchAgentDraft":
+        """Require unique record IDs and valid project/action relationships."""
+        # Reject duplicate IDs before evidence paths and UI decisions use them as keys.
+        reference_lists = (
+            ("criteria.criterion_ref", [item.criterion_ref for item in self.criteria]),
+            (
+                "funded_projects.project_ref",
+                [item.project_ref for item in self.funded_projects],
+            ),
+            (
+                "funded_project_actions.action_ref",
+                [item.action_ref for item in self.funded_project_actions],
+            ),
+            (
+                "funding_links.funding_link_ref",
+                [item.funding_link_ref for item in self.funding_links],
+            ),
+            (
+                "financial_amounts.amount_ref",
+                [item.amount_ref for item in self.financial_amounts],
+            ),
+            (
+                "pipeline_entries.entry_ref",
+                [item.entry_ref for item in self.pipeline_entries],
+            ),
+        )
+        for field_name, values in reference_lists:
+            _ensure_unique(values, field_name)
+
+        # Validate every optional relationship against the records in this dossier.
+        project_refs = {item.project_ref for item in self.funded_projects}
+        actions_by_ref = {
+            item.action_ref: item for item in self.funded_project_actions
+        }
+        for action in self.funded_project_actions:
+            if action.project_ref not in project_refs:
+                raise ValueError(
+                    "funded_project_actions.project_ref must reference a funded "
+                    f"project: {action.project_ref}"
+                )
+
+        linked_records = [*self.funding_links, *self.financial_amounts]
+        for item in linked_records:
+            if item.project_ref is not None and item.project_ref not in project_refs:
+                raise ValueError(
+                    f"{type(item).__name__}.project_ref references an unknown "
+                    f"project: {item.project_ref}"
+                )
+            if item.action_ref is None:
+                continue
+            action = actions_by_ref.get(item.action_ref)
+            if action is None:
+                raise ValueError(
+                    f"{type(item).__name__}.action_ref references an unknown "
+                    f"action: {item.action_ref}"
+                )
+            if item.project_ref is not None and action.project_ref != item.project_ref:
+                raise ValueError(
+                    f"{type(item).__name__} links action {item.action_ref} to the "
+                    f"wrong project {item.project_ref}"
+                )
+        return self
+
 
 class ResearchConflictResult(ResearchModel):
     """Structured-output-safe conflict converted to final JsonValue candidates."""
@@ -371,6 +464,26 @@ class FundingOpportunityResearchResult(ResearchModel):
     evidence: list[FieldEvidence] = Field(default_factory=list)
     gaps: list[ResearchGap] = Field(default_factory=list)
     conflicts: list[ResearchConflictResult] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_result_references(self) -> "FundingOpportunityResearchResult":
+        """Require unique evidence IDs and conflict links to known evidence."""
+        _ensure_unique(
+            [item.source_ref for item in self.source_assessments],
+            "source_assessments.source_ref",
+        )
+        evidence_refs = [item.evidence_ref for item in self.evidence]
+        _ensure_unique(evidence_refs, "evidence.evidence_ref")
+        known_evidence_refs = set(evidence_refs)
+        for conflict in self.conflicts:
+            unknown_refs = set(conflict.evidence_refs) - known_evidence_refs
+            if unknown_refs:
+                unknown_list = ", ".join(sorted(unknown_refs))
+                raise ValueError(
+                    "conflicts.evidence_refs must reference retained evidence: "
+                    f"{unknown_list}"
+                )
+        return self
 
 
 class FundingOpportunityResearchRequest(ResearchModel):

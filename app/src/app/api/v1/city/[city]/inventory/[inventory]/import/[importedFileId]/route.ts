@@ -198,6 +198,7 @@ const PDF_IMPORT_FIELD_DEFS: Array<{ key: string; label: string }> = [
   { key: "co2", label: "CO2" },
   { key: "ch4", label: "CH4" },
   { key: "n2o", label: "N2O" },
+  { key: "source", label: "Document Source / Location" },
   { key: "methodology", label: "Activity data - Description and Methodology" },
   { key: "activityAmount", label: "Activity Amount" },
   { key: "activityUnit", label: "Activity Unit" },

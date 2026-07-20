@@ -48,7 +48,9 @@
   const view = {};
   let statusTimer;
 
-  document.addEventListener("DOMContentLoaded", initialize);
+  if (typeof document !== "undefined") {
+    document.addEventListener("DOMContentLoaded", initialize);
+  }
 
   function initialize() {
     [
@@ -153,6 +155,54 @@
       section.append(summary, content);
       view.editorSections.append(section);
     });
+    renderUnmappedReviewItems();
+  }
+
+  function renderUnmappedReviewItems() {
+    const decisionPaths = visibleDecisions().map((item) => item.target_path);
+    const collections = ["evidence", "gaps", "conflicts"];
+    const unmapped = [];
+    collections.forEach((collection) => {
+      itemsWithoutRelatedPath(state.bundle?.[collection] || [], decisionPaths)
+        .forEach((item) => unmapped.push({ collection, item }));
+    });
+    if (!unmapped.length) return;
+
+    const section = element("details", "editor-section review-issues");
+    section.id = "other-review-issues";
+    section.open = true;
+    const summary = element("summary", "section-summary");
+    const summaryText = element("span", "section-summary-text");
+    summaryText.append(
+      element("h2", "", "Other evidence and issues"),
+      element(
+        "span",
+        "section-description",
+        "Items that do not map to an editable dossier field.",
+      ),
+    );
+    summary.append(summaryText, element("span", "collapse-label"));
+
+    const content = element("div", "section-content");
+    unmapped.forEach(({ collection, item }) => {
+      let reviewItem;
+      if (collection === "evidence") {
+        reviewItem = evidenceItem(item);
+      } else if (collection === "gaps") {
+        reviewItem = issueItem("Gap", item.reason, "gap");
+      } else {
+        const candidates = JSON.stringify(item.candidate_values);
+        reviewItem = issueItem(
+          "Conflict",
+          `${item.explanation} Candidates: ${candidates}`,
+          "conflict",
+        );
+      }
+      reviewItem.prepend(element("code", "issue-path", item.target_path));
+      content.append(reviewItem);
+    });
+    section.append(summary, content);
+    view.editorSections.prepend(section);
   }
 
   function renderValue(parent, key, value, path, segments) {
@@ -371,16 +421,32 @@
   }
 
   function pathsRelated(left, right) {
-    const a = normalizePath(left);
-    const b = normalizePath(right);
-    return a === b || a.startsWith(`${b}.`) || b.startsWith(`${a}.`);
+    const leftTokens = pathTokens(left);
+    const rightTokens = pathTokens(right);
+    const sharedLength = Math.min(leftTokens.length, rightTokens.length);
+    for (let index = 0; index < sharedLength; index += 1) {
+      const leftToken = leftTokens[index];
+      const rightToken = rightTokens[index];
+      if (leftToken !== "*" && rightToken !== "*" && leftToken !== rightToken) {
+        return false;
+      }
+    }
+    return sharedLength > 0;
   }
 
-  function normalizePath(path) {
-    return path.split(/([.\[\]])/).map((part) => {
-      if (/^[.\[\]]$/.test(part)) return part;
-      return part.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_");
-    }).join("");
+  function pathTokens(path) {
+    const parts = String(path).match(/[^.\[\]]+|\[[^\]]*\]/g) || [];
+    return parts.map((part) => {
+      const value = part.startsWith("[") ? part.slice(1, -1) : part;
+      if (value.trim() === "*") return "*";
+      return value.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_");
+    });
+  }
+
+  function itemsWithoutRelatedPath(items, paths) {
+    return items.filter(
+      (item) => !paths.some((path) => pathsRelated(path, item.target_path)),
+    );
   }
 
   function saveUpdate() {
@@ -547,5 +613,9 @@
     view.statusMessage.classList.add("visible");
     clearTimeout(statusTimer);
     statusTimer = window.setTimeout(() => view.statusMessage.classList.remove("visible"), 2400);
+  }
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { itemsWithoutRelatedPath, pathsRelated };
   }
 })();

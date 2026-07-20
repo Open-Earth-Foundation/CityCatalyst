@@ -78,8 +78,19 @@ def build_research_bundle(
             )
         )
 
+    conflicts, conflict_evidence_gaps = retain_conflict_evidence(
+        conflicts=conflicts,
+        evidence=evidence,
+    )
+
     gaps = deduplicate_gaps(
-        [*bootstrap_gaps, *source_gaps, *evidence_gaps, *result.gaps]
+        [
+            *bootstrap_gaps,
+            *source_gaps,
+            *evidence_gaps,
+            *conflict_evidence_gaps,
+            *result.gaps,
+        ]
     )
     gaps = add_evidence_coverage_gaps(
         opportunity=opportunity,
@@ -99,6 +110,38 @@ def build_research_bundle(
         agent_trace=trace,
         review=ReviewState(status="pending_review"),
     )
+
+
+def retain_conflict_evidence(
+    *,
+    conflicts: list[ResearchConflict],
+    evidence: list[FieldEvidence],
+) -> tuple[list[ResearchConflict], list[ResearchGap]]:
+    """Remove conflict links to evidence rejected by current-run provenance checks."""
+    retained_refs = {item.evidence_ref for item in evidence}
+    validated_conflicts: list[ResearchConflict] = []
+    gaps: list[ResearchGap] = []
+    for conflict in conflicts:
+        valid_refs = [
+            evidence_ref
+            for evidence_ref in conflict.evidence_refs
+            if evidence_ref in retained_refs
+        ]
+        missing_refs = sorted(set(conflict.evidence_refs) - retained_refs)
+        if missing_refs:
+            gaps.append(
+                ResearchGap(
+                    target_path=conflict.target_path,
+                    reason=(
+                        "Conflict evidence was not retained from a verified current-run "
+                        f"source: {', '.join(missing_refs)}."
+                    ),
+                )
+            )
+        validated_conflicts.append(
+            conflict.model_copy(update={"evidence_refs": valid_refs})
+        )
+    return validated_conflicts, gaps
 
 
 def convert_agent_opportunity(

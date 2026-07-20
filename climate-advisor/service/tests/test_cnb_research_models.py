@@ -7,11 +7,16 @@ from pydantic import ValidationError
 import pytest
 
 from app.models.cnb_research import (
+    FieldEvidence,
     FinancialAmountResearchResult,
+    FundedProjectActionDraft,
+    FundedProjectDraft,
     FundingLinkResearchResult,
+    FundingOpportunityResearchAgentDraft,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
     FundingPipelineEntryResearchResult,
+    ResearchConflictResult,
 )
 from tests.cnb_research_helpers import build_request, build_result
 
@@ -90,3 +95,66 @@ def test_funding_records_use_calendar_year_only() -> None:
         assert "calendar_year" in model.model_fields
         assert "fiscal_year" not in model.model_fields
         assert "award_year" not in model.model_fields
+
+
+def test_agent_opportunity_rejects_duplicate_and_orphan_references() -> None:
+    """Model-generated record keys must be unique and internally connected."""
+    base = build_result().opportunity.model_dump(mode="json")
+
+    with pytest.raises(ValidationError, match="project_ref values must be unique"):
+        FundingOpportunityResearchAgentDraft.model_validate(
+            {
+                **base,
+                "funded_projects": [
+                    FundedProjectDraft(project_ref="duplicate", title="First"),
+                    FundedProjectDraft(project_ref="duplicate", title="Second"),
+                ],
+            }
+        )
+
+    with pytest.raises(
+        ValidationError,
+        match="project_ref must reference a funded project",
+    ):
+        FundingOpportunityResearchAgentDraft.model_validate(
+            {
+                **base,
+                "funded_project_actions": [
+                    FundedProjectActionDraft(
+                        action_ref="action-001",
+                        project_ref="missing-project",
+                        description="Prepare the project.",
+                    )
+                ],
+            }
+        )
+
+
+def test_research_result_rejects_duplicate_and_unknown_evidence_refs() -> None:
+    """Evidence identifiers remain unique and conflicts cannot cite missing rows."""
+    base = build_result().model_dump(mode="json")
+    duplicate = FieldEvidence(
+        evidence_ref="evidence-001",
+        target_path="opportunity.status",
+        source_ref="source-003",
+        quote_or_summary="A second claim with the same identifier.",
+    )
+
+    with pytest.raises(ValidationError, match="evidence_ref values must be unique"):
+        FundingOpportunityResearchResult.model_validate(
+            {**base, "evidence": [*base["evidence"], duplicate]}
+        )
+
+    conflict = ResearchConflictResult(
+        target_path="opportunity.status",
+        candidate_values=["open", "closed"],
+        evidence_refs=["missing-evidence"],
+        explanation="Sources disagree.",
+    )
+    with pytest.raises(
+        ValidationError,
+        match="must reference retained evidence",
+    ):
+        FundingOpportunityResearchResult.model_validate(
+            {**base, "conflicts": [conflict]}
+        )

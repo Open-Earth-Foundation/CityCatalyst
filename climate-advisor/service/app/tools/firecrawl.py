@@ -298,14 +298,12 @@ class FirecrawlClient:
         )
         title_value = metadata_dict.get("title")
         title = str(title_value) if title_value else None
-        existing = self._sources_by_url.get(canonical_url)
-        source_ref = (
-            existing.source_ref
-            if existing
-            else f"source-{len(self._sources_by_url) + 1:03d}"
-        )
         fetched_at = datetime.now(timezone.utc)
         content_hash = hashlib.sha256(markdown.encode("utf-8")).hexdigest()
+        source_identity = hashlib.sha256(
+            f"{canonical_url}\n{content_hash}".encode("utf-8")
+        ).hexdigest()
+        source_ref = f"source-{source_identity}"
         relative_path = Path("sources") / f"{source_ref}.md"
         snapshot_path = self.run_directory / relative_path
 

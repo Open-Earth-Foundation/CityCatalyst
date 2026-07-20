@@ -3,8 +3,8 @@
  */
 import { describe, expect, it } from "@jest/globals";
 import {
-  fillActivityDataSourceFromSource,
   mergeAndDedupeRows,
+  normalizeExtractedRows,
   PATH_C_CHUNK_OVERLAP,
   PATH_C_CHUNK_SIZE,
   PATH_C_CHUNK_THRESHOLD,
@@ -12,25 +12,27 @@ import {
   type ExtractedRow,
 } from "@/backend/InventoryExtractionService";
 
-describe("fillActivityDataSourceFromSource", () => {
-  it("uses source when the canonical activity data source is empty", () => {
-    const rows = fillActivityDataSourceFromSource([
+describe("normalizeExtractedRows", () => {
+  it("keeps document source separate from activity data source", () => {
+    const rows = normalizeExtractedRows([
       {
         year: 2025,
         sector: "Stationary Energy",
         subsector: "Residential Buildings",
         category: "Natural gas",
         totalCO2e: 10,
-        source: "Utility ledger",
+        source: "Table 5",
         activityDataSource: null,
       },
     ]);
 
-    expect(rows[0].activityDataSource).toBe("Utility ledger");
+    expect(rows[0].source).toBe("Table 5");
+    expect(rows[0].activityDataSource).toBeNull();
+    expect(rows[0].activityType).toBe("Natural gas");
   });
 
   it("keeps an explicitly extracted activity data source", () => {
-    const rows = fillActivityDataSourceFromSource([
+    const rows = normalizeExtractedRows([
       {
         year: 2025,
         sector: "Stationary Energy",

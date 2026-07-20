@@ -193,6 +193,14 @@ summary:hover > .collapse-label::after { border-color: var(--accent); }
 .section-summary-text { min-width: 0; }
 .section-description { color: var(--muted); font-size: 13px; }
 .section-content { padding-bottom: 24px; }
+.review-issues { box-shadow: inset 4px 0 0 var(--warning); }
+.issue-path {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--accent);
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
 .nested, .record {
   margin-top: 20px;
   padding-left: 17px;

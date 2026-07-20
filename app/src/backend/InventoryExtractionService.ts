@@ -311,9 +311,7 @@ export async function extractInventoryRowsFromDocument(
     allRows = mergeAndDedupeRows(perChunkRows);
   }
 
-  const withGpc = fillMissingGpcRefNo(allRows);
-  let result = fillActivityTypeFromCategory(withGpc);
-  result = fillActivityDataSourceFromSource(result);
+  let result = normalizeExtractedRows(allRows);
 
   if (targetYear != null && Number.isInteger(targetYear)) {
     const before = result.length;
@@ -827,16 +825,8 @@ function fillActivityTypeFromCategory(rows: ExtractedRow[]): ExtractedRow[] {
 }
 
 /**
- * Preserve the generic source field as the canonical activity data source.
+ * Fill derived fields while keeping document provenance separate from activity data provenance.
  */
-export function fillActivityDataSourceFromSource(
-  rows: ExtractedRow[],
-): ExtractedRow[] {
-  return rows.map((row) => {
-    if (row.activityDataSource?.trim()) return row;
-    if (row.source?.trim()) {
-      return { ...row, activityDataSource: row.source };
-    }
-    return row;
-  });
+export function normalizeExtractedRows(rows: ExtractedRow[]): ExtractedRow[] {
+  return fillActivityTypeFromCategory(fillMissingGpcRefNo(rows));
 }

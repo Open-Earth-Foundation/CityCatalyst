@@ -87,6 +87,9 @@ but are not displayed, editable, selectable, or included in visible field counts
 Monetary inputs use thousands separators for readability, accept grouped or
 ungrouped decimal values, and retain numeric meaning in the saved update.
 
+Evidence, gaps, and conflicts whose target paths do not map to an editable
+dossier field remain visible in an `Other evidence and issues` section.
+
 `Save update` downloads `<run_id>.review-update.json`. The update contains
 source-bundle hashes when browser crypto is available,
 the review decision and notes, every field decision, and the selected edited

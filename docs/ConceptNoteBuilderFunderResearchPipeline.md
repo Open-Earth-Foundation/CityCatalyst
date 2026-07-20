@@ -20,7 +20,10 @@ climate-advisor/
 |   `-- cnb_research/
 |       |-- files/
 |       |-- README.md
-|       `-- research_funding_opportunity.py
+|       |-- research_funding_opportunity.py
+|       |-- review.html
+|       |-- review.css
+|       `-- review.js
 |-- service/app/
 |   |-- models/cnb_research.py
 |   |-- services/
@@ -120,7 +123,7 @@ funded-project chain:
 5. field evidence pointing to captured Firecrawl snapshots.
 
 For dense annual, portfolio, completion, or program reports, the agent is told
-to run focused extractions for program scale, approvals and fiscal periods,
+to run focused extractions for program scale, approvals and calendar years,
 individual technical-assistance amounts, downstream investment amounts and
 statuses, and the strongest named project. It should then follow that project
 to an official project-specific source when available.
@@ -149,14 +152,17 @@ published monetary number actually means.
 
 The last no-tools step checks award minima/maxima and currencies, criterion
 weights and hard gates, selection timing/rates, co-financing, public application
-templates, requested versus awarded amounts and fiscal periods, action-level
+templates, requested versus awarded amounts and calendar years, action-level
 costs, downstream financing status, published pipeline status, and source
 licenses. Unknowns remain null or empty and are recorded as precise gaps where
 they matter to CNB coverage.
 
 ## Traceability and MLflow
 
-Every bundle uses schema version `1.1` and contains code-owned run metadata:
+Every bundle uses schema version `1.2` and contains code-owned run metadata.
+All year-bearing funding links, financial amounts, and pipeline entries use one
+optional integer `calendar_year`; fiscal-year labels are outside this contract.
+The metadata includes:
 
 - pipeline version;
 - model and reasoning effort;
@@ -179,8 +185,6 @@ Each run writes:
 
 ```text
 output/cnb_research/<run_id>/
-|-- request.json
-|-- run_metadata.json
 |-- research_bundle.json
 |-- review.md
 |-- agent_trace.jsonl
@@ -188,11 +192,51 @@ output/cnb_research/<run_id>/
     `-- <source_ref>.md
 ```
 
-`research_bundle.json` is the canonical Pydantic-validated pending-review
-result. `run_metadata.json` is a convenient standalone copy of its metadata.
-The trace records seed scrapes, Firecrawl actions, structured checkpoints, and
-the final audit. Source snapshots include their stable reference, canonical URL,
-capture time, and content hash.
+`research_bundle.json` is the only JSON artifact and the canonical
+Pydantic-validated pending-review result. It embeds the authoritative request
+and run metadata so reviewers do not have to choose between multiple JSON
+files. The trace records seed scrapes, Firecrawl actions, structured
+checkpoints, and the final audit. Source snapshots include their stable
+reference, canonical URL, capture time, and content hash.
+
+## Static review workspace
+
+The static workspace at `scripts/cnb_research/review.html` reads a selected
+`research_bundle.json` entirely in the browser. It renders top-level sections,
+nested objects, and individual records as explicit `Expand`/`Collapse`
+disclosures. A reviewer can edit every discovered leaf value and include or
+exclude each value. The entire evidence-and-review panel remains hidden until a
+field is selected, then reveals related evidence, gaps, conflicts, source links,
+and review controls. Technical reference fields are hidden from the review
+surface and visible counts but are preserved unchanged in
+`reviewed_opportunity` so relationships remain intact.
+Monetary inputs display thousands separators while parsing reviewer edits back
+to numeric values for the saved update.
+
+The page can be opened directly or served from `climate-advisor/`:
+
+```powershell
+uv run python -m http.server 8080
+```
+
+The served page is then available at
+`http://localhost:8080/scripts/cnb_research/review.html`.
+
+Saving downloads `<run_id>.review-update.json`. The update is separate from the
+immutable research bundle and contains:
+
+- update schema version and type;
+- source run ID, bundle schema version, file name, bundle SHA-256 when browser
+  crypto is available, model, and prompt SHA-256;
+- review status, reviewer, timestamp, and notes;
+- selected, excluded, and edited field counts;
+- one auditable decision per field with original value, reviewed value, and
+  evidence references;
+- the selected edited values reconstructed as `reviewed_opportunity`.
+
+The UI performs no network requests except when the reviewer chooses an
+external source link. It has no application token, database dependency, or
+database write capability.
 
 ## Running the pipeline
 
@@ -213,4 +257,15 @@ MLflow uses the existing optional `MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`, and
 Every generated bundle is `pending_review`, including a turn-limited partial
 bundle. Evidence with an unknown source reference is converted into a gap.
 Populated material fields without retained evidence are also surfaced as gaps.
-Loading an approved bundle into CNB storage remains a separate future command.
+
+### Future database save
+
+Database persistence remains deliberately out of scope. When it is added, the
+review UI should expose a separate `Save to database` action only after a local
+update has been created and the reviewer explicitly confirms the write. That
+action should send the review-update JSON to an authenticated Climate Advisor
+or CityCatalyst endpoint. The server must revalidate the update schema, source
+run and bundle version, selected paths, reviewer authorization, and referential
+links before writing in one idempotent transaction. Database credentials and
+direct table writes must remain server-side. No endpoint, button, or persistence
+adapter is implemented in this version.

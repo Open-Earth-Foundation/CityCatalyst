@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Review and edit CNB funding research." />
+    <title>CNB Research Review</title>
+    <link rel="stylesheet" href="review.css" />
+    <script src="review.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">CNB</span>
+        <div><small>Funding research</small><h1>Review workspace</h1></div>
+      </div>
+      <div class="actions">
+        <span>Local files only</span>
+        <label class="button secondary" for="bundleInput">Open bundle</label>
+        <input id="bundleInput" type="file" accept="application/json,.json" hidden />
+        <button id="saveButton" class="button primary" type="button" disabled>
+          Save update
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section id="emptyState" class="empty-state">
+        <small>Pending-review bundle</small>
+        <h2>Open research_bundle.json</h2>
+        <p>
+          Choose what to keep, correct values, inspect the evidence, and save a
+          separate review update.
+        </p>
+        <label class="button primary" for="bundleInput">Choose JSON file</label>
+        <p id="loadError" class="error" role="alert"></p>
+      </section>
+
+      <section id="workspace" hidden>
+        <div class="run-header">
+          <div>
+            <small>Current bundle</small>
+            <h2 id="programName"></h2>
+            <p id="runMeta"></p>
+          </div>
+          <dl class="counts">
+            <div><dt>Sources</dt><dd id="sourceCount">0</dd></div>
+            <div><dt>Evidence</dt><dd id="evidenceCount">0</dd></div>
+            <div><dt>Gaps</dt><dd id="gapCount">0</dd></div>
+            <div><dt>Conflicts</dt><dd id="conflictCount">0</dd></div>
+          </dl>
+        </div>
+
+        <nav id="sectionNav" class="section-nav" aria-label="Research sections"></nav>
+
+        <div id="reviewLayout" class="review-layout">
+          <section class="editor" aria-label="Editable findings">
+            <p id="selectionSummary" class="selection-summary"></p>
+            <div id="editorSections"></div>
+          </section>
+
+          <aside id="inspectorPanel" class="inspector" aria-label="Evidence and review" hidden>
+            <section id="inspectorEvidence">
+              <small>Field evidence</small>
+              <h2 id="inspectorTitle"></h2>
+              <code id="inspectorPath"></code>
+              <div id="inspectorContent"></div>
+            </section>
+            <section class="review-details">
+              <small>Review update</small>
+              <label>Decision
+                <select id="reviewStatus">
+                  <option value="pending_review">Pending review</option>
+                  <option value="approved">Approved</option>
+                  <option value="needs_changes">Needs changes</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </label>
+              <label>Reviewer
+                <input id="reviewerName" type="text" placeholder="Name or team" />
+              </label>
+              <label>Notes
+                <textarea id="reviewNotes" rows="4" placeholder="One note per line"></textarea>
+              </label>
+              <p class="muted">Saving creates a local JSON update. The bundle is unchanged.</p>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <p id="statusMessage" class="status" role="status"></p>
+  </body>
+</html>

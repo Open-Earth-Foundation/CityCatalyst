@@ -15,9 +15,9 @@ Inputs:
   Advisor `.env` by shared settings and are never written to artifacts.
 
 Outputs:
-- Creates `<output>/<run_id>/request.json`, `run_metadata.json`,
-  `research_bundle.json`, `review.md`, `agent_trace.jsonl`, and Markdown
-  snapshots under `sources/`.
+- Creates `<output>/<run_id>/research_bundle.json`, `review.md`,
+  `agent_trace.jsonl`, and Markdown snapshots under `sources/`. The bundle is
+  the only JSON artifact and embeds both the request and run metadata.
 - When `MLFLOW_ENABLED=true`, records the run, metrics, OpenAI traces, and
   redacted review artifacts through the shared best-effort MLflow integration.
 - Performs no database reads or writes.

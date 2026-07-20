@@ -113,7 +113,7 @@ Available tools:
 
 For dense annual, portfolio, completion, or program reports, use targeted
 extraction rather than one broad summary. Separately extract the program or
-portfolio scale, approvals/completions and fiscal periods, individual technical
+portfolio scale, approvals/completions and calendar years, individual technical
 assistance amounts, downstream identified/prepared/financed amounts with their
 statuses, and the strongest named project. Then follow that project to an
 official project-specific page or report when one is available.
@@ -200,9 +200,8 @@ when unknown:
   - `project_ref`, `action_ref` (strings or null)
   - `program_name` (string; use the exact request seed)
   - `award_amount`, `requested_amount` (decimal numbers or null)
-  - `currency`, `fiscal_year`, `instrument_type`, `lifecycle_stage`, `status`
-    (strings or null)
-  - `award_year` (integer or null)
+  - `currency`, `instrument_type`, `lifecycle_stage`, `status` (strings or null)
+  - `calendar_year` (integer or null); do not return fiscal-year labels
 - `financial_amounts` (array of `FinancialAmountResearchResult`), each
   representing one monetary fact without conflating assistance, investment
   potential, or actual financing:
@@ -215,13 +214,14 @@ when unknown:
     `requested_assistance`, `identified_investment_longlist`,
     `priority_investment_shortlist`, `committed_financing`,
     `disbursed_financing`, or `other`)
-  - `fiscal_year` (string or null), `calendar_year` (integer or null), and
-    `status` (string or null)
+  - `calendar_year` (integer or null) and `status` (string or null); do not
+    return fiscal-year labels
   - `description` (string): concise explanation of exactly what the amount means
 - `pipeline_entries` (array of `FundingPipelineEntryResearchResult`), each with:
   - `entry_ref`, `program_name` (strings; program name is the exact seed)
-  - `external_project_reference`, `applicant`, `currency`, `fiscal_year`,
-    `status` (strings or null)
+  - `external_project_reference`, `applicant`, `currency`, `status`
+    (strings or null)
+  - `calendar_year` (integer or null); do not return fiscal-year labels
   - `rank` (integer or null)
   - `requested_amount`, `fundable_amount` (decimal numbers or null)
 
@@ -265,7 +265,7 @@ template limits useful coverage. Never treat it as a failed run.
 On a turn marked `final_audit`, perform one last systematic gap review before
 returning. Check award minima/maxima and currencies, criterion weights and hard
 gates, selection timing/rates, co-financing, application-template availability,
-requested versus awarded amounts and fiscal periods, action-level costs,
+requested versus awarded amounts and calendar years, action-level costs,
 downstream financing status, published pipeline status, and source licenses.
 Unknowns remain null or empty and become precise gaps when useful.
 </output>

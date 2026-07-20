@@ -148,8 +148,7 @@ class FundingLinkDraft(ResearchModel):
     award_amount: Decimal | None = None
     requested_amount: Decimal | None = None
     currency: str | None = None
-    award_year: int | None = None
-    fiscal_year: str | None = None
+    calendar_year: int | None = None
     instrument_type: str | None = None
     lifecycle_stage: str | None = None
     status: str | None = None
@@ -165,7 +164,6 @@ class FinancialAmountDraft(ResearchModel):
     amount: Decimal
     currency: str
     amount_kind: FinancialAmountKind
-    fiscal_year: str | None = None
     calendar_year: int | None = None
     status: str | None = None
     description: str
@@ -182,7 +180,7 @@ class FundingPipelineEntryDraft(ResearchModel):
     requested_amount: Decimal | None = None
     fundable_amount: Decimal | None = None
     currency: str | None = None
-    fiscal_year: str | None = None
+    calendar_year: int | None = None
     status: str | None = None
 
 
@@ -286,8 +284,7 @@ class FundingLinkResearchResult(ResearchModel):
     award_amount: float | None = None
     requested_amount: float | None = None
     currency: str | None = None
-    award_year: int | None = None
-    fiscal_year: str | None = None
+    calendar_year: int | None = None
     instrument_type: str | None = None
     lifecycle_stage: str | None = None
     status: str | None = None
@@ -303,7 +300,6 @@ class FinancialAmountResearchResult(ResearchModel):
     amount: float
     currency: str
     amount_kind: FinancialAmountKind
-    fiscal_year: str | None = None
     calendar_year: int | None = None
     status: str | None = None
     description: str
@@ -320,7 +316,7 @@ class FundingPipelineEntryResearchResult(ResearchModel):
     requested_amount: float | None = None
     fundable_amount: float | None = None
     currency: str | None = None
-    fiscal_year: str | None = None
+    calendar_year: int | None = None
     status: str | None = None
 
 
@@ -392,7 +388,7 @@ class FundingOpportunityResearchRequest(ResearchModel):
 class ResearchRunMetadata(ResearchModel):
     """Code-owned reproducibility and execution metadata for one research run."""
 
-    pipeline_version: Literal["1.1"]
+    pipeline_version: Literal["1.2"]
     model_name: str
     reasoning_effort: str
     prompt_sha256: str
@@ -412,7 +408,7 @@ class ResearchRunMetadata(ResearchModel):
 class FundingOpportunityResearchBundle(ResearchModel):
     """Canonical locally reviewable envelope emitted by the pipeline."""
 
-    schema_version: Literal["1.1"]
+    schema_version: Literal["1.2"]
     run_id: str
     run_metadata: ResearchRunMetadata
     request: FundingOpportunityResearchRequest

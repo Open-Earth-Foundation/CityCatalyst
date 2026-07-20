@@ -20,6 +20,7 @@ from app.models.cnb_research import (
     FundingOpportunityResearchAgentDraft,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
+    FundingPipelineEntryResearchResult,
     FundedProjectActionDraft,
     FundedProjectDraft,
     FundingLinkResearchResult,
@@ -179,13 +180,13 @@ def test_financial_amount_requires_explicit_meaning() -> None:
         amount=125000,
         currency="USD",
         amount_kind="individual_technical_assistance",
-        fiscal_year="FY2026",
         calendar_year=2026,
         status="approved",
         description="Technical assistance approved for project preparation.",
     )
 
     assert amount.amount_kind == "individual_technical_assistance"
+    assert amount.calendar_year == 2026
     with pytest.raises(ValidationError):
         FinancialAmountResearchResult(
             **{
@@ -193,6 +194,18 @@ def test_financial_amount_requires_explicit_meaning() -> None:
                 "amount_kind": "unspecified_money",
             }
         )
+
+
+def test_funding_records_use_calendar_year_only() -> None:
+    """All funding record types expose one consistent year field."""
+    for model in (
+        FundingLinkResearchResult,
+        FinancialAmountResearchResult,
+        FundingPipelineEntryResearchResult,
+    ):
+        assert "calendar_year" in model.model_fields
+        assert "fiscal_year" not in model.model_fields
+        assert "award_year" not in model.model_fields
 
 
 def test_missing_data_allows_multinational_funder_country_to_remain_null() -> None:
@@ -354,6 +367,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         lambda **_kwargs: nullcontext(fake_mlflow_run),
     )
     logged_metrics: list[dict[str, float | int]] = []
+    logged_json_artifacts: list[str] = []
     monkeypatch.setattr(
         cnb_research_service,
         "log_metrics",
@@ -362,7 +376,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     monkeypatch.setattr(
         cnb_research_service,
         "log_json_artifact",
-        lambda *_args, **_kwargs: None,
+        lambda artifact_file, _payload: logged_json_artifacts.append(artifact_file),
     )
     monkeypatch.setattr(
         cnb_research_service,
@@ -377,12 +391,20 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     )
     run_directory = tmp_path / bundle.run_id
 
+    assert bundle.schema_version == "1.2"
+    assert bundle.run_metadata.pipeline_version == "1.2"
     assert bundle.review.status == "pending_review"
     assert bundle.opportunity.program_name == "Example Program"
     assert len(bundle.sources) == 2
-    assert (run_directory / "request.json").exists()
     assert (run_directory / "research_bundle.json").exists()
-    assert (run_directory / "run_metadata.json").exists()
+    assert sorted(path.name for path in run_directory.glob("*.json")) == [
+        "research_bundle.json"
+    ]
+    saved_bundle = json.loads(
+        (run_directory / "research_bundle.json").read_text(encoding="utf-8")
+    )
+    assert saved_bundle["request"]["program_name"] == "Example Program"
+    assert saved_bundle["run_metadata"]["model_name"] == "gpt-5.6-terra"
     assert (run_directory / "review.md").exists()
     assert (run_directory / "agent_trace.jsonl").exists()
     assert fake_openai.responses.calls[0]["model"] == "gpt-5.6-terra"
@@ -400,6 +422,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert bundle.run_metadata.mlflow_run_id == "mlflow-001"
     assert bundle.run_metadata.prompt_sha256
     assert logged_metrics[0]["turns_used"] == 1
+    assert logged_json_artifacts == ["research_bundle.json"]
 
 
 def test_agent_reopens_an_incomplete_structured_checkpoint_for_next_turn() -> None:

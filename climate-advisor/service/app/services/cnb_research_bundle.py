@@ -87,7 +87,7 @@ def build_research_bundle(
         gaps=gaps,
     )
     return FundingOpportunityResearchBundle(
-        schema_version="1.1",
+        schema_version="1.2",
         run_id=run_id,
         run_metadata=run_metadata,
         request=request,

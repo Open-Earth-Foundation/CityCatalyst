@@ -23,6 +23,8 @@ conversational experience for CityCatalyst (CC). The service lives under
   delivery
 - **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
   OpenAI trace logging
+- **Offline CNB Research Review**: Firecrawl-backed funding research plus a
+  local static editor for selecting, correcting, and saving review updates
 
 ## Current Architecture
 
@@ -55,6 +57,32 @@ At runtime:
   request.
 - PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
   workflow state.
+
+## Offline CNB Funding Research
+
+The separate offline CNB workflow researches one known funder and opportunity
+and writes pending-review artifacts under ignored `output/cnb_research/`.
+Run it and open its static review workspace from `climate-advisor/`:
+
+```powershell
+uv run python -m scripts.cnb_research.research_funding_opportunity `
+  --input scripts/cnb_research/files/solar_on_public_buildings.json `
+  --output output/cnb_research
+
+uv run python -m http.server 8080
+```
+
+Visit `http://localhost:8080/scripts/cnb_research/review.html`, load a generated
+`research_bundle.json`, browse its collapsible sections, edit and select the
+findings, then save a local `<run_id>.review-update.json`. Technical reference
+fields remain preserved in the update but are hidden from the reviewer. The
+editor does not modify the bundle or write to the database. The proposed future
+authenticated database-save boundary is documented in
+`../docs/ConceptNoteBuilderFunderResearchPipeline.md`.
+
+Research bundles use schema version `1.2`. Funding links, financial amounts,
+and pipeline entries share one optional integer `calendar_year`; fiscal-year
+labels and a separate award-year field are not part of the contract.
 
 ## Workflow
 
@@ -791,7 +819,7 @@ Energy workflow prompt first, followed by the draft JSON context in
 The offline CNB research CLI tags runs with
 `workflow=cnb_funding_opportunity_research`. It records the exact model,
 reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
-artifacts, and the MLflow run ID also written to local `run_metadata.json`.
+artifacts, and the MLflow run ID embedded in local `research_bundle.json`.
 
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,

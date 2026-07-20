@@ -30,7 +30,7 @@ FINAL_GAP_AUDIT = (
     "Before returning the final object, systematically audit: award minima and "
     "maxima; currencies; criterion weights and hard gates; selection timing and "
     "rates; co-financing; application-template availability; requested versus "
-    "awarded amounts and fiscal periods; action-level costs; downstream financing "
+    "awarded amounts and calendar years; action-level costs; downstream financing "
     "status; published pipeline status; and source-license status. Preserve unknown "
     "values as null or empty and add precise ResearchGap entries."
 )
@@ -413,8 +413,8 @@ def find_missing_data(
         result, "opportunity.financial_amounts"
     ):
         missing.append(
-            "Capture monetary facts with explicit amount_kind, currency, timing, "
-            "status, and project/action linkage, or record a gap."
+            "Capture monetary facts with explicit amount_kind, currency, calendar "
+            "year, status, and project/action linkage, or record a gap."
         )
 
     source_types = [item.source_type.lower() for item in result.source_assessments]

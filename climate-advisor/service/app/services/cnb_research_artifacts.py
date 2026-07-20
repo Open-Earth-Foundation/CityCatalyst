@@ -5,8 +5,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from pydantic import JsonValue
-
 from app.models.cnb_research import FundingOpportunityResearchBundle
 
 
@@ -15,14 +13,15 @@ def write_research_artifacts(
     run_directory: Path,
     bundle: FundingOpportunityResearchBundle,
 ) -> None:
-    """Write the canonical bundle, run metadata, trace, and Markdown review."""
-    write_json(
-        run_directory / "research_bundle.json",
-        bundle.model_dump(mode="json"),
-    )
-    write_json(
-        run_directory / "run_metadata.json",
-        bundle.run_metadata.model_dump(mode="json"),
+    """Write one canonical JSON bundle plus the trace and Markdown review."""
+    (run_directory / "research_bundle.json").write_text(
+        json.dumps(
+            bundle.model_dump(mode="json"),
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
     )
     trace_text = "".join(
         f"{json.dumps(turn.model_dump(mode='json'), ensure_ascii=False)}\n"
@@ -34,14 +33,6 @@ def write_research_artifacts(
     )
     (run_directory / "review.md").write_text(
         render_review(bundle),
-        encoding="utf-8",
-    )
-
-
-def write_json(path: Path, value: JsonValue) -> None:
-    """Serialize one UTF-8 review artifact with stable indentation."""
-    path.write_text(
-        json.dumps(value, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",
     )
 

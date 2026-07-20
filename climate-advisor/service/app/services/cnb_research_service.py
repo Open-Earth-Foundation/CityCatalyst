@@ -23,7 +23,6 @@ from app.services.cnb_research_agent import AgentLoopOutcome, run_agent_loop
 from app.services.cnb_research_agent import scrape_seed_sources
 from app.services.cnb_research_artifacts import (
     render_review,
-    write_json,
     write_research_artifacts,
 )
 from app.services.cnb_research_bundle import build_research_bundle
@@ -37,7 +36,7 @@ from app.utils.mlflow_logging import (
 )
 
 logger = logging.getLogger(__name__)
-PIPELINE_VERSION = "1.1"
+PIPELINE_VERSION = "1.2"
 
 
 def run_funding_opportunity_research(
@@ -53,7 +52,6 @@ def run_funding_opportunity_research(
     run_id = str(uuid4())
     run_directory = output_root / run_id
     run_directory.mkdir(parents=True, exist_ok=False)
-    write_json(run_directory / "request.json", request.model_dump(mode="json"))
 
     model_config = settings.llm.models.funding_research
     prompt = settings.llm.prompts.get_prompt("cnb_funding_opportunity_research")
@@ -206,12 +204,7 @@ def log_run_artifacts(bundle: FundingOpportunityResearchBundle) -> None:
             "trace_entries": len(bundle.agent_trace),
         }
     )
-    log_json_artifact("request.json", bundle.request.model_dump(mode="json"))
     log_json_artifact("research_bundle.json", bundle.model_dump(mode="json"))
-    log_json_artifact(
-        "run_metadata.json",
-        bundle.run_metadata.model_dump(mode="json"),
-    )
     log_text_artifact("review.md", render_review(bundle))
     log_text_artifact(
         "agent_trace.jsonl",

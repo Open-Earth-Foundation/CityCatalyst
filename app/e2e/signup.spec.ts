@@ -74,13 +74,23 @@ test.describe("Signup", () => {
     // Button starts disabled until all fields are valid (new UX)
     await waitForAuthFormReady(page, { expectEnabled: false });
 
-    // Fill invalid name (too short) and blur to trigger onChange validation
-    await page.getByPlaceholder("Your full name").fill("asd");
-    await page.getByPlaceholder("Your full name").blur();
+    // Fill invalid name (too short) — use clear + pressSequentially to fire
+    // individual keystroke events so react-hook-form's onChange validation
+    // processes each character reliably.
+    const nameInput = page.getByPlaceholder("Your full name");
+    await nameInput.click();
+    await nameInput.fill("");
+    await nameInput.pressSequentially("asd");
+    // Tab to next field to trigger blur validation
+    await page.keyboard.press("Tab");
 
-    // Fill short password and blur
-    await page.getByLabel("Password", { exact: true }).fill("Pas");
-    await page.getByLabel("Password", { exact: true }).blur();
+    // Fill short password using same approach
+    const passwordInput = page.getByLabel("Password", { exact: true });
+    await passwordInput.click();
+    await passwordInput.fill("");
+    await passwordInput.pressSequentially("Pas");
+    // Tab away to trigger blur
+    await page.keyboard.press("Tab");
 
     // Button must remain disabled when inputs are invalid
     const submitButton = page.getByRole("button", { name: "Create Account" });

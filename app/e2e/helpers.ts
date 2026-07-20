@@ -23,12 +23,37 @@ export async function waitForAuthFormReady(
 }
 
 export async function expectFieldInvalid(page: Page, fieldName: string) {
-  // Chakra UI v3 / Ark UI marks the Field.Root container (role="group") with
-  // data-invalid="" when invalid — more reliable than checking aria-invalid on
-  // the input, which is inconsistently propagated through the Chakra/Ark layers.
-  await expect(
-    page.locator(`[role="group"]:has(input[name="${fieldName}"])`),
-  ).toHaveAttribute("data-invalid", "", { timeout: 15000 });
+  // Chakra UI v3 / Ark UI uses several DOM signals to indicate an invalid field:
+  //   1. data-invalid="" on the Field.Root group container (role="group")
+  //   2. aria-invalid="true" on the input control
+  //   3. data-invalid="" on the input control itself
+  //   4. An error text element rendered by Field.ErrorText
+  // Depending on the Chakra/Ark version, React rendering timing, and how
+  // react-hook-form propagates errors, not all signals may be present at the
+  // same time. Check for any of them in a polling loop.
+  await page.waitForFunction(
+    (name: string) => {
+      const input = document.querySelector(`input[name="${name}"]`);
+      if (!input) return false;
+
+      // Signal 1: aria-invalid on the input itself
+      if (input.getAttribute("aria-invalid") === "true") return true;
+
+      // Signal 2: data-invalid on the input itself
+      if (input.hasAttribute("data-invalid")) return true;
+
+      // Signal 3: data-invalid on the closest field group container
+      const group = input.closest('[role="group"]');
+      if (group?.hasAttribute("data-invalid")) return true;
+
+      // Signal 4: an error text element rendered inside the field group
+      if (group?.querySelector('[data-part="error-text"]')) return true;
+
+      return false;
+    },
+    fieldName,
+    { timeout: 15000 },
+  );
 }
 
 export async function expectValidationMessage(

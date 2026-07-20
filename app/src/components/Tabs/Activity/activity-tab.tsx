@@ -220,6 +220,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
         { err: error, source: source },
         "Failed to disconnect data source",
       );
+      showError("disconnect-data-source-error", "data-source-connect-load-error");
     } finally {
       setDisconnectingDataSourceId(null);
       refetchDataSources();

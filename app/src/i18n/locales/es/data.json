@@ -786,6 +786,7 @@
   "external-dataset-integrated": "Conjunto de datos externo integrado",
   "external-dataset-description": "Conjunto de datos externo integrado directamente en tu inventario de emisiones de GEI desde proveedores externos",
   "disconnected-data-source": "Fuente de datos desconectada",
+  "disconnect-data-source-error": "Error al desconectar la fuente de datos",
   "emissions-from-industrial-processes-occurring-within-the-city-boundary": "Emisiones de procesos industriales que ocurren dentro de los límites de la ciudad",
   "emissions-from-product-use-occurring-within-the-city-boundary": "Emisiones del uso de productos que ocurren dentro de los límites de la ciudad",
   "emissions-from-livestock-within-the-city-boundary": "Emisiones del ganado dentro de los límites de la ciudad",

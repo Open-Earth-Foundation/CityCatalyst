@@ -747,6 +747,7 @@ export const api = createApi({
           url: `datasource/${inventoryId}/datasource/${datasourceId}`,
         }),
         invalidatesTags: [
+          "ActivityValue",
           "InventoryValue",
           "InventoryProgress",
           "ReportResults",

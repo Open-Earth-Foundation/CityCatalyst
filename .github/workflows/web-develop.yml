@@ -15,6 +15,7 @@ on:
       - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - k8s/cc-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
   pull_request:
@@ -24,6 +25,7 @@ on:
       - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - k8s/cc-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
 
@@ -459,6 +461,7 @@ jobs:
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_DEV}} \
+            MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_DEV}} \
             "OPENAI_ASSISTANT_ID=asst_saoKNCVqCX7adTMoLqPxPHvB" \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
@@ -500,6 +503,9 @@ jobs:
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
+          kubectl apply -f k8s/cc-process-pdf-ocr-jobs.yml -n default
+          kubectl set env cronjob/citycatalyst-process-pdf-ocr-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
 

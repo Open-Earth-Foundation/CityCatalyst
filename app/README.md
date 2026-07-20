@@ -132,6 +132,27 @@ The standard port is 3000 and the application can be opend at http://localhost:3
 
 Use `johndoe@example.com` and `password` to login.
 
+#### Climate Advisor multi-role fixtures (ON-6046)
+
+To validate Clima inventory totals by role against the smoke organization demos:
+
+```bash
+# Requires the CA smoke org + demo projects/cities already in the DB
+CA_ROLE_FIXTURE_PASSWORD='password' npm run upsert-ca-role-fixtures
+npm run validate-ca-inventory-access-by-role
+```
+
+UI logins (password from `CA_ROLE_FIXTURE_PASSWORD`, default `password`):
+
+| Role | Email | Expected access |
+| --- | --- | --- |
+| Collaborator | `ca-collaborator@citycatalyst.local` | 3 assigned cities in Demo Project 1 |
+| Project admin | `ca-project-admin@citycatalyst.local` | Demo Project 2 only |
+| Org admin | `ca-org-admin@citycatalyst.local` | All projects in the smoke org |
+| System admin | `ca-system-admin@citycatalyst.local` | Platform-wide (`access_scope: platform`) |
+
+Ask Clima: *How many inventories do I have?* — answers should use “you have access to…” and match All projects for that user.
+
 #### HIAP
 To connect to the HIAP prioritizer/plan creator, run
 kubectl port-forward svc/hiap-service-dev 8080:8080

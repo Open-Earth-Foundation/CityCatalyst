@@ -96,6 +96,9 @@ sequenceDiagram
   - `get_all_datasources` as the temporary legacy datasource lookup
   - The general prompt must disambiguate same-city/year inventories with
     inventory name, type, and GWP before calling inventory detail tools.
+  - `inventory_list_accessible` includes organization/project metadata and a
+    `by_project` breakdown so count answers use "access to" wording with
+    totals explained by project.
 - Added when the request is scoped to the Stationary Energy draft surface and
   no draft run is active:
   - `stationary_energy_start_draft`

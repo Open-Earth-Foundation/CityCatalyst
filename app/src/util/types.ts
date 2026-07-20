@@ -497,6 +497,7 @@ export type CityResponse = {
 export type ProjectWithCities = {
   projectId: string;
   name: string;
+  organizationId: string;
   description?: string;
   cityCountLimit?: Number;
   cities: CityResponse[];

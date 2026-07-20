@@ -109,6 +109,7 @@ LLM-specific non-secret settings now live in `llm_config.yaml`, including:
 - `models.free_text_exclusions`
 - `models.explanations`
 - `models.explanation_translations`
+- `models.output_plan`
 - `features.free_text_exclusions_enabled`
 - `features.explanations_enabled`
 - `openai.timeout_seconds`
@@ -226,6 +227,7 @@ Verify the service:
 - Standard MLflow UI: `https://mlflow-dev.openearth.dev`
 - Local Compose MLflow UI: `http://localhost:5000`
 - Prioritization endpoint: `POST /v1/prioritize`
+- Output-plan report endpoint: `POST /v1/reports/output-plan`
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
@@ -254,6 +256,7 @@ upstream response integrations in `app/modules/prioritizer/models.py`.
 Key models:
 
 - Frontend request envelope: `PrioritizerApiRequest`
+- Output-plan request envelope: `CityActionReportApiRequest`
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
 - Global action pathways API response: `ActionPathwaysApiResponse`
@@ -281,7 +284,25 @@ Design note:
   legal data is still available for local fixture-based tests.
 - Current implementation note: exclusion preview and prioritization are separate flows. Exclusion preview resolves raw exclusion preferences into proposals for review, while prioritization consumes confirmed `excludedActionIds`. Prioritization uses a dedicated orchestrator for run-level artifact writing, while exclusion preview currently writes its request artifacts directly from the API layer.
 
-### 4. Call the prioritization endpoint
+### 4. Call the output-plan report endpoint
+
+`POST /v1/reports/output-plan` generates one Markdown chapter bundle for one selected action in one city. The request must include:
+
+- `requestData.locode`: the single city locode
+- `requestData.actionId`: the selected action ID
+- `requestData.language`: the requested report language
+- `requestData.prioritizationSnapshot.request`: the full original `/v1/prioritize` request
+- `requestData.prioritizationSnapshot.response`: the full `/v1/prioritize` response returned to the frontend
+
+The endpoint validates that the requested city and action exist in the supplied prioritization snapshot before it fetches live enrichment data. The report language is an output choice: it does not need to be one of the original prioritization `requestedLanguages`. If it differs, the response keeps a limitation note because action explanations from the original ranking may not exist in that language. The endpoint remains stateless: the prototype frontend stores the snapshot in browser local storage and sends it with the report request. When this frontend is later moved into CityCatalyst, snapshot persistence is expected to move into the CityCatalyst database, not into `hiap-meed`.
+
+The backend uses the supplied prioritization snapshot as the ranking basis and refetches additional city/action/policy/legal/feasibility data where the prioritize response does not carry enough detail for report writing. A report request still produces exactly one action plan; multiple plans should be requested as separate calls so each selected action gets isolated LLM context.
+
+Frontend-facing content is limited to `chapters[].markdown` and the concatenated `output_plan.md` artifact. Response metadata, chapter `limitations`, `source_context`, `chapter_inputs.json`, `report_context.json`, and MLflow artifacts are diagnostic/source-status surfaces; they can support frontend state, QA, and logging, but should not be rendered as report prose unless product explicitly approves a field and copy.
+
+Freshness note: ranking replay is exact only when the frontend or CityCatalyst stores the input snapshot used for prioritization. If a report is generated from live data after the user changed inputs or upstream sources changed, the report may no longer match the original ranking run. Product/frontend should define staleness checks and warnings for changed data after prioritization; the backend exposes source metadata but does not persist or own that UX decision.
+
+### 5. Call the prioritization endpoint
 
 Run commands from a Bash shell (Git Bash, WSL, Linux, macOS).
 
@@ -439,7 +460,7 @@ Explanation stage behavior:
 - If explanation generation fails or times out, the endpoint fails open and
   returns normal ranking output with `explanations={}`.
 
-### 5. Call the explanation translation endpoint
+### 6. Call the explanation translation endpoint
 
 - The endpoint accepts the frontend envelope `ExplanationTranslationApiRequest`.
 - `requestData.sourceLanguage` must be `en`.
@@ -672,7 +693,7 @@ Common validation errors:
 
 Note: city, action, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The legal client resolves to `s3` by default, still supports `mock`, and keeps `api` only as a deprecated failure path. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client downloads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`, parses multiline CSV fields, and maps rows into the existing legal assessment contract. Legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return HTTP `503` with a specific upstream dependency error rather than ranking with neutral legal defaults. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; the first implementation consumes the compact batch evidence only and does not fetch linked named opportunities or projects. The API-backed clients default to `api`, except legal which defaults to `s3`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts include S3 source metadata such as the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available after a successful legal fetch.
 
-### 5. Logging and artifacts
+### 7. Logging and artifacts
 
 The service writes:
 
@@ -681,6 +702,7 @@ The service writes:
 - Optional local per-request artifacts at:
   - `LOG_DIR/requests/prioritization/{UTC_TIMESTAMP}Z_{internal_request_id}/`
   - `LOG_DIR/requests/exclusion_preview/{UTC_TIMESTAMP}Z_{internal_request_id}/`
+  - `LOG_DIR/requests/city_action_report/{UTC_TIMESTAMP}Z_{internal_request_id}/`
 - Direct MLflow artifacts on the active request run when `MLFLOW_ENABLED=true`
 - Local request artifact folders only when `LOCAL_ARTIFACTS_ENABLED=true`
 
@@ -721,6 +743,11 @@ What each local request run folder contains:
   - `llm/explanation_translations_io.json`
   - `llm/explanation_translations_prompt.txt`
 - Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
+- Output-plan report request folders additionally include:
+  - `report_context.json`: normalized context for the selected city/action report
+  - `chapter_inputs.json`: the isolated per-chapter inputs retained for diagnostics, including internal guardrails not rendered as report prose
+  - `llm/output_plan_io.json`: output-plan LLM request/response diagnostics, or a skipped marker when `debugContextOnly=true`
+  - `output_plan.md`: reader-friendly Markdown with all returned chapters concatenated in response order
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
 - Exclusion preview step-detail artifacts keep the city-level diagnostics, including:
@@ -729,6 +756,7 @@ What each local request run folder contains:
   - dropped-row diagnostics for unknown IDs, ambiguous matches, and empty reasons inside the free-text exclusion validation payload
 - Current implementation note:
   - prioritization artifacts are assembled from the orchestrator layer
+  - output-plan report artifacts are assembled from the report API layer
   - exclusion preview artifacts are currently assembled from `api.py`
   - the folder structure is already split by request kind, but the internal ownership is not yet symmetrical
 
@@ -762,7 +790,7 @@ Typical per-request artifact events:
 - `run_summary.completed`
 - `response_summary.completed`
 
-### 6. Docker
+### 8. Docker
 
 For local development, the normal path is to keep `hiap-meed` pointed at the hosted dev MLflow. Docker Compose remains available when you want the whole stack, including MLflow, fully local.
 
@@ -820,3 +848,7 @@ From the `hiap-meed` directory:
 ```bash
 uv run pytest -c pytest.ini
 ```
+
+Pytest forces `MLFLOW_ENABLED=false` during test collection so local or CI test
+runs do not write hosted MLflow runs even if the surrounding shell has MLflow
+enabled.

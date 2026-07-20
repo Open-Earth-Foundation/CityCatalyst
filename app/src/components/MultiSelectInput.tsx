@@ -1,9 +1,8 @@
-import React from "react";
 import { Select, MultiValueProps, OptionProps } from "chakra-react-select";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, FieldValues } from "react-hook-form";
 import { CloseButton } from "./ui/close-button";
 import { Checkbox } from "./ui/checkbox";
 import { MdWarning } from "react-icons/md";
@@ -17,7 +16,7 @@ interface MultiSelectInputProps {
   t: TFunction;
   multiselect?: boolean;
   required?: boolean;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   selectedActivity?: string;
 }
 

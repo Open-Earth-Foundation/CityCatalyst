@@ -11,7 +11,7 @@ import { HiOutlineInformationCircle } from "react-icons/hi";
 export interface ToggleTipProps extends ChakraPopover.RootProps {
   showArrow?: boolean;
   portalled?: boolean;
-  portalRef?: React.RefObject<HTMLElement>;
+  portalRef?: React.RefObject<HTMLElement | null>;
   content?: React.ReactNode;
 }
 

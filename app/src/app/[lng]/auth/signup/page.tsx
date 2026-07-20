@@ -17,7 +17,6 @@ import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
-import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { isPasswordPatternValid } from "@/util/validation";
@@ -32,6 +31,7 @@ type Inputs = {
   acceptTerms: boolean;
   preferredLanguage: LANGUAGES;
 };
+
 
 const normalizeInviteEmail = (value: string | null): string =>
   (value ?? "").replaceAll(" ", "+");
@@ -63,7 +63,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   } = useForm<Inputs>({
     mode: "onChange",
     defaultValues: {
-      preferredLanguage: lng as LANGUAGES,
+      preferredLanguage: lng,
       email: prefilledEmail,
     },
   });
@@ -205,30 +205,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           shouldValidate={false}
           mismatch={passwordsMismatch}
         />
-        <Field
-          label={<LabelLarge>{t("preferred-language")}</LabelLarge>}
-          invalid={!!errors.preferredLanguage}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.preferredLanguage?.message}
-              </Text>
-            </Box>
-          }
-        >
-          <LanguageSelector
-            register={register}
-            error={errors.preferredLanguage}
-            t={t}
-            defaultValue={lng as LANGUAGES}
-          />
-        </Field>
+        <input type="hidden" {...register("preferredLanguage")} />
         <Field
           invalid={!!errors.acceptTerms}
           errorText={

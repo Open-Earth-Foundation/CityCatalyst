@@ -16,7 +16,7 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { use, useEffect, useMemo, useState } from "react";
+import React, { use, useEffect, useMemo, useRef, useState } from "react";
 import type {
   Control,
   FieldErrors,
@@ -30,6 +30,9 @@ import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-s
 import ThirdPartyInventoryDataStep, {
   THIRD_PARTY_DATA_FILL_YES,
 } from "@/components/steps/GHGI/set-third-party-step";
+import InviteCollaboratorsStep, {
+  type InviteCollaboratorsStepRef,
+} from "@/components/steps/GHGI/invite-collaborators-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast, UseWarningToast } from "@/hooks/Toasts";
@@ -88,10 +91,12 @@ export default function OnboardingSetup(props: {
         { title: t("setup-step") },
         { title: t("set-inventory-details-step") },
         { title: t("set-population-step") },
+        { title: t("invite-collaborators-step") },
         { title: t("set-third-party-data-step") },
       ];
 
-  const thirdPartyStepIndex = 3;
+  const thirdPartyStepIndex = 4;
+  const inviteCollaboratorsStepIndex = 3;
   const inventoryConfirmStepIndex = isUploadMode ? 2 : thirdPartyStepIndex;
 
   const {
@@ -134,6 +139,8 @@ export default function OnboardingSetup(props: {
   const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
     string | null
   >(null);
+
+  const inviteStepRef = useRef<InviteCollaboratorsStepRef>(null);
 
   const makeErrorToast = (title: string, description?: string) => {
     const { showErrorToast } = UseErrorToast({ description, title });
@@ -442,6 +449,9 @@ export default function OnboardingSetup(props: {
               numberFormat={userInfo?.numberFormat}
             />
           )}
+          {!isUploadMode && activeStep === inviteCollaboratorsStepIndex && (
+            <InviteCollaboratorsStep ref={inviteStepRef} lng={lng} />
+          )}
           {!isUploadMode && activeStep === thirdPartyStepIndex && (
             <ThirdPartyInventoryDataStep
               t={t}
@@ -502,6 +512,52 @@ export default function OnboardingSetup(props: {
                     <MdArrowForward height="24px" width="24px" />
                   </Button>
                 )}
+              {!isUploadMode && activeStep === inviteCollaboratorsStepIndex && (
+                <Box display="flex" gap="16px">
+                  <Button
+                    w="auto"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    h="64px"
+                    variant="ghost"
+                    onClick={goToNextStep}
+                    color="content.link"
+                  >
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("skip-this-step")}
+                    </Text>
+                  </Button>
+                  <Button
+                    w="auto"
+                    gap="8px"
+                    py="16px"
+                    px="24px"
+                    h="64px"
+                    onClick={async () => {
+                      try {
+                        await inviteStepRef.current?.sendInvites();
+                      } catch {
+                        makeErrorToast(t("invite-failed"));
+                      }
+                      goToNextStep();
+                    }}
+                  >
+                    <Text
+                      fontFamily="button.md"
+                      fontWeight="600"
+                      letterSpacing="wider"
+                    >
+                      {t("continue")}
+                    </Text>
+                    <MdArrowForward height="24px" width="24px" />
+                  </Button>
+                </Box>
+              )}
               {activeStep === inventoryConfirmStepIndex && (
                 <Button
                   h={16}

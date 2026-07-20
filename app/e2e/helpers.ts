@@ -51,6 +51,28 @@ export async function dismissCookieConsent(page: Page) {
   }
 }
 
+/**
+ * Dismiss any visible toast notifications so they don't intercept pointer events.
+ * Toasts are rendered in a portal at bottom-end and can block button clicks.
+ */
+export async function dismissToasts(page: Page) {
+  // Try to click close buttons on any toasts that have them
+  const closeButtons = page.locator('[data-scope="toast"] [data-part="close-trigger"]');
+  const count = await closeButtons.count().catch(() => 0);
+  for (let i = 0; i < count; i++) {
+    await closeButtons.nth(i).click().catch(() => {});
+  }
+  // Disable pointer-events on all toast group containers so they can't block
+  // button clicks even if the toast persists (not all toasts are closable)
+  await page.evaluate(() => {
+    document.querySelectorAll('[data-part="group"][data-scope="toast"]').forEach((el) => {
+      (el as HTMLElement).style.pointerEvents = "none";
+    });
+  }).catch(() => {});
+  // Wait briefly for toasts to clear
+  await page.waitForTimeout(500);
+}
+
 export async function signup(
   request: APIRequestContext,
   email: string,
@@ -200,6 +222,10 @@ async function walkCitiesOnboardingWizard(
   }
 
   {
+    // Dismiss any toast notifications that may block the Continue button
+    // (e.g. "An inventory for 2025 already exists for this city")
+    await dismissToasts(page);
+
     const continueButton = page
       .getByRole("button", { name: /^Continue$/ })
       .last();
@@ -207,7 +233,13 @@ async function walkCitiesOnboardingWizard(
     await continueButton.click();
   }
 
-  // Step 3: third-party data — opt out for speed/determinism
+  // Step 3: invite collaborators — skip for speed/determinism
+  await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
+    timeout: 15000,
+  });
+  await page.getByRole("button", { name: /Skip this step/i }).click();
+
+  // Step 4: third-party data — opt out for speed/determinism
   await completeThirdPartyDataOnboardingStep(page, "no", {
     waitForInventoryUrl: true,
   });
@@ -367,6 +399,9 @@ export async function createInventoryThroughOnboarding(
 
   // Click Continue and wait for data to be submitted also add timeout to allow for data to be submitted
   {
+    // Dismiss any toast notifications that may block the Continue button
+    await dismissToasts(page);
+
     const continueBtn = page.getByRole("button", { name: /Continue/i });
     await expect(continueBtn).toBeEnabled({ timeout: 30000 });
     await continueBtn.click();

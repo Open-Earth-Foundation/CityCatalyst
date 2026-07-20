@@ -1,14 +1,9 @@
-import {
-  Box,
-  HStack,
-  Icon,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+import { Box, HStack, Icon, Input, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import {
   Control,
   Controller,
+  FieldValues,
   UseFormGetValues,
   UseFormRegister,
   UseFormSetValue,
@@ -28,7 +23,7 @@ import {
 interface DynamicFieldsSectionProps {
   t: TFunction;
   register: UseFormRegister<any>;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   fields: ExtraField[];
   errors: Record<string, any>;
   setError: Function;
@@ -119,14 +114,10 @@ export const DynamicFieldsSection = ({
                 borderWidth={errors?.activity?.[f.id] ? "1px" : 0}
                 border="inputBox"
                 borderColor={
-                  errors?.activity?.[f.id]
-                    ? "sentiment.negativeDefault"
-                    : ""
+                  errors?.activity?.[f.id] ? "sentiment.negativeDefault" : ""
                 }
                 background={
-                  errors?.activity?.[f.id]
-                    ? "sentiment.negativeOverlay"
-                    : ""
+                  errors?.activity?.[f.id] ? "sentiment.negativeOverlay" : ""
                 }
                 bgColor="base.light"
                 _focus={{
@@ -135,22 +126,13 @@ export const DynamicFieldsSection = ({
                   borderColor: "content.link",
                 }}
                 {...register(`activity.${f.id}` as any, {
-                  required:
-                    f.required === false ? false : t("value-required"),
+                  required: f.required === false ? false : t("value-required"),
                 })}
               />
 
               {errors?.activity?.[f.id] && (
-                <Box
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  mt="6px"
-                >
-                  <Icon
-                    as={MdWarning}
-                    color="sentiment.negativeDefault"
-                  />
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
                     {errors?.activity?.[f.id]?.message}
                   </Text>
@@ -181,17 +163,13 @@ export const DynamicFieldsSection = ({
                     defaultValue=""
                     rules={{
                       required:
-                        f.required === false
-                          ? false
-                          : t("option-required"),
+                        f.required === false ? false : t("option-required"),
                     }}
                     render={({ field }) => (
                       <NativeSelectRoot
                         borderRadius="4px"
                         borderWidth={
-                          errors?.activity?.[`${f.id}-unit`]
-                            ? "1px"
-                            : 0
+                          errors?.activity?.[`${f.id}-unit`] ? "1px" : 0
                         }
                         border="inputBox"
                         h="42px"
@@ -237,37 +215,22 @@ export const DynamicFieldsSection = ({
                 )}
               </HStack>
               {errors?.activity?.[f.id] && (
-                <Box
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  mt="6px"
-                >
-                  <Icon
-                    as={MdWarning}
-                    color="sentiment.negativeDefault"
-                  />
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
                     {errors?.activity?.[f.id]?.message}
                   </Text>
                 </Box>
               )}
-              {errors?.activity?.[`${f.id}-unit`] && !errors?.activity?.[f.id] && (
-                <Box
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  mt="6px"
-                >
-                  <Icon
-                    as={MdWarning}
-                    color="sentiment.negativeDefault"
-                  />
-                  <Text fontSize="body.md">
-                    {errors?.activity?.[`${f.id}-unit`]?.message}
-                  </Text>
-                </Box>
-              )}
+              {errors?.activity?.[`${f.id}-unit`] &&
+                !errors?.activity?.[f.id] && (
+                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                    <Icon as={MdWarning} color="sentiment.negativeDefault" />
+                    <Text fontSize="body.md">
+                      {errors?.activity?.[`${f.id}-unit`]?.message}
+                    </Text>
+                  </Box>
+                )}
             </Field>
           )}
           {f.dependsOn && (
@@ -289,3 +252,4 @@ export const DynamicFieldsSection = ({
     </HStack>
   );
 };
+

@@ -1,28 +1,30 @@
 # CNB Funding-Opportunity Research
 
-This folder holds the offline research CLI and authoritative input manifests
-for the Concept Note Builder funder-research pipeline. Generated review outputs
-are written to the ignored `output/cnb_research/` folder. Reusable models,
-orchestration, Firecrawl tools, and the production prompt stay in the standard
-Climate Advisor application folders.
+This folder holds the offline research CLI for the Concept Note Builder
+funder-research pipeline. The CLI accepts a caller-supplied input manifest and
+writes review outputs under `output/cnb_research/`. Generated runs are ignored
+by Git except for the retained EUCF reference bundle described below. Reusable
+models, orchestration, Firecrawl tools, and the production prompt stay in the
+standard Climate Advisor application folders.
 
 ```text
 scripts/cnb_research/
-|-- files/                         # Input manifests selected before each run
 |-- research_funding_opportunity.py
 |-- review.html                    # Static human-review workspace
 |-- review.css
 `-- review.js
 
 output/cnb_research/
-`-- <run_id>/    # Generated local review artifacts; ignored by Git
+|-- 9023c3d6-8581-4e7b-91d1-b65db544559b/
+|   `-- research_bundle.json       # Tracked EUCF reference bundle
+`-- <run_id>/                      # Other generated artifacts; ignored by Git
 ```
 
 From `climate-advisor/`:
 
 ```powershell
 uv run python -m scripts.cnb_research.research_funding_opportunity `
-  --input scripts/cnb_research/files/solar_on_public_buildings.json `
+  --input path/to/research-request.json `
   --output output/cnb_research
 ```
 
@@ -97,18 +99,11 @@ server endpoint can accept the saved review-update contract after explicit user
 confirmation; the browser must never receive database credentials or write to
 CNB tables directly.
 
-## Retained live trials
+## Tracked reference bundle
 
-- `9023c3d6-8581-4e7b-91d1-b65db544559b`: European City Facility (EUCF)
-  Call 7 confirmation run; 8 sources, 26 evidence records, 10 criteria, and 11
-  declared gaps. This run also confirmed that `research_bundle.json` is the
-  only generated JSON review artifact.
-- `1b519545-44c5-469d-8842-2e95143b7241`: Minnesota Solar on Public
-  Buildings; 6 sources, 25 evidence records, 9 criteria, and 6 declared gaps.
-- `2749dacc-cf53-4bab-9b49-749e86b6809c`: Minnesota Local Climate Action
-  Grants; 3 sources, 19 evidence records, 4 criteria, and 19 declared gaps.
-
-The Minnesota trials were executed on 2026-07-20 and the EUCF confirmation on
-2026-07-21, all with Firecrawl and the configured `gpt-5.6-terra`
-medium-reasoning model. Failed schema-debugging runs and superseded validation
-runs are not retained.
+`output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`
+is the single tracked live-run output. It contains the European City Facility
+(EUCF) Call 7 confirmation result produced on 2026-07-21 with Firecrawl and the
+configured `gpt-5.6-terra` medium-reasoning model: 8 sources, 26 evidence
+records, 10 criteria, and 11 declared gaps. All other generated run artifacts
+remain local and ignored.

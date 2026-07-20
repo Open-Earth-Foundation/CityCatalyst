@@ -24,7 +24,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
-DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "Clima"
+DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "clima"
 DEFAULT_MLFLOW_RUN_USER = "climate-advisor"
 MLFLOW_INIT_RETRY_COOLDOWN_SECONDS = 60.0
 REDACTED_VALUE = "[REDACTED]"

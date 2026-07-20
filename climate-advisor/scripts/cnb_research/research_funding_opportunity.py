@@ -24,7 +24,7 @@ Outputs:
 
 Usage (from project root):
 - uv run python -m scripts.cnb_research.research_funding_opportunity \
-    --input scripts/cnb_research/files/solar_on_public_buildings.json \
+    --input path/to/research-request.json \
     --output output/cnb_research
 """
 

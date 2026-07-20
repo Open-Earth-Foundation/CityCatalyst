@@ -18,7 +18,6 @@ climate-advisor/
 |   `-- cnb_funding_opportunity_research.md
 |-- scripts/
 |   `-- cnb_research/
-|       |-- files/
 |       |-- README.md
 |       |-- research_funding_opportunity.py
 |       |-- review.html
@@ -32,7 +31,7 @@ climate-advisor/
 |   |   |-- cnb_research_bundle.py
 |   |   `-- cnb_research_service.py
 |   `-- tools/firecrawl.py
-`-- output/cnb_research/            # generated and gitignored
+`-- output/cnb_research/            # generated; one reference bundle tracked
 ```
 
 The CLI is intentionally thin. Reusable behavior is split into functions for
@@ -201,6 +200,12 @@ files. The trace records seed scrapes, Firecrawl actions, structured
 checkpoints, and the final audit. Source snapshots include their stable
 reference, canonical URL, capture time, and content hash.
 
+The repository retains one complete live-run output for review and regression
+reference:
+`output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`.
+It is the EUCF Call 7 confirmation bundle. All other generated output remains
+ignored.
+
 ## Static review workspace
 
 The static workspace at `scripts/cnb_research/review.html` reads a selected
@@ -246,7 +251,7 @@ From `climate-advisor/`:
 
 ```powershell
 uv run python -m scripts.cnb_research.research_funding_opportunity `
-  --input scripts/cnb_research/files/solar_on_public_buildings.json `
+  --input path/to/research-request.json `
   --output output/cnb_research
 ```
 

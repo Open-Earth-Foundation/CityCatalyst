@@ -1,0 +1,701 @@
+{
+  "schema_version": "1.2",
+  "run_id": "9023c3d6-8581-4e7b-91d1-b65db544559b",
+  "run_metadata": {
+    "pipeline_version": "1.2",
+    "model_name": "gpt-5.6-terra",
+    "reasoning_effort": "medium",
+    "prompt_sha256": "9c58204c59b10a19d85a161067e9f6072835d3c10fa425f88f630933eb16f14c",
+    "started_at": "2026-07-20T22:15:47.033201Z",
+    "completed_at": "2026-07-20T22:18:48.657241Z",
+    "duration_seconds": 181.625,
+    "max_turns": 12,
+    "turns_used": 11,
+    "termination_reason": "coverage_complete",
+    "mlflow_run_id": "2f99a784a3914d11b045fc3b7ab2665f"
+  },
+  "request": {
+    "funder_name": "European Union LIFE Programme",
+    "funder_url": "https://cinea.ec.europa.eu/programmes/life_en",
+    "program_name": "European City Facility (EUCF) - Call 7",
+    "program_url": "https://www.eucityfacility.eu/calls/call-7",
+    "application_template_url": null,
+    "current_filled_object": null,
+    "max_turns": 12
+  },
+  "opportunity": {
+    "funder_name": "European Union LIFE Programme",
+    "funder_url": "https://cinea.ec.europa.eu/programmes/life_en",
+    "funder_type": "European Union funding programme",
+    "funder_country": null,
+    "funder_region": "European Union",
+    "funder_profile": {
+      "stated": {
+        "purpose": "LIFE protects the environment and climate; its Clean Energy Transition strand includes the European City Facility initiative.",
+        "EUCF objective": "EUCF supports municipalities and local authorities to develop investment concepts for actions identified in climate and energy action plans and to build a pipeline of sustainable-energy investments.",
+        "EUCF support model": "EUCF provides EUR 60,000 lump sums and related capacity-building services for preparatory investment-concept development, not for the underlying capital investments."
+      },
+      "derived": {
+        "Call 7 selection pattern": "Call 7 selected 71 beneficiaries across the three regional calls from 297 submitted applications (approximately 24% overall success rate).",
+        "Call 7 sector pattern": "Public buildings, including social-rental and public housing, were the most frequently targeted main investment sector among selected Call 7 applications in CEE and Southern Europe; innovative energy infrastructure led in Nordic countries and Western Europe."
+      }
+    },
+    "program_name": "European City Facility (EUCF) - Call 7",
+    "program_url": "https://www.eucityfacility.eu/calls/call-7",
+    "finance_route": "EUCF is funded by the LIFE Programme; it provides support directly to local-authority beneficiaries for investment-concept preparation.",
+    "instrument_type": "Fixed lump-sum grant with capacity-building support",
+    "region_scope": "EU-27 Member States, Iceland and Ukraine, organised into Central and Eastern Europe; Nordic countries and Western Europe; and Southern Europe regional calls.",
+    "min_award": "60000.0",
+    "max_award": "60000.0",
+    "currency": "EUR",
+    "live_status": "closed",
+    "status": "Closed; Call 7 closed on 18 December 2024 and 71 beneficiaries were subsequently selected.",
+    "application_template": {
+      "template_ref": "template-001",
+      "template_name": "Letter of support to the proposed investment concept",
+      "source_url": "https://eucityfacility.eu/sites/default/files/media/documents/Template__Letter_of_Support__European_City_Facility.docx",
+      "output_format": "DOCX",
+      "chapter_schema": [
+        {
+          "chapter_ref": "template-001-chapter-1",
+          "title": "Letter header and proposal identification",
+          "description": "Location/date, investment-concept title, applicant name, and EUCF website user-zone application ID.",
+          "required": null
+        },
+        {
+          "chapter_ref": "template-001-chapter-2",
+          "title": "Political support statement",
+          "description": "Statement by the mayor or other relevant political representative supporting development of the proposed investment concept within EUCF.",
+          "required": null
+        },
+        {
+          "chapter_ref": "template-001-chapter-3",
+          "title": "Signature and contact details",
+          "description": "Signature and stamp; political representative name, position, department, and postal contact details.",
+          "required": null
+        }
+      ],
+      "required_fields": [
+        "Location and date",
+        "Title of investment concept",
+        "Name of municipality/local authority, grouping lead applicant, or eligible local public entity",
+        "Application ID in the EUCF website user zone",
+        "Name of mayor or other relevant political representative",
+        "Confirmation of support for the proposed investment concept",
+        "Signature and stamp",
+        "Political representative position and contact details"
+      ]
+    },
+    "criteria": [
+      {
+        "criterion_ref": "eligibility-001",
+        "criterion_type": "eligibility",
+        "label": "Eligible applicant type",
+        "requirement_text": "Applicant must be a municipality/local authority, a grouping of municipalities/local authorities, or a local public entity aggregating municipalities/local authorities.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Applicant must be an eligible local-authority entity or eligible grouping/aggregator."
+      },
+      {
+        "criterion_ref": "eligibility-002",
+        "criterion_type": "eligibility",
+        "label": "Eligible geography",
+        "requirement_text": "The applicant must be located entirely in an EU-27 Member State, Iceland, or Ukraine.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Applicant location must be in EU-27, Iceland, or Ukraine."
+      },
+      {
+        "criterion_ref": "eligibility-003",
+        "criterion_type": "eligibility",
+        "label": "Climate or energy plan",
+        "requirement_text": "Applicant must have a SECAP or other local climate and/or energy plan with mitigation targets.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "A local climate/energy plan with at least one mitigation target is required."
+      },
+      {
+        "criterion_ref": "eligibility-004",
+        "criterion_type": "eligibility",
+        "label": "Political commitment",
+        "requirement_text": "Applicant must provide proof of political commitment to develop the investment concept, signed by the mayor or other relevant political representative.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Submit the required signed political-support letter."
+      },
+      {
+        "criterion_ref": "eligibility-005",
+        "criterion_type": "eligibility",
+        "label": "Monitoring commitment",
+        "requirement_text": "Applicant must commit to the EUCF monitoring period of two years.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Commit to two years of EUCF monitoring."
+      },
+      {
+        "criterion_ref": "evaluation-001",
+        "criterion_type": "evaluation",
+        "label": "Ambition of the proposed investment concept",
+        "requirement_text": "Applications are evaluated on the ambition of the proposed investment concept. For Calls 6 and 7, the quality threshold was revoked for this criterion.",
+        "weight": null,
+        "hard_gate": false,
+        "normalized_rule": "Score well on investment-concept ambition; no per-criterion quality threshold applied in Call 7."
+      },
+      {
+        "criterion_ref": "evaluation-002",
+        "criterion_type": "evaluation",
+        "label": "Governance structure",
+        "requirement_text": "Applications are evaluated on the governance structure for development of the investment concept. In Call 7, a quality threshold of 50% of total possible points applied.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Achieve at least 50% of available points for governance structure."
+      },
+      {
+        "criterion_ref": "evaluation-003",
+        "criterion_type": "evaluation",
+        "label": "Stakeholder engagement strategy",
+        "requirement_text": "Applications are evaluated on the stakeholder engagement strategy. In Call 7, a quality threshold of 50% of total possible points applied.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Achieve at least 50% of available points for stakeholder engagement."
+      },
+      {
+        "criterion_ref": "evaluation-004",
+        "criterion_type": "evaluation",
+        "label": "Coherence and plausibility",
+        "requirement_text": "Applications are evaluated on coherence and plausibility. In Call 7, a quality threshold of 50% of total possible points applied.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Achieve at least 50% of available points for coherence and plausibility."
+      },
+      {
+        "criterion_ref": "application-001",
+        "criterion_type": "application",
+        "label": "Application language and annexes",
+        "requirement_text": "Full applications must be submitted in English and include a SECAP or other local climate/energy plan with mitigation targets and a letter of political commitment.",
+        "weight": null,
+        "hard_gate": true,
+        "normalized_rule": "Submit the English online application with both mandatory annexes."
+      }
+    ],
+    "funded_projects": [
+      {
+        "project_ref": "project-001",
+        "title": "Zero-Emission Urban Transport for Innsbruck",
+        "applicant": "Innsbruck",
+        "city": "Innsbruck",
+        "state_or_region": null,
+        "country": "Austria",
+        "category": "Sustainable urban mobility",
+        "hazards": [
+          "Climate change"
+        ],
+        "interventions": [
+          "Zero-emission urban transport",
+          "Investment-concept development"
+        ],
+        "summary": "Innsbruck was listed as a Call 7 beneficiary for the investment concept titled “Zero-Emission Urban Transport for Innsbruck.”"
+      }
+    ],
+    "funded_project_actions": [
+      {
+        "action_ref": "action-001",
+        "project_ref": "project-001",
+        "action_type": "Investment-concept preparation",
+        "category": "Sustainable urban mobility",
+        "hazards": [
+          "Climate change"
+        ],
+        "interventions": [
+          "Zero-emission urban transport"
+        ],
+        "description": "Prepare the investment concept titled “Zero-Emission Urban Transport for Innsbruck”; EUCF support is for the preparatory investment concept rather than direct financing of the underlying transport investment."
+      }
+    ],
+    "funding_links": [
+      {
+        "funding_link_ref": "funding-link-001",
+        "project_ref": "project-001",
+        "action_ref": "action-001",
+        "program_name": "European City Facility (EUCF) - Call 7",
+        "award_amount": "60000.0",
+        "requested_amount": null,
+        "currency": "EUR",
+        "calendar_year": 2025,
+        "instrument_type": "Lump-sum grant",
+        "lifecycle_stage": "Investment-concept development",
+        "status": "Selected beneficiary"
+      }
+    ],
+    "financial_amounts": [
+      {
+        "amount_ref": "amount-001",
+        "project_ref": "project-001",
+        "action_ref": "action-001",
+        "program_name": "European City Facility (EUCF) - Call 7",
+        "amount": "60000.0",
+        "currency": "EUR",
+        "amount_kind": "individual_technical_assistance",
+        "calendar_year": 2025,
+        "status": "Selected beneficiary",
+        "description": "Fixed EUCF lump-sum support package for the selected Innsbruck beneficiary to develop its investment concept; this is preparatory support, not capital financing for transport implementation."
+      },
+      {
+        "amount_ref": "amount-002",
+        "project_ref": null,
+        "action_ref": null,
+        "program_name": "European City Facility (EUCF) - Call 7",
+        "amount": "4260000.0",
+        "currency": "EUR",
+        "amount_kind": "program_capitalization",
+        "calendar_year": 2024,
+        "status": "Call budget",
+        "description": "Published total Call 7 budget allocated to support development of 71 investment concepts across the three regional calls."
+      },
+      {
+        "amount_ref": "amount-003",
+        "project_ref": null,
+        "action_ref": null,
+        "program_name": "European City Facility (EUCF) - Call 7",
+        "amount": "993000000.0",
+        "currency": "EUR",
+        "amount_kind": "identified_investment_longlist",
+        "calendar_year": 2025,
+        "status": "Expected investment indicated by selected applicants",
+        "description": "Aggregate expected underlying investment size reported by selected Call 7 applicants in Central and Eastern Europe; it is not EUCF grant funding or committed financing."
+      },
+      {
+        "amount_ref": "amount-004",
+        "project_ref": null,
+        "action_ref": null,
+        "program_name": "European City Facility (EUCF) - Call 7",
+        "amount": "719000000.0",
+        "currency": "EUR",
+        "amount_kind": "identified_investment_longlist",
+        "calendar_year": 2025,
+        "status": "Expected investment indicated by selected applicants",
+        "description": "Aggregate expected underlying investment size reported by selected Call 7 applicants in Nordic countries and Western Europe; it is not EUCF grant funding or committed financing."
+      },
+      {
+        "amount_ref": "amount-005",
+        "project_ref": null,
+        "action_ref": null,
+        "program_name": "European City Facility (EUCF) - Call 7",
+        "amount": "900000000.0",
+        "currency": "EUR",
+        "amount_kind": "identified_investment_longlist",
+        "calendar_year": 2025,
+        "status": "Expected investment indicated by selected applicants",
+        "description": "Aggregate expected underlying investment size reported by selected Call 7 applicants in Southern Europe; it is not EUCF grant funding or committed financing."
+      }
+    ],
+    "pipeline_entries": []
+  },
+  "sources": [
+    {
+      "source_ref": "source-001",
+      "source_type": "funder_page",
+      "url": "https://cinea.ec.europa.eu/programmes/life_en",
+      "title": "LIFE",
+      "publication_date": null,
+      "license_status": null,
+      "content_hash": "f7e57cbcb85c17f1e38d7e32d1de8755be7c0acc8ddb54295a0bcc73fb4f267b",
+      "fetched_at": "2026-07-20T22:15:50.839126Z",
+      "local_snapshot_path": "sources/source-001.md"
+    },
+    {
+      "source_ref": "source-002",
+      "source_type": "program_page",
+      "url": "https://www.eucityfacility.eu/calls/call-7",
+      "title": "Call 7 | EUCF",
+      "publication_date": null,
+      "license_status": null,
+      "content_hash": "9a8e68b72188a0454c97a1b9448cb83221a4b28928e5038b6dbe7bc10eca5530",
+      "fetched_at": "2026-07-20T22:15:51.422189Z",
+      "local_snapshot_path": "sources/source-002.md"
+    },
+    {
+      "source_ref": "source-003",
+      "source_type": "award_list",
+      "url": "https://www.eucityfacility.eu/news/european-city-facility-announces-71-new-beneficiaries",
+      "title": "European City Facility announces 71 new beneficiaries | EUCF",
+      "publication_date": "2025-07-18",
+      "license_status": null,
+      "content_hash": "cd291cbc39e226427fe9ad4fab82891961638f21bb2dad5b5425b4b9bdc7a4f7",
+      "fetched_at": "2026-07-20T22:16:05.118795Z",
+      "local_snapshot_path": "sources/source-003.md"
+    },
+    {
+      "source_ref": "source-004",
+      "source_type": "guidance",
+      "url": "https://eucityfacility.eu/sites/default/files/media/Call%207%20document_FINAL.pdf",
+      "title": null,
+      "publication_date": null,
+      "license_status": null,
+      "content_hash": "0cdd5242d6e24f6eedc2519ce96a4db076dc3a651e6630d1706efbd4c3a5fe8f",
+      "fetched_at": "2026-07-20T22:16:25.939545Z",
+      "local_snapshot_path": "sources/source-004.md"
+    },
+    {
+      "source_ref": "source-005",
+      "source_type": "funded_project_report",
+      "url": "https://www.eucityfacility.eu/documents/summary-report-call-7",
+      "title": "Summary Report Call 7 | EUCF",
+      "publication_date": "2025-12-17",
+      "license_status": null,
+      "content_hash": "acff9b81d4022424171ac690088bdfcd195f1c2b650c9f273798e4df712039eb",
+      "fetched_at": "2026-07-20T22:16:45.433931Z",
+      "local_snapshot_path": "sources/source-005.md"
+    },
+    {
+      "source_ref": "source-006",
+      "source_type": "funded_project_report",
+      "url": "https://www.eucityfacility.eu/sites/default/files/media/documents/Summary%20Report%20Call%207.pdf",
+      "title": null,
+      "publication_date": null,
+      "license_status": null,
+      "content_hash": "095af5b9e5cc0a323bda82676ab11c80bba4ebf9bcb145fe903a4b73c4945336",
+      "fetched_at": "2026-07-20T22:17:18.759803Z",
+      "local_snapshot_path": "sources/source-006.md"
+    },
+    {
+      "source_ref": "source-007",
+      "source_type": "application_guidance",
+      "url": "https://www.eucityfacility.eu/application-process",
+      "title": "Application Process | EUCF",
+      "publication_date": null,
+      "license_status": null,
+      "content_hash": "b044ca89ab4dcf381b611fa7368f6db5a6d4d16ff90e426414240049ea30b5c6",
+      "fetched_at": "2026-07-20T22:17:39.870615Z",
+      "local_snapshot_path": "sources/source-007.md"
+    },
+    {
+      "source_ref": "source-008",
+      "source_type": "application_template",
+      "url": "https://eucityfacility.eu/sites/default/files/media/documents/Template__Letter_of_Support__European_City_Facility.docx",
+      "title": "Document",
+      "publication_date": null,
+      "license_status": null,
+      "content_hash": "347a666782b1fd86ba74522a6f87a6534b6fb842c54031c6cc668cc2e45958b4",
+      "fetched_at": "2026-07-20T22:17:49.762555Z",
+      "local_snapshot_path": "sources/source-008.md"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_ref": "evidence-001",
+      "target_path": "opportunity.funder_type",
+      "source_ref": "source-001",
+      "source_location": "LIFE page",
+      "quote_or_summary": "CINEA presents LIFE as the LIFE Programme and identifies it as the Programme for the Environment and Climate Action."
+    },
+    {
+      "evidence_ref": "evidence-002",
+      "target_path": "opportunity.funder_region",
+      "source_ref": "source-001",
+      "source_location": "LIFE page / official EU website notice",
+      "quote_or_summary": "The source is an official European Union website and presents EUCF among LIFE initiatives supporting municipalities across Europe."
+    },
+    {
+      "evidence_ref": "evidence-003",
+      "target_path": "opportunity.funder_profile.stated",
+      "source_ref": "source-004",
+      "source_location": "Objective; About the European City Facility",
+      "quote_or_summary": "EUCF supports municipalities/local authorities to develop investment concepts for actions in climate and energy plans and build a sustainable-energy investment pipeline; it is funded by LIFE."
+    },
+    {
+      "evidence_ref": "evidence-004",
+      "target_path": "opportunity.finance_route",
+      "source_ref": "source-004",
+      "source_location": "About the European City Facility",
+      "quote_or_summary": "The document states EUCF was originally set up under Horizon 2020 and is now funded by the EU LIFE Programme."
+    },
+    {
+      "evidence_ref": "evidence-005",
+      "target_path": "opportunity.instrument_type",
+      "source_ref": "source-004",
+      "source_location": "Financial Support; About the European City Facility",
+      "quote_or_summary": "EUCF provides tailor-made, fast and simplified financial support in the form of EUR 60,000 lump sums and related services."
+    },
+    {
+      "evidence_ref": "evidence-006",
+      "target_path": "opportunity.region_scope",
+      "source_ref": "source-004",
+      "source_location": "Eligibility; Regional Calls",
+      "quote_or_summary": "Eligible geography is EU-27 Member States, Iceland and Ukraine, with calls organised in three geographic regions."
+    },
+    {
+      "evidence_ref": "evidence-007",
+      "target_path": "opportunity.min_award",
+      "source_ref": "source-004",
+      "source_location": "Financial Support",
+      "quote_or_summary": "The EUCF finances development of an Investment Concept with a fixed grant of EUR 60,000."
+    },
+    {
+      "evidence_ref": "evidence-008",
+      "target_path": "opportunity.max_award",
+      "source_ref": "source-004",
+      "source_location": "Financial Support",
+      "quote_or_summary": "The published grant is a fixed EUR 60,000 amount, establishing the same minimum and maximum award."
+    },
+    {
+      "evidence_ref": "evidence-009",
+      "target_path": "opportunity.currency",
+      "source_ref": "source-004",
+      "source_location": "Financial Support",
+      "quote_or_summary": "The fixed grant is denominated in EUR."
+    },
+    {
+      "evidence_ref": "evidence-010",
+      "target_path": "opportunity.live_status",
+      "source_ref": "source-002",
+      "source_location": "About the call",
+      "quote_or_summary": "The Call 7 page explicitly states that the call is closed and that it was the last round currently planned."
+    },
+    {
+      "evidence_ref": "evidence-011",
+      "target_path": "opportunity.status",
+      "source_ref": "source-003",
+      "source_location": "Opening paragraphs",
+      "quote_or_summary": "EUCF selected 71 beneficiaries from 297 applications submitted during the seventh call; the existing EUCF calls are all closed."
+    },
+    {
+      "evidence_ref": "evidence-012",
+      "target_path": "opportunity.application_template",
+      "source_ref": "source-008",
+      "source_location": "Document body",
+      "quote_or_summary": "The captured DOCX is the EUCF letter-of-support template and contains proposal identification, political-support declaration, signature, and representative contact fields."
+    },
+    {
+      "evidence_ref": "evidence-013",
+      "target_path": "opportunity.criteria",
+      "source_ref": "source-007",
+      "source_location": "Eligibility Check; Required Annexes",
+      "quote_or_summary": "The official application page provides five yes/no eligibility questions, says eligibility requires YES to all, and identifies the plan and political-support letter as required annexes."
+    },
+    {
+      "evidence_ref": "evidence-014",
+      "target_path": "opportunity.criteria[evaluation-001].hard_gate",
+      "source_ref": "source-006",
+      "source_location": "4.1 EUCF Evaluation Process",
+      "quote_or_summary": "For Calls 6 and 7, the quality threshold was revoked for criterion 1, ambition of the proposed investment concept."
+    },
+    {
+      "evidence_ref": "evidence-015",
+      "target_path": "opportunity.criteria[evaluation-002].hard_gate",
+      "source_ref": "source-006",
+      "source_location": "4.1 EUCF Evaluation Process",
+      "quote_or_summary": "For Call 7, the 50% quality threshold applied to criteria two, three, and four."
+    },
+    {
+      "evidence_ref": "evidence-016",
+      "target_path": "opportunity.criteria[evaluation-003].hard_gate",
+      "source_ref": "source-006",
+      "source_location": "4.1 EUCF Evaluation Process",
+      "quote_or_summary": "For Call 7, the 50% quality threshold applied to criteria two, three, and four."
+    },
+    {
+      "evidence_ref": "evidence-017",
+      "target_path": "opportunity.criteria[evaluation-004].hard_gate",
+      "source_ref": "source-006",
+      "source_location": "4.1 EUCF Evaluation Process",
+      "quote_or_summary": "For Call 7, the 50% quality threshold applied to criteria two, three, and four."
+    },
+    {
+      "evidence_ref": "evidence-018",
+      "target_path": "opportunity.funded_projects[project-001]",
+      "source_ref": "source-003",
+      "source_location": "Full list of new beneficiaries",
+      "quote_or_summary": "The official Call 7 beneficiary list identifies Innsbruck, Austria, with the investment-concept title “Zero-Emission Urban Transport for Innsbruck.”"
+    },
+    {
+      "evidence_ref": "evidence-019",
+      "target_path": "opportunity.funded_project_actions[action-001]",
+      "source_ref": "source-003",
+      "source_location": "Full list of new beneficiaries",
+      "quote_or_summary": "The named Innsbruck investment concept explicitly concerns zero-emission urban transport; the announcement states selected cities use funding to develop investment concepts."
+    },
+    {
+      "evidence_ref": "evidence-020",
+      "target_path": "opportunity.funding_links[funding-link-001]",
+      "source_ref": "source-003",
+      "source_location": "Opening paragraphs; Full list of new beneficiaries",
+      "quote_or_summary": "The announcement says Call 7 selected 71 new beneficiaries for its EUR 60,000 support package and lists Innsbruck among them."
+    },
+    {
+      "evidence_ref": "evidence-021",
+      "target_path": "opportunity.financial_amounts[amount-001]",
+      "source_ref": "source-003",
+      "source_location": "Opening paragraphs",
+      "quote_or_summary": "Selected cities receive a EUR 60,000 support package to develop investment concepts; the announcement was published 18 July 2025."
+    },
+    {
+      "evidence_ref": "evidence-022",
+      "target_path": "opportunity.financial_amounts[amount-002]",
+      "source_ref": "source-004",
+      "source_location": "Budget",
+      "quote_or_summary": "Call 7 budget was EUR 4.26 million for 71 investment concepts."
+    },
+    {
+      "evidence_ref": "evidence-023",
+      "target_path": "opportunity.financial_amounts[amount-003]",
+      "source_ref": "source-006",
+      "source_location": "5.1.3 Expected investment size of selected applications",
+      "quote_or_summary": "Selected Call 7 CEE applications indicated approximately EUR 993 million total expected investments."
+    },
+    {
+      "evidence_ref": "evidence-024",
+      "target_path": "opportunity.financial_amounts[amount-004]",
+      "source_ref": "source-006",
+      "source_location": "5.2.3 Expected investment size of selected applications",
+      "quote_or_summary": "Selected Call 7 NC&WE applications indicated more than EUR 719 million total expected investments."
+    },
+    {
+      "evidence_ref": "evidence-025",
+      "target_path": "opportunity.financial_amounts[amount-005]",
+      "source_ref": "source-006",
+      "source_location": "5.3.3 Expected investment size of selected applications",
+      "quote_or_summary": "Selected Call 7 Southern Europe applications indicated around EUR 900 million total expected investments."
+    },
+    {
+      "evidence_ref": "evidence-026",
+      "target_path": "opportunity.funder_profile.derived",
+      "source_ref": "source-006",
+      "source_location": "4.5 Cumulative evaluation results; 5.1.4, 5.2.4 and 5.3.4",
+      "quote_or_summary": "The report records 297 Call 7 submissions, a 24% success rate, 71 selected applications, and region-specific leading investment sectors."
+    }
+  ],
+  "gaps": [
+    {
+      "target_path": "opportunity.funder_country",
+      "reason": "LIFE is an EU-level programme; no institutional country is appropriate, and the available official sources do not define one."
+    },
+    {
+      "target_path": "opportunity.application_template.full_application_form",
+      "reason": "The full Call 7 application was completed in the EUCF online user zone. Captured sources provide a mandatory letter-of-support DOCX template, but no downloadable full application-form template."
+    },
+    {
+      "target_path": "opportunity.criteria[*].weight",
+      "reason": "Captured official Call 7 sources establish the four criteria and applicable 50% thresholds but do not publish numeric criterion weights."
+    },
+    {
+      "target_path": "opportunity.co_financing_requirement",
+      "reason": "No Call 7 co-financing, match-funding, or contribution requirement was established in the captured official sources."
+    },
+    {
+      "target_path": "opportunity.funding_links[funding-link-001].requested_amount",
+      "reason": "The Call 7 beneficiary announcement confirms a fixed EUR 60,000 support package but does not publish Innsbruck's requested amount."
+    },
+    {
+      "target_path": "opportunity.funding_links[funding-link-001].disbursement_status",
+      "reason": "The official announcement establishes selection and the EUR 60,000 support package, but does not establish Innsbruck's executed grant agreement, payment, or disbursement status."
+    },
+    {
+      "target_path": "opportunity.financial_amounts.individual_underlying_investment",
+      "reason": "The official beneficiary list identifies Innsbruck's zero-emission transport investment concept but does not publish its project-specific expected capital-investment amount."
+    },
+    {
+      "target_path": "opportunity.funded_project_actions[action-001].cost",
+      "reason": "No action-level preparation cost or underlying transport-investment cost for Innsbruck was published in the captured sources."
+    },
+    {
+      "target_path": "opportunity.downstream_financing_status",
+      "reason": "The regional expected-investment figures are applicant estimates; no committed, financed, or disbursed downstream capital investment was established for Call 7 or the Innsbruck concept."
+    },
+    {
+      "target_path": "opportunity.pipeline_entries",
+      "reason": "No official Call 7 ranked pipeline, requested-amount table, or applicant-level fundable-amount list was found in the captured sources."
+    },
+    {
+      "target_path": "source_assessments[*].license_status",
+      "reason": "No explicit reusable-content licence was identified in the captured official pages, report, guidance, or template."
+    }
+  ],
+  "conflicts": [],
+  "agent_trace": [
+    {
+      "turn": 0,
+      "action": "firecrawl_scrape_seed_funder",
+      "query_or_url": "https://cinea.ec.europa.eu/programmes/life_en",
+      "result_summary": "Captured source-001: LIFE."
+    },
+    {
+      "turn": 0,
+      "action": "firecrawl_scrape_seed_program",
+      "query_or_url": "https://www.eucityfacility.eu/calls/call-7",
+      "result_summary": "Captured source-002: Call 7 | EUCF."
+    },
+    {
+      "turn": 1,
+      "action": "firecrawl_search",
+      "query_or_url": "site:eucityfacility.eu \"European City Facility announces 71 new beneficiaries\" Call 7 beneficiaries",
+      "result_summary": "Returned 5 search results."
+    },
+    {
+      "turn": 2,
+      "action": "firecrawl_extract",
+      "query_or_url": "https://www.eucityfacility.eu/news/european-city-facility-announces-71-new-beneficiaries",
+      "result_summary": "Captured source-003 and extracted keys: beneficiaryList."
+    },
+    {
+      "turn": 3,
+      "action": "firecrawl_search",
+      "query_or_url": "Innsbruck \"Zero-Emission Urban Transport for Innsbruck\" EUCF",
+      "result_summary": "Returned 1 search results."
+    },
+    {
+      "turn": 4,
+      "action": "firecrawl_extract",
+      "query_or_url": "https://eucityfacility.eu/sites/default/files/media/Call%207%20document_FINAL.pdf",
+      "result_summary": "Captured source-004 and extracted keys: eligibilityRequirements, evaluationCriteria, applicationFormSections, fixedGrant, permittedUses, selectionTimeline, eligibleGeography, projectExamples."
+    },
+    {
+      "turn": 5,
+      "action": "firecrawl_extract",
+      "query_or_url": "https://www.eucityfacility.eu/documents/summary-report-call-7",
+      "result_summary": "Captured source-005 and extracted keys: summaryReportURL, aggregateData, publicationDate."
+    },
+    {
+      "turn": 6,
+      "action": "firecrawl_extract",
+      "query_or_url": "https://www.eucityfacility.eu/sites/default/files/media/documents/Summary%20Report%20Call%207.pdf",
+      "result_summary": "Captured source-006 and extracted keys: totalSubmissions, eligibleApplications, evaluatedApplications, selectedBeneficiaries, evaluationMethodology, scoresThresholds, countryRegionalTables, namedBeneficiaryList, selectedProposals."
+    },
+    {
+      "turn": 7,
+      "action": "firecrawl_extract",
+      "query_or_url": "https://www.eucityfacility.eu/application-process",
+      "result_summary": "Captured source-007 and extracted keys: applicationProcess."
+    },
+    {
+      "turn": 8,
+      "action": "firecrawl_search",
+      "query_or_url": "site:europa.eu LIFE Programme EU funding programme 2021 2027 European Union official",
+      "result_summary": "Firecrawl search returned HTTP 502: Bad Gateway"
+    },
+    {
+      "turn": 9,
+      "action": "firecrawl_scrape",
+      "query_or_url": "https://eucityfacility.eu/sites/default/files/media/documents/Template__Letter_of_Support__European_City_Facility.docx",
+      "result_summary": "Captured source-008: Document."
+    },
+    {
+      "turn": 10,
+      "action": "structured_candidate",
+      "query_or_url": "",
+      "result_summary": "Returned structured output with 0 coverage targets unresolved."
+    },
+    {
+      "turn": 11,
+      "action": "final_gap_audit",
+      "query_or_url": "",
+      "result_summary": "Returned structured output with 0 coverage targets unresolved."
+    }
+  ],
+  "review": {
+    "status": "pending_review",
+    "reviewer": null,
+    "reviewed_at": null,
+    "notes": []
+  }
+}

@@ -61,12 +61,13 @@ At runtime:
 ## Offline CNB Funding Research
 
 The separate offline CNB workflow researches one known funder and opportunity
-and writes pending-review artifacts under ignored `output/cnb_research/`.
-Run it and open its static review workspace from `climate-advisor/`:
+and writes pending-review artifacts under `output/cnb_research/`. Generated
+runs are ignored except for the single tracked EUCF reference bundle. Run it
+and open its static review workspace from `climate-advisor/`:
 
 ```powershell
 uv run python -m scripts.cnb_research.research_funding_opportunity `
-  --input scripts/cnb_research/files/solar_on_public_buildings.json `
+  --input path/to/research-request.json `
   --output output/cnb_research
 
 uv run python -m http.server 8080
@@ -79,6 +80,9 @@ fields remain preserved in the update but are hidden from the reviewer. The
 editor does not modify the bundle or write to the database. The proposed future
 authenticated database-save boundary is documented in
 `../docs/ConceptNoteBuilderFunderResearchPipeline.md`.
+
+The tracked reference output is
+`output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`.
 
 Research bundles use schema version `1.2`. Funding links, financial amounts,
 and pipeline entries share one optional integer `calendar_year`; fiscal-year
@@ -441,7 +445,7 @@ language, or client-side fallback behavior. The boundary is:
   `https://mlflow-dev.openearth.dev`
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
-  default `Clima`
+  default `clima`
 - `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
   match the shared HIAP-MEED fail-open tuning
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
@@ -789,7 +793,7 @@ HIAP-MEED. The split is experiment-based between services, and tag-based inside
 Climate Advisor:
 
 - `hiap-meed` remains the existing HIAP-MEED experiment
-- `Clima` stores all Climate Advisor runs, including general `/v1/messages`
+- `clima` stores all Climate Advisor runs, including general `/v1/messages`
   chat, Stationary Energy draft, review, save, background generation, and
   draft-context chat runs, plus offline CNB funding-opportunity research
 
@@ -831,7 +835,7 @@ GitHub.
 Before enabling MLflow in an environment:
 
 1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
-2. Confirm or create the experiment named `Clima`.
+2. Confirm or create the experiment named `clima`.
 3. Set the MLflow environment variables documented above in `.env` or the
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth

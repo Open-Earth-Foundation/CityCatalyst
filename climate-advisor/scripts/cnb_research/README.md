@@ -12,8 +12,7 @@ scripts/cnb_research/
 |-- research_funding_opportunity.py
 |-- review.html                    # Static human-review workspace
 |-- review.css
-|-- review.js
-`-- review.test.cjs               # Review path-mapping regression tests
+`-- review.js
 
 output/cnb_research/
 |-- 9023c3d6-8581-4e7b-91d1-b65db544559b/
@@ -96,12 +95,6 @@ ungrouped decimal values, and retain numeric meaning in the saved update.
 
 Evidence, gaps, and conflicts whose target paths do not map to an editable
 dossier field remain visible in an `Other evidence and issues` section.
-
-Run the review path-mapping regression tests from `climate-advisor/` with:
-
-```powershell
-node --test scripts/cnb_research/review.test.cjs
-```
 
 `Save update` downloads `<run_id>.review-update.json`. The update contains
 source-bundle hashes when browser crypto is available,

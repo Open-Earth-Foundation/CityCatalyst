@@ -287,58 +287,68 @@ export default class DataSourceService {
       populationIssue,
     } = populationScaleFactors;
 
-    if (source.retrievalMethod === "global_api") {
-      const sourceStatus = await DataSourceService.applyGlobalAPISource(
-        source,
-        inventory,
-        userId,
-        1.0,
-        forceReplace,
-      );
-      if (typeof sourceStatus === "string") {
-        result.issue = sourceStatus;
-        result.success = false;
-      }
-    } else if (source.retrievalMethod === "global_api_notation_key") {
-      const sourceStatus =
-        await DataSourceService.applyGlobalAPINotationKeySource(
+    try {
+      if (source.retrievalMethod === "global_api") {
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
           source,
           inventory,
           userId,
+          1.0,
           forceReplace,
         );
-      if (typeof sourceStatus === "string") {
-        result.issue = sourceStatus;
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else if (source.retrievalMethod === "global_api_notation_key") {
+        const sourceStatus =
+          await DataSourceService.applyGlobalAPINotationKeySource(
+            source,
+            inventory,
+            userId,
+            forceReplace,
+          );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else if (
+        populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
+      ) {
+        if (populationIssue) {
+          result.issue = populationIssue;
+          result.success = false;
+          return result;
+        }
+        let scaleFactor = 1.0;
+        if (source.retrievalMethod === downscaledByCountryPopulation) {
+          scaleFactor = countryPopulationScaleFactor;
+        } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+          scaleFactor = regionPopulationScaleFactor;
+        }
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
+          source,
+          inventory,
+          userId,
+          scaleFactor,
+          forceReplace,
+        );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else {
+        result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
+        logger.error(result.issue);
         result.success = false;
       }
-    } else if (
-      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
-    ) {
-      if (populationIssue) {
-        result.issue = populationIssue;
-        result.success = false;
-        return result;
-      }
-      let scaleFactor = 1.0;
-      if (source.retrievalMethod === downscaledByCountryPopulation) {
-        scaleFactor = countryPopulationScaleFactor;
-      } else if (source.retrievalMethod === downscaledByRegionPopulation) {
-        scaleFactor = regionPopulationScaleFactor;
-      }
-      const sourceStatus = await DataSourceService.applyGlobalAPISource(
-        source,
-        inventory,
-        userId,
-        scaleFactor,
-        forceReplace,
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error(
+        { err, datasourceId: source.datasourceId },
+        `Unexpected error applying source: ${message}`,
       );
-      if (typeof sourceStatus === "string") {
-        result.issue = sourceStatus;
-        result.success = false;
-      }
-    } else {
-      result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
-      logger.error(result.issue);
+      result.issue = message;
       result.success = false;
     }
 

@@ -74,10 +74,17 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
     },
   });
   if (inventoryValues.length === 0) {
-    throw new createHttpError.NotFound("Inventory value not found");
+    // Already disconnected – return success for idempotency
+    return NextResponse.json({ data: [], deleted: false });
   }
 
   await db.sequelize?.transaction(async (transaction) => {
+    const inventoryValueIds = inventoryValues.map((iv) => iv.id);
+    await db.models.ActivityValue.destroy({
+      where: { inventoryValueId: inventoryValueIds },
+      transaction,
+    });
+
     await db.models.InventoryValue.destroy({
       where: {
         datasourceId: params.datasourceId,

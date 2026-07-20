@@ -44,7 +44,9 @@ is kept in `service/app/tools/firecrawl.py`.
 If `MLFLOW_ENABLED=true`, the command also uses the shared Climate Advisor
 MLflow setup. It starts a run in `MLFLOW_EXPERIMENT_NAME`, activates the existing
 OpenAI autologging, records run parameters and coverage metrics, and uploads
-redacted copies of the bundle, review, and trace. MLflow is
+redacted copies of the bundle, review, and trace. Every run is tagged
+`module=concept_note_builder` and
+`workflow=cnb_funding_opportunity_research`. MLflow is
 best-effort: an unavailable tracking server does not prevent local output.
 
 Each `<run_id>/` contains:

@@ -817,6 +817,7 @@ Energy workflow prompt first, followed by the draft JSON context in
 `Created by` service identity are handled in code.
 
 The offline CNB research CLI tags runs with
+`module=concept_note_builder` and
 `workflow=cnb_funding_opportunity_research`. It records the exact model,
 reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
 artifacts, and the MLflow run ID embedded in local `research_bundle.json`.

@@ -6,10 +6,7 @@
 
 import { createLLMClient, LLMError, LLMErrorCode } from "@/backend/llm";
 import { logger } from "@/services/logger";
-import {
-  getLlmChunkConcurrency,
-  mapPool,
-} from "@/backend/asyncPool";
+import { getLlmChunkConcurrency, mapPool } from "@/backend/asyncPool";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import gpcNameMappings from "@/util/GHGI/data/gpc-name-mappings.json";
@@ -316,6 +313,7 @@ export async function extractInventoryRowsFromDocument(
 
   const withGpc = fillMissingGpcRefNo(allRows);
   let result = fillActivityTypeFromCategory(withGpc);
+  result = fillActivityDataSourceFromSource(result);
 
   if (targetYear != null && Number.isInteger(targetYear)) {
     const before = result.length;
@@ -381,7 +379,9 @@ export const PATH_C_CHUNK_OVERLAP = CHUNK_OVERLAP;
  * Dedupe rows from multiple chunks (overlap can produce duplicates). Use a simple key.
  * Exported for unit tests.
  */
-export function mergeAndDedupeRows(perChunkRows: ExtractedRow[][]): ExtractedRow[] {
+export function mergeAndDedupeRows(
+  perChunkRows: ExtractedRow[][],
+): ExtractedRow[] {
   const seen = new Set<string>();
   const out: ExtractedRow[] = [];
   for (const rows of perChunkRows) {
@@ -822,6 +822,21 @@ function fillActivityTypeFromCategory(rows: ExtractedRow[]): ExtractedRow[] {
   return rows.map((row) => {
     if (row.activityType?.trim()) return row;
     if (row.category?.trim()) return { ...row, activityType: row.category };
+    return row;
+  });
+}
+
+/**
+ * Preserve the generic source field as the canonical activity data source.
+ */
+export function fillActivityDataSourceFromSource(
+  rows: ExtractedRow[],
+): ExtractedRow[] {
+  return rows.map((row) => {
+    if (row.activityDataSource?.trim()) return row;
+    if (row.source?.trim()) {
+      return { ...row, activityDataSource: row.source };
+    }
     return row;
   });
 }

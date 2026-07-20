@@ -72,6 +72,7 @@ def run_funding_opportunity_research(
             run_name=f"cnb-funding-research-{run_id}",
             experiment_name=climate_advisor_experiment_name(),
             tags={
+                "module": "concept_note_builder",
                 "workflow": "cnb_funding_opportunity_research",
                 "run_id": run_id,
                 "review_status": "pending_review",

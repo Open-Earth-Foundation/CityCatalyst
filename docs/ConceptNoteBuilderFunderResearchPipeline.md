@@ -176,8 +176,10 @@ The metadata includes:
 Climate Advisor already contains a best-effort MLflow integration. The CNB CLI
 now starts a run through it. When `MLFLOW_ENABLED=true`, OpenAI autologging,
 parameters, coverage metrics, and redacted bundle/review/trace artifacts are
-recorded in the configured experiment. If MLflow is disabled or unavailable,
-the same local run continues without telemetry.
+recorded in the configured experiment. Runs are tagged
+`module=concept_note_builder` and
+`workflow=cnb_funding_opportunity_research` for clear filtering. If MLflow is
+disabled or unavailable, the same local run continues without telemetry.
 
 ## Local artifacts
 

@@ -361,10 +361,16 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         FakeFirecrawl,
     )
     fake_mlflow_run = SimpleNamespace(info=SimpleNamespace(run_id="mlflow-001"))
+    started_run_kwargs: list[dict[str, object]] = []
+
+    def fake_start_run(**kwargs):
+        started_run_kwargs.append(kwargs)
+        return nullcontext(fake_mlflow_run)
+
     monkeypatch.setattr(
         cnb_research_service,
         "start_run",
-        lambda **_kwargs: nullcontext(fake_mlflow_run),
+        fake_start_run,
     )
     logged_metrics: list[dict[str, float | int]] = []
     logged_json_artifacts: list[str] = []
@@ -423,6 +429,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert bundle.run_metadata.prompt_sha256
     assert logged_metrics[0]["turns_used"] == 1
     assert logged_json_artifacts == ["research_bundle.json"]
+    assert started_run_kwargs[0]["tags"]["module"] == "concept_note_builder"
 
 
 def test_agent_reopens_an_incomplete_structured_checkpoint_for_next_turn() -> None:

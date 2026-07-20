@@ -3,6 +3,7 @@
  */
 import { describe, expect, it } from "@jest/globals";
 import {
+  fillActivityDataSourceFromSource,
   mergeAndDedupeRows,
   PATH_C_CHUNK_OVERLAP,
   PATH_C_CHUNK_SIZE,
@@ -10,6 +11,40 @@ import {
   splitIntoChunks,
   type ExtractedRow,
 } from "@/backend/InventoryExtractionService";
+
+describe("fillActivityDataSourceFromSource", () => {
+  it("uses source when the canonical activity data source is empty", () => {
+    const rows = fillActivityDataSourceFromSource([
+      {
+        year: 2025,
+        sector: "Stationary Energy",
+        subsector: "Residential Buildings",
+        category: "Natural gas",
+        totalCO2e: 10,
+        source: "Utility ledger",
+        activityDataSource: null,
+      },
+    ]);
+
+    expect(rows[0].activityDataSource).toBe("Utility ledger");
+  });
+
+  it("keeps an explicitly extracted activity data source", () => {
+    const rows = fillActivityDataSourceFromSource([
+      {
+        year: 2025,
+        sector: "Stationary Energy",
+        subsector: "Residential Buildings",
+        category: "Natural gas",
+        totalCO2e: 10,
+        source: "Table 5",
+        activityDataSource: "Utility ledger",
+      },
+    ]);
+
+    expect(rows[0].activityDataSource).toBe("Utility ledger");
+  });
+});
 
 describe("splitIntoChunks", () => {
   it("returns a single chunk when content fits in one window", () => {
@@ -44,7 +79,10 @@ describe("mergeAndDedupeRows", () => {
       }) as ExtractedRow;
     const a = row("Energy", 10);
     const b = row("Waste", 20);
-    const merged = mergeAndDedupeRows([[a, b], [b, row("Transport", 30)]]);
+    const merged = mergeAndDedupeRows([
+      [a, b],
+      [b, row("Transport", 30)],
+    ]);
     expect(merged).toHaveLength(3);
   });
 });

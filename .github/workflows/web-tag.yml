@@ -65,11 +65,22 @@ jobs:
           npm run sync-catalogue
           npm run sync-emissions-factors
 
+      - name: Setup Environment Variables
+        run: |
+          echo "NEXT_PUBLIC_API_URL=https://citycatalyst.io" >> .env && \
+          echo "GLOBAL_API_URL=https://api.citycatalyst.io" >> .env && \
+          echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.network" >> .env && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
+          echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env
+
       - name: Run NextJS build
         run: npm run build
 
       - name: Lint the OpenAPI spec
-        run: npm run openapi:lint
+        run: |
+          npm run openapi:build
+          npm run openapi:lint
 
       - name: Run API tests
         run: npm run api:test
@@ -249,6 +260,24 @@ jobs:
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    if: ${{ !contains(github.ref, '-') }}
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/prod/cc-prod-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-prod \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

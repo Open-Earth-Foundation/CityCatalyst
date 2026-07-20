@@ -5,7 +5,6 @@ import { FC } from "react";
 import { UserAttributes } from "@/models/User";
 import { TFunction } from "i18next";
 import AccountDetailsTabPanel from "./AccountDetailsTabPanel";
-import ManageUsersTabPanel from "./ManageUsersTabPanel";
 import ManageCitiesTabPanel from "./ManageCitiesTabPanel";
 import ManagePasswordTabContent from "./ManagePasswordTabContent";
 
@@ -73,30 +72,6 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
                 }}
               >
                 {t("account-details")}
-              </Tabs.Trigger>
-              <Tabs.Trigger
-                value="manage-users"
-                fontFamily="heading"
-                justifyContent={"left"}
-                letterSpacing={"wide"}
-                color="content.secondary"
-                lineHeight="20px"
-                fontStyle="normal"
-                fontSize="label.lg"
-                height="52px"
-                w={"223px"}
-                _selected={{
-                  color: "content.link",
-                  fontSize: "label.lg",
-                  fontWeight: "medium",
-                  backgroundColor: "background.neutral",
-                  borderRadius: "8px",
-                  borderWidth: "1px",
-                  borderStyle: "solid",
-                  borderColor: "content.link",
-                }}
-              >
-                {t("users")}
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="manage-cities"
@@ -177,16 +152,6 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
                 </Text>
               </Box>
               <AccountDetailsTabPanel t={t} userInfo={userInfo} />
-            </Tabs.Content>
-            <Tabs.Content
-              value="manage-users"
-              width="full"
-              padding="24px"
-              display="flex"
-              flexDirection="column"
-              gap="24px"
-            >
-              <ManageUsersTabPanel lng={lng} />
             </Tabs.Content>
             <Tabs.Content
               value="manage-cities"

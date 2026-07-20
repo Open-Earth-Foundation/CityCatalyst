@@ -1,6 +1,8 @@
 {
   "sector-card-let-agent-draft": "Agent drafting",
   "sector-card-review-before-saving": "Review every value before saving",
+  "sector-card-draft-with-agent": "Draft with agent",
+  "sector-card-draft-with-agent-tooltip": "Let Clima draft this sector from your connected data (beta) — you review every value before saving.",
   "legacy-route-unavailable-title": "Stationary Energy draft unavailable",
   "legacy-route-unavailable-description": "The inventory could not be loaded for the documented city-scoped draft route.",
   "selector-unknown-year": "Unknown year",

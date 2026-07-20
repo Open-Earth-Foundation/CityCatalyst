@@ -156,7 +156,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
  *       - organizations
  *     operationId: deleteOrganization
  *     summary: Delete an organization (admin only).
- *     description: Deletes an organization unless it is the default. Requires an admin session. Response is { deleted: true } on success.
+ *     description: "Deletes an organization unless it is the default. Requires an admin session. Response is { deleted: true } on success."
  *     parameters:
  *       - in: path
  *         name: organization

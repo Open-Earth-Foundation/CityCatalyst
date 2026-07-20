@@ -118,6 +118,13 @@ def test_mlflow_run_user_defaults_and_overrides(monkeypatch) -> None:
     assert mlflow_logging.mlflow_run_user() == "ca-local-smoke"
 
 
+def test_mlflow_experiment_name_matches_active_server_name(monkeypatch) -> None:
+    """The default preserves the case-sensitive active MLflow experiment name."""
+    monkeypatch.delenv("MLFLOW_EXPERIMENT_NAME", raising=False)
+
+    assert mlflow_logging.climate_advisor_experiment_name() == "Clima"
+
+
 def test_live_span_set_tag_compatibility_uses_span_attributes(monkeypatch) -> None:
     """OpenAI Agents tracing should work with MLflow builds missing LiveSpan.set_tag."""
 

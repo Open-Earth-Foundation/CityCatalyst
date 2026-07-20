@@ -413,7 +413,7 @@ language, or client-side fallback behavior. The boundary is:
   `https://mlflow-dev.openearth.dev`
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
-  default `clima`
+  default `Clima`
 - `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
   match the shared HIAP-MEED fail-open tuning
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
@@ -761,9 +761,9 @@ HIAP-MEED. The split is experiment-based between services, and tag-based inside
 Climate Advisor:
 
 - `hiap-meed` remains the existing HIAP-MEED experiment
-- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+- `Clima` stores all Climate Advisor runs, including general `/v1/messages`
   chat, Stationary Energy draft, review, save, background generation, and
-  draft-context chat runs
+  draft-context chat runs, plus offline CNB funding-opportunity research
 
 Each run includes tags such as `service`, `environment`, `workflow`,
 `prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
@@ -788,6 +788,11 @@ Energy workflow prompt first, followed by the draft JSON context in
 `<context>...</context>`. Other operational defaults such as the MLflow
 `Created by` service identity are handled in code.
 
+The offline CNB research CLI tags runs with
+`workflow=cnb_funding_opportunity_research`. It records the exact model,
+reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
+artifacts, and the MLflow run ID also written to local `run_metadata.json`.
+
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
 because the value is a non-sensitive experiment name. The Kubernetes manifests
@@ -797,7 +802,7 @@ GitHub.
 Before enabling MLflow in an environment:
 
 1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
-2. Confirm or create the experiment named `clima`.
+2. Confirm or create the experiment named `Clima`.
 3. Set the MLflow environment variables documented above in `.env` or the
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth

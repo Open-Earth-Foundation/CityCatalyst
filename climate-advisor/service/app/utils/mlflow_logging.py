@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+import io
 import logging
 import os
 import re
 import time
 from collections.abc import Mapping, Sequence
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stdout
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
@@ -23,7 +24,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
-DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "clima"
+DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "Clima"
 DEFAULT_MLFLOW_RUN_USER = "climate-advisor"
 MLFLOW_INIT_RETRY_COOLDOWN_SECONDS = 60.0
 REDACTED_VALUE = "[REDACTED]"
@@ -242,11 +243,14 @@ def start_run(
         raise
     finally:
         try:
-            run_context.__exit__(
-                exit_exception_type,
-                exit_exception,
-                exit_traceback,
-            )
+            # MLflow prints emoji links while closing. Redirect only that library
+            # output so Windows cp1250 consoles cannot leave completed runs open.
+            with redirect_stdout(io.StringIO()):
+                run_context.__exit__(
+                    exit_exception_type,
+                    exit_exception,
+                    exit_traceback,
+                )
         except Exception as error:
             logger.warning(
                 "MLflow not running or unavailable while closing run run_name=%s experiment=%s nested=%s error=%s",

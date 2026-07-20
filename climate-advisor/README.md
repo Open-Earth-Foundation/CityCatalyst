@@ -79,7 +79,7 @@ findings, then save a local `<run_id>.review-update.json`. Technical reference
 fields remain preserved in the update but are hidden from the reviewer. The
 editor does not modify the bundle or write to the database. The proposed future
 authenticated database-save boundary is documented in
-`../docs/ConceptNoteBuilderFunderResearchPipeline.md`.
+`scripts/cnb_research/README.md`.
 
 The tracked reference output is
 `output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`.

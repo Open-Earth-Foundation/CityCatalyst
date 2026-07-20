@@ -400,6 +400,44 @@ class CityCatalystClient:
             headers["Authorization"] = f"Bearer {token}"
         return headers
 
+    async def validate_user_identity(self, token: str) -> str:
+        """Validate a CC-issued bearer token and return its canonical user ID."""
+        if not self.base_url:
+            raise CityCatalystClientError(
+                "CC_BASE_URL not configured",
+                status_code=503,
+            )
+        client = await self._get_client()
+        try:
+            response = await client.post(
+                f"{self.base_url}/api/v1/internal/ca/auth/identity",
+                headers=self._internal_headers(token),
+                follow_redirects=True,
+            )
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "CC identity validation unavailable",
+                status_code=503,
+            ) from exc
+        if not response.is_success:
+            raise CityCatalystClientError(
+                "CC bearer token is invalid",
+                status_code=response.status_code,
+            )
+        try:
+            user_id = response.json().get("user_id")
+        except ValueError as exc:
+            raise CityCatalystClientError(
+                "CC identity response is invalid",
+                status_code=503,
+            ) from exc
+        if not isinstance(user_id, str) or not user_id:
+            raise CityCatalystClientError(
+                "CC identity response is invalid",
+                status_code=503,
+            )
+        return user_id
+
     async def post_internal_capability(
         self,
         path: str,

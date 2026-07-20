@@ -8,9 +8,7 @@ const packageInfo = JSON.parse(packageJson);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
-  // Keep PDF parsers outside Turbopack/webpack bundles. pdf-parse's vendored pdf.js
-  // historically produced "bad XRef entry" when bundled; unpdf is the Path C extractor.
-  serverExternalPackages: ["sequelize", "unpdf"],
+  serverExternalPackages: ["sequelize"],
   turbopack: {
     rules: {},
   },

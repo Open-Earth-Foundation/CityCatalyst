@@ -3,7 +3,9 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { Readable } from "node:stream";
 import { logger } from "@/services/logger";
 
@@ -29,6 +31,18 @@ function assertConfigured(): void {
         "Configure it to enable S3-backed file storage for inventory imports.",
     );
   }
+}
+
+async function bodyToBuffer(body: unknown): Promise<Buffer> {
+  const stream = body as Readable;
+  return new Promise<Buffer>((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    stream.on("data", (chunk: Buffer | Uint8Array) =>
+      chunks.push(Buffer.from(chunk)),
+    );
+    stream.on("end", () => resolve(Buffer.concat(chunks)));
+    stream.on("error", reject);
+  });
 }
 
 /**
@@ -78,7 +92,9 @@ export default class InventoryFileStorageService {
   }): Promise<Buffer | null> {
     if (importedFile.s3Key) {
       try {
-        return await InventoryFileStorageService.getFileBuffer(importedFile.s3Key);
+        return await InventoryFileStorageService.getFileBuffer(
+          importedFile.s3Key,
+        );
       } catch (err) {
         logger.error(
           { err, s3Key: importedFile.s3Key },
@@ -105,13 +121,58 @@ export default class InventoryFileStorageService {
       new GetObjectCommand({ Bucket: BUCKET!, Key: s3Key }),
     );
 
-    const stream = response.Body as Readable;
-    return new Promise<Buffer>((resolve, reject) => {
-      const chunks: Buffer[] = [];
-      stream.on("data", (chunk: Buffer) => chunks.push(chunk));
-      stream.on("end", () => resolve(Buffer.concat(chunks)));
-      stream.on("error", reject);
-    });
+    return bodyToBuffer(response.Body);
+  }
+
+  static async getFilePrefix(
+    s3Key: string,
+    byteCount: number,
+  ): Promise<Buffer> {
+    assertConfigured();
+    const response = await getS3Client().send(
+      new GetObjectCommand({
+        Bucket: BUCKET!,
+        Key: s3Key,
+        Range: `bytes=0-${Math.max(0, byteCount - 1)}`,
+      }),
+    );
+    return bodyToBuffer(response.Body);
+  }
+
+  static async getFileMetadata(s3Key: string) {
+    assertConfigured();
+    return getS3Client().send(
+      new HeadObjectCommand({ Bucket: BUCKET!, Key: s3Key }),
+    );
+  }
+
+  static async createSignedDownloadUrl(
+    s3Key: string,
+    expiresIn: number,
+  ): Promise<string> {
+    assertConfigured();
+    return getSignedUrl(
+      getS3Client(),
+      new GetObjectCommand({ Bucket: BUCKET!, Key: s3Key }),
+      { expiresIn },
+    );
+  }
+
+  static async putTextFile(s3Key: string, text: string): Promise<void> {
+    assertConfigured();
+    await getS3Client().send(
+      new PutObjectCommand({
+        Bucket: BUCKET!,
+        Key: s3Key,
+        Body: Buffer.from(text, "utf8"),
+        ContentType: "text/markdown; charset=utf-8",
+        ServerSideEncryption: "AES256",
+      }),
+    );
+  }
+
+  static async getTextFile(s3Key: string): Promise<string> {
+    return (await this.getFileBuffer(s3Key)).toString("utf8");
   }
 
   /**

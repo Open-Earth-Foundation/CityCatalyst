@@ -6,12 +6,19 @@ import {
   Card,
   Heading,
   Spinner,
+  Table,
   Text,
   VStack,
   HStack,
   Icon,
 } from "@chakra-ui/react";
 import { api } from "@/services/api";
+import { Trans } from "react-i18next";
+import { Button } from "@/components/ui/button";
+import { MdEdit, MdEditSquare, MdOutlineMap, MdOutlineModeEdit } from "react-icons/md";
+import { BiEdit } from "react-icons/bi";
+import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
+import { LuRows4 } from "react-icons/lu";
 
 interface ReviewConfirmStepProps {
   t: TFunction;
@@ -20,6 +27,7 @@ interface ReviewConfirmStepProps {
   inventoryId: string;
   importedFileId: string;
   onImport: () => void;
+  onEditMapping?: () => void;
 }
 
 export default function ReviewConfirmStep({
@@ -28,6 +36,7 @@ export default function ReviewConfirmStep({
   cityName,
   importedFileId,
   onImport,
+  onEditMapping,
   inventoryId,
 }: ReviewConfirmStepProps) {
   const { data, isLoading } = api.useGetImportStatusQuery(
@@ -105,6 +114,7 @@ export default function ReviewConfirmStep({
       .map((col: any) => ({
         sourceColumn: col.columnName,
         mappedField: col.interpretedAs,
+        sampleValue: col.exampleValue || null,
       })) ||
     [];
 
@@ -116,113 +126,93 @@ export default function ReviewConfirmStep({
             {cityName}
           </Text>
         )}
-        <Heading size="lg">{t("review-confirm-heading")}</Heading>
-        <Text fontSize="body.lg" color="content.tertiary">
-          {t("review-confirm-description")}
+        <Heading size="lg" fontSize="display.sm">{t("review-confirm-heading")}</Heading>
+        <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
+          <Trans i18nKey="review-confirm-description" t={t}>
+            Please <Text as="span" fontWeight="bold">carefully review all fields</Text> and confirm the upload since you won&apos;t be able to modify it later on.
+          </Trans>
         </Text>
       </Box>
-
-      <HStack gap="24px" alignItems="flex-start" mb={8}>
-        <Card.Root
-          px={6}
-          py={8}
-          shadow="none"
-          bg="white"
-          flex="1"
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="border.default"
-        >
-          <Heading size="md" mb={6}>
-            {t("import-summary")}
-          </Heading>
-          <VStack gap="16px" alignItems="flex-start">
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("source-file")}
-              </Text>
-              <Text
-                fontWeight={importSummary.sourceFile ? "medium" : undefined}
-                color={
-                  importSummary.sourceFile ? undefined : "content.tertiary"
-                }
-              >
-                {importSummary.sourceFile || t("not-specified")}
-              </Text>
+      <VStack gap="32px" shadow="sm" borderRadius="8px" p="24px" mb="32px">
+        <HStack justifyContent="space-between" alignItems="flex-start" w="full">
+          <Box display="flex" alignItems="flex-start" gap="4px">
+            <Icon as={ConfirmDocumentIcon} w={8} h={8} />
+            <VStack alignItems='flex-start' gap="4px">
+              <Text fontSize="headline.sm" fontWeight="bold">{importSummary.sourceFile}</Text>
+              <Text fontSize="body.sm" color="content.tertiary">{t("file-name")}</Text>
+            </VStack>
+          </Box>
+          <Button p="24px" onClick={onEditMapping}>
+            <Icon as={EditIconOutlineSquare} />
+            {t('edit-mapping')}
+          </Button>
+        </HStack>
+        <HStack w="full" alignItems="flex-start" gap="16px">
+          <HStack w="174px" alignItems="flex-start">
+            <Box display="flex" alignItems="flex-start" gap="4px">
+              <Icon as={LuRows4} boxSize={6} color="content.tertiary" mt="2px"/>
+              <VStack alignItems='flex-start' gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">{importSummary.rowsFound}</Text>
+                <Text fontSize="body.sm" color="content.tertiary">{t("rows-in-file")}</Text>
+              </VStack>
             </Box>
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("format-detected")}
-              </Text>
-              <Text
-                fontWeight={
-                  importSummary.formatDetected ? "medium" : undefined
-                }
-                color={
-                  importSummary.formatDetected ? undefined : "content.tertiary"
-                }
-              >
-                {importSummary.formatDetected || t("not-specified")}
-              </Text>
+          </HStack>
+          <HStack w="174px" alignItems="flex-start">
+            <Box display="flex" alignItems="flex-start" gap="4px">
+              <Icon as={MdOutlineMap} boxSize={6} color="content.tertiary" mt="2px"/>
+              <VStack alignItems='flex-start' gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">{importSummary.fieldsMapped}</Text>
+                <Text fontSize="body.sm" color="content.tertiary">{t("fields-mapped-in-file")}</Text>
+              </VStack>
             </Box>
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("rows-found")}
-              </Text>
-              <Text fontWeight="medium">{importSummary.rowsFound}</Text>
-            </Box>
-            <Box w="full">
-              <Text fontSize="body.sm" color="content.tertiary" mb={1}>
-                {t("fields-mapped")}
-              </Text>
-              <Text fontWeight="medium">{importSummary.fieldsMapped}</Text>
-            </Box>
-          </VStack>
-        </Card.Root>
-
-        <Card.Root
-          px={6}
-          py={8}
-          shadow="none"
-          bg="white"
-          flex="1"
-          borderRadius="lg"
-          borderWidth="1px"
-          borderColor="border.default"
-        >
-          <Heading size="md" mb={6}>
-            {t("field-mappings")}
-          </Heading>
-          <VStack
-            gap="12px"
-            alignItems="flex-start"
-            maxH="400px"
-            overflowY="auto"
-          >
+          </HStack>
+        </HStack>
+      </VStack>
+      <Box
+        w="full"
+        borderWidth="1px"
+        borderColor="border.default"
+        borderRadius="lg"
+        overflow="hidden"
+        mb={8}
+      >
+        <Table.Root>
+          <Table.Header>
+            <Table.Row>
+              <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("map-to")}</Table.ColumnHeader>
+            </Table.Row>
+          </Table.Header>
+          <Table.Body>
             {fieldMappings && fieldMappings.length > 0 ? (
               fieldMappings.map((mapping: any, index: number) => (
-                <Box
-                  key={index}
-                  w="full"
-                  display="flex"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  py={2}
-                  borderBottomWidth="1px"
-                  borderColor="border.overlay"
-                >
-                  <Text fontWeight="medium">{mapping.sourceColumn}</Text>
-                  <Text color="content.secondary">{mapping.mappedField}</Text>
-                </Box>
+                <Table.Row key={index} h="72px">
+                  <Table.Cell>
+                    <Text fontWeight="medium">{mapping.sourceColumn}</Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text color={mapping.sampleValue ? "content.secondary" : "content.tertiary"}>
+                      {mapping.sampleValue || t("not-specified")}
+                    </Text>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Text color="content.secondary">{mapping.mappedField}</Text>
+                  </Table.Cell>
+                </Table.Row>
               ))
             ) : (
-              <Text color="content.tertiary" fontSize="body.sm">
-                {t("no-field-mappings")}
-              </Text>
+              <Table.Row>
+                <Table.Cell colSpan={3}>
+                  <Text color="content.tertiary" fontSize="body.sm">
+                    {t("no-field-mappings")}
+                  </Text>
+                </Table.Cell>
+              </Table.Row>
             )}
-          </VStack>
-        </Card.Root>
-      </HStack>
+          </Table.Body>
+        </Table.Root>
+      </Box>
     </Box>
   );
 }

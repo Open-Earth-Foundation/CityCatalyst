@@ -536,6 +536,11 @@ const JNDrawer = ({
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
   const [selectedCity, setSelectedCity] = React.useState<string>("");
 
+  // Prefer explicit org context, then access-status prop, then first accessible project.
+  const resolvedOrganizationId =
+    organizationId ||
+    projectsData?.find((project) => project.organizationId)?.organizationId;
+
   // Module data fetching
   const { data: allModules, isLoading: isAllModulesLoading } =
     useGetModulesQuery();
@@ -639,7 +644,9 @@ const JNDrawer = ({
                   {
                     label: "all-projects",
                     icon: LuLayoutGrid,
-                    href: `/${lng}/organization/${organizationId}/project`,
+                    href: resolvedOrganizationId
+                      ? `/${lng}/organization/${resolvedOrganizationId}/project`
+                      : `/${lng}/cities`,
                   },
                 ]}
                 t={t}

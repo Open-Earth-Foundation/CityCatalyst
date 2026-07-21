@@ -6,7 +6,7 @@
  *       - internal
  *     operationId: postInternalCaInventoryListAccessible
  *     summary: List accessible GHGI inventories for Climate Advisor
- *     description: Internal Climate Advisor capability route. Requires service-to-service headers plus a user-scoped bearer token, then returns the city/year inventories the authenticated user can access.
+ *     description: Internal Climate Advisor capability route. Requires service-to-service headers plus a user-scoped bearer token, then returns the city/year inventories the authenticated user can access, including organization/project metadata and a by_project breakdown for Clima summaries.
  *     parameters:
  *       - in: header
  *         name: X-Service-Name
@@ -52,7 +52,10 @@
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
-import { buildAccessibleInventoryList } from "@/backend/agentic/ghgi/inventory/context";
+import {
+  buildAccessibleInventoryList,
+  summarizeAccessibleInventoryList,
+} from "@/backend/agentic/ghgi/inventory/context";
 import {
   INVENTORY_LIST_ACCESSIBLE_CAPABILITY,
   inventoryListAccessibleInputSchema,
@@ -96,6 +99,9 @@ export const POST = apiHandler(async (req, { session }) => {
   });
 });
 
+/**
+ * Drop inventories the session cannot access, then rebuild totals/`by_project`.
+ */
 async function filterByInventoryPermission(
   session: AppSession | null,
   list: AccessibleInventoryList,
@@ -122,15 +128,11 @@ async function filterByInventoryPermission(
 
   const permittedCities = cities.filter((city) => city.inventories.length > 0);
 
-  return {
-    ...list,
-    cities: permittedCities,
-    total_cities: permittedCities.length,
-    total_inventories: permittedCities.reduce(
-      (sum, city) => sum + city.inventories.length,
-      0,
-    ),
-  };
+  return summarizeAccessibleInventoryList(
+    permittedCities,
+    list.access_scope,
+    list.filters,
+  );
 }
 
 async function canAccessInventory(

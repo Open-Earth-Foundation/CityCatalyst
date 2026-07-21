@@ -14,6 +14,9 @@ from app.modules.prioritizer.llm_config import (
     is_explanations_enabled,
 )
 from app.modules.prioritizer.internal_models import ScoredAction
+from app.modules.prioritizer.utils.co_benefit_taxonomy import (
+    CO_BENEFIT_DISPLAY_LABELS,
+)
 from app.services.openai_client import create_openai_client
 
 logger = logging.getLogger(__name__)
@@ -58,15 +61,6 @@ GPC_SUBSECTOR_DISPLAY_LABELS: dict[str, str] = {
     "V.1": "livestock",
     "V.2": "land",
     "V.3": "aggregate sources and non-CO2 emissions on land",
-}
-CO_BENEFIT_DISPLAY_LABELS: dict[str, str] = {
-    "air_quality": "air quality",
-    "cost_of_living": "cost of living",
-    "habitat": "habitat",
-    "housing": "housing",
-    "mobility": "mobility",
-    "stakeholder_engagement": "stakeholder engagement",
-    "water_quality": "water quality",
 }
 FEASIBILITY_COMPONENT_LABELS: dict[str, str] = {
     "legal": "legal feasibility",

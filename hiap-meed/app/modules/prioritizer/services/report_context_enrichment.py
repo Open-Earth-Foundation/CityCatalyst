@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from app.modules.prioritizer.internal_models import Action
+import logging
+
+from app.modules.prioritizer.internal_models import (
+    Action,
+    ClimateFinanceReportEvidenceFetchResult,
+)
 from app.modules.prioritizer.models import CityActionReportApiRequest
 from app.modules.prioritizer.report_context import (
     build_report_context,
@@ -25,6 +30,9 @@ from app.services.data_clients import (
     S3LegalDataApiClient,
     describe_legal_data_source,
 )
+from app.services.http_client import UpstreamApiError
+
+logger = logging.getLogger(__name__)
 
 
 def build_report_context_with_live_enrichment(
@@ -76,6 +84,14 @@ def build_report_context_with_live_enrichment(
             locode, country_code
         )
     )
+    financial_record = financial_result.scores_by_action_id.get(action.action_id)
+    finance_evidence = _fetch_report_finance_evidence(
+        client=action_financial_feasibility_scores_data_api_client,
+        action_id=action.action_id,
+        country_code=country_code,
+        sector=financial_record.sector if financial_record else None,
+        route=financial_record.route if financial_record else None,
+    )
 
     # Step 2: keep source metadata separate from report facts.
     source_metadata = {
@@ -87,6 +103,7 @@ def build_report_context_with_live_enrichment(
         ),
         "mitigation_feasibility": mitigation_result.source_metadata,
         "financial_feasibility": financial_result.source_metadata,
+        "finance_catalogues": finance_evidence.source_metadata,
     }
 
     return build_report_context(
@@ -98,11 +115,44 @@ def build_report_context_with_live_enrichment(
         mitigation_feasibility=mitigation_result.scores_by_action_id.get(
             action.action_id
         ),
-        financial_feasibility=financial_result.scores_by_action_id.get(
-            action.action_id
-        ),
+        financial_feasibility=financial_record,
+        finance_opportunities=finance_evidence.opportunities,
+        comparable_projects=finance_evidence.projects,
         source_metadata=source_metadata,
     )
+
+
+def _fetch_report_finance_evidence(
+    *,
+    client: MockActionFinancialFeasibilityScoresDataApiClient
+    | ApiActionFinancialFeasibilityScoresDataApiClient,
+    action_id: str,
+    country_code: str,
+    sector: str | None,
+    route: str | None,
+) -> ClimateFinanceReportEvidenceFetchResult:
+    """Fetch selected-action finance details when the injected client supports it."""
+    fetch_evidence = getattr(client, "get_report_finance_evidence", None)
+    if fetch_evidence is None:
+        return ClimateFinanceReportEvidenceFetchResult(
+            warnings=["The finance client does not provide detailed report evidence."]
+        )
+    try:
+        return fetch_evidence(
+            action_id=action_id,
+            country_code=country_code,
+            sector=sector,
+            route=route,
+        )
+    except UpstreamApiError as error:
+        logger.warning(
+            "Detailed report finance evidence unavailable action_id=%s error=%s",
+            action_id,
+            error,
+        )
+        return ClimateFinanceReportEvidenceFetchResult(
+            warnings=["Detailed finance opportunities and precedents are unavailable."]
+        )
 
 
 def _find_action(actions: list[Action], action_id: str) -> Action:

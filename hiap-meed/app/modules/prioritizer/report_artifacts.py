@@ -44,10 +44,12 @@ def build_output_plan_markdown(response: CityActionReportApiResponse) -> str:
         chapter_markdown = chapter.markdown.strip()
         if not chapter_markdown:
             continue
-        if not chapter_markdown.startswith("#"):
-            parts.extend([f"## {chapter.title}", "", chapter_markdown, ""])
+        expected_heading = f"## {chapter.title}"
+        first_line = chapter_markdown.splitlines()[0].strip()
+        if first_line.casefold() == expected_heading.casefold():
+            parts.extend([chapter_markdown, ""])
             continue
-        parts.extend([chapter_markdown, ""])
+        parts.extend([expected_heading, "", chapter_markdown, ""])
     return "\n".join(parts).rstrip() + "\n"
 
 

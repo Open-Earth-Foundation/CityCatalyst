@@ -880,6 +880,7 @@ class ActionPolicyEvidence(BaseModel):
     page: int | None = None
     evidence_strength: float | None = None
     evidence_text: str | None = None
+    link: str | None = None
 
 
 class ActionPolicyScoreApiItem(BaseModel):
@@ -982,6 +983,86 @@ class ActionFinancialFeasibilityScoresApiResponse(BaseModel):
 
     meta: ActionFinancialFeasibilityScoresApiMeta
     data: list[ActionFinancialFeasibilityScoreApiItem] = Field(default_factory=list)
+
+
+class ClimateFinanceCatalogueDataSource(BaseModel):
+    """Public datasource attribution returned by climate-finance catalogues."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    publisher_name: str | None = None
+    publisher_url: str | None = None
+    dataset_name: str | None = None
+    dataset_url: str | None = None
+
+
+class ClimateFinanceOpportunitiesApiMeta(BaseModel):
+    """Metadata returned by the climate-finance opportunities endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    count: int | None = None
+    datasources: list[ClimateFinanceCatalogueDataSource] = Field(default_factory=list)
+
+
+class ClimateFinanceOpportunityApiItem(BaseModel):
+    """One named financing opportunity returned by the upstream catalogue."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    opportunity_name: str
+    funder_name: str | None = None
+    instrument: str | None = None
+    status: str | None = None
+    status_as_of: str | None = None
+    recurrence: str | None = None
+    source_url: str | None = None
+    amount_note: str | None = None
+    city_application: list[str] = Field(default_factory=list)
+    climate_relevance: str | None = None
+
+
+class ClimateFinanceOpportunitiesApiResponse(BaseModel):
+    """Response model for named climate-finance opportunities."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ClimateFinanceOpportunitiesApiMeta
+    data: list[ClimateFinanceOpportunityApiItem] = Field(default_factory=list)
+
+
+class ClimateFinanceProjectsApiMeta(BaseModel):
+    """Metadata returned by the comparable climate-projects endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    total: int | None = None
+    count: int | None = None
+    datasources: list[ClimateFinanceCatalogueDataSource] = Field(default_factory=list)
+
+
+class ClimateFinanceProjectApiItem(BaseModel):
+    """One comparable project returned by the upstream catalogue."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    project_name: str
+    project_name_i18n: dict[str, str] = Field(default_factory=dict)
+    jurisdiction: str | None = None
+    lifecycle_stage: str | None = None
+    funding_channel: str | None = None
+    funding_sources: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ClimateFinanceProjectsApiResponse(BaseModel):
+    """Response model for selected-action comparable climate projects."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ClimateFinanceProjectsApiMeta
+    data: list[ClimateFinanceProjectApiItem] = Field(default_factory=list)
 
 
 class ActionLegalAssessmentApiItem(BaseModel):

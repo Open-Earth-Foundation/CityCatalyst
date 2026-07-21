@@ -82,7 +82,7 @@ authenticated database-save boundary is documented in
 `scripts/cnb_research/README.md`.
 
 The tracked reference output is
-`output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`.
+`output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.
 
 Research bundles use schema version `2.0`. They mirror the CNB architecture with
 one funder, one shared `funding_records` collection distinguished by

@@ -15,7 +15,7 @@ scripts/cnb_research/
 `-- review.js
 
 output/cnb_research/
-|-- 9023c3d6-8581-4e7b-91d1-b65db544559b/
+|-- ef602f2c-f47d-4384-b079-5fdfde085ad4/
 |   `-- research_bundle.json       # Tracked EUCF reference bundle
 `-- <run_id>/                      # Other generated artifacts; ignored by Git
 ```
@@ -118,9 +118,10 @@ CNB tables directly.
 
 ## Tracked reference bundle
 
-`output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`
+`output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`
 is the single tracked live-run output. It contains the European City Facility
-(EUCF) Call 7 confirmation result produced on 2026-07-21 with Firecrawl and the
-configured `gpt-5.6-terra` medium-reasoning model: 2 funding records, 5 sources,
-31 evidence records, 9 criteria, and 18 declared gaps. All other generated run
-artifacts remain local and ignored.
+(EUCF) Call 7 result produced on 2026-07-21 with Firecrawl and the configured
+`gpt-5.6-terra` medium-reasoning model, then manually curated against its
+official sources: 2 funding records, 1 application-form structure, 5 sources,
+38 evidence records, 9 criteria, and 5 deliberately retained gaps. All other
+generated run artifacts remain local and ignored.

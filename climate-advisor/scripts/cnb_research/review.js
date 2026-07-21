@@ -5,6 +5,12 @@
     "funding_record_ref", "criterion_ref", "template_ref", "chapter_ref",
     "funder_ref",
   ];
+  const COLLECTION_IDENTITY_KEYS = {
+    funding_records: "funding_record_ref",
+    funder_criteria: "criterion_ref",
+    funder_templates: "template_ref",
+    chapter_schema: "chapter_ref",
+  };
   const NUMBER_KEYS = new Set([
     "weight", "min_award", "max_award", "award_amount", "award_year",
   ]);
@@ -224,7 +230,10 @@
       return;
     }
     values.forEach((record, index) => {
-      const identity = IDENTITY_KEYS.find((field) => record[field]);
+      const collectionIdentity = COLLECTION_IDENTITY_KEYS[key];
+      const identity = collectionIdentity && record[collectionIdentity]
+        ? collectionIdentity
+        : IDENTITY_KEYS.find((field) => record[field]);
       const stableId = identity ? record[identity] : index;
       const recordPath = `${path}[${stableId}]`;
       const { group, content } = disclosureGroup(

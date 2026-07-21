@@ -114,6 +114,16 @@ async function countInventoriesForProjects(
   });
 }
 
+/** Count distinct cities in the given project ids. */
+async function countCitiesForProjects(projectIds: string[]): Promise<number> {
+  if (projectIds.length === 0) {
+    return 0;
+  }
+  return db.models.City.count({
+    where: { projectId: { [Op.in]: projectIds } },
+  });
+}
+
 /** Count inventories for cities explicitly assigned to a collaborator. */
 async function countCollaboratorInventories(userId: string): Promise<{
   inventoryCount: number;
@@ -179,7 +189,11 @@ async function validateRoleAccess() {
     const orgProjectIds = orgProjects.map((project) => project.projectId);
     const orgInventoryCount =
       await countInventoriesForProjects(orgProjectIds);
+    const orgCityCount = await countCitiesForProjects(orgProjectIds);
     const projectAdminInventoryCount = await countInventoriesForProjects([
+      projectAdminProjectId,
+    ]);
+    const projectAdminCityCount = await countCitiesForProjects([
       projectAdminProjectId,
     ]);
 
@@ -252,10 +266,10 @@ async function validateRoleAccess() {
           `total_inventories=${list.total_inventories}, expected ${projectAdminInventoryCount}`,
         );
       }
-      if (list.total_cities !== projectAdminInventoryCount) {
+      if (list.total_cities !== projectAdminCityCount) {
         ok = false;
         details.push(
-          `total_cities=${list.total_cities}, expected ${projectAdminInventoryCount}`,
+          `total_cities=${list.total_cities}, expected ${projectAdminCityCount}`,
         );
       }
       const onlyExpectedProject =
@@ -297,10 +311,10 @@ async function validateRoleAccess() {
           `total_inventories=${list.total_inventories}, expected ${orgInventoryCount}`,
         );
       }
-      if (list.total_cities !== orgInventoryCount) {
+      if (list.total_cities !== orgCityCount) {
         ok = false;
         details.push(
-          `total_cities=${list.total_cities}, expected ${orgInventoryCount}`,
+          `total_cities=${list.total_cities}, expected ${orgCityCount}`,
         );
       }
       if (list.by_project.length !== orgProjects.length) {

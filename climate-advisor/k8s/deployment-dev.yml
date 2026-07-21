@@ -37,7 +37,7 @@ spec:
             - name: MLFLOW_ENVIRONMENT
               value: "dev"
             - name: MLFLOW_EXPERIMENT_NAME
-              value: "clima"
+              value: "Clima"
             - name: MLFLOW_HTTP_REQUEST_TIMEOUT
               value: "3"
             - name: MLFLOW_HTTP_REQUEST_MAX_RETRIES

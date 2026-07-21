@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.22.0-dev.0",
+  "version": "1.24.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -35,6 +35,8 @@
     "email": "email dev --dir src/lib/emails",
     "create-admin": "tsx scripts/create-admin.ts",
     "upsert-ca-smoke-fixture": "tsx scripts/upsert-ca-smoke-fixture.ts",
+    "upsert-ca-role-fixtures": "tsx scripts/upsert-ca-role-fixtures.ts",
+    "validate-ca-inventory-access-by-role": "tsx scripts/validate-ca-inventory-access-by-role.ts",
     "update-brazil-emissions": "tsx scripts/update-country-emissions.ts",
     "generate:changelog": "node scripts/generate-changelog.js",
     "upgrade:ui": "npm uninstall @emotion/styled framer-motion && npm install @chakra-ui/react@latest @emotion/react@latest",

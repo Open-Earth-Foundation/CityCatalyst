@@ -11,6 +11,9 @@ models:
     name: "openai/gpt-5.4"
     description: "Agentic flow model for high-context review and source selection workflows."
     temperature: 0.0
+  funding_research:
+    name: "gpt-5.6-terra"
+    reasoning_effort: "medium"
 
 # Generation Parameters
 generation:
@@ -34,6 +37,9 @@ prompts:
 
   # Prompt for active Stationary Energy review chat flows
   stationary_energy_review: "prompts/stationary_energy_review.md"
+
+  # Offline Concept Note Builder funder and program research
+  cnb_funding_opportunity_research: "prompts/cnb_funding_opportunity_research.md"
 
 # API Configuration
 api:
@@ -63,6 +69,11 @@ api:
 
 # Tool Configuration
 tools:
+  # Offline Concept Note Builder web research
+  firecrawl:
+    base_url: "https://api.firecrawl.dev/v2"
+    timeout_seconds: 120
+
   # Climate Vector Search Tool
   climate_vector_search:
     enabled: true

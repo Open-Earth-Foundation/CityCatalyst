@@ -30,13 +30,33 @@ type AccessibleInventoryCity = {
   country: string | null;
   region: string | null;
   locode: string | null;
+  project_id: string | null;
+  project_name: string | null;
+  organization_id: string | null;
+  organization_name: string | null;
   inventories: AccessibleInventory[];
+};
+
+type AccessibleInventoryProjectBreakdown = {
+  organization_id: string | null;
+  organization_name: string | null;
+  project_id: string | null;
+  project_name: string | null;
+  total_cities: number;
+  total_inventories: number;
 };
 
 type AccessibleInventoryList = {
   cities: AccessibleInventoryCity[];
   total_cities: number;
   total_inventories: number;
+  /** Aggregated city/inventory counts grouped by organization + project. */
+  by_project: AccessibleInventoryProjectBreakdown[];
+  /**
+   * `platform` = system/super admin (all cities); `projects` = scoped via
+   * project/org admin or city membership.
+   */
+  access_scope: "platform" | "projects";
   filters: {
     city_query: string | null;
     year: number | null;
@@ -58,6 +78,10 @@ type InventoryListCity = {
   country?: string | null;
   region?: string | null;
   locode?: string | null;
+  projectId?: string | null;
+  projectName?: string | null;
+  organizationId?: string | null;
+  organizationName?: string | null;
   inventories?: InventoryListInventory[];
 };
 
@@ -165,6 +189,14 @@ const SECTOR_REFERENCE_BY_DB_NAME: Record<string, string> = {
   "Agriculture, Forestry, and Other Land Use (AFOLU)": "V",
 };
 
+/**
+ * List inventories the user can access, with org/project metadata for Clima
+ * breakdown answers ("you have access to …").
+ *
+ * System admins (`Roles.Admin`) get platform-wide cities (`access_scope:
+ * "platform"`). Everyone else uses `ProjectService.fetchUserProjects`
+ * (`access_scope: "projects"`).
+ */
 export async function buildAccessibleInventoryList({
   userId,
   cityQuery,
@@ -185,6 +217,8 @@ export async function buildAccessibleInventoryList({
     throw new createHttpError.NotFound("User not found");
   }
 
+  const accessScope: AccessibleInventoryList["access_scope"] =
+    user.role === Roles.Admin ? "platform" : "projects";
   const normalizedQuery = normalizeSearch(cityQuery);
   const cities = (await candidateCitiesForUser(user.userId, user.role))
     .filter((city) => cityMatchesQuery(city, normalizedQuery))
@@ -192,6 +226,22 @@ export async function buildAccessibleInventoryList({
     .filter((city) => city.inventories.length > 0)
     .sort((a, b) => citySortLabel(a).localeCompare(citySortLabel(b)));
 
+  return summarizeAccessibleInventoryList(cities, accessScope, {
+    city_query: cityQuery?.trim() || null,
+    year: year ?? null,
+    include_all_city_years: includeAllCityYears,
+  });
+}
+
+/**
+ * Recompute totals and `by_project` after permission filtering so the route
+ * and builder share one summary shape.
+ */
+export function summarizeAccessibleInventoryList(
+  cities: AccessibleInventoryCity[],
+  accessScope: AccessibleInventoryList["access_scope"],
+  filters: AccessibleInventoryList["filters"],
+): AccessibleInventoryList {
   return {
     cities,
     total_cities: cities.length,
@@ -199,11 +249,9 @@ export async function buildAccessibleInventoryList({
       (sum, city) => sum + city.inventories.length,
       0,
     ),
-    filters: {
-      city_query: cityQuery?.trim() || null,
-      year: year ?? null,
-      include_all_city_years: includeAllCityYears,
-    },
+    by_project: buildProjectBreakdown(cities),
+    access_scope: accessScope,
+    filters,
   };
 }
 
@@ -217,16 +265,80 @@ async function candidateCitiesForUser(
   }
 
   const projects = await ProjectService.fetchUserProjects(userId);
+  const organizationNames = await organizationNameById(
+    projects.map((project) => project.organizationId),
+  );
+
   return dedupeCities(
-    projects.flatMap((project) => project.cities as InventoryListCity[]),
+    projects.flatMap((project) =>
+      (project.cities as InventoryListCity[]).map((city) => ({
+        ...city,
+        projectId: project.projectId,
+        projectName: project.name,
+        organizationId: project.organizationId,
+        organizationName: organizationNames.get(project.organizationId) ?? null,
+      })),
+    ),
   );
 }
 
-/** Load all city candidates for system admins. */
+/** Load all city candidates for system admins, including org/project labels. */
 async function citiesWithInventories(): Promise<InventoryListCity[]> {
-  return (await db.models.City.findAll({
-    include: [{ model: db.models.Inventory, as: "inventories" }],
-  })) as InventoryListCity[];
+  const cities = await db.models.City.findAll({
+    include: [
+      { model: db.models.Inventory, as: "inventories" },
+      {
+        model: db.models.Project,
+        as: "project",
+        include: [
+          {
+            model: db.models.Organization,
+            as: "organization",
+            attributes: ["organizationId", "name"],
+          },
+        ],
+      },
+    ],
+  });
+
+  return cities.map((city) => {
+    const project = city.project;
+    const organization = project?.organization;
+    return {
+      cityId: city.cityId,
+      name: city.name,
+      country: city.country,
+      region: city.region,
+      locode: city.locode,
+      projectId: project?.projectId ?? null,
+      projectName: project?.name ?? null,
+      organizationId: organization?.organizationId ?? project?.organizationId ?? null,
+      organizationName: organization?.name ?? null,
+      inventories: city.inventories as InventoryListInventory[],
+    };
+  });
+}
+
+/** Resolve organization display names for the given IDs. */
+async function organizationNameById(
+  organizationIds: string[],
+): Promise<Map<string, string | null>> {
+  const uniqueIds = [...new Set(organizationIds.filter(Boolean))];
+  if (uniqueIds.length === 0) {
+    return new Map();
+  }
+
+  const organizations = await db.models.Organization.findAll({
+    attributes: ["organizationId", "name"],
+    where: { organizationId: uniqueIds },
+  });
+
+  return new Map(
+    organizations.map((organization) => [
+      organization.organizationId,
+      organization.name ?? null,
+    ]),
+  );
 }
 
 /** Keep the first candidate when access paths overlap. */
@@ -238,6 +350,42 @@ function dedupeCities(cities: InventoryListCity[]): InventoryListCity[] {
     }
     seen.add(city.cityId);
     return true;
+  });
+}
+
+/** Aggregate accessible cities into org/project totals for Clima summaries. */
+function buildProjectBreakdown(
+  cities: AccessibleInventoryCity[],
+): AccessibleInventoryProjectBreakdown[] {
+  const byProject = new Map<string, AccessibleInventoryProjectBreakdown>();
+
+  for (const city of cities) {
+    const key = city.project_id ?? `unassigned:${city.city_id}`;
+    const existing = byProject.get(key);
+    if (!existing) {
+      byProject.set(key, {
+        organization_id: city.organization_id,
+        organization_name: city.organization_name,
+        project_id: city.project_id,
+        project_name: city.project_name,
+        total_cities: 1,
+        total_inventories: city.inventories.length,
+      });
+      continue;
+    }
+
+    existing.total_cities += 1;
+    existing.total_inventories += city.inventories.length;
+  }
+
+  return [...byProject.values()].sort((a, b) => {
+    const orgCompare = (a.organization_name ?? "").localeCompare(
+      b.organization_name ?? "",
+    );
+    if (orgCompare !== 0) {
+      return orgCompare;
+    }
+    return (a.project_name ?? "").localeCompare(b.project_name ?? "");
   });
 }
 
@@ -337,6 +485,10 @@ function accessibleCity(
     country: city.country ?? null,
     region: city.region ?? null,
     locode: city.locode ?? null,
+    project_id: city.projectId ?? null,
+    project_name: city.projectName ?? null,
+    organization_id: city.organizationId ?? null,
+    organization_name: city.organizationName ?? null,
     inventories,
   };
 }

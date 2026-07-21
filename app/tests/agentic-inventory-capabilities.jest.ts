@@ -236,14 +236,31 @@ describe("GHGI inventory internal CA capability routes", () => {
 
     expect(payload.action).toBe(INVENTORY_LIST_ACCESSIBLE_CAPABILITY);
     expect(payload.success).toBe(true);
+    expect(payload.data.access_scope).toBe("projects");
     expect(payload.data.total_cities).toBeGreaterThanOrEqual(1);
     expect(payload.data.total_inventories).toBeGreaterThanOrEqual(2);
+    expect(payload.data.by_project).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          organization_id: testData.organizationId,
+          organization_name: "Test Organization",
+          project_id: testData.projectId,
+          project_name: "Test Project",
+          total_cities: expect.any(Number),
+          total_inventories: expect.any(Number),
+        }),
+      ]),
+    );
     expect(payload.data.cities).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           city_id: city.cityId,
           name: "New York",
           country: "United States of America",
+          project_id: testData.projectId,
+          project_name: "Test Project",
+          organization_id: testData.organizationId,
+          organization_name: "Test Organization",
           inventories: expect.arrayContaining([
             expect.objectContaining({
               inventory_id: inventory.inventoryId,
@@ -257,6 +274,43 @@ describe("GHGI inventory internal CA capability routes", () => {
         }),
       ]),
     );
+  });
+
+  it("includes organization/project breakdown for project-admin cities", async () => {
+    const res = await listAccessibleRoute(listAccessibleRequest(), {
+      params: Promise.resolve({}),
+    });
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+    const matchingCity = payload.data.cities.find(
+      (candidate: { city_id: string }) =>
+        candidate.city_id === projectAdminOnlyCity.cityId,
+    );
+    const projectBreakdown = payload.data.by_project.find(
+      (entry: { project_id: string | null }) =>
+        entry.project_id === testData.projectId,
+    );
+
+    expect(matchingCity).toEqual(
+      expect.objectContaining({
+        city_id: projectAdminOnlyCity.cityId,
+        project_id: testData.projectId,
+        project_name: "Test Project",
+        organization_id: testData.organizationId,
+        organization_name: "Test Organization",
+      }),
+    );
+    expect(projectBreakdown).toEqual(
+      expect.objectContaining({
+        project_id: testData.projectId,
+        organization_id: testData.organizationId,
+        total_cities: expect.any(Number),
+        total_inventories: expect.any(Number),
+      }),
+    );
+    expect(projectBreakdown.total_cities).toBeGreaterThanOrEqual(2);
+    expect(projectBreakdown.total_inventories).toBeGreaterThanOrEqual(3);
   });
 
   it("treats null list filters as omitted filters", async () => {
@@ -362,6 +416,27 @@ describe("GHGI inventory internal CA capability routes", () => {
           candidate.inventory_id === priorYearInventory.inventoryId,
       ),
     ).toBe(false);
+
+    // by_project must match the permission-filtered city list.
+    const projectCities = payload.data.cities.filter(
+      (candidate: { project_id: string | null }) =>
+        candidate.project_id === testData.projectId,
+    );
+    const projectBreakdown = payload.data.by_project.find(
+      (entry: { project_id: string | null }) =>
+        entry.project_id === testData.projectId,
+    );
+    expect(projectBreakdown).toEqual(
+      expect.objectContaining({
+        project_id: testData.projectId,
+        total_cities: projectCities.length,
+        total_inventories: projectCities.reduce(
+          (sum: number, candidate: { inventories: unknown[] }) =>
+            sum + candidate.inventories.length,
+          0,
+        ),
+      }),
+    );
   });
 
   it("filters accessible inventories by city and year", async () => {

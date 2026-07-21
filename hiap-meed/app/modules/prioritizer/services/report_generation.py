@@ -6,7 +6,7 @@ import json
 import logging
 from pathlib import Path
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 from app.modules.prioritizer.llm_config import (
     get_output_plan_model,
@@ -41,9 +41,11 @@ CHAPTER_PROMPT_FILES: dict[str, Path] = {
 class OutputPlanChapterResponse(BaseModel):
     """Structured chapter response returned by the LLM."""
 
+    model_config = ConfigDict(extra="forbid")
+
     markdown: str
-    source_refs: list[str] = Field(default_factory=list)
-    limitations: list[str] = Field(default_factory=list)
+    source_refs: list[str]
+    limitations: list[str]
 
 
 def generate_output_plan_chapters(
@@ -91,20 +93,21 @@ def generate_output_plan_chapters(
             chapter_input.key,
             model_name,
         )
-        completion = client.chat.completions.parse(
+        completion = client.chat.completions.create(
             model=model_name,
             temperature=get_output_plan_temperature(),
-            response_format=OutputPlanChapterResponse,
+            response_format=_output_plan_response_format(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
         )
-        parsed = completion.choices[0].message.parsed
-        if parsed is None:
+        content = completion.choices[0].message.content
+        if not content:
             raise ValueError(
-                f"LLM did not return parsable output for chapter `{chapter_input.key}`"
+                f"LLM did not return structured output for chapter `{chapter_input.key}`"
             )
+        parsed = OutputPlanChapterResponse.model_validate_json(content)
         draft = ReportChapterDraft(
             key=chapter_input.key,
             title=chapter_input.title,
@@ -176,6 +179,18 @@ def _build_chapter_prompt(chapter_input: ReportChapterInput) -> str:
             indent=2,
         )
     )
+
+
+def _output_plan_response_format() -> dict[str, object]:
+    """Return the strict JSON Schema used for one report chapter response."""
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "output_plan_chapter_response",
+            "strict": True,
+            "schema": OutputPlanChapterResponse.model_json_schema(),
+        },
+    }
 
 
 def _model_visible_chapter_input(chapter_input: ReportChapterInput) -> dict[str, object]:

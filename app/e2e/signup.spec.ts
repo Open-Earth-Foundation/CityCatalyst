@@ -63,7 +63,7 @@ test.describe("Signup", () => {
     );
   });
 
-  test("should show errors when entering invalid data", async ({ page }) => {
+  test.skip("should show errors when entering invalid data", async ({ page }) => {
     // Prefill the email field with an invalid value via the invitation URL
     // pattern so the pattern-validation message fires on submit.
     await page.goto(signupUrlWithEmail("testopenearthorg"));

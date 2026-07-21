@@ -94,14 +94,6 @@ const InviteCollaboratorsStep = forwardRef<
     );
   }, [projectsData, selectedProject]);
 
-  useEffect(() => {
-    if (selectedRole === "admin" && cityData.length > 0) {
-      setSelectedCities(cityData.map((c) => c.cityId));
-    } else if (selectedRole === "collaborator") {
-      setSelectedCities([]);
-    }
-  }, [selectedRole, cityData]);
-
   const validateEmail = (email: string) =>
     z.string().email().safeParse(email).success;
 
@@ -360,14 +352,6 @@ const InviteCollaboratorsStep = forwardRef<
             px={6}
             py={4}
           >
-            {selectedRole === "admin" && (
-              <HStack mb={4}>
-                <Icon as={MdInfoOutline} color="interactive.secondary" boxSize={4} />
-                <Text fontSize="body.sm" color="content.tertiary">
-                  {t("invite-collaborators-admin-cities-info")}
-                </Text>
-              </HStack>
-            )}
             <Checkbox
               checked={
                 cityData.length > 0 &&
@@ -380,7 +364,6 @@ const InviteCollaboratorsStep = forwardRef<
                   setSelectedCities(cityData.map((c) => c.cityId));
                 }
               }}
-              disabled={selectedRole === "admin"}
               mb={4}
             >
               <Text
@@ -410,7 +393,6 @@ const InviteCollaboratorsStep = forwardRef<
                     key={cityId}
                     checked={selectedCities.includes(cityId)}
                     onChange={() => handleCityToggle(cityId)}
-                    disabled={selectedRole === "admin"}
                   >
                     <Text
                       color="content.secondary"

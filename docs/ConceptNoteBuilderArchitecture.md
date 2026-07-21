@@ -22,11 +22,17 @@ data and configuration, not by rebuilding the workflow.
 - The NBS Project Preparation prototype and its document, block, patch,
   knowledge-source, and concept-note patterns.
 - The CityCatalyst global-data concept-note-builder research page, especially
-  its supply/awards/pipeline split and its funder, funding opportunity, project,
-  action, and funding-link data model.
-- The supporting PDF converter repository for PDF-to-markdown conversion.
+  its funder and funding reference data.
 
 ## Scope
+
+Implementation baseline (2026-07-16): only GHGI inventory PDFs are currently
+enqueued in CC. The generic CC OCR/delivery model and the authenticated CA
+Markdown-ingest contract are implemented, but `ConceptNoteUpload`, CC Concept
+Note upload routes/UI, the datateam repository adapter, downstream indexing,
+and a CA/CNB database migration remain deferred. The production CA repository
+provider therefore returns `503 cnb_storage_unavailable` after request and
+identity validation.
 
 In scope:
 
@@ -38,13 +44,13 @@ In scope:
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
-- PDF upload ingestion using the supporting PDF converter repository.
+- PDF upload ingestion using the shared CityCatalyst Markdown converter.
 - Reuse of current CityCatalyst-to-Climate-Advisor connection for CC data.
 
 Out of scope:
 
 - Redesigning the CC data connection.
-- Planning the internals of `Open-Earth-Foundation/PDF_converter`.
+- Using `Open-Earth-Foundation/PDF_converter` as a runtime service.
 - Multi-funder discovery in the first release.
 - Submitting grants or applications to external funder portals.
 - A new broad agent microservice outside Climate Advisor.
@@ -58,8 +64,8 @@ workflow, following the same direction as the Stationary Energy workflow:
 2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
 3. The datateam managed CNB database stores reusable funder and funded-project
    tables alongside CNB workflow tables.
-4. PDF ingestion should use the supporting PDF converter repository to convert
-   PDFs to markdown.
+4. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
+   optionally passes the completed Markdown to CA for CNB ingestion.
 5. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
@@ -70,12 +76,18 @@ flowchart TB
     subgraph CC["CityCatalyst"]
         CCUI
         CCBridge["CNB bridge routes"]
+        CCUpload["Authenticated upload routes"]
+        CCOCR["Durable PDF OCR service"]
         CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, HIAP"]
-        CCData[("CC DB")]
+        CCData[("CC PostgreSQL")]
     end
+
+    CCFiles[("Existing CC S3<br/>source PDFs + Markdown")]
+    Mistral["Mistral OCR"]
 
     subgraph CA["Climate Advisor service"]
         CARoutes["CNB workflow routes<br/>start, status, messages, export"]
+        MarkdownIngress["Optional Markdown ingest"]
         Stream["StreamingHandler"]
         Agent["AgentService<br/>scoped CNB prompt + tools"]
         CNBService["ConceptNoteWorkflowService"]
@@ -85,15 +97,23 @@ flowchart TB
     end
 
     subgraph CNBDB["datateam managed CNB database"]
-        FunderDB[("Funder criteria tables<br/>templates")]
-        ProjectKB[("Funded project tables<br/>awards<br/>source evidence")]
+        FunderDB[("Funders<br/>criteria + templates")]
+        ProjectKB[("Funding records<br/>opportunities + funded projects<br/>source evidence")]
     end
 
     ContextBundle["Context bundle<br/>CC context + funder criteria<br/>funded projects + uploads"]
     OpenRouter["OpenRouter"]
-    ObjectStore["Object/file storage<br/>uploads + DOCX/PDF exports"]
+    ExportStore["Object/file storage<br/>DOCX/PDF exports"]
 
     CCUI --> CCBridge
+    CCUI --> CCUpload
+    CCUpload --> CCFiles
+    CCUpload --> CCOCR
+    CCOCR --> Mistral
+    Mistral --> CCOCR
+    CCOCR --> CCFiles
+    CCOCR -. "when CNB needs it" .-> MarkdownIngress
+    MarkdownIngress --> CNBService
     CCBridge --> CARoutes
     CARoutes --> Stream
     Stream --> Agent
@@ -110,7 +130,7 @@ flowchart TB
     ContextService --> ContextBundle
     ContextBundle --> Agent
     ContextBundle --> DocService
-    DocService --> ObjectStore
+    DocService --> ExportStore
     Agent --> OpenRouter
 ```
 
@@ -144,7 +164,8 @@ flowchart LR
     Review --> Revise["Revise chapters"]
     Revise --> Export["Generate DOCX/PDF export"]
 
-    Upload["User uploads files<br/>any time"] --> Ingest["Convert + ingest"]
+    Upload["User uploads files<br/>any time"] --> Convert["CC converts PDF<br/>and stores Markdown"]
+    Convert --> Ingest["Optionally pass .md to CA"]
     Ingest --> Context
     Ingest --> Draft
 
@@ -155,18 +176,20 @@ flowchart LR
 
 ## State Ownership
 
-| State | Owner | Reason |
-| --- | --- | --- |
-| City profile, project, GHGI, CCRA, HIAP | CityCatalyst | Existing product source of truth and permission model. |
-| Chat threads and messages | Climate Advisor | Existing CA conversation model. |
-| Concept-note run state | datateam managed CNB database | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure. |
-| Context bundle snapshot | datateam managed CNB database | Reusable run input/output for this workflow. |
-| Uploaded file references and selected source context | datateam managed CNB database | Needed for mid-flow ingestion, evidence review, and export. |
-| Document chapters and revisions | datateam managed CNB database | Draft document state before export. |
-| Funder profiles and criteria | datateam managed CNB database | Shared curated corpus, reusable across cities and agents. |
-| Similar funded projects | datateam managed CNB database | Shared project repository, queryable by funder, category, region, instrument. |
-| Exported DOCX/PDF file references | datateam managed CNB database | Workflow output artifacts. |
-| PDF-to-markdown conversion | Supporting PDF converter repo | Used for converting uploaded PDFs to markdown. |
+| State                                                                      | Owner                          | Reason                                                                                           |
+| -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| City profile, project, GHGI, CCRA, HIAP                                    | CityCatalyst                   | Existing product source of truth and permission model.                                           |
+| Chat threads and messages                                                  | Climate Advisor                | Existing CA conversation model.                                                                  |
+| Concept-note run state                                                     | datateam managed CNB database  | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure.          |
+| Context bundle snapshot                                                    | datateam managed CNB database  | Reusable run input/output for this workflow.                                                     |
+| CN upload/run associations, received Markdown, and selected source context | datateam managed CNB database  | Registers the optional Markdown handoff and keeps selected context for review and export.        |
+| Uploaded source objects, OCR result objects, and their S3 pointers         | CityCatalyst                   | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
+| Document chapters and revisions                                            | datateam managed CNB database  | Draft document state before export.                                                              |
+| Funder profiles and criteria                                               | datateam managed CNB database  | Shared curated corpus, reusable across cities and agents.                                        |
+| Funding opportunities and funded projects                                  | datateam managed CNB database  | Shared funding records distinguished by `is_opportunity`.                                        |
+| Exported DOCX/PDF file references                                          | datateam managed CNB database  | Workflow output artifacts.                                                                       |
+| PDF-to-Markdown conversion                                                 | CityCatalyst                   | Owns Mistral OCR, queueing, retries, validation, authoritative storage, and result pointers.     |
+| Optional Markdown handoff                                                  | CityCatalyst → Climate Advisor | CC sends the completed `.md` only when a CA workflow needs it; CA never participates in OCR.     |
 
 ## Data Infrastructure Boundary
 
@@ -179,15 +202,164 @@ The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
 
 - typed read/write clients or repositories for CNB run and document state
-- typed reference-data clients for funder, funding-opportunity, pipeline, and
-  funded-project data
-- stable file references for uploads and exports
+- typed reference-data clients for funders, funding records, templates,
+  criteria, and evidence
+- stable CC-created upload IDs and CNB export file references
 - source labels/locations and evidence link records for workspace review and
   audit trails
 
 The diagrams below describe the logical storage shape the workflow needs. They
 are contract requirements for integration, not a decision that the Climate
 Advisor service owns the database infrastructure or migrations.
+
+## Tables and Data Placement
+
+PDF ingestion spans two PostgreSQL databases and the existing CC S3 bucket. The
+same `upload_id` identifies a Concept Note source across the boundary, but there
+is no database foreign key between CC PostgreSQL and the datateam managed CNB
+database.
+
+```mermaid
+flowchart LR
+    subgraph CCDB["CityCatalyst PostgreSQL"]
+        Inventory["ImportedInventoryFile<br/>(existing inventory source)"]
+        CNUpload["ConceptNoteUpload<br/>(new CNB source record)"]
+        OCR["PdfOcrJob<br/>(new shared OCR job)"]
+    end
+
+    subgraph CCS3["Existing CityCatalyst S3"]
+        Source["Immutable source PDF"]
+        Markdown["Authoritative combined Markdown"]
+    end
+
+    subgraph CNBDB["datateam managed CNB database"]
+        Run["concept_note_runs"]
+        Received["concept_note_uploads<br/>(optional CA ingest record)"]
+    end
+
+    Inventory -.->|"inventory_import + id"| OCR
+    CNUpload -.->|"concept_note_upload + upload_id"| OCR
+    CNUpload --> Source
+    OCR --> Markdown
+    Run --> Received
+    Markdown -.->|"optional API delivery using upload_id"| Received
+```
+
+### CityCatalyst PostgreSQL
+
+CC adds two tables for the shared conversion path. They are owned and migrated
+with the CityCatalyst application.
+
+#### `ConceptNoteUpload`
+
+This table is the authoritative CC source record for a Concept Note PDF. It is
+separate from the datateam database's `concept_note_uploads` table and from the
+existing CC `UserFile` model.
+
+```text
+upload_id              uuid primary key
+run_id                 uuid not null
+user_id                uuid not null
+city_id                uuid not null
+project_id             uuid null
+filename               string not null
+source_label           string null
+mime_type              string not null
+size_bytes             bigint not null
+source_s3_key          string not null
+source_sha256          string not null
+created_at             timestamp not null
+deleted_at             timestamp null
+```
+
+Rules:
+
+- `run_id` is an integration identifier, not a foreign key into another
+  database.
+- `upload_id` is immutable and is reused as `PdfOcrJob.source_id`.
+- The source PDF is immutable. Replacing it creates a new `upload_id`.
+- The row stores the authoritative source pointer and permission scope, but no
+  OCR status or Markdown bytes.
+- Source deletion and OCR-result retention follow the same CC file lifecycle.
+
+#### `PdfOcrJob`
+
+This is the durable CC queue and result catalog shared by inventory imports and
+Concept Note uploads. It has one logical row per `(source_type, source_id)` and
+has no public job identifier.
+
+```text
+source_type            string not null
+source_id              uuid not null
+status                 string not null
+attempt_count          integer not null
+run_after              timestamp null
+model                  string null
+page_count              integer null
+result_s3_key           string null
+result_size_bytes       bigint null
+result_sha256           string null
+lease_owner             string null
+lease_expires_at        timestamp null
+heartbeat_at            timestamp null
+started_at              timestamp null
+completed_at            timestamp null
+error_code              string null
+error_message           string null
+delivery_target         string null
+delivery_status         string null
+delivery_attempt_count  integer not null
+delivery_run_after      timestamp null
+delivered_at            timestamp null
+delivery_error_code     string null
+delivery_error_message  string null
+created_at              timestamp not null
+updated_at              timestamp not null
+unique                  (source_type, source_id)
+```
+
+Rules:
+
+- `source_type = inventory_import` resolves `source_id` through the existing
+  `ImportedInventoryFile` table.
+- `source_type = concept_note_upload` resolves `source_id` through
+  `ConceptNoteUpload.upload_id`.
+- Because the source relationship is polymorphic, `source_id` is resolved and
+  authorized by application code rather than a database foreign key.
+- OCR state, retries, leases, and result metadata are independent from optional
+  CA delivery state. Retrying delivery does not increment `attempt_count` or
+  call Mistral again.
+- PDF and Markdown bytes stay in S3. The table stores pointers and metadata only.
+
+The existing `ImportedInventoryFile.importStatus` remains the user-facing GHGI
+import lifecycle. It does not replace `PdfOcrJob`: the current `extract` route
+will create or reuse the shared OCR row, and successful OCR will pass the stored
+Markdown to `InventoryExtractionService` before the import advances to
+`waiting_for_approval`.
+
+### Existing CityCatalyst S3
+
+| Object                  | Authoritative pointer             | Lifecycle                               |
+| ----------------------- | --------------------------------- | --------------------------------------- |
+| Inventory source PDF    | `ImportedInventoryFile.s3Key`     | Existing inventory import lifecycle.    |
+| Concept Note source PDF | `ConceptNoteUpload.source_s3_key` | Concept Note upload lifecycle in CC.    |
+| Combined Markdown       | `PdfOcrJob.result_s3_key`         | Same lifecycle as its immutable source. |
+
+The combined Markdown key follows
+`pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md`.
+
+### Datateam Managed CNB Database
+
+The `concept_note_uploads` table in the CNB workflow diagram is created only when
+CC optionally delivers completed Markdown to CA. It stores the received
+Markdown, its digest and page count, and downstream ingest state. It stores no
+source/result S3 key, Mistral configuration, OCR attempt, lease, or authoritative
+artifact pointer.
+
+`concept_note_uploads.upload_id` equals `ConceptNoteUpload.upload_id`, while
+`concept_note_uploads.run_id` associates the received Markdown with the CNB run.
+Those values are checked through API and repository contracts; they do not form
+cross-database foreign keys.
 
 ## Workflow Steps
 
@@ -197,7 +369,7 @@ The active step decides which tools are available.
 ```mermaid
 flowchart TB
     Start([Start]) --> Scope["selecting_scope"]
-    Scope --> Ingest["ingesting_user_files<br/>deterministic conversion"]
+    Scope --> Ingest["ingesting_user_files<br/>receive + process Markdown"]
     Ingest --> Funder["profiling_funder"]
     Funder --> Match["matching_examples"]
     Match --> Context["assembling_context<br/>build context bundle"]
@@ -207,7 +379,7 @@ flowchart TB
     Edit --> Draft
     Draft --> Complete([completed])
 
-    IngestNote["Full uploads are converted and stored.<br/>Only selected source excerpts enter the context bundle."]
+    IngestNote["CC owns PDF conversion and Markdown storage.<br/>CA receives .md only when needed; selected excerpts enter the context bundle."]
     ContextNote["Context bundle combines CC data,<br/>selected source excerpts, funder rubric/template,<br/>and matched funded projects."]
     Ingest -.-> IngestNote
     Context -.-> ContextNote
@@ -215,16 +387,16 @@ flowchart TB
 
 ### Step Scope Table
 
-| Step | Main context | Enabled tool groups |
-| --- | --- | --- |
-| `selecting_scope` | user, city, project candidates | workflow control, CC project reads |
-| `ingesting_user_files` | uploaded file refs, deterministic converter status, candidate source excerpts | deterministic document ingest tools; no LLM |
-| `profiling_funder` | selected funder, template, criteria | CNB reference table tools |
-| `matching_examples` | project profile, funder profile, project KB filters | matching tools |
-| `assembling_context` | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | internal `ContextBundleService`; no agent tools |
-| `interviewing` | gaps, known facts, required template fields | interview tools, document read tools |
-| `drafting_document` | chapter plan, evidence map, examples | chapter draft tools, evidence tools |
-| `editing_document` | selected chapter/revision | document edit tools |
+| Step                   | Main context                                                                                        | Enabled tool groups                              |
+| ---------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `selecting_scope`      | user, city, project candidates                                                                      | workflow control, CC project reads               |
+| `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts                        | deterministic document ingest operations; no LLM |
+| `profiling_funder`     | selected funder, template, criteria                                                                 | CNB reference table tools                        |
+| `matching_examples`    | project profile, funder profile, project KB filters                                                 | matching tools                                   |
+| `assembling_context`   | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | internal `ContextBundleService`; no agent tools  |
+| `interviewing`         | gaps, known facts, required template fields                                                         | interview tools, document read tools             |
+| `drafting_document`    | chapter plan, evidence map, examples                                                                | chapter draft tools, evidence tools              |
+| `editing_document`     | selected chapter/revision                                                                           | document edit tools                              |
 
 Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters
@@ -287,6 +459,55 @@ Recommended high-level shape:
 }
 ```
 
+## CityCatalyst Data Landscape
+
+The context bundle should use the available CityCatalyst data as bounded
+summaries. Coverage and source formats vary by city, so the workflow must not
+assume that every selected city has complete GHGI or CCRA data.
+
+### GHGI
+
+Amanda confirmed that GHGI data exists for Minnesota cities, but coverage is not
+complete. Not every city is available, and some cities report only selected
+sectors. Cities also use their own reporting structures, so the available data
+must be mapped into the CityCatalyst/GPC structure before it can be used as
+consistent concept-note context.
+
+Once the first target cities are selected, Amanda can confirm the exact GHGI
+coverage for each city, including available years, covered sectors, missing
+sectors, source format, and required mapping work.
+
+### CCRA and Minnesota GreenStep
+
+Minnesota cities may have risk-assessment material and reported sustainability
+actions that can contribute to CCRA context. These sources must be reviewed for
+the selected cities before they are treated as structured CityCatalyst data.
+
+[Minnesota GreenStep Cities & Tribal Nations](https://greenstep.pca.state.mn.us/)
+is a voluntary sustainability and quality-of-life program built around 29
+optional best practices and more than 180 actions. It gives cities a menu of
+actions they can choose to pursue and records implementation at one-, two-, or
+three-star levels. The
+[Climate Adaptation and Community Resilience best practice](https://greenstep.pca.state.mn.us/bp-detail/81730)
+includes actions covering extreme-weather preparedness, integration of climate
+resilience into planning and budgeting, community resilience, and private-sector
+risk reduction. Individual GreenStep actions can also reference risk-assessment
+methods; for example, the
+[water and wastewater resilience action](https://greenstep.pca.state.mn.us/bp-action-detail/81918)
+uses CREAT or a similar assessment to evaluate climate risk to infrastructure.
+
+GreenStep therefore provides potentially useful evidence about city actions,
+plans, and resilience work, but it should not be assumed to be a complete or
+standardized CCRA dataset. For each selected city, the workflow should review:
+
+- available risk assessments and their hazard, exposure, vulnerability, and
+  scoring structure;
+- GreenStep actions, their implementation status, and supporting evidence;
+- overlap between GreenStep actions and actions already stored in CityCatalyst;
+- missing risks, sectors, populations, infrastructure, or geographic coverage;
+  and
+- whether the records are current enough to use in the concept note.
+
 ## Database Model
 
 ### Data Planning Constraints From Global Data
@@ -296,19 +517,13 @@ important planning rules are:
 
 - Keep the four discovered input groups separate: finance landscape, funder
   profiles, comparable awards, and CityCatalyst city context/GHGI.
-- Keep funding lifecycle moments separate:
-  - `supply`: what funding exists, one row per program/opportunity.
-  - `awards`: what got funded, one row per award/funding link.
-  - `pipeline`: the ranked queue that determines funding order for routes such
-    as SRF priority lists.
-- Use four country-agnostic stored concepts: funder, funding opportunity,
-  funded project, and funded project action.
-- Connect projects/actions to funding through explicit funding links rather than
-  embedding awards directly in project records.
+- Store opportunities and funded projects in one `funding_records` table.
+  `is_opportunity` distinguishes opportunity rows from funded-project rows.
+- Keep each funded project and its award information in one complete row; do
+  not introduce a separate funding-link table.
 - Treat the finance route as document-shaping data. A competitive grant,
-  revolving-fund priority-list project, formula/block grant, green-bank loan,
-  capital-investment request, and city self-financing path each imply different
-  required document sections.
+  formula/block grant, green-bank loan, capital-investment request, and city
+  self-financing path each imply different required document sections.
 - Store funder profiles with two halves:
   - `stated`: eligibility, rubric, template, award rules, and requirements read
     from RFP/NOFO/program documents.
@@ -334,6 +549,7 @@ only so the workflow state and curated funding/reference data are easier to read
 erDiagram
     threads ||--o{ concept_note_runs : "optionally anchors"
     concept_note_runs ||--|| concept_note_context_bundles : "stores"
+    concept_note_runs ||--o{ concept_note_uploads : "has"
     concept_note_runs ||--o{ concept_note_chapters : "contains"
     concept_note_runs ||--o{ concept_note_gaps : "tracks"
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
@@ -353,8 +569,8 @@ erDiagram
         string user_id
         string city_id
         string project_id
-        string funder_id
-        string opportunity_id
+        uuid funder_id
+        uuid selected_funding_record_id
         string status
         string workflow_step
         jsonb context_summary
@@ -362,6 +578,23 @@ erDiagram
         string trace_id
         timestamp created_at
         timestamp updated_at
+    }
+
+    concept_note_uploads {
+        uuid upload_id
+        uuid run_id
+        string uploaded_by_user_id
+        string filename
+        string source_label
+        text markdown_text
+        string markdown_sha256
+        int page_count
+        string ingest_status
+        string ingest_error_code
+        timestamp ingest_started_at
+        timestamp ingest_completed_at
+        timestamp received_at
+        timestamp created_at
     }
 
     concept_note_context_bundles {
@@ -390,7 +623,6 @@ erDiagram
         int position
         string status
         bool required
-        bool deleted
         bool user_locked
         timestamp created_at
         timestamp updated_at
@@ -410,7 +642,6 @@ erDiagram
     concept_note_evidence_links {
         uuid evidence_link_id
         uuid chapter_id
-        uuid revision_id
         string selected_source_label
         string source_location
         string claim_ref
@@ -420,7 +651,7 @@ erDiagram
     concept_note_matched_projects {
         uuid match_id
         uuid run_id
-        string funded_project_id
+        uuid funding_record_id
         string decision
         text fit_rationale
         jsonb evidence
@@ -436,10 +667,37 @@ erDiagram
     }
 ```
 
+Within the CNB database, funding references use the same UUID type as their
+source records:
+
+- `concept_note_runs.funder_id` references `funders.funder_id`.
+- `concept_note_runs.selected_funding_record_id` references
+  `funding_records.funding_record_id`.
+- `concept_note_matched_projects.funding_record_id` references
+  `funding_records.funding_record_id`.
+
+`concept_note_chapter_revisions` enforces a unique
+`(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
+revision.
+
+For uploads, `upload_id` is created by the authenticated CityCatalyst upload
+route and identifies the immutable CC source record. When CNB needs the source,
+CA first receives that ID with the completed Markdown, verifies current run
+permission, and creates or reuses the CNB run association. An upload ID already
+bound to another run is rejected.
+
+CA stores the received `markdown_text`, its verified `markdown_sha256`, page
+count, source label, and downstream `ingest_status`. These values are immutable
+for an `upload_id`; replacement creates a new upload. This copy makes CA ingest
+restart-safe, but the CC S3 object and CC result pointer remain authoritative.
+CNB storage never receives a source/result S3 key, signed URL, or opaque CC file
+pointer.
+
 ### Evidence Links
 
 `concept_note_evidence_links` are workspace review records. They connect a claim
-in a specific chapter revision to the selected source context that supports it.
+in a chapter to the selected source context that supports it. Revisions remain
+the chapter history and do not own evidence links.
 
 They do not store source documents or converter chunks. The supporting context
 lives in the context bundle, and the evidence link records the user-facing source
@@ -462,23 +720,17 @@ evidence-backed content.
 ### CNB Funding Reference Tables
 
 These tables live in the same datateam managed CNB database as the workflow
-tables. They are the curated, reusable table group for funders and funded
-projects.
+tables. They store reusable funders and funding records. A funding record is
+either an opportunity or a funded project.
 
 ```mermaid
 erDiagram
-    funders ||--o{ funding_opportunities : "offers"
-    funding_opportunities ||--o{ funder_templates : "uses"
-    funding_opportunities ||--o{ funder_criteria : "defines"
-    funding_opportunities ||--o{ funding_links : "funds"
-    funding_opportunities ||--o{ funding_pipeline_entries : "ranks"
-    funded_projects ||--o{ funded_project_actions : "contains"
-    funded_projects ||--o{ funding_links : "receives"
-    funded_project_actions ||--o{ funding_links : "funded by"
-    funded_projects ||--o{ funded_project_evidence : "cites"
-    source_documents ||--o{ funded_project_evidence : "supports"
+    funders ||--o{ funding_records : "owns"
+    funding_records ||--o{ funder_templates : "uses when opportunity"
+    funding_records ||--o{ funder_criteria : "defines when opportunity"
+    funding_records ||--o{ funding_record_evidence : "cites"
+    source_documents ||--o{ funding_record_evidence : "supports"
     source_documents ||--o{ funder_criteria : "supports"
-    source_documents ||--o{ funding_pipeline_entries : "supports"
 
     funders {
         uuid funder_id
@@ -489,23 +741,33 @@ erDiagram
         jsonb profile
     }
 
-    funding_opportunities {
-        uuid opportunity_id
+    funding_records {
+        uuid funding_record_id
         uuid funder_id
+        bool is_opportunity
         string name
+        string applicant_name
+        string city
+        string state_region
+        string country
+        string category
+        jsonb hazards
+        jsonb interventions
         string finance_route
         string instrument_type
         string region_scope
         numeric min_award
         numeric max_award
+        numeric award_amount
         string currency
-        string live_status
+        int award_year
         string status
+        text summary
     }
 
     funder_templates {
         uuid template_id
-        uuid opportunity_id
+        uuid funding_record_id
         string template_name
         string output_format
         jsonb chapter_schema
@@ -514,63 +776,13 @@ erDiagram
 
     funder_criteria {
         uuid criterion_id
-        uuid opportunity_id
+        uuid funding_record_id
         string criterion_type
         string label
         text requirement_text
         numeric weight
         bool hard_gate
         jsonb normalized_rule
-    }
-
-    funded_projects {
-        uuid funded_project_id
-        string title
-        string applicant_name
-        string city
-        string state_region
-        string country
-        string category
-        jsonb hazards
-        jsonb interventions
-        text summary
-    }
-
-    funded_project_actions {
-        uuid action_id
-        uuid funded_project_id
-        string action_type
-        string category
-        jsonb hazards
-        jsonb interventions
-        text description
-    }
-
-    funding_links {
-        uuid funding_link_id
-        uuid funded_project_id
-        uuid action_id
-        uuid opportunity_id
-        numeric award_amount
-        numeric requested_amount
-        string currency
-        int award_year
-        string fiscal_year
-        string instrument_type
-        string lifecycle_stage
-        string status
-    }
-
-    funding_pipeline_entries {
-        uuid pipeline_entry_id
-        uuid opportunity_id
-        string external_project_ref
-        string applicant_name
-        int rank
-        numeric requested_amount
-        numeric fundable_amount
-        string fiscal_year
-        string status
     }
 
     source_documents {
@@ -583,15 +795,20 @@ erDiagram
         timestamp fetched_at
     }
 
-    funded_project_evidence {
+    funding_record_evidence {
         uuid evidence_id
-        uuid funded_project_id
+        uuid funding_record_id
         uuid source_document_id
         text claim
         text quote_or_summary
         jsonb source_map
     }
 ```
+
+Rows with `is_opportunity = true` hold the application programme, template, and
+criteria. Rows with `is_opportunity = false` hold one complete funded-project
+example and its award information. Templates and criteria may reference only an
+opportunity record.
 
 ## Research Ingest Pipeline
 
@@ -613,13 +830,11 @@ flowchart LR
 Required ingest outputs:
 
 - Source document record with URL, title, date, license status, and hash.
-- Funder record and funding opportunity record, including route, instrument,
-  geography, live status, and award-size ranges.
+- Funder record and funding records for opportunities and funded projects.
 - Template chapter schema.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
-- Funded-project records, project-action records, and funding links.
-- Pipeline entries for priority-list routes where the funding order matters.
+- Opportunity and funded-project details in the shared funding records.
 - Evidence links for each important claim.
 
 ## Similar Project Matching
@@ -661,9 +876,9 @@ flowchart TB
         ProgramGate["selected funder/opportunity scope"]
         GeographyGate["eligible geography"]
         InstrumentGate["finance route / instrument type"]
-        CategoryGate["project sector / action type"]
+        CategoryGate["project category"]
         ApplicantGate["applicant / recipient type"]
-        StatusGate["funded award or valid pipeline entry"]
+        StatusGate["funded award"]
         EvidenceGate["usable source evidence"]
     end
 
@@ -705,24 +920,81 @@ thresholds and weights.
 Conceptual hard filters are gates, not ranking signals. A funded project would
 need to pass the applicable gates before it can be scored.
 
-| Hard filter | What it excludes before scoring |
-| --- | --- |
-| Funder/opportunity scope | Projects from unrelated funders, programs, or opportunity families when the user selected a specific funder/opportunity. |
-| Eligible geography | Projects outside the configured geography fallback path for the opportunity, such as Minnesota, Midwest, then US. |
-| Finance route / instrument type | Examples from the wrong funding route, such as comparing a loan or SRF priority-list project against a competitive grant. |
-| Project sector / action type | Projects in unrelated sectors or action categories. |
-| Applicant / recipient type | Awards to recipient types that do not match the user's applicant profile, such as nonprofit-only awards for a city-led project. |
-| Funded award or valid pipeline entry | Records that are not actual awards or, for priority-list routes, valid pipeline entries. |
-| Usable source evidence | Records without enough source evidence to show the user why the example is relevant. |
+| Hard filter                     | What it excludes before scoring                                                                                                 |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Funder/opportunity scope        | Projects from unrelated funders, programs, or opportunity families when the user selected a specific funder/opportunity.        |
+| Eligible geography              | Projects outside the configured geography fallback path for the opportunity, such as Minnesota, Midwest, then US.               |
+| Finance route / instrument type | Examples from the wrong funding route, such as comparing a loan against a competitive grant.                                    |
+| Project category                | Projects in unrelated sectors or categories.                                                                                    |
+| Applicant / recipient type      | Awards to recipient types that do not match the user's applicant profile, such as nonprofit-only awards for a city-led project. |
+| Funded award                    | Records that are not actual awards.                                                                                             |
+| Usable source evidence          | Records without enough source evidence to show the user why the example is relevant.                                            |
 
 If the user project or funder profile is missing a field needed for the future
 scoring concept, the workflow should not invent it. It should record a match
 caveat and create a gap if the missing field matters for drafting.
 
-## PDF Conversion
+## PDF Conversion and Optional Markdown Handoff
 
-CNB should use the supporting `Open-Earth-Foundation/PDF_converter` repository to
-convert uploaded PDFs to markdown.
+CityCatalyst owns the shared PDF-to-Markdown converter. CC owns source-file
+authorization and storage, the durable OCR queue, Mistral requests, retries,
+ordered page merge, schema validation, and the authoritative Markdown artifact.
+The converter does not depend on CA or
+`Open-Earth-Foundation/PDF_converter` at runtime.
+
+The converted artifact follows these Markdown-shape requirements:
+
+- all pages are merged in source order into one UTF-8 Markdown document;
+- tables retain Markdown structure, exact headers, aligned rows and columns,
+  captions, totals, units, scale, and year context;
+- source rows are not merged, dropped, aggregated, or reordered;
+- GPC references, scopes, gas columns, and activity fields are retained when
+  present; and
+- narrative sections remain available for CNB evidence and context selection.
+
+These requirements govern converter output. CA remains an optional Markdown
+consumer and does not participate in OCR.
+
+Each PDF has a durable CC-created `upload_id`. CC converts it internally with
+`source_type = concept_note_upload` and `source_id = upload_id`. A run may
+contain many uploads, so `run_id`, filename, and S3 keys are not conversion
+identities. The upload route enforces the shared 20 MB source-PDF upload limit,
+and the CC processor enforces the ten-minute job timeout. The 20 MB limit does
+not apply to the resulting Markdown artifact or the optional CA request body.
+There is no page-count acceptance limit. `page_count` remains result metadata
+validated against the ordered Markdown page markers.
+
+The browser sends PDF bytes only to the authenticated CC upload route. CA never
+receives the source PDF, S3 credentials, S3 keys, signed result URLs, Mistral
+configuration, or OCR retry instructions.
+
+Each upload is handled independently:
+
+1. `POST .../{run_id}/uploads` verifies run access, stores the PDF in CC,
+   creates the immutable CC source record, creates or reuses the CC OCR job, and
+   returns `202`.
+2. The CC processor converts the PDF, validates the Markdown shape, stores the
+   authoritative `.md` in CC S3, and records its pointer and SHA-256 digest in
+   CC PostgreSQL.
+3. CC marks OCR `succeeded`. Conversion is complete even if CA is unavailable.
+4. When CNB needs the document, CC optionally calls
+   `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the
+   Markdown, filename, source label, page count, and digest. It uses the existing
+   CC-issued user-scoped bearer token.
+5. CA rechecks run permission, rejects an upload ID already bound to another
+   run, validates the digest, durably registers the Markdown, and returns `202`.
+6. CA then performs excerpt selection, indexing, summarization, and context
+   bundle rebuilding. These steps are not part of conversion.
+7. A failed OCR retry may call Mistral again. A failed CA handoff retries the
+   stored Markdown only and never repeats successful OCR.
+
+Repeated handoff with the same upload and digest is idempotent. A different
+digest for the same immutable upload returns
+`409 markdown_identity_conflict`. One failed file never hides or overwrites
+another upload in the same run.
+
+Other document types require a separate CC normalizer before they can enter the
+optional CA Markdown-ingest boundary.
 
 ## Document Workspace
 
@@ -772,13 +1044,15 @@ Chapter fields should support the editable document surface:
 - `run_id`
 - `template_section_id`
 - `title`
-- `body_markdown`
 - `position`
 - `status`: `empty`, `draft`, `needs_review`, `ready`, `deleted`
 - `required`
 - `user_locked`
-- `deleted`
-- `latest_revision_id`
+
+`concept_note_chapters` stores chapter metadata only. Chapter Markdown is stored
+only in `concept_note_chapter_revisions.body_markdown`. The current chapter body
+is the full Markdown body from the revision with the highest `revision_number`
+for that chapter; it is not duplicated on the chapter row.
 
 Revision fields should support history and conflict handling:
 
@@ -792,6 +1066,10 @@ Revision fields should support history and conflict handling:
 - `patch_summary`
 - `created_at`
 
+Every revision stores the complete `body_markdown`, including revisions created
+for non-text chapter operations, so any historical chapter state can be
+reconstructed without reading Markdown from `concept_note_chapters`.
+
 ## Document Tool Deep Dive
 
 Tools should be grouped by step and registered only when relevant. The LLM
@@ -801,14 +1079,17 @@ preflight and generation routes.
 
 ### Tool Groups
 
-| Group | Purpose | Writes CNB storage | Calls CC | Calls CNB reference tables |
-| --- | --- | --- | --- | --- |
-| Workflow tools | start, resume, retry | yes | no | no |
-| Ingest tools | convert uploads, prepare candidate source excerpts | yes | no | no |
-| Reference tools | funder profile, template, criteria | no | no | yes |
-| Matching tools | find and explain similar projects | yes | no | yes |
-| Document tools | chapters, text, evidence, gaps | yes | no | optional |
-| Export button actions | preflight and generate DOCX/PDF | yes | no | no |
+| Group                 | Purpose                            | Writes CNB storage | Calls CC | Calls CNB reference tables |
+| --------------------- | ---------------------------------- | ------------------ | -------- | -------------------------- |
+| Workflow tools        | start, resume, retry               | yes                | no       | no                         |
+| Reference tools       | funder profile, template, criteria | no                 | no       | yes                        |
+| Matching tools        | find and explain similar projects  | yes                | no       | yes                        |
+| Document tools        | chapters, text, evidence, gaps     | yes                | no       | optional                   |
+| Export button actions | preflight and generate DOCX/PDF    | yes                | no       | no                         |
+
+Markdown receipt and downstream source processing are deterministic service
+operations. They are not agent tools and do not give CA any conversion
+capability.
 
 ### Workflow Tools
 
@@ -824,8 +1105,8 @@ Input:
   "user_id": "string",
   "city_id": "string",
   "project_id": "string",
-  "funder_id": "string",
-  "opportunity_id": "string",
+  "funder_id": "uuid",
+  "selected_funding_record_id": "uuid",
   "thread_id": "uuid|null"
 }
 ```
@@ -845,8 +1126,8 @@ Rules:
 
 - Creates `concept_note_runs`.
 - Creates initial empty document from the selected funder template.
-- Reuses an active run if the same user, city, project, funder, and opportunity
-  already has one.
+- Reuses an active run if the same user, city, project, funder, and selected
+  funding record already has one.
 
 ### Always-On Agent Context
 
@@ -909,8 +1190,8 @@ draft chapter content, not as standalone tools.
 
 #### `funder_get_profile`
 
-Loads the curated funder profile and opportunity criteria into the context
-bundle.
+Loads the curated funder profile and criteria attached to the selected
+opportunity record into the context bundle.
 
 Output includes:
 
@@ -959,7 +1240,7 @@ Input:
 {
   "run_id": "uuid",
   "funder_id": "uuid",
-  "opportunity_id": "uuid",
+  "selected_funding_record_id": "uuid",
   "category": "stormwater",
   "region": "MN",
   "instrument_type": "grant",
@@ -975,7 +1256,7 @@ Output:
 {
   "matches": [
     {
-      "funded_project_id": "uuid",
+      "funding_record_id": "uuid",
       "decision": "selected",
       "fit_rationale": "Why the LLM agent considers this example useful.",
       "matched_tags": ["stormwater", "flood", "city-led"],
@@ -988,55 +1269,73 @@ Output:
 
 Rules:
 
-- Retrieve candidate funded projects from CNB reference tables.
+- Retrieve candidate funding records where `is_opportunity = false`.
 - Use curated project tags when available to find close tag combinations.
 - Use the LLM agent to select comparable examples and explain fit.
 - Do not return calibrated numeric scores in v1.
 - Persist selected matches in `concept_note_matched_projects`.
 - Return rationale, evidence, and caveats.
 
-### Ingest Tools
+### Markdown Ingest Operations
 
-#### `concept_note_ingest_upload`
+#### `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown`
 
-Converts and indexes a user upload.
+Optionally receives completed Markdown from CityCatalyst after CC has finished
+and persisted PDF conversion. This is a service-to-service handoff, not an LLM
+tool and not an OCR trigger.
 
 Input:
 
 ```json
 {
-  "run_id": "uuid",
-  "file_ref": "string",
+  "markdown": "<!-- page: 1 -->\n# Completed CC-produced Markdown",
   "filename": "string",
-  "mime_type": "string",
-  "source_label": "Climate Action Plan"
+  "source_label": "Climate Action Plan",
+  "page_count": 12,
+  "sha256": "lowercase-hex-digest"
 }
 ```
+
+The MVP handoff sends the full Markdown inline. CA enforces a separately
+configured JSON request-body safety limit, and CC rejects deliveries above the
+matching configured guard before sending. This operational safeguard does not
+define source-PDF size or page-count acceptance; the shared 20 MB source-PDF
+limit remains the only document acceptance limit.
 
 Output:
 
 ```json
 {
-  "status": "converted",
-  "selected_sources": [
-    {
-      "label": "Climate Action Plan",
-      "excerpt": "string",
-      "source_location": "page 4"
-    }
-  ],
-  "warnings": [],
-  "extracted_summary": "string"
+  "upload_id": "uuid",
+  "status": "processing"
 }
 ```
 
 Rules:
 
-- Uses the supporting PDF converter repository for PDF-to-markdown conversion.
-- Does not persist converter chunks in dedicated CNB source tables.
-- Stores selected source context in the context bundle.
-- Triggers context bundle rebuild; the UI receives the single
-  `concept_note_context_bundle_ready` event after the assembled context is ready.
+- Uses the existing CC-issued user-scoped bearer authentication and rechecks
+  current run permission.
+- Rejects an `upload_id` already associated with another run.
+- Validates the supplied SHA-256 digest before durably registering the Markdown.
+- Requires the completed Markdown to satisfy the
+  [Markdown-shape requirements](#pdf-conversion-and-optional-markdown-handoff)
+  before CNB source processing begins.
+- Returns `202 Accepted` only after CA durably registers the Markdown for
+  downstream processing.
+- Repeated delivery of the same immutable upload and digest is idempotent. A
+  different digest for the same upload returns
+  `409 markdown_identity_conflict`.
+- Receives no source PDF, S3 key, signed URL, Mistral configuration, or CC OCR
+  status and never writes CC conversion state.
+
+#### `concept_note_process_markdown`
+
+After CA has registered the optional handoff, CN orchestration performs excerpt
+selection, indexing, summary extraction, and context-bundle rebuilding. This
+operation verifies the same run/upload binding, stores selected source context
+in the context bundle, and emits `concept_note_context_bundle_ready` after the
+assembled context is ready. It is downstream of conversion and can be retried
+without calling CityCatalyst OCR or Mistral.
 
 #### `concept_note_extract_facts_from_context`
 
@@ -1070,7 +1369,6 @@ Output:
       "position": 3,
       "status": "draft",
       "required": true,
-      "deleted": false,
       "user_locked": false,
       "latest_revision_id": "uuid"
     }
@@ -1078,10 +1376,14 @@ Output:
 }
 ```
 
+`latest_revision_id` in this response is derived from the revision with the
+highest `revision_number`; it is not stored on `concept_note_chapters`.
+
 ### `document_get_chapter`
 
 Returns one chapter with current text, revision metadata, evidence review state,
-gaps, and template requirements.
+gaps, and template requirements. Current text is read from the revision with the
+highest `revision_number`; no Markdown body is read from the chapter row.
 
 ### `document_add_chapter`
 
@@ -1155,7 +1457,7 @@ Output:
 ```json
 {
   "chapter_id": "uuid",
-  "deleted": true,
+  "status": "deleted",
   "revision_id": "uuid",
   "restore_available": true
 }
@@ -1165,10 +1467,10 @@ Rules:
 
 - Use soft delete only. Do not hard-delete chapter rows.
 - Create a revision with `change_type=delete_chapter`.
-- Preserve previous text for restore.
+- Preserve the previous text and non-deleted chapter status for restore.
 - Re-number visible chapters transactionally.
 - If the chapter is required by the funder template, do not delete silently.
-  Instead mark it as `deleted=true` and create or update a gap explaining why a
+  Instead set `status=deleted` and create or update a gap explaining why a
   required section is intentionally skipped.
 - If the chapter has user-authored text, require explicit user confirmation.
 
@@ -1188,7 +1490,8 @@ Restores a soft-deleted chapter.
 
 Rules:
 
-- Clears `deleted`.
+- Restores the previous non-deleted chapter `status` recorded by the delete
+  revision.
 - Restores position or inserts at a requested position.
 - Adds a `restore_chapter` revision.
 - Reopens any gaps that were closed only because the chapter was deleted.
@@ -1369,18 +1672,19 @@ flowchart TB
 
 Example registry rows:
 
-| Capability id | Step | Operation | Writes | Confirmation |
-| --- | --- | --- | --- | --- |
-| `concept_note.upload.ingest` | `ingesting_user_files` | workflow | context bundle selected sources | no |
-| `concept_note.funder.get_profile` | `profiling_funder` | query | no | no |
-| `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches | no |
-| `concept_note.document.add_chapter` | `drafting_document` | command | CNB document | sometimes |
-| `concept_note.document.delete_chapter` | `editing_document` | command | CNB document | yes for non-empty/required |
-| `concept_note.document.edit_text` | `editing_document` | command | CNB revision | sometimes |
-| `concept_note.document.link_evidence` | `drafting_document` | command | CNB evidence links | no |
+| Capability id                          | Step                | Operation      | Writes             | Confirmation               |
+| -------------------------------------- | ------------------- | -------------- | ------------------ | -------------------------- |
+| `concept_note.funder.get_profile`      | `profiling_funder`  | query          | no                 | no                         |
+| `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches        | no                         |
+| `concept_note.document.add_chapter`    | `drafting_document` | command        | CNB document       | sometimes                  |
+| `concept_note.document.delete_chapter` | `editing_document`  | command        | CNB document       | yes for non-empty/required |
+| `concept_note.document.edit_text`      | `editing_document`  | command        | CNB revision       | sometimes                  |
+| `concept_note.document.link_evidence`  | `drafting_document` | command        | CNB evidence links | no                         |
 
 Export preflight, DOCX generation, and PDF generation are button-triggered route
 actions. They are not registered in the scoped agent tool registry.
+Markdown receipt and processing are deterministic backend operations and are
+also excluded from the agent capability registry.
 
 ## Prompt Model
 
@@ -1412,20 +1716,20 @@ UI_CONTEXT
 
 The UI needs typed events for chat and document state.
 
-| Event | Purpose |
-| --- | --- |
-| `concept_note_run_started` | Run id and initial status. |
-| `concept_note_context_bundle_ready` | Context bundle is ready. This is the only user-visible event for upload ingest, funder/template load, and similar-project refresh. |
-| `document_chapter_added` | Chapter inserted. |
-| `document_chapter_deleted` | Chapter soft-deleted. |
-| `document_chapter_restored` | Chapter restored. |
-| `document_chapter_updated` | New revision created. |
-| `document_gap_added` | Gap or blocker added. |
-| `document_evidence_linked` | Evidence review link added. |
-| `document_delete_confirmation_requested` | UI must confirm delete. |
-| `document_edit_confirmation_requested` | UI must confirm sensitive edit. |
-| `concept_note_export_ready` | DOCX or PDF export created. |
-| `concept_note_export_failed` | Export failed with stable reason. |
+| Event                                    | Purpose                                                                                                                            |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `concept_note_run_started`               | Run id and initial status.                                                                                                         |
+| `concept_note_context_bundle_ready`      | Context bundle is ready. This is the only user-visible event for upload ingest, funder/template load, and similar-project refresh. |
+| `document_chapter_added`                 | Chapter inserted.                                                                                                                  |
+| `document_chapter_deleted`               | Chapter soft-deleted.                                                                                                              |
+| `document_chapter_restored`              | Chapter restored.                                                                                                                  |
+| `document_chapter_updated`               | New revision created.                                                                                                              |
+| `document_gap_added`                     | Gap or blocker added.                                                                                                              |
+| `document_evidence_linked`               | Evidence review link added.                                                                                                        |
+| `document_delete_confirmation_requested` | UI must confirm delete.                                                                                                            |
+| `document_edit_confirmation_requested`   | UI must confirm sensitive edit.                                                                                                    |
+| `concept_note_export_ready`              | DOCX or PDF export created.                                                                                                        |
+| `concept_note_export_failed`             | Export failed with stable reason.                                                                                                  |
 
 ## Export Pipeline
 
@@ -1468,7 +1772,8 @@ POST /v1/concept-notes/start
 GET  /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
-POST /v1/concept-notes/{run_id}/uploads
+POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown
+GET  /v1/concept-notes/{run_id}/uploads/{upload_id}
 POST /v1/concept-notes/{run_id}/matches/refresh
 GET  /v1/concept-notes/{run_id}/document
 POST /v1/concept-notes/{run_id}/document/chapters
@@ -1487,7 +1792,11 @@ POST /api/v1/concept-notes/start
 GET  /api/v1/concept-notes/{run_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads
+GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}
+POST /api/v1/concept-notes/{run_id}/uploads/{upload_id}/retry
 GET  /api/v1/concept-notes/{run_id}/export/{export_id}
+
+POST /api/v1/cron/process-pdf-ocr-jobs
 
 POST /api/v1/internal/ca/capabilities/city/load-context
 POST /api/v1/internal/ca/capabilities/project/load-context
@@ -1501,29 +1810,33 @@ POST /api/v1/internal/ca/capabilities/hiap/summary
 The implementation should stay organized by responsibility, not by a prescribed
 file layout.
 
-| Responsibility | Owner | Boundary |
-| --- | --- | --- |
-| Workflow orchestration | Climate Advisor | Starts/resumes runs, resolves active step, scopes tools, streams responses. |
-| CNB storage access | datateam managed CNB database | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations. |
-| Funding reference access | datateam managed CNB database | Climate Advisor reads funders, opportunities, templates, criteria, pipeline entries, funded projects, and funding links from CNB reference tables. |
-| Document tools | Climate Advisor | Mutates draft document state through the CNB storage contract only. |
-| File ingestion | Climate Advisor | Registers uploads and uses the supporting PDF converter repository for PDF-to-markdown conversion. CNB persistence keeps only selected source context in the context bundle. |
-| CC context loading | CityCatalyst | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities. |
-| CC bridge routes | CityCatalyst | Authenticated browser-facing proxy into CA workflow routes. |
-| Capability registry | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag. |
-| UI workspace | CityCatalyst | Chat, chapter outline, editor, evidence/gap views, upload status, export controls. |
+| Responsibility                | Owner                            | Boundary                                                                                                                                                                                                  |
+| ----------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                               |
+| CNB storage access            | datateam managed CNB database    | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations.                              |
+| Funding reference access      | datateam managed CNB database    | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables.                                                                                              |
+| Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                       |
+| Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result pointers. No storage pointer or signed result URL is handed to CA.                             |
+| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                  |
+| CNB Markdown ingestion        | Climate Advisor                  | Optionally accepts completed Markdown, durably registers its digest and metadata, then performs CN-specific excerpt selection, indexing, summarization, and context-bundle updates. It owns no OCR state. |
+| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities.                                                                                                             |
+| CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                               |
+| Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                |
+| UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                        |
 
 ## Failure Handling
 
-| Failure | User-visible behavior | System behavior |
-| --- | --- | --- |
-| CC context unavailable | Show missing CityCatalyst context and continue with uploads/interview. | Persist blocker and retry option. |
-| Funder profile missing | Block drafting against a real template. | Mark `profiling_funder` blocked. |
-| Converter failed | Show file-specific failure. | Keep upload ref and allow retry. |
-| Similar projects weak | Continue but show caveat. | Persist match caveats. |
-| Chapter edit conflict | Ask user to confirm current text. | Return structured conflict. |
-| Required chapter deleted | Warn at export preflight. | Keep soft-deleted row and gap. |
-| Export failed | Show stable export error. | Persist failed export row with retry. |
+| Failure                      | User-visible behavior                                                     | System behavior                                                                                                                |
+| ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| CC context unavailable       | Show missing CityCatalyst context and continue with uploads/interview.    | Persist blocker and retry option.                                                                                              |
+| Funder profile missing       | Block drafting against a real template.                                   | Mark `profiling_funder` blocked.                                                                                               |
+| `cc_ocr_failed`              | Show that CC could not convert the specific source.                       | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA. |
+| `ca_markdown_ingest_failed`  | Show that conversion succeeded but CNB could not ingest the Markdown yet. | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.         |
+| `markdown_identity_conflict` | Show that the immutable upload cannot be replaced.                        | CA returns `409`; CC does not retry as a transient delivery failure or alter the successful OCR artifact.                      |
+| Similar projects weak        | Continue but show caveat.                                                 | Persist match caveats.                                                                                                         |
+| Chapter edit conflict        | Ask user to confirm current text.                                         | Return structured conflict.                                                                                                    |
+| Required chapter deleted     | Warn at export preflight.                                                 | Keep soft-deleted row and gap.                                                                                                 |
+| Export failed                | Show stable export error.                                                 | Persist failed export row with retry.                                                                                          |
 
 ## Guardrails
 
@@ -1552,56 +1865,20 @@ Minimum test surface:
 - Source-link preservation tests when editing text.
 - Matching tests for candidate retrieval, LLM decision output, fit rationale,
   evidence, and caveats.
-- PDF ingestion tests with success, warning, and failure payloads.
+- Markdown output fixtures covering multi-page order, table headers and
+  alignment, units, years, totals, numeric values, and retained narrative.
+- CC OCR tests covering upload authorization, durable job claims, lease recovery,
+  three-attempt transient retries, ordered page merge, result persistence, and
+  the 20 MB source-PDF upload limit.
+- CC-to-CA Markdown handoff contract tests covering authentication, digest
+  verification, `202` durable registration, same-digest idempotency, and
+  different-digest `409` conflicts.
+- Failure tests distinguishing `cc_ocr_failed` from
+  `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
+  repeat successful OCR.
 - Prompt/tool registration tests proving only the active step's tools are
   available.
 - SSE event shape tests for document updates.
-
-## Implementation Phases
-
-### Phase 1: Durable Document Workspace
-
-- Integrate with datateam managed CNB database contracts for runs, context
-  bundles, chapters, revisions, gaps, and evidence links.
-- Add document tools:
-  - list chapters
-  - get chapter
-  - add chapter
-  - delete chapter
-  - restore chapter
-  - edit chapter text
-  - link evidence
-  - flag gap
-- Add a minimal CC page with chat plus document workspace.
-
-### Phase 2: Context Bundle and CC Context
-
-- Add run start/resume/status.
-- Add context bundle service.
-- Add CC capability wrappers for city, project, GHGI, CCRA, and HIAP summaries.
-- Persist context snapshots for audit and resume.
-
-### Phase 3: CNB Reference Tables and Matching
-
-- Stand up funder/profile/template/project schema.
-- Add curated ingest scripts.
-- Add reference tools and LLM-agent similar-project matching.
-- Persist matched examples and show them in the document workflow.
-
-### Phase 4: File Ingestion
-
-- Add upload registration.
-- Use the supporting PDF converter repository for PDF-to-markdown conversion.
-- Attach converted source context to the context bundle.
-- Enable mid-flow upload ingestion and evidence review through the document workspace.
-
-### Phase 5: Export
-
-- Add export preflight.
-- Add DOCX export generation.
-- Add PDF export generation.
-- Store export file refs.
-- Add retry and failure reporting.
 
 ## Open Questions
 
@@ -1612,3 +1889,9 @@ Minimum test surface:
   appendices/internal notes?
 - What source license rules apply to the Minnesota funded-project corpus?
 - Which matching weights are NLC-approved hard gates versus soft signals?
+- For the selected cities, which GHGI years and sectors are available, what is
+  missing, and which city-specific reports require mapping into the
+  CityCatalyst/GPC structure?
+- Should available risk assessments and GreenStep actions be transformed into
+  the current CityCatalyst CCRA/action format, or remain source evidence that is
+  summarized only inside the context bundle?

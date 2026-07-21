@@ -35,7 +35,6 @@ from app.services.action_policy_scores_api import (
 )
 from app.services.city_attributes_api import CityAttributesApiService
 from app.modules.prioritizer.internal_models import (
-    Action,
     ActionFinancialFeasibilityScoreRecord,
     ActionFinancialFeasibilityScoresFetchResult,
     ActionPathwaysFetchResult,
@@ -44,6 +43,7 @@ from app.modules.prioritizer.internal_models import (
     ActionPolicyScoreRecord,
     ActionPolicyScoresFetchResult,
     CityData,
+    ClimateFinanceReportEvidenceFetchResult,
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
@@ -487,6 +487,22 @@ class MockActionFinancialFeasibilityScoresDataApiClient:
             warning=None,
         )
 
+    def get_report_finance_evidence(
+        self,
+        *,
+        action_id: str,
+        country_code: str,
+        sector: str | None,
+        route: str | None = None,
+    ) -> ClimateFinanceReportEvidenceFetchResult:
+        """Return empty detail rows because the compact mock contains scores only."""
+        del action_id, country_code, sector, route
+        return ClimateFinanceReportEvidenceFetchResult(
+            warnings=[
+                "Named finance opportunities and precedents are not present in the mock score payload."
+            ]
+        )
+
 
 class ApiLegalDataApiClient:
     """Deprecated API-backed legal client that raises before upstream HTTP calls."""
@@ -566,6 +582,22 @@ class ApiActionFinancialFeasibilityScoresDataApiClient:
     ) -> ActionFinancialFeasibilityScoresFetchResult:
         """Fetch city-scoped financial feasibility scores from the upstream API."""
         return self._service.get_scores_by_action_id(locode, country_code)
+
+    def get_report_finance_evidence(
+        self,
+        *,
+        action_id: str,
+        country_code: str,
+        sector: str | None,
+        route: str | None = None,
+    ) -> ClimateFinanceReportEvidenceFetchResult:
+        """Fetch named finance opportunities and precedents for one report."""
+        return self._service.get_report_evidence(
+            action_id=action_id,
+            country_code=country_code,
+            sector=sector,
+            route=route,
+        )
 
 
 class ApiActionPathwaysDataApiClient:

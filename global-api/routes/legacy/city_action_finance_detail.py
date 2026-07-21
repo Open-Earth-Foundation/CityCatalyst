@@ -15,7 +15,7 @@ from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import text
 
 from db.database import SessionLocal
-from routes.city_action_financial_feasibility import (
+from routes.legacy.city_action_financial_feasibility import (
     _CAVEAT,
     _compose_reason,
     _normalize_value,

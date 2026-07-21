@@ -22,7 +22,7 @@ def test_get_emissionfactor_datasources_success(monkeypatch):
                         "dataset_name_i18n": None
                     }]
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/datasource")
     assert response.status_code == 200
     assert "emissions_factor_datasource" in response.json()
@@ -36,7 +36,7 @@ def test_get_emissionfactor_datasources_not_found(monkeypatch):
                 def mappings(self): return self
                 def all(self): return []
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/datasource")
     assert response.status_code == 404
     assert response.json()["detail"] == "No data available"
@@ -55,7 +55,7 @@ def test_get_emissionfactor_emissionfactor_datasource_success(monkeypatch):
                         "emissionfactor_id": 2
                     }]
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/emissions_factor_datasource")
     assert response.status_code == 200
     data = response.json()
@@ -72,7 +72,7 @@ def test_get_emissionfactor_emissionfactor_datasource_not_found(monkeypatch):
                 def mappings(self): return self
                 def all(self): return []
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_emissionfactor_datasource_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/emissions_factor_datasource")
     assert response.status_code == 404
     assert response.json()["detail"] == "No data available"
@@ -101,7 +101,7 @@ def test_get_emissionfactors_success(monkeypatch):
                         "emissionfactor_id": 1
                     }]
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_emissionsfactor_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_emissionsfactor_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/emissions_factor")
     assert response.status_code == 200
     assert "emissions_factor" in response.json()
@@ -115,7 +115,7 @@ def test_get_emissionfactors_not_found(monkeypatch):
                 def mappings(self): return self
                 def all(self): return []
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_emissionsfactor_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_emissionsfactor_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/emissions_factor")
     assert response.status_code == 404
     assert response.json()["detail"] == "No data available"
@@ -136,7 +136,7 @@ def test_get_emissionfactor_methodologies_success(monkeypatch):
                         "dataset_id": 1
                     }]
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_methodology_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_methodology_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/methodology")
     assert response.status_code == 200
     assert "emissions_factor_methodologies" in response.json()
@@ -150,7 +150,7 @@ def test_get_emissionfactor_methodologies_not_found(monkeypatch):
                 def mappings(self): return self
                 def all(self): return []
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_methodology_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_methodology_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/methodology")
     assert response.status_code == 404
     assert response.json()["detail"] == "No data available"
@@ -170,7 +170,7 @@ def test_get_emissionfactor_publishers_success(monkeypatch):
                         "publisher_id": 1
                     }]
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_publisher_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_publisher_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/publisher")
     assert response.status_code == 200
     data = response.json()
@@ -188,7 +188,7 @@ def test_get_emissionfactor_publishers_not_found(monkeypatch):
                 def mappings(self): return self
                 def all(self): return []
             return DummyResult()
-    monkeypatch.setattr("routes.emissionfactor_publisher_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.emissionfactor_publisher_endpoint.SessionLocal", lambda: DummySession())
     response = client.get("/api/v0/emissions_factor/publisher")
     assert response.status_code == 404
     assert response.json()["detail"] == "No data available" 

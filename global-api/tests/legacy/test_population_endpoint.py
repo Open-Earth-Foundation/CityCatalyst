@@ -46,7 +46,7 @@ def test_get_population_by_actor_success(monkeypatch):
 
             return DummyResult()
 
-    monkeypatch.setattr("routes.population_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.population_endpoint.SessionLocal", lambda: DummySession())
 
     response = client.get("/api/v1/population/USA%200US-CA-SF")
 
@@ -81,7 +81,7 @@ def test_get_population_by_actor_no_data(monkeypatch):
 
             return DummyResult()
 
-    monkeypatch.setattr("routes.population_endpoint.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.population_endpoint.SessionLocal", lambda: DummySession())
 
     response = client.get("/api/v1/population/NONEXISTENT")
 

@@ -62,7 +62,7 @@ def test_search_cities_ranks_fuzzy_match(monkeypatch):
             "bbox_west": -71.0,
         },
     ]
-    monkeypatch.setattr("routes.cities_search.SessionLocal", lambda: DummySession(rows))
+    monkeypatch.setattr("routes.legacy.cities_search.SessionLocal", lambda: DummySession(rows))
 
     response = client.get("/api/v1/cities/search?q=santigo&country_code=CL")
 
@@ -90,7 +90,7 @@ def test_search_cities_normalizes_accents(monkeypatch):
             "bbox_west": -71.0,
         }
     ]
-    monkeypatch.setattr("routes.cities_search.SessionLocal", lambda: DummySession(rows))
+    monkeypatch.setattr("routes.legacy.cities_search.SessionLocal", lambda: DummySession(rows))
 
     response = client.get("/api/v1/cities/search?q=nunoa&country_code=CL")
 
@@ -99,7 +99,7 @@ def test_search_cities_normalizes_accents(monkeypatch):
 
 
 def test_search_cities_no_matches(monkeypatch):
-    monkeypatch.setattr("routes.cities_search.SessionLocal", lambda: DummySession([]))
+    monkeypatch.setattr("routes.legacy.cities_search.SessionLocal", lambda: DummySession([]))
 
     response = client.get("/api/v1/cities/search?q=zzzz&country_code=CL")
 

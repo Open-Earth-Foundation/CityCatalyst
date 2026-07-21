@@ -163,6 +163,7 @@ climate-advisor/service/tests/output/
 
 # Local generated artifacts
 /output/
+/climate-advisor/output/
 
 # Cursor plans
 .cursor/plans/

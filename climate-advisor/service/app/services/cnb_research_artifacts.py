@@ -1,0 +1,141 @@
+"""Functions for writing and rendering local CNB research review artifacts."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from app.models.cnb_research import FundingOpportunityResearchBundle
+
+
+def write_research_artifacts(
+    *,
+    run_directory: Path,
+    bundle: FundingOpportunityResearchBundle,
+) -> None:
+    """Write one canonical JSON bundle plus the trace and Markdown review."""
+    # Persist the canonical machine-readable bundle first.
+    (run_directory / "research_bundle.json").write_text(
+        json.dumps(
+            bundle.model_dump(mode="json"),
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    # Write the audit trace and human-readable review beside the bundle.
+    trace_text = "".join(
+        f"{json.dumps(turn.model_dump(mode='json'), ensure_ascii=False)}\n"
+        for turn in bundle.agent_trace
+    )
+    (run_directory / "agent_trace.jsonl").write_text(
+        trace_text,
+        encoding="utf-8",
+    )
+    (run_directory / "review.md").write_text(
+        render_review(bundle),
+        encoding="utf-8",
+    )
+
+
+def render_review(bundle: FundingOpportunityResearchBundle) -> str:
+    """Render a concise human review view from the canonical bundle."""
+    # Build the run summary and architecture-shaped reference-data dossier.
+    opportunity = next(
+        record for record in bundle.funding_records if record.is_opportunity
+    )
+    lines = [
+        f"# Funding Opportunity Research: {opportunity.name}",
+        "",
+        f"- Run: `{bundle.run_id}`",
+        f"- Pipeline: `{bundle.run_metadata.pipeline_version}`",
+        f"- Model: `{bundle.run_metadata.model_name}` "
+        f"(`{bundle.run_metadata.reasoning_effort}` reasoning)",
+        f"- Prompt SHA-256: `{bundle.run_metadata.prompt_sha256}`",
+        f"- Turns: {bundle.run_metadata.turns_used}/"
+        f"{bundle.run_metadata.max_turns} "
+        f"(`{bundle.run_metadata.termination_reason}`)",
+        f"- Duration: {bundle.run_metadata.duration_seconds:.2f} seconds",
+        f"- MLflow run: `{bundle.run_metadata.mlflow_run_id or 'not recorded'}`",
+        f"- Review status: `{bundle.review.status}`",
+        f"- Funder: {bundle.funder.name}",
+        f"- Program URL: {bundle.request.program_url}",
+        f"- Funding records: {len(bundle.funding_records)}",
+        f"- Sources: {len(bundle.sources)}",
+        f"- Evidence records: {len(bundle.evidence)}",
+        f"- Gaps: {len(bundle.gaps)}",
+        f"- Conflicts: {len(bundle.conflicts)}",
+        "",
+        "## Funding reference records",
+        "",
+        "```json",
+        json.dumps(
+            {
+                "funder": bundle.funder.model_dump(mode="json"),
+                "funding_records": [
+                    record.model_dump(mode="json") for record in bundle.funding_records
+                ],
+                "funder_templates": [
+                    template.model_dump(mode="json")
+                    for template in bundle.funder_templates
+                ],
+                "funder_criteria": [
+                    criterion.model_dump(mode="json")
+                    for criterion in bundle.funder_criteria
+                ],
+            },
+            indent=2,
+            ensure_ascii=False,
+        ),
+        "```",
+        "",
+        "## Sources",
+        "",
+    ]
+
+    # Render source provenance before issues and field-level evidence.
+    if bundle.sources:
+        for source in bundle.sources:
+            title = source.title or source.source_ref
+            lines.append(
+                f"- `{source.source_ref}` [{title}]({source.url}) "
+                f"— `{source.source_type}`, snapshot "
+                f"`{source.local_snapshot_path}`"
+            )
+    else:
+        lines.append("No source snapshots were captured.")
+
+    # Render unresolved gaps and competing sourced values.
+    lines.extend(["", "## Gaps", ""])
+    if bundle.gaps:
+        lines.extend(f"- `{gap.target_path}` — {gap.reason}" for gap in bundle.gaps)
+    else:
+        lines.append("No gaps reported.")
+
+    lines.extend(["", "## Conflicts", ""])
+    if bundle.conflicts:
+        for conflict in bundle.conflicts:
+            values = json.dumps(conflict.candidate_values, ensure_ascii=False)
+            lines.append(
+                f"- `{conflict.target_path}` — {conflict.explanation} "
+                f"Candidates: `{values}`"
+            )
+    else:
+        lines.append("No conflicts reported.")
+
+    # Finish with the evidence retained for individual dossier fields.
+    lines.extend(["", "## Field evidence", ""])
+    if bundle.evidence:
+        for evidence in bundle.evidence:
+            location = (
+                f" ({evidence.source_location})" if evidence.source_location else ""
+            )
+            lines.append(
+                f"- `{evidence.target_path}` ← `{evidence.source_ref}`{location}: "
+                f"{evidence.quote_or_summary}"
+            )
+    else:
+        lines.append("No field evidence reported.")
+    return "\n".join(lines) + "\n"

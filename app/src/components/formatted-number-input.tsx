@@ -1,7 +1,4 @@
 import React, { useCallback, useLayoutEffect, useRef } from "react";
-<<<<<<< HEAD
-import { Control, Controller } from "react-hook-form";
-=======
 import {
   Control,
   Controller,
@@ -9,7 +6,6 @@ import {
   Path,
   PathValue,
 } from "react-hook-form";
->>>>>>> v1.23.0-rc.0
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import { NumberInputProps } from "./ui/number-input";
 import { decimalSeparators, formatNumber } from "@/util/helpers";
@@ -55,11 +51,7 @@ function countSeparatorsBefore(
   return count;
 }
 
-<<<<<<< HEAD
-function FormattedNumberInput({
-=======
 function FormattedNumberInput<T extends FieldValues>({
->>>>>>> v1.23.0-rc.0
   control,
   setError,
   id,
@@ -140,14 +132,10 @@ function FormattedNumberInput<T extends FieldValues>({
    * in the old vs new formatted strings.
    */
   const handleChange = useCallback(
-<<<<<<< HEAD
     (
       e: React.ChangeEvent<HTMLInputElement>,
       fieldOnChange: (v: any) => void,
     ) => {
-=======
-    (e: React.ChangeEvent<HTMLInputElement>, fieldOnChange: (v: any) => void) => {
->>>>>>> v1.23.0-rc.0
       const input = e.target;
       const oldValue = input.value;
       const cursorPos = input.selectionStart ?? oldValue.length;
@@ -158,15 +146,11 @@ function FormattedNumberInput<T extends FieldValues>({
       const newFormatted = format(parsedValue);
 
       // Count separators before cursor in old vs new string
-<<<<<<< HEAD
       const oldSeps = countSeparatorsBefore(
         oldValue,
         cursorPos,
         decimalSeparator,
       );
-=======
-      const oldSeps = countSeparatorsBefore(oldValue, cursorPos, decimalSeparator);
->>>>>>> v1.23.0-rc.0
       const newSeps = countSeparatorsBefore(
         newFormatted,
         cursorPos + (newFormatted.length - oldValue.length),

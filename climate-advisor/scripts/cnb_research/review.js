@@ -46,7 +46,7 @@
       "conflictCount", "sectionNav", "reviewLayout", "selectionSummary",
       "editorSections", "inspectorPanel", "inspectorTitle", "inspectorPath",
       "inspectorContent", "reviewStatus", "reviewerName", "reviewNotes",
-      "statusMessage",
+      "closeInspector", "statusMessage",
     ].forEach((id) => { view[id] = document.getElementById(id); });
 
     view.bundleInput.addEventListener("change", (event) => {
@@ -55,6 +55,7 @@
       event.target.value = "";
     });
     view.saveButton.addEventListener("click", saveUpdate);
+    view.closeInspector.addEventListener("click", () => showInspector());
   }
 
   async function loadBundle(file) {
@@ -93,8 +94,9 @@
     view.programName.textContent = opportunity?.name || "Unnamed program";
     view.runMeta.textContent = [
       bundle.funder.name,
-      bundle.run_metadata?.model_name,
-      bundle.run_id,
+      bundle.run_metadata?.model_name
+        ? `Researched with ${bundle.run_metadata.model_name}`
+        : null,
     ].filter(Boolean).join(" · ");
     setCount("sourceCount", bundle.sources);
     setCount("evidenceCount", bundle.evidence);
@@ -165,11 +167,11 @@
     const summary = element("summary", "section-summary");
     const summaryText = element("span", "section-summary-text");
     summaryText.append(
-      element("h2", "", "Other evidence and issues"),
+      element("h2", "", "Needs follow-up"),
       element(
         "span",
         "section-description",
-        "Items that do not map to an editable dossier field.",
+        "Useful facts the official sources did not establish.",
       ),
     );
     summary.append(summaryText, element("span", "collapse-label"));
@@ -189,7 +191,7 @@
           "conflict",
         );
       }
-      reviewItem.prepend(element("code", "issue-path", item.target_path));
+      reviewItem.prepend(element("h3", "issue-title", issueTitle(item.target_path)));
       content.append(reviewItem);
     });
     section.append(summary, content);
@@ -560,6 +562,18 @@
 
   function recordTitle(key, record, index) {
     return record.name || record.title || record.label || record.template_name || `${humanize(key).replace(/s$/, "")} ${index + 1}`;
+  }
+
+  function issueTitle(path) {
+    const tokens = pathTokens(path);
+    const key = tokens[tokens.length - 1] || "research item";
+    const labels = {
+      co_financing: "Co-financing requirement",
+      downstream_financing_status: "Downstream financing",
+      underlying_investment_amount: "Underlying investment value",
+      license_status: "Source reuse licence",
+    };
+    return labels[key] || humanize(key);
   }
 
   function visibleDecisions() {

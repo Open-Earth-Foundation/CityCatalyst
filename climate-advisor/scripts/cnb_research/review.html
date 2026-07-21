@@ -12,10 +12,10 @@
     <header class="topbar">
       <div class="brand">
         <span class="brand-mark">CNB</span>
-        <div><small>Funding research</small><h1>Review workspace</h1></div>
+        <div><small>Concept Note Builder</small><h1>Research review</h1></div>
       </div>
       <div class="actions">
-        <span>Local files only</span>
+        <span class="local-state">Local review</span>
         <label class="button secondary" for="bundleInput">Open bundle</label>
         <input id="bundleInput" type="file" accept="application/json,.json" hidden />
         <button id="saveButton" class="button primary" type="button" disabled>
@@ -61,9 +61,12 @@
 
           <aside id="inspectorPanel" class="inspector" aria-label="Evidence and review" hidden>
             <section id="inspectorEvidence">
-              <small>Field evidence</small>
+              <div class="inspector-heading">
+                <small>Field evidence</small>
+                <button id="closeInspector" class="inspector-close" type="button" aria-label="Close evidence panel">Close</button>
+              </div>
               <h2 id="inspectorTitle"></h2>
-              <code id="inspectorPath"></code>
+              <p id="inspectorPath" class="inspector-path"></p>
               <div id="inspectorContent"></div>
             </section>
             <section class="review-details">

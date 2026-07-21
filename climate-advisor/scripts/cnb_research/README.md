@@ -95,14 +95,16 @@ collapsed, as can nested objects and individual records. Every disclosure shows
 an explicit `Expand` or `Collapse` action. Every leaf field can be edited and
 included or excluded. The entire right panel—including evidence, review status,
 reviewer, and notes—is hidden until a field is selected, then reveals that
-field's mapped evidence, gaps, and conflicts alongside the review controls.
+field's mapped evidence, gaps, and conflicts alongside the review controls. Use
+the panel's `Close` action to return to the full-width editor.
 Technical `*_ref` and `*_reference` fields remain preserved in the saved object
 but are not displayed, editable, selectable, or included in visible field counts.
 Monetary inputs use thousands separators for readability, accept grouped or
 ungrouped decimal values, and retain numeric meaning in the saved update.
 
 Evidence, gaps, and conflicts whose target paths do not map to an editable
-dossier field remain visible in an `Other evidence and issues` section.
+dossier field remain visible with human-readable labels in a `Needs follow-up`
+section; their technical target paths stay hidden from reviewers.
 
 `Save update` downloads `<run_id>.review-update.json`. The update contains
 source-bundle hashes when browser crypto is available,

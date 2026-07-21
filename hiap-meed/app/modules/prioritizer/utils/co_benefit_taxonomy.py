@@ -23,3 +23,13 @@ ALLOWED_CO_BENEFIT_KEYS: tuple[CoBenefitKey, ...] = (
     "stakeholder_engagement",
     "water_quality",
 )
+
+CO_BENEFIT_DISPLAY_LABELS: dict[str, str] = {
+    "air_quality": "air quality",
+    "cost_of_living": "cost of living",
+    "habitat": "habitat",
+    "housing": "housing",
+    "mobility": "mobility",
+    "stakeholder_engagement": "stakeholder engagement",
+    "water_quality": "water quality",
+}

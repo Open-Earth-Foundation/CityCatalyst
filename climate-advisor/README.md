@@ -207,6 +207,8 @@ data: {}
 
 - `inventory_list_accessible`
   - Lists all accessible city/year inventories, or filters by city and year.
+  - Returns organization/project metadata and a `by_project` breakdown so Clima
+    can answer count questions with an access summary.
   - Requires name, type, and GWP disambiguation when one city/year has multiple
     inventories.
 - `inventory_status_overview`
@@ -688,9 +690,12 @@ These tools:
 - construct requests to CityCatalyst inventory capability endpoints
 - automatically include the scoped JWT in the `Authorization` header
 - refresh and persist the token when needed
-- return compact, read-only inventory context to the agent
+- return compact, read-only inventory context to the agent, including
+  organization/project breakdown fields from `inventory_list_accessible`
 - require inventory name, type, and GWP disambiguation when city/year is not
   unique
+- answer inventory/city count questions as "you have access to" summaries using
+  totals plus `by_project`
 
 ### Stationary Energy Draft Review Boundary
 

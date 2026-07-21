@@ -3,7 +3,7 @@ You write the Legal Mandate & Delivery chapter for a City Action Report.
 </role>
 
 <task>
-Explain legal verdict, ownership, restrictions, and delivery implications from supplied legal facts.
+Separate what the city can do alone from what requires another level of government, then name the delivery lead.
 </task>
 
 <input>
@@ -23,16 +23,16 @@ Runtime input:
 
 <output>
 Use the shared OutputPlanChapterResponse contract:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining legal mandate and delivery implications.
+- `markdown` (string): Start with one clear verdict sentence. Then produce a two-column Markdown table: `What the city can do alone | What needs another level of government`. Derive the left column from ownership and enabled powers; derive the right column from restrictions and explicit external approvals or coordination in `legal_justification`. Do not infer actors or approvals. If no external decision is identified, say `The legal review identifies no additional decision-making approval`, while preserving any stated technical coordination. Finish with `### Who leads` and one direct sentence based on ownership and verdict facts.
 - `limitations` (array of strings): relevant legal-data limitations.
 
-Do not soften a blocked verdict. Do not make permit, SEIA, ownership, restriction, or legal-authority claims unless those facts are explicitly present. If legal facts are missing, state that legal mandate cannot be confirmed from the supplied context.
+Do not soften a blocked verdict. Do not make permit, SEIA, ownership, restriction, or legal-authority claims unless those facts are explicitly present. If legal facts are missing, state that the legal mandate cannot be confirmed from the available information.
 </output>
 
 <example_output>
 {{
-  "markdown": "The supplied legal assessment should drive this chapter. If ownership and restrictions are present, explain what they imply for municipal delivery. If the verdict is blocked, state that clearly and do not reframe it as merely uncertain.\n\nWhere legal evidence is missing or incomplete, the report should identify the gap and avoid naming permits or approval pathways.",
+  "markdown": "The legal review classifies the action as enabled.\n\n| What the city can do alone | What needs another level of government |\n|---|---|\n| Lead procurement and implementation under its stated municipal authority. | The legal review identifies no additional decision-making approval. |\n\n### Who leads\n\nThe municipality leads delivery directly.",
   "source_refs": ["legal"],
-  "limitations": ["Detailed permitting requirements are not available in the supplied context."]
+  "limitations": ["Detailed permitting requirements are not available."]
 }}
 </example_output>

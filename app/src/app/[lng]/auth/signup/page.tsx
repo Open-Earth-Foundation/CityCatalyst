@@ -19,6 +19,7 @@ import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
+import { isPasswordPatternValid } from "@/util/validation";
 import { getHomePath } from "@/util/routes";
 
 type Inputs = {
@@ -57,9 +58,10 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     handleSubmit,
     register,
     setError: setFormError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     watch,
   } = useForm<Inputs>({
+    mode: "onChange",
     defaultValues: {
       preferredLanguage: lng,
       email: prefilledEmail,
@@ -67,6 +69,13 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   });
 
   const watchPassword = watch("password", "");
+  const watchConfirmPassword = watch("confirmPassword", "");
+  const passwordsMismatch =
+    watchConfirmPassword.length > 0 && watchPassword !== watchConfirmPassword;
+  const passwordPatternValid = isPasswordPatternValid(watchPassword);
+
+  const isSubmitDisabled =
+    !isValid || passwordsMismatch || !passwordPatternValid;
 
   const [error, setError] = useState("");
 
@@ -76,18 +85,9 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   }
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (data.password !== data.confirmPassword) {
-      setFormError("confirmPassword", {
-        type: "custom",
-        message: "Passwords don't match!",
-      });
-      return;
-    }
-
     if (typeof data.acceptTerms !== "boolean") {
       data.acceptTerms = data.acceptTerms === "on";
     }
-
     try {
       const res = await fetch("/api/v1/auth/register", {
         method: "POST",
@@ -194,6 +194,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           shouldValidate={true}
           t={t}
           watchPassword={watchPassword}
+          mismatch={passwordsMismatch}
         />
         <PasswordInput
           register={register}
@@ -202,6 +203,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           name={t("confirm-password")}
           id="confirmPassword"
           shouldValidate={false}
+          mismatch={passwordsMismatch}
         />
         <input type="hidden" {...register("preferredLanguage")} />
         <Field
@@ -245,6 +247,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           type="submit"
           formNoValidate
           loading={isSubmitting}
+          disabled={isSubmitDisabled}
           h={16}
           width="full"
           bgColor="interactive.secondary"

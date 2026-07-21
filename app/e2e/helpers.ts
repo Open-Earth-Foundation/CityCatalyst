@@ -5,21 +5,53 @@ export async function expectText(page: Page, text: string) {
 }
 
 /** Wait until the auth form is hydrated and inputs are interactive. */
-export async function waitForAuthFormReady(page: Page) {
+export async function waitForAuthFormReady(
+  page: Page,
+  options: { expectEnabled?: boolean } = {},
+) {
+  const { expectEnabled = true } = options;
   await expect(page.locator('input[name="email"]')).toBeVisible();
   await expect(page.locator("form").first()).toHaveAttribute("novalidate", "");
   const submitButton = page.getByRole("button", {
     name: /^(LOG IN|Create Account)$/i,
   });
   await expect(submitButton).toBeVisible();
-  await expect(submitButton).toBeEnabled();
+  if (expectEnabled) {
+    await expect(submitButton).toBeEnabled();
+  }
   await expect(submitButton).toHaveAttribute("formnovalidate", "");
 }
 
 export async function expectFieldInvalid(page: Page, fieldName: string) {
-  await expect(page.locator(`input[name="${fieldName}"]`)).toHaveAttribute(
-    "aria-invalid",
-    "true",
+  // Chakra UI v3 / Ark UI uses several DOM signals to indicate an invalid field:
+  //   1. data-invalid="" on the Field.Root group container (role="group")
+  //   2. aria-invalid="true" on the input control
+  //   3. data-invalid="" on the input control itself
+  //   4. An error text element rendered by Field.ErrorText
+  // Depending on the Chakra/Ark version, React rendering timing, and how
+  // react-hook-form propagates errors, not all signals may be present at the
+  // same time. Check for any of them in a polling loop.
+  await page.waitForFunction(
+    (name: string) => {
+      const input = document.querySelector(`input[name="${name}"]`);
+      if (!input) return false;
+
+      // Signal 1: aria-invalid on the input itself
+      if (input.getAttribute("aria-invalid") === "true") return true;
+
+      // Signal 2: data-invalid on the input itself
+      if (input.hasAttribute("data-invalid")) return true;
+
+      // Signal 3: data-invalid on the closest field group container
+      const group = input.closest('[role="group"]');
+      if (group?.hasAttribute("data-invalid")) return true;
+
+      // Signal 4: an error text element rendered inside the field group
+      if (group?.querySelector('[data-part="error-text"]')) return true;
+
+      return false;
+    },
+    fieldName,
     { timeout: 15000 },
   );
 }

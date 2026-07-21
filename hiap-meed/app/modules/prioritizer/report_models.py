@@ -12,6 +12,8 @@ from app.modules.prioritizer.internal_models import (
     ActionMitigationFeasibilityScoreRecord,
     ActionPolicyScoreRecord,
     CityData,
+    ClimateFinanceOpportunityRecord,
+    ClimateFinanceProjectRecord,
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
@@ -56,6 +58,10 @@ class ReportContext(BaseModel):
     legal_assessment: LegalAssessmentRecord | None = None
     mitigation_feasibility: ActionMitigationFeasibilityScoreRecord | None = None
     financial_feasibility: ActionFinancialFeasibilityScoreRecord | None = None
+    finance_opportunities: list[ClimateFinanceOpportunityRecord] = Field(
+        default_factory=list
+    )
+    comparable_projects: list[ClimateFinanceProjectRecord] = Field(default_factory=list)
     source_metadata: dict[str, Any] = Field(default_factory=dict)
     limitations: list[str] = Field(default_factory=list)
 

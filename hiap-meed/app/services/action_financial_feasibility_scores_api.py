@@ -12,9 +12,14 @@ from pydantic import ValidationError
 from app.modules.prioritizer.internal_models import (
     ActionFinancialFeasibilityScoreRecord,
     ActionFinancialFeasibilityScoresFetchResult,
+    ClimateFinanceOpportunityRecord,
+    ClimateFinanceProjectRecord,
+    ClimateFinanceReportEvidenceFetchResult,
 )
 from app.modules.prioritizer.models import (
     ActionFinancialFeasibilityScoresApiResponse,
+    ClimateFinanceOpportunitiesApiResponse,
+    ClimateFinanceProjectsApiResponse,
 )
 from app.services.http_client import UpstreamApiError, get_json_with_retries
 
@@ -26,6 +31,10 @@ DEFAULT_ACTION_FINANCIAL_FEASIBILITY_SCORES_BASE_URL = (
 ACTION_FINANCIAL_FEASIBILITY_SCORES_ENDPOINT_TEMPLATE = (
     "GET /api/v1/cities/{locode}/climate-finance/feasibility"
 )
+CLIMATE_FINANCE_OPPORTUNITIES_ENDPOINT = "GET /api/v1/climate-finance/opportunities"
+CLIMATE_FINANCE_PROJECTS_ENDPOINT = "GET /api/v1/climate-finance/projects"
+REPORT_FINANCE_ROWS_LIMIT = 5
+REPORT_FINANCE_SCREENING_LIMIT = 50
 
 
 def get_action_financial_feasibility_scores_base_url() -> str:
@@ -174,3 +183,188 @@ class ActionFinancialFeasibilityScoresApiService:
             upstream_meta=response.meta.model_dump(mode="json"),
             warning=None,
         )
+
+    def get_report_evidence(
+        self,
+        *,
+        action_id: str,
+        country_code: str,
+        sector: str | None,
+        route: str | None = None,
+        limit: int = REPORT_FINANCE_ROWS_LIMIT,
+    ) -> ClimateFinanceReportEvidenceFetchResult:
+        """Fetch a compact set of named funds and precedents for one report."""
+        opportunities_url = self._build_catalogue_url(
+            path="/api/v1/climate-finance/opportunities",
+            query={
+                "country_code": country_code.strip().upper(),
+                "sector": sector,
+                "eligible_actor": "municipality",
+            },
+            limit=REPORT_FINANCE_SCREENING_LIMIT,
+        )
+        projects_url = self._build_catalogue_url(
+            path="/api/v1/climate-finance/projects",
+            query={
+                "country_code": country_code.strip().upper(),
+                "action_id": action_id,
+            },
+            limit=limit,
+        )
+
+        # Fetch only the selected action's compact report evidence.
+        opportunities_payload, opportunities_status = get_json_with_retries(
+            url=opportunities_url,
+            operation_name="climate finance opportunities API call",
+            headers={"accept": "application/json"},
+        )
+        projects_payload, projects_status = get_json_with_retries(
+            url=projects_url,
+            operation_name="climate finance projects API call",
+            headers={"accept": "application/json"},
+        )
+        try:
+            opportunities_response = ClimateFinanceOpportunitiesApiResponse.model_validate(
+                opportunities_payload
+            )
+            projects_response = ClimateFinanceProjectsApiResponse.model_validate(
+                projects_payload
+            )
+        except ValidationError as error:
+            raise UpstreamApiError(
+                status_code=502,
+                message="climate finance report evidence failed schema validation",
+                url=opportunities_url,
+            ) from error
+
+        screened_opportunities = _screen_report_opportunities(
+            [
+                ClimateFinanceOpportunityRecord.model_validate(
+                    opportunity.model_dump(mode="json")
+                )
+                for opportunity in opportunities_response.data
+            ],
+            route=route,
+            limit=limit,
+        )
+        current_count = sum(
+            opportunity.report_category == "current"
+            for opportunity in screened_opportunities
+        )
+        monitoring_count = sum(
+            opportunity.report_category == "monitor"
+            for opportunity in screened_opportunities
+        )
+        return ClimateFinanceReportEvidenceFetchResult(
+            opportunities=screened_opportunities,
+            projects=[
+                ClimateFinanceProjectRecord.model_validate(project.model_dump(mode="json"))
+                for project in projects_response.data
+            ],
+            source_metadata={
+                "opportunities": {
+                    "upstream_url": opportunities_url,
+                    "upstream_endpoint": CLIMATE_FINANCE_OPPORTUNITIES_ENDPOINT,
+                    "http_status_code": opportunities_status,
+                    "upstream_generated_at_utc": (
+                        opportunities_response.meta.generated_at_utc
+                    ),
+                    "fetched_count": len(opportunities_response.data),
+                    "selected_count": len(screened_opportunities),
+                    "current_count": current_count,
+                    "monitoring_count": monitoring_count,
+                    "selection_scope": (
+                        "Catalogue candidates screened by country, sector, municipal "
+                        "eligibility, availability, climate relevance, municipal "
+                        "application route, and the selected action's finance route. "
+                        "Closed programmes are retained only for monitoring when the "
+                        "catalogue marks them as recurring; candidates are not matched "
+                        "to the selected action."
+                    ),
+                    "datasources": [
+                        source.model_dump(mode="json", exclude_none=True)
+                        for source in opportunities_response.meta.datasources
+                    ],
+                },
+                "projects": {
+                    "upstream_url": projects_url,
+                    "upstream_endpoint": CLIMATE_FINANCE_PROJECTS_ENDPOINT,
+                    "http_status_code": projects_status,
+                    "upstream_generated_at_utc": projects_response.meta.generated_at_utc,
+                    "total": projects_response.meta.total,
+                    "datasources": [
+                        source.model_dump(mode="json", exclude_none=True)
+                        for source in projects_response.meta.datasources
+                    ],
+                },
+            },
+        )
+
+    def _build_catalogue_url(
+        self,
+        *,
+        path: str,
+        query: dict[str, str | None],
+        limit: int,
+    ) -> str:
+        """Build one climate-finance catalogue URL without empty filters."""
+        normalized_query = {
+            key: value.strip() if isinstance(value, str) else value
+            for key, value in query.items()
+            if value is not None and (not isinstance(value, str) or value.strip())
+        }
+        normalized_query["limit"] = str(limit)
+        return f"{self.base_url.rstrip('/')}{path}?{urlencode(normalized_query)}"
+
+
+def _screen_report_opportunities(
+    opportunities: list[ClimateFinanceOpportunityRecord],
+    *,
+    route: str | None,
+    limit: int,
+) -> list[ClimateFinanceOpportunityRecord]:
+    """Select current candidates and recurring closed programmes to monitor."""
+    inactive_statuses = {"closed", "cancelled", "expired"}
+    active = [
+        opportunity
+        for opportunity in opportunities
+        if (opportunity.status or "").strip().lower() not in inactive_statuses
+    ]
+    normalized_route = (route or "").strip().lower().replace("_", " ")
+    if "technical assistance" in normalized_route:
+        technical_assistance = [
+            opportunity
+            for opportunity in active
+            if opportunity.instrument == "technical_assistance"
+        ]
+        if technical_assistance:
+            active = technical_assistance
+
+    recurring_values = {"annual", "periodic", "recurring", "sporadic"}
+    monitoring = [
+        opportunity
+        for opportunity in opportunities
+        if (opportunity.status or "").strip().lower() == "closed"
+        and (opportunity.recurrence or "").strip().lower() in recurring_values
+    ]
+
+    def priority(opportunity: ClimateFinanceOpportunityRecord) -> tuple[int, int, int]:
+        """Favor explicit climate relevance and direct municipal application."""
+        applications = {
+            value.strip().lower() for value in opportunity.city_application if value.strip()
+        }
+        return (
+            0 if opportunity.climate_relevance == "explicit" else 1,
+            0 if "direct" in applications else 1,
+            0 if opportunity.instrument == "technical_assistance" else 1,
+        )
+
+    current_rows = [
+        opportunity.model_copy(update={"report_category": "current"})
+        for opportunity in sorted(active, key=priority)[:limit]
+    ]
+    monitoring_rows = [
+        opportunity.model_copy(update={"report_category": "monitor"})
+        for opportunity in sorted(monitoring, key=priority)[:limit]
+    ]
+    return current_rows + monitoring_rows

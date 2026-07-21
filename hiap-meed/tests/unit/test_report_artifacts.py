@@ -25,7 +25,12 @@ def test_build_output_plan_markdown_concatenates_report_chapters() -> None:
             CityActionReportChapter(
                 key="city_fit",
                 title="City Fit",
-                markdown="## Existing Heading\n\nThis heading should not be duplicated.",
+                markdown="## City Fit\n\nThis heading should not be duplicated.",
+            ),
+            CityActionReportChapter(
+                key="sources_assumptions",
+                title="Where The Information Comes From",
+                markdown="### Source references\n\nA subsection still needs its chapter heading.",
             ),
         ],
         metadata=CityActionReportMetadata(
@@ -39,5 +44,5 @@ def test_build_output_plan_markdown_concatenates_report_chapters() -> None:
     assert markdown.startswith("# Output Plan: icare_0040")
     assert "- City: CL IQQ" in markdown
     assert "## Snapshot\n\nThis is the snapshot." in markdown
-    assert markdown.count("## City Fit") == 0
-    assert "## Existing Heading\n\nThis heading should not be duplicated." in markdown
+    assert markdown.count("## City Fit") == 1
+    assert "## Where The Information Comes From\n\n### Source references" in markdown

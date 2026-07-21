@@ -3,9 +3,10 @@
 from app.models.cnb_research import (
     FieldEvidence,
     FunderProfileResearchResult,
-    FundingOpportunityResearchAgentDraft,
+    FunderResearchResult,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
+    FundingRecordResearchResult,
 )
 
 
@@ -24,18 +25,25 @@ def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
 def build_result() -> FundingOpportunityResearchResult:
     """Create a small fully typed model result."""
     return FundingOpportunityResearchResult(
-        opportunity=FundingOpportunityResearchAgentDraft(
-            funder_name="Example Funder",
-            funder_url="https://funder.example/",
-            funder_profile=FunderProfileResearchResult(),
-            program_name="Example Program",
-            program_url="https://funder.example/program",
-            live_status="open",
+        funder=FunderResearchResult(
+            funder_ref="funder-001",
+            name="Example Funder",
+            profile=FunderProfileResearchResult(),
         ),
+        funding_records=[
+            FundingRecordResearchResult(
+                funding_record_ref="opportunity-001",
+                funder_ref="funder-001",
+                is_opportunity=True,
+                name="Example Program",
+                status="open",
+            )
+        ],
         evidence=[
             FieldEvidence(
                 evidence_ref="evidence-001",
-                target_path="opportunity.live_status",
+                funding_record_ref="opportunity-001",
+                target_path="funding_records[opportunity-001].status",
                 source_ref="source-002",
                 source_location="Status",
                 quote_or_summary=(

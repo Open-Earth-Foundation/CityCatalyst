@@ -9,7 +9,8 @@ Inputs:
   - `--log-level`: Python logging level; defaults to `INFO`.
 - Files/paths: the manifest contains exact funder/program names and URLs, an
   optional application-template URL, an optional validated
-  `current_filled_object`, and a positive `max_turns` value.
+  `current_filled_object`, and an optional positive `max_turns` value that
+  defaults to 15.
 - Env vars: `OPENAI_API_KEY` calls the configured research model and
   `FIRECRAWL_API_KEY` calls Firecrawl. Values are loaded from the Climate
   Advisor `.env` by shared settings and are never written to artifacts.
@@ -18,8 +19,9 @@ Outputs:
 - Creates `<output>/<run_id>/research_bundle.json`, `review.md`,
   `agent_trace.jsonl`, and Markdown snapshots under `sources/`. The bundle is
   the only JSON artifact and embeds both the request and run metadata.
-- When `MLFLOW_ENABLED=true`, records the run, metrics, OpenAI traces, and
-  redacted review artifacts through the shared best-effort MLflow integration.
+- When `MLFLOW_ENABLED=true`, records the run, one workflow trace containing
+  model and Firecrawl spans, redacted review artifacts, and exact source
+  snapshots through the shared best-effort MLflow integration.
 - Performs no database reads or writes.
 
 Usage (from project root):

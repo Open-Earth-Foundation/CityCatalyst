@@ -13,6 +13,8 @@ from urllib.parse import urlparse
 import httpx
 from pydantic import JsonValue
 
+from app.utils.mlflow_logging import set_span_outputs, start_trace_span
+
 logger = logging.getLogger(__name__)
 
 
@@ -150,41 +152,54 @@ class FirecrawlClient:
         if not 1 <= limit <= 100:
             raise ValueError("Firecrawl search limit must be between 1 and 100")
 
-        # Search results guide later scrape choices; only scraped pages become sources.
-        payload: dict[str, JsonValue] = {
-            "query": query,
-            "limit": limit,
-            "sources": ["web"],
-            "ignoreInvalidURLs": True,
-        }
-        normalized_domains = [
-            domain
-            for domain in (
-                self._normalize_domain(value) for value in include_domains or []
-            )
-            if domain
-        ]
-        if normalized_domains:
-            payload["includeDomains"] = normalized_domains
-
-        response = self._post("search", payload)
-        raw_data = response.get("data", {})
-        raw_results = raw_data.get("web", []) if isinstance(raw_data, dict) else raw_data
-        results: list[dict[str, JsonValue]] = []
-        if isinstance(raw_results, list):
-            for item in raw_results:
-                if not isinstance(item, dict):
-                    continue
-                results.append(
-                    {
-                        "title": item.get("title"),
-                        "url": item.get("url"),
-                        "description": item.get("description"),
-                    }
+        with start_trace_span(
+            name="firecrawl.search",
+            span_type="TOOL",
+            inputs={
+                "query": query,
+                "limit": limit,
+                "include_domains": include_domains or [],
+            },
+        ) as span:
+            # Search results guide later scrape choices; only scraped pages become sources.
+            payload: dict[str, JsonValue] = {
+                "query": query,
+                "limit": limit,
+                "sources": ["web"],
+                "ignoreInvalidURLs": True,
+            }
+            normalized_domains = [
+                domain
+                for domain in (
+                    self._normalize_domain(value) for value in include_domains or []
                 )
+                if domain
+            ]
+            if normalized_domains:
+                payload["includeDomains"] = normalized_domains
 
-        logger.info("Firecrawl search returned %s results", len(results))
-        return {"query": query, "results": results}
+            response = self._post("search", payload)
+            raw_data = response.get("data", {})
+            raw_results = (
+                raw_data.get("web", []) if isinstance(raw_data, dict) else raw_data
+            )
+            results: list[dict[str, JsonValue]] = []
+            if isinstance(raw_results, list):
+                for item in raw_results:
+                    if not isinstance(item, dict):
+                        continue
+                    results.append(
+                        {
+                            "title": item.get("title"),
+                            "url": item.get("url"),
+                            "description": item.get("description"),
+                        }
+                    )
+
+            result: dict[str, JsonValue] = {"query": query, "results": results}
+            set_span_outputs(span, result)
+            logger.info("Firecrawl search returned %s results", len(results))
+            return result
 
     @staticmethod
     def _normalize_domain(value: str) -> str:
@@ -196,48 +211,80 @@ class FirecrawlClient:
 
     def scrape(self, *, url: str) -> dict[str, JsonValue]:
         """Scrape one URL to Markdown and save it as a review source."""
-        response = self._post(
-            "scrape",
-            {
-                "url": url,
-                "formats": ["markdown", "links"],
-                "onlyMainContent": True,
-            },
-        )
-        data = self._response_data(response)
-        source = self._capture_source(url=url, data=data)
-        return {
-            "source_ref": source.source_ref,
-            "url": source.url,
-            "title": source.title,
-            "markdown": data.get("markdown", ""),
-            "links": data.get("links", []),
-            "local_snapshot_path": source.local_snapshot_path,
-        }
+        with start_trace_span(
+            name="firecrawl.scrape",
+            span_type="TOOL",
+            inputs={"url": url},
+        ) as span:
+            response = self._post(
+                "scrape",
+                {
+                    "url": url,
+                    "formats": ["markdown", "links"],
+                    "onlyMainContent": True,
+                },
+            )
+            data = self._response_data(response)
+            source = self._capture_source(url=url, data=data)
+            result: dict[str, JsonValue] = {
+                "source_ref": source.source_ref,
+                "url": source.url,
+                "title": source.title,
+                "markdown": data.get("markdown", ""),
+                "links": data.get("links", []),
+                "local_snapshot_path": source.local_snapshot_path,
+            }
+            set_span_outputs(
+                span,
+                {
+                    "source_ref": source.source_ref,
+                    "url": source.url,
+                    "title": source.title,
+                    "local_snapshot_path": source.local_snapshot_path,
+                },
+            )
+            return result
 
     def extract(self, *, url: str, extraction_prompt: str) -> dict[str, JsonValue]:
         """Run Firecrawl JSON extraction while retaining the underlying Markdown."""
-        response = self._post(
-            "scrape",
-            {
-                "url": url,
-                "formats": [
-                    "markdown",
-                    {"type": "json", "prompt": extraction_prompt},
-                ],
-                "onlyMainContent": True,
-            },
-        )
-        data = self._response_data(response)
-        source = self._capture_source(url=url, data=data)
-        return {
-            "source_ref": source.source_ref,
-            "url": source.url,
-            "title": source.title,
-            "extracted": data.get("json", {}),
-            "markdown": data.get("markdown", ""),
-            "local_snapshot_path": source.local_snapshot_path,
-        }
+        with start_trace_span(
+            name="firecrawl.extract",
+            span_type="TOOL",
+            inputs={"url": url, "extraction_prompt": extraction_prompt},
+        ) as span:
+            response = self._post(
+                "scrape",
+                {
+                    "url": url,
+                    "formats": [
+                        "markdown",
+                        {"type": "json", "prompt": extraction_prompt},
+                    ],
+                    "onlyMainContent": True,
+                },
+            )
+            data = self._response_data(response)
+            source = self._capture_source(url=url, data=data)
+            extracted = data.get("json", {})
+            result: dict[str, JsonValue] = {
+                "source_ref": source.source_ref,
+                "url": source.url,
+                "title": source.title,
+                "extracted": extracted,
+                "markdown": data.get("markdown", ""),
+                "local_snapshot_path": source.local_snapshot_path,
+            }
+            set_span_outputs(
+                span,
+                {
+                    "source_ref": source.source_ref,
+                    "url": source.url,
+                    "title": source.title,
+                    "extracted": extracted,
+                    "local_snapshot_path": source.local_snapshot_path,
+                },
+            )
+            return result
 
     def close(self) -> None:
         """Close the internally owned HTTP client."""

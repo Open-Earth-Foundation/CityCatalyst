@@ -8,14 +8,10 @@ import pytest
 
 from app.models.cnb_research import (
     FieldEvidence,
-    FinancialAmountResearchResult,
-    FundedProjectActionDraft,
-    FundedProjectDraft,
-    FundingLinkResearchResult,
-    FundingOpportunityResearchAgentDraft,
+    FunderTemplateResearchResult,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
-    FundingPipelineEntryResearchResult,
+    FundingRecordResearchResult,
     ResearchConflictResult,
 )
 from tests.cnb_research_helpers import build_request, build_result
@@ -38,16 +34,24 @@ def test_request_accepts_missing_template_and_rejects_zero_turns() -> None:
     assert build_request().current_filled_object is None
 
     resumed_manifest = build_request().model_dump(mode="json")
-    resumed_manifest["current_filled_object"] = build_result().model_dump(
-        mode="json"
-    )
-    resumed_request = FundingOpportunityResearchRequest.model_validate(
-        resumed_manifest
-    )
+    resumed_manifest["current_filled_object"] = build_result().model_dump(mode="json")
+    resumed_request = FundingOpportunityResearchRequest.model_validate(resumed_manifest)
     assert resumed_request.current_filled_object == build_result()
 
     with pytest.raises(ValidationError):
         build_request(max_turns=0)
+
+
+def test_request_defaults_to_fifteen_turns() -> None:
+    """A manifest without an override should receive the production turn budget."""
+    request = FundingOpportunityResearchRequest(
+        funder_name="Example Funder",
+        funder_url="https://funder.example/",
+        program_name="Example Program",
+        program_url="https://funder.example/program",
+    )
+
+    assert request.max_turns == 15
 
 
 def test_model_output_schema_avoids_unsupported_strict_json_features() -> None:
@@ -59,94 +63,104 @@ def test_model_output_schema_avoids_unsupported_strict_json_features() -> None:
     assert "pattern" not in schema_keys
 
 
-def test_financial_amount_requires_explicit_meaning() -> None:
-    """Monetary facts distinguish assistance from downstream financing."""
-    amount = FinancialAmountResearchResult(
-        amount_ref="amount-001",
-        project_ref="project-001",
-        action_ref=None,
-        program_name="Example Program",
-        amount=125000,
+def test_funding_record_matches_architecture_year_and_award_shape() -> None:
+    """A funded project keeps action and award information in one record."""
+    record = FundingRecordResearchResult(
+        funding_record_ref="project-001",
+        funder_ref="funder-001",
+        is_opportunity=False,
+        name="Funded project",
+        applicant_name="Example City",
+        interventions=["Prepare a retrofit investment concept"],
+        award_amount=125000,
         currency="USD",
-        amount_kind="individual_technical_assistance",
-        calendar_year=2026,
-        status="approved",
-        description="Technical assistance approved for project preparation.",
+        award_year=2026,
+        status="awarded",
+        summary="The award funded project preparation.",
     )
 
-    assert amount.amount_kind == "individual_technical_assistance"
-    assert amount.calendar_year == 2026
-    with pytest.raises(ValidationError):
-        FinancialAmountResearchResult(
-            **{
-                **amount.model_dump(),
-                "amount_kind": "unspecified_money",
-            }
+    assert record.award_year == 2026
+    assert "calendar_year" not in record.model_fields
+    assert "opportunity" not in FundingOpportunityResearchResult.model_fields
+    assert {
+        "funder",
+        "funding_records",
+        "funder_templates",
+        "funder_criteria",
+    }.issubset(FundingOpportunityResearchResult.model_fields)
+    for removed_collection in (
+        "funded_projects",
+        "funded_project_actions",
+        "funding_links",
+        "financial_amounts",
+        "pipeline_entries",
+    ):
+        assert removed_collection not in FundingRecordResearchResult.model_fields
+
+
+def test_result_requires_one_opportunity_and_valid_table_references() -> None:
+    """The offline schema preserves one opportunity and its table relationships."""
+    base = build_result().model_dump(mode="json")
+    opportunity = base["funding_records"][0]
+
+    with pytest.raises(ValidationError, match="values must be unique"):
+        FundingOpportunityResearchResult.model_validate(
+            {**base, "funding_records": [opportunity, opportunity]}
         )
 
-
-def test_funding_records_use_calendar_year_only() -> None:
-    """All funding record types expose one consistent year field."""
-    for model in (
-        FundingLinkResearchResult,
-        FinancialAmountResearchResult,
-        FundingPipelineEntryResearchResult,
-    ):
-        assert "calendar_year" in model.model_fields
-        assert "fiscal_year" not in model.model_fields
-        assert "award_year" not in model.model_fields
-
-
-def test_agent_opportunity_rejects_duplicate_and_orphan_references() -> None:
-    """Model-generated record keys must be unique and internally connected."""
-    base = build_result().opportunity.model_dump(mode="json")
-
-    with pytest.raises(ValidationError, match="project_ref values must be unique"):
-        FundingOpportunityResearchAgentDraft.model_validate(
+    with pytest.raises(ValidationError, match="exactly one opportunity"):
+        FundingOpportunityResearchResult.model_validate(
             {
                 **base,
-                "funded_projects": [
-                    FundedProjectDraft(project_ref="duplicate", title="First"),
-                    FundedProjectDraft(project_ref="duplicate", title="Second"),
-                ],
+                "funding_records": [{**opportunity, "is_opportunity": False}],
             }
         )
 
+    funded_project = FundingRecordResearchResult(
+        funding_record_ref="project-001",
+        funder_ref="funder-001",
+        is_opportunity=False,
+        name="Funded project",
+    )
     with pytest.raises(
         ValidationError,
-        match="project_ref must reference a funded project",
+        match="must reference the opportunity record",
     ):
-        FundingOpportunityResearchAgentDraft.model_validate(
+        FundingOpportunityResearchResult.model_validate(
             {
                 **base,
-                "funded_project_actions": [
-                    FundedProjectActionDraft(
-                        action_ref="action-001",
-                        project_ref="missing-project",
-                        description="Prepare the project.",
+                "funding_records": [opportunity, funded_project],
+                "funder_templates": [
+                    FunderTemplateResearchResult(
+                        template_ref="template-001",
+                        funding_record_ref="project-001",
+                        template_name="Application",
                     )
                 ],
             }
         )
 
 
-def test_research_result_rejects_duplicate_and_unknown_evidence_refs() -> None:
-    """Evidence identifiers remain unique and conflicts cannot cite missing rows."""
+def test_research_result_rejects_unknown_record_and_evidence_refs() -> None:
+    """Evidence must link to a record and conflicts cannot cite missing evidence."""
     base = build_result().model_dump(mode="json")
-    duplicate = FieldEvidence(
-        evidence_ref="evidence-001",
-        target_path="opportunity.status",
+    unknown_record_evidence = FieldEvidence(
+        evidence_ref="evidence-002",
+        funding_record_ref="missing-record",
+        target_path="funding_records[missing-record].status",
         source_ref="source-003",
-        quote_or_summary="A second claim with the same identifier.",
+        quote_or_summary="A claim for a missing record.",
     )
-
-    with pytest.raises(ValidationError, match="evidence_ref values must be unique"):
+    with pytest.raises(
+        ValidationError,
+        match="must reference a funding record",
+    ):
         FundingOpportunityResearchResult.model_validate(
-            {**base, "evidence": [*base["evidence"], duplicate]}
+            {**base, "evidence": [unknown_record_evidence]}
         )
 
     conflict = ResearchConflictResult(
-        target_path="opportunity.status",
+        target_path="funding_records[opportunity-001].status",
         candidate_values=["open", "closed"],
         evidence_refs=["missing-evidence"],
         explanation="Sources disagree.",

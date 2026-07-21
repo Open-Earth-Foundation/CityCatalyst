@@ -1,18 +1,38 @@
 """Tests for the Firecrawl boundary used by CNB funder research."""
 
 import json
+from contextlib import contextmanager
 from pathlib import Path
 
 import httpx
 
+from app.tools import firecrawl as firecrawl_module
 from app.tools.firecrawl import FirecrawlClient
 
 
 def test_firecrawl_client_searches_extracts_and_writes_snapshots(
     tmp_path: Path,
+    monkeypatch,
 ) -> None:
     """Firecrawl responses become compact search leads and local Markdown sources."""
     markdown = "# Official program\n\nMaximum award: $50,000."
+    span_calls: list[dict[str, object]] = []
+
+    class FakeSpan:
+        def __init__(self) -> None:
+            self.outputs: object | None = None
+
+    @contextmanager
+    def fake_start_trace_span(**kwargs: object):
+        span = FakeSpan()
+        span_calls.append({**kwargs, "span": span})
+        yield span
+
+    def fake_set_span_outputs(span: FakeSpan, outputs: object) -> None:
+        span.outputs = outputs
+
+    monkeypatch.setattr(firecrawl_module, "start_trace_span", fake_start_trace_span)
+    monkeypatch.setattr(firecrawl_module, "set_span_outputs", fake_set_span_outputs)
 
     def handler(request: httpx.Request) -> httpx.Response:
         if request.url.path.endswith("/search"):
@@ -89,3 +109,9 @@ def test_firecrawl_client_searches_extracts_and_writes_snapshots(
     assert refreshed["source_ref"] != source_ref
     assert (tmp_path / "sources" / f"{refreshed['source_ref']}.md").exists()
     assert len(client.captured_sources) == 1
+    assert [call["name"] for call in span_calls] == [
+        "firecrawl.search",
+        "firecrawl.extract",
+        "firecrawl.extract",
+    ]
+    assert all(call["span"].outputs is not None for call in span_calls)

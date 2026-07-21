@@ -12,10 +12,16 @@ from pydantic import JsonValue
 from app.models.cnb_research import (
     AgentTurn,
     FunderProfileResearchResult,
-    FundingOpportunityResearchAgentDraft,
+    FunderResearchResult,
+    FundingRecordResearchResult,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
     ResearchGap,
+)
+from app.services.cnb_research_bundle import (
+    convert_agent_result,
+    evidence_covers,
+    uncovered_material_paths,
 )
 from app.tools.firecrawl import (
     FIRECRAWL_TOOL_DEFINITIONS,
@@ -29,10 +35,10 @@ logger = logging.getLogger(__name__)
 FINAL_GAP_AUDIT = (
     "Before returning the final object, systematically audit: award minima and "
     "maxima; currencies; criterion weights and hard gates; selection timing and "
-    "rates; co-financing; application-template availability; requested versus "
-    "awarded amounts and calendar years; action-level costs; downstream financing "
-    "status; published pipeline status; and source-license status. Preserve unknown "
-    "values as null or empty and add precise ResearchGap entries."
+    "rates; co-financing; application-template availability; awarded amounts and "
+    "award years; funded-project interventions; downstream financing status; "
+    "published pipeline evidence; and source-license status. Preserve unknown values "
+    "as null or empty and add precise ResearchGap entries."
 )
 
 
@@ -104,7 +110,13 @@ def run_agent_loop(
     """Run model-selected Firecrawl turns followed by one explicit gap audit."""
     # Initialize the validated working dossier and first-turn payload.
     current_filled_object = request.current_filled_object or empty_result(request)
-    missing_data = find_missing_data(current_filled_object, request=request)
+    missing_data = find_missing_data(
+        current_filled_object,
+        request=request,
+        captured_source_refs={
+            source.source_ref for source in firecrawl.captured_sources
+        },
+    )
     current_input: str | list[dict[str, JsonValue]] = json.dumps(
         {
             "research_request": request.model_dump(
@@ -120,9 +132,7 @@ def run_agent_loop(
                 final_audit=request.max_turns == 1,
             ),
             "research_stage": research_stage(missing_data),
-            "final_gap_audit": (
-                FINAL_GAP_AUDIT if request.max_turns == 1 else None
-            ),
+            "final_gap_audit": (FINAL_GAP_AUDIT if request.max_turns == 1 else None),
         },
         ensure_ascii=False,
     )
@@ -168,9 +178,7 @@ def run_agent_loop(
             len(missing_data),
         )
         response = openai_client.responses.parse(**request_kwargs)
-        tool_calls = [
-            item for item in response.output if item.type == "function_call"
-        ]
+        tool_calls = [item for item in response.output if item.type == "function_call"]
 
         # Accept structured checkpoints and decide whether another turn is useful.
         if not tool_calls:
@@ -179,14 +187,18 @@ def run_agent_loop(
                     "Research model returned neither a tool call nor structured output"
                 )
             current_filled_object = response.output_parsed
-            missing_data = find_missing_data(current_filled_object, request=request)
+            missing_data = find_missing_data(
+                current_filled_object,
+                request=request,
+                captured_source_refs={
+                    source.source_ref for source in firecrawl.captured_sources
+                },
+            )
             trace.append(
                 AgentTurn(
                     turn=turn_number,
                     action=(
-                        "final_gap_audit"
-                        if is_final_audit
-                        else "structured_candidate"
+                        "final_gap_audit" if is_final_audit else "structured_candidate"
                     ),
                     query_or_url="",
                     result_summary=(
@@ -235,13 +247,19 @@ def empty_result(
 ) -> FundingOpportunityResearchResult:
     """Create the seed-preserving starting object shown to the research model."""
     return FundingOpportunityResearchResult(
-        opportunity=FundingOpportunityResearchAgentDraft(
-            funder_name=request.funder_name,
-            funder_url=str(request.funder_url),
-            funder_profile=FunderProfileResearchResult(),
-            program_name=request.program_name,
-            program_url=str(request.program_url),
-        )
+        funder=FunderResearchResult(
+            funder_ref="funder-001",
+            name=request.funder_name,
+            profile=FunderProfileResearchResult(),
+        ),
+        funding_records=[
+            FundingRecordResearchResult(
+                funding_record_ref="opportunity-001",
+                funder_ref="funder-001",
+                is_opportunity=True,
+                name=request.program_name,
+            )
+        ],
     )
 
 
@@ -303,9 +321,7 @@ def turn_context_message(
     )
     missing_lines = "\n".join(f"- {item}" for item in missing_data) or "- none"
     final_instruction = (
-        f"\n<final_gap_audit>{FINAL_GAP_AUDIT}</final_gap_audit>"
-        if final_audit
-        else ""
+        f"\n<final_gap_audit>{FINAL_GAP_AUDIT}</final_gap_audit>" if final_audit else ""
     )
 
     # Render the current dossier state as one user-context message.
@@ -368,73 +384,84 @@ def find_missing_data(
     result: FundingOpportunityResearchResult,
     *,
     request: FundingOpportunityResearchRequest,
+    captured_source_refs: set[str],
 ) -> list[str]:
-    """List unresolved coverage targets; this does not judge factual correctness."""
-    opportunity = result.opportunity
+    """List unresolved coverage targets using current-run source provenance."""
+    funder = result.funder
+    opportunity = next(item for item in result.funding_records if item.is_opportunity)
+    opportunity_path = f"funding_records[{opportunity.funding_record_ref}]"
     missing: list[str] = []
 
     # Check the core scalar opportunity fields.
     scalar_targets = (
-        ("opportunity.funder_type", opportunity.funder_type),
-        ("opportunity.funder_region", opportunity.funder_region),
-        ("opportunity.finance_route", opportunity.finance_route),
-        ("opportunity.instrument_type", opportunity.instrument_type),
-        ("opportunity.region_scope", opportunity.region_scope),
-        ("opportunity.live_status", opportunity.live_status),
-        ("opportunity.status", opportunity.status),
+        ("funder.funder_type", funder.funder_type),
+        ("funder.region", funder.region),
+        (f"{opportunity_path}.finance_route", opportunity.finance_route),
+        (f"{opportunity_path}.instrument_type", opportunity.instrument_type),
+        (f"{opportunity_path}.region_scope", opportunity.region_scope),
+        (f"{opportunity_path}.status", opportunity.status),
     )
     for target_path, value in scalar_targets:
         if not value and not gap_covers(result, target_path):
             missing.append(f"Resolve {target_path} or record a precise gap.")
 
     # Require a template decision and both eligibility and selection coverage.
-    if (
-        opportunity.application_template is None
-        and not gap_covers(result, "opportunity.application_template")
-    ):
+    if not result.funder_templates and not gap_covers(result, "funder_templates"):
         suffix = " from the supplied URL" if request.application_template_url else ""
         missing.append(
-            "Resolve opportunity.application_template"
+            "Resolve funder_templates"
             f"{suffix}, or record that no public template was found."
         )
 
-    criterion_types = {item.criterion_type.lower() for item in opportunity.criteria}
-    if not opportunity.criteria and not gap_covers(result, "opportunity.criteria"):
-        missing.append("Find eligibility and selection criteria, or record precise gaps.")
+    criterion_types = {item.criterion_type.lower() for item in result.funder_criteria}
+    if not result.funder_criteria and not gap_covers(result, "funder_criteria"):
+        missing.append(
+            "Find eligibility and selection criteria, or record precise gaps."
+        )
     else:
         if not any("eligib" in value for value in criterion_types) and not gap_covers(
-            result, "opportunity.criteria.eligibility"
+            result, "funder_criteria.eligibility"
         ):
             missing.append("Find at least one eligibility criterion or record a gap.")
         if not any(
             token in value
             for value in criterion_types
             for token in ("select", "evaluat", "assess")
-        ) and not gap_covers(result, "opportunity.criteria.selection"):
+        ) and not gap_covers(result, "funder_criteria.selection"):
             missing.append("Find selection/evaluation criteria or record a gap.")
 
-    # Require one deep funded-project chain and explicit monetary facts.
-    if not opportunity.funded_projects and not gap_covers(
-        result, "opportunity.funded_projects"
-    ):
+    # Require one complete funded-project row and explicit monetary coverage.
+    funded_records = [
+        item for item in result.funding_records if not item.is_opportunity
+    ]
+    if not funded_records and not gap_covers(result, "funding_records[funded-project]"):
         missing.append("Find at least one officially documented funded project.")
     if not has_deep_project(result) and not gap_covers(
-        result, "opportunity.deep_funded_project"
+        result, "funding_records.deep_funded_project"
     ):
         missing.append(
-            "Build one deep funded project linking its project record, at least one "
-            "action, and its funding relationship."
+            "Build one complete funded-project row with interventions, summary, award "
+            "amount, currency, award year when published, and status."
         )
-    if not opportunity.financial_amounts and not gap_covers(
-        result, "opportunity.financial_amounts"
+    has_monetary_fact = any(
+        value is not None
+        for record in result.funding_records
+        for value in (record.min_award, record.max_award, record.award_amount)
+    )
+    if not has_monetary_fact and not gap_covers(
+        result, "funding_records.financial_coverage"
     ):
         missing.append(
-            "Capture monetary facts with explicit amount_kind, currency, calendar "
-            "year, status, and project/action linkage, or record a gap."
+            "Capture opportunity award bounds or a funded-project award amount with "
+            "currency, award year when published, and status, or record a gap."
         )
 
     # Confirm that authoritative guidance and funded-project sources were captured.
-    source_types = [item.source_type.lower() for item in result.source_assessments]
+    source_types = [
+        item.source_type.lower()
+        for item in result.source_assessments
+        if item.source_ref in captured_source_refs
+    ]
     source_roles = (
         (
             "sources.guidance_or_eligibility",
@@ -448,42 +475,63 @@ def find_missing_data(
         ),
     )
     for target_path, tokens, instruction in source_roles:
-        if not any(token in source_type for source_type in source_types for token in tokens):
+        if not any(
+            token in source_type for source_type in source_types for token in tokens
+        ):
             if not gap_covers(result, target_path):
                 missing.append(instruction)
 
-    # Require retained evidence unless the absence is itself an explicit gap.
-    if not result.evidence and not gap_covers(result, "evidence"):
+    # Reconcile prior evidence with the sources captured during this run.
+    retained_evidence = [
+        item for item in result.evidence if item.source_ref in captured_source_refs
+    ]
+    prior_sources_by_target: dict[str, set[str]] = {}
+    for item in result.evidence:
+        if item.source_ref in captured_source_refs:
+            continue
+        prior_sources_by_target.setdefault(item.target_path, set()).add(item.source_ref)
+    for target_path, source_refs in sorted(prior_sources_by_target.items()):
+        missing.append(
+            f"Revalidate {target_path} by recapturing or replacing prior-run "
+            f"sources: {', '.join(sorted(source_refs))}."
+        )
+
+    # Require every populated material field to survive bundle provenance checks.
+    funder, funding_records, funder_templates, funder_criteria = convert_agent_result(
+        result
+    )
+    prior_evidence_paths = set(prior_sources_by_target)
+    for target_path in uncovered_material_paths(
+        funder=funder,
+        funding_records=funding_records,
+        funder_templates=funder_templates,
+        funder_criteria=funder_criteria,
+        evidence=retained_evidence,
+        gaps=result.gaps,
+    ):
+        if evidence_covers(target_path, prior_evidence_paths):
+            continue
+        missing.append(
+            f"Support {target_path} with evidence from a source captured in this "
+            "run, or record a precise gap."
+        )
+
+    if not retained_evidence and not gap_covers(result, "evidence"):
         missing.append("Retain field evidence for populated non-seed facts.")
     return missing
 
 
 def has_deep_project(result: FundingOpportunityResearchResult) -> bool:
-    """Return whether one project has both an action and funding relationship."""
-    opportunity = result.opportunity
-
-    # Precompute project and action references used by funding relationships.
-    action_projects = {item.project_ref for item in opportunity.funded_project_actions}
-    funding_projects = {
-        item.project_ref for item in opportunity.funding_links if item.project_ref
-    }
-    funded_action_refs = {
-        item.action_ref for item in opportunity.funding_links if item.action_ref
-    }
-
-    # Accept either project-level funding or funding attached to one project action.
-    for project in opportunity.funded_projects:
-        project_actions = {
-            action.action_ref
-            for action in opportunity.funded_project_actions
-            if action.project_ref == project.project_ref
-        }
-        if project.project_ref in action_projects and (
-            project.project_ref in funding_projects
-            or bool(project_actions & funded_action_refs)
-        ):
-            return True
-    return False
+    """Return whether one funded-project row contains action and award context."""
+    return any(
+        not record.is_opportunity
+        and bool(record.interventions)
+        and bool(record.summary)
+        and record.award_amount is not None
+        and bool(record.currency)
+        and bool(record.status)
+        for record in result.funding_records
+    )
 
 
 def gap_covers(result: FundingOpportunityResearchResult, target_path: str) -> bool:

@@ -42,9 +42,12 @@ def write_research_artifacts(
 
 def render_review(bundle: FundingOpportunityResearchBundle) -> str:
     """Render a concise human review view from the canonical bundle."""
-    # Build the run summary and full opportunity dossier.
+    # Build the run summary and architecture-shaped reference-data dossier.
+    opportunity = next(
+        record for record in bundle.funding_records if record.is_opportunity
+    )
     lines = [
-        f"# Funding Opportunity Research: {bundle.opportunity.program_name}",
+        f"# Funding Opportunity Research: {opportunity.name}",
         "",
         f"- Run: `{bundle.run_id}`",
         f"- Pipeline: `{bundle.run_metadata.pipeline_version}`",
@@ -57,18 +60,32 @@ def render_review(bundle: FundingOpportunityResearchBundle) -> str:
         f"- Duration: {bundle.run_metadata.duration_seconds:.2f} seconds",
         f"- MLflow run: `{bundle.run_metadata.mlflow_run_id or 'not recorded'}`",
         f"- Review status: `{bundle.review.status}`",
-        f"- Funder: {bundle.opportunity.funder_name}",
-        f"- Program URL: {bundle.opportunity.program_url}",
+        f"- Funder: {bundle.funder.name}",
+        f"- Program URL: {bundle.request.program_url}",
+        f"- Funding records: {len(bundle.funding_records)}",
         f"- Sources: {len(bundle.sources)}",
         f"- Evidence records: {len(bundle.evidence)}",
         f"- Gaps: {len(bundle.gaps)}",
         f"- Conflicts: {len(bundle.conflicts)}",
         "",
-        "## Opportunity dossier",
+        "## Funding reference records",
         "",
         "```json",
         json.dumps(
-            bundle.opportunity.model_dump(mode="json"),
+            {
+                "funder": bundle.funder.model_dump(mode="json"),
+                "funding_records": [
+                    record.model_dump(mode="json") for record in bundle.funding_records
+                ],
+                "funder_templates": [
+                    template.model_dump(mode="json")
+                    for template in bundle.funder_templates
+                ],
+                "funder_criteria": [
+                    criterion.model_dump(mode="json")
+                    for criterion in bundle.funder_criteria
+                ],
+            },
             indent=2,
             ensure_ascii=False,
         ),
@@ -93,9 +110,7 @@ def render_review(bundle: FundingOpportunityResearchBundle) -> str:
     # Render unresolved gaps and competing sourced values.
     lines.extend(["", "## Gaps", ""])
     if bundle.gaps:
-        lines.extend(
-            f"- `{gap.target_path}` — {gap.reason}" for gap in bundle.gaps
-        )
+        lines.extend(f"- `{gap.target_path}` — {gap.reason}" for gap in bundle.gaps)
     else:
         lines.append("No gaps reported.")
 

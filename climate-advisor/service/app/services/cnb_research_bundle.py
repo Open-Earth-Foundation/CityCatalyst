@@ -10,16 +10,14 @@ from pydantic import JsonValue
 from app.models.cnb_research import (
     AgentTurn,
     FieldEvidence,
-    FinancialAmountDraft,
     FunderCriterionDraft,
+    FunderDraft,
     FunderProfileDraft,
     FunderTemplateDraft,
-    FundingLinkDraft,
     FundingOpportunityResearchBundle,
-    FundingOpportunityResearchDraft,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
-    FundingPipelineEntryDraft,
+    FundingRecordDraft,
     ResearchConflict,
     ResearchGap,
     ResearchRunMetadata,
@@ -41,8 +39,10 @@ def build_research_bundle(
     bootstrap_gaps: list[ResearchGap],
 ) -> FundingOpportunityResearchBundle:
     """Assemble the code-owned bundle envelope and enforce provenance rules."""
-    # Convert model-facing types and restore caller-owned seed values.
-    opportunity = convert_agent_opportunity(result)
+    # Convert model-facing types into the architecture-shaped review contract.
+    funder, funding_records, funder_templates, funder_criteria = convert_agent_result(
+        result
+    )
     conflicts = [
         ResearchConflict(
             target_path=item.target_path,
@@ -52,9 +52,10 @@ def build_research_bundle(
         )
         for item in result.conflicts
     ]
-    opportunity = preserve_authoritative_seeds(
+    funder, funding_records = preserve_authoritative_seeds(
         request=request,
-        opportunity=opportunity,
+        funder=funder,
+        funding_records=funding_records,
         conflicts=conflicts,
     )
     sources, source_gaps = build_sources(
@@ -97,16 +98,22 @@ def build_research_bundle(
         ]
     )
     gaps = add_evidence_coverage_gaps(
-        opportunity=opportunity,
+        funder=funder,
+        funding_records=funding_records,
+        funder_templates=funder_templates,
+        funder_criteria=funder_criteria,
         evidence=evidence,
         gaps=gaps,
     )
     return FundingOpportunityResearchBundle(
-        schema_version="1.2",
+        schema_version="2.0",
         run_id=run_id,
         run_metadata=run_metadata,
         request=request,
-        opportunity=opportunity,
+        funder=funder,
+        funding_records=funding_records,
+        funder_templates=funder_templates,
+        funder_criteria=funder_criteria,
         sources=sources,
         evidence=evidence,
         gaps=gaps,
@@ -116,18 +123,89 @@ def build_research_bundle(
     )
 
 
+def convert_agent_result(
+    result: FundingOpportunityResearchResult,
+) -> tuple[
+    FunderDraft,
+    list[FundingRecordDraft],
+    list[FunderTemplateDraft],
+    list[FunderCriterionDraft],
+]:
+    """Convert strict model types into the richer review-facing representations."""
+    # Convert list-based profile facts into JSON objects without losing keys.
+    profile = FunderProfileDraft(
+        stated={fact.key: fact.value for fact in result.funder.profile.stated},
+        derived={fact.key: fact.value for fact in result.funder.profile.derived},
+    )
+    funder = FunderDraft(
+        **result.funder.model_dump(exclude={"profile"}),
+        profile=profile,
+    )
+
+    # Preserve the table boundaries documented by the CNB architecture.
+    funding_records = [
+        FundingRecordDraft(**item.model_dump()) for item in result.funding_records
+    ]
+    funder_templates = [
+        FunderTemplateDraft(**item.model_dump()) for item in result.funder_templates
+    ]
+    funder_criteria = [
+        FunderCriterionDraft(**item.model_dump()) for item in result.funder_criteria
+    ]
+    return funder, funding_records, funder_templates, funder_criteria
+
+
+def preserve_authoritative_seeds(
+    *,
+    request: FundingOpportunityResearchRequest,
+    funder: FunderDraft,
+    funding_records: list[FundingRecordDraft],
+    conflicts: list[ResearchConflict],
+) -> tuple[FunderDraft, list[FundingRecordDraft]]:
+    """Restore request names and retain model-proposed replacements as conflicts."""
+    opportunity = next(item for item in funding_records if item.is_opportunity)
+    checks = {
+        "funder.name": (funder.name, request.funder_name),
+        f"funding_records[{opportunity.funding_record_ref}].name": (
+            opportunity.name,
+            request.program_name,
+        ),
+    }
+    for target_path, (candidate, seed) in checks.items():
+        if candidate == seed:
+            continue
+        conflicts.append(
+            ResearchConflict(
+                target_path=target_path,
+                candidate_values=[seed, candidate],
+                evidence_refs=[],
+                explanation=(
+                    "The model proposed a value different from the authoritative "
+                    "request seed. The seed was preserved for review."
+                ),
+            )
+        )
+
+    funder = funder.model_copy(update={"name": request.funder_name})
+    funding_records = [
+        record.model_copy(update={"name": request.program_name})
+        if record.is_opportunity
+        else record
+        for record in funding_records
+    ]
+    return funder, funding_records
+
+
 def retain_conflict_evidence(
     *,
     conflicts: list[ResearchConflict],
     evidence: list[FieldEvidence],
 ) -> tuple[list[ResearchConflict], list[ResearchGap]]:
     """Remove conflict links to evidence rejected by current-run provenance checks."""
-    # Build the allowed evidence set once for all conflict records.
     retained_refs = {item.evidence_ref for item in evidence}
     validated_conflicts: list[ResearchConflict] = []
     gaps: list[ResearchGap] = []
     for conflict in conflicts:
-        # Preserve valid links and turn every rejected link into a review gap.
         valid_refs = [
             evidence_ref
             for evidence_ref in conflict.evidence_refs
@@ -148,105 +226,6 @@ def retain_conflict_evidence(
             conflict.model_copy(update={"evidence_refs": valid_refs})
         )
     return validated_conflicts, gaps
-
-
-def convert_agent_opportunity(
-    result: FundingOpportunityResearchResult,
-) -> FundingOpportunityResearchDraft:
-    """Convert strict model types into the richer architecture bundle types."""
-    # Separate nested values that require conversion into final bundle models.
-    agent_opportunity = result.opportunity
-    opportunity_data = agent_opportunity.model_dump(
-        exclude={
-            "funder_profile",
-            "criteria",
-            "application_template",
-            "funding_links",
-            "financial_amounts",
-            "pipeline_entries",
-        }
-    )
-
-    # Convert strict output records into the richer review-facing representations.
-    profile = FunderProfileDraft(
-        stated={fact.key: fact.value for fact in agent_opportunity.funder_profile.stated},
-        derived={fact.key: fact.value for fact in agent_opportunity.funder_profile.derived},
-    )
-    criteria = [
-        FunderCriterionDraft(**criterion.model_dump())
-        for criterion in agent_opportunity.criteria
-    ]
-    template = (
-        FunderTemplateDraft(**agent_opportunity.application_template.model_dump())
-        if agent_opportunity.application_template is not None
-        else None
-    )
-    funding_links = [
-        FundingLinkDraft(**item.model_dump()) for item in agent_opportunity.funding_links
-    ]
-    financial_amounts = [
-        FinancialAmountDraft(**item.model_dump())
-        for item in agent_opportunity.financial_amounts
-    ]
-    pipeline_entries = [
-        FundingPipelineEntryDraft(**item.model_dump())
-        for item in agent_opportunity.pipeline_entries
-    ]
-    return FundingOpportunityResearchDraft(
-        **opportunity_data,
-        funder_profile=profile,
-        criteria=criteria,
-        application_template=template,
-        funding_links=funding_links,
-        financial_amounts=financial_amounts,
-        pipeline_entries=pipeline_entries,
-    )
-
-
-def preserve_authoritative_seeds(
-    *,
-    request: FundingOpportunityResearchRequest,
-    opportunity: FundingOpportunityResearchDraft,
-    conflicts: list[ResearchConflict],
-) -> FundingOpportunityResearchDraft:
-    """Restore request seeds and retain model-proposed replacements as conflicts."""
-    # Compare each immutable request seed with the model-proposed value.
-    checks = {
-        "opportunity.funder_name": (opportunity.funder_name, request.funder_name),
-        "opportunity.funder_url": (
-            str(opportunity.funder_url),
-            str(request.funder_url),
-        ),
-        "opportunity.program_name": (opportunity.program_name, request.program_name),
-        "opportunity.program_url": (
-            str(opportunity.program_url),
-            str(request.program_url),
-        ),
-    }
-    for target_path, (candidate, seed) in checks.items():
-        if candidate == seed:
-            continue
-        conflicts.append(
-            ResearchConflict(
-                target_path=target_path,
-                candidate_values=[seed, candidate],
-                evidence_refs=[],
-                explanation=(
-                    "The model proposed a value different from the authoritative "
-                    "request seed. The seed was preserved for review."
-                ),
-            )
-        )
-
-    # Restore the authoritative seeds after recording every disagreement.
-    return opportunity.model_copy(
-        update={
-            "funder_name": request.funder_name,
-            "funder_url": request.funder_url,
-            "program_name": request.program_name,
-            "program_url": request.program_url,
-        }
-    )
 
 
 def build_sources(
@@ -318,23 +297,54 @@ def parse_publication_date(
 
 def add_evidence_coverage_gaps(
     *,
-    opportunity: FundingOpportunityResearchDraft,
+    funder: FunderDraft,
+    funding_records: list[FundingRecordDraft],
+    funder_templates: list[FunderTemplateDraft],
+    funder_criteria: list[FunderCriterionDraft],
     evidence: list[FieldEvidence],
     gaps: list[ResearchGap],
 ) -> list[ResearchGap]:
     """Flag populated material fields that do not have source evidence."""
-    # Derive uncovered material paths without duplicating existing gaps.
-    evidence_paths = {item.target_path for item in evidence}
-    existing_gap_paths = {item.target_path for item in gaps}
     additions = [
         ResearchGap(
             target_path=path,
             reason="The populated value has no retained field-evidence record.",
         )
-        for path in material_paths(opportunity)
-        if path not in existing_gap_paths and not evidence_covers(path, evidence_paths)
+        for path in uncovered_material_paths(
+            funder=funder,
+            funding_records=funding_records,
+            funder_templates=funder_templates,
+            funder_criteria=funder_criteria,
+            evidence=evidence,
+            gaps=gaps,
+        )
     ]
     return deduplicate_gaps([*gaps, *additions])
+
+
+def uncovered_material_paths(
+    *,
+    funder: FunderDraft,
+    funding_records: list[FundingRecordDraft],
+    funder_templates: list[FunderTemplateDraft],
+    funder_criteria: list[FunderCriterionDraft],
+    evidence: list[FieldEvidence],
+    gaps: list[ResearchGap],
+) -> list[str]:
+    """Return populated fields that lack retained evidence or an explicit gap."""
+    # Apply the same evidence boundary during agent coverage and bundle assembly.
+    evidence_paths = {item.target_path for item in evidence}
+    existing_gap_paths = {item.target_path for item in gaps}
+    return [
+        path
+        for path in material_paths(
+            funder=funder,
+            funding_records=funding_records,
+            funder_templates=funder_templates,
+            funder_criteria=funder_criteria,
+        )
+        if path not in existing_gap_paths and not evidence_covers(path, evidence_paths)
+    ]
 
 
 def evidence_covers(path: str, evidence_paths: set[str]) -> bool:
@@ -348,39 +358,37 @@ def evidence_covers(path: str, evidence_paths: set[str]) -> bool:
 
 
 def material_paths(
-    opportunity: FundingOpportunityResearchDraft,
+    *,
+    funder: FunderDraft,
+    funding_records: list[FundingRecordDraft],
+    funder_templates: list[FunderTemplateDraft],
+    funder_criteria: list[FunderCriterionDraft],
 ) -> Iterable[str]:
-    """Yield populated non-seed leaf paths using stable temporary references."""
-    # Exclude caller-owned seeds and use stable record identifiers in paths.
+    """Yield populated non-seed leaves using stable record references in paths."""
+    opportunity = next(item for item in funding_records if item.is_opportunity)
     seed_paths = {
-        "opportunity.funder_name",
-        "opportunity.funder_url",
-        "opportunity.program_name",
-        "opportunity.program_url",
+        "funder.name",
+        f"funding_records[{opportunity.funding_record_ref}].name",
     }
-    identity_fields = (
-        "criterion_ref",
-        "template_ref",
-        "chapter_ref",
-        "funding_link_ref",
-        "amount_ref",
-        "entry_ref",
-        "action_ref",
-        "project_ref",
-    )
+    data: dict[str, JsonValue] = {
+        "funder": funder.model_dump(mode="json"),
+        "funding_records": [item.model_dump(mode="json") for item in funding_records],
+        "funder_templates": [item.model_dump(mode="json") for item in funder_templates],
+        "funder_criteria": [item.model_dump(mode="json") for item in funder_criteria],
+    }
 
     def walk(value: JsonValue, path: str) -> Iterable[str]:
         """Recursively yield evidence paths for populated JSON values."""
-        # Descend through objects while excluding seed and identity fields.
         if isinstance(value, dict):
             for key, item in value.items():
-                child_path = f"{path}.{key}"
-                if key.endswith("_ref") or child_path in seed_paths:
+                child_path = f"{path}.{key}" if path else key
+                if key.endswith("_ref") or key == "is_opportunity":
+                    continue
+                if child_path in seed_paths:
                     continue
                 yield from walk(item, child_path)
             return
 
-        # Treat primitive lists as one field and structured lists as records.
         if isinstance(value, list):
             if not value:
                 return
@@ -390,20 +398,29 @@ def material_paths(
             for index, item in enumerate(value):
                 token = str(index)
                 if isinstance(item, dict):
-                    for identity_field in identity_fields:
-                        identity = item.get(identity_field)
-                        if identity:
-                            token = str(identity)
-                            break
+                    identity = next(
+                        (
+                            item[key]
+                            for key in (
+                                "template_ref",
+                                "criterion_ref",
+                                "chapter_ref",
+                                "funding_record_ref",
+                                "funder_ref",
+                            )
+                            if item.get(key)
+                        ),
+                        None,
+                    )
+                    if identity is not None:
+                        token = str(identity)
                 yield from walk(item, f"{path}[{token}]")
             return
 
-        # Emit only populated scalar leaves.
         if value is not None and value != "":
             yield path
 
-    data = opportunity.model_dump(mode="json")
-    yield from walk(data, "opportunity")
+    yield from walk(data, "")
 
 
 def deduplicate_gaps(gaps: list[ResearchGap]) -> list[ResearchGap]:

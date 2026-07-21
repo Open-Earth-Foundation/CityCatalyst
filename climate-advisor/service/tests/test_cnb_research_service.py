@@ -1,6 +1,6 @@
 """Tests for CNB funder research service orchestration and artifacts."""
 
-from contextlib import nullcontext
+from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
 import json
 from pathlib import Path
@@ -121,8 +121,37 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         "start_run",
         fake_start_run,
     )
+    workflow_span_calls: list[dict[str, object]] = []
+
+    class FakeSpan:
+        def __init__(self) -> None:
+            self.outputs: object | None = None
+
+    @contextmanager
+    def fake_start_trace_span(**kwargs: object):
+        span = FakeSpan()
+        workflow_span_calls.append({**kwargs, "span": span})
+        yield span
+
+    monkeypatch.setattr(
+        cnb_research_service,
+        "start_trace_span",
+        fake_start_trace_span,
+    )
+    monkeypatch.setattr(
+        cnb_research_service,
+        "set_span_outputs",
+        lambda span, outputs: setattr(span, "outputs", outputs),
+    )
+    trace_context_updates: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        cnb_research_service,
+        "update_current_trace_context",
+        lambda **kwargs: trace_context_updates.append(kwargs),
+    )
     logged_metrics: list[dict[str, float | int]] = []
     logged_json_artifacts: list[str] = []
+    logged_directories: list[tuple[Path, str]] = []
     monkeypatch.setattr(
         cnb_research_service,
         "log_metrics",
@@ -138,6 +167,13 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         "log_text_artifact",
         lambda *_args, **_kwargs: None,
     )
+    monkeypatch.setattr(
+        cnb_research_service,
+        "log_directory_artifacts",
+        lambda path, *, artifact_path: logged_directories.append(
+            (path, artifact_path)
+        ),
+    )
     fake_openai = FakeOpenAI()
     bundle = run_funding_opportunity_research(
         build_request(max_turns=1),
@@ -146,10 +182,12 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     )
     run_directory = tmp_path / bundle.run_id
 
-    assert bundle.schema_version == "1.2"
-    assert bundle.run_metadata.pipeline_version == "1.2"
+    assert bundle.schema_version == "2.0"
+    assert bundle.run_metadata.pipeline_version == "2.0"
     assert bundle.review.status == "pending_review"
-    assert bundle.opportunity.program_name == "Example Program"
+    assert bundle.funder.name == "Example Funder"
+    assert bundle.funding_records[0].name == "Example Program"
+    assert bundle.funding_records[0].is_opportunity is True
     assert len(bundle.sources) == 2
     assert (run_directory / "research_bundle.json").exists()
     assert sorted(path.name for path in run_directory.glob("*.json")) == [
@@ -166,7 +204,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert fake_openai.responses.calls[0]["reasoning"] == {"effort": "medium"}
     assert "tools" not in fake_openai.responses.calls[0]
     model_input = json.loads(fake_openai.responses.calls[0]["input"])
-    assert model_input["current_filled_object"]["opportunity"]["program_name"] == (
+    assert model_input["current_filled_object"]["funding_records"][0]["name"] == (
         "Example Program"
     )
     assert "current_filled_object" not in model_input["research_request"]
@@ -178,4 +216,8 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert bundle.run_metadata.prompt_sha256
     assert logged_metrics[0]["turns_used"] == 1
     assert logged_json_artifacts == ["research_bundle.json"]
+    assert logged_directories == [(run_directory / "sources", "sources")]
     assert started_run_kwargs[0]["tags"]["module"] == "concept_note_builder"
+    assert workflow_span_calls[0]["name"] == "cnb_funding_opportunity_research"
+    assert workflow_span_calls[0]["span"].outputs["turns_used"] == 1
+    assert trace_context_updates[0]["session_id"] == bundle.run_id

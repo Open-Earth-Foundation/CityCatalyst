@@ -12,6 +12,7 @@ from contextlib import contextmanager, redirect_stdout
 from datetime import date, datetime
 from decimal import Decimal
 from enum import Enum
+from pathlib import Path
 from typing import Any, Iterator
 from uuid import UUID
 
@@ -24,7 +25,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 DEFAULT_MLFLOW_TRACKING_URI = "https://mlflow-dev.openearth.dev"
-DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "clima"
+DEFAULT_CLIMATE_ADVISOR_EXPERIMENT_NAME = "Clima"
 DEFAULT_MLFLOW_RUN_USER = "climate-advisor"
 MLFLOW_INIT_RETRY_COOLDOWN_SECONDS = 60.0
 REDACTED_VALUE = "[REDACTED]"
@@ -261,6 +262,67 @@ def start_run(
             )
 
 
+@contextmanager
+def start_trace_span(
+    *,
+    name: str,
+    span_type: str,
+    inputs: object | None = None,
+    attributes: Mapping[str, object] | None = None,
+) -> Iterator[Any | None]:
+    """Start one best-effort MLflow span inside the active trace context."""
+    if not _INITIALIZED or mlflow is None:
+        yield None
+        return
+
+    span_factory = getattr(mlflow, "start_span", None)
+    if not callable(span_factory):
+        yield None
+        return
+
+    try:
+        span_context = span_factory(
+            name=name,
+            span_type=span_type,
+            attributes=_json_safe(attributes or {}),
+        )
+        span = span_context.__enter__()
+    except Exception as error:
+        logger.warning("MLflow span start failed name=%s error=%s", name, error)
+        yield None
+        return
+
+    if inputs is not None:
+        _set_span_value(span, "set_inputs", inputs, name=name)
+
+    exit_exception_type = None
+    exit_exception = None
+    exit_traceback = None
+    try:
+        yield span
+    except Exception as error:
+        exit_exception_type = type(error)
+        exit_exception = error
+        exit_traceback = error.__traceback__
+        raise
+    finally:
+        try:
+            span_context.__exit__(
+                exit_exception_type,
+                exit_exception,
+                exit_traceback,
+            )
+        except Exception as error:
+            logger.warning("MLflow span close failed name=%s error=%s", name, error)
+
+
+def set_span_outputs(span: object | None, outputs: object) -> None:
+    """Attach redacted outputs to an active best-effort MLflow span."""
+    if span is None:
+        return
+    _set_span_value(span, "set_outputs", outputs, name="active")
+
+
 def log_tags(tags: Mapping[str, object]) -> None:
     """Best-effort log run tags for the active MLflow run."""
     if not _has_active_run() or not tags:
@@ -373,9 +435,50 @@ def log_text_artifact(artifact_file: str, content: str) -> None:
         )
 
 
+def log_directory_artifacts(
+    local_directory: Path,
+    *,
+    artifact_path: str,
+) -> None:
+    """Best-effort upload an exact local artifact directory to the active run."""
+    if not _has_active_run() or not local_directory.is_dir():
+        return
+    try:
+        mlflow.log_artifacts(str(local_directory), artifact_path=artifact_path)
+    except Exception as error:
+        logger.warning(
+            "MLflow directory artifact logging failed local_directory=%s artifact_path=%s error=%s",
+            local_directory,
+            artifact_path,
+            error,
+        )
+
+
 def redact_payload(payload: Any) -> Any:
     """Return a JSON-safe copy of a payload with secrets redacted."""
     return _json_safe(payload)
+
+
+def _set_span_value(
+    span: object,
+    method_name: str,
+    value: object,
+    *,
+    name: str,
+) -> None:
+    """Set redacted span data without allowing observability to break runtime work."""
+    method = getattr(span, method_name, None)
+    if not callable(method):
+        return
+    try:
+        method(_json_safe(value))
+    except Exception as error:
+        logger.warning(
+            "MLflow span data logging failed name=%s method=%s error=%s",
+            name,
+            method_name,
+            error,
+        )
 
 
 def _param_value(value: object) -> object:

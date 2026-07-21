@@ -2,45 +2,26 @@
   "use strict";
 
   const IDENTITY_KEYS = [
-    "criterion_ref", "template_ref", "chapter_ref", "funding_link_ref",
-    "amount_ref", "entry_ref", "action_ref", "project_ref",
+    "funding_record_ref", "criterion_ref", "template_ref", "chapter_ref",
+    "funder_ref",
   ];
   const NUMBER_KEYS = new Set([
-    "weight", "min_award", "max_award", "award_amount", "requested_amount",
-    "fundable_amount", "amount", "calendar_year", "rank",
+    "weight", "min_award", "max_award", "award_amount", "award_year",
   ]);
   const MONEY_KEYS = new Set([
-    "min_award", "max_award", "award_amount", "requested_amount",
-    "fundable_amount", "amount",
+    "min_award", "max_award", "award_amount",
   ]);
-  const BOOLEAN_KEYS = new Set(["hard_gate", "required"]);
+  const BOOLEAN_KEYS = new Set(["hard_gate", "required", "is_opportunity"]);
   const SECTIONS = [
-    ["funder", "Funder", "Institutional identity, scope, and profile.", [
-      "funder_name", "funder_url", "funder_type", "funder_country",
-      "funder_region", "funder_profile",
-    ]],
-    ["program", "Program", "Opportunity, route, geography, and status.", [
-      "program_name", "program_url", "finance_route", "instrument_type",
-      "region_scope", "min_award", "max_award", "currency", "live_status", "status",
+    ["funder", "Funder", "Institutional identity, scope, and profile.", ["funder"]],
+    ["records", "Funding records", "The opportunity and complete funded-project examples.", [
+      "funding_records",
     ]],
     ["template", "Application template", "Form structure and required content.", [
-      "application_template",
+      "funder_templates",
     ]],
-    ["criteria", "Criteria", "Eligibility and evaluation requirements.", ["criteria"]],
-    ["projects", "Funded projects", "Examples associated with the program.", [
-      "funded_projects",
-    ]],
-    ["actions", "Project actions", "Activities delivered in funded examples.", [
-      "funded_project_actions",
-    ]],
-    ["links", "Funding links", "Program, project, and award relationships.", [
-      "funding_links",
-    ]],
-    ["amounts", "Financial amounts", "Monetary facts with meaning and timing.", [
-      "financial_amounts",
-    ]],
-    ["pipeline", "Pipeline entries", "Published ranked or fundable applications.", [
-      "pipeline_entries",
+    ["criteria", "Criteria", "Eligibility and evaluation requirements.", [
+      "funder_criteria",
     ]],
   ];
 
@@ -89,8 +70,11 @@
 
   function validateBundle(bundle) {
     if (!bundle || typeof bundle !== "object") throw new Error("expected a JSON object");
-    if (!bundle.run_id || !bundle.schema_version || !bundle.opportunity) {
-      throw new Error("run_id, schema_version, and opportunity are required");
+    if (!bundle.run_id || !bundle.schema_version || !bundle.funder || !Array.isArray(bundle.funding_records)) {
+      throw new Error("run_id, schema_version, funder, and funding_records are required");
+    }
+    if (bundle.funding_records.filter((record) => record.is_opportunity).length !== 1) {
+      throw new Error("funding_records must contain exactly one opportunity");
     }
   }
 
@@ -99,9 +83,10 @@
     view.emptyState.hidden = true;
     view.workspace.hidden = false;
     view.saveButton.disabled = false;
-    view.programName.textContent = bundle.opportunity.program_name || "Unnamed program";
+    const opportunity = bundle.funding_records.find((record) => record.is_opportunity);
+    view.programName.textContent = opportunity?.name || "Unnamed program";
     view.runMeta.textContent = [
-      bundle.opportunity.funder_name,
+      bundle.funder.name,
       bundle.run_metadata?.model_name,
       bundle.run_id,
     ].filter(Boolean).join(" · ");
@@ -147,8 +132,8 @@
       summary.append(summaryText, element("span", "collapse-label"));
       const content = element("div", "section-content");
       keys.forEach((key) => {
-        if (key in state.bundle.opportunity) {
-          renderValue(content, key, state.bundle.opportunity[key], `opportunity.${key}`, [key]);
+        if (key in state.bundle) {
+          renderValue(content, key, state.bundle[key], key, [key]);
         }
       });
       if (!content.children.length) content.append(element("p", "empty", "Nothing found."));
@@ -474,7 +459,7 @@
     const selected = decisions.filter((decision) => decision.selected).length;
     const now = new Date().toISOString();
     return {
-      schema_version: "1.0",
+      schema_version: "2.0",
       update_type: "cnb_funder_research_review",
       source_bundle: {
         run_id: state.bundle.run_id,
@@ -498,11 +483,11 @@
         edited_fields: decisions.filter((item) => !equal(item.original_value, item.reviewed_value)).length,
       },
       decisions,
-      reviewed_opportunity: buildReviewedOpportunity(),
+      reviewed_reference_data: buildReviewedReferenceData(),
     };
   }
 
-  function buildReviewedOpportunity() {
+  function buildReviewedReferenceData() {
     const result = {};
     [...state.decisions.values()].filter((item) => item.selected).forEach((item) => {
       setNestedValue(result, item.segments, item.reviewed_value);
@@ -565,7 +550,7 @@
   }
 
   function recordTitle(key, record, index) {
-    return record.title || record.label || record.template_name || `${humanize(key).replace(/s$/, "")} ${index + 1}`;
+    return record.name || record.title || record.label || record.template_name || `${humanize(key).replace(/s$/, "")} ${index + 1}`;
   }
 
   function visibleDecisions() {
@@ -573,13 +558,12 @@
   }
 
   function isReferenceKey(key) {
-    return key.endsWith("_ref") || key.endsWith("_reference");
+    return key.endsWith("_ref") || key.endsWith("_reference") || key === "is_opportunity";
   }
 
   function displayPath(path) {
     if (!path) return "";
     return path
-      .replace(/^opportunity\./, "")
       .replace(/\[[^\]]+\]/g, "")
       .split(".")
       .map(humanize)

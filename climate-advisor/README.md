@@ -84,9 +84,11 @@ authenticated database-save boundary is documented in
 The tracked reference output is
 `output/cnb_research/9023c3d6-8581-4e7b-91d1-b65db544559b/research_bundle.json`.
 
-Research bundles use schema version `1.2`. Funding links, financial amounts,
-and pipeline entries share one optional integer `calendar_year`; fiscal-year
-labels and a separate award-year field are not part of the contract.
+Research bundles use schema version `2.0`. They mirror the CNB architecture with
+one funder, one shared `funding_records` collection distinguished by
+`is_opportunity`, and linked template and criteria collections. Each funded
+project keeps its interventions, award amount, currency, `award_year`, status,
+and summary in one record.
 
 ## Workflow
 
@@ -445,7 +447,7 @@ language, or client-side fallback behavior. The boundary is:
   `https://mlflow-dev.openearth.dev`
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
-  default `clima`
+  default `Clima`
 - `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
   match the shared HIAP-MEED fail-open tuning
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
@@ -793,7 +795,7 @@ HIAP-MEED. The split is experiment-based between services, and tag-based inside
 Climate Advisor:
 
 - `hiap-meed` remains the existing HIAP-MEED experiment
-- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+- `Clima` stores all Climate Advisor runs, including general `/v1/messages`
   chat, Stationary Energy draft, review, save, background generation, and
   draft-context chat runs, plus offline CNB funding-opportunity research
 
@@ -824,7 +826,15 @@ The offline CNB research CLI tags runs with
 `module=concept_note_builder` and
 `workflow=cnb_funding_opportunity_research`. It records the exact model,
 reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
-artifacts, and the MLflow run ID embedded in local `research_bundle.json`.
+artifacts, exact Markdown source snapshots, and the MLflow run ID embedded in
+local `research_bundle.json`. Each run uses one parent workflow trace containing
+the model and Firecrawl spans so tool latency and handled provider failures stay
+visible with the model calls. CNB manifests default to 15 research turns when
+`max_turns` is omitted.
+
+Pytest disables MLflow before test collection. Tests may exercise the logging
+helpers with in-memory fakes, but they do not send runs or traces to the remote
+`Clima` experiment.
 
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
@@ -835,7 +845,7 @@ GitHub.
 Before enabling MLflow in an environment:
 
 1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
-2. Confirm or create the experiment named `clima`.
+2. Confirm or create the experiment named `Clima`.
 3. Set the MLflow environment variables documented above in `.env` or the
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth

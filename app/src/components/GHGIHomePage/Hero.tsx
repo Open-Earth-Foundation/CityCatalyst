@@ -216,8 +216,10 @@ export function Hero({
                       >
                         <>
                           {value}{" "}
-                          {/* eslint-disable-next-line i18next/no-literal-string */}
-                          <span style={{ fontSize: "16px" }}>{unit}CO2e</span>
+                          {unit && (
+                            // eslint-disable-next-line i18next/no-literal-string
+                            <span style={{ fontSize: "16px" }}>{unit}CO2e</span>
+                          )}
                         </>
                       </Text>
                       <Tooltip

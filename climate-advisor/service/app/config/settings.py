@@ -429,6 +429,9 @@ class Settings(BaseModel):
     cc_oauth_client_id: str | None = os.getenv("CC_OAUTH_CLIENT_ID")
     cc_oauth_client_secret: str | None = os.getenv("CC_OAUTH_CLIENT_SECRET")
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
+    cnb_markdown_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
 
     def model_post_init(self, __context: Any) -> None:
         """Load non-secret OpenRouter and observability settings from llm_config.yaml."""

@@ -15,6 +15,7 @@ on:
       - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - k8s/cc-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
   pull_request:
@@ -24,6 +25,7 @@ on:
       - k8s/cc-ca-smoke-fixture.yml
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
+      - k8s/cc-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
 
@@ -81,6 +83,7 @@ jobs:
       - name: Setup Environment Variables
         run: |
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst.openearth.dev" >> .env && \
+          echo "GLOBAL_API_URL=https://ccglobal.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" >> .env && \
           echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env && \
@@ -90,10 +93,9 @@ jobs:
         run: npm run build
 
       - name: Lint the OpenAPI spec
-        run: npm run openapi:lint
-
-      # - name: Run Cypress tests
-      #   run: npm run cy:test
+        run: |
+          npm run openapi:build
+          npm run openapi:lint
 
       - name: Restore previous coverage
         uses: actions/cache@v4
@@ -459,6 +461,7 @@ jobs:
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_DEV}} \
+            MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_DEV}} \
             "OPENAI_ASSISTANT_ID=asst_saoKNCVqCX7adTMoLqPxPHvB" \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
@@ -500,18 +503,39 @@ jobs:
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
+          kubectl apply -f k8s/cc-process-pdf-ocr-jobs.yml -n default
+          kubectl set env cronjob/citycatalyst-process-pdf-ocr-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_DEV_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
+      EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/cc-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-dev \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh
 
   notifyDeploymentFailure:
-    needs: [runTests, pushToGHCR, deployToEKS]
+    needs: [runTests, pushToGHCR, deployToEKS, ccCaPostDeploySmoke]
     runs-on: ubuntu-latest
     if: |
       always() &&
-      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure') &&
+      (needs.runTests.result == 'failure' || needs.pushToGHCR.result == 'failure' || needs.deployToEKS.result == 'failure' || needs.ccCaPostDeploySmoke.result == 'failure') &&
       github.event_name == 'push' &&
       github.ref == 'refs/heads/develop'
 
@@ -527,6 +551,8 @@ jobs:
             echo "stage=Docker Build" >> $GITHUB_OUTPUT
           elif [ "${{ needs.deployToEKS.result }}" == "failure" ]; then
             echo "stage=Deployment" >> $GITHUB_OUTPUT
+          elif [ "${{ needs.ccCaPostDeploySmoke.result }}" == "failure" ]; then
+            echo "stage=CA/CC post-deploy smoke" >> $GITHUB_OUTPUT
           fi
 
       - name: Notify Slack - Deployment Failure

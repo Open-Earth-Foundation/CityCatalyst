@@ -1,0 +1,1124 @@
+{
+  "status": "completed",
+  "provider": "openai",
+  "model": "gpt-5.4-mini",
+  "request_context": {
+    "locode": "CL ZAL",
+    "canonical_language": "en",
+    "city_preference_sectors": [],
+    "city_preference_co_benefit_keys": [],
+    "ranked_action_ids": [
+      "c40_0010",
+      "c40_0012",
+      "c40_0015",
+      "c40_0023",
+      "c40_0025",
+      "c40_0029",
+      "c40_0034",
+      "c40_0035",
+      "c40_0037",
+      "icare_0016",
+      "icare_0025",
+      "icare_0028",
+      "icare_0045",
+      "icare_0053",
+      "icare_0117",
+      "icare_0121",
+      "icare_0122",
+      "icare_0139",
+      "ipcc_0067",
+      "ipcc_0105"
+    ]
+  },
+  "llm_input": {
+    "system_prompt": "<role>\nYou are a faithful writer of grounded qualitative explanations for ranked climate actions.\n</role>\n\n<task>\nFollow the user prompt exactly.\n- Use only provided evidence.\n- Do not add or remove factual content.\n- Prioritize the main ranking drivers over small supporting details.\n- Write in plain language suitable for a non-technical city user.\n- Return JSON only.\n</task>\n\n<input>\nInput will provide city context and ranked-action evidence payloads.\n</input>\n\n<output>\nReturn exactly the fields requested in the user prompt.\n</output>",
+    "curated_actions": [
+      {
+        "action_id": "c40_0023",
+        "rank": 1,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "ipcc_0105",
+        "rank": 2,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0016",
+        "rank": 3,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 2,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0121",
+        "rank": 4,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0029",
+        "rank": 5,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "medium",
+          "timeline_bucket": "5-10 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "neutral"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "5-10 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0035",
+        "rank": 6,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0015",
+        "rank": 7,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0117",
+        "rank": 8,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "5-10 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "neutral"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "5-10 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0037",
+        "rank": 9,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "high"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0010",
+        "rank": 10,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0139",
+        "rank": 11,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0025",
+        "rank": 12,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "high",
+          "timeline_bucket": "5-10 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "neutral"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "5-10 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0028",
+        "rank": 13,
+        "score_bands": {
+          "final": "low",
+          "impact": "low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 2,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0045",
+        "rank": 14,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0053",
+        "rank": 15,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "low",
+          "feasibility": "high"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "ipcc_0067",
+        "rank": 16,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "high",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "5-10 years",
+          "matched_city_subsector_keys_count": 2,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "neutral"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "5-10 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "very_strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Shows very strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "icare_0122",
+        "rank": 17,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "high"
+        },
+        "impact_signals": {
+          "impact_band": "low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0025",
+        "rank": 18,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0034",
+        "rank": 19,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      },
+      {
+        "action_id": "c40_0012",
+        "rank": 20,
+        "score_bands": {
+          "final": "low",
+          "impact": "very low",
+          "alignment": "moderate",
+          "feasibility": "moderate"
+        },
+        "impact_signals": {
+          "impact_band": "very low",
+          "timeline_bucket": "<5 years",
+          "matched_city_subsector_keys_count": 1,
+          "emissions_reduction_component_bucket": "very_weak",
+          "timeline_component_bucket": "very_strong"
+        },
+        "alignment_signals": {
+          "sector_match": false,
+          "action_timeline_bucket": "<5 years",
+          "city_preference_timeframes": [
+            "no_preference"
+          ],
+          "timeframe_match_label": "neutral_no_preference",
+          "policy_component_bucket": "strong",
+          "sector_component_bucket": "very_weak",
+          "co_benefit_component_bucket": "neutral",
+          "timeframe_component_bucket": "neutral",
+          "matched_preferred_co_benefits_count": 0
+        },
+        "feasibility_signals": {
+          "legal_assessment_present": false,
+          "legal_assessment_missing": true,
+          "legal_verdict_category": null,
+          "legal_component_source": "neutral_fallback",
+          "legal_component_bucket": "neutral",
+          "mitigation_feasibility_component_bucket": "very_strong"
+        },
+        "main_strengths": [
+          "Can deliver emissions benefits on a very favorable timeline.",
+          "Shows strong supportive policy context in the current evidence.",
+          "Shows very strong mitigation feasibility for the current city."
+        ],
+        "main_constraints": [
+          "Its expected emissions reduction is very limited in the current city inventory."
+        ],
+        "known_limitations": [
+          "No legal assessment row was available for this action, so the legal component used a neutral fallback."
+        ]
+      }
+    ],
+    "prompt_text_file": "llm/explanations_prompt.txt",
+    "prompt_text_characters": 37855
+  },
+  "llm_output": {
+    "parsed": {
+      "explanations": [
+        {
+          "action_id": "c40_0023",
+          "explanation": "This action ranks first because it can deliver emissions benefits on a very favorable timeline and has very strong supportive policy context. It also looks very feasible for the city to carry out. Its main drawback is that the expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available."
+        },
+        {
+          "action_id": "ipcc_0105",
+          "explanation": "This action is near the top for the same reasons as the first-ranked option: it has a very favorable timeline, very strong policy support, and very strong mitigation feasibility. It stays below the top spot because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0016",
+          "explanation": "This action ranks well because it can deliver emissions benefits on a very favorable timeline and has very strong policy support and mitigation feasibility. It sits below the top two because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0121",
+          "explanation": "This action is placed here because it shares the same main strengths as the higher-ranked options: a very favorable timeline, strong policy support, and very strong mitigation feasibility. It ranks a bit lower because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0029",
+          "explanation": "This action is ranked lower because its expected emissions reduction is very limited in the current city inventory. It still benefits from very strong policy support and very strong mitigation feasibility, which keep it above many other low-impact options. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0035",
+          "explanation": "This action stays in the middle of the list because it has a very favorable timeline, very strong policy support, and very strong mitigation feasibility. It does not rank higher because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0015",
+          "explanation": "This action ranks below the similar options above it because, while it has a very favorable timeline and very strong policy support and feasibility, its expected emissions reduction is very limited in the current city inventory. That limited impact keeps it from moving higher. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0117",
+          "explanation": "This action is placed here because it has very strong policy support and very strong mitigation feasibility. It ranks lower than the actions above because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0037",
+          "explanation": "This action has a very favorable timeline, very strong policy support, and very strong mitigation feasibility, which keeps it in the upper half of the list. It still ranks below the actions above because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0010",
+          "explanation": "This action is similar to the one above it, with a very favorable timeline, strong policy support, and very strong mitigation feasibility. It sits lower because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0139",
+          "explanation": "This action ranks here because it has a very favorable timeline, strong policy support, and very strong mitigation feasibility. It does not rise higher because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0025",
+          "explanation": "This action is held down by its very limited expected emissions reduction in the current city inventory. It still has very strong policy support and very strong mitigation feasibility, which keep it from falling further. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0028",
+          "explanation": "This action ranks below the similar higher options because its expected emissions reduction is very limited in the current city inventory. It has a favorable timeline, strong policy support, and very strong mitigation feasibility, but those strengths are not enough to lift it higher. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0045",
+          "explanation": "This action is kept low in the ranking because its expected emissions reduction is very limited in the current city inventory. It still has a very favorable timeline, very strong policy support, and very strong mitigation feasibility. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0053",
+          "explanation": "This action ranks lower than many of the others because its expected emissions reduction is very limited in the current city inventory. It has strong policy support and very strong mitigation feasibility, but its overall alignment is lower than most of the actions above. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "ipcc_0067",
+          "explanation": "This action remains low in the list because its expected emissions reduction is very limited in the current city inventory. It still has very strong policy support and very strong mitigation feasibility, which help keep it above the weakest options. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "icare_0122",
+          "explanation": "This action is ranked near the bottom because its expected emissions reduction is very limited in the current city inventory. It does have a favorable timeline, strong policy support, and very strong mitigation feasibility, but that is not enough to move it higher. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0025",
+          "explanation": "This action stays low because its expected emissions reduction is very limited in the current city inventory. It still has a favorable timeline, strong policy support, and very strong mitigation feasibility. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0034",
+          "explanation": "This action is near the bottom for the same reason as the other low-ranked options: its expected emissions reduction is very limited in the current city inventory. It does have a favorable timeline, strong policy support, and very strong mitigation feasibility. No legal assessment row was available for this action."
+        },
+        {
+          "action_id": "c40_0012",
+          "explanation": "This action closes the list because its expected emissions reduction is very limited in the current city inventory. It still has a favorable timeline, strong policy support, and very strong mitigation feasibility, but those strengths do not outweigh the limited impact. No legal assessment row was available for this action."
+        }
+      ]
+    },
+    "explanations_by_action_id": {
+      "c40_0023": "This action ranks first because it can deliver emissions benefits on a very favorable timeline and has very strong supportive policy context. It also looks very feasible for the city to carry out. Its main drawback is that the expected emissions reduction is very limited in the current city inventory, and there was no legal assessment row available.",
+      "ipcc_0105": "This action is near the top for the same reasons as the first-ranked option: it has a very favorable timeline, very strong policy support, and very strong mitigation feasibility. It stays below the top spot because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "icare_0016": "This action ranks well because it can deliver emissions benefits on a very favorable timeline and has very strong policy support and mitigation feasibility. It sits below the top two because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "icare_0121": "This action is placed here because it shares the same main strengths as the higher-ranked options: a very favorable timeline, strong policy support, and very strong mitigation feasibility. It ranks a bit lower because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "c40_0029": "This action is ranked lower because its expected emissions reduction is very limited in the current city inventory. It still benefits from very strong policy support and very strong mitigation feasibility, which keep it above many other low-impact options. No legal assessment row was available for this action.",
+      "c40_0035": "This action stays in the middle of the list because it has a very favorable timeline, very strong policy support, and very strong mitigation feasibility. It does not rank higher because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "c40_0015": "This action ranks below the similar options above it because, while it has a very favorable timeline and very strong policy support and feasibility, its expected emissions reduction is very limited in the current city inventory. That limited impact keeps it from moving higher. No legal assessment row was available for this action.",
+      "icare_0117": "This action is placed here because it has very strong policy support and very strong mitigation feasibility. It ranks lower than the actions above because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "c40_0037": "This action has a very favorable timeline, very strong policy support, and very strong mitigation feasibility, which keeps it in the upper half of the list. It still ranks below the actions above because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "c40_0010": "This action is similar to the one above it, with a very favorable timeline, strong policy support, and very strong mitigation feasibility. It sits lower because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "icare_0139": "This action ranks here because it has a very favorable timeline, strong policy support, and very strong mitigation feasibility. It does not rise higher because its expected emissions reduction is very limited in the current city inventory. No legal assessment row was available for this action.",
+      "icare_0025": "This action is held down by its very limited expected emissions reduction in the current city inventory. It still has very strong policy support and very strong mitigation feasibility, which keep it from falling further. No legal assessment row was available for this action.",
+      "icare_0028": "This action ranks below the similar higher options because its expected emissions reduction is very limited in the current city inventory. It has a favorable timeline, strong policy support, and very strong mitigation feasibility, but those strengths are not enough to lift it higher. No legal assessment row was available for this action.",
+      "icare_0045": "This action is kept low in the ranking because its expected emissions reduction is very limited in the current city inventory. It still has a very favorable timeline, very strong policy support, and very strong mitigation feasibility. No legal assessment row was available for this action.",
+      "icare_0053": "This action ranks lower than many of the others because its expected emissions reduction is very limited in the current city inventory. It has strong policy support and very strong mitigation feasibility, but its overall alignment is lower than most of the actions above. No legal assessment row was available for this action.",
+      "ipcc_0067": "This action remains low in the list because its expected emissions reduction is very limited in the current city inventory. It still has very strong policy support and very strong mitigation feasibility, which help keep it above the weakest options. No legal assessment row was available for this action.",
+      "icare_0122": "This action is ranked near the bottom because its expected emissions reduction is very limited in the current city inventory. It does have a favorable timeline, strong policy support, and very strong mitigation feasibility, but that is not enough to move it higher. No legal assessment row was available for this action.",
+      "c40_0025": "This action stays low because its expected emissions reduction is very limited in the current city inventory. It still has a favorable timeline, strong policy support, and very strong mitigation feasibility. No legal assessment row was available for this action.",
+      "c40_0034": "This action is near the bottom for the same reason as the other low-ranked options: its expected emissions reduction is very limited in the current city inventory. It does have a favorable timeline, strong policy support, and very strong mitigation feasibility. No legal assessment row was available for this action.",
+      "c40_0012": "This action closes the list because its expected emissions reduction is very limited in the current city inventory. It still has a favorable timeline, strong policy support, and very strong mitigation feasibility, but those strengths do not outweigh the limited impact. No legal assessment row was available for this action."
+    }
+  }
+}

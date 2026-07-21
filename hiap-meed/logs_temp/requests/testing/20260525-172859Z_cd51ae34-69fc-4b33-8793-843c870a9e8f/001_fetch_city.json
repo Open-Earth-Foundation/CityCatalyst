@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-05-25T17:28:59.875710+00:00",
+  "request_id": "cd51ae34-69fc-4b33-8793-843c870a9e8f",
+  "request_kind": "prioritization",
+  "event_index": 1,
+  "step_name": "fetch_city",
+  "event_type": "fetch_city.completed",
+  "payload": {
+    "locode": "CL ZAL",
+    "city_name": "Valdivia",
+    "region_name": "Los Ríos",
+    "source": "city_attributes_api",
+    "source_metadata": {
+      "mock_file_path": null,
+      "upstream_url": "https://ccglobal.openearth.dev/api/v0/city_attributes/CL%20ZAL",
+      "upstream_endpoint": "GET /api/v0/city_attributes/{locode}",
+      "requested_locode": "CL ZAL",
+      "http_status_code": 200,
+      "upstream_generated_at_utc": "2026-05-25T17:29:00.091449+00:00"
+    },
+    "elapsed_seconds": 0.6842363327741623
+  }
+}

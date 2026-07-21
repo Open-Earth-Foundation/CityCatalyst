@@ -42,7 +42,7 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
      block
    - Composes `prompts.core` with `prompts.stationary_energy_review`
    - Registers only scoped review tools that stage, preview, rollback, and save
-     draft-review choices
+     draft-review choices, including notation-key choices
 
 At runtime:
 
@@ -173,6 +173,8 @@ data: {}
 
 - `inventory_list_accessible`
   - Lists all accessible city/year inventories, or filters by city and year.
+  - Returns organization/project metadata and a `by_project` breakdown so Clima
+    can answer count questions with an access summary.
   - Requires name, type, and GWP disambiguation when one city/year has multiple
     inventories.
 - `inventory_status_overview`
@@ -201,14 +203,19 @@ draft for review.
 **Added for active Stationary Energy draft review chat**
 
 - `stationary_energy_list_review_options`
+- `stationary_energy_list_notation_keys`
 - `stationary_energy_accept_one`
+- `stationary_energy_stage_notation_key`
 - `stationary_energy_accept_multiple`
 - `stationary_energy_accept_all_recommended`
 - `stationary_energy_request_bulk_review_confirmation`
+- `stationary_energy_request_bulk_notation_confirmation`
+- `stationary_energy_apply_bulk_notation_choices`
 - `stationary_energy_request_all_recommended_confirmation`
 - `stationary_energy_request_staged_source_change_confirmation`
 - `stationary_energy_request_staged_sources_rollback_confirmation`
 - `stationary_energy_rollback_staged_sources`
+- `stationary_energy_rollback_staged_notation_keys`
 - `stationary_energy_save_review_draft`
 - `stationary_energy_request_inventory_save_confirmation`
 
@@ -229,7 +236,11 @@ When a request is scoped to an active `stationary_energy_draft_run_id`:
    instructions and registers only the scoped review tools
 4. Review tools stage temporary selections first, then save them into durable
    `review_decisions` only when the user asks to save the reviewed draft
-5. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
+5. Notation-key tools use the same staged-first boundary. They list eligible
+   Stationary Energy rows and the allowed settable keys (`NO`, `NE`, `IE`,
+   `C`), stage or roll back notation choices in CA state, and never write
+   directly to inventory from chat
+6. Save-to-inventory stays a separate CityCatalyst confirmation step. CA chat
    returns the confirmation payload but does not write the inventory directly
 
 Stationary Energy `tool_result` payloads may include these `ui_event` values:
@@ -394,6 +405,11 @@ language, or client-side fallback behavior. The boundary is:
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
 - `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
+- `CC_API_KEY` - Service credential used when CA asks CC to validate the
+  CC-issued user bearer token
+- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Complete JSON request-body limit for the
+  optional CC-to-CA Markdown ingest endpoint (default `20971520`; this is an
+  operational body guard, not a source-PDF or page-count acceptance limit)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -409,6 +425,17 @@ language, or client-side fallback behavior. The boundary is:
   not emit GitPython warnings during MLflow initialization
 - `MLFLOW_ASYNC_LOGGING_ENABLED` - Enables MLflow async logging when set to
   `true`
+
+### CC-produced Concept Note Markdown baseline
+
+`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` validates the
+CC-issued user token through CC before consuming the request, streams the body
+up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`, recomputes SHA-256, verifies contiguous
+page markers and their positive metadata count without imposing a page-count
+limit, and delegates atomic run/upload registration to a repository
+interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
+the datateam repository adapter is configured, the production provider returns
+`503 cnb_storage_unavailable`; contract tests inject an in-memory repository.
 
 ## Database Schema
 
@@ -461,9 +488,11 @@ Climate Advisor also persists CA-owned Stationary Energy draft workflow state:
 - `stationary_energy_draft_proposals`
   - Per-row proposed values plus recommended and alternate candidate references
 - `stationary_energy_review_decisions`
-  - Durable saved review decisions with versioning and commit status
+  - Durable saved review decisions with versioning, commit status, and optional
+    notation-key metadata
 - `stationary_energy_staged_review_selections`
-  - Active temporary chat-staged selections awaiting save, change, or rollback
+  - Active temporary chat-staged source or notation-key selections awaiting
+    save, change, or rollback
 
 `StreamingHandler` loads this state into chat context when the request is
 scoped to an active `stationary_energy_draft_run_id`.
@@ -627,9 +656,12 @@ These tools:
 - construct requests to CityCatalyst inventory capability endpoints
 - automatically include the scoped JWT in the `Authorization` header
 - refresh and persist the token when needed
-- return compact, read-only inventory context to the agent
+- return compact, read-only inventory context to the agent, including
+  organization/project breakdown fields from `inventory_list_accessible`
 - require inventory name, type, and GWP disambiguation when city/year is not
   unique
+- answer inventory/city count questions as "you have access to" summaries using
+  totals plus `by_project`
 
 ### Stationary Energy Draft Review Boundary
 
@@ -637,9 +669,12 @@ The Stationary Energy review tool pack uses the same scoped CityCatalyst token
 for draft-save flows, but the ownership split is:
 
 - Climate Advisor owns pre-commit draft state, staged review selections, and
-  saved review decisions
+  saved review decisions, including notation-key choices
 - CityCatalyst owns the final user-facing inventory-write confirmation and
   commit flow
+- The agent can list notation-key targets and stage `NO`, `NE`, `IE`, or `C`
+  choices, but committed notation-key writes happen only after the reviewed
+  draft is saved and the existing inventory-save confirmation is approved
 
 ## Testing
 

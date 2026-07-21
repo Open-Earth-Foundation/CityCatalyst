@@ -1,6 +1,6 @@
 import { Box, HStack, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { Control } from "react-hook-form";
+import { Control, FieldValues } from "react-hook-form";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import { Field } from "@/components/ui/field";
 import { MdWarning } from "react-icons/md";
@@ -9,7 +9,7 @@ import LabelLarge from "@/components/package/Texts/Label";
 
 interface EmissionFactorsSectionProps {
   t: TFunction;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   errors: Record<string, any>;
   isDirectMeasure: boolean;
   hideEmissionFactors?: boolean;

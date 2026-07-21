@@ -5,21 +5,53 @@ export async function expectText(page: Page, text: string) {
 }
 
 /** Wait until the auth form is hydrated and inputs are interactive. */
-export async function waitForAuthFormReady(page: Page) {
+export async function waitForAuthFormReady(
+  page: Page,
+  options: { expectEnabled?: boolean } = {},
+) {
+  const { expectEnabled = true } = options;
   await expect(page.locator('input[name="email"]')).toBeVisible();
   await expect(page.locator("form").first()).toHaveAttribute("novalidate", "");
   const submitButton = page.getByRole("button", {
     name: /^(LOG IN|Create Account)$/i,
   });
   await expect(submitButton).toBeVisible();
-  await expect(submitButton).toBeEnabled();
+  if (expectEnabled) {
+    await expect(submitButton).toBeEnabled();
+  }
   await expect(submitButton).toHaveAttribute("formnovalidate", "");
 }
 
 export async function expectFieldInvalid(page: Page, fieldName: string) {
-  await expect(page.locator(`input[name="${fieldName}"]`)).toHaveAttribute(
-    "aria-invalid",
-    "true",
+  // Chakra UI v3 / Ark UI uses several DOM signals to indicate an invalid field:
+  //   1. data-invalid="" on the Field.Root group container (role="group")
+  //   2. aria-invalid="true" on the input control
+  //   3. data-invalid="" on the input control itself
+  //   4. An error text element rendered by Field.ErrorText
+  // Depending on the Chakra/Ark version, React rendering timing, and how
+  // react-hook-form propagates errors, not all signals may be present at the
+  // same time. Check for any of them in a polling loop.
+  await page.waitForFunction(
+    (name: string) => {
+      const input = document.querySelector(`input[name="${name}"]`);
+      if (!input) return false;
+
+      // Signal 1: aria-invalid on the input itself
+      if (input.getAttribute("aria-invalid") === "true") return true;
+
+      // Signal 2: data-invalid on the input itself
+      if (input.hasAttribute("data-invalid")) return true;
+
+      // Signal 3: data-invalid on the closest field group container
+      const group = input.closest('[role="group"]');
+      if (group?.hasAttribute("data-invalid")) return true;
+
+      // Signal 4: an error text element rendered inside the field group
+      if (group?.querySelector('[data-part="error-text"]')) return true;
+
+      return false;
+    },
+    fieldName,
     { timeout: 15000 },
   );
 }
@@ -42,6 +74,28 @@ export async function dismissCookieConsent(page: Page) {
   } catch {
     // Consent banner not present, continue
   }
+}
+
+/**
+ * Dismiss any visible toast notifications so they don't intercept pointer events.
+ * Toasts are rendered in a portal at bottom-end and can block button clicks.
+ */
+export async function dismissToasts(page: Page) {
+  // Try to click close buttons on any toasts that have them
+  const closeButtons = page.locator('[data-scope="toast"] [data-part="close-trigger"]');
+  const count = await closeButtons.count().catch(() => 0);
+  for (let i = 0; i < count; i++) {
+    await closeButtons.nth(i).click().catch(() => {});
+  }
+  // Disable pointer-events on all toast group containers so they can't block
+  // button clicks even if the toast persists (not all toasts are closable)
+  await page.evaluate(() => {
+    document.querySelectorAll('[data-part="group"][data-scope="toast"]').forEach((el) => {
+      (el as HTMLElement).style.pointerEvents = "none";
+    });
+  }).catch(() => {});
+  // Wait briefly for toasts to clear
+  await page.waitForTimeout(500);
 }
 
 export async function signup(
@@ -193,6 +247,10 @@ async function walkCitiesOnboardingWizard(
   }
 
   {
+    // Dismiss any toast notifications that may block the Continue button
+    // (e.g. "An inventory for 2025 already exists for this city")
+    await dismissToasts(page);
+
     const continueButton = page
       .getByRole("button", { name: /^Continue$/ })
       .last();
@@ -200,7 +258,13 @@ async function walkCitiesOnboardingWizard(
     await continueButton.click();
   }
 
-  // Step 3: third-party data — opt out for speed/determinism
+  // Step 3: invite collaborators — skip for speed/determinism
+  await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
+    timeout: 15000,
+  });
+  await page.getByRole("button", { name: /Skip this step/i }).click();
+
+  // Step 4: third-party data — opt out for speed/determinism
   await completeThirdPartyDataOnboardingStep(page, "no", {
     waitForInventoryUrl: true,
   });
@@ -360,6 +424,9 @@ export async function createInventoryThroughOnboarding(
 
   // Click Continue and wait for data to be submitted also add timeout to allow for data to be submitted
   {
+    // Dismiss any toast notifications that may block the Continue button
+    await dismissToasts(page);
+
     const continueBtn = page.getByRole("button", { name: /Continue/i });
     await expect(continueBtn).toBeEnabled({ timeout: 30000 });
     await continueBtn.click();

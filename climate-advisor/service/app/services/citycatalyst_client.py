@@ -400,6 +400,44 @@ class CityCatalystClient:
             headers["Authorization"] = f"Bearer {token}"
         return headers
 
+    async def validate_user_identity(self, token: str) -> str:
+        """Validate a CC-issued bearer token and return its canonical user ID."""
+        if not self.base_url:
+            raise CityCatalystClientError(
+                "CC_BASE_URL not configured",
+                status_code=503,
+            )
+        client = await self._get_client()
+        try:
+            response = await client.post(
+                f"{self.base_url}/api/v1/internal/ca/auth/identity",
+                headers=self._internal_headers(token),
+                follow_redirects=True,
+            )
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "CC identity validation unavailable",
+                status_code=503,
+            ) from exc
+        if not response.is_success:
+            raise CityCatalystClientError(
+                "CC bearer token is invalid",
+                status_code=response.status_code,
+            )
+        try:
+            user_id = response.json().get("user_id")
+        except ValueError as exc:
+            raise CityCatalystClientError(
+                "CC identity response is invalid",
+                status_code=503,
+            ) from exc
+        if not isinstance(user_id, str) or not user_id:
+            raise CityCatalystClientError(
+                "CC identity response is invalid",
+                status_code=503,
+            )
+        return user_id
+
     async def post_internal_capability(
         self,
         path: str,
@@ -515,6 +553,19 @@ class CityCatalystClient:
             token=token,
         )
 
+    async def list_stationary_energy_notation_keys(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """List Stationary Energy notation-key targets through the CC internal route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+            json_data=request_payload,
+            token=token,
+        )
+
     async def load_inventory_list_accessible(
         self,
         *,
@@ -563,6 +614,19 @@ class CityCatalystClient:
         """Commit accepted Stationary Energy review rows through the CC internal capability route."""
         return await self.post_internal_capability(
             "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted",
+            json_data=request_payload,
+            token=token,
+        )
+
+    async def commit_stationary_energy_notation_keys(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Commit saved Stationary Energy notation-key rows through CC."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
             json_data=request_payload,
             token=token,
         )

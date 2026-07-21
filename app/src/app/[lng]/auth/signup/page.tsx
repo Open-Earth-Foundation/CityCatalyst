@@ -17,9 +17,9 @@ import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
-import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
+import { isPasswordPatternValid } from "@/util/validation";
 import { getHomePath } from "@/util/routes";
 
 type Inputs = {
@@ -31,6 +31,7 @@ type Inputs = {
   acceptTerms: boolean;
   preferredLanguage: LANGUAGES;
 };
+
 
 const normalizeInviteEmail = (value: string | null): string =>
   (value ?? "").replaceAll(" ", "+");
@@ -57,16 +58,24 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
     handleSubmit,
     register,
     setError: setFormError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     watch,
   } = useForm<Inputs>({
+    mode: "onChange",
     defaultValues: {
-      preferredLanguage: lng as LANGUAGES,
+      preferredLanguage: lng,
       email: prefilledEmail,
     },
   });
 
   const watchPassword = watch("password", "");
+  const watchConfirmPassword = watch("confirmPassword", "");
+  const passwordsMismatch =
+    watchConfirmPassword.length > 0 && watchPassword !== watchConfirmPassword;
+  const passwordPatternValid = isPasswordPatternValid(watchPassword);
+
+  const isSubmitDisabled =
+    !isValid || passwordsMismatch || !passwordPatternValid;
 
   const [error, setError] = useState("");
 
@@ -76,18 +85,9 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   }
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (data.password !== data.confirmPassword) {
-      setFormError("confirmPassword", {
-        type: "custom",
-        message: "Passwords don't match!",
-      });
-      return;
-    }
-
     if (typeof data.acceptTerms !== "boolean") {
       data.acceptTerms = data.acceptTerms === "on";
     }
-
     try {
       const res = await fetch("/api/v1/auth/register", {
         method: "POST",
@@ -194,6 +194,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           shouldValidate={true}
           t={t}
           watchPassword={watchPassword}
+          mismatch={passwordsMismatch}
         />
         <PasswordInput
           register={register}
@@ -202,31 +203,9 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           name={t("confirm-password")}
           id="confirmPassword"
           shouldValidate={false}
+          mismatch={passwordsMismatch}
         />
-        <Field
-          label={<LabelLarge>{t("preferred-language")}</LabelLarge>}
-          invalid={!!errors.preferredLanguage}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.preferredLanguage?.message}
-              </Text>
-            </Box>
-          }
-        >
-          <LanguageSelector
-            register={register}
-            error={errors.preferredLanguage}
-            t={t}
-            defaultValue={lng as LANGUAGES}
-          />
-        </Field>
+        <input type="hidden" {...register("preferredLanguage")} />
         <Field
           invalid={!!errors.acceptTerms}
           errorText={
@@ -268,6 +247,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           type="submit"
           formNoValidate
           loading={isSubmitting}
+          disabled={isSubmitDisabled}
           h={16}
           width="full"
           bgColor="interactive.secondary"

@@ -8,6 +8,14 @@ export const tokenRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9_\-]+$/;
 export const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/** Returns true when a password meets the minimum strength requirements:
+ *  at least 8 characters, one uppercase letter, one lowercase letter, one digit. */
+export const isPasswordPatternValid = (password: string): boolean =>
+  password.length >= 8 &&
+  /[A-Z]/.test(password) &&
+  /[a-z]/.test(password) &&
+  /[0-9]/.test(password);
+
 export const geoJSON = z.object({
   title: z.string(),
   description: z.string(),
@@ -184,8 +192,12 @@ export const AcceptOrganizationInvite = z.object({
 });
 
 export const CreateUsersInvite = z.object({
-  emails: z.array(z.string().email()),
+  projectId: z.string().uuid(),
   cityIds: z.array(z.string()),
+  invites: z.array(z.object({
+    email: z.string().email(),
+    role: z.enum(["admin", "collaborator"]),
+  })),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;

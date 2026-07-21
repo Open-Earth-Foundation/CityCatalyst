@@ -1318,6 +1318,112 @@ def test_action_financial_feasibility_scores_service_uses_env_base_url_override(
 
 
 @pytest.mark.unit
+def test_finance_client_fetches_named_report_opportunities_and_projects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Report finance enrichment should preserve names, links, and locations."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        del self
+        request = httpx.Request("GET", url, headers=headers)
+        if "/opportunities?" in url:
+            payload = {
+                "meta": {
+                    "generated_at_utc": "2026-07-20T00:00:00Z",
+                    "count": 1,
+                    "datasources": [
+                        {
+                            "publisher_name": "Energy Agency",
+                            "publisher_url": "https://agency.example/",
+                            "dataset_name": "Energy programmes",
+                        }
+                    ],
+                },
+                "data": [
+                    {
+                        "opportunity_name": "Closed fund",
+                        "funder_name": "Energy Agency",
+                        "instrument": "grant",
+                        "status": "closed",
+                        "status_as_of": "2026-06-08",
+                        "recurrence": "sporadic",
+                        "source_url": "https://agency.example/closed",
+                        "city_application": ["direct"],
+                        "climate_relevance": "explicit",
+                    },
+                    {
+                        "opportunity_name": "Open capital grant",
+                        "funder_name": "Energy Agency",
+                        "instrument": "grant",
+                        "status": "open",
+                        "source_url": "https://agency.example/grant",
+                        "city_application": ["direct"],
+                        "climate_relevance": "explicit",
+                    },
+                    {
+                        "opportunity_name": "Municipal energy assistance",
+                        "funder_name": "Energy Agency",
+                        "instrument": "technical_assistance",
+                        "status": "ongoing",
+                        "source_url": "https://agency.example/programme",
+                        "city_application": ["direct"],
+                        "climate_relevance": "explicit",
+                    }
+                ],
+            }
+        else:
+            payload = {
+                "meta": {
+                    "generated_at_utc": "2026-07-20T00:00:00Z",
+                    "total": 1,
+                    "count": 1,
+                    "datasources": [
+                        {
+                            "publisher_name": "Project System",
+                            "publisher_url": "https://projects.example/",
+                            "dataset_name": "Climate projects",
+                        }
+                    ],
+                },
+                "data": [
+                    {
+                        "project_name": "Street lighting upgrade",
+                        "jurisdiction": "Santa Cruz",
+                        "lifecycle_stage": "in-execution",
+                        "funding_channel": "public investment",
+                    }
+                ],
+            }
+        return httpx.Response(200, request=request, json=payload)
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    evidence = ApiActionFinancialFeasibilityScoresDataApiClient().get_report_finance_evidence(
+        action_id="icare_0040",
+        country_code="CL",
+        sector="stationary_energy",
+        route="needs technical assistance",
+    )
+
+    assert evidence.opportunities[0].opportunity_name == "Municipal energy assistance"
+    assert evidence.opportunities[0].source_url == "https://agency.example/programme"
+    assert len(evidence.opportunities) == 2
+    assert evidence.opportunities[0].report_category == "current"
+    assert evidence.opportunities[1].opportunity_name == "Closed fund"
+    assert evidence.opportunities[1].report_category == "monitor"
+    assert evidence.opportunities[1].status_as_of == "2026-06-08"
+    assert evidence.source_metadata["opportunities"]["current_count"] == 1
+    assert evidence.source_metadata["opportunities"]["monitoring_count"] == 1
+    assert "not matched to the selected action" in evidence.source_metadata[
+        "opportunities"
+    ]["selection_scope"]
+    assert "limit=50" in evidence.source_metadata["opportunities"]["upstream_url"]
+    assert evidence.projects[0].project_name == "Street lighting upgrade"
+    assert evidence.projects[0].jurisdiction == "Santa Cruz"
+    assert evidence.source_metadata["projects"]["total"] == 1
+
+@pytest.mark.unit
 def test_mock_action_financial_feasibility_scores_client_loads_scores_from_file() -> None:
     """Mock financial feasibility client reads checked-in compact score payloads."""
     mock_file_path = (

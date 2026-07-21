@@ -92,6 +92,7 @@ The service loads `.env` at startup (see `app/main.py`). The variables below com
   - **`LANGCHAIN_PROJECT`**: Base LangSmith project name.
   - **`LANGCHAIN_PROJECT_NAME_PRIORITIZER`**: Project name override for prioritizer traces.
   - **`LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION`**: Project name override for plan translation traces.
+  - Structured-output helpers (`chat.completions.parse` for explanations / translations) use a plain OpenAI client plus function-level `@traceable`. They do **not** use `wrap_openai`, which would serialize the SDK `parsed` field and emit noisy Pydantic warnings.
 
 - **AWS / S3 (used by Docker startup + some scripts)**
   - **`AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`**: Credentials for reading artefacts from S3.

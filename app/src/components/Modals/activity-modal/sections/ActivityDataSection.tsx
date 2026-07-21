@@ -3,6 +3,7 @@ import { TFunction } from "i18next";
 import {
   Control,
   Controller,
+  FieldValues,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -20,7 +21,7 @@ import { BodyMedium } from "@/components/package/Texts/Body";
 interface ActivityDataSectionProps {
   t: TFunction;
   register: UseFormRegister<any>;
-  control: Control<any, any>;
+  control: Control<FieldValues, any>;
   errors: Record<string, any>;
   setValue: UseFormSetValue<any>;
   title: string;

@@ -74,16 +74,25 @@ const ExternalDataSection = ({
   const onDisconnectThirdPartyData = async (
     _source: DataSourceWithRelations,
   ) => {
-    await disconnectThirdPartyData({
-      inventoryId: inventoryValue.inventoryId,
-      datasourceId: inventoryValue.datasourceId,
-    });
-    toaster.create({
-      title: t("disconnected-data-source"),
-      type: "info",
-      duration: 5000,
-    });
-    onDisconnect?.(inventoryValue.datasourceId!);
+    try {
+      await disconnectThirdPartyData({
+        inventoryId: inventoryValue.inventoryId,
+        datasourceId: inventoryValue.datasourceId,
+      }).unwrap();
+      toaster.create({
+        title: t("disconnected-data-source"),
+        type: "info",
+        duration: 5000,
+      });
+      onDisconnect?.(inventoryValue.datasourceId!);
+    } catch (err) {
+      console.error("Failed to disconnect data source:", err);
+      toaster.create({
+        title: t("disconnect-data-source-error"),
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
   if (!source) {

@@ -101,6 +101,11 @@ import type {
 } from "./ImportedInventoryFile";
 import { ImportedInventoryFile as _ImportedInventoryFile } from "./ImportedInventoryFile";
 import type {
+  PdfOcrJobAttributes,
+  PdfOcrJobCreationAttributes,
+} from "./PdfOcrJob";
+import { PdfOcrJob as _PdfOcrJob } from "./PdfOcrJob";
+import type {
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
 } from "./ImportMappingFeedback";
@@ -233,7 +238,6 @@ import {
   OAuthClientI18NOptionalAttributes,
   OAuthClientI18N,
 } from "./OAuthClientI18N";
-import { se } from "date-fns/locale";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
 import {
@@ -271,6 +275,7 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
+  _PdfOcrJob as PdfOcrJob,
   _ImportMappingFeedback as ImportMappingFeedback,
   _Methodology as Methodology,
   _Organization as Organization,
@@ -349,6 +354,8 @@ export type {
   InventoryCreationAttributes,
   ImportedInventoryFileAttributes,
   ImportedInventoryFileCreationAttributes,
+  PdfOcrJobAttributes,
+  PdfOcrJobCreationAttributes,
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
   MethodologyAttributes,
@@ -444,6 +451,7 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
+  const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
@@ -1208,6 +1216,7 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
+    PdfOcrJob: PdfOcrJob,
     ImportMappingFeedback: ImportMappingFeedback,
     Methodology: Methodology,
     Organization: Organization,

@@ -34,6 +34,9 @@ export default function HIAPInventoryPage(props: {
   const [ignoreExisting, setIgnoreExisting] = useState(false);
   const [shouldRefetch, setShouldRefetch] = useState(false);
   const [userTriggeredHiap, setUserTriggeredHiap] = useState(false);
+  const [activeActionType, setActiveActionType] = useState<ACTION_TYPES>(
+    ACTION_TYPES.Mitigation,
+  );
 
   // Get inventory data
   const {
@@ -151,14 +154,17 @@ export default function HIAPInventoryPage(props: {
           setIgnoreExisting={setIgnoreExisting}
           actions={hiapData}
           inventory={null}
-          actionType={ACTION_TYPES.Mitigation}
+          actionType={activeActionType}
           lng={lng as any}
           isReprioritizing={isLoading}
         />
         <Tabs.Root
           variant="line"
           lazyMount
-          defaultValue={ACTION_TYPES.Mitigation}
+          value={activeActionType}
+          onValueChange={(details) =>
+            setActiveActionType(details.value as ACTION_TYPES)
+          }
         >
           <Tabs.List>
             {Object.values(ACTION_TYPES).map((actionType) => (
@@ -260,12 +266,16 @@ export default function HIAPInventoryPage(props: {
         }}
         actions={hiapData}
         inventory={inventory}
+        actionType={activeActionType}
       />
 
       <Tabs.Root
         variant="line"
         lazyMount
-        defaultValue={ACTION_TYPES.Mitigation}
+        value={activeActionType}
+        onValueChange={(details) =>
+          setActiveActionType(details.value as ACTION_TYPES)
+        }
       >
         <Tabs.List>
           {Object.values(ACTION_TYPES).map((actionType) => (

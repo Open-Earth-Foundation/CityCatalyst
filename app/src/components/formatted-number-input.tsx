@@ -1,16 +1,27 @@
 import React, { useCallback, useLayoutEffect, useRef } from "react";
+<<<<<<< HEAD
 import { Control, Controller } from "react-hook-form";
+=======
+import {
+  Control,
+  Controller,
+  FieldValues,
+  Path,
+  PathValue,
+} from "react-hook-form";
+>>>>>>> v1.23.0-rc.0
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import { NumberInputProps } from "./ui/number-input";
 import { decimalSeparators, formatNumber } from "@/util/helpers";
 import { NumberFormatEnum } from "@/util/enums";
 
-interface FormattedNumberInputProps extends NumberInputProps {
-  control: Control<any, any>;
-  name: string;
+interface FormattedNumberInputProps<T extends FieldValues>
+  extends NumberInputProps {
+  control: Control<T>;
+  name: Path<T>;
   setError?: Function;
   clearErrors?: Function;
-  defaultValue?: string | undefined;
+  defaultValue?: PathValue<T, Path<T>>;
   isDisabled?: boolean;
   placeholder?: string;
   children?: React.ReactNode;
@@ -44,13 +55,17 @@ function countSeparatorsBefore(
   return count;
 }
 
+<<<<<<< HEAD
 function FormattedNumberInput({
+=======
+function FormattedNumberInput<T extends FieldValues>({
+>>>>>>> v1.23.0-rc.0
   control,
   setError,
   id,
   testId,
   name,
-  defaultValue = "0",
+  defaultValue,
   isDisabled = false,
   children,
   placeholder,
@@ -61,7 +76,7 @@ function FormattedNumberInput({
   max,
   numberFormat,
   ...rest
-}: FormattedNumberInputProps) {
+}: FormattedNumberInputProps<T>) {
   const normalizedFormat = numberFormat ?? NumberFormatEnum.COMMA_AND_DOT;
   const decimalSeparator = decimalSeparators[normalizedFormat];
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -125,10 +140,14 @@ function FormattedNumberInput({
    * in the old vs new formatted strings.
    */
   const handleChange = useCallback(
+<<<<<<< HEAD
     (
       e: React.ChangeEvent<HTMLInputElement>,
       fieldOnChange: (v: any) => void,
     ) => {
+=======
+    (e: React.ChangeEvent<HTMLInputElement>, fieldOnChange: (v: any) => void) => {
+>>>>>>> v1.23.0-rc.0
       const input = e.target;
       const oldValue = input.value;
       const cursorPos = input.selectionStart ?? oldValue.length;
@@ -139,11 +158,15 @@ function FormattedNumberInput({
       const newFormatted = format(parsedValue);
 
       // Count separators before cursor in old vs new string
+<<<<<<< HEAD
       const oldSeps = countSeparatorsBefore(
         oldValue,
         cursorPos,
         decimalSeparator,
       );
+=======
+      const oldSeps = countSeparatorsBefore(oldValue, cursorPos, decimalSeparator);
+>>>>>>> v1.23.0-rc.0
       const newSeps = countSeparatorsBefore(
         newFormatted,
         cursorPos + (newFormatted.length - oldValue.length),

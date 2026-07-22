@@ -9,7 +9,7 @@ Inputs:
   - `--request-index`: Optional 1-based request position for a batch input. Runs only that request and leaves the full batch index unchanged.
   - `--output`: Parent directory for per-run artifacts; defaults to `output/cnb_research`.
   - `--log-level`: Python logging level; defaults to `INFO`.
-- Files/paths: the project JSON contains the target project's matching profile. A single-request input contains the exact seeded funder/program names and URLs plus optional `application_template_url`, `current_filled_object`, `target_funded_projects`, and `max_turns`. A batch input adds a human-readable `batch_name` and a non-empty `requests` array of those same request objects.
+- Files/paths: the project JSON contains the target project's matching profile. A single-request input contains the exact seeded funder/program names and URLs plus optional `application_template_url`, `current_filled_object`, `target_funded_projects`, and `max_turns`. When omitted, `max_turns` defaults to 20 for this similar-project research CLI. A batch input adds a human-readable `batch_name` and a non-empty `requests` array of those same request objects.
 - Env vars: `OPENAI_API_KEY` calls the configured research model and `FIRECRAWL_API_KEY` calls Firecrawl. Shared MLflow environment variables remain optional and are handled by the reused research pipeline.
 
 Outputs:
@@ -50,6 +50,7 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 logger = logging.getLogger(__name__)
 
 DEFAULT_OUTPUT = Path("output/cnb_research")
+DEFAULT_SIMILAR_PROJECT_MAX_TURNS = 20
 SNAPSHOT_LIST_KEYS = ("funders", "items", "results", "data")
 BATCH_INDEX_SUFFIX = ".batch.json"
 
@@ -174,6 +175,13 @@ def load_target_project(path: Path) -> Any:
     return CnbSimilarProjectSearchRequest.model_validate(read_json(path))
 
 
+def apply_similar_project_defaults(payload: object) -> object:
+    """Apply defaults owned by the funded-project discovery wrapper."""
+    if not isinstance(payload, dict) or "max_turns" in payload:
+        return payload
+    return {**payload, "max_turns": DEFAULT_SIMILAR_PROJECT_MAX_TURNS}
+
+
 def load_request(path: Path, *, target_project: Any) -> Any:
     """Validate one request or batch and attach the target project to each."""
     ensure_service_directory_on_path()
@@ -187,7 +195,9 @@ def load_request(path: Path, *, target_project: Any) -> Any:
         validated_requests: list[Any] = []
         for index, item in enumerate(batch.requests, start=1):
             try:
-                request = FundingOpportunityResearchRequest.model_validate(item)
+                request = FundingOpportunityResearchRequest.model_validate(
+                    apply_similar_project_defaults(item)
+                )
                 validated_requests.append(
                     request.model_copy(update={"target_project": target_project})
                 )
@@ -197,7 +207,9 @@ def load_request(path: Path, *, target_project: Any) -> Any:
             batch_name=batch.batch_name,
             requests=tuple(validated_requests),
         )
-    request = FundingOpportunityResearchRequest.model_validate(payload)
+    request = FundingOpportunityResearchRequest.model_validate(
+        apply_similar_project_defaults(payload)
+    )
     return request.model_copy(update={"target_project": target_project})
 
 

@@ -227,6 +227,23 @@ def test_load_request_accepts_single_request_manifest(tmp_path: Path) -> None:
     assert loaded.target_project == target_project
 
 
+def test_load_request_defaults_single_request_to_twenty_turns(tmp_path: Path) -> None:
+    """Similar-project discovery owns a 20-turn default without a manifest."""
+    request = build_request()
+    request_path = tmp_path / "request.json"
+    request_path.write_text(
+        json.dumps(request.model_dump(mode="json", exclude={"max_turns"})),
+        encoding="utf-8",
+    )
+
+    loaded = research_funded_projects.load_request(
+        request_path,
+        target_project=build_target_project(),
+    )
+
+    assert loaded.max_turns == 20
+
+
 def test_load_request_accepts_strict_batch_manifest(tmp_path: Path) -> None:
     """Batch inputs should validate each request and retain the batch name."""
     first = build_request()
@@ -268,6 +285,33 @@ def test_load_request_accepts_strict_batch_manifest(tmp_path: Path) -> None:
     assert all(
         request.target_project == target_project for request in loaded.requests
     )
+
+
+def test_load_request_applies_batch_default_and_preserves_explicit_turns(
+    tmp_path: Path,
+) -> None:
+    """Batch requests default independently while respecting caller overrides."""
+    request = build_request(max_turns=7)
+    batch_path = tmp_path / "batch.json"
+    batch_path.write_text(
+        json.dumps(
+            {
+                "batch_name": "Award portfolios",
+                "requests": [
+                    request.model_dump(mode="json", exclude={"max_turns"}),
+                    request.model_dump(mode="json"),
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    loaded = research_funded_projects.load_request(
+        batch_path,
+        target_project=build_target_project(),
+    )
+
+    assert [item.max_turns for item in loaded.requests] == [20, 7]
 
 
 def test_load_request_rejects_empty_batch_manifest(tmp_path: Path) -> None:

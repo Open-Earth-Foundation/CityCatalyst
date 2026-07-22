@@ -72,13 +72,12 @@ discovery step; when supplied, it adds possible canonical IDs for later review
 without narrowing the search or selecting an ID. Batch manifests contain only
 funder/program source seeds; they never contain hand-authored candidate
 projects. `target_funded_projects` optionally keeps each program run in breadth
-discovery after the first deeply evidenced project; it defaults to one. The
-checked-in Nicosia batches use the schema maximum of 50 projects and an explicit
-20-turn research budget per program so each bounded run exhausts as much
-attributable public evidence as it can. A failed batch entry can be rerun
-reproducibly with its 1-based `--request-index N`; that selected run writes the
-normal per-run artifact without replacing the full batch index. Run the commands
-from `climate-advisor/`:
+discovery after the first deeply evidenced project; it defaults to one and is
+bounded at 50. The similar-project wrapper uses a 20-turn research budget when
+`max_turns` is omitted while preserving an explicit caller value. A failed batch
+entry can be rerun reproducibly with its 1-based `--request-index N`; that
+selected run writes the normal per-run artifact without replacing the full batch
+index. Run the commands from `climate-advisor/`:
 
 ```powershell
 uv run python -m scripts.cnb_research.research_funding_opportunity `
@@ -90,21 +89,11 @@ uv run python -m scripts.cnb_research.research_funded_projects `
   --input path/to/research-request.json `
   --output output/cnb_research
 
-uv run python -m scripts.cnb_research.research_funded_projects `
-  --project scripts/cnb_research/manifests/nicosia_similar_project_search_request.json `
-  --input scripts/cnb_research/manifests/nicosia_similar_project_programs.json `
-  --output output/cnb_research
-
-uv run python -m scripts.cnb_research.research_funded_projects `
-  --project scripts/cnb_research/manifests/nicosia_similar_project_search_request.json `
-  --input scripts/cnb_research/manifests/nicosia_similar_project_award_portfolios.json `
-  --output output/cnb_research
-
 # Optional identity enrichment for later review/import preparation.
 uv run python -m scripts.cnb_research.research_funded_projects `
-  --project scripts/cnb_research/manifests/nicosia_similar_project_search_request.json `
-  --input scripts/cnb_research/manifests/nicosia_similar_project_award_portfolios.json `
-  --funders scripts/cnb_research/manifests/nicosia_similar_project_funders.local-review.json `
+  --project path/to/current-project.json `
+  --input path/to/award-portfolio-batch.json `
+  --funders path/to/canonical-funders.json `
   --output output/cnb_research
 
 uv run python -m scripts.cnb_research.run_similar_project_matching `
@@ -116,11 +105,6 @@ uv run python -m scripts.cnb_research.run_similar_project_matching `
 
 uv run python -m http.server 8080
 ```
-
-The checked-in Nicosia funder file is a reproducible local-review snapshot, not
-an export of production canonical UUIDs. Discovery does not require it. Replace
-it with the production funder snapshot before validating or importing reviewed
-records.
 
 Visit `http://localhost:8080/scripts/cnb_research/review.html`, load a generated
 `<run_id>.research.json` or `<run_id>.similar-projects.json`, and browse its
@@ -928,8 +912,9 @@ reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
 artifacts, exact Markdown source snapshots, and the MLflow run ID embedded in
 local `research_bundle.json`. Each run uses one parent workflow trace containing
 the model and Firecrawl spans so tool latency and handled provider failures stay
-visible with the model calls. CNB manifests default to 15 research turns when
-`max_turns` is omitted.
+visible with the model calls. The generic funding-opportunity CLI uses the
+shared 15-turn model default when `max_turns` is omitted. The funded-project
+similar-search wrapper applies its scoped 20-turn default before validation.
 
 Pytest disables MLflow before test collection. Tests may exercise the logging
 helpers with in-memory fakes, but they do not send runs or traces to the remote

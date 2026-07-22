@@ -9,11 +9,6 @@ production prompt stay in the standard Climate Advisor application folders.
 
 ```text
 scripts/cnb_research/
-|-- manifests/
-|   |-- nicosia_similar_project_award_portfolios.json
-|   |-- nicosia_similar_project_programs.json
-|   |-- nicosia_similar_project_funders.local-review.json
-|   `-- nicosia_similar_project_search_request.json
 |-- research_funding_opportunity.py
 |-- research_funded_projects.py
 |-- run_similar_project_matching.py
@@ -64,41 +59,25 @@ pipeline independently for every request and writes
 artifact paths. To rerun one failed entry without repeating completed work, pass
 its 1-based batch position as `--request-index N`. The selected request writes
 its ordinary per-run artifact and does not overwrite the existing full batch
-index. Set `target_funded_projects` to a positive integer up to 50 to
-keep each request in source-grounded breadth discovery after its first deeply
-supported project; the default remains one for existing manifests. The checked-in
-Nicosia-adjacent manifest sets the maximum target of 50 and a 20-turn research
-budget for each of eight official program seeds, so every bounded run keeps
-searching for all publicly attributable projects it can support, and is
-reproducible with:
+index. Set `target_funded_projects` to a positive integer up to 50 to keep each
+request in source-grounded breadth discovery after its first deeply supported
+project; the default remains one. This wrapper defaults omitted `max_turns` to
+20 while preserving an explicit caller value.
 
-```powershell
-uv run python -m scripts.cnb_research.research_funded_projects `
-  --project scripts/cnb_research/manifests/nicosia_similar_project_search_request.json `
-  --input scripts/cnb_research/manifests/nicosia_similar_project_programs.json `
-  --output output/cnb_research
-```
-
-The bundled funder snapshot is deliberately marked `local_review_only`. Its
-stable IDs can make local identity review repeatable when passed with
-`--funders`, but the file is not needed for discovery and must be replaced by an
-export of real production canonical funder IDs before import.
-
-For the widest reproducible scan, the award-portfolio manifest seeds the same
-pipeline with official pages that enumerate completed or selected projects.
-It still contains no project records: the model must extract every retained
+For the widest reproducible scan, supply a caller-owned batch whose request
+entries seed official pages that enumerate completed or selected projects. The
+batch still contains no project records: the model must extract every retained
 project and its evidence from the captured sources.
 
 ```powershell
 uv run python -m scripts.cnb_research.research_funded_projects `
-  --project scripts/cnb_research/manifests/nicosia_similar_project_search_request.json `
-  --input scripts/cnb_research/manifests/nicosia_similar_project_award_portfolios.json `
+  --project path/to/current-project.json `
+  --input path/to/award-portfolio-batch.json `
   --output output/cnb_research
 ```
 
-Add
-`--funders scripts/cnb_research/manifests/nicosia_similar_project_funders.local-review.json`
-only when the same discovery run should also propose local canonical identities.
+Add `--funders path/to/canonical-funders.json` only when the same discovery run
+should also propose canonical identities for later review.
 
 To exercise the configured runtime matcher with plan-aligned, approved research
 artifacts, derive candidates from one or more reviewed pairs:
@@ -167,8 +146,9 @@ to continue from an existing partial dossier; otherwise the runtime creates a
 seed-only object before the first model turn. `target_funded_projects` defaults
 to one and keeps discovery active until that many distinct project rows are
 captured or the final audit records why the target could not be reached.
-`max_turns` is optional and defaults to 15; callers may still supply a different
-positive limit for a deliberately shorter or longer run.
+`max_turns` is optional. The generic funding-opportunity CLI uses the shared
+15-turn model default, while the funded-project similar-search wrapper defaults
+to 20. Both preserve an explicit positive caller limit.
 
 New bundles use schema version `2.0`. They contain one funder and one shared
 `funding_records` collection, with `is_opportunity` distinguishing the program

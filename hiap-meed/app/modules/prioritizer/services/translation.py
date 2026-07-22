@@ -12,6 +12,10 @@ from app.modules.prioritizer.llm_config import (
     get_explanation_translations_model,
     get_explanation_translations_temperature,
 )
+from app.modules.prioritizer.localization import (
+    terminology_for_translation,
+    validate_generated_language,
+)
 from app.services.openai_client import create_openai_client
 
 
@@ -79,10 +83,12 @@ def translate_explanations(
         }
         for action_id in sorted(canonical_explanations_by_action_id.keys())
     ]
+    terminology = terminology_for_translation(normalized_target_languages)
     prompt = _build_prompt(
         source_language="en",
         target_languages=normalized_target_languages,
         actions_payload=actions_payload,
+        terminology=terminology,
     )
     system_prompt = _read_system_prompt_template()
     logger.info(
@@ -111,6 +117,7 @@ def translate_explanations(
         expected_action_ids=set(canonical_explanations_by_action_id.keys()),
         target_languages=normalized_target_languages,
     )
+    _validate_translation_languages(translations_by_action_id)
     warnings = _build_translation_warnings(warning_action_ids=warning_action_ids)
     llm_io_payload = {
         "status": "completed",
@@ -125,6 +132,7 @@ def translate_explanations(
             "system_prompt": system_prompt,
             "prompt_text": prompt,
             "actions_payload": actions_payload,
+            "terminology": terminology,
         },
         "llm_output": {
             "parsed": parsed.model_dump(mode="json"),
@@ -237,6 +245,21 @@ def _build_translation_warnings(*, warning_action_ids: list[str]) -> list[str]:
     ]
 
 
+def _validate_translation_languages(
+    translations_by_action_id: dict[str, dict[str, str]],
+) -> None:
+    """Require each substantive translation to use its declared target language."""
+    for action_id, translations in translations_by_action_id.items():
+        for language, translated_text in translations.items():
+            validate_generated_language(
+                translated_text,
+                language,
+                content_label=(
+                    f"Translation for action `{action_id}` and language `{language}`"
+                ),
+            )
+
+
 def _sorted_detail_map(detail_map: dict[str, set[str]]) -> dict[str, list[str]]:
     """Convert a string->set mapping into a deterministic string->sorted-list mapping."""
     return {
@@ -250,12 +273,14 @@ def _build_prompt(
     source_language: str,
     target_languages: list[str],
     actions_payload: list[dict[str, str]],
+    terminology: dict[str, object],
 ) -> str:
     """Build translation prompt from markdown template and canonical explanation rows."""
     template = _read_prompt_template()
     return template.format(
         source_language=source_language,
         target_languages=json.dumps(target_languages, ensure_ascii=False),
+        terminology_json=json.dumps(terminology, ensure_ascii=False, indent=2),
         actions_json=json.dumps(actions_payload, ensure_ascii=False, indent=2),
     )
 

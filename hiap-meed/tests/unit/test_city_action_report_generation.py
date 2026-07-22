@@ -7,12 +7,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from app.modules.prioritizer.report_models import ReportChapterInput
+from app.modules.prioritizer.report_models import ReportChapterDraft, ReportChapterInput
 from app.modules.prioritizer.services import report_generation
 from app.modules.prioritizer.services.report_generation import (
     _build_chapter_prompt,
     _output_plan_response_format,
     _read_system_prompt,
+    _validate_chapter_output,
+    aggregate_localized_chapters,
     generate_output_plan_chapters,
 )
 
@@ -135,7 +137,8 @@ def test_snapshot_prompt_requires_prominent_ask_line() -> None:
         )
     )
 
-    assert "**The ask:** {facts.ask.summary}" in prompt
+    assert "terminology.ask_label" in prompt
+    assert "express the meaning of `facts.ask` fluently" in prompt
     assert "Provide technical assistance to install efficient streetlights." in prompt
 
 
@@ -198,3 +201,60 @@ def test_system_prompt_requires_finished_report_language() -> None:
     assert "finished report that a municipal reader will see" in prompt
     assert "Never describe facts as supplied" in prompt
     assert "Say information is `not available` rather than `not supplied`" in prompt
+    assert "Never mix languages" in prompt
+    assert "exact recurring UI terminology" in prompt
+
+
+def test_aggregate_localized_chapters_requires_complete_language_coverage() -> None:
+    """Aggregation should expose every frontend field under every requested language."""
+    chapters = aggregate_localized_chapters(
+        languages=["en", "es"],
+        chapters_by_language={
+            "en": [
+                ReportChapterDraft(
+                    key="snapshot",
+                    title="Snapshot",
+                    markdown="English report content for the selected city action.",
+                    source_refs=["city"],
+                    limitations=["An English limitation."],
+                )
+            ],
+            "es": [
+                ReportChapterDraft(
+                    key="snapshot",
+                    title="Resumen",
+                    markdown="Contenido en español del informe para la acción seleccionada.",
+                    source_refs=["city"],
+                    limitations=["Una limitación en español."],
+                )
+            ],
+        },
+    )
+
+    assert chapters[0].title == {"en": "Snapshot", "es": "Resumen"}
+    assert set(chapters[0].markdown) == {"en", "es"}
+    assert set(chapters[0].limitations) == {"en", "es"}
+    assert chapters[0].source_refs == ["city"]
+
+
+def test_language_validation_rejects_clearly_wrong_dominant_language() -> None:
+    """A Spanish chapter must not pass validation when its prose is English."""
+    output = report_generation.OutputPlanChapterResponse(
+        markdown=(
+            "This chapter is written entirely in English and describes the city "
+            "action, its expected result, and the next implementation steps."
+        ),
+        source_refs=["city"],
+        limitations=[],
+    )
+
+    with pytest.raises(ValueError, match="instead of `es`"):
+        _validate_chapter_output(
+            output,
+            ReportChapterInput(
+                key="snapshot",
+                title="Resumen",
+                language="es",
+                source_refs=["city"],
+            ),
+        )

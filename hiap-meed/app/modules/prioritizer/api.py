@@ -38,6 +38,7 @@ from app.modules.prioritizer.services.report_context_enrichment import (
     build_report_context_with_live_enrichment,
 )
 from app.modules.prioritizer.services.report_generation import (
+    aggregate_localized_chapters,
     generate_output_plan_chapters,
 )
 from app.modules.prioritizer.utils.subsector_mapping import (
@@ -551,7 +552,7 @@ def prioritize(
         "Generates one JSON-with-Markdown-chapters output plan for one selected "
         "ranked action. The endpoint is stateless: callers must provide the "
         "original prioritization request/response snapshot plus one locode, "
-        "one actionId, and one language."
+        "one actionId, and a non-empty language list."
     ),
     responses={
         200: {"description": "Output plan generated for the selected action."},
@@ -587,7 +588,7 @@ def generate_output_plan(
 
     The route validates that the selected city/action belong to the supplied
     snapshot, refetches live source context, then generates isolated report
-    chapters in the requested language for that single action.
+    chapters independently in every requested language for that single action.
     """
     request_trace_id = request.meta.requestId
     internal_request_id = uuid4()
@@ -647,31 +648,53 @@ def generate_output_plan(
                     action_financial_feasibility_scores_data_api_client
                 ),
             )
-            chapter_inputs = build_chapter_inputs(report_context)
             artifact_writer.write_run_file(
                 "report_context.json",
                 report_context.model_dump(mode="json"),
             )
+
+            # Step 2: localize and generate each language independently.
+            chapter_inputs_by_language = {}
+            generation_by_language = {}
+            llm_io_by_language = {}
+            for language in report_context.requested_languages:
+                localized_context = report_context.model_copy(
+                    update={"language": language}
+                )
+                chapter_inputs = build_chapter_inputs(localized_context)
+                chapter_inputs_by_language[language] = chapter_inputs
+                generation_result = generate_output_plan_chapters(
+                    chapter_inputs=chapter_inputs,
+                    use_llm=not request.requestData.debugContextOnly,
+                )
+                generation_by_language[language] = generation_result.chapters
+                llm_io_by_language[language] = generation_result.llm_io
+
             artifact_writer.write_run_file(
                 "chapter_inputs.json",
-                [chapter.model_dump(mode="json") for chapter in chapter_inputs],
-            )
-
-            # Step 2: generate one isolated Markdown body per chapter.
-            generation_result = generate_output_plan_chapters(
-                chapter_inputs=chapter_inputs,
-                use_llm=not request.requestData.debugContextOnly,
+                {
+                    language: [
+                        chapter.model_dump(mode="json") for chapter in chapter_inputs
+                    ]
+                    for language, chapter_inputs in chapter_inputs_by_language.items()
+                },
             )
             write_output_plan_llm_artifacts(
                 artifact_writer=artifact_writer,
-                llm_io=generation_result.llm_io,
+                llm_io={"languages": llm_io_by_language},
+            )
+
+            # Step 3: aggregate only after every requested language is complete.
+            localized_chapters = aggregate_localized_chapters(
+                languages=report_context.requested_languages,
+                chapters_by_language=generation_by_language,
             )
 
             response = CityActionReportApiResponse(
                 locode=report_context.locode,
                 action_id=report_context.action_id,
-                language=report_context.language,
-                chapters=generation_result.chapters,
+                language=report_context.requested_languages,
+                chapters=localized_chapters,
                 metadata=CityActionReportMetadata(
                     frontend_request_id=request_trace_id,
                     internal_request_id=internal_request_id_str,
@@ -716,7 +739,10 @@ def generate_output_plan(
                         "report_context": "report_context.json",
                         "chapter_inputs": "chapter_inputs.json",
                         "output_plan_llm_io": "llm/output_plan_io.json",
-                        "output_plan_markdown": "output_plan.md",
+                        "output_plan_markdown": [
+                            f"output_plan.{language}.md"
+                            for language in response.language
+                        ],
                         "response_full": "response_full.json",
                     },
                 }

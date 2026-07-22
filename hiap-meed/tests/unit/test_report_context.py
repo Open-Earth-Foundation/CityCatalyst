@@ -27,7 +27,7 @@ from app.modules.prioritizer.report_context import (
 def _report_request(
     *,
     action_id: str = "A_1",
-    language: str = "en",
+    language: list[str] | None = None,
     locode: str = "CL-SCL",
     response_results: list[dict[str, object]] | None = None,
 ) -> CityActionReportApiRequest:
@@ -83,7 +83,7 @@ def _report_request(
             "requestData": {
                 "locode": locode,
                 "actionId": action_id,
-                "language": language,
+                "language": language or ["en"],
                 "debugContextOnly": True,
                 "prioritizationSnapshot": {
                     "request": {
@@ -182,7 +182,7 @@ def test_validate_report_snapshot_returns_selected_city_action_and_country() -> 
 def test_report_context_warns_when_language_was_not_in_source_request() -> None:
     """Report language can differ from the prioritization explanation languages."""
     context = build_report_context(
-        request=_report_request(language="es"),
+        request=_report_request(language=["es"]),
         action=Action(action_id="A_1", action_name="Bus electrification"),
         city=CityData(
             city_name="Santiago",
@@ -200,7 +200,7 @@ def test_report_context_warns_when_language_was_not_in_source_request() -> None:
 
     assert context.language == "es"
     assert any(
-        "report language differs from the languages used in the original prioritization"
+        "report languages differ from the languages used in the original prioritization"
         in item
         for item in context.limitations
     )
@@ -235,11 +235,13 @@ def test_report_context_limitations_are_reader_safe() -> None:
 
 def test_report_request_normalizes_boundary_values() -> None:
     """Request DTO validation should normalize simple report boundary values."""
-    request = _report_request(action_id=" A_1 ", language=" EN ", locode=" cl-scl ")
+    request = _report_request(
+        action_id=" A_1 ", language=[" EN "], locode=" cl-scl "
+    )
 
     assert request.requestData.locode == "CL-SCL"
     assert request.requestData.actionId == "A_1"
-    assert request.requestData.language == "en"
+    assert request.requestData.language == ["en"]
 
 
 def test_report_request_rejects_blank_boundary_values() -> None:
@@ -500,7 +502,7 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
     assert "fixed_internet_household_share" not in str(city_fit.facts)
     assert city_fit.facts["supporting_conditions"] == [
         {
-            "indicator": "electricity_access_rate",
+            "indicator": "Electricity access rate",
             "display_value": "99.75% (high)",
             "implication": (
                 "In the feasibility assessment, this indicator strengthens "
@@ -508,7 +510,7 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
             ),
         },
         {
-            "indicator": "poverty_rate",
+            "indicator": "Poverty rate",
             "display_value": "19.72% (low)",
             "implication": (
                 "In the feasibility assessment, this indicator strengthens "
@@ -516,7 +518,7 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
             ),
         },
         {
-            "indicator": "median_household_income",
+            "indicator": "Median household income",
             "display_value": "1,174,475 CLP (medium)",
             "implication": (
                 "In the feasibility assessment, this indicator strengthens "
@@ -524,7 +526,7 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
             ),
         },
     ]
-    assert city_fit.facts["limiting_conditions"][0]["indicator"] == "renter_share"
+    assert city_fit.facts["limiting_conditions"][0]["indicator"] == "Renter share"
     assert "weakens public acceptance" in city_fit.facts["limiting_conditions"][0][
         "implication"
     ]
@@ -692,9 +694,9 @@ def test_snapshot_finance_and_sources_inputs_expose_structured_report_rows() -> 
     impact = chapters["action_impact"].facts
     assert impact["action"]["co_benefits"] == [
         {
-            "label": "cost of living",
+            "label": "Cost of living",
             "relationship": "positive",
-            "strength": "medium",
+            "strength": "Medium",
         }
     ]
     assert "impact_score" not in impact["ranking"]

@@ -12,7 +12,7 @@
   "requestData": {
     "locode": "CL IQQ",
     "actionId": "icare_0040",
-    "language": "en",
+    "language": ["en", "es"],
     "debugContextOnly": false,
     "prioritizationSnapshot": {
       "request": {

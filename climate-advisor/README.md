@@ -23,6 +23,8 @@ conversational experience for CityCatalyst (CC). The service lives under
   delivery
 - **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
   OpenAI trace logging
+- **Offline CNB Research Review**: Firecrawl-backed funding research plus a
+  local static editor for selecting, correcting, and saving review updates
 
 ## Current Architecture
 
@@ -55,6 +57,38 @@ At runtime:
   request.
 - PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
   workflow state.
+
+## Offline CNB Funding Research
+
+The separate offline CNB workflow researches one known funder and opportunity
+and writes pending-review artifacts under `output/cnb_research/`. Generated
+runs are ignored except for the single tracked EUCF reference bundle. Run it
+and open its static review workspace from `climate-advisor/`:
+
+```powershell
+uv run python -m scripts.cnb_research.research_funding_opportunity `
+  --input path/to/research-request.json `
+  --output output/cnb_research
+
+uv run python -m http.server 8080
+```
+
+Visit `http://localhost:8080/scripts/cnb_research/review.html`, load a generated
+`research_bundle.json`, browse its collapsible sections, edit and select the
+findings, then save a local `<run_id>.review-update.json`. Technical reference
+fields remain preserved in the update but are hidden from the reviewer. The
+editor does not modify the bundle or write to the database. The proposed future
+authenticated database-save boundary is documented in
+`scripts/cnb_research/README.md`.
+
+The tracked reference output is
+`output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.
+
+Research bundles use schema version `2.0`. They mirror the CNB architecture with
+one funder, one shared `funding_records` collection distinguished by
+`is_opportunity`, and linked template and criteria collections. Each funded
+project keeps its interventions, award amount, currency, `award_year`, status,
+and summary in one record.
 
 ## Workflow
 
@@ -415,7 +449,7 @@ language, or client-side fallback behavior. The boundary is:
   `https://mlflow-dev.openearth.dev`
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
-  default `clima`
+  default `Clima`
 - `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
   match the shared HIAP-MEED fail-open tuning
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
@@ -766,9 +800,9 @@ HIAP-MEED. The split is experiment-based between services, and tag-based inside
 Climate Advisor:
 
 - `hiap-meed` remains the existing HIAP-MEED experiment
-- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+- `Clima` stores all Climate Advisor runs, including general `/v1/messages`
   chat, Stationary Energy draft, review, save, background generation, and
-  draft-context chat runs
+  draft-context chat runs, plus offline CNB funding-opportunity research
 
 Each run includes tags such as `service`, `environment`, `workflow`,
 `prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
@@ -793,6 +827,20 @@ Energy workflow prompt first, followed by the draft JSON context in
 `<context>...</context>`. Other operational defaults such as the MLflow
 `Created by` service identity are handled in code.
 
+The offline CNB research CLI tags runs with
+`module=concept_note_builder` and
+`workflow=cnb_funding_opportunity_research`. It records the exact model,
+reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
+artifacts, exact Markdown source snapshots, and the MLflow run ID embedded in
+local `research_bundle.json`. Each run uses one parent workflow trace containing
+the model and Firecrawl spans so tool latency and handled provider failures stay
+visible with the model calls. CNB manifests default to 15 research turns when
+`max_turns` is omitted.
+
+Pytest disables MLflow before test collection. Tests may exercise the logging
+helpers with in-memory fakes, but they do not send runs or traces to the remote
+`Clima` experiment.
+
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
 because the value is a non-sensitive experiment name. The Kubernetes manifests
@@ -802,7 +850,7 @@ GitHub.
 Before enabling MLflow in an environment:
 
 1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
-2. Confirm or create the experiment named `clima`.
+2. Confirm or create the experiment named `Clima`.
 3. Set the MLflow environment variables documented above in `.env` or the
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth

@@ -8,14 +8,16 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from app.modules.prioritizer.internal_models import ScoredAction
 from app.modules.prioritizer.llm_config import (
     get_explanations_model,
     get_explanations_temperature,
     is_explanations_enabled,
 )
-from app.modules.prioritizer.internal_models import ScoredAction
-from app.modules.prioritizer.utils.co_benefit_taxonomy import (
-    CO_BENEFIT_DISPLAY_LABELS,
+from app.modules.prioritizer.localization import (
+    localized_source_value,
+    translate_term,
+    validate_generated_language,
 )
 from app.services.openai_client import create_openai_client
 
@@ -28,45 +30,7 @@ SYSTEM_PROMPT_FILE_PATH = (
     Path(__file__).resolve().parents[1] / "prompts" / "ranking_explanation_system.md"
 )
 EXPLANATION_PROMPT_WARNING_CHARS = 20_000
-SECTOR_DISPLAY_LABELS: dict[str, str] = {
-    "I": "Stationary Energy",
-    "II": "Transportation",
-    "III": "Waste",
-    "IV": "Industrial Processes and Product Use",
-    "V": "AFOLU",
-    "stationary_energy": "Stationary Energy",
-    "transportation": "Transportation",
-    "waste": "Waste",
-    "ippu": "Industrial Processes and Product Use",
-    "afolu": "AFOLU",
-}
-GPC_SUBSECTOR_DISPLAY_LABELS: dict[str, str] = {
-    "I.1": "residential buildings",
-    "I.2": "commercial and institutional buildings and facilities",
-    "I.3": "manufacturing industries and construction",
-    "I.4": "energy industries",
-    "I.5": "agriculture, forestry, and fishing energy use",
-    "I.6": "non-specified stationary energy sources",
-    "II.1": "on-road transportation",
-    "II.2": "railways",
-    "II.3": "waterborne navigation",
-    "II.4": "aviation",
-    "II.5": "off-road transportation",
-    "III.1": "solid waste disposal",
-    "III.2": "biological treatment of waste",
-    "III.3": "incineration and open burning",
-    "III.4": "wastewater treatment and discharge",
-    "IV.1": "industrial processes",
-    "IV.2": "product use",
-    "V.1": "livestock",
-    "V.2": "land",
-    "V.3": "aggregate sources and non-CO2 emissions on land",
-}
-FEASIBILITY_COMPONENT_LABELS: dict[str, str] = {
-    "legal": "legal feasibility",
-    "mitigation_feasibility": "mitigation feasibility",
-    "financial_feasibility": "financial feasibility",
-}
+MAX_LANGUAGE_ATTEMPTS = 2
 FEASIBILITY_COMPONENT_ORDER: tuple[str, ...] = (
     "legal",
     "mitigation_feasibility",
@@ -113,16 +77,41 @@ class ExplanationBatch(BaseModel):
 def generate_explanations(
     *,
     locode: str,
+    languages: list[str],
     scored_actions: list[ScoredAction],
     city_preference_sectors: list[str],
     city_preference_co_benefit_keys: list[str],
-) -> tuple[dict[str, str], dict[str, object]]:
+) -> tuple[dict[str, dict[str, str]], dict[str, object]]:
     """
-    Generate qualitative explanations for ranked actions.
+    Generate qualitative explanations independently in every requested language.
 
     The current implementation assumes OpenAI as the provider to keep this flow
     simple and explicit.
     """
+    localized: dict[str, dict[str, str]] = {}
+    llm_io_by_language: dict[str, object] = {}
+    for language in languages:
+        explanations, llm_io = _generate_explanations_for_language(
+            locode=locode,
+            language=language,
+            scored_actions=scored_actions,
+            city_preference_sectors=city_preference_sectors,
+            city_preference_co_benefit_keys=city_preference_co_benefit_keys,
+        )
+        localized[language] = explanations
+        llm_io_by_language[language] = llm_io
+    return localized, {"languages": llm_io_by_language}
+
+
+def _generate_explanations_for_language(
+    *,
+    locode: str,
+    language: str,
+    scored_actions: list[ScoredAction],
+    city_preference_sectors: list[str],
+    city_preference_co_benefit_keys: list[str],
+) -> tuple[dict[str, str], dict[str, object]]:
+    """Generate and validate one complete explanation batch in one language."""
     if not is_explanations_enabled():
         return {}, {"status": "skipped", "reason": "explanations_disabled"}
     if not scored_actions:
@@ -136,12 +125,14 @@ def generate_explanations(
     curated_actions = [
         _build_curated_action_payload(
             scored_action=scored_action,
+            language=language,
         )
         for scored_action in scored_actions
     ]
     expected_action_ids = {item.action.action_id for item in scored_actions}
     prompt = _build_prompt(
         locode=locode,
+        language=language,
         city_preference_sectors=city_preference_sectors,
         city_preference_co_benefit_keys=city_preference_co_benefit_keys,
         curated_actions=curated_actions,
@@ -153,38 +144,57 @@ def generate_explanations(
     )
     system_prompt = _read_system_prompt_template()
     logger.info(
-        "Calling explanations LLM API locode=%s model=%s actions=%s",
+        "Calling explanations LLM API locode=%s language=%s model=%s actions=%s",
         locode,
+        language,
         model_name,
         len(scored_actions),
     )
 
     client = create_openai_client()
-    completion = client.chat.completions.parse(
-        # Parse helper converts the Pydantic model to JSON schema and returns
-        # a typed parsed object in `message.parsed`.
-        model=model_name,
-        temperature=get_explanations_temperature(),
-        response_format=ExplanationBatch,
-        messages=[
-            {
-                "role": "system",
-                "content": system_prompt,
-            },
-            {"role": "user", "content": prompt},
-        ],
-    )
+    attempts: list[dict[str, object]] = []
+    explanations_by_action_id: dict[str, str] = {}
+    parsed: ExplanationBatch | None = None
+    for attempt in range(1, MAX_LANGUAGE_ATTEMPTS + 1):
+        completion = client.chat.completions.parse(
+            model=model_name,
+            temperature=get_explanations_temperature(),
+            response_format=ExplanationBatch,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+        )
+        candidate = completion.choices[0].message.parsed
+        if candidate is None:
+            raise ValueError("LLM did not return parsable structured explanation output")
+        explanations_by_action_id = _rows_to_explanations(
+            explanation_rows=candidate.explanations,
+            expected_action_ids=expected_action_ids,
+        )
+        attempts.append(
+            {"attempt": attempt, "parsed": candidate.model_dump(mode="json")}
+        )
+        try:
+            _validate_explanation_coverage(
+                explanations_by_action_id, expected_action_ids, language
+            )
+            _validate_explanation_languages(explanations_by_action_id, language)
+        except ValueError:
+            if attempt == MAX_LANGUAGE_ATTEMPTS:
+                raise
+            prompt = _build_language_retry_prompt(prompt, language)
+            continue
+        parsed = candidate
+        break
 
-    parsed = completion.choices[0].message.parsed
     if parsed is None:
-        raise ValueError("LLM did not return parsable structured explanation output")
-    explanations_by_action_id = _rows_to_explanations(
-        explanation_rows=parsed.explanations,
-        expected_action_ids=expected_action_ids,
-    )
+        raise ValueError("LLM explanation language validation failed")
     logger.info(
-        "Explanations LLM API call completed locode=%s model=%s returned_rows=%s",
+        "Explanations LLM API call completed locode=%s language=%s "
+        "model=%s returned_rows=%s",
         locode,
+        language,
         model_name,
         len(parsed.explanations),
     )
@@ -194,7 +204,7 @@ def generate_explanations(
         "model": model_name,
         "request_context": {
             "locode": locode,
-            "canonical_language": "en",
+            "language": language,
             "city_preference_sectors": city_preference_sectors,
             "city_preference_co_benefit_keys": city_preference_co_benefit_keys,
             "ranked_action_ids": sorted(expected_action_ids),
@@ -207,6 +217,7 @@ def generate_explanations(
         "llm_output": {
             "parsed": parsed.model_dump(mode="json"),
             "explanations_by_action_id": explanations_by_action_id,
+            "attempts": attempts,
         },
     }
     return explanations_by_action_id, llm_io_payload
@@ -230,6 +241,7 @@ def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> 
 def _build_prompt(
     *,
     locode: str,
+    language: str,
     city_preference_sectors: list[str],
     city_preference_co_benefit_keys: list[str],
     curated_actions: list[dict[str, object]],
@@ -238,6 +250,7 @@ def _build_prompt(
     template = _read_prompt_template()
     return template.format(
         locode=locode,
+        language=language,
         city_preference_sectors=json.dumps(city_preference_sectors, ensure_ascii=False),
         city_preference_co_benefit_keys=json.dumps(
             city_preference_co_benefit_keys, ensure_ascii=False
@@ -272,9 +285,44 @@ def _rows_to_explanations(
     return explanations_by_action_id
 
 
+def _validate_explanation_languages(
+    explanations_by_action_id: dict[str, str], language: str
+) -> None:
+    """Require every substantive explanation to use the requested language."""
+    for action_id, explanation in explanations_by_action_id.items():
+        validate_generated_language(
+            explanation,
+            language,
+            content_label=f"Explanation for action `{action_id}`",
+        )
+
+
+def _validate_explanation_coverage(
+    explanations_by_action_id: dict[str, str],
+    expected_action_ids: set[str],
+    language: str,
+) -> None:
+    """Require one non-empty explanation per action for the generated language."""
+    if set(explanations_by_action_id) != expected_action_ids:
+        missing = sorted(expected_action_ids - set(explanations_by_action_id))
+        raise ValueError(
+            f"Explanation batch for `{language}` is missing action IDs: {missing}"
+        )
+
+
+def _build_language_retry_prompt(prompt: str, language: str) -> str:
+    """Add a focused correction after a wrong-language explanation batch."""
+    return (
+        f"{prompt}\n\n"
+        f"Correction: rewrite every explanation in `{language}`. Keep only official "
+        "document, programme, agency, law, place, and action names in their source form."
+    )
+
+
 def _build_curated_action_payload(
     *,
     scored_action: ScoredAction,
+    language: str,
 ) -> dict[str, object]:
     """Build qualitative, stable explanation input payload for one action."""
     impact_evidence_raw = scored_action.evidence.get("impact")
@@ -293,11 +341,16 @@ def _build_curated_action_payload(
     payload: dict[str, object] = {
         "action_id": scored_action.action.action_id,
         "rank": scored_action.rank,
-        "action_name": scored_action.action.action_name,
+        "action_name": localized_source_value(
+            language=language,
+            localized=scored_action.action.name_i18n,
+            fallback=scored_action.action.action_name,
+        ),
         "explanation_slots": _build_explanation_slots(
             impact_evidence=impact_evidence,
             alignment_evidence=alignment_evidence,
             feasibility_evidence=feasibility_evidence,
+            language=language,
         ),
         "known_limitations": _build_known_limitations(
             feasibility_evidence=feasibility_evidence,
@@ -311,16 +364,21 @@ def _build_explanation_slots(
     impact_evidence: dict[str, object],
     alignment_evidence: dict[str, object],
     feasibility_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Build the fixed Notion-proposal explanation slots for one action."""
     return {
-        "impact_driver": _build_impact_driver(impact_evidence),
-        "alignment_driver": _build_alignment_driver(alignment_evidence),
-        "feasibility_driver": _build_feasibility_driver(feasibility_evidence),
+        "impact_driver": _build_impact_driver(impact_evidence, language),
+        "alignment_driver": _build_alignment_driver(alignment_evidence, language),
+        "feasibility_driver": _build_feasibility_driver(
+            feasibility_evidence, language
+        ),
     }
 
 
-def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object]:
+def _build_impact_driver(
+    impact_evidence: dict[str, object], language: str
+) -> dict[str, object]:
     """Return the top matched subsector/share slot used for the first sentence."""
     contributors = impact_evidence.get("subsector_contributors", [])
     if not isinstance(contributors, list) or not contributors:
@@ -330,7 +388,9 @@ def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object
                 "This action does not directly match a subsector with recorded "
                 "city emissions in the current inventory."
             ),
-            "impact_band": _clean_optional_string(impact_evidence.get("impact_band")),
+            "impact_band": translate_term(
+                "score_labels", impact_evidence.get("impact_band"), language
+            ),
         }
 
     contributor_rows: list[dict[str, object]] = []
@@ -349,7 +409,9 @@ def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object
         contributor_rows.append(
             {
                 "subsector_key": subsector_key,
-                "subsector_label": _display_label_for_subsector(subsector_key),
+                "subsector_label": _display_label_for_subsector(
+                    subsector_key, language
+                ),
                 "sector_key": subsector_key.split(".", 1)[0],
                 "share_of_city": share,
                 "reduction_amount": reduction_amount,
@@ -363,7 +425,9 @@ def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object
                 "This action does not directly match a subsector with recorded "
                 "city emissions in the current inventory."
             ),
-            "impact_band": _clean_optional_string(impact_evidence.get("impact_band")),
+            "impact_band": translate_term(
+                "score_labels", impact_evidence.get("impact_band"), language
+            ),
         }
 
     top_subsector = sorted(
@@ -380,27 +444,39 @@ def _build_impact_driver(impact_evidence: dict[str, object]) -> dict[str, object
         "subsector_key": top_subsector["subsector_key"],
         "subsector_label": top_subsector["subsector_label"],
         "sector_key": top_subsector["sector_key"],
-        "sector_label": _display_label_for_sector(str(top_subsector["sector_key"])),
+        "sector_label": _display_label_for_sector(
+            str(top_subsector["sector_key"]), language
+        ),
         "share_of_city_percent": round(share * 100.0, 1),
         "share_phrase": _format_percent_share(share),
-        "impact_band": _clean_optional_string(impact_evidence.get("impact_band")),
+        "impact_band": translate_term(
+            "score_labels", impact_evidence.get("impact_band"), language
+        ),
     }
 
 
 def _build_alignment_driver(
     alignment_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Return policy, priority, co-benefit, and notable timeframe alignment facts."""
     return {
-        "policy": _build_policy_alignment_fact(alignment_evidence),
-        "sector_priority": _build_sector_priority_fact(alignment_evidence),
-        "co_benefit_priority": _build_co_benefit_priority_fact(alignment_evidence),
-        "timeframe": _build_timeframe_alignment_fact(alignment_evidence),
+        "policy": _build_policy_alignment_fact(alignment_evidence, language),
+        "sector_priority": _build_sector_priority_fact(
+            alignment_evidence, language
+        ),
+        "co_benefit_priority": _build_co_benefit_priority_fact(
+            alignment_evidence, language
+        ),
+        "timeframe": _build_timeframe_alignment_fact(
+            alignment_evidence, language
+        ),
     }
 
 
 def _build_policy_alignment_fact(
     alignment_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Return the top policy evidence fact for the alignment sentence."""
     policy_score_present = bool(alignment_evidence.get("policy_score_present", False))
@@ -421,8 +497,10 @@ def _build_policy_alignment_fact(
 
     return {
         "status": "present" if policy_score_present else "not_present",
-        "support_category": _clean_optional_string(
-            alignment_evidence.get("policy_support_category")
+        "support_category": translate_term(
+            "score_labels",
+            alignment_evidence.get("policy_support_category"),
+            language,
         ),
         "document_name": (
             _clean_optional_string(top_evidence.get("document_name"))
@@ -444,6 +522,7 @@ def _build_policy_alignment_fact(
 
 def _build_sector_priority_fact(
     alignment_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Return whether the action sector matches city-selected priority sectors."""
     city_preference_sectors = _clean_string_list(
@@ -453,13 +532,15 @@ def _build_sector_priority_fact(
     matched_sectors = sorted(set(city_preference_sectors).intersection(mapped_sector_tags))
     return {
         "city_selected_sectors": [
-            _display_label_for_sector(sector) for sector in city_preference_sectors
+            _display_label_for_sector(sector, language)
+            for sector in city_preference_sectors
         ],
         "action_sectors": [
-            _display_label_for_sector(sector) for sector in mapped_sector_tags
+            _display_label_for_sector(sector, language)
+            for sector in mapped_sector_tags
         ],
         "matched_sectors": [
-            _display_label_for_sector(sector) for sector in matched_sectors
+            _display_label_for_sector(sector, language) for sector in matched_sectors
         ],
         "matches_city_priority": bool(alignment_evidence.get("sector_match", False)),
     }
@@ -467,6 +548,7 @@ def _build_sector_priority_fact(
 
 def _build_co_benefit_priority_fact(
     alignment_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Return co-benefit preference matches in display-friendly form."""
     matched_keys = _clean_string_list(
@@ -477,10 +559,10 @@ def _build_co_benefit_priority_fact(
     )
     return {
         "city_selected_co_benefits": [
-            _display_label_for_co_benefit(key) for key in selected_keys
+            _display_label_for_co_benefit(key, language) for key in selected_keys
         ],
         "matched_co_benefits": [
-            _display_label_for_co_benefit(key) for key in matched_keys
+            _display_label_for_co_benefit(key, language) for key in matched_keys
         ],
         "matched_count": len(matched_keys),
         "city_selected_any": bool(
@@ -491,6 +573,7 @@ def _build_co_benefit_priority_fact(
 
 def _build_timeframe_alignment_fact(
     alignment_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Return timeframe alignment only when it is notably aligned or misaligned."""
     match_label = _clean_optional_string(alignment_evidence.get("timeframe_match_label"))
@@ -498,24 +581,30 @@ def _build_timeframe_alignment_fact(
         return {"status": "not_notable"}
     return {
         "status": "aligned" if match_label == "exact_match" else "misaligned",
-        "action_timeframe": _clean_optional_string(
-            alignment_evidence.get("action_timeframe_label")
+        "action_timeframe": translate_term(
+            "timeframes", alignment_evidence.get("action_timeframe_label"), language
         ),
         "action_timeline_bucket": _clean_optional_string(
             alignment_evidence.get("action_timeline_bucket")
         ),
-        "city_preference_timeframes": _clean_string_list(
-            alignment_evidence.get("city_preference_timeframes")
-        ),
+        "city_preference_timeframes": [
+            translate_term("timeframes", timeframe, language)
+            for timeframe in _clean_string_list(
+                alignment_evidence.get("city_preference_timeframes")
+            )
+        ],
     }
 
 
 def _build_feasibility_driver(
     feasibility_evidence: dict[str, object],
+    language: str,
 ) -> dict[str, object]:
     """Return the single feasibility component to mention in the third sentence."""
     components = [
-        _build_feasibility_component_fact(feasibility_evidence, component_name)
+        _build_feasibility_component_fact(
+            feasibility_evidence, component_name, language
+        )
         for component_name in FEASIBILITY_COMPONENT_ORDER
     ]
     scored_components = [
@@ -553,7 +642,7 @@ def _build_feasibility_driver(
 
 
 def _build_feasibility_component_fact(
-    feasibility_evidence: dict[str, object], component_name: str
+    feasibility_evidence: dict[str, object], component_name: str, language: str
 ) -> dict[str, object]:
     """Return one comparable feasibility component fact."""
     component_score = _feasibility_component_value(
@@ -565,20 +654,26 @@ def _build_feasibility_component_fact(
     score = _coerce_unit_score(component_score)
     fact: dict[str, object] = {
         "component": component_name,
-        "component_label": FEASIBILITY_COMPONENT_LABELS[component_name],
+        "component_label": translate_term(
+            "feasibility_components", component_name, language
+        ),
         "score_for_comparison": score,
-        "bucket": _component_score_bucket(score),
+        "bucket": translate_term(
+            "score_labels", _component_score_bucket(score), language
+        ),
     }
     if component_name == "financial_feasibility":
         fact.update(
             {
-                "route": _clean_optional_string(
+                "route": translate_term(
+                    "finance_routes",
                     _feasibility_component_value(
                         feasibility_evidence,
                         component_name,
                         "route",
                         "financial_feasibility_route",
-                    )
+                    ),
+                    language,
                 ),
                 "reason": _clean_optional_string(
                     _feasibility_component_value(
@@ -593,29 +688,27 @@ def _build_feasibility_component_fact(
     elif component_name == "legal":
         fact.update(
             {
-                "verdict_category": _clean_optional_string(
+                "verdict_category": translate_term(
+                    "score_labels",
                     _feasibility_component_value(
                         feasibility_evidence,
                         component_name,
                         "verdict_category",
                         "legal_verdict_category",
-                    )
+                    ),
+                    language,
                 ),
-                "ownership_description": _clean_optional_string(
-                    _feasibility_component_value(
-                        feasibility_evidence,
-                        component_name,
-                        "ownership_description",
-                        "ownership_description",
-                    )
+                "ownership_description": _localized_legal_description(
+                    feasibility_evidence,
+                    component_name,
+                    "ownership_description",
+                    language,
                 ),
-                "restrictions_description": _clean_optional_string(
-                    _feasibility_component_value(
-                        feasibility_evidence,
-                        component_name,
-                        "restrictions_description",
-                        "restrictions_description",
-                    )
+                "restrictions_description": _localized_legal_description(
+                    feasibility_evidence,
+                    component_name,
+                    "restrictions_description",
+                    language,
                 ),
             }
         )
@@ -667,23 +760,58 @@ def _clean_string_list(value: object) -> list[str]:
     return list(dict.fromkeys(cleaned_values))
 
 
-def _display_label_for_sector(sector_key: str) -> str:
-    """Return a human-friendly sector label for a GPC sector or sector tag."""
-    return SECTOR_DISPLAY_LABELS.get(sector_key, sector_key.replace("_", " ").title())
-
-
-def _display_label_for_subsector(subsector_key: str) -> str:
-    """Return a human-friendly GPC subsector label."""
-    normalized_key = subsector_key.strip().upper()
-    return GPC_SUBSECTOR_DISPLAY_LABELS.get(
-        normalized_key, f"GPC subsector {normalized_key}"
+def _localized_legal_description(
+    feasibility_evidence: dict[str, object],
+    component_name: str,
+    key: str,
+    language: str,
+) -> str | None:
+    """Select an upstream legal description in the requested language."""
+    component = _feasibility_component(feasibility_evidence, component_name)
+    localized = {
+        "es": str(component.get(f"{key}_es") or ""),
+    }
+    fallback = _clean_optional_string(
+        _feasibility_component_value(
+            feasibility_evidence,
+            component_name,
+            key,
+            key,
+        )
+    )
+    return localized_source_value(
+        language=language,
+        localized=localized,
+        fallback=fallback,
     )
 
 
-def _display_label_for_co_benefit(co_benefit_key: str) -> str:
+def _display_label_for_sector(sector_key: str, language: str) -> str:
+    """Return a human-friendly sector label for a GPC sector or sector tag."""
+    normalized = {
+        "I": "stationary_energy",
+        "II": "transportation",
+        "III": "waste",
+        "IV": "ippu",
+        "V": "afolu",
+    }.get(sector_key.strip().upper(), sector_key)
+    return translate_term("gpc_sectors", normalized, language) or normalized
+
+
+def _display_label_for_subsector(subsector_key: str, language: str) -> str:
+    """Return a human-friendly GPC subsector label."""
+    normalized_key = subsector_key.strip().lower()
+    return (
+        translate_term("gpc_subsectors", normalized_key, language)
+        or f"GPC {subsector_key.strip().upper()}"
+    )
+
+
+def _display_label_for_co_benefit(co_benefit_key: str, language: str) -> str:
     """Return a human-friendly co-benefit label for one taxonomy key."""
-    return CO_BENEFIT_DISPLAY_LABELS.get(
-        co_benefit_key, co_benefit_key.replace("_", " ")
+    return (
+        translate_term("co_benefits", co_benefit_key, language)
+        or co_benefit_key.replace("_", " ")
     )
 
 

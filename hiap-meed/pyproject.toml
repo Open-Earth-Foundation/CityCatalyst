@@ -15,6 +15,7 @@ dependencies = [
     "pyyaml>=6.0.3",
     "python-dotenv>=1.2.2",
     "uvicorn>=0.48.0",
+    "langdetect>=1.0.9",
 ]
 
 [dependency-groups]

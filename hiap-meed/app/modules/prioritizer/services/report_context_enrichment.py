@@ -51,7 +51,7 @@ def build_report_context_with_live_enrichment(
     Build a report context using snapshot validation plus live source refetches.
 
     Inputs:
-    - report request carrying one locode, action ID, language, and prioritization snapshot
+    - report request carrying one locode, action ID, language list, and prioritization snapshot
     - data clients for live city/action/policy/legal/feasibility enrichment
 
     Returns:

@@ -228,7 +228,7 @@ def test_action_pathways_service_uses_env_base_url_override(
     assert service.base_url == "https://pathways.example.test/root/"
     assert (
         service._build_action_pathways_url()
-        == "https://pathways.example.test/root/api/v1/action-pathways"
+        == "https://pathways.example.test/root/api/v1/action-pathways?lang=all"
     )
 
 
@@ -284,7 +284,7 @@ def test_api_action_pathways_client_maps_remote_payload_and_metadata(
         "2026-05-21T14:07:38.144930+00:00"
     )
     assert fetch_result.source_metadata["upstream_url"].endswith(
-        "/api/v1/action-pathways"
+        "/api/v1/action-pathways?lang=all"
     )
 
 

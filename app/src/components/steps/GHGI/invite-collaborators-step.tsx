@@ -65,8 +65,17 @@ const InviteCollaboratorsStep = forwardRef<
   }, [invitedMembers.length]);
 
   useEffect(() => {
-    onValidityChange?.(invitedMembers.length > 0 && selectedProject.length > 0);
-  }, [invitedMembers.length, selectedProject.length, onValidityChange]);
+    onValidityChange?.(
+      invitedMembers.length > 0 &&
+        selectedProject.length > 0 &&
+        selectedCities.length > 0,
+    );
+  }, [
+    invitedMembers.length,
+    selectedProject.length,
+    selectedCities.length,
+    onValidityChange,
+  ]);
 
   const { data: projectsData } = useGetUserProjectsQuery({});
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
@@ -121,7 +130,12 @@ const InviteCollaboratorsStep = forwardRef<
 
   useImperativeHandle(ref, () => ({
     sendInvites: async () => {
-      if (!invitedMembers.length || !selectedProject.length) return;
+      if (
+        !invitedMembers.length ||
+        !selectedProject.length ||
+        !selectedCities.length
+      )
+        return;
       await inviteUsers({
         projectId: selectedProject[0],
         cityIds: selectedCities,

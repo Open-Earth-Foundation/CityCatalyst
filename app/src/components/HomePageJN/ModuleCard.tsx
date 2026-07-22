@@ -69,7 +69,7 @@ export function ModuleCard({
     <Card.Root
       data-testid={`module-card-${module.id}`}
       width="320px"
-      minH="280px"
+      minH="310px"
       display="flex"
       flexDirection="column"
       opacity={enabled ? 1 : 0.5}
@@ -135,9 +135,7 @@ export function ModuleCard({
             display="flex"
             alignItems="flex-start"
           >
-            <TitleLarge lineClamp={2}>
-              {getTranslationInLanguage(name)}
-            </TitleLarge>
+            <TitleLarge>{getTranslationInLanguage(name)}</TitleLarge>
           </Card.Title>
         </VStack>
         <BodySmall lineClamp={1}>{t("by", { author: author })}</BodySmall>

@@ -50,6 +50,9 @@ chapter_terms:
     limiting_heading:
       en: Local conditions that limit the action
       es: Condiciones locales que limitan la acción
+    mixed_heading:
+      en: Local conditions with mixed effects
+      es: Condiciones locales con efectos mixtos
     indicator:
       en: Indicator
       es: Indicador

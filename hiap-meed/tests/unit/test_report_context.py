@@ -399,6 +399,12 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
                     "attribute_category": "very high",
                     "attribute_units": "percent",
                 },
+                {
+                    "attribute_name": "unemployment_rate",
+                    "attribute_value": 8.5,
+                    "attribute_category": "medium",
+                    "attribute_units": "percent",
+                },
             ],
         ),
         policy_score=None,
@@ -442,7 +448,33 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
                                     "contribution": -1.0,
                                 }
                             ],
-                        }
+                        },
+                        {
+                            "global_indicator": "inclusiveness",
+                            "city_indicators": [
+                                {
+                                    "city_indicator": "poverty_rate",
+                                    "category": "low",
+                                    "direction": "negative",
+                                    "capacity": 0.75,
+                                    "contribution": 0.5,
+                                },
+                                {
+                                    "city_indicator": "median_household_income",
+                                    "category": "medium",
+                                    "direction": "positive",
+                                    "capacity": 0.5,
+                                    "contribution": -0.5,
+                                },
+                                {
+                                    "city_indicator": "unemployment_rate",
+                                    "category": "medium",
+                                    "direction": "positive",
+                                    "capacity": 0.5,
+                                    "contribution": 0.0,
+                                },
+                            ],
+                        },
                     ]
                 },
                 "cost_effectiveness": {
@@ -472,7 +504,19 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
                                     "contribution": 0.4,
                                 }
                             ],
-                        }
+                        },
+                        {
+                            "global_indicator": "distributional_effects",
+                            "city_indicators": [
+                                {
+                                    "city_indicator": "poverty_rate",
+                                    "category": "low",
+                                    "direction": "negative",
+                                    "capacity": 0.75,
+                                    "contribution": 0.5,
+                                }
+                            ],
+                        },
                     ]
                 },
             },
@@ -500,6 +544,7 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
     assert "breakdown" not in mitigation
     assert "raw" not in mitigation
     assert "fixed_internet_household_share" not in str(city_fit.facts)
+    assert "unemployment_rate" not in str(city_fit.facts)
     assert city_fit.facts["supporting_conditions"] == [
         {
             "indicator": "Electricity access rate",
@@ -514,21 +559,24 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
             "display_value": "19.72% (low)",
             "implication": (
                 "In the feasibility assessment, this indicator strengthens "
-                "affordability and value for money."
-            ),
-        },
-        {
-            "indicator": "Median household income",
-            "display_value": "1,174,475 CLP (medium)",
-            "implication": (
-                "In the feasibility assessment, this indicator strengthens "
-                "affordability and value for money."
+                "inclusiveness, affordability and value for money, and "
+                "distributional effects."
             ),
         },
     ]
     assert city_fit.facts["limiting_conditions"][0]["indicator"] == "Renter share"
     assert "weakens public acceptance" in city_fit.facts["limiting_conditions"][0][
         "implication"
+    ]
+    assert city_fit.facts["mixed_conditions"] == [
+        {
+            "indicator": "Median household income",
+            "display_value": "1,174,475 CLP (medium)",
+            "implication": (
+                "In the feasibility assessment, this indicator strengthens "
+                "affordability and value for money, but weakens inclusiveness."
+            ),
+        }
     ]
     snapshot = next(
         chapter

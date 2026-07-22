@@ -113,6 +113,19 @@ the output-plan LLM.
 `meta.apiContext.endpoint` reflects the report route:
 - `POST /v1/reports/output-plan`
 
+# output_plan_grouped_city_fit_request_mock.json:
+
+This report request uses the same stored Iquique prioritization snapshot as
+`output_plan_request_mock.json`, but selects action `icare_0121`. The live
+mitigation-feasibility response currently maps its poverty-rate value to
+cost-effectiveness, distributional effects, and inclusiveness, so this fixture
+exercises the report's grouping of repeated city indicators into one row.
+
+This request depends on the live mitigation-feasibility API for that repeated
+mapping. Synthetic mixed-sign and neutral-contribution cases are covered by
+`tests/unit/test_report_context.py`, because the live response currently has no
+mixed-sign city indicators.
+
 # city_api_mock.json:
 
 This is a mock response from the city context data API.

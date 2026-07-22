@@ -317,6 +317,7 @@ def _build_city_fit_input(context: ReportContext) -> ReportChapterInput:
     Implements fit signal from ranking feasibility and live city/mitigation
     feasibility indicators. Supports/limits are derived only from available rows.
     """
+    condition_tables = _city_fit_table_rows(context)
     return _chapter_input(
         key="city_fit",
         title=chapter_title("city_fit", context.language),
@@ -329,12 +330,7 @@ def _build_city_fit_input(context: ReportContext) -> ReportChapterInput:
             "mitigation_feasibility": _city_fit_mitigation_facts(
                 context.mitigation_feasibility, context.language
             ),
-            "supporting_conditions": _city_fit_table_rows(
-                context, keep_positive=True
-            ),
-            "limiting_conditions": _city_fit_table_rows(
-                context, keep_positive=False
-            ),
+            **condition_tables,
         },
         source_refs=["city", "mitigation_feasibility"],
         limitations=["Local implementation capacity has not been assessed."],
@@ -342,6 +338,7 @@ def _build_city_fit_input(context: ReportContext) -> ReportChapterInput:
             "overall fit",
             "supporting local conditions",
             "limiting local conditions",
+            "mixed local conditions when contribution signs conflict",
         ],
         notion_deferred=[],
         unsupported_claims=["Do not infer local conditions beyond available indicators."],
@@ -942,10 +939,7 @@ def _city_fit_city_context(
 
     referenced_indicators = {
         row["city_indicator"]
-        for row in (
-            _city_fit_condition_rows(mitigation.breakdown, keep_positive=True)
-            + _city_fit_condition_rows(mitigation.breakdown, keep_positive=False)
-        )
+        for row in _city_fit_condition_rows(mitigation.breakdown)
         if row.get("city_indicator")
     }
     if not referenced_indicators:
@@ -978,10 +972,8 @@ def _city_fit_city_context(
 
 def _city_fit_condition_rows(
     breakdown: dict[str, Any],
-    *,
-    keep_positive: bool,
 ) -> list[dict[str, Any]]:
-    """Extract compact supporting or limiting city-indicator rows."""
+    """Extract compact non-neutral city-indicator contribution rows."""
     rows: list[dict[str, Any]] = []
     for dimension_name, dimension_payload in breakdown.items():
         if not isinstance(dimension_payload, dict):
@@ -999,9 +991,11 @@ def _city_fit_condition_rows(
                 if not isinstance(city_indicator, dict):
                     continue
                 contribution = city_indicator.get("contribution")
-                if not isinstance(contribution, int | float):
-                    continue
-                if keep_positive != (contribution > 0):
+                if (
+                    not isinstance(contribution, int | float)
+                    or isinstance(contribution, bool)
+                    or contribution == 0
+                ):
                     continue
                 rows.append(
                     {
@@ -1020,41 +1014,72 @@ def _city_fit_condition_rows(
 
 
 def _city_fit_table_rows(
-    context: ReportContext, *, keep_positive: bool
-) -> list[dict[str, Any]]:
-    """Join feasibility conditions to city values for the two City Fit tables."""
+    context: ReportContext,
+) -> dict[str, list[dict[str, Any]]]:
+    """
+    Group city indicators into supporting, limiting, and mixed table rows.
+
+    Each measured city indicator appears at most once. Its implication preserves
+    every distinct upstream criterion while neutral contributions are omitted.
+    """
+    tables: dict[str, list[dict[str, Any]]] = {
+        "supporting_conditions": [],
+        "limiting_conditions": [],
+        "mixed_conditions": [],
+    }
     mitigation = context.mitigation_feasibility
     if mitigation is None:
-        return []
+        return tables
     city_rows = {
         row.get("attribute_name"): row
         for row in context.city.city_context
         if row.get("attribute_name")
     }
-    table_rows: list[dict[str, Any]] = []
-    for condition in _city_fit_condition_rows(
-        mitigation.breakdown, keep_positive=keep_positive
-    ):
-        city_row = city_rows.get(condition.get("city_indicator"), {})
+    grouped_conditions: dict[str, list[dict[str, Any]]] = {}
+    for condition in _city_fit_condition_rows(mitigation.breakdown):
+        city_indicator = condition.get("city_indicator")
+        if not isinstance(city_indicator, str) or not city_indicator:
+            continue
+        grouped_conditions.setdefault(city_indicator, []).append(condition)
+
+    for city_indicator, conditions in grouped_conditions.items():
+        city_row = city_rows.get(city_indicator, {})
         if city_row.get("attribute_value") is None:
             continue
-        table_rows.append(
+
+        positive_dimensions = _city_fit_dimension_labels(
+            conditions, positive=True, language=context.language
+        )
+        negative_dimensions = _city_fit_dimension_labels(
+            conditions, positive=False, language=context.language
+        )
+        if positive_dimensions and negative_dimensions:
+            table_key = "mixed_conditions"
+        elif positive_dimensions:
+            table_key = "supporting_conditions"
+        else:
+            table_key = "limiting_conditions"
+
+        tables[table_key].append(
             {
                 "indicator": translate_term(
-                    "indicators", condition.get("city_indicator"), context.language
+                    "indicators", city_indicator, context.language
                 ),
                 "display_value": _city_fit_display_value(
-                    indicator=condition.get("city_indicator"),
+                    indicator=city_indicator,
                     value=city_row.get("attribute_value"),
                     unit=city_row.get("attribute_units"),
                     category=city_row.get("attribute_category")
-                    or condition.get("category"),
+                    or conditions[0].get("category"),
                     language=context.language,
                 ),
-                "implication": _city_fit_implication(condition, context.language),
+                "implication": _city_fit_implication(
+                    positive_dimensions=positive_dimensions,
+                    negative_dimensions=negative_dimensions,
+                ),
             }
         )
-    return table_rows
+    return tables
 
 
 def _city_fit_display_value(
@@ -1092,21 +1117,45 @@ def _city_fit_display_value(
     )
 
 
-def _city_fit_implication(condition: dict[str, Any], language: str) -> str:
-    """Turn a signed fit contribution into an unambiguous reader-facing statement."""
-    contribution = condition.get("contribution")
-    dimension = _reader_dimension_label(
-        condition.get("global_indicator") or condition.get("dimension"),
-        language,
-    ).lower()
-    if isinstance(contribution, (int, float)) and contribution > 0:
-        return f"In the feasibility assessment, this indicator strengthens {dimension}."
-    if isinstance(contribution, (int, float)) and contribution < 0:
-        return f"In the feasibility assessment, this indicator weakens {dimension}."
-    return (
-        f"In the feasibility assessment, this indicator has a neutral effect on "
-        f"{dimension}."
-    )
+def _city_fit_dimension_labels(
+    conditions: list[dict[str, Any]], *, positive: bool, language: str
+) -> list[str]:
+    """Return distinct reader labels for one contribution sign."""
+    labels: list[str] = []
+    for condition in conditions:
+        contribution = condition.get("contribution")
+        if not isinstance(contribution, int | float) or (contribution > 0) != positive:
+            continue
+        label = _reader_dimension_label(
+            condition.get("global_indicator") or condition.get("dimension"),
+            language,
+        ).lower()
+        if label and label not in labels:
+            labels.append(label)
+    return labels
+
+
+def _city_fit_implication(
+    *, positive_dimensions: list[str], negative_dimensions: list[str]
+) -> str:
+    """Describe all supporting and limiting effects of one city indicator."""
+    prefix = "In the feasibility assessment, this indicator"
+    positive_text = _natural_language_list(positive_dimensions)
+    negative_text = _natural_language_list(negative_dimensions)
+    if positive_text and negative_text:
+        return f"{prefix} strengthens {positive_text}, but weakens {negative_text}."
+    if positive_text:
+        return f"{prefix} strengthens {positive_text}."
+    return f"{prefix} weakens {negative_text}."
+
+
+def _natural_language_list(values: list[str]) -> str:
+    """Join distinct labels as an English list for later report translation."""
+    if len(values) < 2:
+        return "".join(values)
+    if len(values) == 2:
+        return " and ".join(values)
+    return f"{', '.join(values[:-1])}, and {values[-1]}"
 
 
 def _reader_dimension_label(value: Any, language: str) -> str:

@@ -167,6 +167,12 @@ def test_report_prompts_require_feedback_table_structures() -> None:
         )
         assert expected_contract in prompt
 
+    city_fit_prompt = _build_chapter_prompt(
+        ReportChapterInput(key="city_fit", title="City Fit", language="en")
+    )
+    assert "`facts.mixed_conditions` is present" in city_fit_prompt
+    assert "omit the mixed heading and table entirely" in city_fit_prompt
+
 
 def test_sources_prompt_omits_missing_link_placeholders() -> None:
     """Source references should remain readable when optional URLs are absent."""

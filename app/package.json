@@ -84,7 +84,7 @@
     "jsonwebtoken": "^9.0.3",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
-    "katex": "^0.16.25",
+    "katex": "^0.17.0",
     "lodash": "^4.17.23",
     "nanoid": "^5.1.6",
     "next": "16.2.4",

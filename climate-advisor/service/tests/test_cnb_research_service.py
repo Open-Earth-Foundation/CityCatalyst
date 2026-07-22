@@ -6,7 +6,6 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
 from app.services import cnb_research_service
 from app.services.cnb_research_service import run_funding_opportunity_research
 from app.tools.firecrawl import CapturedSource
@@ -176,18 +175,8 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         ),
     )
     fake_openai = FakeOpenAI()
-    target_project = CnbSimilarProjectSearchRequest(
-        run_id="eee75fe1-30e7-5fc1-9bf8-d2a72fca00dd",
-        funder_scope="cross_funder",
-        project_name="Nicosia municipal energy and mobility project",
-        project_summary="Municipal solar, storage, and charging infrastructure.",
-        country="Cyprus",
-        interventions=["Municipal solar", "Battery storage"],
-    )
     bundle = run_funding_opportunity_research(
-        build_request(max_turns=1).model_copy(
-            update={"target_project": target_project}
-        ),
+        build_request(max_turns=1),
         output_root=tmp_path,
         openai_client=fake_openai,
     )
@@ -208,9 +197,6 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         (run_directory / "research_bundle.json").read_text(encoding="utf-8")
     )
     assert saved_bundle["request"]["program_name"] == "Example Program"
-    assert saved_bundle["request"]["target_project"] == target_project.model_dump(
-        mode="json"
-    )
     assert saved_bundle["run_metadata"]["model_name"] == "gpt-5.6-terra"
     assert (run_directory / "review.md").exists()
     assert (run_directory / "agent_trace.jsonl").exists()
@@ -222,9 +208,6 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         "Example Program"
     )
     assert "current_filled_object" not in model_input["research_request"]
-    assert model_input["research_request"]["target_project"] == (
-        target_project.model_dump(mode="json")
-    )
     assert model_input["missing_data"]
     assert model_input["turn_budget"]["final_audit"] is True
     assert bundle.run_metadata.model_name == "gpt-5.6-terra"

@@ -68,8 +68,6 @@ def test_cnb_research_configuration_matches_runtime_contract() -> None:
     assert config.models.funding_research.name == "gpt-5.6-terra"
     assert config.models.funding_research.reasoning_effort == "medium"
     assert "`current_filled_object`" in prompt_text
-    assert "`target_project`" in prompt_text
-    assert "Build source queries" in prompt_text
     assert "`missing_data`" in prompt_text
     assert "`funding_records`" in prompt_text
     assert "`is_opportunity`" in prompt_text

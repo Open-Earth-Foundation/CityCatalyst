@@ -69,28 +69,17 @@ class FakeResponses:
 
     def parse(self, **kwargs: object) -> SimpleNamespace:
         self.calls.append(kwargs)
-        return SimpleNamespace(
-            id="response-001",
-            output=[],
-            output_parsed=self.decisions,
-        )
+        return SimpleNamespace(output=[], output_parsed=self.decisions)
 
 
-def _request(
-    *,
-    limit: int = 1,
-    funder_scope: str = "same_funder",
-) -> CnbSimilarProjectSearchRequest:
+def _request(*, funder_scope: str = "same_funder") -> CnbSimilarProjectSearchRequest:
     return CnbSimilarProjectSearchRequest(
         run_id=uuid4(),
         funder_id=uuid4(),
         funder_scope=funder_scope,
         category="Stormwater",
-        hazards=["Flood"],
-        interventions=["Green Infrastructure"],
         project_tags=["Stormwater", "Flood", "City Led"],
-        known_gaps=["beneficiary group"],
-        limit=limit,
+        limit=1,
     )
 
 
@@ -101,23 +90,17 @@ def _candidate(
     funder_id: UUID | None = None,
 ) -> CnbSimilarProjectCandidate:
     record_id = uuid4()
-    evidence_ref = f"evidence-{name}"
     return CnbSimilarProjectCandidate(
         funding_record_id=record_id,
         funder_id=funder_id or request.funder_id,
-        funder_name="Example Funder",
         is_opportunity=False,
         is_funded_award=True,
-        award_status="awarded",
         name=name,
         category="stormwater",
-        hazards=["flood"],
-        interventions=["green infrastructure"],
         project_tags=["stormwater", "flood", "city-led"],
-        known_gaps=["award recipient type"],
         evidence=[
             CnbSimilarProjectEvidence(
-                evidence_ref=evidence_ref,
+                evidence_ref=f"evidence-{name}",
                 source_ref=f"source-{name}",
                 target_path=f"funding_records[{record_id}].summary",
                 quote_or_summary=f"{name} evidence",
@@ -162,10 +145,22 @@ def test_service_skips_until_the_project_upload_is_ingested() -> None:
     assert responses.calls == []
 
 
-def test_service_filters_selects_and_persists_a_grounded_match() -> None:
+def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     request = _request()
     selected = _candidate(request)
+    less_related = _candidate(request, name="Less related").model_copy(
+        update={"project_tags": ["stormwater"]}
+    )
     wrong_funder = _candidate(request, name="Wrong funder", funder_id=uuid4())
+    opportunity = _candidate(request, name="Opportunity").model_copy(
+        update={"is_opportunity": True}
+    )
+    unfunded = _candidate(request, name="Unfunded").model_copy(
+        update={"is_funded_award": False}
+    )
+    unsupported = _candidate(request, name="Unsupported").model_copy(
+        update={"evidence": []}
+    )
     decisions = CnbSimilarProjectLlmDecisionSet(
         decisions=[
             CnbSimilarProjectLlmDecision(
@@ -174,12 +169,27 @@ def test_service_filters_selects_and_persists_a_grounded_match() -> None:
                 fit_rationale="Comparable city-led flood project.",
                 matched_tags=["stormwater", "flood", "city-led"],
                 evidence_refs=[selected.evidence[0].evidence_ref],
-                caveats=["Award year is not published."],
-            )
+            ),
+            CnbSimilarProjectLlmDecision(
+                funding_record_id=less_related.funding_record_id,
+                decision="rejected",
+                fit_rationale="Fewer curated tags overlap.",
+                matched_tags=["stormwater"],
+                evidence_refs=[less_related.evidence[0].evidence_ref],
+            ),
         ]
     )
     store = FakeStore()
-    reference_data = FakeReferenceData([wrong_funder, selected])
+    reference_data = FakeReferenceData(
+        [
+            wrong_funder,
+            opportunity,
+            unfunded,
+            unsupported,
+            less_related,
+            selected,
+        ]
+    )
     service, responses = _service(
         store=store,
         reference_data=reference_data,
@@ -197,12 +207,8 @@ def test_service_filters_selects_and_persists_a_grounded_match() -> None:
     assert reference_data.calls == [(request.funder_id, 5)]
     payload = json.loads(responses.calls[0]["input"])
     assert [item["funding_record_id"] for item in payload["candidates"]] == [
-        str(selected.funding_record_id)
-    ]
-    assert result.result.matches[0].caveats == [
-        "Current project gap: beneficiary group",
-        "Candidate gap: award recipient type",
-        "Award year is not published.",
+        str(selected.funding_record_id),
+        str(less_related.funding_record_id),
     ]
 
 

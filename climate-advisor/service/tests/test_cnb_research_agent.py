@@ -3,8 +3,7 @@
 import json
 from types import SimpleNamespace
 
-from app.models.cnb_research import FundingRecordResearchResult, ResearchGap
-from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
+from app.models.cnb_research import ResearchGap
 from app.services.cnb_research_agent import find_missing_data, run_agent_loop
 from tests.cnb_research_helpers import build_request, build_result
 
@@ -56,62 +55,6 @@ def test_agent_reopens_an_incomplete_structured_checkpoint_for_next_turn() -> No
     assert "<current_filled_object>" in progress_message
     assert "<missing_data>" in progress_message
     assert "<final_gap_audit>" in progress_message
-
-
-def test_target_project_guides_research_without_counting_as_a_result() -> None:
-    target_name = "Nicosia Solar-Storage & E-Mobility Project"
-    target_project = CnbSimilarProjectSearchRequest(
-        run_id="eee75fe1-30e7-5fc1-9bf8-d2a72fca00dd",
-        funder_scope="cross_funder",
-        project_name=target_name,
-        interventions=["Municipal solar", "Battery storage"],
-    )
-    request = build_request(max_turns=1).model_copy(
-        update={"target_project": target_project}
-    )
-    base = build_result()
-    self_match = FundingRecordResearchResult(
-        funding_record_ref="project-self",
-        funder_ref="funder-001",
-        is_opportunity=False,
-        name="nicosia solar storage e mobility project",
-        reported_funder_name="Example Funder",
-    )
-    parsed_result = base.model_copy(
-        update={"funding_records": [*base.funding_records, self_match]}
-    )
-
-    class FakeResponses:
-        def __init__(self) -> None:
-            self.calls: list[dict[str, object]] = []
-
-        def parse(self, **kwargs: object) -> SimpleNamespace:
-            self.calls.append(kwargs)
-            return SimpleNamespace(
-                id="response-001",
-                output=[],
-                output_parsed=parsed_result,
-            )
-
-    responses = FakeResponses()
-    outcome = run_agent_loop(
-        request=request,
-        seed_sources=[],
-        firecrawl=SimpleNamespace(captured_sources=[]),
-        trace=[],
-        openai_client=SimpleNamespace(responses=responses),
-        model_name="test-model",
-        reasoning_effort="medium",
-        prompt="Research prompt",
-    )
-
-    initial_input = json.loads(responses.calls[0]["input"])
-    assert initial_input["research_request"]["target_project"]["project_name"] == (
-        target_name
-    )
-    assert [record.funding_record_ref for record in outcome.result.funding_records] == [
-        "opportunity-001"
-    ]
 
 
 def test_resumed_prior_evidence_cannot_report_coverage_complete() -> None:

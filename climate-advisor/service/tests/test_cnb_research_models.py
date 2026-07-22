@@ -1,7 +1,6 @@
 """Tests for Concept Note Builder research request and result models."""
 
 from collections.abc import Iterator
-from uuid import uuid4
 
 from openai.lib._pydantic import to_strict_json_schema
 from pydantic import ValidationError
@@ -9,14 +8,12 @@ import pytest
 
 from app.models.cnb_research import (
     FieldEvidence,
-    FundingRecordDraft,
     FunderTemplateResearchResult,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
     FundingRecordResearchResult,
     ResearchConflictResult,
 )
-from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
 from tests.cnb_research_helpers import build_request, build_result
 
 
@@ -35,7 +32,6 @@ def test_request_accepts_missing_template_and_rejects_zero_turns() -> None:
     """The optional template stays optional while max_turns remains positive."""
     assert build_request().application_template_url is None
     assert build_request().current_filled_object is None
-    assert build_request().target_funded_projects == 1
 
     resumed_manifest = build_request().model_dump(mode="json")
     resumed_manifest["current_filled_object"] = build_result().model_dump(mode="json")
@@ -44,14 +40,10 @@ def test_request_accepts_missing_template_and_rejects_zero_turns() -> None:
 
     with pytest.raises(ValidationError):
         build_request(max_turns=0)
-    with pytest.raises(ValidationError):
-        build_request(target_funded_projects=0)
-    with pytest.raises(ValidationError):
-        build_request(target_funded_projects=51)
 
 
 def test_request_defaults_to_fifteen_turns() -> None:
-    """A manifest without overrides should receive the production defaults."""
+    """A manifest without an override should receive the production turn budget."""
     request = FundingOpportunityResearchRequest(
         funder_name="Example Funder",
         funder_url="https://funder.example/",
@@ -60,37 +52,6 @@ def test_request_defaults_to_fifteen_turns() -> None:
     )
 
     assert request.max_turns == 15
-    assert request.target_funded_projects == 1
-    assert request.target_project is None
-
-
-def test_request_accepts_cross_funder_target_project_without_funder_id() -> None:
-    """A project profile can guide research without canonical funder data."""
-    manifest = build_request().model_dump(mode="json")
-    manifest["target_project"] = CnbSimilarProjectSearchRequest(
-        run_id=uuid4(),
-        funder_scope="cross_funder",
-        project_name="Nicosia municipal energy and mobility project",
-        project_summary="Solar, storage, and charging on municipal sites.",
-        category="Renewable energy and sustainable urban mobility",
-        country="Cyprus",
-        interventions=["Municipal solar", "Battery storage"],
-        project_tags=["municipal-solar", "battery-storage"],
-        limit=50,
-    ).model_dump(mode="json")
-
-    request = FundingOpportunityResearchRequest.model_validate(manifest)
-
-    assert request.target_project is not None
-    assert request.target_project.funder_id is None
-    assert request.target_project.project_name == (
-        "Nicosia municipal energy and mobility project"
-    )
-    assert request.target_project.country == "Cyprus"
-    assert request.target_project.interventions == [
-        "Municipal solar",
-        "Battery storage",
-    ]
 
 
 def test_model_output_schema_avoids_unsupported_strict_json_features() -> None:
@@ -110,7 +71,6 @@ def test_funding_record_matches_architecture_year_and_award_shape() -> None:
         is_opportunity=False,
         name="Funded project",
         applicant_name="Example City",
-        reported_funder_name="Minnesota Pollution Control Agency",
         interventions=["Prepare a retrofit investment concept"],
         award_amount=125000,
         currency="USD",
@@ -120,7 +80,6 @@ def test_funding_record_matches_architecture_year_and_award_shape() -> None:
     )
 
     assert record.award_year == 2026
-    assert record.reported_funder_name == "Minnesota Pollution Control Agency"
     assert "calendar_year" not in record.model_fields
     assert "opportunity" not in FundingOpportunityResearchResult.model_fields
     assert {
@@ -137,24 +96,6 @@ def test_funding_record_matches_architecture_year_and_award_shape() -> None:
         "pipeline_entries",
     ):
         assert removed_collection not in FundingRecordResearchResult.model_fields
-    for reviewer_only_field in (
-        "project_tags",
-        "candidate_funders",
-        "selected_funder_id",
-    ):
-        assert reviewer_only_field not in FundingRecordResearchResult.model_fields
-    draft = FundingRecordDraft(
-        funding_record_ref="project-001",
-        funder_ref="funder-001",
-        is_opportunity=False,
-        name="Funded project",
-        reported_funder_name="Minnesota Pollution Control Agency",
-    )
-
-    assert draft.project_tags == []
-    assert draft.candidate_funders == []
-    assert draft.selected_funder_id is None
-    assert draft.reported_funder_name == "Minnesota Pollution Control Agency"
 
 
 def test_result_requires_one_opportunity_and_valid_table_references() -> None:

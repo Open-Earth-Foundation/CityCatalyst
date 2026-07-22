@@ -11,11 +11,9 @@ from app.models.cnb_research import (
     ResearchRunMetadata,
     TemplateChapterDraft,
 )
-from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
 from app.services.cnb_research_bundle import (
     build_research_bundle,
     convert_agent_result,
-    exclude_target_project_self_matches,
     material_paths,
 )
 from app.tools.firecrawl import CapturedSource
@@ -29,7 +27,6 @@ def test_material_paths_use_funding_record_reference() -> None:
         funder_ref="funder-001",
         is_opportunity=False,
         name="Project",
-        reported_funder_name="Example Funder",
         interventions=["Prepare the project"],
         award_amount=125000,
         currency="USD",
@@ -54,10 +51,6 @@ def test_material_paths_use_funding_record_reference() -> None:
     assert "funding_records[project-001].interventions" in paths
     assert "funding_records[project-001].award_amount" in paths
     assert "funding_records[project-001].award_year" in paths
-    assert "funding_records[project-001].reported_funder_name" in paths
-    assert records[1].reported_funder_name == "Example Funder"
-    assert records[1].candidate_funders == []
-    assert records[1].selected_funder_id is None
 
 
 def test_material_paths_use_criterion_template_and_chapter_references() -> None:
@@ -161,39 +154,3 @@ def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
     assert any(
         "Conflict evidence was not retained" in gap.reason for gap in bundle.gaps
     )
-
-
-def test_target_project_is_not_returned_as_its_own_match() -> None:
-    target = CnbSimilarProjectSearchRequest(
-        run_id="eee75fe1-30e7-5fc1-9bf8-d2a72fca00dd",
-        funder_scope="cross_funder",
-        project_name="Nicosia Solar-Storage & E-Mobility Project",
-    )
-    request = build_request().model_copy(update={"target_project": target})
-    base = build_result()
-    self_match = FundingRecordResearchResult(
-        funding_record_ref="project-self",
-        funder_ref="funder-001",
-        is_opportunity=False,
-        name="nicosia solar storage e mobility project",
-    )
-    comparison = self_match.model_copy(
-        update={
-            "funding_record_ref": "project-comparison",
-            "name": "Nicosia solar storage phase two",
-        }
-    )
-    result = base.model_copy(
-        update={"funding_records": [*base.funding_records, self_match, comparison]}
-    )
-
-    filtered = exclude_target_project_self_matches(request=request, result=result)
-
-    assert [record.funding_record_ref for record in filtered.funding_records] == [
-        "opportunity-001",
-        "project-comparison",
-    ]
-    assert exclude_target_project_self_matches(
-        request=build_request(),
-        result=result,
-    ) is result

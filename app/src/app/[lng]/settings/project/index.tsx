@@ -12,8 +12,8 @@ import {
 import { useRouter } from "next/navigation";
 import { uniqBy } from "lodash";
 import { TFunction } from "i18next";
-import ProjectList from "@/app/[lng]/organization/[id]/account-settings/project/projectList";
-import ProjectDetails from "@/app/[lng]/organization/[id]/account-settings/project/projectDetails";
+import ProjectList from "@/app/[lng]/settings/project/projectList";
+import ProjectDetails from "@/app/[lng]/settings/project/projectDetails";
 
 export const TagMapping = {
   [OrganizationRole.ORG_ADMIN]: { color: "green", text: "owner" },

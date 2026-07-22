@@ -31,7 +31,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
 import { BsDownload } from "react-icons/bs";
 import { TagMapping } from "./index";
-import DeleteCityModal from "@/app/[lng]/organization/[id]/account-settings/project/deleteCityModal";
+import DeleteCityModal from "@/app/[lng]/settings/project/deleteCityModal";
 import { TFunction } from "i18next";
 import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import InventoryView from "./InventoryView";

@@ -4,8 +4,9 @@ This folder holds the offline research CLIs and static review site for the
 Concept Note Builder funding-reference workflow. The CLIs accept caller-supplied
 JSON inputs and write local review artifacts under `output/cnb_research/`.
 Generated runs are ignored by Git except for the retained EUCF reference bundle
-described below. Reusable models, orchestration, Firecrawl tools, and the
-production prompt stay in the standard Climate Advisor application folders.
+and one completed similar-project review sample described below. Reusable
+models, orchestration, Firecrawl tools, and the production prompt stay in the
+standard Climate Advisor application folders.
 
 ```text
 scripts/cnb_research/
@@ -15,7 +16,9 @@ scripts/cnb_research/
 |-- import_reviewed_reference_data.py
 |-- review.html
 |-- review.css
-`-- review.js
+|-- review.js
+`-- review_samples/
+    `-- e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18.similar-projects.json
 
 output/cnb_research/
 |-- ef602f2c-f47d-4384-b079-5fdfde085ad4/
@@ -229,6 +232,12 @@ either a generated `<run_id>.research.json` corpus artifact or a
 `research_bundle.json` files still load for inspection, but the funded-project
 import workflow expects `<run_id>.research.json` so each funded project carries
 canonical-funder candidates and local `project_tags`.
+
+For a ready-made PR review, load
+`scripts/cnb_research/review_samples/e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18.similar-projects.json`.
+It is a completed Nicosia cross-funder run with 34 candidates, 34 proposed
+matches, and 18 cited sources. Only the machine-local source-bundle path was
+reduced to its filename before committing the artifact.
 
 Each top-level section can be collapsed, as can nested objects and individual
 records. Every disclosure shows an explicit `Expand` or `Collapse` action.

@@ -1,0 +1,2597 @@
+{
+  "artifact_type": "cnb_similar_project_search",
+  "schema_version": "1.0",
+  "run_id": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18",
+  "generated_at": "2026-07-22T09:56:05.408449Z",
+  "run_metadata": {
+    "model_name": "gpt-5.6-terra",
+    "reasoning_effort": "medium",
+    "prompt_sha256": "6fe8b11f844172b4c219df50dc405fc88b893771fb84d8d9e97431b3e7563103",
+    "input_mode": "local_review_snapshot",
+    "source_bundle": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18.broad-discovery-sources.json"
+  },
+  "search_request": {
+    "run_id": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18",
+    "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+    "funder_scope": "cross_funder",
+    "category": "Renewable energy and sustainable urban mobility",
+    "sector": "Municipal energy and transport",
+    "region": "Southern Europe",
+    "country": "Cyprus",
+    "finance_route": "EUCF grant support for investment-concept development",
+    "instrument_type": "Fixed lump-sum grant",
+    "applicant_type": "Municipality/local authority",
+    "hazards": [],
+    "interventions": [
+      "Solar photovoltaic systems on municipality-owned buildings",
+      "Battery storage integrated with municipal solar generation",
+      "Electric-vehicle charging infrastructure"
+    ],
+    "project_tags": [
+      "municipal-solar",
+      "battery-storage",
+      "electric-mobility",
+      "local-authority",
+      "investment-concept"
+    ],
+    "known_gaps": [
+      "The target project's underlying investment value and implementation status are not confirmed."
+    ],
+    "limit": 34
+  },
+  "candidates": [
+    {
+      "funding_record_id": "65e88580-62ad-5c1d-bcb0-f0bbcde9fb4b",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Catalyzing a Renewable Future: Technological Innovation and Smart Connectivity for the Sustainable Transformation of the Machairas Complex",
+      "applicant_name": "Lythrodontas",
+      "applicant_type": "Municipality/local authority",
+      "city": "Lythrodontas",
+      "state_region": null,
+      "country": "Cyprus",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Catalyzing a Renewable Future: Technological Innovation and Smart Connectivity for the Sustainable Transformation of the Machairas Complex"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Lythrodontas is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "renewable-energy",
+        "smart-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-65e8858062ad5c1d",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[65e88580-62ad-5c1d-bcb0-f0bbcde9fb4b].summary",
+          "source_location": "Call 7 beneficiary table, Lythrodontas row",
+          "quote_or_summary": "The official table lists Lythrodontas, Cyprus: Catalyzing a Renewable Future: Technological Innovation and Smart Connectivity for the Sustainable Transformation of the Machairas Complex."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "75b95b00-9d9f-5b60-9252-79ba13a5f576",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "I.S.S.M: Fostering Energy Solidarity and Sustainability",
+      "applicant_name": "Strovolos",
+      "applicant_type": "Municipality/local authority",
+      "city": "Strovolos",
+      "state_region": null,
+      "country": "Cyprus",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "I.S.S.M: Fostering Energy Solidarity and Sustainability"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Strovolos is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "energy-community"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-75b95b009d9f5b60",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[75b95b00-9d9f-5b60-9252-79ba13a5f576].summary",
+          "source_location": "Call 7 beneficiary table, Strovolos row",
+          "quote_or_summary": "The official table lists Strovolos, Cyprus: I.S.S.M: Fostering Energy Solidarity and Sustainability."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "dd60e11d-7167-5da6-9ae7-f2828a92a8fe",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Zero-Emission Urban Transport for Innsbruck",
+      "applicant_name": "Innsbruck",
+      "applicant_type": "Municipality/local authority",
+      "city": "Innsbruck",
+      "state_region": null,
+      "country": "Austria",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Zero-Emission Urban Transport for Innsbruck"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Innsbruck is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "electric-mobility"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-dd60e11d71675da6",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[dd60e11d-7167-5da6-9ae7-f2828a92a8fe].summary",
+          "source_location": "Call 7 beneficiary table, Innsbruck row",
+          "quote_or_summary": "The official table lists Innsbruck, Austria: Zero-Emission Urban Transport for Innsbruck."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "f2e93e4c-6b1c-5ee8-a0bb-30253a7311d9",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Facilitating metropolitan e-mobility solutions: An integrated Island Capital Mobility Hub",
+      "applicant_name": "Las Palmas de Gran Canaria",
+      "applicant_type": "Municipality/local authority",
+      "city": "Las Palmas de Gran Canaria",
+      "state_region": null,
+      "country": "Spain",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Facilitating metropolitan e-mobility solutions: An integrated Island Capital Mobility Hub"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Las Palmas de Gran Canaria is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "electric-mobility"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-f2e93e4c6b1c5ee8",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[f2e93e4c-6b1c-5ee8-a0bb-30253a7311d9].summary",
+          "source_location": "Call 7 beneficiary table, Las Palmas de Gran Canaria row",
+          "quote_or_summary": "The official table lists Las Palmas de Gran Canaria, Spain: Facilitating metropolitan e-mobility solutions: An integrated Island Capital Mobility Hub."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "06f6dad3-c301-5562-9f63-bf309ccb3927",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Carbon Neutral Municipalities",
+      "applicant_name": "Barcelona Metropolitan Area",
+      "applicant_type": "Municipality/local authority",
+      "city": "Barcelona Metropolitan Area",
+      "state_region": null,
+      "country": "Spain",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Carbon Neutral Municipalities"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Barcelona Metropolitan Area is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "municipal-decarbonisation"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-06f6dad3c3015562",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[06f6dad3-c301-5562-9f63-bf309ccb3927].summary",
+          "source_location": "Call 7 beneficiary table, Barcelona Metropolitan Area row",
+          "quote_or_summary": "The official table lists Barcelona Metropolitan Area, Spain: Carbon Neutral Municipalities."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "085e33db-c8c2-5635-a402-a4763e7dfdbd",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Energy and Mobility Program for Optimized Workforce and Environmental Resilience - EMPOWER",
+      "applicant_name": "Nedeli\u0161\u0107e",
+      "applicant_type": "Municipality/local authority",
+      "city": "Nedeli\u0161\u0107e",
+      "state_region": null,
+      "country": "Croatia",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Energy and Mobility Program for Optimized Workforce and Environmental Resilience - EMPOWER"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Nedeli\u0161\u0107e is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "electric-mobility",
+        "renewable-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-085e33dbc8c25635",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[085e33db-c8c2-5635-a402-a4763e7dfdbd].summary",
+          "source_location": "Call 7 beneficiary table, Nedeli\u0161\u0107e row",
+          "quote_or_summary": "The official table lists Nedeli\u0161\u0107e, Croatia: Energy and Mobility Program for Optimized Workforce and Environmental Resilience - EMPOWER."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "4b962599-67bc-5fe8-a255-35c133bb7fb9",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Sustainable Power and Leisure Advancements in Shoreline & Hinterland - SPLASH",
+      "applicant_name": "Omi\u0161",
+      "applicant_type": "Municipality/local authority",
+      "city": "Omi\u0161",
+      "state_region": null,
+      "country": "Croatia",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Sustainable Power and Leisure Advancements in Shoreline & Hinterland - SPLASH"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Omi\u0161 is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "renewable-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-4b96259967bc5fe8",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[4b962599-67bc-5fe8-a255-35c133bb7fb9].summary",
+          "source_location": "Call 7 beneficiary table, Omi\u0161 row",
+          "quote_or_summary": "The official table lists Omi\u0161, Croatia: Sustainable Power and Leisure Advancements in Shoreline & Hinterland - SPLASH."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "3a5853a3-8357-5b0a-863c-987901dc11a4",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Duna Valley Energy Community - Sustainable future",
+      "applicant_name": "Nemesn\u00e1dudvar",
+      "applicant_type": "Municipality/local authority",
+      "city": "Nemesn\u00e1dudvar",
+      "state_region": null,
+      "country": "Hungary",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Duna Valley Energy Community - Sustainable future"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Nemesn\u00e1dudvar is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "energy-community",
+        "renewable-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-3a5853a383575b0a",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[3a5853a3-8357-5b0a-863c-987901dc11a4].summary",
+          "source_location": "Call 7 beneficiary table, Nemesn\u00e1dudvar row",
+          "quote_or_summary": "The official table lists Nemesn\u00e1dudvar, Hungary: Duna Valley Energy Community - Sustainable future."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "c4d44963-4f73-579b-94ab-fe92add35f13",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Sustainable Energy Hub: Powering Rural Growth",
+      "applicant_name": "Jakabsz\u00e1ll\u00e1s",
+      "applicant_type": "Municipality/local authority",
+      "city": "Jakabsz\u00e1ll\u00e1s",
+      "state_region": null,
+      "country": "Hungary",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Sustainable Energy Hub: Powering Rural Growth"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Jakabsz\u00e1ll\u00e1s is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "renewable-energy",
+        "smart-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-c4d449634f73579b",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[c4d44963-4f73-579b-94ab-fe92add35f13].summary",
+          "source_location": "Call 7 beneficiary table, Jakabsz\u00e1ll\u00e1s row",
+          "quote_or_summary": "The official table lists Jakabsz\u00e1ll\u00e1s, Hungary: Sustainable Energy Hub: Powering Rural Growth."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "98bebe64-e9f5-50ff-b075-4a224db9be25",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Exploring the Potential of Fleet Electrification and Infrastructure to support Public Private Vehicle Switch",
+      "applicant_name": "Wexford",
+      "applicant_type": "Municipality/local authority",
+      "city": "Wexford",
+      "state_region": null,
+      "country": "Ireland",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Exploring the Potential of Fleet Electrification and Infrastructure to support Public Private Vehicle Switch"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Wexford is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "electric-mobility"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-98bebe64e9f550ff",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[98bebe64-e9f5-50ff-b075-4a224db9be25].summary",
+          "source_location": "Call 7 beneficiary table, Wexford row",
+          "quote_or_summary": "The official table lists Wexford, Ireland: Exploring the Potential of Fleet Electrification and Infrastructure to support Public Private Vehicle Switch."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "648802a1-6686-5fbf-b7a8-ecf10225d041",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Public Fleet Decarbonisation and Charging Infrastructure to support wide Public EV Uptake",
+      "applicant_name": "Cavan County Council",
+      "applicant_type": "Municipality/local authority",
+      "city": "Cavan County Council",
+      "state_region": null,
+      "country": "Ireland",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Public Fleet Decarbonisation and Charging Infrastructure to support wide Public EV Uptake"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Cavan County Council is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "electric-mobility"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-648802a166865fbf",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[648802a1-6686-5fbf-b7a8-ecf10225d041].summary",
+          "source_location": "Call 7 beneficiary table, Cavan County Council row",
+          "quote_or_summary": "The official table lists Cavan County Council, Ireland: Public Fleet Decarbonisation and Charging Infrastructure to support wide Public EV Uptake."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "0d34fb78-a1f5-50b9-8290-a113db615a03",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Silesian synergy: renewable energy solutions for Radzionk\u00f3w and \u015awierklaniec",
+      "applicant_name": "Radzionk\u00f3w",
+      "applicant_type": "Municipality/local authority",
+      "city": "Radzionk\u00f3w",
+      "state_region": null,
+      "country": "Poland",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Silesian synergy: renewable energy solutions for Radzionk\u00f3w and \u015awierklaniec"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Radzionk\u00f3w is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "renewable-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-0d34fb78a1f550b9",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[0d34fb78-a1f5-50b9-8290-a113db615a03].summary",
+          "source_location": "Call 7 beneficiary table, Radzionk\u00f3w row",
+          "quote_or_summary": "The official table lists Radzionk\u00f3w, Poland: Silesian synergy: renewable energy solutions for Radzionk\u00f3w and \u015awierklaniec."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "c367cb74-2219-5029-aa53-787c38ff73c2",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "The investment concept for the creation of integrated investments of the Opole Energy Cluster",
+      "applicant_name": "Opole",
+      "applicant_type": "Municipality/local authority",
+      "city": "Opole",
+      "state_region": null,
+      "country": "Poland",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "The investment concept for the creation of integrated investments of the Opole Energy Cluster"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Opole is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "energy-community",
+        "smart-energy"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-c367cb7422195029",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[c367cb74-2219-5029-aa53-787c38ff73c2].summary",
+          "source_location": "Call 7 beneficiary table, Opole row",
+          "quote_or_summary": "The official table lists Opole, Poland: The investment concept for the creation of integrated investments of the Opole Energy Cluster."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "a467475e-6c64-5741-8dd9-dbad7d3496d4",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Empowering Lamego: A Sustainable Energy Transition through Renewable Integration and Efficiency",
+      "applicant_name": "Lamego",
+      "applicant_type": "Municipality/local authority",
+      "city": "Lamego",
+      "state_region": null,
+      "country": "Portugal",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Empowering Lamego: A Sustainable Energy Transition through Renewable Integration and Efficiency"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Lamego is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "renewable-energy",
+        "energy-efficiency"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-a467475e6c645741",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[a467475e-6c64-5741-8dd9-dbad7d3496d4].summary",
+          "source_location": "Call 7 beneficiary table, Lamego row",
+          "quote_or_summary": "The official table lists Lamego, Portugal: Empowering Lamego: A Sustainable Energy Transition through Renewable Integration and Efficiency."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "0598216c-4d81-54cc-8815-6d594cc35b75",
+      "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
+      "funder_name": "European Union LIFE Programme",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Selected beneficiary",
+      "award_amount": "60000",
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "Decarbonisation of the district heating system, transport and increasing the energy efficiency of buildings",
+      "applicant_name": "Partiz\u00e1nske",
+      "applicant_type": "Municipality/local authority",
+      "city": "Partiz\u00e1nske",
+      "state_region": null,
+      "country": "Slovakia",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Decarbonisation of the district heating system, transport and increasing the energy efficiency of buildings"
+      ],
+      "finance_route": "EUCF grant support for investment-concept development",
+      "instrument_type": "Fixed lump-sum grant",
+      "region_scope": "Europe",
+      "summary": "Partiz\u00e1nske is listed in the official EUCF Call 7 beneficiary table with this investment-concept title.",
+      "project_tags": [
+        "local-authority",
+        "investment-concept",
+        "sustainable-transport",
+        "district-heating",
+        "energy-efficiency"
+      ],
+      "known_gaps": [
+        "The official beneficiary list establishes selection and title, not implementation status or underlying investment value."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-0598216c4d8154cc",
+          "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+          "target_path": "funding_records[0598216c-4d81-54cc-8815-6d594cc35b75].summary",
+          "source_location": "Call 7 beneficiary table, Partiz\u00e1nske row",
+          "quote_or_summary": "The official table lists Partiz\u00e1nske, Slovakia: Decarbonisation of the district heating system, transport and increasing the energy efficiency of buildings."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "6d39c742-1cf7-5da5-8e2d-ae6c2f2d45f2",
+      "funder_id": "a4a66cd8-4e56-5256-a200-b330f43e9d38",
+      "funder_name": "UK Department for Energy Security and Net Zero - Mayoral Renewables Fund",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "750000",
+      "currency": "GBP",
+      "award_year": 2026,
+      "name": "West London solar PV and battery storage installations",
+      "applicant_name": "Greater London Authority and five West London boroughs",
+      "applicant_type": "Municipality/local authority",
+      "city": "London",
+      "state_region": null,
+      "country": "United Kingdom",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Install solar PV and battery storage at nine schools, community centres, and a council office"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United Kingdom",
+      "summary": "The official mayoral decision approved a DESNZ grant for nine solar PV and battery storage installations in West London public buildings.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "local-authority"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-6d39c7421cf75da5",
+          "source_ref": "source-542981972fde502588503bc85441b7a7",
+          "target_path": "funding_records[6d39c742-1cf7-5da5-8e2d-ae6c2f2d45f2].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The official mayoral decision approved a DESNZ grant for nine solar PV and battery storage installations in West London public buildings."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "d7d0383e-e9b5-5dae-972d-8c2b98861107",
+      "funder_id": "4062c059-dd81-5662-9424-74fd726b1753",
+      "funder_name": "European Regional Development Fund via UK local government",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "5600000",
+      "currency": "GBP",
+      "award_year": 2023,
+      "name": "St Ives Park & Ride Smart Energy Grid",
+      "applicant_name": "Cambridgeshire County Council",
+      "applicant_type": "Municipality/local authority",
+      "city": "St Ives",
+      "state_region": null,
+      "country": "United Kingdom",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Deploy a 1 MW solar carport, battery storage, and up to nine EV chargers at a council park-and-ride site"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United Kingdom",
+      "summary": "The council describes an ERDF-part-funded smart grid combining solar carports, battery storage, and EV charging.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "local-authority"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-d7d0383ee9b55dae",
+          "source_ref": "source-0fe9a9e7a0c853e893744fe62d215e2e",
+          "target_path": "funding_records[d7d0383e-e9b5-5dae-972d-8c2b98861107].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The council describes an ERDF-part-funded smart grid combining solar carports, battery storage, and EV charging."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "e96b9e65-924f-5a2a-886b-ada382c8820a",
+      "funder_id": "339fe601-c500-5745-8e3a-829d5f94ac47",
+      "funder_name": "Transport Scotland and European Regional Development Fund",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "988500",
+      "currency": "GBP",
+      "award_year": 2021,
+      "name": "Clepington Road public EV chargers and solar power provision",
+      "applicant_name": "Dundee City Council",
+      "applicant_type": "Municipality/local authority",
+      "city": "Dundee",
+      "state_region": null,
+      "country": "United Kingdom",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Install rapid EV chargers, battery storage, and a solar carport at a municipal depot for public use"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United Kingdom",
+      "summary": "The council capital report approved a public charging hub with rapid chargers, battery storage, and a solar carport using Transport Scotland, ERDF, and UK funding.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "local-authority"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-e96b9e65924f5a2a",
+          "source_ref": "source-9c3079833eab5a3aad2fb37ca97f2e32",
+          "target_path": "funding_records[e96b9e65-924f-5a2a-886b-ada382c8820a].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The council capital report approved a public charging hub with rapid chargers, battery storage, and a solar carport using Transport Scotland, ERDF, and UK funding."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "1d0d31b7-86e0-556b-981d-acea22330c5b",
+      "funder_id": "7378bb80-0c79-5078-90b5-a405295c2ca4",
+      "funder_name": "Australian Renewable Energy Agency",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": null,
+      "currency": "AUD",
+      "award_year": 2024,
+      "name": "Transport for NSW Community Batteries Pilot Project",
+      "applicant_name": "Transport for NSW",
+      "applicant_type": null,
+      "city": "Multiple NSW transport sites",
+      "state_region": null,
+      "country": "Australia",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Install community batteries at commuter car parks, rail buildings, and electric bus depots to store surplus solar energy"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "Australia",
+      "summary": "ARENA records a public-transport battery pilot linked to surplus solar, public EV charging, and bus-depot electrification.",
+      "project_tags": [
+        "battery-storage",
+        "electric-mobility",
+        "public-sector"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-1d0d31b786e0556b",
+          "source_ref": "source-850f1925b26d59fda6207e792c0e87c3",
+          "target_path": "funding_records[1d0d31b7-86e0-556b-981d-acea22330c5b].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "ARENA records a public-transport battery pilot linked to surplus solar, public EV charging, and bus-depot electrification."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "162ba3d7-8940-5fc1-b727-aa8aa58a0e52",
+      "funder_id": "5681b526-e423-548d-822b-9c325ff27cee",
+      "funder_name": "California Energy Commission",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": null,
+      "currency": "USD",
+      "award_year": 2026,
+      "name": "Redwood Coast Airport Microgrid",
+      "applicant_name": "Redwood Coast Energy Authority project team",
+      "applicant_type": null,
+      "city": "McKinleyville",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Operate solar PV, 8.87 MWh battery storage, and bidirectional EV charging in a community microgrid"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "The CEC final report describes a 100% renewable airport microgrid with solar arrays, lithium-ion storage, and four bidirectional EV chargers.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "community-microgrid"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-162ba3d789405fc1",
+          "source_ref": "source-48347326ee91587281116f7ef22d4731",
+          "target_path": "funding_records[162ba3d7-8940-5fc1-b727-aa8aa58a0e52].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The CEC final report describes a 100% renewable airport microgrid with solar arrays, lithium-ion storage, and four bidirectional EV chargers."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "a792f55e-5885-5ece-905b-ff0d881cec19",
+      "funder_id": "5681b526-e423-548d-822b-9c325ff27cee",
+      "funder_name": "California Energy Commission",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "1800000",
+      "currency": "USD",
+      "award_year": 2019,
+      "name": "Solar Emergency Microgrids for Fremont Fire Stations",
+      "applicant_name": "City of Fremont and Gridscape Solutions",
+      "applicant_type": "Municipality/local authority",
+      "city": "Fremont",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Install parking-lot solar canopies, battery storage, and automated microgrid controls at three city fire stations"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "CEC funded the City of Fremont partnership to install solar and battery emergency microgrids at municipal fire stations.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "local-authority",
+        "resilience"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-a792f55e58855ece",
+          "source_ref": "source-2da6cdca8f58568aab1757979f716193",
+          "target_path": "funding_records[a792f55e-5885-5ece-905b-ff0d881cec19].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "CEC funded the City of Fremont partnership to install solar and battery emergency microgrids at municipal fire stations."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "8e5ef80a-76f0-5921-a2d3-78bd96316919",
+      "funder_id": "5681b526-e423-548d-822b-9c325ff27cee",
+      "funder_name": "California Energy Commission",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "9093833",
+      "currency": "USD",
+      "award_year": 2019,
+      "name": "Bassett-Avocado Advanced Energy Community",
+      "applicant_name": "The Energy Coalition",
+      "applicant_type": null,
+      "city": "La Puente",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Build community solar and storage, a resiliency hub, household PV batteries, and mobile EV charging and shared mobility"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "The CEC grant notice describes a disadvantaged-community project integrating solar, storage, resilience, EV charging, and shared electric mobility.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "community-energy"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-8e5ef80a76f05921",
+          "source_ref": "source-e7c09b782e2a52079be135078e89b3a7",
+          "target_path": "funding_records[8e5ef80a-76f0-5921-a2d3-78bd96316919].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The CEC grant notice describes a disadvantaged-community project integrating solar, storage, resilience, EV charging, and shared electric mobility."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "f25c9277-631b-59df-bfd8-06fb50411dd3",
+      "funder_id": "5681b526-e423-548d-822b-9c325ff27cee",
+      "funder_name": "California Energy Commission",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": null,
+      "currency": "USD",
+      "award_year": 2023,
+      "name": "Bay Area EV Corridor Project",
+      "applicant_name": "Association of Bay Area Governments",
+      "applicant_type": "Municipality/local authority",
+      "city": "San Francisco Bay Area",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Deploy battery-backed solar-integrated fast charging and solar-plus-storage EV chargers across Bay Area communities"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "The CEC report records municipal and multi-unit EV charging deployments integrating solar generation and energy storage.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "local-authority"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-f25c9277631b59df",
+          "source_ref": "source-fa2815887ae559cca7f5f3ff9d335b97",
+          "target_path": "funding_records[f25c9277-631b-59df-bfd8-06fb50411dd3].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The CEC report records municipal and multi-unit EV charging deployments integrating solar generation and energy storage."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "0d3f762f-a0e3-5b8f-9209-c33accf7e13a",
+      "funder_id": "5681b526-e423-548d-822b-9c325ff27cee",
+      "funder_name": "California Energy Commission",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": null,
+      "currency": "USD",
+      "award_year": 2019,
+      "name": "Laguna Wastewater Treatment Plant Microgrid",
+      "applicant_name": "City of Santa Rosa",
+      "applicant_type": "Municipality/local authority",
+      "city": "Santa Rosa",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Integrate a 2 MW battery system, carport solar PV, and microgrid controls at a municipal wastewater plant"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "The CEC final report documents a completed solar and battery microgrid at the City of Santa Rosa wastewater facility.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "local-authority",
+        "resilience"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-0d3f762fa0e35b8f",
+          "source_ref": "source-9b4abb5c3543569d88ee5def78d8c540",
+          "target_path": "funding_records[0d3f762f-a0e3-5b8f-9209-c33accf7e13a].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The CEC final report documents a completed solar and battery microgrid at the City of Santa Rosa wastewater facility."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "51b43194-7d8e-59c0-b33f-3943cb7bc237",
+      "funder_id": "5681b526-e423-548d-822b-9c325ff27cee",
+      "funder_name": "California Energy Commission",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "10000000",
+      "currency": "USD",
+      "award_year": 2024,
+      "name": "Port of San Diego Drayage EV DCFC Charging Hub",
+      "applicant_name": "SkyChargers LLC",
+      "applicant_type": null,
+      "city": "San Diego",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Install 35 dual-port EV chargers, a 1.7 MW solar canopy, and a 1 MW/4 MWh battery microgrid at the Port of San Diego"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "CEC approved a $10 million grant for a solar-powered battery-backed electric-truck charging hub at the Port of San Diego.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "freight-electrification"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-51b431947d8e59c0",
+          "source_ref": "source-35d5cd45c85a52f7b5d670a9ce391662",
+          "target_path": "funding_records[51b43194-7d8e-59c0-b33f-3943cb7bc237].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "CEC approved a $10 million grant for a solar-powered battery-backed electric-truck charging hub at the Port of San Diego."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "65bdfa93-3572-5a11-afd7-08633b8a08da",
+      "funder_id": "a838987e-e048-5139-91a7-dba930afe128",
+      "funder_name": "United States Department of Energy - EECBG",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "144230",
+      "currency": "USD",
+      "award_year": 2024,
+      "name": "Livermore solar-powered EV chargers",
+      "applicant_name": "City of Livermore",
+      "applicant_type": "Municipality/local authority",
+      "city": "Livermore",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Purchase two off-grid dual-port solar EV chargers with battery storage for city fleet and public use"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "The DOE EECBG award example records solar-powered, battery-backed EV chargers at City Hall and the public library.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "local-authority"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-65bdfa9335725a11",
+          "source_ref": "source-ad470edcf89553ceb9662c1a1e632577",
+          "target_path": "funding_records[65bdfa93-3572-5a11-afd7-08633b8a08da].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "The DOE EECBG award example records solar-powered, battery-backed EV chargers at City Hall and the public library."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "1467a52f-fa72-565f-a25b-91114dd2fe1f",
+      "funder_id": "c3949d76-2b34-5efb-9775-4f3457309700",
+      "funder_name": "New York State Energy Research and Development Authority",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "500000",
+      "currency": "USD",
+      "award_year": 2022,
+      "name": "Connected Autonomous Vehicle Enclosure",
+      "applicant_name": "University at Buffalo",
+      "applicant_type": null,
+      "city": "Buffalo",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Construct a carbon-neutral facility with EV charging, solar, wind, and battery storage for an automated vehicle fleet"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "NYSERDA awarded $500,000 for a vehicle-fleet facility combining charging, solar, wind, and battery storage.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "carbon-neutral-building"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-1467a52ffa72565f",
+          "source_ref": "source-aa9bff97d4cf511da2d4a7810a364c3f",
+          "target_path": "funding_records[1467a52f-fa72-565f-a25b-91114dd2fe1f].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "NYSERDA awarded $500,000 for a vehicle-fleet facility combining charging, solar, wind, and battery storage."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "4fb6a58c-1a85-5cf3-8804-5e57e92d79bf",
+      "funder_id": "c3949d76-2b34-5efb-9775-4f3457309700",
+      "funder_name": "New York State Energy Research and Development Authority",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "149186",
+      "currency": "USD",
+      "award_year": 2022,
+      "name": "Bethel Town Hall Renovation and Modernization",
+      "applicant_name": "Town of Bethel",
+      "applicant_type": "Municipality/local authority",
+      "city": "Bethel",
+      "state_region": null,
+      "country": "United States",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Renovate a town hall with rooftop solar, battery storage, EV charging, and high-efficiency building systems"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "United States",
+      "summary": "NYSERDA awarded the Town of Bethel funding for a carbon-neutral town hall with solar, storage, and EV charging.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "local-authority"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-4fb6a58c1a855cf3",
+          "source_ref": "source-aa9bff97d4cf511da2d4a7810a364c3f",
+          "target_path": "funding_records[4fb6a58c-1a85-5cf3-8804-5e57e92d79bf].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "NYSERDA awarded the Town of Bethel funding for a carbon-neutral town hall with solar, storage, and EV charging."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "cca9afa2-a170-5013-a93d-c272aab3a0d1",
+      "funder_id": "b2a6d33a-808a-54c6-9758-44e59a9fdd31",
+      "funder_name": "European Commission Horizon programmes",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": null,
+      "currency": "EUR",
+      "award_year": 2025,
+      "name": "SOLAR Photovoltaic to MOVE for Systems Integration",
+      "applicant_name": "SOLAR-MOVE consortium",
+      "applicant_type": null,
+      "city": "Multiple European pilots",
+      "state_region": null,
+      "country": "Multiple",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Demonstrate vehicle-integrated PV and PV charging stations, including municipality-level management pilots"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "Multiple",
+      "summary": "CORDIS describes a Horizon project developing PV-integrated vehicles and charging stations with municipal pilots across Europe.",
+      "project_tags": [
+        "municipal-solar",
+        "electric-mobility",
+        "smart-energy"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-cca9afa2a1705013",
+          "source_ref": "source-a4b3f777e2575c9a85c65d3619214cc3",
+          "target_path": "funding_records[cca9afa2-a170-5013-a93d-c272aab3a0d1].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "CORDIS describes a Horizon project developing PV-integrated vehicles and charging stations with municipal pilots across Europe."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "71e75736-7cbf-5702-8175-c69ca416707f",
+      "funder_id": "b2a6d33a-808a-54c6-9758-44e59a9fdd31",
+      "funder_name": "European Commission Horizon programmes",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": null,
+      "currency": "EUR",
+      "award_year": 2017,
+      "name": "IRIS smart-city solar V2G and storage demonstrations",
+      "applicant_name": "IRIS consortium and lighthouse cities",
+      "applicant_type": null,
+      "city": "Utrecht, Nice, Gothenburg",
+      "state_region": null,
+      "country": "Multiple",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Demonstrate solar-powered vehicle-to-grid car sharing, smart e-buses, storage, and city energy management"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "Multiple",
+      "summary": "CORDIS results document city demonstrations combining locally produced solar, V2G mobility, batteries, and smart energy management.",
+      "project_tags": [
+        "municipal-solar",
+        "battery-storage",
+        "electric-mobility",
+        "smart-city"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-71e757367cbf5702",
+          "source_ref": "source-892f24e91f0355e1b69990aabaf337ee",
+          "target_path": "funding_records[71e75736-7cbf-5702-8175-c69ca416707f].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "CORDIS results document city demonstrations combining locally produced solar, V2G mobility, batteries, and smart energy management."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "f63e0b15-987c-56b9-80d0-e31305c1eac9",
+      "funder_id": "b2a6d33a-808a-54c6-9758-44e59a9fdd31",
+      "funder_name": "European Commission Horizon programmes",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Funded or formally approved",
+      "award_amount": "50000",
+      "currency": "EUR",
+      "award_year": 2020,
+      "name": "Drive your Electric Vehicle with the Power of the Sun - e-port",
+      "applicant_name": "SECAR Technologie GmbH",
+      "applicant_type": null,
+      "city": null,
+      "state_region": null,
+      "country": "Austria",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Develop a lightweight integrated solar carport for direct low-carbon EV charging"
+      ],
+      "finance_route": "Public grant or funded demonstration",
+      "instrument_type": "Grant",
+      "region_scope": "Austria",
+      "summary": "CORDIS records a funded solar-carport innovation project designed to supply direct photovoltaic EV charging.",
+      "project_tags": [
+        "municipal-solar",
+        "electric-mobility",
+        "solar-carport"
+      ],
+      "known_gaps": [
+        "The retained official page does not establish every later implementation milestone or operating result."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-f63e0b15987c56b9",
+          "source_ref": "source-8b8db8f6b0d7584a91583dc458be3d3b",
+          "target_path": "funding_records[f63e0b15-987c-56b9-80d0-e31305c1eac9].summary",
+          "source_location": "Official award, decision, or project description",
+          "quote_or_summary": "CORDIS records a funded solar-carport innovation project designed to supply direct photovoltaic EV charging."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "69ae8727-e76d-5c93-a9d8-5da3a41712ea",
+      "funder_id": "5519faa4-62a8-50f7-81a8-2df78e63cc64",
+      "funder_name": "World Bank",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Gap Fund support completed; downstream project under preparation",
+      "award_amount": null,
+      "currency": null,
+      "award_year": 2024,
+      "name": "Low carbon city project in Ho Chi Minh City",
+      "applicant_name": "Ho Chi Minh City",
+      "applicant_type": "Municipality/local authority",
+      "city": "Ho Chi Minh City",
+      "state_region": null,
+      "country": "Vietnam",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Rooftop solar installations",
+        "Electric-vehicle upgrades",
+        "LED streetlights",
+        "Financial modelling for urban greenhouse-gas reduction interventions"
+      ],
+      "finance_route": "City Climate Finance Gap Fund technical assistance",
+      "instrument_type": "Technical assistance",
+      "region_scope": "Vietnam",
+      "summary": "Gap Fund technical assistance costed Ho Chi Minh City climate investments and modelled rooftop solar and electric-vehicle interventions; the report also describes a USD 250 million low-carbon city project under preparation.",
+      "project_tags": [
+        "municipal-solar",
+        "electric-mobility",
+        "local-authority",
+        "investment-concept"
+      ],
+      "known_gaps": [
+        "The USD 250 million figure is downstream project value, not a published Gap Fund technical-assistance award.",
+        "The retained source does not evidence battery storage."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-c77623f238115649",
+          "source_ref": "source-f087aa3c19956f9b315cc11f3c677fbf",
+          "target_path": "funding_records[69ae8727-e76d-5c93-a9d8-5da3a41712ea].summary",
+          "source_location": "Ho Chi Minh City narrative and downstream-results table, Vietnam row",
+          "quote_or_summary": "Gap Fund technical assistance costed Ho Chi Minh City climate investments and modelled rooftop solar and electric-vehicle interventions; the report also describes a USD 250 million low-carbon city project under preparation."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "dd822a4a-a6e4-5f15-9a53-48dbd9b126c8",
+      "funder_id": "5519faa4-62a8-50f7-81a8-2df78e63cc64",
+      "funder_name": "World Bank",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Gap Fund technical assistance delivered",
+      "award_amount": null,
+      "currency": null,
+      "award_year": 2024,
+      "name": "Solar PV for public schools and primary healthcare centres in Ojodu LCDA",
+      "applicant_name": "Ojodu LCDA / Lagos State",
+      "applicant_type": "Municipality/local authority",
+      "city": "Bodu/Lagos",
+      "state_region": null,
+      "country": "Nigeria",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Solar photovoltaic systems for public schools",
+        "Solar photovoltaic systems for primary healthcare centres",
+        "Cost-benefit, ownership, operation, and maintenance analysis",
+        "Solar photovoltaic upscaling recommendations for Lagos State"
+      ],
+      "finance_route": "City Climate Finance Gap Fund technical assistance",
+      "instrument_type": "Technical assistance",
+      "region_scope": "Nigeria",
+      "summary": "The Gap Fund report describes technical assistance in Bodu/Lagos that analysed public-school and healthcare-centre energy systems, assessed solar PV business models, and recommended wider deployment in Lagos State.",
+      "project_tags": [
+        "municipal-solar",
+        "local-authority",
+        "investment-concept"
+      ],
+      "known_gaps": [
+        "The official report does not provide a distinct formal project title, award amount, or award year.",
+        "The retained source does not evidence battery storage or electric-vehicle charging."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-c7a267b64333b92e",
+          "source_ref": "source-308cf7f60db5089374ef238b1e508e06",
+          "target_path": "funding_records[dd822a4a-a6e4-5f15-9a53-48dbd9b126c8].summary",
+          "source_location": "Results table, Bodu/Lagos, Nigeria - Energy row",
+          "quote_or_summary": "The Gap Fund report describes technical assistance in Bodu/Lagos that analysed public-school and healthcare-centre energy systems, assessed solar PV business models, and recommended wider deployment in Lagos State."
+        }
+      ]
+    },
+    {
+      "funding_record_id": "b0520d94-d7c5-587a-81a3-629fceedf7d0",
+      "funder_id": "5519faa4-62a8-50f7-81a8-2df78e63cc64",
+      "funder_name": "World Bank",
+      "is_opportunity": false,
+      "is_funded_award": true,
+      "award_status": "Gap Fund technical assistance completed",
+      "award_amount": null,
+      "currency": null,
+      "award_year": 2024,
+      "name": "Strengthening the framework to foster e-mobility adoption in Buenos Aires",
+      "applicant_name": "Buenos Aires",
+      "applicant_type": "Municipality/local authority",
+      "city": "Buenos Aires",
+      "state_region": null,
+      "country": "Argentina",
+      "category": "Renewable energy and sustainable urban mobility",
+      "sector": "Municipal energy and transport",
+      "hazards": [],
+      "interventions": [
+        "Electric-vehicle charging infrastructure deployment",
+        "Electric-mobility roadmap",
+        "Regulatory framework for electric-vehicle adoption",
+        "Public and private financing recommendations"
+      ],
+      "finance_route": "City Climate Finance Gap Fund technical assistance",
+      "instrument_type": "Technical assistance",
+      "region_scope": "Argentina",
+      "summary": "Gap Fund technical assistance produced a Buenos Aires e-mobility roadmap, charging-infrastructure analysis, and financing recommendations, identifying USD 96 million in charging needs by 2030.",
+      "project_tags": [
+        "electric-mobility",
+        "local-authority",
+        "investment-concept"
+      ],
+      "known_gaps": [
+        "The USD 96 million figure is identified charging-infrastructure need, not a published Gap Fund technical-assistance award.",
+        "The retained source does not evidence solar generation or battery storage."
+      ],
+      "evidence": [
+        {
+          "evidence_ref": "evidence-c06b7a6286e825ba",
+          "source_ref": "source-f087aa3c19956f9b315cc11f3c677fbf",
+          "target_path": "funding_records[b0520d94-d7c5-587a-81a3-629fceedf7d0].summary",
+          "source_location": "Buenos Aires e-mobility narrative and downstream-results table, Argentina row",
+          "quote_or_summary": "Gap Fund technical assistance produced a Buenos Aires e-mobility roadmap, charging-infrastructure analysis, and financing recommendations, identifying USD 96 million in charging needs by 2030."
+        }
+      ]
+    }
+  ],
+  "completion_signal": "concept_note_context_bundle_ready",
+  "result": {
+    "status": "completed",
+    "matches": [
+      {
+        "funding_record_id": "0598216c-4d81-54cc-8815-6d594cc35b75",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority EUCF investment concepts in municipal energy and transport, including transport decarbonisation.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-0598216c4d8154cc",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[0598216c-4d81-54cc-8815-6d594cc35b75].summary",
+            "source_location": "Call 7 beneficiary table, Partiz\u00e1nske row",
+            "quote_or_summary": "The official table lists Partiz\u00e1nske, Slovakia: Decarbonisation of the district heating system, transport and increasing the energy efficiency of buildings."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "06f6dad3-c301-5562-9f63-bf309ccb3927",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led investment concepts supported through the same EUCF route in municipal energy and transport.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-06f6dad3c3015562",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[06f6dad3-c301-5562-9f63-bf309ccb3927].summary",
+            "source_location": "Call 7 beneficiary table, Barcelona Metropolitan Area row",
+            "quote_or_summary": "The official table lists Barcelona Metropolitan Area, Spain: Carbon Neutral Municipalities."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate title does not specify solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "085e33db-c8c2-5635-a402-a4763e7dfdbd",
+        "decision": "selected",
+        "fit_rationale": "Both are municipal EUCF investment concepts in the same sector and include electric-mobility relevance.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-085e33dbc8c25635",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[085e33db-c8c2-5635-a402-a4763e7dfdbd].summary",
+            "source_location": "Call 7 beneficiary table, Nedeli\u0161\u0107e row",
+            "quote_or_summary": "The official table lists Nedeli\u0161\u0107e, Croatia: Energy and Mobility Program for Optimized Workforce and Environmental Resilience - EMPOWER."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The retained evidence does not specify the candidate's solar, storage, or charging measures.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "0d34fb78-a1f5-50b9-8290-a113db615a03",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led EUCF investment concepts with renewable-energy relevance in the same sector.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-0d34fb78a1f550b9",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[0d34fb78-a1f5-50b9-8290-a113db615a03].summary",
+            "source_location": "Call 7 beneficiary table, Radzionk\u00f3w row",
+            "quote_or_summary": "The official table lists Radzionk\u00f3w, Poland: Silesian synergy: renewable energy solutions for Radzionk\u00f3w and \u015awierklaniec."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "0d3f762f-a0e3-5b8f-9209-c33accf7e13a",
+        "decision": "selected",
+        "fit_rationale": "Both are municipal projects integrating solar PV and battery storage on municipally owned facilities.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-0d3f762fa0e35b8f",
+            "source_ref": "source-9b4abb5c3543569d88ee5def78d8c540",
+            "target_path": "funding_records[0d3f762f-a0e3-5b8f-9209-c33accf7e13a].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The CEC final report documents a completed solar and battery microgrid at the City of Santa Rosa wastewater facility."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The candidate does not include electric-mobility measures.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "1467a52f-fa72-565f-a25b-91114dd2fe1f",
+        "decision": "selected",
+        "fit_rationale": "Both combine solar generation, battery storage, and EV charging for a vehicle-related facility.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-1467a52ffa72565f",
+            "source_ref": "source-aa9bff97d4cf511da2d4a7810a364c3f",
+            "target_path": "funding_records[1467a52f-fa72-565f-a25b-91114dd2fe1f].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "NYSERDA awarded $500,000 for a vehicle-fleet facility combining charging, solar, wind, and battery storage."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "162ba3d7-8940-5fc1-b727-aa8aa58a0e52",
+        "decision": "selected",
+        "fit_rationale": "Both integrate solar PV, battery storage, and bidirectional or other EV charging within an energy system.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-162ba3d789405fc1",
+            "source_ref": "source-48347326ee91587281116f7ef22d4731",
+            "target_path": "funding_records[162ba3d7-8940-5fc1-b727-aa8aa58a0e52].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The CEC final report describes a 100% renewable airport microgrid with solar arrays, lithium-ion storage, and four bidirectional EV chargers."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The candidate is an airport community microgrid rather than a municipal-building project.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "1d0d31b7-86e0-556b-981d-acea22330c5b",
+        "decision": "selected",
+        "fit_rationale": "Both link battery storage with electric-mobility infrastructure and surplus solar energy in public-sector settings.",
+        "matched_tags": [
+          "battery-storage",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-1d0d31b786e0556b",
+            "source_ref": "source-850f1925b26d59fda6207e792c0e87c3",
+            "target_path": "funding_records[1d0d31b7-86e0-556b-981d-acea22330c5b].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "ARENA records a public-transport battery pilot linked to surplus solar, public EV charging, and bus-depot electrification."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The candidate does not establish municipal solar PV installations on buildings.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "3a5853a3-8357-5b0a-863c-987901dc11a4",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority EUCF investment concepts for municipal renewable-energy transition.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-3a5853a383575b0a",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[3a5853a3-8357-5b0a-863c-987901dc11a4].summary",
+            "source_location": "Call 7 beneficiary table, Nemesn\u00e1dudvar row",
+            "quote_or_summary": "The official table lists Nemesn\u00e1dudvar, Hungary: Duna Valley Energy Community - Sustainable future."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "4b962599-67bc-5fe8-a255-35c133bb7fb9",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led EUCF investment concepts for renewable-energy transition in the same sector.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-4b96259967bc5fe8",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[4b962599-67bc-5fe8-a255-35c133bb7fb9].summary",
+            "source_location": "Call 7 beneficiary table, Omi\u0161 row",
+            "quote_or_summary": "The official table lists Omi\u0161, Croatia: Sustainable Power and Leisure Advancements in Shoreline & Hinterland - SPLASH."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "4fb6a58c-1a85-5cf3-8804-5e57e92d79bf",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority projects combining rooftop solar, battery storage, and EV charging at municipal buildings.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-4fb6a58c1a855cf3",
+            "source_ref": "source-aa9bff97d4cf511da2d4a7810a364c3f",
+            "target_path": "funding_records[4fb6a58c-1a85-5cf3-8804-5e57e92d79bf].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "NYSERDA awarded the Town of Bethel funding for a carbon-neutral town hall with solar, storage, and EV charging."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "51b43194-7d8e-59c0-b33f-3943cb7bc237",
+        "decision": "selected",
+        "fit_rationale": "Both integrate solar canopies, battery storage, and EV charging infrastructure.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-51b431947d8e59c0",
+            "source_ref": "source-35d5cd45c85a52f7b5d670a9ce391662",
+            "target_path": "funding_records[51b43194-7d8e-59c0-b33f-3943cb7bc237].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "CEC approved a $10 million grant for a solar-powered battery-backed electric-truck charging hub at the Port of San Diego."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The candidate is a freight-charging hub rather than a municipal-building project.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "648802a1-6686-5fbf-b7a8-ecf10225d041",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority EUCF investment concepts in municipal energy and transport, with charging infrastructure relevance.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-648802a166865fbf",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[648802a1-6686-5fbf-b7a8-ecf10225d041].summary",
+            "source_location": "Call 7 beneficiary table, Cavan County Council row",
+            "quote_or_summary": "The official table lists Cavan County Council, Ireland: Public Fleet Decarbonisation and Charging Infrastructure to support wide Public EV Uptake."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV or battery storage.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "65bdfa93-3572-5a11-afd7-08633b8a08da",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority projects combining solar-powered, battery-backed EV charging infrastructure.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-65bdfa9335725a11",
+            "source_ref": "source-ad470edcf89553ceb9662c1a1e632577",
+            "target_path": "funding_records[65bdfa93-3572-5a11-afd7-08633b8a08da].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The DOE EECBG award example records solar-powered, battery-backed EV chargers at City Hall and the public library."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "65e88580-62ad-5c1d-bcb0-f0bbcde9fb4b",
+        "decision": "selected",
+        "fit_rationale": "Both are Cyprus local-authority investment concepts under the same EUCF grant route for municipal energy transition.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-65e8858062ad5c1d",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[65e88580-62ad-5c1d-bcb0-f0bbcde9fb4b].summary",
+            "source_location": "Call 7 beneficiary table, Lythrodontas row",
+            "quote_or_summary": "The official table lists Lythrodontas, Cyprus: Catalyzing a Renewable Future: Technological Innovation and Smart Connectivity for the Sustainable Transformation of the Machairas Complex."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate title does not specify solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "69ae8727-e76d-5c93-a9d8-5da3a41712ea",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-focused investment-concept efforts involving rooftop solar and electric-vehicle interventions.",
+        "matched_tags": [
+          "municipal-solar",
+          "electric-mobility",
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-c77623f238115649",
+            "source_ref": "source-f087aa3c19956f9b315cc11f3c677fbf",
+            "target_path": "funding_records[69ae8727-e76d-5c93-a9d8-5da3a41712ea].summary",
+            "source_location": "Ho Chi Minh City narrative and downstream-results table, Vietnam row",
+            "quote_or_summary": "Gap Fund technical assistance costed Ho Chi Minh City climate investments and modelled rooftop solar and electric-vehicle interventions; the report also describes a USD 250 million low-carbon city project under preparation."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The USD 250 million figure is downstream project value, not a published Gap Fund technical-assistance award.",
+          "Candidate gap: The retained source does not evidence battery storage.",
+          "The candidate does not evidence battery storage.",
+          "The USD 250 million figure is downstream project value, not a published technical-assistance award.",
+          "The target project's underlying investment value and implementation status are not confirmed."
+        ]
+      },
+      {
+        "funding_record_id": "6d39c742-1cf7-5da5-8e2d-ae6c2f2d45f2",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority projects deploying solar PV and battery storage at public buildings.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-6d39c7421cf75da5",
+            "source_ref": "source-542981972fde502588503bc85441b7a7",
+            "target_path": "funding_records[6d39c742-1cf7-5da5-8e2d-ae6c2f2d45f2].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The official mayoral decision approved a DESNZ grant for nine solar PV and battery storage installations in West London public buildings."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The candidate does not include electric-mobility measures.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "71e75736-7cbf-5702-8175-c69ca416707f",
+        "decision": "selected",
+        "fit_rationale": "Both combine city-oriented solar generation, battery storage, and electric-mobility measures.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-71e757367cbf5702",
+            "source_ref": "source-892f24e91f0355e1b69990aabaf337ee",
+            "target_path": "funding_records[71e75736-7cbf-5702-8175-c69ca416707f].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "CORDIS results document city demonstrations combining locally produced solar, V2G mobility, batteries, and smart energy management."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "75b95b00-9d9f-5b60-9252-79ba13a5f576",
+        "decision": "selected",
+        "fit_rationale": "Both are Cyprus municipality investment concepts supported through the same EUCF grant route.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-75b95b009d9f5b60",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[75b95b00-9d9f-5b60-9252-79ba13a5f576].summary",
+            "source_location": "Call 7 beneficiary table, Strovolos row",
+            "quote_or_summary": "The official table lists Strovolos, Cyprus: I.S.S.M: Fostering Energy Solidarity and Sustainability."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate title does not specify solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "8e5ef80a-76f0-5921-a2d3-78bd96316919",
+        "decision": "selected",
+        "fit_rationale": "Both combine solar generation, battery storage, and electric-mobility measures in a public-sector context.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-8e5ef80a76f05921",
+            "source_ref": "source-e7c09b782e2a52079be135078e89b3a7",
+            "target_path": "funding_records[8e5ef80a-76f0-5921-a2d3-78bd96316919].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The CEC grant notice describes a disadvantaged-community project integrating solar, storage, resilience, EV charging, and shared electric mobility."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "98bebe64-e9f5-50ff-b075-4a224db9be25",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority investment concepts in the same EUCF municipal energy and transport context, with electric-mobility focus.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-98bebe64e9f550ff",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[98bebe64-e9f5-50ff-b075-4a224db9be25].summary",
+            "source_location": "Call 7 beneficiary table, Wexford row",
+            "quote_or_summary": "The official table lists Wexford, Ireland: Exploring the Potential of Fleet Electrification and Infrastructure to support Public Private Vehicle Switch."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV or battery storage.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "a467475e-6c64-5741-8dd9-dbad7d3496d4",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led EUCF investment concepts for renewable-energy transition in the same municipal energy and transport sector.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-a467475e6c645741",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[a467475e-6c64-5741-8dd9-dbad7d3496d4].summary",
+            "source_location": "Call 7 beneficiary table, Lamego row",
+            "quote_or_summary": "The official table lists Lamego, Portugal: Empowering Lamego: A Sustainable Energy Transition through Renewable Integration and Efficiency."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "a792f55e-5885-5ece-905b-ff0d881cec19",
+        "decision": "selected",
+        "fit_rationale": "Both involve municipal solar PV and battery storage installations at local-authority facilities.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-a792f55e58855ece",
+            "source_ref": "source-2da6cdca8f58568aab1757979f716193",
+            "target_path": "funding_records[a792f55e-5885-5ece-905b-ff0d881cec19].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "CEC funded the City of Fremont partnership to install solar and battery emergency microgrids at municipal fire stations."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The candidate does not include electric-mobility measures.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "b0520d94-d7c5-587a-81a3-629fceedf7d0",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority investment-concept efforts involving EV charging infrastructure and financing planning.",
+        "matched_tags": [
+          "electric-mobility",
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-c06b7a6286e825ba",
+            "source_ref": "source-f087aa3c19956f9b315cc11f3c677fbf",
+            "target_path": "funding_records[b0520d94-d7c5-587a-81a3-629fceedf7d0].summary",
+            "source_location": "Buenos Aires e-mobility narrative and downstream-results table, Argentina row",
+            "quote_or_summary": "Gap Fund technical assistance produced a Buenos Aires e-mobility roadmap, charging-infrastructure analysis, and financing recommendations, identifying USD 96 million in charging needs by 2030."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The USD 96 million figure is identified charging-infrastructure need, not a published Gap Fund technical-assistance award.",
+          "Candidate gap: The retained source does not evidence solar generation or battery storage.",
+          "The candidate does not evidence solar generation or battery storage.",
+          "The USD 96 million figure is identified charging-infrastructure need, not a published technical-assistance award.",
+          "The target project's underlying investment value and implementation status are not confirmed."
+        ]
+      },
+      {
+        "funding_record_id": "c367cb74-2219-5029-aa53-787c38ff73c2",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led EUCF investment concepts involving integrated local energy planning.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-c367cb7422195029",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[c367cb74-2219-5029-aa53-787c38ff73c2].summary",
+            "source_location": "Call 7 beneficiary table, Opole row",
+            "quote_or_summary": "The official table lists Opole, Poland: The investment concept for the creation of integrated investments of the Opole Energy Cluster."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "c4d44963-4f73-579b-94ab-fe92add35f13",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority EUCF investment concepts addressing municipal renewable and smart-energy transition.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-c4d449634f73579b",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[c4d44963-4f73-579b-94ab-fe92add35f13].summary",
+            "source_location": "Call 7 beneficiary table, Jakabsz\u00e1ll\u00e1s row",
+            "quote_or_summary": "The official table lists Jakabsz\u00e1ll\u00e1s, Hungary: Sustainable Energy Hub: Powering Rural Growth."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "cca9afa2-a170-5013-a93d-c272aab3a0d1",
+        "decision": "selected",
+        "fit_rationale": "Both involve municipal-scale photovoltaic charging and electric-mobility integration.",
+        "matched_tags": [
+          "municipal-solar",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-cca9afa2a1705013",
+            "source_ref": "source-a4b3f777e2575c9a85c65d3619214cc3",
+            "target_path": "funding_records[cca9afa2-a170-5013-a93d-c272aab3a0d1].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "CORDIS describes a Horizon project developing PV-integrated vehicles and charging stations with municipal pilots across Europe."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The candidate does not evidence battery storage.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "d7d0383e-e9b5-5dae-972d-8c2b98861107",
+        "decision": "selected",
+        "fit_rationale": "Both integrate municipal solar, battery storage, and EV charging infrastructure.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-d7d0383ee9b55dae",
+            "source_ref": "source-0fe9a9e7a0c853e893744fe62d215e2e",
+            "target_path": "funding_records[d7d0383e-e9b5-5dae-972d-8c2b98861107].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The council describes an ERDF-part-funded smart grid combining solar carports, battery storage, and EV charging."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "dd60e11d-7167-5da6-9ae7-f2828a92a8fe",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led EUCF investment concepts in the same sector and include electric-mobility objectives.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-dd60e11d71675da6",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[dd60e11d-7167-5da6-9ae7-f2828a92a8fe].summary",
+            "source_location": "Call 7 beneficiary table, Innsbruck row",
+            "quote_or_summary": "The official table lists Innsbruck, Austria: Zero-Emission Urban Transport for Innsbruck."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV or battery storage.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "dd822a4a-a6e4-5f15-9a53-48dbd9b126c8",
+        "decision": "selected",
+        "fit_rationale": "Both are local-authority investment-concept efforts for solar PV on public buildings.",
+        "matched_tags": [
+          "municipal-solar",
+          "local-authority",
+          "investment-concept"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-c7a267b64333b92e",
+            "source_ref": "source-308cf7f60db5089374ef238b1e508e06",
+            "target_path": "funding_records[dd822a4a-a6e4-5f15-9a53-48dbd9b126c8].summary",
+            "source_location": "Results table, Bodu/Lagos, Nigeria - Energy row",
+            "quote_or_summary": "The Gap Fund report describes technical assistance in Bodu/Lagos that analysed public-school and healthcare-centre energy systems, assessed solar PV business models, and recommended wider deployment in Lagos State."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official report does not provide a distinct formal project title, award amount, or award year.",
+          "Candidate gap: The retained source does not evidence battery storage or electric-vehicle charging.",
+          "The candidate does not evidence battery storage or electric-vehicle charging.",
+          "The official report does not provide a distinct formal project title, award amount, or award year.",
+          "The target project's underlying investment value and implementation status are not confirmed."
+        ]
+      },
+      {
+        "funding_record_id": "e96b9e65-924f-5a2a-886b-ada382c8820a",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led projects integrating solar power, battery storage, and public EV charging.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-e96b9e65924f5a2a",
+            "source_ref": "source-9c3079833eab5a3aad2fb37ca97f2e32",
+            "target_path": "funding_records[e96b9e65-924f-5a2a-886b-ada382c8820a].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The council capital report approved a public charging hub with rapid chargers, battery storage, and a solar carport using Transport Scotland, ERDF, and UK funding."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "f25c9277-631b-59df-bfd8-06fb50411dd3",
+        "decision": "selected",
+        "fit_rationale": "Both combine municipal solar generation, battery storage, and EV charging infrastructure.",
+        "matched_tags": [
+          "municipal-solar",
+          "battery-storage",
+          "electric-mobility",
+          "local-authority"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-f25c9277631b59df",
+            "source_ref": "source-fa2815887ae559cca7f5f3ff9d335b97",
+            "target_path": "funding_records[f25c9277-631b-59df-bfd8-06fb50411dd3].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "The CEC report records municipal and multi-unit EV charging deployments integrating solar generation and energy storage."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      },
+      {
+        "funding_record_id": "f2e93e4c-6b1c-5ee8-a0bb-30253a7311d9",
+        "decision": "selected",
+        "fit_rationale": "Both are municipality-led EUCF investment concepts in the same sector and address electric mobility.",
+        "matched_tags": [
+          "local-authority",
+          "investment-concept",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-f2e93e4c6b1c5ee8",
+            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+            "target_path": "funding_records[f2e93e4c-6b1c-5ee8-a0bb-30253a7311d9].summary",
+            "source_location": "Call 7 beneficiary table, Las Palmas de Gran Canaria row",
+            "quote_or_summary": "The official table lists Las Palmas de Gran Canaria, Spain: Facilitating metropolitan e-mobility solutions: An integrated Island Capital Mobility Hub."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
+          "The candidate evidence does not establish solar PV or battery storage.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The candidate's implementation status and underlying investment value are not established."
+        ]
+      },
+      {
+        "funding_record_id": "f63e0b15-987c-56b9-80d0-e31305c1eac9",
+        "decision": "selected",
+        "fit_rationale": "Both involve photovoltaic systems supporting EV charging infrastructure.",
+        "matched_tags": [
+          "municipal-solar",
+          "electric-mobility"
+        ],
+        "evidence": [
+          {
+            "evidence_ref": "evidence-f63e0b15987c56b9",
+            "source_ref": "source-8b8db8f6b0d7584a91583dc458be3d3b",
+            "target_path": "funding_records[f63e0b15-987c-56b9-80d0-e31305c1eac9].summary",
+            "source_location": "Official award, decision, or project description",
+            "quote_or_summary": "CORDIS records a funded solar-carport innovation project designed to supply direct photovoltaic EV charging."
+          }
+        ],
+        "caveats": [
+          "Candidate is missing region for direct comparison.",
+          "Candidate is missing applicant_type for direct comparison.",
+          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
+          "Candidate is missing applicant type for direct comparison.",
+          "The candidate does not evidence battery storage and is a solar-carport innovation project rather than a municipal authority project.",
+          "The target project's underlying investment value and implementation status are not confirmed.",
+          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+        ]
+      }
+    ],
+    "caveats": []
+  },
+  "sources": [
+    {
+      "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
+      "url": "https://www.eucityfacility.eu/news/european-city-facility-announces-71-new-beneficiaries",
+      "title": "European City Facility announces 71 new beneficiaries"
+    },
+    {
+      "source_ref": "source-542981972fde502588503bc85441b7a7",
+      "url": "https://www.london.gov.uk/md3438-grant-mayoral-renewables-fund-west-london-solar-projects",
+      "title": "Grant from the Mayoral Renewables Fund for West London solar projects"
+    },
+    {
+      "source_ref": "source-0fe9a9e7a0c853e893744fe62d215e2e",
+      "url": "https://www.cambridgeshire.gov.uk/residents/climate-change-energy-and-environment/climate-change-action/low-carbon-energy/large-scale-renewable-energy-and-storage/st-ives-park-and-ride-smart-energy-grid",
+      "title": "St Ives Park & Ride Smart Energy Grid"
+    },
+    {
+      "source_ref": "source-9c3079833eab5a3aad2fb37ca97f2e32",
+      "url": "https://www.dundeecity.gov.uk/minutes/report?rep_id=275-2021",
+      "title": "Dundee City Council capital programme report 275-2021"
+    },
+    {
+      "source_ref": "source-850f1925b26d59fda6207e792c0e87c3",
+      "url": "https://arena.gov.au/projects/transport-for-nsw-community-batteries-pilot-project/",
+      "title": "Transport for NSW Community Batteries Pilot Project"
+    },
+    {
+      "source_ref": "source-48347326ee91587281116f7ef22d4731",
+      "url": "https://www.energy.ca.gov/publications/2026/redwood-coast-airport-microgrid",
+      "title": "Redwood Coast Airport Microgrid"
+    },
+    {
+      "source_ref": "source-2da6cdca8f58568aab1757979f716193",
+      "url": "https://www.energy.ca.gov/publications/2019/solar-emergency-microgrids-fremont-fire-stations-demonstrating-energy-savings",
+      "title": "Solar Emergency Microgrids for Fremont Fire Stations"
+    },
+    {
+      "source_ref": "source-e7c09b782e2a52079be135078e89b3a7",
+      "url": "https://www.energy.ca.gov/filebrowser/download/461?fid=461",
+      "title": "Bassett-Avocado Advanced Energy Community grant notice"
+    },
+    {
+      "source_ref": "source-fa2815887ae559cca7f5f3ff9d335b97",
+      "url": "https://www.energy.ca.gov/publications/2023/bay-area-ev-corridor-project-project-association-bay-area-governments",
+      "title": "Bay Area EV Corridor Project"
+    },
+    {
+      "source_ref": "source-9b4abb5c3543569d88ee5def78d8c540",
+      "url": "https://www.energy.ca.gov/publications/2019/constructing-microgrid-wastewater-treatment-facility",
+      "title": "Constructing a Microgrid for a Wastewater Treatment Facility"
+    },
+    {
+      "source_ref": "source-35d5cd45c85a52f7b5d670a9ce391662",
+      "url": "https://www.energy.ca.gov/filebrowser/download/7658?fid=7658",
+      "title": "SkyChargers Port of San Diego grant materials"
+    },
+    {
+      "source_ref": "source-ad470edcf89553ceb9662c1a1e632577",
+      "url": "https://www.energy.gov/sites/default/files/2024-10/EECBG%20Program%20Formula%20Application%20Assistance%20Webinar_10.2.pdf",
+      "title": "EECBG formula award example: Livermore solar-powered EV chargers"
+    },
+    {
+      "source_ref": "source-aa9bff97d4cf511da2d4a7810a364c3f",
+      "url": "https://www.nyserda.ny.gov/All-Programs/Building-Cleaner-Communities-Competition",
+      "title": "Building Cleaner Communities Competition awardees"
+    },
+    {
+      "source_ref": "source-a4b3f777e2575c9a85c65d3619214cc3",
+      "url": "https://cordis.europa.eu/project/id/101235635",
+      "title": "SOLAR-MOVE project fact sheet"
+    },
+    {
+      "source_ref": "source-892f24e91f0355e1b69990aabaf337ee",
+      "url": "https://cordis.europa.eu/project/id/774199/results",
+      "title": "IRIS project results"
+    },
+    {
+      "source_ref": "source-8b8db8f6b0d7584a91583dc458be3d3b",
+      "url": "https://cordis.europa.eu/project/id/886398",
+      "title": "e-port project fact sheet"
+    },
+    {
+      "source_ref": "source-f087aa3c19956f9b315cc11f3c677fbf",
+      "url": "https://www.citygapfund.org/wp-content/uploads/2025/03/WB-Annual-Report-FY24.pdf",
+      "title": "City Climate Finance Gap Fund - World Bank Annual Report FY2024"
+    },
+    {
+      "source_ref": "source-308cf7f60db5089374ef238b1e508e06",
+      "url": "https://www.citygapfund.org/wp-content/uploads/2025/11/The-City-Climate-Finance-Gap-Fund-%E2%80%93-EIB-Annual-Report-2024-1.pdf",
+      "title": "City Climate Finance Gap Fund - EIB Annual Report 2024"
+    }
+  ],
+  "review": {
+    "status": "pending_review"
+  }
+}

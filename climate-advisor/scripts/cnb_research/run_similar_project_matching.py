@@ -54,21 +54,19 @@ from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone
-from decimal import Decimal
 import hashlib
 import json
 import logging
 from pathlib import Path
 import sys
 from typing import Any
-from uuid import UUID, uuid5
+from uuid import UUID
 
 from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_OUTPUT = Path("output/cnb_research")
-LOCAL_REVIEW_ID_NAMESPACE = UUID("a5321519-d7fb-4ac3-b8c1-68c8f667eb2f")
 
 
 class LocalReviewWorkflowStore:
@@ -252,344 +250,21 @@ def load_review_artifact(path: Path) -> Any:
     return ReviewedReferenceDataArtifact.model_validate(payload)
 
 
-def _normalize_text(value: str | None) -> str:
-    """Normalize optional text for deterministic deduplication keys."""
-    return (value or "").strip().casefold()
-
-
-def _normalize_decimal(value: Decimal | None) -> str:
-    """Render decimals deterministically without preserving trailing zeros."""
-    if value is None:
-        return ""
-    text = format(value, "f")
-    if "." not in text:
-        return text
-    return text.rstrip("0").rstrip(".")
-
-
-def _humanize_gap_field(target_path: str, funding_record_ref: str) -> str | None:
-    """Return a simple field label for one project-scoped gap path."""
-    prefix = f"funding_records[{funding_record_ref}]"
-    if not target_path.startswith(f"{prefix}."):
-        return None
-    field_path = target_path[len(prefix) + 1 :]
-    if not field_path:
-        return None
-    field_tokens = [
-        token.replace("_", " ").strip()
-        for token in field_path.split(".")
-        if token.strip()
-    ]
-    if not field_tokens:
-        return None
-    return " ".join(field_tokens).title()
-
-
-def _record_gap_texts(research: Any, funding_record_ref: str) -> list[str]:
-    """Retain project-scoped gap reasons as prompt-facing caveat text."""
-    prefix = f"funding_records[{funding_record_ref}]"
-    gap_texts: list[str] = []
-    seen: set[str] = set()
-    for gap in research.gaps:
-        if gap.target_path != prefix and not gap.target_path.startswith(f"{prefix}."):
-            continue
-        label = _humanize_gap_field(gap.target_path, funding_record_ref)
-        gap_text = (
-            f"{label}: {gap.reason}"
-            if label is not None
-            else gap.reason
-        )
-        if gap_text in seen:
-            continue
-        seen.add(gap_text)
-        gap_texts.append(gap_text)
-    return gap_texts
-
-
-def _candidate_funder_name(record: Any) -> str | None:
-    """Return the reviewed canonical funder name for one funded project."""
-    if record.selected_funder_id is None:
-        return record.reported_funder_name
-    for candidate in record.candidate_funders:
-        if candidate.funder_id == record.selected_funder_id:
-            return candidate.name
-    return record.reported_funder_name
-
-
-def _local_source_ref(*, run_id: str, source_ref: str) -> str:
-    """Namespace reviewed source identities so merged snapshots stay unique."""
-    return f"{run_id}:{source_ref}"
-
-
-def _local_evidence_ref(*, run_id: str, evidence_ref: str) -> str:
-    """Namespace reviewed evidence identities across paired review runs."""
-    return f"{run_id}:{evidence_ref}"
-
-
-def _candidate_identity_key(record: Any) -> str:
-    """Build the semantic key used for local reviewed-project deduplication."""
-    return "|".join(
-        (
-            str(record.selected_funder_id),
-            _normalize_text(record.name),
-            _normalize_text(record.applicant_name),
-            _normalize_text(record.city),
-            _normalize_text(record.state_region),
-            _normalize_text(record.country),
-            str(record.award_year or ""),
-            _normalize_decimal(record.award_amount),
-            _normalize_text(record.currency),
-        )
-    )
-
-
-def _candidate_funding_record_id(record: Any) -> UUID:
-    """Derive one deterministic local UUID from the semantic candidate key."""
-    return uuid5(
-        LOCAL_REVIEW_ID_NAMESPACE,
-        _candidate_identity_key(record),
-    )
-
-
-def _candidate_scalar_score(candidate: Any) -> int:
-    """Prefer the candidate carrying the richest reviewed scalar coverage."""
-    scalar_values = (
-        candidate.funder_name,
-        candidate.award_status,
-        candidate.award_amount,
-        candidate.currency,
-        candidate.award_year,
-        candidate.name,
-        candidate.applicant_name,
-        candidate.applicant_type,
-        candidate.city,
-        candidate.state_region,
-        candidate.country,
-        candidate.category,
-        candidate.sector,
-        candidate.finance_route,
-        candidate.instrument_type,
-        candidate.region_scope,
-        candidate.summary,
-    )
-    return sum(
-        value is not None and value != ""
-        for value in scalar_values
-    )
-
-
-def _ordered_unique_strings(values: list[str]) -> list[str]:
-    """Deduplicate string lists while preserving their first observed order."""
-    unique_values: list[str] = []
-    seen: set[str] = set()
-    for value in values:
-        if value in seen:
-            continue
-        seen.add(value)
-        unique_values.append(value)
-    return unique_values
-
-
-def _merge_sources(source_groups: list[list[Any]]) -> list[Any]:
-    """Merge namespaced reviewed sources while preserving first-seen order."""
-    merged: list[Any] = []
-    seen: set[str] = set()
-    for group in source_groups:
-        for source in group:
-            if source.source_ref in seen:
-                continue
-            seen.add(source.source_ref)
-            merged.append(source)
-    return merged
-
-
-def _merge_evidence(evidence_groups: list[list[Any]]) -> list[Any]:
-    """Merge namespaced reviewed evidence while preserving first-seen order."""
-    merged: list[Any] = []
-    seen: set[str] = set()
-    for group in evidence_groups:
-        for evidence in group:
-            if evidence.evidence_ref in seen:
-                continue
-            seen.add(evidence.evidence_ref)
-            merged.append(evidence)
-    return merged
-
-
-def _build_reviewed_candidate(
-    *,
-    reviewed_project: Any,
-    research: Any,
-) -> tuple[Any, list[Any]]:
-    """Convert one validated reviewed project import into a local candidate."""
-    from app.models.cnb_similar_projects import (
-        CnbSimilarProjectCandidate,
-        CnbSimilarProjectEvidence,
-        CnbSimilarProjectReviewSource,
-    )
-
-    evidence_items = [
-        CnbSimilarProjectEvidence(
-            evidence_ref=_local_evidence_ref(
-                run_id=research.run_id,
-                evidence_ref=retained.evidence.evidence_ref,
-            ),
-            source_ref=_local_source_ref(
-                run_id=research.run_id,
-                source_ref=retained.source.source_ref,
-            ),
-            target_path=retained.evidence.target_path,
-            source_location=retained.evidence.source_location,
-            quote_or_summary=retained.evidence.quote_or_summary,
-        )
-        for retained in reviewed_project.evidence
-    ]
-    sources = _merge_sources(
-        [
-            [
-                CnbSimilarProjectReviewSource(
-                    source_ref=_local_source_ref(
-                        run_id=research.run_id,
-                        source_ref=retained.source.source_ref,
-                    ),
-                    url=retained.source.url,
-                    title=retained.source.title,
-                )
-            ]
-            for retained in reviewed_project.evidence
-        ]
-    )
-    record = reviewed_project.record
-    candidate = CnbSimilarProjectCandidate(
-        funding_record_id=_candidate_funding_record_id(record),
-        funder_id=record.selected_funder_id,
-        funder_name=_candidate_funder_name(record),
-        is_opportunity=False,
-        is_funded_award=True,
-        award_status=record.status,
-        award_amount=record.award_amount,
-        currency=record.currency,
-        award_year=record.award_year,
-        name=record.name,
-        applicant_name=record.applicant_name,
-        applicant_type=None,
-        city=record.city,
-        state_region=record.state_region,
-        country=record.country,
-        category=record.category,
-        sector=None,
-        hazards=list(record.hazards),
-        interventions=list(record.interventions),
-        finance_route=record.finance_route,
-        instrument_type=record.instrument_type,
-        region_scope=record.region_scope,
-        summary=record.summary,
-        project_tags=list(record.project_tags),
-        known_gaps=_record_gap_texts(research, record.funding_record_ref),
-        evidence=evidence_items,
-    )
-    return candidate, sources
-
-
 def build_run_input_from_reviewed_pairs(
     *,
     search_request: Any,
     research_review_pairs: list[tuple[Any, Any]],
     known_funder_ids: set[UUID],
 ) -> Any:
-    """Build one local runner input from approved reviewed research pairs."""
-    from app.models.cnb_similar_projects import CnbSimilarProjectReviewRunInput
-    from app.services.cnb_review_import import prepare_reviewed_reference_import
-
-    grouped_candidates: dict[
-        UUID,
-        list[tuple[Any, list[Any], str, str]],
-    ] = {}
-    all_sources: list[Any] = []
-    for research, review in research_review_pairs:
-        reviewed_import = prepare_reviewed_reference_import(
-            research=research,
-            review=review,
-            known_funder_ids=known_funder_ids,
-        )
-        for project in reviewed_import.projects:
-            candidate, sources = _build_reviewed_candidate(
-                reviewed_project=project,
-                research=research,
-            )
-            grouped_candidates.setdefault(candidate.funding_record_id, []).append(
-                (
-                    candidate,
-                    sources,
-                    research.run_id,
-                    project.record.funding_record_ref,
-                )
-            )
-            all_sources.extend(sources)
-
-    merged_candidates: list[Any] = []
-    for funding_record_id, entries in grouped_candidates.items():
-        best_candidate, _, _, _ = min(
-            entries,
-            key=lambda item: (
-                -_candidate_scalar_score(item[0]),
-                -len(item[0].evidence),
-                item[2],
-                item[3],
-            ),
-        )
-        merged_candidate = best_candidate.model_copy(
-            update={
-                "hazards": _ordered_unique_strings(
-                    [
-                        value
-                        for candidate, _, _, _ in entries
-                        for value in candidate.hazards
-                    ]
-                ),
-                "interventions": _ordered_unique_strings(
-                    [
-                        value
-                        for candidate, _, _, _ in entries
-                        for value in candidate.interventions
-                    ]
-                ),
-                "project_tags": _ordered_unique_strings(
-                    [
-                        value
-                        for candidate, _, _, _ in entries
-                        for value in candidate.project_tags
-                    ]
-                ),
-                "known_gaps": _ordered_unique_strings(
-                    [
-                        value
-                        for candidate, _, _, _ in entries
-                        for value in candidate.known_gaps
-                    ]
-                ),
-                "evidence": _merge_evidence(
-                    [
-                        candidate.evidence
-                        for candidate, _, _, _ in entries
-                    ]
-                ),
-            }
-        )
-        assert merged_candidate.funding_record_id == funding_record_id
-        merged_candidates.append(merged_candidate)
-
-    merged_candidates.sort(
-        key=lambda candidate: (
-            candidate.name.casefold(),
-            str(candidate.funder_id),
-            str(candidate.funding_record_id),
-        )
+    """Build local input while preserving the runner's import-level API."""
+    from app.services.cnb_similar_project_review import (
+        build_run_input_from_reviewed_pairs as build_reviewed_input,
     )
-    return CnbSimilarProjectReviewRunInput(
+
+    return build_reviewed_input(
         search_request=search_request,
-        candidates=merged_candidates,
-        sources=_merge_sources([all_sources]),
+        research_review_pairs=research_review_pairs,
+        known_funder_ids=known_funder_ids,
     )
 
 

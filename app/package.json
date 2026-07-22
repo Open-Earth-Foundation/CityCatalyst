@@ -99,7 +99,7 @@
     "pino": "^9.6.0",
     "posthog-js": "^1.378.1",
     "react": "^19.2.7",
-    "react-circle-flags": "^0.0.24",
+    "react-circle-flags": "^0.0.30",
     "react-dom": "^19.2.7",
     "react-email": "^4.2.8",
     "react-hook-form": "^7.81.0",

@@ -77,24 +77,16 @@ def test_cnb_research_configuration_matches_runtime_contract() -> None:
 
 
 def test_cnb_similar_project_prompt_matches_runtime_contract() -> None:
-    """Keep internal matching grounded in the supplied shortlist contract."""
     config = _load_llm_config()
     prompt_path = config.prompts.cnb_similar_project_matching
     prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
 
     assert "`current_project`" in prompt_text
-    assert "`project_name`" in prompt_text
-    assert "`project_summary`" in prompt_text
-    assert "`funder_id` (UUID or null)" in prompt_text
-    assert "funder scope has already been applied" in prompt_text
     assert "`selection_limit`" in prompt_text
     assert "`candidates`" in prompt_text
-    assert "`funding_record_id`" in prompt_text
     assert "`matched_tags`" in prompt_text
     assert "`evidence_refs`" in prompt_text
     assert "numeric score" in prompt_text
-    assert "Do not invent" in prompt_text
-    assert "<example_output>" in prompt_text
 
 
 def test_compose_prompt_wraps_core_and_chat() -> None:

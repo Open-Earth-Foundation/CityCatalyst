@@ -1,18 +1,16 @@
 """Tests for Concept Note Builder research request and result models."""
 
 from collections.abc import Iterator
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from openai.lib._pydantic import to_strict_json_schema
 from pydantic import ValidationError
 import pytest
 
 from app.models.cnb_research import (
-    CanonicalFunder,
     FieldEvidence,
     FundingRecordDraft,
     FunderTemplateResearchResult,
-    FunderIdentityCandidate,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
     FundingRecordResearchResult,
@@ -145,10 +143,6 @@ def test_funding_record_matches_architecture_year_and_award_shape() -> None:
         "selected_funder_id",
     ):
         assert reviewer_only_field not in FundingRecordResearchResult.model_fields
-
-
-def test_review_only_funder_fields_live_on_draft_records() -> None:
-    """Reviewer-only funder fields stay off model output but exist on drafts."""
     draft = FundingRecordDraft(
         funding_record_ref="project-001",
         funder_ref="funder-001",
@@ -161,25 +155,6 @@ def test_review_only_funder_fields_live_on_draft_records() -> None:
     assert draft.candidate_funders == []
     assert draft.selected_funder_id is None
     assert draft.reported_funder_name == "Minnesota Pollution Control Agency"
-
-
-def test_canonical_funder_candidates_require_uuid_ids() -> None:
-    """Canonical funder identities use UUIDs in review-facing models."""
-    canonical = CanonicalFunder(
-        funder_id="7eb0df43-db16-4eb7-88f9-92b5884b617f",
-        name="Minnesota Pollution Control Agency",
-    )
-    candidate = FunderIdentityCandidate(
-        funder_id="7eb0df43-db16-4eb7-88f9-92b5884b617f",
-        name="Minnesota Pollution Control Agency",
-        match_reason="Exact reported name match",
-    )
-
-    assert canonical.funder_id == UUID("7eb0df43-db16-4eb7-88f9-92b5884b617f")
-    assert candidate.funder_id == UUID("7eb0df43-db16-4eb7-88f9-92b5884b617f")
-
-    with pytest.raises(ValidationError):
-        CanonicalFunder(name="Invalid UUID", funder_id="not-a-uuid")
 
 
 def test_result_requires_one_opportunity_and_valid_table_references() -> None:

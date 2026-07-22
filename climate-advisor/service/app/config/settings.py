@@ -120,7 +120,7 @@ class RoleModelConfig(BaseModel):
 
 
 class ResearchModelConfig(BaseModel):
-    """Direct OpenAI model settings for bounded offline research."""
+    """Direct OpenAI model settings for bounded CNB workflows."""
 
     name: str
     reasoning_effort: Literal["low", "medium", "high"] = "medium"
@@ -130,6 +130,7 @@ class ModelsConfig(BaseModel):
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
     funding_research: ResearchModelConfig
+    funder_identity: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -164,6 +165,7 @@ class PromptsConfig(BaseModel):
     chat: str
     stationary_energy_review: Optional[str] = None
     cnb_funding_opportunity_research: str
+    cnb_funder_identity_matching: str
     cnb_similar_project_matching: str
 
     def get_prompt(self, prompt_type: str) -> str:

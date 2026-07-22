@@ -14,6 +14,9 @@ models:
   funding_research:
     name: "gpt-5.6-terra"
     reasoning_effort: "medium"
+  funder_identity:
+    name: "gpt-5.4-mini"
+    reasoning_effort: "low"
 
 # Generation Parameters
 generation:
@@ -40,6 +43,9 @@ prompts:
 
   # Offline Concept Note Builder funder and program research
   cnb_funding_opportunity_research: "prompts/cnb_funding_opportunity_research.md"
+
+  # Offline Concept Note Builder canonical-funder identity matching
+  cnb_funder_identity_matching: "prompts/cnb_funder_identity_matching.md"
 
   # Internal Concept Note Builder funded-project selection
   cnb_similar_project_matching: "prompts/cnb_similar_project_matching.md"

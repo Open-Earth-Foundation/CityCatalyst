@@ -67,10 +67,11 @@ EUCF reference bundle. The funded-project command always requires a current
 project JSON profile and embeds it in every research request so its sectors,
 location, interventions, finance route, and curated tags guide queries and
 project prioritization. Metadata-only project profiles are rejected. A
-canonical-funder snapshot is optional during this
-discovery step; when supplied, it adds possible canonical IDs for later review
-without narrowing the search or selecting an ID. Batch manifests contain only
-funder/program source seeds; they never contain hand-authored candidate
+canonical-funder snapshot is optional during discovery; when supplied, it adds
+possible canonical IDs for later review through one structured, low-reasoning
+LLM identity call. Returned IDs are validated against the supplied snapshot,
+and the call never narrows the search or selects an ID. Batch manifests contain
+only funder/program source seeds; they never contain hand-authored candidate
 projects. `target_funded_projects` optionally keeps each program run in breadth
 discovery after the first deeply evidenced project; it defaults to one and is
 bounded at 50. The similar-project wrapper uses a 20-turn research budget when

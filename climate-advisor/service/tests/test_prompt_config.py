@@ -26,6 +26,7 @@ def test_prompt_include_directive_resolves_relative_tools_fragment(tmp_path) -> 
         chat=str(prompt_path),
         stationary_energy_review=str(prompt_path),
         cnb_funding_opportunity_research=str(prompt_path),
+        cnb_funder_identity_matching=str(prompt_path),
         cnb_similar_project_matching=str(prompt_path),
     )
 
@@ -43,6 +44,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
         "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
+        "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
         "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
     }
 
@@ -85,6 +87,20 @@ def test_cnb_similar_project_prompt_matches_runtime_contract() -> None:
     assert "`matched_tags`" in prompt_text
     assert "`evidence_refs`" in prompt_text
     assert "numeric score" in prompt_text
+
+
+def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
+    config = _load_llm_config()
+    prompt_path = config.prompts.cnb_funder_identity_matching
+    prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
+
+    assert config.models.funder_identity.name == "gpt-5.4-mini"
+    assert config.models.funder_identity.reasoning_effort == "low"
+    assert "`funding_records`" in prompt_text
+    assert "`canonical_funders`" in prompt_text
+    assert "`funding_record_ref`" in prompt_text
+    assert "`funder_id`" in prompt_text
+    assert "human reviewer" in prompt_text
 
 
 def test_compose_prompt_wraps_core_and_chat() -> None:

@@ -10,15 +10,15 @@ Inputs:
   - `--output`: Parent directory for per-run artifacts; defaults to `output/cnb_research`.
   - `--log-level`: Python logging level; defaults to `INFO`.
 - Files/paths: the project JSON contains the target project's matching profile. A single-request input contains the exact seeded funder/program names and URLs plus optional `application_template_url`, `current_filled_object`, `target_funded_projects`, and `max_turns`. When omitted, `max_turns` defaults to 20 for this similar-project research CLI. A batch input adds a human-readable `batch_name` and a non-empty `requests` array of those same request objects.
-- Env vars: `OPENAI_API_KEY` calls the configured research model and `FIRECRAWL_API_KEY` calls Firecrawl. Shared MLflow environment variables remain optional and are handled by the reused research pipeline.
+- Env vars: `OPENAI_API_KEY` calls the configured research and funder-identity models, and `FIRECRAWL_API_KEY` calls Firecrawl. Shared MLflow environment variables remain optional and are handled by the reused research pipeline.
 
 Outputs:
 - Reuses the existing funding-opportunity research pipeline to create the normal run artifacts under `<output>/<run_id>/`, including `research_bundle.json`, `review.md`, `agent_trace.jsonl`, and source snapshots.
 - Adds `<output>/<run_id>/<run_id>.research.json`, a review-ready JSON artifact
   with reviewer-facing `candidate_funders`, `selected_funder_id`, and
   `project_tags` fields on funded-project rows. When a canonical-funder snapshot
-  is supplied, candidate matching may fall back to the known dossier funder
-  without populating a missing source-reported name.
+  is supplied, one structured LLM call proposes candidates and may fall back to
+  the known dossier funder without populating a missing source-reported name.
 - For full batch inputs, adds `<output>/<batch-name>.batch.json`, an index artifact listing each generated `run_id` and `<run_id>.research.json` path. A `--request-index` retry writes only the selected request's ordinary per-run artifacts and does not overwrite this index.
 - Performs no database reads or writes.
 
@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
+from functools import partial
 import json
 import logging
 from pathlib import Path
@@ -366,6 +367,9 @@ def main() -> None:
 
     # Step 2: import the shared service code lazily so this module has no import-time path side effects.
     ensure_service_directory_on_path()
+    from openai import OpenAI
+
+    from app.config import get_settings
     from app.services.cnb_funder_identity_match import (
         propose_funder_identity_candidates,
     )
@@ -403,8 +407,26 @@ def main() -> None:
         logger.error("Invalid funded-project research input: %s", exc)
         raise SystemExit(2) from exc
 
-    # Step 4: reuse the existing local research pipeline and enrich funded-project rows for review.
+    # Step 4: share one provider client across research and funder-identity calls.
+    openai_client = None
     try:
+        settings = get_settings()
+        openai_client = OpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.llm.api.openai.base_url,
+        )
+        identity_model = settings.llm.models.funder_identity
+        run_research = partial(
+            run_funding_opportunity_research,
+            openai_client=openai_client,
+        )
+        propose_candidates = partial(
+            propose_funder_identity_candidates,
+            openai_client=openai_client,
+            model_name=identity_model.name,
+            reasoning_effort=identity_model.reasoning_effort,
+            prompt=settings.llm.prompts.get_prompt("cnb_funder_identity_matching"),
+        )
         if selected_batch_position is not None:
             selected_index, request_count = selected_batch_position
             logger.info(
@@ -420,8 +442,8 @@ def main() -> None:
                 batch=request_or_batch,
                 output_root=args.output,
                 canonical_funders=canonical_funders,
-                run_research=run_funding_opportunity_research,
-                propose_candidates=propose_funder_identity_candidates,
+                run_research=run_research,
+                propose_candidates=propose_candidates,
             )
             batch_index_path = write_batch_index_artifact(
                 output_root=args.output,
@@ -438,12 +460,15 @@ def main() -> None:
             request=request_or_batch,
             output_root=args.output,
             canonical_funders=canonical_funders,
-            run_research=run_funding_opportunity_research,
-            propose_candidates=propose_funder_identity_candidates,
+            run_research=run_research,
+            propose_candidates=propose_candidates,
         )
     except Exception:
         logger.exception("Funded-project research failed")
         raise SystemExit(1) from None
+    finally:
+        if openai_client is not None:
+            openai_client.close()
 
     # Step 5: keep the existing run artifacts untouched and add the review-ready JSON beside them.
     logger.info("Funded-project research ready for review: %s", artifact.research_path)

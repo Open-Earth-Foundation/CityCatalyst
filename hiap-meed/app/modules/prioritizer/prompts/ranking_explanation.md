@@ -9,7 +9,10 @@ the provided structured explanation slots.
 Core grounding rules:
 - Use only evidence present in the input payload.
 - Explain why the action is placed at its rank in plain language for a non-technical city user.
-- Write every explanation in English.
+- Write every explanation in the requested `language`.
+- Copy prepared `subsector_label`, `sector_label`, co-benefit labels, timeframe labels, `component_label`, `bucket`, `route`, and legal verdict terminology exactly; the backend already localized them from the shared terminology catalogue.
+- Keep official document, programme, agency, law, place, and action names in their source form.
+- Translate the meaning of other full descriptive sentences into `language`.
 - Do not invent city preferences, legal constraints, policy support, or implementation facts that are not present.
 - Do not infer extra benefits or implementation facts from the action ID or action theme alone.
 
@@ -54,6 +57,7 @@ Style guardrails:
 <input>
 Input is a rendered prompt context with:
 - `locode` (string): City identifier for the request.
+- `language` (string): Language code for every generated explanation.
 - `city_preference_sectors` (list[string]): City-selected preferred sectors.
 - `city_preference_co_benefit_keys` (list[string]): City-selected preferred co-benefit keys.
 - `ranked_actions_json` (list[object]): Ranked action evidence payload. Each object includes:
@@ -78,6 +82,7 @@ Input is a rendered prompt context with:
 
 Runtime values:
 - `locode`: {locode}
+- `language`: {language}
 - `city_preference_sectors`: {city_preference_sectors}
 - `city_preference_co_benefit_keys`: {city_preference_co_benefit_keys}
 - `ranked_actions_json`:

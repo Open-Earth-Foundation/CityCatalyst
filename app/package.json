@@ -47,8 +47,8 @@
     "openapi:lint": "spectral lint public/openapi-spec.json"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.966.0",
-    "@aws-sdk/s3-request-presigner": "^3.966.0",
+    "@aws-sdk/client-s3": "^3.1092.0",
+    "@aws-sdk/s3-request-presigner": "^3.1092.0",
     "@chakra-ui/react": "^3.36.0",
     "@emotion/react": "^11.14.0",
     "@highlight-run/next": "^7.9.38",
@@ -87,8 +87,8 @@
     "katex": "^0.17.0",
     "lodash": "^4.17.23",
     "nanoid": "^5.1.6",
-    "next": "16.2.4",
-    "next-auth": "^4.24.13",
+    "next": "^16.2.11",
+    "next-auth": "^4.24.15",
     "next-runtime-env": "^3.3.0",
     "next-swagger-doc": "^0.4.1",
     "next-themes": "^0.4.6",

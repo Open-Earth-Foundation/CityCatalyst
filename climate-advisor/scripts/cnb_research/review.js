@@ -39,23 +39,10 @@
     ]],
   ];
   const SIMILAR_PROJECT_SECTIONS = [
-    [
-      "current-project",
-      "Current project",
-      "Ingested project fields supplied to the internal similar-project search.",
-    ],
-    [
-      "selected-matches",
-      "Selected matches",
-      "Reviewed match decisions joined to candidate display context and evidence.",
-    ],
-    [
-      "result-caveats",
-      "Result caveats",
-      "Run-level caveats retained with the reviewed similar-project result.",
-    ],
+    ["current-project", "Current project", "Fields used for similar-project search."],
+    ["selected-matches", "Selected matches", "Candidate context, evidence, and review."],
+    ["result-caveats", "Result caveats", "Caveats retained with the result."],
   ];
-
   const state = { bundle: null, mode: REFERENCE_DATA_MODE, decisions: new Map() };
   const view = {};
   let statusTimer;
@@ -66,14 +53,13 @@
 
   function initialize() {
     [
-      "bundleInput", "saveButton", "pageTitle", "emptyState", "emptyStateLabel",
-      "emptyStateTitle", "emptyStateDescription", "loadError", "workspace",
-      "workspaceLabel", "programName", "runMeta", "sourceCount", "evidenceCount",
+      "bundleInput", "saveButton", "pageTitle", "emptyState", "loadError", "workspace",
+      "programName", "runMeta", "sourceCount", "evidenceCount",
       "gapCount", "conflictCount", "countLabel1", "countLabel2", "countLabel3",
       "countLabel4", "sectionNav", "reviewLayout", "selectionSummary",
       "editorSections", "inspectorPanel", "inspectorTitle", "inspectorPath",
-      "inspectorContent", "reviewMetaLabel", "reviewStatus", "reviewerName",
-      "reviewNotes", "saveHelpText", "closeInspector", "statusMessage",
+      "inspectorContent", "reviewStatus", "reviewerName", "reviewNotes",
+      "closeInspector", "statusMessage",
     ].forEach((id) => { view[id] = document.getElementById(id); });
 
     view.bundleInput.addEventListener("change", (event) => {
@@ -88,9 +74,8 @@
   async function loadBundle(file) {
     try {
       const text = await file.text();
-      const parsed = JSON.parse(text);
-      const mode = detectReviewMode(parsed);
-      const bundle = normalizeBundle(parsed, mode);
+      const bundle = JSON.parse(text);
+      const mode = detectReviewMode(bundle);
       validateBundle(bundle, mode);
       state.bundle = bundle;
       state.mode = mode;
@@ -104,99 +89,9 @@
   }
 
   function detectReviewMode(bundle) {
-    if (!bundle || typeof bundle !== "object") {
-      return REFERENCE_DATA_MODE;
-    }
-    if (
-      bundle.artifact_type === "cnb_similar_project_search"
-      || bundle.review_mode === SIMILAR_PROJECT_MODE
-    ) {
-      return SIMILAR_PROJECT_MODE;
-    }
-    if (
-      bundle.search_request
-      && Array.isArray(bundle.candidates)
-      && bundle.result
-      && typeof bundle.result === "object"
-    ) {
-      return SIMILAR_PROJECT_MODE;
-    }
-    return REFERENCE_DATA_MODE;
-  }
-
-  function normalizeBundle(bundle, mode) {
-    const normalized = clone(bundle);
-    if (mode === SIMILAR_PROJECT_MODE) {
-      normalizeSimilarProjectBundle(normalized);
-    } else {
-      normalizeReferenceDataBundle(normalized);
-    }
-    return normalized;
-  }
-
-  function normalizeReferenceDataBundle(bundle) {
-    if (!Array.isArray(bundle.funding_records)) bundle.funding_records = [];
-    if (!Array.isArray(bundle.sources)) bundle.sources = [];
-    if (!Array.isArray(bundle.evidence)) bundle.evidence = [];
-    if (!Array.isArray(bundle.gaps)) bundle.gaps = [];
-    if (!Array.isArray(bundle.conflicts)) bundle.conflicts = [];
-    if (!Array.isArray(bundle.funder_templates)) bundle.funder_templates = [];
-    if (!Array.isArray(bundle.funder_criteria)) bundle.funder_criteria = [];
-    if (!bundle.review || typeof bundle.review !== "object") {
-      bundle.review = pendingReview();
-    }
-
-    bundle.funding_records = bundle.funding_records.map((record) => {
-      const nextRecord = { ...record };
-      if (!Array.isArray(nextRecord.project_tags)) nextRecord.project_tags = [];
-      if (!Array.isArray(nextRecord.candidate_funders)) {
-        nextRecord.candidate_funders = [];
-      }
-      if (!Object.prototype.hasOwnProperty.call(nextRecord, "selected_funder_id")) {
-        nextRecord.selected_funder_id = null;
-      }
-      if (!Object.prototype.hasOwnProperty.call(nextRecord, "reported_funder_name")) {
-        nextRecord.reported_funder_name = null;
-      }
-      return nextRecord;
-    });
-  }
-
-  function normalizeSimilarProjectBundle(bundle) {
-    if (!Array.isArray(bundle.candidates)) bundle.candidates = [];
-    if (!Array.isArray(bundle.sources)) bundle.sources = [];
-    if (!bundle.result || typeof bundle.result !== "object") {
-      bundle.result = { status: "completed", matches: [], caveats: [] };
-    }
-    if (!Array.isArray(bundle.result.matches)) bundle.result.matches = [];
-    if (!Array.isArray(bundle.result.caveats)) bundle.result.caveats = [];
-    if (!bundle.review || typeof bundle.review !== "object") {
-      bundle.review = pendingReview();
-    }
-    bundle.candidates = bundle.candidates.map((candidate) => ({
-      ...candidate,
-      project_tags: Array.isArray(candidate?.project_tags) ? candidate.project_tags : [],
-      hazards: Array.isArray(candidate?.hazards) ? candidate.hazards : [],
-      interventions: Array.isArray(candidate?.interventions) ? candidate.interventions : [],
-      known_gaps: Array.isArray(candidate?.known_gaps) ? candidate.known_gaps : [],
-      evidence: Array.isArray(candidate?.evidence) ? candidate.evidence : [],
-    }));
-    bundle.result.matches = bundle.result.matches.map((match) => ({
-      ...match,
-      evidence: Array.isArray(match?.evidence) ? match.evidence : [],
-      matched_tags: Array.isArray(match?.matched_tags) ? match.matched_tags : [],
-      caveats: Array.isArray(match?.caveats) ? match.caveats : [],
-      fit_rationale: match?.fit_rationale ?? "",
-    }));
-  }
-
-  function pendingReview() {
-    return {
-      status: "pending_review",
-      reviewer: null,
-      reviewed_at: null,
-      notes: [],
-    };
+    return bundle?.artifact_type === "cnb_similar_project_search"
+      ? SIMILAR_PROJECT_MODE
+      : REFERENCE_DATA_MODE;
   }
 
   function validateBundle(bundle, mode) {
@@ -212,8 +107,12 @@
           "search_request, candidates, and result are required for similar-project review",
         );
       }
-      if (!Array.isArray(bundle.result.matches) || !Array.isArray(bundle.result.caveats)) {
-        throw new Error("result.matches and result.caveats are required");
+      if (
+        !Array.isArray(bundle.sources)
+        || !Array.isArray(bundle.result.matches)
+        || !Array.isArray(bundle.result.caveats)
+      ) {
+        throw new Error("sources, result.matches, and result.caveats are required");
       }
       return;
     }
@@ -244,49 +143,16 @@
   }
 
   function configureModeCopy(mode) {
-    if (mode === SIMILAR_PROJECT_MODE) {
-      view.pageTitle.textContent = "Similar project review";
-      view.saveButton.textContent = "Save similar-project review";
-      view.emptyStateLabel.textContent = "Pending-review artifacts";
-      view.emptyStateTitle.textContent = "Open similar-project search JSON";
-      view.emptyStateDescription.textContent = (
-        "Review the current project, inspect selected similar-project matches, "
-        + "edit fit rationale, matched tags, and caveats, then save a separate local review file."
-      );
-      view.workspaceLabel.textContent = "Current search result";
-      view.countLabel1.textContent = "Candidates";
-      view.countLabel2.textContent = "Matches";
-      view.countLabel3.textContent = "Evidence";
-      view.countLabel4.textContent = "Caveats";
-      view.reviewMetaLabel.textContent = "Review metadata";
-      view.saveHelpText.innerHTML = (
-        "Saving creates a local <code>&lt;run_id&gt;.similar-project-review.json</code> file. "
-        + "The search JSON is unchanged and the browser never writes to the database."
-      );
-      view.sectionNav.setAttribute("aria-label", "Similar-project review sections");
-      return;
-    }
-    view.pageTitle.textContent = "Research review";
-    view.saveButton.textContent = "Save review";
-    view.emptyStateLabel.textContent = "Pending-review artifacts";
-    view.emptyStateTitle.innerHTML = "Open &lt;run_id&gt;.research.json";
-    view.emptyStateDescription.innerHTML = (
-      "Review the funded-project findings, select one canonical funder per "
-      + "funded project, curate project tags, inspect the evidence, and save a "
-      + "separate local review file. Older <code>research_bundle.json</code> "
-      + "files still load for inspection."
-    );
-    view.workspaceLabel.textContent = "Current bundle";
-    view.countLabel1.textContent = "Sources";
-    view.countLabel2.textContent = "Evidence";
-    view.countLabel3.textContent = "Gaps";
-    view.countLabel4.textContent = "Conflicts";
-    view.reviewMetaLabel.textContent = "Review metadata";
-    view.saveHelpText.innerHTML = (
-      "Saving creates a local <code>&lt;run_id&gt;.review.json</code> file. "
-      + "The research JSON is unchanged and the browser never writes to the database."
-    );
-    view.sectionNav.setAttribute("aria-label", "Research sections");
+    const similar = mode === SIMILAR_PROJECT_MODE;
+    view.pageTitle.textContent = similar ? "Similar project review" : "Research review";
+    view.saveButton.textContent = similar ? "Save similar-project review" : "Save review";
+    const labels = similar
+      ? ["Candidates", "Matches", "Evidence", "Caveats"]
+      : ["Sources", "Evidence", "Gaps", "Conflicts"];
+    labels.forEach((label, index) => {
+      view[`countLabel${index + 1}`].textContent = label;
+    });
+    view.sectionNav.setAttribute("aria-label", `${view.pageTitle.textContent} sections`);
   }
 
   function renderReferenceDataWorkspace() {
@@ -349,316 +215,163 @@
 
   function renderReferenceDataSections() {
     view.editorSections.replaceChildren();
-    REFERENCE_DATA_SECTIONS.forEach(([id, title, description, keys]) => {
-      const section = createSection(id, title, description);
-      const content = section.querySelector(".section-content");
+    REFERENCE_DATA_SECTIONS.forEach((definition) => {
+      const keys = definition[3];
+      appendSection(definition, (content) => {
       keys.forEach((key) => {
         if (key in state.bundle) {
           renderValue(content, key, state.bundle[key], key, [key]);
         }
       });
-      if (!content.children.length) {
-        content.append(element("p", "empty", "Nothing found."));
-      }
-      view.editorSections.append(section);
+      });
     });
     renderUnmappedReviewItems();
   }
 
   function renderSimilarProjectSections() {
     view.editorSections.replaceChildren();
-    renderCurrentProjectSection();
-    renderSelectedMatchesSection();
-    renderResultCaveatsSection();
-  }
-
-  function renderCurrentProjectSection() {
-    const section = createSection(...SIMILAR_PROJECT_SECTIONS[0]);
-    const content = section.querySelector(".section-content");
-    const grid = element("div", "readonly-grid");
-    const request = state.bundle.search_request || {};
-    buildCurrentProjectCards(request, state.bundle.candidates).forEach((item) => {
-      grid.append(createReadonlyCard(item.label, item.value));
-    });
-    if (!grid.children.length) {
-      content.append(element("p", "empty", "No current-project fields were supplied."));
-    } else {
+    const request = state.bundle.search_request;
+    appendSection(SIMILAR_PROJECT_SECTIONS[0], (content) => {
+      const grid = element("div", "readonly-grid");
+      Object.entries(request).forEach(([key, value]) => {
+        if (!hasValue(value) || ["run_id", "limit"].includes(key)) return;
+        const card = element("article", "readonly-card");
+        const displayValue = Array.isArray(value) ? value.join(", ") : String(value);
+        card.append(element("h3", "", humanize(key)), element("p", "", displayValue));
+        grid.append(card);
+      });
       content.append(grid);
-    }
-    view.editorSections.append(section);
-  }
-
-  function buildCurrentProjectCards(request, candidates) {
-    const currentFunder = (candidates || []).find(
-      (candidate) => String(candidate.funder_id) === String(request.funder_id),
-    );
-    return [
-      ["Funder", currentFunder?.funder_name],
-      ["Category", request.category],
-      ["Sector", request.sector],
-      ["Region", request.region],
-      ["Country", request.country],
-      ["Finance route", request.finance_route],
-      ["Instrument type", request.instrument_type],
-      ["Applicant type", request.applicant_type],
-      ["Hazards", formatList(request.hazards)],
-      ["Interventions", formatList(request.interventions)],
-      ["Project tags", formatList(request.project_tags)],
-      ["Known gaps", formatList(request.known_gaps)],
-    ]
-      .filter(([, value]) => hasValue(value))
-      .map(([label, value]) => ({ label, value }));
-  }
-
-  function createReadonlyCard(label, value) {
-    const card = element("article", "readonly-card");
-    card.append(
-      element("h3", "", label),
-      element("p", "", String(value)),
-    );
-    return card;
-  }
-
-  function renderSelectedMatchesSection() {
-    const section = createSection(...SIMILAR_PROJECT_SECTIONS[1]);
-    const content = section.querySelector(".section-content");
-    const matches = state.bundle.result.matches || [];
-    if (!matches.length) {
-      content.append(element("p", "empty", "No selected matches were provided."));
-      view.editorSections.append(section);
-      return;
-    }
-
-    matches.forEach((match, index) => {
-      const candidate = candidateForMatch(match);
-      const record = element("details", "record");
-      record.open = true;
-      const summary = element("summary", "group-summary");
-      summary.append(
-        element(
-          "h3",
-          "",
-          candidate?.name || `Match ${index + 1}`,
-        ),
-        element("span", "collapse-label"),
-      );
-      const body = element("div", "group-content");
-      body.append(
-        createMatchToggleRow(match, candidate),
-        createCandidateSummary(candidate),
-        createSimilarFieldRow(
-          "Fit rationale",
-          match.fit_rationale,
-          `result.matches[${match.funding_record_id}].fit_rationale`,
-          "Edit the rationale kept in the reviewed similar-project result.",
-          { key: "fit_rationale", original: match.fit_rationale, match },
-        ),
-        createSimilarFieldRow(
-          "Matched tags",
-          match.matched_tags || [],
-          `result.matches[${match.funding_record_id}].matched_tags`,
-          "One matched tag per line. Keep only retained normalized overlap tags.",
-          { key: "matched_tags", original: match.matched_tags || [], match },
-        ),
-        createSimilarFieldRow(
-          "Caveats",
-          match.caveats || [],
-          `result.matches[${match.funding_record_id}].caveats`,
-          "One caveat per line.",
-          { key: "caveats", original: match.caveats || [], match },
-        ),
-      );
-      record.append(summary, body);
-      content.append(record);
     });
-    view.editorSections.append(section);
+    appendSection(SIMILAR_PROJECT_SECTIONS[1], (content) => {
+      state.bundle.result.matches.forEach((match, index) => {
+        content.append(createMatchCard(match, index));
+      });
+    });
+    appendSection(SIMILAR_PROJECT_SECTIONS[2], (content) => {
+      content.append(createEditableRow({
+        key: "caveats",
+        label: "Result caveats",
+        value: state.bundle.result.caveats,
+        path: "result.caveats",
+        segments: ["result", "caveats"],
+        note: "One caveat per line.",
+      }));
+    });
   }
 
-  function createMatchToggleRow(match, candidate) {
+  function createMatchCard(match, index) {
+    const candidate = candidateForMatch(match);
     const path = `result.matches[${match.funding_record_id}]`;
     state.decisions.set(path, {
       target_path: path,
-      segments: ["result", "matches", String(match.funding_record_id)],
       selected: true,
       original_value: clone(match),
       reviewed_value: clone(match),
-      kind: "similar_match",
+      evidence_refs: (match.evidence || []).map((item) => item.evidence_ref),
     });
 
-    const wrapper = element("div", "match-review-header");
+    const { group, content } = disclosureGroup(
+      "record",
+      candidate?.name || `Match ${index + 1}`,
+    );
+    const header = element("div", "match-review-header");
     const toggle = element("label", "match-toggle");
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = true;
-    checkbox.setAttribute("aria-label", `Include ${candidate?.name || "match"}`);
-    checkbox.addEventListener("change", () => {
-      const decision = state.decisions.get(path);
-      decision.selected = checkbox.checked;
-      wrapper.classList.toggle("excluded", !checkbox.checked);
-      toggleSimilarMatchControls(path, checkbox.checked);
-      updateSelectionCount();
-      showSimilarProjectInspector(match, path, "match");
-    });
-
-    const copy = element("div", "");
-    copy.append(
-      element("strong", "", candidate?.name || "Selected match"),
-      element(
-        "p",
-        "",
-        buildMatchMeta(candidate, match),
-      ),
-    );
-    toggle.append(checkbox, copy);
-    wrapper.append(toggle);
-
-    const badges = element("div", "badges");
-    badges.append(badge(`${(match.evidence || []).length} evidence`, "evidence"));
-    if (match.matched_tags?.length) {
-      badges.append(badge(`${match.matched_tags.length} matched tags`, "gap"));
-    }
-    if (match.caveats?.length) {
-      badges.append(badge(`${match.caveats.length} caveats`, "conflict"));
-    }
-    wrapper.append(badges);
-    return wrapper;
-  }
-
-  function buildMatchMeta(candidate, match) {
-    const parts = [];
-    if (candidate?.applicant_name) parts.push(candidate.applicant_name);
-    if (candidate?.city || candidate?.country) {
-      parts.push([candidate.city, candidate.country].filter(Boolean).join(", "));
-    }
-    if (candidate?.award_amount || candidate?.currency || candidate?.award_year) {
-      parts.push(formatAward(candidate));
-    }
-    parts.push(`Decision: ${match.decision}`);
-    return parts.filter(Boolean).join(" | ");
-  }
-
-  function createCandidateSummary(candidate) {
-    const wrapper = element("article", "candidate-summary");
-    wrapper.append(element("h4", "", "Candidate context"));
-    if (!candidate) {
-      wrapper.append(element("p", "", "Candidate display data was not supplied."));
-      return wrapper;
-    }
-    const meta = element(
-      "p",
-      "candidate-meta",
+    const meta = [
+      candidate?.applicant_name,
+      [candidate?.city, candidate?.state_region, candidate?.country].filter(Boolean).join(", "),
       [
-        candidate.funder_name,
-        candidate.category,
-        candidate.sector,
-        candidate.region_scope,
-      ].filter(Boolean).join(" | "),
-    );
-    if (meta.textContent) wrapper.append(meta);
-    if (candidate.summary) {
-      wrapper.append(element("p", "", candidate.summary));
+        candidate?.award_amount,
+        candidate?.currency,
+        candidate?.award_year,
+      ].filter(Boolean).join(" "),
+    ].filter(Boolean).join(" | ");
+    const copy = element("div");
+    copy.append(element("strong", "", candidate?.name || "Selected match"));
+    if (meta) copy.append(element("p", "", meta));
+    toggle.append(checkbox, copy);
+    header.append(toggle);
+    [[match.evidence?.length, "evidence", "evidence"],
+      [match.matched_tags?.length, "matched tags", "gap"],
+      [match.caveats?.length, "caveats", "conflict"]]
+      .filter(([count]) => count)
+      .forEach(([count, text, kind]) => header.append(badge(`${count} ${text}`, kind)));
+
+    const summary = element("article", "candidate-summary");
+    if (candidate) {
+      const facts = [
+        [candidate.funder_name, candidate.category, candidate.sector, candidate.region_scope]
+          .filter(Boolean).join(" | "),
+        candidate.summary,
+        listFact("Hazards", candidate.hazards),
+        listFact("Interventions", candidate.interventions),
+        listFact("Project tags", candidate.project_tags),
+        listFact("Known gaps", candidate.known_gaps),
+      ].filter(Boolean);
+      facts.forEach((fact) => summary.append(element("p", "", fact)));
+    } else {
+      summary.append(element("p", "", "Candidate display data was not supplied."));
     }
-    const details = [];
-    if (candidate.hazards?.length) details.push(`Hazards: ${candidate.hazards.join(", ")}`);
-    if (candidate.interventions?.length) {
-      details.push(`Interventions: ${candidate.interventions.join(", ")}`);
-    }
-    if (candidate.project_tags?.length) {
-      details.push(`Project tags: ${candidate.project_tags.join(", ")}`);
-    }
-    if (candidate.known_gaps?.length) {
-      details.push(`Known gaps: ${candidate.known_gaps.join(", ")}`);
-    }
-    details.forEach((line) => wrapper.append(element("p", "", line)));
-    return wrapper;
+    const rows = [
+      createSimilarFieldRow(match, "fit_rationale", "Fit rationale", "Why this match helps."),
+      createSimilarFieldRow(match, "matched_tags", "Matched tags", "One tag per line."),
+      createSimilarFieldRow(match, "caveats", "Caveats", "One caveat per line."),
+    ];
+    checkbox.addEventListener("change", () => {
+      state.decisions.get(path).selected = checkbox.checked;
+      ["fit_rationale", "matched_tags", "caveats"].forEach((field) => {
+        state.decisions.get(`${path}.${field}`).selected = checkbox.checked;
+      });
+      [header, ...rows].forEach((row) => row.classList.toggle("excluded", !checkbox.checked));
+      rows.forEach((row) => row.querySelectorAll("input, textarea, select")
+        .forEach((control) => { control.disabled = !checkbox.checked; }));
+      updateSelectionCount();
+    });
+    content.append(header, summary);
+    (match.evidence || []).forEach((item) => content.append(evidenceItem(item)));
+    content.append(...rows);
+    return group;
   }
 
-  function createSimilarFieldRow(label, value, path, note, config) {
-    const decision = {
-      target_path: path,
-      segments: pathToSegments(path),
-      selected: true,
-      original_value: clone(config.original),
-      reviewed_value: clone(config.original),
-      kind: "similar_field",
-      match_id: String(config.match.funding_record_id),
-      field_key: config.key,
-    };
-    state.decisions.set(path, decision);
-
-    const row = element("div", "field-row");
-    row.dataset.parentMatch = `result.matches[${config.match.funding_record_id}]`;
-    const spacer = document.createElement("div");
-    const labelNode = element("div", "field-label", label);
-    if (note) labelNode.append(element("span", "field-note", note));
-
-    const controlBox = element("div", "field-control");
-    const control = createControl(config.key, value);
-    control.value = formatValue(config.key, value);
-    control.setAttribute("aria-label", label);
-    control.addEventListener("focus", () => {
-      showSimilarProjectInspector(config.match, path, config.key);
+  function createSimilarFieldRow(match, key, label, note) {
+    const value = match[key] ?? (key === "fit_rationale" ? "" : []);
+    const path = `result.matches[${match.funding_record_id}].${key}`;
+    const row = createEditableRow({
+      key,
+      label,
+      value,
+      path,
+      segments: ["result", "matches", String(match.funding_record_id), key],
+      note,
+      badges: [
+        [(match.evidence || []).length, "evidence", "evidence"],
+        [key === "caveats" ? 0 : (match.caveats || []).length, "caveats", "conflict"],
+      ],
+      evidenceRefs: (match.evidence || []).map((item) => item.evidence_ref),
     });
-    control.addEventListener("input", () => {
-      decision.reviewed_value = parseValue(config.key, config.original, control.value);
-    });
-    if (MONEY_KEYS.has(config.key)) {
-      control.addEventListener("blur", () => {
-        control.value = formatValue(config.key, decision.reviewed_value);
-      });
-    }
-
-    const badges = element("div", "badges");
-    if (config.match.evidence?.length) {
-      badges.append(badge(`${config.match.evidence.length} evidence`, "evidence"));
-    }
-    if (config.match.caveats?.length && config.key !== "caveats") {
-      badges.append(badge(`${config.match.caveats.length} caveats`, "conflict"));
-    }
-    controlBox.append(control, badges);
-    row.addEventListener("click", () => showSimilarProjectInspector(config.match, path, config.key));
-    row.append(spacer, labelNode, controlBox);
+    row.dataset.parentMatch = `result.matches[${match.funding_record_id}]`;
     return row;
   }
 
-  function toggleSimilarMatchControls(matchPath, isSelected) {
-    const rows = view.editorSections.querySelectorAll(`[data-parent-match="${matchPath}"]`);
-    rows.forEach((row) => {
-      row.classList.toggle("excluded", !isSelected);
-      row.querySelectorAll("input, textarea, select").forEach((control) => {
-        control.disabled = !isSelected;
-      });
-    });
-  }
-
-  function renderResultCaveatsSection() {
-    const section = createSection(...SIMILAR_PROJECT_SECTIONS[2]);
-    const content = section.querySelector(".section-content");
-    content.append(
-      createSimilarFieldRow(
-        "Result caveats",
-        state.bundle.result.caveats || [],
-        "result.caveats",
-        "One caveat per line.",
-        {
-          key: "caveats",
-          original: state.bundle.result.caveats || [],
-          match: { funding_record_id: "result-caveats", evidence: [], caveats: [] },
-        },
-      ),
-    );
-    view.editorSections.append(section);
+  function listFact(label, values) {
+    return values?.length ? `${label}: ${values.join(", ")}` : "";
   }
 
   function candidateForMatch(match) {
-    return findCandidateForMatch(state.bundle, match);
-  }
-
-  function findCandidateForMatch(bundle, match) {
     const targetId = String(match?.funding_record_id);
-    return (bundle?.candidates || []).find(
+    return state.bundle.candidates.find(
       (candidate) => String(candidate.funding_record_id) === targetId,
     ) || null;
+  }
+
+  function appendSection(definition, renderContent) {
+    const section = createSection(...definition);
+    const content = section.querySelector(".section-content");
+    renderContent(content);
+    if (!content.children.length) content.append(element("p", "empty", "Nothing found."));
+    view.editorSections.append(section);
   }
 
   function createSection(id, title, description) {
@@ -834,7 +547,9 @@
     (record.candidate_funders || []).forEach((candidate) => {
       const option = document.createElement("option");
       option.value = String(candidate.funder_id);
-      option.textContent = candidate.name;
+      option.textContent = candidate.match_reason
+        ? `${candidate.name} - ${candidate.match_reason}`
+        : candidate.name;
       select.append(option);
     });
     select.value = decision.reviewed_value ? String(decision.reviewed_value) : "";
@@ -845,22 +560,8 @@
       decision.reviewed_value = select.value || null;
     });
 
-    const badges = element("div", "badges");
-    badges.append(badge(`${(record.candidate_funders || []).length} candidates`, "evidence"));
-    controlBox.append(select, badges);
-
-    if (record.candidate_funders?.length) {
-      const candidateList = element("div", "candidate-list");
-      record.candidate_funders.forEach((candidate) => {
-        const card = element("div", "candidate-card");
-        card.append(
-          element("strong", "", candidate.name),
-          element("p", "", candidate.match_reason),
-        );
-        candidateList.append(card);
-      });
-      controlBox.append(candidateList);
-    } else {
+    controlBox.append(select);
+    if (!record.candidate_funders?.length) {
       controlBox.append(
         element(
           "p",
@@ -878,37 +579,15 @@
   }
 
   function createProjectTagsField(record, path, segments) {
-    const decision = {
-      target_path: path,
+    return createEditableRow({
+      key: "project_tags",
+      label: "Project tags",
+      value: record.project_tags || [],
+      path,
       segments,
-      selected: true,
-      original_value: clone(record.project_tags || []),
-      reviewed_value: clone(record.project_tags || []),
-    };
-    state.decisions.set(path, decision);
-
-    const row = element("div", "field-row");
-    const spacer = document.createElement("div");
-    const label = element("div", "field-label", "Project tags");
-    label.append(element("span", "field-note", "One tag per line. Reviewer-curated only."));
-
-    const controlBox = element("div", "field-control");
-    const textarea = document.createElement("textarea");
-    textarea.rows = Math.min(Math.max((record.project_tags || []).length || 2, 2), 6);
-    textarea.value = (record.project_tags || []).join("\n");
-    textarea.setAttribute("aria-label", "Project tags");
-    textarea.addEventListener("focus", () => showInspector("project_tags", path));
-    textarea.addEventListener("input", () => {
-      decision.reviewed_value = textarea.value
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean);
+      note: "One tag per line. Reviewer-curated only.",
+      inspect: () => showInspector("project_tags", path),
     });
-
-    controlBox.append(textarea);
-    row.addEventListener("click", () => showInspector("project_tags", path));
-    row.append(spacer, label, controlBox);
-    return row;
   }
 
   function disclosureGroup(className, title) {
@@ -937,40 +616,68 @@
 
   function createField(key, value, path, segments) {
     const required = isRequiredReviewField(segments);
-    const decision = {
-      target_path: path,
-      segments,
-      selected: required || hasValue(value),
-      original_value: clone(value),
-      reviewed_value: clone(value),
-    };
-    state.decisions.set(path, decision);
-
     const evidence = relatedItems("evidence", path);
     const gaps = relatedItems("gaps", path);
     const conflicts = relatedItems("conflicts", path);
+    return createEditableRow({
+      key,
+      label: humanize(key),
+      value,
+      path,
+      segments,
+      selected: required || hasValue(value),
+      required,
+      showToggle: true,
+      note: !hasValue(value) ? "Not found" : required ? "Required for import." : "",
+      warning: gaps.length > 0 || conflicts.length > 0,
+      inspect: () => showInspector(key, path),
+      badges: [
+        [evidence.length, "evidence", "evidence"],
+        [gaps.length, "gap", "gap"],
+        [conflicts.length, "conflict", "conflict"],
+      ],
+    });
+  }
+
+  function createEditableRow({
+    key, label, value, path, segments, selected = true, required = false,
+    showToggle = false, note = "", warning = false, inspect, badges = [],
+    evidenceRefs = null,
+  }) {
+    const decision = {
+      target_path: path,
+      segments,
+      selected,
+      original_value: clone(value),
+      reviewed_value: clone(value),
+      evidence_refs: evidenceRefs,
+    };
+    state.decisions.set(path, decision);
+
     const row = element("div", "field-row");
     if (!decision.selected) row.classList.add("excluded");
-    if (gaps.length || conflicts.length) row.classList.add("warning");
+    if (warning) row.classList.add("warning");
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.checked = decision.selected;
-    checkbox.disabled = required;
-    checkbox.setAttribute("aria-label", `Use ${humanize(key)}`);
+    const checkbox = document.createElement(showToggle ? "input" : "div");
+    if (showToggle) {
+      checkbox.type = "checkbox";
+      checkbox.checked = decision.selected;
+      checkbox.disabled = required;
+      checkbox.setAttribute("aria-label", `Use ${label}`);
+    }
 
-    const label = element("div", "field-label", humanize(key));
-    if (!hasValue(value)) label.append(element("span", "", "Not found"));
-    if (required) label.append(element("span", "field-note", "Required for import."));
+    const labelNode = element("div", "field-label", label);
+    if (note) labelNode.append(element("span", "field-note", note));
 
     const controlBox = element("div", "field-control");
     const control = createControl(key, value);
     control.value = formatValue(key, value);
     control.disabled = !decision.selected;
-    control.setAttribute("aria-label", humanize(key));
-    const inspect = () => showInspector(key, path);
-    row.addEventListener("click", inspect);
-    control.addEventListener("focus", inspect);
+    control.setAttribute("aria-label", label);
+    if (inspect) {
+      row.addEventListener("click", inspect);
+      control.addEventListener("focus", inspect);
+    }
     control.addEventListener("input", () => {
       decision.reviewed_value = parseValue(key, value, control.value);
     });
@@ -979,20 +686,22 @@
         control.value = formatValue(key, decision.reviewed_value);
       });
     }
-    checkbox.addEventListener("change", () => {
-      decision.selected = checkbox.checked;
-      control.disabled = !checkbox.checked;
-      row.classList.toggle("excluded", !checkbox.checked);
-      updateSelectionCount();
-      inspect();
-    });
+    if (showToggle) {
+      checkbox.addEventListener("change", () => {
+        decision.selected = checkbox.checked;
+        control.disabled = !checkbox.checked;
+        row.classList.toggle("excluded", !checkbox.checked);
+        updateSelectionCount();
+        if (inspect) inspect();
+      });
+    }
 
-    const badges = element("div", "badges");
-    if (evidence.length) badges.append(badge(`${evidence.length} evidence`, "evidence"));
-    if (gaps.length) badges.append(badge(`${gaps.length} gap`, "gap"));
-    if (conflicts.length) badges.append(badge(`${conflicts.length} conflict`, "conflict"));
-    controlBox.append(control, badges);
-    row.append(checkbox, label, controlBox);
+    const badgeBox = element("div", "badges");
+    badges.filter(([count]) => count).forEach(([count, text, kind]) => {
+      badgeBox.append(badge(`${count} ${text}`, kind));
+    });
+    controlBox.append(control, badgeBox);
+    row.append(checkbox, labelNode, controlBox);
     return row;
   }
 
@@ -1039,14 +748,6 @@
   }
 
   function showInspector(key, path) {
-    if (state.mode === SIMILAR_PROJECT_MODE) {
-      const match = matchFromPath(path);
-      if (match) {
-        showSimilarProjectInspector(match, path, key);
-        return;
-      }
-    }
-
     view.inspectorPanel.hidden = !path;
     view.reviewLayout.classList.toggle("inspector-open", Boolean(path));
     if (!path) return;
@@ -1066,40 +767,9 @@
     });
     if (!evidence.length && !gaps.length && !conflicts.length) {
       view.inspectorContent.append(
-        element("p", "muted", "No field-level evidence or issue is mapped here."),
+        element("p", "muted", "No evidence or issue is mapped here."),
       );
     }
-  }
-
-  function showSimilarProjectInspector(match, path, key) {
-    view.inspectorPanel.hidden = false;
-    view.reviewLayout.classList.add("inspector-open");
-    const candidate = candidateForMatch(match);
-    view.inspectorTitle.textContent = candidate?.name || humanize(key || "match");
-    view.inspectorPath.textContent = displayPath(path);
-    view.inspectorContent.replaceChildren();
-    (match.evidence || []).forEach((item) => {
-      view.inspectorContent.append(evidenceItem(item));
-    });
-    if (key === "caveats" && (match.caveats || []).length) {
-      match.caveats.forEach((item) => {
-        view.inspectorContent.append(issueItem("Caveat", item, "conflict"));
-      });
-    }
-    if (!(match.evidence || []).length && !(match.caveats || []).length) {
-      view.inspectorContent.append(
-        element("p", "muted", "No retained evidence or caveats are mapped here."),
-      );
-    }
-  }
-
-  function matchFromPath(path) {
-    const match = /^result\.matches\[([^\]]+)\]/.exec(String(path || ""));
-    if (!match) return null;
-    const targetId = match[1];
-    return (state.bundle?.result?.matches || []).find(
-      (item) => String(item.funding_record_id) === targetId,
-    ) || null;
   }
 
   function evidenceItem(item) {
@@ -1149,16 +819,6 @@
     });
   }
 
-  function pathToSegments(path) {
-    const parts = String(path).match(/[^.\[\]]+|\[[^\]]*\]/g) || [];
-    return parts.map((part) => {
-      if (part.startsWith("[") && part.endsWith("]")) {
-        return part.slice(1, -1);
-      }
-      return part;
-    });
-  }
-
   function itemsWithoutRelatedPath(items, paths) {
     return items.filter(
       (item) => !paths.some((path) => pathsRelated(path, item.target_path)),
@@ -1195,121 +855,45 @@
       reviewed_at: now,
       notes: view.reviewNotes.value.split("\n").map((note) => note.trim()).filter(Boolean),
     };
+    const update = {
+      run_id: state.bundle.run_id,
+      schema_version: state.bundle.schema_version,
+      saved_at: now,
+      review,
+    };
     if (state.mode === SIMILAR_PROJECT_MODE) {
       const errors = collectSimilarProjectReviewErrors(state.bundle, state.decisions);
-      if (errors.length) {
-        throw new Error(errors.join(" "));
-      }
-      const decisions = buildSimilarProjectReviewDecisions(state.bundle, state.decisions);
-      return buildSimilarProjectReviewArtifact({
-        bundle: state.bundle,
-        review,
-        decisions,
-        reviewedSimilarProjects: buildReviewedSimilarProjects(state.bundle, state.decisions),
-        savedAt: now,
-      });
+      if (errors.length) throw new Error(errors.join(" "));
+      return {
+        ...update,
+        update_type: SIMILAR_PROJECT_UPDATE_TYPE,
+        decisions: serializeDecisions(),
+        reviewed_similar_projects: buildReviewedSimilarProjects(
+          state.bundle,
+          state.decisions,
+        ),
+      };
     }
 
     const errors = collectFunderSelectionErrors(state.bundle, state.decisions);
-    if (errors.length) {
-      throw new Error(errors.join(" "));
-    }
-    const decisions = visibleDecisions().map((decision) => ({
+    if (errors.length) throw new Error(errors.join(" "));
+    return {
+      ...update,
+      update_type: REFERENCE_DATA_UPDATE_TYPE,
+      decisions: serializeDecisions(),
+      reviewed_reference_data: buildReviewedReferenceData(),
+    };
+  }
+
+  function serializeDecisions() {
+    return visibleDecisions().map((decision) => ({
       target_path: decision.target_path,
       selected: decision.selected,
       original_value: decision.original_value,
       reviewed_value: decision.reviewed_value,
-      evidence_refs: relatedItems("evidence", decision.target_path).map((item) => item.evidence_ref),
+      evidence_refs: decision.evidence_refs || relatedItems("evidence", decision.target_path)
+        .map((item) => item.evidence_ref),
     }));
-    return buildReviewArtifact({
-      bundle: state.bundle,
-      review,
-      decisions,
-      reviewedReferenceData: buildReviewedReferenceData(),
-      savedAt: now,
-    });
-  }
-
-  function buildReviewArtifact({
-    bundle, review, decisions, reviewedReferenceData, savedAt,
-  }) {
-    return {
-      run_id: bundle.run_id,
-      schema_version: bundle.schema_version,
-      update_type: REFERENCE_DATA_UPDATE_TYPE,
-      saved_at: savedAt,
-      review,
-      decisions,
-      reviewed_reference_data: reviewedReferenceData,
-    };
-  }
-
-  function buildSimilarProjectReviewArtifact({
-    bundle, review, decisions, reviewedSimilarProjects, savedAt,
-  }) {
-    return {
-      run_id: bundle.run_id,
-      schema_version: bundle.schema_version,
-      update_type: SIMILAR_PROJECT_UPDATE_TYPE,
-      saved_at: savedAt,
-      review,
-      decisions,
-      reviewed_similar_projects: reviewedSimilarProjects,
-    };
-  }
-
-  function buildSimilarProjectReviewDecisions(bundle, decisions) {
-    const serialized = [];
-    (bundle.result.matches || []).forEach((match) => {
-      const matchId = String(match.funding_record_id);
-      const matchPath = `result.matches[${matchId}]`;
-      const includeDecision = decisions.get(matchPath);
-      const reviewedMatch = buildReviewedSimilarMatch(match, decisions);
-      const candidate = findCandidateForMatch(bundle, match);
-      serialized.push({
-        target_path: matchPath,
-        selected: includeDecision?.selected !== false,
-        original_value: buildSerializableSimilarMatchValue(match, candidate),
-        reviewed_value: buildSerializableSimilarMatchValue(reviewedMatch, candidate),
-        evidence_refs: (match.evidence || []).map((item) => item.evidence_ref),
-      });
-      ["fit_rationale", "matched_tags", "caveats"].forEach((field) => {
-        const path = `${matchPath}.${field}`;
-        const decision = decisions.get(path);
-        if (!decision) return;
-        serialized.push({
-          target_path: path,
-          selected: includeDecision?.selected !== false,
-          original_value: clone(decision.original_value),
-          reviewed_value: clone(decision.reviewed_value),
-          evidence_refs: (match.evidence || []).map((item) => item.evidence_ref),
-        });
-      });
-    });
-
-    const caveatDecision = decisions.get("result.caveats");
-    if (caveatDecision) {
-      serialized.push({
-        target_path: "result.caveats",
-        selected: true,
-        original_value: clone(caveatDecision.original_value),
-        reviewed_value: clone(caveatDecision.reviewed_value),
-        evidence_refs: [],
-      });
-    }
-    return serialized;
-  }
-
-  function buildSerializableSimilarMatchValue(matchValue, candidate) {
-    const snapshot = clone(matchValue) || {};
-    if (!candidate) return snapshot;
-    snapshot.candidate_context = {
-      funding_record_id: clone(candidate.funding_record_id),
-      funder_id: clone(candidate.funder_id),
-      funder_name: clone(candidate.funder_name ?? null),
-      candidate_name: clone(candidate.name ?? null),
-    };
-    return snapshot;
   }
 
   function buildReviewedSimilarProjects(bundle, decisions) {
@@ -1418,13 +1002,11 @@
   }
 
   function removeArrayHoles(value) {
-    if (Array.isArray(value)) {
-      return value.filter((item) => item !== undefined).map(removeArrayHoles);
-    }
+    if (Array.isArray(value)) return value.filter((item) => item !== undefined).map(removeArrayHoles);
     if (value !== null && typeof value === "object") {
-      return Object.fromEntries(
-        Object.entries(value).map(([key, item]) => [key, removeArrayHoles(item)]),
-      );
+      return Object.fromEntries(Object.entries(value).map(
+        ([key, item]) => [key, removeArrayHoles(item)],
+      ));
     }
     return value;
   }
@@ -1437,12 +1019,8 @@
   }
 
   function parseValue(key, original, raw) {
-    if (Array.isArray(original)) {
-      return raw.split("\n").map((item) => item.trim()).filter(Boolean);
-    }
-    if (typeof original === "boolean" || BOOLEAN_KEYS.has(key)) {
-      return createControlValue(raw, "boolean");
-    }
+    if (Array.isArray(original)) return raw.split("\n").map((item) => item.trim()).filter(Boolean);
+    if (typeof original === "boolean" || BOOLEAN_KEYS.has(key)) return createControlValue(raw, "boolean");
     if (typeof original === "number" || NUMBER_KEYS.has(key)) {
       const normalized = MONEY_KEYS.has(key) ? raw.replace(/[,\s]/g, "") : raw;
       return createControlValue(normalized, "number");
@@ -1457,17 +1035,6 @@
       return numeric.toLocaleString("en-US", { maximumFractionDigits: 2 });
     }
     return Array.isArray(value) ? value.join("\n") : String(value);
-  }
-
-  function formatList(values) {
-    return Array.isArray(values) ? values.join(", ") : values;
-  }
-
-  function formatAward(candidate) {
-    const amount = candidate.award_amount && candidate.currency
-      ? `${candidate.award_amount} ${candidate.currency}`
-      : candidate.award_amount || candidate.currency;
-    return [amount, candidate.award_year].filter(Boolean).join(" | ");
   }
 
   function updateSelectionCount() {
@@ -1528,57 +1095,28 @@
     return node;
   }
 
-  function setCount(id, value) {
-    view[id].textContent = Array.isArray(value) ? value.length : 0;
-  }
-
-  function hasValue(value) {
-    return (
-      value !== null
-      && value !== undefined
-      && value !== ""
-      && (!Array.isArray(value) || value.length > 0)
-    );
-  }
-
-  function clone(value) {
-    if (value === undefined) return undefined;
-    return JSON.parse(JSON.stringify(value));
-  }
-  function humanize(value) {
-    return String(value)
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .replace(/[_-]+/g, " ")
-      .replace(/^./, (letter) => letter.toUpperCase());
-  }
-  function isLongText(key, value) {
-    return typeof value === "string" && (
-      value.length > 90 || /description|summary|requirement|normalized_rule/.test(key)
-    );
-  }
+  function setCount(id, value) { view[id].textContent = Array.isArray(value) ? value.length : 0; }
+  function hasValue(value) { return value !== null && value !== undefined && value !== "" && (!Array.isArray(value) || value.length > 0); }
+  function clone(value) { return value === undefined ? undefined : JSON.parse(JSON.stringify(value)); }
+  function humanize(value) { return String(value).replace(/([a-z])([A-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/^./, (letter) => letter.toUpperCase()); }
+  function isLongText(key, value) { return typeof value === "string" && (value.length > 90 || /description|summary|requirement|normalized_rule/.test(key)); }
 
   function showStatus(message, isError = false) {
     view.statusMessage.textContent = message;
     view.statusMessage.classList.toggle("error", isError);
     view.statusMessage.classList.add("visible");
     clearTimeout(statusTimer);
-    statusTimer = window.setTimeout(() => {
-      view.statusMessage.classList.remove("visible");
-    }, 2400);
+    statusTimer = window.setTimeout(() => view.statusMessage.classList.remove("visible"), 2400);
   }
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = {
-      buildReviewArtifact,
       buildReviewedSimilarProjects,
-      buildSimilarProjectReviewArtifact,
-      buildSimilarProjectReviewDecisions,
       collectFunderSelectionErrors,
       collectSimilarProjectReviewErrors,
       detectReviewMode,
       isRequiredReviewField,
       itemsWithoutRelatedPath,
-      normalizeBundle,
       pathsRelated,
     };
   }

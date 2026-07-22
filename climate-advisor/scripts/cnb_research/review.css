@@ -376,26 +376,6 @@ details[open] > .section-content, details[open] > .group-content { animation: re
   font-size: 11px;
   font-weight: 500;
 }
-.candidate-list {
-  display: grid;
-  gap: 7px;
-  margin-top: 8px;
-}
-.candidate-card {
-  padding: 9px 10px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--surface);
-}
-.candidate-card strong {
-  display: block;
-  font-size: 12px;
-}
-.candidate-card p {
-  margin: 3px 0 0;
-  color: var(--muted);
-  font-size: 11px;
-}
 .candidate-empty {
   margin-top: 8px;
   color: var(--danger);
@@ -467,10 +447,6 @@ details[open] > .section-content, details[open] > .group-content { animation: re
   margin: 0;
   font-size: 12px;
   font-weight: 760;
-}
-.candidate-meta {
-  color: var(--muted);
-  font-size: 12px;
 }
 .candidate-summary p {
   margin: 0;

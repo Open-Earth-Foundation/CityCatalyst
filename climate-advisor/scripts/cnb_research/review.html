@@ -26,9 +26,9 @@
 
     <main>
       <section id="emptyState" class="empty-state">
-        <small id="emptyStateLabel">Pending-review artifacts</small>
-        <h2 id="emptyStateTitle">Open a CNB review artifact</h2>
-        <p id="emptyStateDescription">
+        <small>Pending-review artifacts</small>
+        <h2>Open a CNB review artifact</h2>
+        <p>
           Choose a funded-project <code>&lt;run_id&gt;.research.json</code>, an
           older <code>research_bundle.json</code>, or a matching
           <code>&lt;run_id&gt;.similar-projects.json</code>. The page adapts the
@@ -41,7 +41,7 @@
       <section id="workspace" hidden>
         <div class="run-header">
           <div>
-            <small id="workspaceLabel">Current bundle</small>
+            <small>Current bundle</small>
             <h2 id="programName"></h2>
             <p id="runMeta"></p>
           </div>
@@ -72,7 +72,7 @@
               <div id="inspectorContent"></div>
             </section>
             <section class="review-details">
-              <small id="reviewMetaLabel">Review metadata</small>
+              <small>Review metadata</small>
               <label>Decision
                 <select id="reviewStatus">
                   <option value="pending_review">Pending review</option>
@@ -87,7 +87,7 @@
               <label>Notes
                 <textarea id="reviewNotes" rows="4" placeholder="One note per line"></textarea>
               </label>
-              <p id="saveHelpText" class="muted">
+              <p class="muted">
                 Saving creates a local <code>&lt;run_id&gt;.review.json</code> file.
                 The research JSON is unchanged and the browser never writes to the database.
               </p>

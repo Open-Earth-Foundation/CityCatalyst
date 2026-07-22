@@ -5,8 +5,11 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Literal
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, JsonValue, model_validator
+
+from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
 
 
 def _ensure_unique(values: list[str], field_name: str) -> None:
@@ -91,14 +94,30 @@ class FunderDraft(ResearchModel):
     profile: FunderProfileDraft
 
 
+class CanonicalFunder(ResearchModel):
+    """One existing canonical funder available for reviewer selection."""
+
+    funder_id: UUID
+    name: str
+
+
+class FunderIdentityCandidate(ResearchModel):
+    """One proposed canonical funder match retained for human review."""
+
+    funder_id: UUID
+    name: str
+    match_reason: str
+
+
 class FundingRecordDraft(ResearchModel):
-    """One opportunity or funded-project row in the shared funding-record shape."""
+    """One review-facing opportunity or funded-project row."""
 
     funding_record_ref: str
     funder_ref: str
     is_opportunity: bool
     name: str
     applicant_name: str | None = None
+    reported_funder_name: str | None = None
     city: str | None = None
     state_region: str | None = None
     country: str | None = None
@@ -115,6 +134,9 @@ class FundingRecordDraft(ResearchModel):
     award_year: int | None = None
     status: str | None = None
     summary: str | None = None
+    project_tags: list[str] = Field(default_factory=list)
+    candidate_funders: list[FunderIdentityCandidate] = Field(default_factory=list)
+    selected_funder_id: UUID | None = None
 
 
 class TemplateChapterDraft(ResearchModel):
@@ -213,6 +235,7 @@ class FundingRecordResearchResult(ResearchModel):
     is_opportunity: bool
     name: str
     applicant_name: str | None = None
+    reported_funder_name: str | None = None
     city: str | None = None
     state_region: str | None = None
     country: str | None = None
@@ -349,7 +372,7 @@ class FundingOpportunityResearchResult(ResearchModel):
 
 
 class FundingOpportunityResearchRequest(ResearchModel):
-    """Authoritative seeds, optional prior progress, and the agent-turn limit."""
+    """Program seeds, optional target project or prior progress, and turn limit."""
 
     funder_name: str = Field(min_length=1)
     funder_url: HttpUrl
@@ -357,6 +380,8 @@ class FundingOpportunityResearchRequest(ResearchModel):
     program_url: HttpUrl
     application_template_url: HttpUrl | None = None
     current_filled_object: FundingOpportunityResearchResult | None = None
+    target_project: CnbSimilarProjectSearchRequest | None = None
+    target_funded_projects: int = Field(default=1, gt=0, le=50)
     max_turns: int = Field(default=15, gt=0)
 
 

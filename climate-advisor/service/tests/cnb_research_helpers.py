@@ -10,7 +10,11 @@ from app.models.cnb_research import (
 )
 
 
-def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
+def build_request(
+    *,
+    max_turns: int = 3,
+    target_funded_projects: int = 1,
+) -> FundingOpportunityResearchRequest:
     """Create a valid no-template request for tests."""
     return FundingOpportunityResearchRequest(
         funder_name="Example Funder",
@@ -18,6 +22,7 @@ def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
         program_name="Example Program",
         program_url="https://funder.example/program",
         application_template_url=None,
+        target_funded_projects=target_funded_projects,
         max_turns=max_turns,
     )
 

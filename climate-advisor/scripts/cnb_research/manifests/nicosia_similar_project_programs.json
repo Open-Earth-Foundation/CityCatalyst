@@ -1,0 +1,69 @@
+{
+  "batch_name": "Nicosia municipal solar storage and e-mobility funded projects",
+  "requests": [
+    {
+      "funder_name": "Renewable Energy Sources and Energy Conservation Fund",
+      "funder_url": "https://resecfund.org.cy/en/home",
+      "program_name": "Grant Scheme to encourage the use of Renewable Energy Sources and Energy Saving in Local Authorities and Non Profit Organisations",
+      "program_url": "https://www.fundingprogrammesportal.gov.cy/en/call/grant-scheme-to-encourage-the-use-of-renewable-energy-sources-and-energy-saving-in-local-authorities-and-non-profit-organisations/",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "Cyprus Recovery and Resilience Plan - Axis 2 / Department of Electromechanical Services",
+      "funder_url": "https://www.fundingprogrammesportal.gov.cy/en/programs/accelerated-transition-to-a-green-economy/",
+      "program_name": "Grants Scheme for the installation of 1000 charging points for electric vehicles EV 1000 - 2nd Call",
+      "program_url": "https://www.fundingprogrammesportal.gov.cy/en/call/grants-scheme-for-the-installation-of-1000-charging-points-for-electric-vehicles-ev-1000-2nd-call/",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "European Investment Bank",
+      "funder_url": "https://www.eib.org/en/index",
+      "program_name": "ELENA - European Local ENergy Assistance",
+      "program_url": "https://www.eib.org/en/products/advisory-services/elena/index",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "LIFE Programme / CINEA",
+      "funder_url": "https://cinea.ec.europa.eu/programmes/life_en",
+      "program_name": "European City Facility LIFE-2025-CET-EUCF",
+      "program_url": "https://cinea.ec.europa.eu/funding-opportunities/calls-proposals/european-city-facility_en",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "CEF Transport / CINEA",
+      "funder_url": "https://cinea.ec.europa.eu/programmes/cef_en",
+      "program_name": "Alternative Fuels Infrastructure Facility call for proposal",
+      "program_url": "https://cinea.ec.europa.eu/funding-opportunities/calls-proposals/cef-transport-alternative-fuels-infrastructure-facility-afif-call-proposal_en",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "EIT Urban Mobility",
+      "funder_url": "https://www.eiturbanmobility.eu/",
+      "program_name": "RAPTOR Open Call 2026",
+      "program_url": "https://www.eiturbanmobility.eu/call-for-proposals/raptor-open-call-2026/",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "European Bank for Reconstruction and Development",
+      "funder_url": "https://www.ebrd.com/home",
+      "program_name": "EBRD Green Cities",
+      "program_url": "https://www.ebrdgreencities.com/",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "Innovation Fund / CINEA",
+      "funder_url": "https://cinea.ec.europa.eu/programmes/innovation-fund_en",
+      "program_name": "Innovation Fund 2025 Net-Zero Technologies Call",
+      "program_url": "https://cinea.ec.europa.eu/funding-opportunities/calls-proposals/innovation-fund-2025-net-zero-technologies-call_en",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    }
+  ]
+}

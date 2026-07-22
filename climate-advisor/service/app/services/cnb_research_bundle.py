@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import date
+import re
+import unicodedata
 
 from pydantic import JsonValue
 
@@ -28,6 +30,9 @@ from app.models.cnb_research import (
 from app.tools.firecrawl import CapturedSource
 
 
+_PROJECT_NAME_TOKEN_PATTERN = re.compile(r"[^\W_]+", re.UNICODE)
+
+
 def build_research_bundle(
     *,
     run_id: str,
@@ -39,6 +44,9 @@ def build_research_bundle(
     bootstrap_gaps: list[ResearchGap],
 ) -> FundingOpportunityResearchBundle:
     """Assemble the code-owned bundle envelope and enforce provenance rules."""
+    # Defensively exclude the input project before creating review-facing rows.
+    result = exclude_target_project_self_matches(request=request, result=result)
+
     # Convert model-facing types into the architecture-shaped review contract.
     funder, funding_records, funder_templates, funder_criteria = convert_agent_result(
         result
@@ -121,6 +129,100 @@ def build_research_bundle(
         agent_trace=trace,
         review=ReviewState(status="pending_review"),
     )
+
+
+def exclude_target_project_self_matches(
+    *,
+    request: FundingOpportunityResearchRequest,
+    result: FundingOpportunityResearchResult,
+) -> FundingOpportunityResearchResult:
+    """Remove funded rows that are exact normalized copies of the input project."""
+    target_project = request.target_project
+    if target_project is None or target_project.project_name is None:
+        return result
+
+    target_name = _normalize_project_name(target_project.project_name)
+    if not target_name:
+        return result
+
+    removed_record_refs = {
+        record.funding_record_ref
+        for record in result.funding_records
+        if not record.is_opportunity
+        and _normalize_project_name(record.name) == target_name
+    }
+    if not removed_record_refs:
+        return result
+
+    # Remove record-owned evidence and paths before revalidating all references.
+    removed_evidence = [
+        item
+        for item in result.evidence
+        if item.funding_record_ref in removed_record_refs
+        or _path_references_record(item.target_path, removed_record_refs)
+    ]
+    removed_evidence_refs = {item.evidence_ref for item in removed_evidence}
+    retained_evidence = [
+        item
+        for item in result.evidence
+        if item.evidence_ref not in removed_evidence_refs
+    ]
+    retained_evidence_refs = {item.evidence_ref for item in retained_evidence}
+    removed_only_source_refs = {
+        item.source_ref for item in removed_evidence
+    } - {item.source_ref for item in retained_evidence}
+    result_data = result.model_dump(mode="python")
+    result_data["funding_records"] = [
+        record.model_dump(mode="python")
+        for record in result.funding_records
+        if record.funding_record_ref not in removed_record_refs
+    ]
+    result_data["evidence"] = [
+        item.model_dump(mode="python") for item in retained_evidence
+    ]
+    result_data["source_assessments"] = [
+        item.model_dump(mode="python")
+        for item in result.source_assessments
+        if item.source_ref not in removed_only_source_refs
+    ]
+    result_data["gaps"] = [
+        item.model_dump(mode="python")
+        for item in result.gaps
+        if not _path_references_record(item.target_path, removed_record_refs)
+    ]
+    result_data["conflicts"] = [
+        item.model_copy(
+            update={
+                "evidence_refs": [
+                    evidence_ref
+                    for evidence_ref in item.evidence_refs
+                    if evidence_ref in retained_evidence_refs
+                ]
+            }
+        ).model_dump(mode="python")
+        for item in result.conflicts
+        if not _path_references_record(item.target_path, removed_record_refs)
+    ]
+    return FundingOpportunityResearchResult.model_validate(result_data)
+
+
+def _normalize_project_name(name: str) -> str:
+    """Normalize Unicode, case, punctuation, and whitespace for exact comparison."""
+    normalized = unicodedata.normalize("NFKC", name).casefold()
+    return " ".join(_PROJECT_NAME_TOKEN_PATTERN.findall(normalized))
+
+
+def _path_references_record(path: str, record_refs: set[str]) -> bool:
+    """Return whether a structured target path belongs to one removed record."""
+    for record_ref in record_refs:
+        row_path = f"funding_records[{record_ref}]"
+        if (
+            path == row_path
+            or path.startswith(f"{row_path}.")
+            or path.startswith(f"{row_path}[")
+        ):
+            return True
+    return False
 
 
 def convert_agent_result(

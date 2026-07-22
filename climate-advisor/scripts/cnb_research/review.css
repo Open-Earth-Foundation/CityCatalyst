@@ -369,6 +369,114 @@ details[open] > .section-content, details[open] > .group-content { animation: re
   line-height: 1.45;
   resize: vertical;
 }
+.field-note {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+.candidate-list {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+}
+.candidate-card {
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+}
+.candidate-card strong {
+  display: block;
+  font-size: 12px;
+}
+.candidate-card p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+.candidate-empty {
+  margin-top: 8px;
+  color: var(--danger);
+  font-size: 11px;
+}
+.readonly-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.readonly-card {
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.readonly-card h3 {
+  margin: 0 0 5px;
+  font-size: 11px;
+  font-weight: 760;
+}
+.readonly-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.match-review-header {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.match-toggle {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+.match-toggle input {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+.match-toggle strong {
+  display: block;
+  font-size: 13px;
+}
+.match-toggle p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.candidate-summary {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-subtle);
+}
+.candidate-summary h4 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 760;
+}
+.candidate-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+.candidate-summary p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
 .field-control :disabled { color: #8d929c; background: var(--surface-subtle); }
 .badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
 .badge {
@@ -446,6 +554,7 @@ details[open] > .section-content, details[open] > .group-content { animation: re
   transition: opacity 150ms ease, transform 150ms ease;
 }
 .status.visible { opacity: 1; transform: translateY(0); }
+.status.error { background: var(--danger); }
 [hidden] { display: none !important; }
 
 @keyframes enter {

@@ -1,0 +1,53 @@
+{
+  "batch_name": "Nicosia adjacent awarded project portfolios",
+  "requests": [
+    {
+      "funder_name": "European Investment Bank",
+      "funder_url": "https://www.eib.org/en/products/advisory-services/elena/index",
+      "program_name": "ELENA completed project portfolio",
+      "program_url": "https://www.eib.org/en/products/advisory-services/elena/list?sortColumn=null&sortDir=asc&pageNumber=0&itemPerPage=25&pageable=true&la=EN&deLa=EN&orSectors=true&status=elena-completed&orStatus=true&orCountries=true",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "LIFE Programme / CINEA",
+      "funder_url": "https://cinea.ec.europa.eu/programmes/life_en",
+      "program_name": "European City Facility selected beneficiaries",
+      "program_url": "https://www.eucityfacility.eu/news/european-city-facility-announces-71-new-beneficiaries",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "CEF Transport / CINEA",
+      "funder_url": "https://cinea.ec.europa.eu/programmes/cef_en",
+      "program_name": "CEF Transport AFIF 2024 cut-off 1 awarded projects",
+      "program_url": "https://cinea.ec.europa.eu/document/download/d03b6b81-0fc7-49fb-a197-36ba0fdcae97_en?filename=CEF-T-2024-AFIF_Cut-off%201_Evaluation%20outcome_Communication%20item_List%20of%20projects_final.pdf",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "EIT Urban Mobility",
+      "funder_url": "https://www.eiturbanmobility.eu/",
+      "program_name": "RAPTOR 2026 selected city pilots",
+      "program_url": "https://www.eiturbanmobility.eu/fourteen-european-cities-partner-with-startups-to-test-innovative-mobility-solutions-through-raptor-2026/",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "European Bank for Reconstruction and Development",
+      "funder_url": "https://www.ebrdgreencities.com/",
+      "program_name": "EBRD Green Cities evaluated project portfolio",
+      "program_url": "https://www.ebrd.com/content/dam/ebrd_dxp/assets/pdfs/evaluation/2023/Supporting-Green-Transformations-in-Municipalities-EBRD-Green-Cities-Programme-Interim-Evaluation-2016-21-Report.pdf",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    },
+    {
+      "funder_name": "Innovation Fund / CINEA",
+      "funder_url": "https://cinea.ec.europa.eu/programmes/innovation-fund_en",
+      "program_name": "Innovation Fund 2024 awarded projects",
+      "program_url": "https://climate.ec.europa.eu/eu-action/eu-funding-climate-action/innovation-fund/calls-proposals/if24-call_en",
+      "target_funded_projects": 50,
+      "max_turns": 20
+    }
+  ]
+}

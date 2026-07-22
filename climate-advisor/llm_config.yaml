@@ -41,6 +41,9 @@ prompts:
   # Offline Concept Note Builder funder and program research
   cnb_funding_opportunity_research: "prompts/cnb_funding_opportunity_research.md"
 
+  # Internal Concept Note Builder funded-project selection
+  cnb_similar_project_matching: "prompts/cnb_similar_project_matching.md"
+
 # API Configuration
 api:
   # OpenRouter configuration

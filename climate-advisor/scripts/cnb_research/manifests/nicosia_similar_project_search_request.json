@@ -1,0 +1,30 @@
+{
+  "run_id": "eee75fe1-30e7-5fc1-9bf8-d2a72fca00dd",
+  "funder_scope": "cross_funder",
+  "project_name": "Smart-controlled community-integrated photovoltaic-plus-storage and electric mobility infrastructure for municipality-owned sites",
+  "project_summary": "Nicosia's investment concept combines smart-controlled solar photovoltaic systems and battery storage on municipality-owned sites with electric-vehicle charging infrastructure.",
+  "category": "Renewable energy and sustainable urban mobility",
+  "sector": "Municipal energy and transport",
+  "region": "Southern Europe",
+  "country": "Cyprus",
+  "finance_route": "EUCF grant support for investment-concept development",
+  "instrument_type": "Fixed lump-sum grant",
+  "applicant_type": "Municipality/local authority",
+  "hazards": [],
+  "interventions": [
+    "Solar photovoltaic systems on municipality-owned buildings",
+    "Battery storage integrated with municipal solar generation",
+    "Electric-vehicle charging infrastructure"
+  ],
+  "project_tags": [
+    "municipal-solar",
+    "battery-storage",
+    "electric-mobility",
+    "local-authority",
+    "investment-concept"
+  ],
+  "known_gaps": [
+    "The target project's underlying investment value and implementation status are not confirmed."
+  ],
+  "limit": 50
+}

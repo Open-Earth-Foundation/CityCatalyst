@@ -164,6 +164,7 @@ class PromptsConfig(BaseModel):
     chat: str
     stationary_energy_review: Optional[str] = None
     cnb_funding_opportunity_research: str
+    cnb_similar_project_matching: str
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

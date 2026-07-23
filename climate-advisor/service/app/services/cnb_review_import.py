@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 from datetime import datetime
+from decimal import Decimal, InvalidOperation
 import logging
 import re
 from typing import Literal, Protocol
 from uuid import UUID
 
-from pydantic import Field, JsonValue, model_validator
+from pydantic import BaseModel, Field, JsonValue, model_validator
 
 from app.models.cnb_research import (
     FieldEvidence,
@@ -25,6 +26,18 @@ from app.services.cnb_project_tag_normalizer import normalize_project_tags
 
 logger = logging.getLogger(__name__)
 _PATH_TOKEN_PATTERN = re.compile(r"[^.\[\]]+|\[[^\]]*\]")
+_STABLE_ID_FIELDS = (
+    "funding_record_ref",
+    "template_ref",
+    "criterion_ref",
+    "chapter_ref",
+)
+_RESEARCH_OWNED_PROJECT_FIELDS = {
+    "funding_record_ref",
+    "funder_ref",
+    "is_opportunity",
+    "candidate_funders",
+}
 
 
 class ReviewFieldDecision(ResearchModel):
@@ -153,6 +166,133 @@ def _paths_related(left: str, right: str) -> bool:
     )
 
 
+def _raw_path_tokens(path: str) -> list[str]:
+    """Split a review target path without altering stable record identifiers."""
+    return [
+        (part[1:-1] if part.startswith("[") else part).strip()
+        for part in _PATH_TOKEN_PATTERN.findall(path)
+    ]
+
+
+def _resolve_reviewed_value(reviewed_data: ReviewedReferenceData, path: str) -> object:
+    """Resolve one stable review path against the typed reviewed payload."""
+    current: object = reviewed_data
+    for token in _raw_path_tokens(path):
+        if isinstance(current, BaseModel):
+            if token not in type(current).model_fields:
+                raise ValueError(f"unknown model field {token}")
+            current = getattr(current, token)
+            continue
+        if isinstance(current, dict):
+            if token not in current:
+                raise ValueError(f"unknown object key {token}")
+            current = current[token]
+            continue
+        if isinstance(current, list):
+            matches = [
+                item
+                for item in current
+                if isinstance(item, BaseModel)
+                and any(
+                    str(getattr(item, field_name, "")) == token
+                    for field_name in _STABLE_ID_FIELDS
+                )
+            ]
+            if len(matches) == 1:
+                current = matches[0]
+                continue
+            if len(matches) > 1:
+                raise ValueError(f"stable record identifier is not unique: {token}")
+            if token.isdecimal():
+                index = int(token)
+                if index < len(current):
+                    current = current[index]
+                    continue
+                raise ValueError(f"array index is out of range: {token}")
+            raise ValueError(f"unknown stable record identifier: {token}")
+        raise ValueError(f"path continues beyond a scalar at {token}")
+    return current
+
+
+def _review_values_equal(actual: object, reviewed: JsonValue) -> bool:
+    """Compare typed reviewed fields with their JSON decision representation."""
+    if isinstance(actual, UUID):
+        return str(actual) == str(reviewed)
+    if isinstance(actual, Decimal):
+        if isinstance(reviewed, bool) or reviewed is None:
+            return False
+        try:
+            return actual == Decimal(str(reviewed))
+        except (InvalidOperation, ValueError):
+            return False
+    if isinstance(actual, list) and isinstance(reviewed, list):
+        return len(actual) == len(reviewed) and all(
+            _review_values_equal(actual_item, reviewed_item)
+            for actual_item, reviewed_item in zip(actual, reviewed, strict=True)
+        )
+    if isinstance(actual, dict) and isinstance(reviewed, dict):
+        return actual.keys() == reviewed.keys() and all(
+            _review_values_equal(actual[key], reviewed[key]) for key in actual
+        )
+    return actual == reviewed
+
+
+def _review_value_is_empty(value: object) -> bool:
+    """Return whether an unselected field has its schema-default empty value."""
+    return value is None or value == [] or value == {}
+
+
+def _validate_review_decision_values(review: ReviewedReferenceDataArtifact) -> None:
+    """Require imported fields to agree with selected and excluded decisions."""
+    for decision in review.decisions:
+        try:
+            actual_value = _resolve_reviewed_value(
+                review.reviewed_reference_data,
+                decision.target_path,
+            )
+        except ValueError as error:
+            if not decision.selected:
+                continue
+            raise ValueError(
+                f"selected review decision does not resolve in "
+                f"reviewed_reference_data: {decision.target_path}"
+            ) from error
+        if decision.selected and not _review_values_equal(
+            actual_value,
+            decision.reviewed_value,
+        ):
+            raise ValueError(
+                "reviewed_reference_data does not match selected decision: "
+                f"{decision.target_path}"
+            )
+        if not decision.selected and not _review_value_is_empty(actual_value):
+            raise ValueError(
+                "reviewed_reference_data includes an unselected decision: "
+                f"{decision.target_path}"
+            )
+
+    # Every populated database-bound project field must have an affirmative decision.
+    selected_paths = {
+        decision.target_path for decision in review.decisions if decision.selected
+    }
+    for record in review.reviewed_reference_data.funding_records:
+        if record.is_opportunity:
+            continue
+        row_path = f"funding_records[{record.funding_record_ref}]"
+        for field_name in type(record).model_fields:
+            if field_name in _RESEARCH_OWNED_PROJECT_FIELDS:
+                continue
+            value = getattr(record, field_name)
+            if _review_value_is_empty(value):
+                continue
+            field_path = f"{row_path}.{field_name}"
+            if field_path not in selected_paths:
+                raise ValueError(
+                    "reviewed_reference_data field has no selected decision: "
+                    f"{field_path}"
+                )
+
+
 def prepare_reviewed_reference_import(
     *,
     research: FundingOpportunityResearchBundle,
@@ -162,6 +302,7 @@ def prepare_reviewed_reference_import(
     """Pair by run ID and validate approved, source-grounded funded projects."""
     # Step 1: enforce the explicit run-ID pairing and approval boundary.
     validate_review_pair(research=research, review=review)
+    _validate_review_decision_values(review)
 
     # Step 2: retain research-owned identities, funder proposals, and provenance.
     research_records = {

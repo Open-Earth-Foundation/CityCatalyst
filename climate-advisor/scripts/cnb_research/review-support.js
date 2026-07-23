@@ -112,8 +112,10 @@
       };
     }
 
-    const errors = collectFunderSelectionErrors(bundle, decisions);
-    if (errors.length) throw new Error(errors.join(" "));
+    if (review.status === "approved") {
+      const errors = collectFunderSelectionErrors(bundle, decisions);
+      if (errors.length) throw new Error(errors.join(" "));
+    }
     return {
       ...update,
       update_type: REFERENCE_DATA_UPDATE_TYPE,

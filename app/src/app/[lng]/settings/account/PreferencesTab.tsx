@@ -34,7 +34,7 @@ const numberFormatOptions = [
 
 const PreferencesTab: FC<SettingsTabProps> = ({ t, userInfo }) => {
   const { showSuccessToast } = UseSuccessToast({
-    title: t("user-details-updated"),
+    title: t("preferences-updated"),
     duration: 5000,
   });
   const {

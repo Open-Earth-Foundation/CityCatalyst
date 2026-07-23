@@ -329,7 +329,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           TagMapping[item.role as OrganizationRole].color
                         }
                       >
-                        {TagMapping[item.role as OrganizationRole].text}
+                        {t(TagMapping[item.role as OrganizationRole].text)}
                       </Tag>
                     </Table.Cell>
                     <Table.Cell w="10">

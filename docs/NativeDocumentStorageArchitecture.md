@@ -1,26 +1,38 @@
 # Native Document Storage Architecture
 
 > Draft for [CC-553](https://linear.app/openearth/issue/CC-553/create-architecture-for-agentic-native-document-storage) · 2026-07-22  
-> Status: **draft for stakeholder review**
+> Status: **draft for stakeholder review** (clarifications 2026-07-23 after Piotr / Mirco Slack feedback)
 
 ## One-line intent
 
 CityCatalyst owns city-provided documents and structured intakes. Climate Advisor (Clima) never holds S3 keys; it reads via **typed capabilities** and optional **Markdown delivery**, then uses that context to guide downstream suggestions.
 
+### What this draft is (and is not)
+
+| This draft **is** | This draft **is not** |
+| --- | --- |
+| Ownership + access layer for city-native intakes (GHGI files, HIAP/MEED prefs, CNB uploads) | The Stationary Energy ↔ CNB **context-exchange** design itself |
+| Rules so modules do not each invent their own upload cupboard | A requirement that Clima browse GHGI PDFs by default |
+| Prerequisite for later SE ↔ CNB / city-wide reuse | A centralized mega-database for every service response |
+
+The **context bundle** (and future SE ↔ CNB exchange) **consumes** this layer — it is not the document store.
+
+**Naming note:** “Native document storage” here means **documents + structured city intakes** (preferences, selections), not only PDF bytes. The goal matches Mirco’s framing: joint foundation / data permeability across modules, without one DB that stores everything for all services.
+
 ## Scope (from original product ask)
 
 Three intakes today / soon:
 
-1. **GHGI onboarding** — city uploads inventory file
-2. **HIAP / MEED** — city preferences / selections
-3. **Concept Note Builder** — city uploads supporting docs
+1. **GHGI onboarding** — city uploads inventory file (source artifact). Clima’s default numbers come from **structured inventory**, not from re-reading the PDF.
+2. **HIAP / MEED** — city preferences / selections (**structured**, not PDF Path B)
+3. **Concept Note Builder** — city uploads supporting docs (CAP, budget, letters…). CAP upload is **forward-looking** (not live in product yet).
 
 DoD: Mermaid + ownership + how Clima accesses + how inputs inform decisions → then follow-up tickets.
 
 **v1 services in diagram:** CityCatalyst app + Climate Advisor (+ hiap-meed as one compute path for preferences).  
 **`global-api`:** out of v1 unless someone shows active document traffic there (open confirm).
 
-**Related repo docs:** [ConceptNoteBuilderArchitecture.md](./ConceptNoteBuilderArchitecture.md) (CNB/OCR deep dive), [AgenticModuleScope.md](./AgenticModuleScope.md) (Stage-1 agentic scope).
+**Related repo docs:** [ConceptNoteBuilderArchitecture.md](./ConceptNoteBuilderArchitecture.md) (CNB/OCR deep dive), [AgenticModuleScope.md](./AgenticModuleScope.md) (Stage-1 agentic scope — Path A capability payloads are the CC-facing contracts that feed those capability layers / module scope).
 
 ---
 
@@ -29,42 +41,45 @@ DoD: Mermaid + ownership + how Clima accesses + how inputs inform decisions → 
 ```mermaid
 flowchart TB
   subgraph Intakes["City inputs"]
-    GHGI["1. GHGI onboarding<br/>PDF / CSV / XLSX"]
-    HIAP["2. HIAP / MEED<br/>preferences + selections"]
-    CNB["3. Concept Note Builder<br/>CAP, budget, letters…"]
+    GHGI["1. GHGI onboarding<br/>source file PDF / CSV / XLSX<br/>SoT for agents = inventory rows"]
+    HIAP["2. HIAP / MEED<br/>preferences + selections<br/>structured only"]
+    CNB["3. Concept Note Builder<br/>CAP, budget, letters…<br/>forward-looking"]
   end
 
   subgraph CC["CityCatalyst — owner of native inputs"]
-    Catalog["Native Document Catalog<br/>proposed · metadata + pointers only"]
+    Catalog["Native Document Catalog<br/>proposed · not implemented<br/>metadata + pointers only"]
     S3["CC S3 bucket<br/>imports/… + pdf-ocr/results/…"]
     OCR["PdfOcrJob queue<br/>CronJob → Mistral OCR"]
-    Prod["Product SoT<br/>inventory rows · HIAP tables<br/>MEED preference snapshots"]
+    Prod["Product SoT<br/>inventory rows · HIAP tables<br/>preference commit snapshot TBD"]
   end
 
   subgraph Other["Other services"]
-    MEED["hiap-meed<br/>prioritize compute only<br/>not the only HIAP path"]
+    MEED["hiap-meed<br/>prioritize compute only<br/>not the file cupboard"]
     CNBDB["datateam CNB DB<br/>bundles · chapters · funder KB"]
   end
 
   subgraph CA["Climate Advisor / Clima"]
-    PathA["Path A — Capabilities<br/>GET structured JSON"]
-    PathB["Path B — Markdown delivery<br/>CC POSTs .md when opted in"]
-    Bundle["Context bundle<br/>selected facts + excerpts"]
+    PathA["Path A — Capabilities<br/>GET structured JSON<br/>default for GHGI + HIAP"]
+    PathB["Path B — Markdown delivery<br/>CC POSTs .md · mainly CNB"]
+    Bundle["Context bundle<br/>consumes Path A/B · not the store"]
     Agents["Agents / suggestions<br/>SE · CNB · future recs"]
   end
 
-  GHGI --> Catalog
-  HIAP --> Catalog
-  CNB --> Catalog
+  GHGI -->|"register pointer"| Catalog
+  HIAP -->|"register prefs id"| Catalog
+  CNB -->|"register upload"| Catalog
 
-  Catalog --> Prod
-  Catalog --> OCR
-  OCR --> S3
+  GHGI -->|"row extract →"| Prod
+  HIAP --> Prod
   HIAP --> MEED
   MEED -->|"ranking result"| Prod
 
-  Prod --> PathA
-  OCR -->|"CC reads result .md<br/>delivery_target = climate_advisor"| PathB
+  Catalog -.->|"facade later"| Prod
+  Catalog -.->|"PDF kinds only"| OCR
+  OCR --> S3
+
+  Prod -->|"GHGI + HIAP"| PathA
+  OCR -->|"CNB opt-in<br/>delivery_target = climate_advisor"| PathB
 
   PathA --> Bundle
   PathB --> Bundle
@@ -75,10 +90,13 @@ flowchart TB
 ### How to read this (30 seconds)
 
 1. All city inputs enter **CityCatalyst** first.
-2. PDFs go S3 + OCR queue; prefs/rankings stay as **structured** product data.
-3. Clima has **two doors**: ask for JSON summaries (Path A) or receive Markdown bytes from CC (Path B). Clima does **not** read S3.
-4. Agents do not browse the bucket — they use a **context bundle** built from those doors.
-5. The **Native Document Catalog** is a proposed logical layer (API facade over existing tables first, or an explicit table later) — it is not implemented yet.
+2. **Two layers for the same intake (especially GHGI):**
+   - **Storage / ownership:** source PDF (+ OCR Markdown in S3) may live in CC as a city-provided artifact / catalog pointer.
+   - **Clima read path (default):** Path A JSON from the **product SoT** (approved inventory rows, HIAP selections) — **not** “send the PDF to Clima.”
+3. Prefs/rankings stay **structured** product data. **HIAP / MEED never rides Path B.**
+4. Clima has **two doors**: Path A (JSON capabilities, default) or Path B (Markdown bytes from CC, **mainly CNB**, opt-in). Clima does **not** read S3.
+5. Agents do not browse the bucket — they use a **context bundle** built from those doors. SE ↔ CNB exchange is a **consumer** of this layer.
+6. The **Native Document Catalog** is a **proposed** logical layer (API facade over existing tables first, or an explicit table later) — dashed in the diagram; **not implemented**.
 
 ---
 
@@ -86,16 +104,16 @@ flowchart TB
 
 | Input | What is stored | Owner | Clima access |
 | --- | --- | --- | --- |
-| GHGI PDF + OCR `.md` | S3 objects + `ImportedInventoryFile` + `PdfOcrJob` | CC | Path A (emissions/status) today; Path B optional later |
-| HIAP / MEED prefs | JSON snapshot + ranking/selection tables | CC (MEED = compute when used) | Path A (`hiap.summary` — to build) |
-| CNB uploads | S3 + `ConceptNoteUpload` + `PdfOcrJob` | CC | Path B → ingest → excerpts in bundle |
+| GHGI PDF + OCR `.md` | S3 objects + `ImportedInventoryFile` + `PdfOcrJob` (source artifact) | CC | **Path A only today** (emissions/status from inventory). Path B / excerpts = product opt-in later, not default |
+| HIAP / MEED prefs | Selection / preference SoT in CC (exact snapshot shape **open** — see below) | CC (MEED = compute when used) | **Path A only** (`hiap.summary` — to build). Never Path B |
+| CNB uploads | S3 + `ConceptNoteUpload` + `PdfOcrJob` | CC | **Path B** → ingest → excerpts in bundle |
 | Context bundle snapshot | Run-scoped assembled context | datateam CNB DB (CA orchestrates) | Internal to CA workflows |
 | Funder / similar projects | Curated research corpus | datateam CNB DB | CNB tools (not city-native docs) |
 
 **Hard rules**
 
 1. Clima never gets S3 keys or signed URLs for source/OCR objects.
-2. Path B is **opt-in** per OCR job (`delivery_target`), not automatic for every inventory PDF.
+2. Path B is **opt-in** per OCR job (`delivery_target`), not automatic for every inventory PDF. **Default Path B traffic is CNB.**
 3. Re-upload = **new** immutable id; old row soft-deleted / superseded.
 4. No cross-DB foreign keys — only shared IDs over APIs.
 
@@ -111,14 +129,14 @@ sequenceDiagram
   participant CA as Climate Advisor
   participant Bundle as Context bundle
 
-  Note over City,Bundle: Path A — structured capabilities default
-  City->>CC: Upload GHGI / set HIAP prefs
-  CC->>CC: Persist product SoT
+  Note over City,Bundle: Path A — structured capabilities default (GHGI + HIAP)
+  City->>CC: Upload GHGI / commit HIAP prefs
+  CC->>CC: Persist product SoT (inventory rows / prefs)
   CA->>CC: GET internal capability summary
   CC-->>CA: Bounded JSON facts
   CA->>Bundle: Store selected facts
 
-  Note over City,Bundle: Path B — Markdown delivery opt-in CNB
+  Note over City,Bundle: Path B — Markdown delivery opt-in (mainly CNB; not HIAP)
   City->>CC: Upload CAP PDF for CNB run
   CC->>OCR: Queue OCR
   OCR->>CC: Write .md to S3
@@ -128,9 +146,11 @@ sequenceDiagram
 
 ### Path A — capability payloads
 
-Clima calls CC internal APIs. Live GHGI examples already exist under `/api/v1/internal/ca/capabilities/ghgi/…` (for example `emissions-context`, `list-accessible`). The JSON below is **illustrative** for architecture discussion — field names may not match production responses 1:1.
+Clima calls CC internal APIs. These payloads are the **CC-facing capability contracts** that feed Clima / [AgenticModuleScope](./AgenticModuleScope.md) capability layers / context bundle assembly.
 
-**GHGI emissions context (illustrative; live capability exists):**
+Live GHGI examples already exist under `/api/v1/internal/ca/capabilities/ghgi/…` (for example `emissions-context`, `list-accessible`). The JSON below is **illustrative** for architecture discussion — field names may not match production responses 1:1.
+
+**GHGI emissions context (illustrative; live capability exists) — numbers from inventory SoT, not PDF bytes:**
 
 ```json
 {
@@ -148,7 +168,7 @@ Clima calls CC internal APIs. Live GHGI examples already exist under `/api/v1/in
 }
 ```
 
-Optional later enrichment (not live today) could advertise related native documents:
+Optional later enrichment (not live today) could **advertise** related native documents as references (e.g. “we already received this file from you”) without making PDF the agent SoT:
 
 ```json
 {
@@ -163,7 +183,7 @@ Optional later enrichment (not live today) could advertise related native docume
 }
 ```
 
-**HIAP / MEED summary (target only — not wired yet):**
+**HIAP / MEED summary (target only — not wired yet; Path A only):**
 
 ```json
 {
@@ -187,7 +207,9 @@ Optional later enrichment (not live today) could advertise related native docume
 
 ### Path B — Markdown delivery
 
-After OCR succeeds for a CNB upload, **CC reads** the authoritative Markdown from S3 and **POSTs the bytes** to CA (no S3 key in the body). Endpoint shape already exists; production storage still returns `503 cnb_storage_unavailable` until the datateam adapter is wired.
+After OCR succeeds for a **CNB** upload, **CC reads** the authoritative Markdown from S3 and **POSTs the bytes** to CA (no S3 key in the body). Endpoint shape already exists; production storage still returns `503 cnb_storage_unavailable` until the datateam adapter is wired.
+
+**HIAP / MEED does not use Path B** — preferences are structured Path A.
 
 ```http
 POST /v1/concept-notes/cnb_run_demo_001/uploads/upl_cap_001/markdown
@@ -228,8 +250,8 @@ CA then keeps **excerpts** in the run bundle (not necessarily the full corpus in
 | Input | Informs today | Informs with this architecture |
 | --- | --- | --- |
 | GHGI structured inventory | Inventory UI, HIAP inputs, CA GHGI tools | Same + SE agentic prefilling + CNB emissions context |
-| GHGI OCR Markdown | Row extraction only | Optional excerpts if product enables Path B / excerpt capability |
-| HIAP / MEED prefs | HIAP UI / prioritizer request | Any Clima skill via `hiap.summary` |
+| GHGI source PDF / OCR Markdown | Row extraction only (current user flow) | Catalog pointer / user reference; optional excerpts only if product enables Path B later |
+| HIAP / MEED prefs | HIAP UI / prioritizer request | Any Clima skill via `hiap.summary` (once wired) |
 | CNB uploads | — (not wired) | Concept note draft, evidence links, gaps |
 | Funder KB / similar projects | Research pipeline | CNB examples (curated, not city-native) |
 
@@ -248,8 +270,8 @@ flowchart LR
 
 | Intake | Now | Target |
 | --- | --- | --- |
-| GHGI PDF | S3 + `PdfOcrJob` + row extract; CA = structured Path A only | Same ownership; proposed catalog registers it; Path A first |
-| HIAP / MEED | Rankings in CC; MEED prefs often request-scoped; classic HIAP API path also exists | Durable preference snapshot in CC + Path A |
+| GHGI PDF | S3 + `PdfOcrJob` + row extract; CA = structured Path A only | Same ownership; proposed catalog may register the source file; **Clima stays on inventory Path A** unless product later opts into excerpts |
+| HIAP / MEED | Rankings in CC; MEED prefs often request-scoped; classic HIAP API path also exists | Clima can read prefs via Path A `hiap.summary`. **How durable the SoT is (commit-only snapshot vs re-request) is an open question** — see below |
 | CNB uploads | Ingest endpoint exists; `503 cnb_storage_unavailable` | CC upload + OCR + Path B delivery + CA storage adapter |
 
 ---
@@ -259,11 +281,11 @@ flowchart LR
 | Keep | Extend later (follow-up tickets) |
 | --- | --- |
 | `PdfOcrJob` + cron + Mistral | `concept_note_upload` resolver; inventory stays no-delivery by default |
-| GHGI capability routes | Add `hiap.summary` (+ optional markdown excerpts) |
-| CA `POST .../markdown` | Replace unavailable repo with datateam adapter |
-| HIAP / hiap-meed split | Persist MEED snapshots in **CC**, not in hiap-meed |
+| GHGI capability routes | Add `hiap.summary` (+ optional markdown excerpts only if product asks) |
+| CA `POST .../markdown` | Replace unavailable repo with datateam adapter (CNB Path B) |
+| HIAP / hiap-meed split | **hiap-meed stays compute-only** (not the file cupboard). Preference SoT for Clima lives on the **CC side** — exact persistence shape TBD (open question), not “cache every MEED API response” |
 
-Suggested follow-ups after approval: catalog facade/API · HIAP snapshot + capability · CNB upload + delivery · CA storage adapter ([CC-570](https://linear.app/openearth/issue/CC-570/placeholder-implementation)) · optional inventory Markdown excerpts.
+Suggested follow-ups after approval: catalog facade/API · HIAP Path A capability (`hiap.summary`) + agreed preference SoT · CNB upload + delivery · CA storage adapter ([CC-570](https://linear.app/openearth/issue/CC-570/placeholder-implementation)) · optional inventory Markdown excerpts · product UX if GHGI source files become user-visible references.
 
 ---
 
@@ -283,12 +305,17 @@ Suggested follow-ups after approval: catalog facade/API · HIAP snapshot + capab
 ## Open questions (review)
 
 1. Catalog: lean facade over existing tables first, or new `NativeDocument` table now?
-2. Should agents ever read GHGI OCR Markdown, or only structured inventory?
-3. Confirm HIAP/MEED snapshots live in CC.
+2. Should agents ever read GHGI OCR Markdown, or only structured inventory? (Default proposal: **inventory only**; PDF = source artifact / optional later reference.)
+3. **HIAP / MEED preference SoT in CC — how light?** Options under discussion:
+   - **A (lighter v1):** persist only on **explicit user commit / selection save**; ephemeral ranking stays re-request from MEED/HIAP APIs (avoids caching every upstream answer + heavy schema).
+   - **B:** fuller durable snapshots / history in CC for audit and city-wide reuse.
+   - Goal either way: Clima can `GET hiap.summary` without depending on request-scoped prefs alone — **not** “reproduce every MEED API payload in CC.”
 4. Bundle stays **per-run** in v1; catalog is the path to later city-wide reuse?
 5. Is `UserFile` BYTEA in-scope for agentic native docs?
 6. Confirm `global-api` out of v1.
 7. Extra retention/audit rules beyond current CC lifecycle?
+8. If GHGI (or other) source files become visible as “we already received this,” what **product / UX** changes are needed so users are not confused (current GHGI flow was built for align-into-inventory, not future chat context)?
+9. Loop in **Milan** (and product) before locking follow-up tickets?
 
 ---
 
@@ -296,11 +323,11 @@ Suggested follow-ups after approval: catalog facade/API · HIAP snapshot + capab
 
 | Item | Status |
 | --- | --- |
-| Mermaid: three intakes → CC → services → Clima | Drafted |
+| Mermaid: three intakes → CC → services → Clima | Drafted (+ 2026-07-23 clarifications) |
 | Ownership model | Drafted |
 | Clima access patterns + example contracts | Drafted |
 | Downstream decision map | Drafted |
-| Integration / no-breaking-change path | Drafted |
+| Integration / no-breaking-change path | Drafted (MEED persistence softened to open Q) |
 | Constraints | Drafted |
-| Stakeholder review (Piotr / Carlos / Mirco) | Pending |
+| Stakeholder review (Piotr / Carlos / Mirco / Milan) | In progress (Slack + PR) |
 | Follow-up implementation tickets | Pending after approval |

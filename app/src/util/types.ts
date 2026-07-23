@@ -556,9 +556,9 @@ export type OrganizationWithThemeResponse = {
 };
 
 export interface UpdateUserPayload {
-  name: string;
-  email: string;
   userId: string;
+  name?: string;
+  email?: string;
   title?: string;
   preferredLanguage?: string;
   numberFormat?: string;

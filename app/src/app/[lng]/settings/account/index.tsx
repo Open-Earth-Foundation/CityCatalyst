@@ -36,6 +36,7 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
 import AccountDetailsTab from "@/app/[lng]/settings/account/AccountDetailsTab";
+import PreferencesTab from "./PreferencesTab";
 
 const KeyColorMapping = {
   blue_theme: "#001EA7",

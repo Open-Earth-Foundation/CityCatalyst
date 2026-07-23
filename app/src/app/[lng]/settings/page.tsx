@@ -10,10 +10,8 @@ import ProjectSettings from "./project/index";
 import MyTokensTab from "@/components/Tabs/my-tokens-tab";
 
 // TODO create tabs component with recipe
-const AccountSettingsPage = (props: {
-  params: Promise<{ lng: string; id: string }>;
-}) => {
-  const { lng, id } = use(props.params);
+const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "settings");
 
   return (
@@ -142,10 +140,10 @@ const AccountSettingsPage = (props: {
               </Box>
             </Tabs.Content>
             <Tabs.Content value="team">
-              <TeamSettings lng={lng} id={id} />
+              <TeamSettings lng={lng} />
             </Tabs.Content>
             <Tabs.Content value="project">
-              <ProjectSettings lng={lng} id={id} />
+              <ProjectSettings lng={lng} />
             </Tabs.Content>
             <MyTokensTab lng={lng} />
           </Tabs.Root>

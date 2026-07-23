@@ -34,6 +34,12 @@ from app.services.action_policy_scores_api import (
     ActionPolicyScoresApiService,
 )
 from app.services.city_attributes_api import CityAttributesApiService
+from app.services.climate_finance_opportunities_api import (
+    ClimateFinanceOpportunitiesApiService,
+)
+from app.services.climate_finance_projects_api import (
+    ClimateFinanceProjectsApiService,
+)
 from app.modules.prioritizer.internal_models import (
     ActionFinancialFeasibilityScoreRecord,
     ActionFinancialFeasibilityScoresFetchResult,
@@ -43,7 +49,8 @@ from app.modules.prioritizer.internal_models import (
     ActionPolicyScoreRecord,
     ActionPolicyScoresFetchResult,
     CityData,
-    ClimateFinanceReportEvidenceFetchResult,
+    ClimateFinanceOpportunitiesFetchResult,
+    ClimateFinanceProjectsFetchResult,
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
@@ -487,20 +494,29 @@ class MockActionFinancialFeasibilityScoresDataApiClient:
             warning=None,
         )
 
-    def get_report_finance_evidence(
+    def get_report_finance_opportunities(
+        self,
+        *,
+        country_code: str,
+        sector: str | None,
+        route: str | None = None,
+    ) -> ClimateFinanceOpportunitiesFetchResult:
+        """Return no opportunities because the compact mock contains scores only."""
+        del country_code, sector, route
+        return ClimateFinanceOpportunitiesFetchResult(
+            warning="Named finance opportunities are not present in the mock score payload."
+        )
+
+    def get_report_finance_projects(
         self,
         *,
         action_id: str,
         country_code: str,
-        sector: str | None,
-        route: str | None = None,
-    ) -> ClimateFinanceReportEvidenceFetchResult:
-        """Return empty detail rows because the compact mock contains scores only."""
-        del action_id, country_code, sector, route
-        return ClimateFinanceReportEvidenceFetchResult(
-            warnings=[
-                "Named finance opportunities and precedents are not present in the mock score payload."
-            ]
+    ) -> ClimateFinanceProjectsFetchResult:
+        """Return no projects because the compact mock contains scores only."""
+        del action_id, country_code
+        return ClimateFinanceProjectsFetchResult(
+            warning="Comparable projects are not present in the mock score payload."
         )
 
 
@@ -569,13 +585,25 @@ class ApiActionMitigationFeasibilityScoresDataApiClient:
 
 
 class ApiActionFinancialFeasibilityScoresDataApiClient:
-    """API-backed financial feasibility client using the upstream score service."""
+    """API-backed financial client composed from endpoint-specific services."""
 
     def __init__(
-        self, service: ActionFinancialFeasibilityScoresApiService | None = None
+        self,
+        service: ActionFinancialFeasibilityScoresApiService | None = None,
+        opportunities_service: ClimateFinanceOpportunitiesApiService | None = None,
+        projects_service: ClimateFinanceProjectsApiService | None = None,
     ) -> None:
-        """Create the financial feasibility API client with a service wrapper."""
+        """Create endpoint-specific score, opportunity, and project services."""
         self._service = service or ActionFinancialFeasibilityScoresApiService()
+        catalogue_base_url = self._service.base_url
+        self._opportunities_service = (
+            opportunities_service
+            or ClimateFinanceOpportunitiesApiService(base_url=catalogue_base_url)
+        )
+        self._projects_service = (
+            projects_service
+            or ClimateFinanceProjectsApiService(base_url=catalogue_base_url)
+        )
 
     def get_action_financial_feasibility_scores(
         self, locode: str, country_code: str
@@ -583,20 +611,30 @@ class ApiActionFinancialFeasibilityScoresDataApiClient:
         """Fetch city-scoped financial feasibility scores from the upstream API."""
         return self._service.get_scores_by_action_id(locode, country_code)
 
-    def get_report_finance_evidence(
+    def get_report_finance_opportunities(
+        self,
+        *,
+        country_code: str,
+        sector: str | None,
+        route: str | None = None,
+    ) -> ClimateFinanceOpportunitiesFetchResult:
+        """Fetch named finance opportunities for one report."""
+        return self._opportunities_service.get_opportunities(
+            country_code=country_code,
+            sector=sector,
+            route=route,
+        )
+
+    def get_report_finance_projects(
         self,
         *,
         action_id: str,
         country_code: str,
-        sector: str | None,
-        route: str | None = None,
-    ) -> ClimateFinanceReportEvidenceFetchResult:
-        """Fetch named finance opportunities and precedents for one report."""
-        return self._service.get_report_evidence(
+    ) -> ClimateFinanceProjectsFetchResult:
+        """Fetch action-matched comparable projects for one report."""
+        return self._projects_service.get_projects(
             action_id=action_id,
             country_code=country_code,
-            sector=sector,
-            route=route,
         )
 
 

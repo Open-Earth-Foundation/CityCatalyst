@@ -1041,13 +1041,7 @@ export default class UserService {
       projectId: null,
     };
 
-    const user = await db.models.User.findOne({ where: { userId } });
-    // System admins are treated as org owners for UI gates, without a single org.
-    if (user?.role === Roles.Admin) {
-      responseObject.isOrgOwner = true;
-      return responseObject;
-    }
-
+    // TODO a user can own multiple organizations now
     const orgOwner = await db.models.OrganizationAdmin.findOne({
       where: { userId },
     });
@@ -1057,6 +1051,7 @@ export default class UserService {
       return responseObject;
     }
 
+    // TODO might be able to have multiple project admin roles as well
     const projectAdmin = await db.models.ProjectAdmin.findOne({
       where: { userId },
       include: [

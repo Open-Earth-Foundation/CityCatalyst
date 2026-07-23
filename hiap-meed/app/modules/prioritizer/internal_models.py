@@ -270,6 +270,22 @@ class ClimateFinanceProjectRecord(BaseModel):
     funding_sources: list[dict[str, Any]] = Field(default_factory=list)
 
 
+class ClimateFinanceOpportunitiesFetchResult(BaseModel):
+    """One independently fetched opportunities-catalogue result."""
+
+    opportunities: list[ClimateFinanceOpportunityRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
+class ClimateFinanceProjectsFetchResult(BaseModel):
+    """One independently fetched projects-catalogue result."""
+
+    projects: list[ClimateFinanceProjectRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
 class ClimateFinanceReportEvidenceFetchResult(BaseModel):
     """Selected-action finance opportunities and precedents for report writing."""
 

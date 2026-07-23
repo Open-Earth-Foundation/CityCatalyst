@@ -24,8 +24,8 @@ export default function PasswordInput({
   error: FieldError | undefined;
   register: Function;
   t: TFunction;
-  name?: String;
-  id?: String;
+  name?: string;
+  id?: string;
   w?: string;
   shouldValidate?: boolean;
   watchPassword?: string;

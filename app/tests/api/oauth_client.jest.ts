@@ -143,7 +143,7 @@ describe("OAuth Client API", () => {
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toBeGreaterThanOrEqual(3);
       for (const testClient of testClients) {
-        let client = data.find((c: any) => c.clientId == testClient.clientId);
+        const client = data.find((c: any) => c.clientId == testClient.clientId);
         expect(client).toBeDefined();
         expect(client.redirectUri).toEqual(testClient.redirectURI);
         expect(typeof client.name).toBe("object");

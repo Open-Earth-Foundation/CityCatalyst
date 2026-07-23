@@ -137,7 +137,7 @@ function convertDataToDefaultUnit(
 
   // if methodologyId is !direct measure, and number of activities === 1 use the Oth activity
   if ((methododology.activities?.length as number) > 1) {
-    let selectedActivityOption =
+    const selectedActivityOption =
       activityValue.metadata?.[
         methododology.activitySelectionField?.id as string
       ];
@@ -153,7 +153,7 @@ function convertDataToDefaultUnit(
   }
   // deal with activity title value
 
-  let data: Record<string, any> = { ...activityValue.activityData };
+  const data: Record<string, any> = { ...activityValue.activityData };
   // check if it has a default unit property
   if (activity?.["default-units"]) {
     const val = data[activity?.["activity-title"] as string];
@@ -174,7 +174,7 @@ function convertDataToDefaultUnit(
 
   if (activity?.["extra-fields"]) {
     activity["extra-fields"].forEach((field) => {
-      let val = data[field.id];
+      const val = data[field.id];
       if (field.units && field["default-units"]) {
         data[field.id] = new Decimal(
           UnitConversionService.convertUnits(

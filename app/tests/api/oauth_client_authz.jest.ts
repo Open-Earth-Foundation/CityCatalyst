@@ -94,7 +94,7 @@ describe("OAuth Client Authz API", () => {
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toEqual(testOAuthClientAuthzs.length);
       for (const clientAuthz of testOAuthClientAuthzs) {
-        let authz = data.find(
+        const authz = data.find(
           (authz: any) => authz.client.clientId == clientAuthz.clientId,
         );
         expect(authz).toBeDefined();

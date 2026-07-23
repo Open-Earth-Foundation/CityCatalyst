@@ -51,7 +51,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
   const tag = referenceNumber?.includes("II") ? "-transport-types" : "";
 
-  let groupBy = directMeasure?.["group-by"] as string;
+  const groupBy = directMeasure?.["group-by"] as string;
 
   const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
     if (!groupBy) return {};

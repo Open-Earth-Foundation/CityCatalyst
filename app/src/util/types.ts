@@ -500,7 +500,7 @@ export type ProjectWithCities = {
   name: string;
   organizationId: string;
   description?: string;
-  cityCountLimit?: Number;
+  cityCountLimit?: number;
   cities: CityResponse[];
 };
 

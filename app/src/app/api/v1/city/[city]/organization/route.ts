@@ -59,7 +59,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
 export const GET = apiHandler(async (req, { session, params }) => {
-  let cityId = params.city;
+  const cityId = params.city;
 
   const city = await UserService.findUserCity(cityId, session);
 

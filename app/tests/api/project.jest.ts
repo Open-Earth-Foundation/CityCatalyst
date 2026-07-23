@@ -63,7 +63,7 @@ const mockAdminSession: AppSession = {
 
 describe("Project API", () => {
   let organization: Organization;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();

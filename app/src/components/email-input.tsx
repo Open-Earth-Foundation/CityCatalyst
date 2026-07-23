@@ -19,8 +19,8 @@ export default function EmailInput({
   error: FieldError | undefined;
   register: Function;
   t: Function;
-  name?: String;
-  id?: String;
+  name?: string;
+  id?: string;
   disabled?: boolean;
   defaultValue?: string;
 }) {

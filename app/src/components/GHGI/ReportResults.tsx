@@ -429,7 +429,7 @@ export function EmissionPerSectors({
     },
   ];
 
-  let containerRef = useRef<HTMLDivElement>(document.createElement("div"));
+  const containerRef = useRef<HTMLDivElement>(document.createElement("div"));
 
   return (
     <Box display="flex" flexDirection="column" gap={8} w="full">

@@ -88,7 +88,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
     );
   }
 
-  let city = await db.models.City.findOne({
+  const city = await db.models.City.findOne({
     include: [
       {
         model: db.models.Inventory,

@@ -66,7 +66,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
       // create a map of everything else except activityData
       const activityGroups = methodology.activities?.reduce(
         (acc, curr) => {
-          let key = curr.activitySelectedOption as string;
+          const key = curr.activitySelectedOption as string;
           acc[key] = {
             activityData: activityData?.filter(
               (activity) =>
@@ -95,8 +95,8 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
       };
     }
 
-    let groupBy = methodology?.activities?.[0]["group-by"];
-    let extraFields = (methodology as Methodology)?.activities?.[0]?.[
+    const groupBy = methodology?.activities?.[0]["group-by"];
+    const extraFields = (methodology as Methodology)?.activities?.[0]?.[
       "extra-fields"
     ] as ExtraField[];
 

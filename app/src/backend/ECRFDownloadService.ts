@@ -360,7 +360,7 @@ export default class ECRFDownloadService {
           ],
         };
       } else {
-        let methodologyDescription = inventoryValue.inputMethodology;
+        const methodologyDescription = inventoryValue.inputMethodology;
         const methodology = findMethodology(
           inventoryValue.inputMethodology as string,
           gpcRefNo,
@@ -374,11 +374,11 @@ export default class ECRFDownloadService {
           notation_key: inventoryValue.unavailableReason,
           input_methodology: t(inventoryValue.inputMethodology),
           activityValues: activityValues.map((activityValue) => {
-            let activityTitleKey = activityValue.metadata?.activityTitle;
-            let dataQuality = activityValue.metadata?.dataQuality;
-            let dataSource = activityValue.activityData?.["data-source"];
-            let activityAmount = activityValue.activityData?.[activityTitleKey];
-            let activityUnit = t(
+            const activityTitleKey = activityValue.metadata?.activityTitle;
+            const dataQuality = activityValue.metadata?.dataQuality;
+            const dataSource = activityValue.activityData?.["data-source"];
+            const activityAmount = activityValue.activityData?.[activityTitleKey];
+            const activityUnit = t(
               activityValue.activityData?.[`${activityTitleKey}-unit`],
             );
             let emission_co2 = null;
@@ -389,13 +389,13 @@ export default class ECRFDownloadService {
             let ghg_n2o = null;
 
             if (activityValue.gasValues) {
-              let co2_gas = activityValue.gasValues.find(
+              const co2_gas = activityValue.gasValues.find(
                 (g) => g.gas === "CO2",
               );
-              let ch4_gas = activityValue.gasValues.find(
+              const ch4_gas = activityValue.gasValues.find(
                 (g) => g.gas === "CH4",
               );
-              let n2o_gas = activityValue.gasValues.find(
+              const n2o_gas = activityValue.gasValues.find(
                 (g) => g.gas === "N2O",
               );
 

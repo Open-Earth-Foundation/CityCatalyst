@@ -200,7 +200,7 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
 
   return new Promise((resolve, reject) => {
     const results: ManualTestData[] = [];
-    let totalRows = 0;
+    const totalRows = 0;
 
     fs.createReadStream(csvPath)
       .pipe(

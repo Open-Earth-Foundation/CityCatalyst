@@ -99,7 +99,13 @@ export default function ProjectPage(props: {
             </VStack>
             {project?.cities && project.cities.length > 0 && (
               <Suspense fallback={<ProgressLoader />}>
-                <CitiesTable cities={project.cities} lng={lng} t={t} />
+                <CitiesTable
+                  cities={project.cities}
+                  lng={lng}
+                  t={t}
+                  organizationId={organizationId}
+                  projectId={projectId}
+                />
               </Suspense>
             )}
             <NextLink

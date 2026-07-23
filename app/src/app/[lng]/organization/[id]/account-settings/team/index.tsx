@@ -42,7 +42,17 @@ import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUser
 import { Trans } from "react-i18next";
 import { useSession } from "next-auth/react";
 
-const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
+const TeamSettings = ({
+  lng,
+  id,
+  initialProjectId,
+  initialCityId,
+}: {
+  lng: string;
+  id: string;
+  initialProjectId?: string | null;
+  initialCityId?: string | null;
+}) => {
   const { t } = useTranslation(lng, "settings");
 
   const TagMapping = {
@@ -60,8 +70,12 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
     },
   };
 
-  const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
-  const [selectedCity, setSelectedCity] = React.useState<string | null>("");
+  const [selectedProject, setSelectedProject] = React.useState<string[]>(
+    initialProjectId ? [initialProjectId] : [],
+  );
+  const [selectedCity, setSelectedCity] = React.useState<string | null>(
+    initialCityId ?? "",
+  );
   const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
@@ -103,9 +117,14 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
   }, [projectUsers, selectedCity]);
 
   useEffect(() => {
-    if (projectsData && projectsData.length > 0) {
+    if (
+      projectsData &&
+      projectsData.length > 0 &&
+      selectedProject.length === 0
+    ) {
       setSelectedProject([projectsData[0].projectId]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
 
   const selectedCityData = useMemo(() => {

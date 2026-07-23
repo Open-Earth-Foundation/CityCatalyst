@@ -4,6 +4,7 @@ import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
@@ -15,6 +16,8 @@ const AccountSettingsPage = (props: {
 }) => {
   const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "settings");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") ?? "account";
 
   return (
     <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
@@ -47,7 +50,7 @@ const AccountSettingsPage = (props: {
           {t("account-settings")}
         </Text>
         <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-          <Tabs.Root defaultValue="account" variant="enclosed">
+          <Tabs.Root defaultValue={initialTab} variant="enclosed">
             <Tabs.List
               p={0}
               w="full"
@@ -142,7 +145,12 @@ const AccountSettingsPage = (props: {
               </Box>
             </Tabs.Content>
             <Tabs.Content value="team">
-              <TeamSettings lng={lng} id={id} />
+              <TeamSettings
+                lng={lng}
+                id={id}
+                initialProjectId={searchParams.get("project")}
+                initialCityId={searchParams.get("city")}
+              />
             </Tabs.Content>
             <Tabs.Content value="project">
               <ProjectSettings lng={lng} id={id} />

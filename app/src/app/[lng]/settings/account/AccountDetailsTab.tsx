@@ -26,13 +26,6 @@ interface AccountDetailsFormProps {
   showTitle?: boolean;
 }
 
-const numberFormatOptions = [
-  { value: NumberFormatEnum.COMMA_AND_DOT, label: "comma-and-dot" },
-  { value: NumberFormatEnum.DOT_AND_COMMA, label: "dot-and-comma" },
-  { value: NumberFormatEnum.SPACE_AND_COMMA, label: "space-and-comma" },
-  { value: NumberFormatEnum.APOSTROPHE_AND_DOT, label: "apostrophe-and-dot" },
-];
-
 const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
   t,
   userInfo,
@@ -55,8 +48,6 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
       setValue("name", userInfo.name);
       setValue("email", userInfo.email);
       setValue("title", userInfo.title);
-      setValue("preferredLanguage", userInfo.preferredLanguage);
-      setValue("numberFormat", userInfo.numberFormat);
     }
   }, [setValue, userInfo]);
 
@@ -65,8 +56,6 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
       userId: userInfo.userId,
       name: data.name ?? "",
       email: data.email ?? "",
-      preferredLanguage: data.preferredLanguage ?? LANGUAGES.en,
-      numberFormat: data.numberFormat ?? NumberFormatEnum.COMMA_AND_DOT,
     };
     if (data.title) {
       payload.title = data.title;
@@ -123,52 +112,6 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
                 <BodyMedium>{t("position-description")}</BodyMedium>
               </HStack>
             </>
-          )}
-          <Field
-            label={t("preferred-language")}
-            invalid={!!errors.preferredLanguage}
-            errorText={errors.preferredLanguage?.message}
-          >
-            <LanguageSelector
-              defaultValue={
-                (userInfo.preferredLanguage as LANGUAGES) || LANGUAGES.en
-              }
-              register={register}
-              error={errors.preferredLanguage}
-              t={t}
-            />
-          </Field>
-
-          {hasFeatureFlag(FeatureFlags.NUMERICAL_FORMATS) && (
-            <Field
-              label={t("numerical-formats")}
-              invalid={!!errors.numberFormat}
-              errorText={errors.numberFormat?.message}
-            >
-              <NativeSelectRoot
-                shadow="2dp"
-                borderRadius="4px"
-                border="inputBox"
-                background={
-                  errors.numberFormat
-                    ? "sentiment.negativeOverlay"
-                    : "background.default"
-                }
-              >
-                <NativeSelectField
-                  {...register("numberFormat", {
-                    required: t("numerical-formats-required"),
-                  })}
-                  defaultValue={NumberFormatEnum.COMMA_AND_DOT}
-                >
-                  {numberFormatOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {t(option.label)}
-                    </option>
-                  ))}
-                </NativeSelectField>
-              </NativeSelectRoot>
-            </Field>
           )}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button

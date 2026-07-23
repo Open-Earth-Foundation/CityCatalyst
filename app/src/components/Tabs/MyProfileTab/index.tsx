@@ -4,9 +4,9 @@ import { Box, Tabs, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { UserAttributes } from "@/models/User";
 import { TFunction } from "i18next";
-import AccountDetailsTabPanel from "@/app/[lng]/settings/account/AccountDetailsTabPanel";
+import AccountDetailsTab from "@/app/[lng]/settings/account/AccountDetailsTab";
 import ManageCitiesTabPanel from "./ManageCitiesTabPanel";
-import ManagePasswordTabContent from "@/app/[lng]/settings/account/ManagePasswordTabContent";
+import ManagePasswordTab from "@/app/[lng]/settings/account/ManagePasswordTab";
 
 interface MyProfileTabProps {
   t: TFunction;
@@ -151,7 +151,7 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
                   {t("my-profile-sub-title")}
                 </Text>
               </Box>
-              <AccountDetailsTabPanel t={t} userInfo={userInfo} />
+              <AccountDetailsTab t={t} userInfo={userInfo} />
             </Tabs.Content>
             <Tabs.Content
               value="manage-cities"
@@ -169,7 +169,7 @@ export const MyProfileTab: FC<MyProfileTabProps> = ({ t, lng, userInfo }) => {
               flexDirection="column"
               gap="24px"
             >
-              <ManagePasswordTabContent t={t} />
+              <ManagePasswordTab t={t} />
             </Tabs.Content>
           </Tabs.Root>
         </Box>

@@ -26,7 +26,7 @@ import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
-import ManagePasswordTabContent from "@/app/[lng]/settings/account/ManagePasswordTabContent";
+import ManagePasswordTab from "@/app/[lng]/settings/account/ManagePasswordTab";
 import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
@@ -35,7 +35,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
-import AccountDetailsTabPanel from "@/app/[lng]/settings/account/AccountDetailsTabPanel";
+import AccountDetailsTab from "@/app/[lng]/settings/account/AccountDetailsTab";
 
 const KeyColorMapping = {
   blue_theme: "#001EA7",
@@ -303,7 +303,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         {isUserInfoLoading ? (
           <ProgressLoader />
         ) : (
-          <AccountDetailsTabPanel t={t} userInfo={userInfo} showTitle />
+          <AccountDetailsTab t={t} userInfo={userInfo} showTitle />
         )}
         {userAccessStatus?.isOrgOwner && (
           <Box backgroundColor="white" p={6} marginTop={4}>
@@ -316,7 +316,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       </TabContent>
       <TabContent value="manage-password">
         <Box bg="background.default">
-          <ManagePasswordTabContent t={t} />
+          <ManagePasswordTab t={t} />
         </Box>
       </TabContent>
       <TabContent value="preferences">

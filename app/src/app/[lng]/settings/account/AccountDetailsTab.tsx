@@ -33,7 +33,7 @@ const numberFormatOptions = [
   { value: NumberFormatEnum.APOSTROPHE_AND_DOT, label: "apostrophe-and-dot" },
 ];
 
-const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
+const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
   t,
   userInfo,
   showTitle,
@@ -193,4 +193,4 @@ const AccountDetailsTabPanel: FC<AccountDetailsFormProps> = ({
   );
 };
 
-export default AccountDetailsTabPanel;
+export default AccountDetailsTab;

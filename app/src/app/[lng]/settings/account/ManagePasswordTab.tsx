@@ -21,7 +21,7 @@ type Inputs = {
   confirmPassword: string;
 };
 
-const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
+const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const [error, setError] = useState("");
 
   const {
@@ -115,4 +115,4 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
   );
 };
 
-export default ManagePasswordTabContent;
+export default ManagePasswordTab;

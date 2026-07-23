@@ -13,18 +13,6 @@ import { api } from "@/services/api";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
 
-export type ProfileInputs = {
-  name: string;
-  email: string;
-  city: string;
-  role: string;
-  locode: string;
-  userId: string;
-  title?: string | null;
-  preferredLanguage?: string;
-  numberFormat?: string;
-};
-
 export type UserDetails = {
   id: string;
   name: string;

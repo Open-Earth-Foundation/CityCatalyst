@@ -6,7 +6,7 @@ import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
-import { LANGUAGES, UpdateUserPayload } from "@/util/types";
+import { LANGUAGES, UpdateUserPayload, UserInfoResponse } from "@/util/types";
 import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
 import { Field } from "@/components/ui/field";
 import { NumberFormatEnum } from "@/util/enums";
@@ -18,7 +18,12 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 interface SettingsTabProps {
   t: TFunction;
-  userInfo: any;
+  userInfo: UserInfoResponse;
+}
+
+interface ProfileInputs {
+  preferredLanguage?: string;
+  numberFormat?: string;
 }
 
 const numberFormatOptions = [

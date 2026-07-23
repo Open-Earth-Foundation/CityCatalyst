@@ -121,6 +121,7 @@ export interface UserInfoResponse {
   defaultInventoryId: string | null;
   defaultCityId: string | null;
   role: Roles;
+  title?: string;
   email?: string;
   preferredLanguage?: string;
   numberFormat?: string;

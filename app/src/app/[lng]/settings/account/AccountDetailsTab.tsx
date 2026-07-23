@@ -1,29 +1,30 @@
 import { FC, useEffect } from "react";
 import { Box, Button, HStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileInputs } from "@/components/GHGI/inventory-pages/settings-page";
-import FormInput from "../../../../components/form-input";
-import EmailInput from "../../../../components/email-input";
+import FormInput from "@/components/form-input";
+import EmailInput from "@/components/email-input";
 import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { MdInfoOutline } from "react-icons/md";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { LANGUAGES, UpdateUserPayload } from "@/util/types";
-import { LanguageSelector } from "@/app/[lng]/auth/signup/LanguageSelector";
-import { Field } from "@/components/ui/field";
-import { NumberFormatEnum } from "@/util/enums";
-import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from "@/components/ui/native-select";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { UpdateUserPayload, UserInfoResponse } from "@/util/types";
 
 interface AccountDetailsFormProps {
   t: TFunction;
-  userInfo: any;
+  userInfo: UserInfoResponse;
   showTitle?: boolean;
+}
+
+interface ProfileInputs {
+  name: string;
+  email?: string;
+  city: string;
+  role: string;
+  locode: string;
+  userId: string;
+  title?: string | null;
 }
 
 const AccountDetailsTab: FC<AccountDetailsFormProps> = ({

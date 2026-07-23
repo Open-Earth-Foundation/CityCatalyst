@@ -249,7 +249,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                     <Table.Cell>{item.inventories.length}</Table.Cell>
                     <Table.Cell w="10">
                       <MenuRoot>
-                        <MenuTrigger>
+                        <MenuTrigger asChild>
                           <IconButton
                             data-testid="activity-more-icon"
                             aria-label="more-icon"
@@ -317,7 +317,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 columns={[
                   { header: t("email"), accessor: "email" },
                   { header: t("role"), accessor: "role" },
-                  { header: "", accessor: null },
+                  { header: " ", accessor: null },
                   { header: "", accessor: null },
                 ]}
                 renderRow={(item, idx) => (
@@ -335,7 +335,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                     </Table.Cell>
                     <Table.Cell w="10">
                       <MenuRoot>
-                        <MenuTrigger>
+                        <MenuTrigger asChild>
                           <IconButton
                             data-testid="activity-more-icon"
                             aria-label="more-icon"

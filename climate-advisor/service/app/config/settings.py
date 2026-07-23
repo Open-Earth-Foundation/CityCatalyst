@@ -120,7 +120,7 @@ class RoleModelConfig(BaseModel):
 
 
 class ResearchModelConfig(BaseModel):
-    """Direct OpenAI model settings for bounded CNB workflows."""
+    """OpenRouter model settings for bounded CNB workflows."""
 
     name: str
     reasoning_effort: Literal["low", "medium", "high"] = "medium"
@@ -284,17 +284,11 @@ class OpenRouterConfig(BaseModel):
     timeout_ms: Optional[int] = None
     retry_attempts: Optional[int] = None
     retry_delay_ms: Optional[int] = None
-
-
-class OpenAIConfig(BaseModel):
-    base_url: str
-    timeout_ms: Optional[int] = None
     embedding_model: str
 
 
 class APIConfig(BaseModel):
     openrouter: OpenRouterConfig
-    openai: OpenAIConfig
     requests: Optional[Dict[str, Any]] = None
 
 
@@ -414,9 +408,6 @@ class Settings(BaseModel):
     openrouter_api_key: str | None = os.getenv("OPENROUTER_API_KEY")
     openrouter_base_url: str | None = None
     openrouter_model: str | None = None
-
-    # OpenAI configuration for embeddings
-    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
     # Firecrawl is used only by the offline CNB research CLI.
     firecrawl_api_key: str | None = os.getenv("FIRECRAWL_API_KEY")

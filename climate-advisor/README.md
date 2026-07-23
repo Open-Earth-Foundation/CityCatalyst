@@ -4,9 +4,8 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the
 conversational experience for CityCatalyst (CC). The service lives under
 `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
-- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible chat
-  client; OpenRouter is the default router and direct OpenAI chat endpoints are
-  also supported
+- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible client
+  routed exclusively through OpenRouter
 - **Persistent Threads And Messages**: PostgreSQL-backed conversation history
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
@@ -22,7 +21,7 @@ conversational experience for CityCatalyst (CC). The service lives under
 - **Streaming Responses**: Server-Sent Events (SSE) for real-time message
   delivery
 - **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
-  OpenAI trace logging
+  model-call logging
 - **Offline CNB Research Review**: Firecrawl-backed funding research plus a
   local static editor for selecting, correcting, and saving review updates
 
@@ -115,7 +114,9 @@ selects one proposed canonical funder for every funded project, and saves
 candidate context, model rationale, evidence, and caveats; reviewers can keep or
 exclude matches and save `<run_id>.similar-project-review.json`. Technical
 references remain preserved but read-only. The browser never modifies the input
-file or writes to a database.
+file or writes to a database. Pending, needs-changes, and rejected corpus reviews
+may be saved without a canonical funder selection; approval still requires one
+valid proposed funder for every funded project.
 
 The local importer pairs the files only when their `run_id` values match. It
 requires an approved review, an existing reviewer-selected `funder_id`, and
@@ -396,7 +397,6 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climat
 CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
-OPENAI_API_KEY=your-openai-api-key
 LANGSMITH_API_KEY=your-langsmith-key
 
 # Optional - CityCatalyst integration
@@ -469,7 +469,8 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, and Stationary Energy review chat-context prompt budgets.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
-such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
+such as `OPENROUTER_API_KEY` and `LANGSMITH_API_KEY`. All LLM and embedding
+requests use OpenRouter.
 
 Prompt paths are also configured in `llm_config.yaml`:
 
@@ -510,12 +511,11 @@ language, or client-side fallback behavior. The boundary is:
 
 ### Environment Variables
 
-- `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
+- `OPENROUTER_API_KEY` - OpenRouter API key for LLM and embedding access
 - `CA_DATABASE_URL` - PostgreSQL connection string
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
-- `OPENAI_API_KEY` - OpenAI API key for embeddings
 - `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
 - `CC_API_KEY` - Service credential used when CA asks CC to validate the

@@ -11,7 +11,7 @@ Inputs:
   optional application-template URL, an optional validated
   `current_filled_object`, and an optional positive `max_turns` value that
   defaults to 15.
-- Env vars: `OPENAI_API_KEY` calls the configured research model and
+- Env vars: `OPENROUTER_API_KEY` calls the configured research model and
   `FIRECRAWL_API_KEY` calls Firecrawl. Values are loaded from the Climate
   Advisor `.env` by shared settings and are never written to artifacts.
 

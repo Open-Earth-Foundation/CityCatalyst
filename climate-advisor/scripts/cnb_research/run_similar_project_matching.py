@@ -21,7 +21,7 @@ Inputs:
   - ``--source-bundle``: Optional path recorded as provenance for a local
     ``--input`` snapshot. The file is not parsed or modified by this command.
   - ``--log-level``: Python logging level; defaults to ``INFO``.
-- Env vars: ``OPENAI_API_KEY`` is loaded from the Climate Advisor ``.env`` and
+- Env vars: ``OPENROUTER_API_KEY`` is loaded from the Climate Advisor ``.env`` and
   used with the model, reasoning effort, API base URL, and prompt configured in
   ``llm_config.yaml``. Its value is never written to an artifact or log, and
   provider-side response storage is disabled for this local harness.
@@ -378,6 +378,7 @@ def main() -> None:
         CnbSimilarProjectReviewRunArtifact,
         CnbSimilarProjectReviewState,
     )
+    from app.services.openrouter_client import build_openrouter_client_options
     from app.services.cnb_similar_project_search import ProjectMatchingService
 
     # Step 2: reject malformed input or missing provenance before a provider call.
@@ -392,11 +393,18 @@ def main() -> None:
         logger.error("Invalid similar-project review input: %s", exc)
         raise SystemExit(2) from exc
 
-    # Step 3: load shared config and require a real provider credential.
+    # Step 3: load shared OpenRouter configuration and require its credential.
     settings = get_settings()
-    if not settings.openai_api_key:
-        logger.error("OPENAI_API_KEY is required for similar-project matching")
-        raise SystemExit(2)
+    try:
+        client_options = build_openrouter_client_options(
+            settings,
+            missing_api_key_message=(
+                "OPENROUTER_API_KEY is required for similar-project matching"
+            ),
+        )
+    except ValueError as exc:
+        logger.error("%s", exc)
+        raise SystemExit(2) from exc
     model_config = settings.llm.models.funding_research
     prompt = settings.llm.prompts.get_prompt("cnb_similar_project_matching")
     prompt_sha256 = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
@@ -404,11 +412,7 @@ def main() -> None:
     # Step 4: execute the matching service against local protocol adapters.
     workflow_store = LocalReviewWorkflowStore()
     reference_data_client = LocalReviewReferenceDataClient(run_input.candidates)
-    openai_config = settings.llm.api.openai
-    openai_client = OpenAI(
-        api_key=settings.openai_api_key,
-        base_url=openai_config.base_url,
-    )
+    openai_client = OpenAI(**client_options.kwargs)
     try:
         service = ProjectMatchingService.from_settings(
             openai_client=openai_client,

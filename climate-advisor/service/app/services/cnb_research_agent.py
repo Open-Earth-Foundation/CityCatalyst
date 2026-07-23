@@ -237,6 +237,7 @@ def run_agent_loop(
                 previous_result=current_filled_object,
                 candidate_result=response.output_parsed,
                 captured_source_refs=captured_source_refs,
+                target_funded_projects=request.target_funded_projects,
             )
             current_filled_object = exclude_target_project_self_matches(
                 request=request,
@@ -325,6 +326,7 @@ def preserve_evidence_qualified_funded_projects(
     previous_result: FundingOpportunityResearchResult,
     candidate_result: FundingOpportunityResearchResult,
     captured_source_refs: set[str],
+    target_funded_projects: int,
 ) -> FundingOpportunityResearchResult:
     """Restore omitted rows with only facts supported by current-run evidence."""
     candidate_record_refs = {
@@ -385,7 +387,7 @@ def preserve_evidence_qualified_funded_projects(
         retained_material_paths = {
             path
             for path in row_material_paths
-            if parent_evidence or path in evidence_paths
+            if path in evidence_paths
         }
         record_data = {
             "funding_record_ref": record.funding_record_ref,
@@ -453,11 +455,16 @@ def preserve_evidence_qualified_funded_projects(
     merged_data["source_assessments"].extend(
         assessment.model_dump(mode="python") for assessment in restored_assessments
     )
-    merged_data["gaps"] = [
-        gap
-        for gap in merged_data["gaps"]
-        if gap["target_path"] != TARGET_FUNDED_PROJECTS_GAP_PATH
-    ]
+    # Clear the shortfall only when the merged checkpoint actually reaches its target.
+    funded_record_count = sum(
+        not record["is_opportunity"] for record in merged_data["funding_records"]
+    )
+    if funded_record_count >= target_funded_projects:
+        merged_data["gaps"] = [
+            gap
+            for gap in merged_data["gaps"]
+            if gap["target_path"] != TARGET_FUNDED_PROJECTS_GAP_PATH
+        ]
     return FundingOpportunityResearchResult.model_validate(merged_data)
 
 

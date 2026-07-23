@@ -10,7 +10,7 @@ Inputs:
   - `--output`: Parent directory for per-run artifacts; defaults to `output/cnb_research`.
   - `--log-level`: Python logging level; defaults to `INFO`.
 - Files/paths: the project JSON contains the target project's matching profile. A single-request input contains the exact seeded funder/program names and URLs plus optional `application_template_url`, `current_filled_object`, `target_funded_projects`, and `max_turns`. When omitted, `max_turns` defaults to 20 for this similar-project research CLI. A batch input adds a human-readable `batch_name` and a non-empty `requests` array of those same request objects.
-- Env vars: `OPENAI_API_KEY` calls the configured research and funder-identity models, and `FIRECRAWL_API_KEY` calls Firecrawl. Shared MLflow environment variables remain optional and are handled by the reused research pipeline.
+- Env vars: `OPENROUTER_API_KEY` calls the configured research and funder-identity models, and `FIRECRAWL_API_KEY` calls Firecrawl. Shared MLflow environment variables remain optional and are handled by the reused research pipeline.
 
 Outputs:
 - Reuses the existing funding-opportunity research pipeline to create the normal run artifacts under `<output>/<run_id>/`, including `research_bundle.json`, `review.md`, `agent_trace.jsonl`, and source snapshots.
@@ -373,6 +373,7 @@ def main() -> None:
     from app.services.cnb_funder_identity_match import (
         propose_funder_identity_candidates,
     )
+    from app.services.openrouter_client import build_openrouter_client_options
     from app.services.cnb_research_service import run_funding_opportunity_research
 
     # Step 3: validate the target project, research manifest, and optional selection.
@@ -411,10 +412,13 @@ def main() -> None:
     openai_client = None
     try:
         settings = get_settings()
-        openai_client = OpenAI(
-            api_key=settings.openai_api_key,
-            base_url=settings.llm.api.openai.base_url,
+        client_options = build_openrouter_client_options(
+            settings,
+            missing_api_key_message=(
+                "OpenRouter API key (OPENROUTER_API_KEY) must be set"
+            ),
         )
+        openai_client = OpenAI(**client_options.kwargs)
         identity_model = settings.llm.models.funder_identity
         run_research = partial(
             run_funding_opportunity_research,

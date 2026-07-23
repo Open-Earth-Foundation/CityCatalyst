@@ -25,7 +25,6 @@ def _required_env() -> dict[str, str]:
         "CC_BASE_URL",
         "CC_API_KEY",
         "OPENROUTER_API_KEY",
-        "OPENAI_API_KEY",
         "CA_E2E_CC_TOKEN",
         "CA_E2E_USER_ID",
         "CA_E2E_CITY_ID",

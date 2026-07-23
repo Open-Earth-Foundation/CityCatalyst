@@ -26,6 +26,7 @@ from app.services.cnb_research_artifacts import (
     write_research_artifacts,
 )
 from app.services.cnb_research_bundle import build_research_bundle
+from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.firecrawl import FirecrawlClient
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
@@ -64,13 +65,18 @@ def run_funding_opportunity_research(
     started_at = datetime.now(timezone.utc)
     started_clock = time.monotonic()
 
-    # Create the model client once and track whether this function owns its lifecycle.
-    openai_config = settings.llm.api.openai
+    # Create the OpenRouter client once and track whether this function owns it.
     owns_openai_client = openai_client is None
-    research_client = openai_client or OpenAI(
-        api_key=settings.openai_api_key,
-        base_url=openai_config.base_url,
-    )
+    if openai_client is None:
+        client_options = build_openrouter_client_options(
+            settings,
+            missing_api_key_message=(
+                "OpenRouter API key (OPENROUTER_API_KEY) must be set"
+            ),
+        )
+        research_client = OpenAI(**client_options.kwargs)
+    else:
+        research_client = openai_client
     firecrawl: FirecrawlClient | None = None
 
     try:
@@ -195,8 +201,8 @@ def run_funding_opportunity_research(
 
 def validate_credentials(settings: Settings) -> None:
     """Fail before creating clients when either required provider key is absent."""
-    if not settings.openai_api_key:
-        raise ValueError("OPENAI_API_KEY must be set")
+    if not settings.openrouter_api_key:
+        raise ValueError("OPENROUTER_API_KEY must be set")
     if not settings.firecrawl_api_key:
         raise ValueError("FIRECRAWL_API_KEY must be set")
 

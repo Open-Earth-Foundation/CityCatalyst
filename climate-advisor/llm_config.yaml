@@ -12,10 +12,10 @@ models:
     description: "Agentic flow model for high-context review and source selection workflows."
     temperature: 0.0
   funding_research:
-    name: "gpt-5.6-terra"
+    name: "openai/gpt-5.4"
     reasoning_effort: "medium"
   funder_identity:
-    name: "gpt-5.4-mini"
+    name: "openai/gpt-5.4-mini"
     reasoning_effort: "low"
 
 # Generation Parameters
@@ -59,13 +59,7 @@ api:
     timeout_ms: 30000
     retry_attempts: 3
     retry_delay_ms: 1000
-
-  # OpenAI configuration for embeddings
-  openai:
-    base_url: "https://api.openai.com/v1"
-    # API key should be set via environment variable OPENAI_API_KEY
-    timeout_ms: 30000
-    embedding_model: "text-embedding-3-large"
+    embedding_model: "openai/text-embedding-3-large"
 
   # Request configuration
   requests:

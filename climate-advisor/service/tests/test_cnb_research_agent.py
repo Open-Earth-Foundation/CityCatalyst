@@ -3,8 +3,17 @@
 import json
 from types import SimpleNamespace
 
-from app.models.cnb_research import ResearchGap
-from app.services.cnb_research_agent import find_missing_data, run_agent_loop
+from app.models.cnb_research import (
+    FieldEvidence,
+    FundingRecordResearchResult,
+    ResearchGap,
+)
+from app.services.cnb_research_agent import (
+    TARGET_FUNDED_PROJECTS_GAP_PATH,
+    find_missing_data,
+    preserve_evidence_qualified_funded_projects,
+    run_agent_loop,
+)
 from tests.cnb_research_helpers import build_request, build_result
 
 
@@ -125,3 +134,102 @@ def test_recaptured_resume_evidence_can_satisfy_coverage() -> None:
 
     assert not any("prior-run" in item for item in missing)
     assert not any("funding_records[opportunity-001].status" in item for item in missing)
+
+
+def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> None:
+    base = build_result()
+    project = FundingRecordResearchResult(
+        funding_record_ref="project-001",
+        funder_ref="funder-001",
+        is_opportunity=False,
+        name="Evidence-backed project",
+        award_amount=999,
+        currency="USD",
+    )
+    row_evidence = FieldEvidence(
+        evidence_ref="evidence-project-row",
+        funding_record_ref=project.funding_record_ref,
+        target_path="funding_records[project-001]",
+        source_ref="source-project",
+        quote_or_summary="The program supported Evidence-backed project.",
+    )
+    previous_result = base.model_copy(
+        update={
+            "funding_records": [*base.funding_records, project],
+            "evidence": [*base.evidence, row_evidence],
+        }
+    )
+
+    restored = preserve_evidence_qualified_funded_projects(
+        previous_result=previous_result,
+        candidate_result=base,
+        captured_source_refs={"source-project"},
+        target_funded_projects=1,
+    )
+
+    restored_project = next(
+        record
+        for record in restored.funding_records
+        if record.funding_record_ref == project.funding_record_ref
+    )
+    assert restored_project.name == project.name
+    assert restored_project.award_amount is None
+    assert restored_project.currency is None
+    assert [item.evidence_ref for item in restored.evidence] == [
+        "evidence-001",
+        "evidence-project-row",
+    ]
+
+
+def test_restored_project_only_clears_a_satisfied_target_gap() -> None:
+    base = build_result()
+    project = FundingRecordResearchResult(
+        funding_record_ref="project-001",
+        funder_ref="funder-001",
+        is_opportunity=False,
+        name="Evidence-backed project",
+    )
+    row_evidence = FieldEvidence(
+        evidence_ref="evidence-project-row",
+        funding_record_ref=project.funding_record_ref,
+        target_path="funding_records[project-001]",
+        source_ref="source-project",
+        quote_or_summary="The program supported Evidence-backed project.",
+    )
+    previous_result = base.model_copy(
+        update={
+            "funding_records": [*base.funding_records, project],
+            "evidence": [*base.evidence, row_evidence],
+        }
+    )
+    candidate_result = base.model_copy(
+        update={
+            "gaps": [
+                ResearchGap(
+                    target_path=TARGET_FUNDED_PROJECTS_GAP_PATH,
+                    reason="Only one funded project was documented.",
+                )
+            ]
+        }
+    )
+
+    still_short = preserve_evidence_qualified_funded_projects(
+        previous_result=previous_result,
+        candidate_result=candidate_result,
+        captured_source_refs={"source-project"},
+        target_funded_projects=2,
+    )
+    target_met = preserve_evidence_qualified_funded_projects(
+        previous_result=previous_result,
+        candidate_result=candidate_result,
+        captured_source_refs={"source-project"},
+        target_funded_projects=1,
+    )
+
+    assert any(
+        gap.target_path == TARGET_FUNDED_PROJECTS_GAP_PATH
+        for gap in still_short.gaps
+    )
+    assert all(
+        gap.target_path != TARGET_FUNDED_PROJECTS_GAP_PATH for gap in target_met.gaps
+    )

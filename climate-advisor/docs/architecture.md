@@ -337,10 +337,10 @@ Stationary Energy chat also has a dedicated prompt budget:
 
 ### LLM Providers
 
-- OpenRouter is the default chat-completions provider.
-- Direct OpenAI chat endpoints are also supported through the same
-  OpenAI-compatible client abstraction.
-- OpenAI embeddings power `climate_vector_search`.
+- OpenRouter is the sole LLM and embedding gateway.
+- OpenAI-compatible SDK clients retain provider-prefixed model IDs and route
+  requests through the configured OpenRouter base URL.
+- OpenRouter-hosted embeddings power `climate_vector_search`.
 
 ### CityCatalyst
 

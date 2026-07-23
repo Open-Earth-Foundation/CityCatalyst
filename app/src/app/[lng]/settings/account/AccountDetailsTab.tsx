@@ -13,7 +13,7 @@ import { UpdateUserPayload, UserInfoResponse } from "@/util/types";
 
 interface AccountDetailsFormProps {
   t: TFunction;
-  userInfo: UserInfoResponse;
+  userInfo?: UserInfoResponse;
   showTitle?: boolean;
 }
 
@@ -54,7 +54,7 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const payload: UpdateUserPayload = {
-      userId: userInfo.userId,
+      userId: userInfo?.userId,
       name: data.name ?? "",
       email: data.email ?? "",
     };

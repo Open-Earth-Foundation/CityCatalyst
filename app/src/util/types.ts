@@ -557,7 +557,7 @@ export type OrganizationWithThemeResponse = {
 };
 
 export interface UpdateUserPayload {
-  userId: string;
+  userId?: string;
   name?: string;
   email?: string;
   title?: string;

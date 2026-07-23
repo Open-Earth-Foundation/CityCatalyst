@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { ProfileInputs } from "@/components/GHGI/inventory-pages/settings-page";
 import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
@@ -18,7 +17,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 interface SettingsTabProps {
   t: TFunction;
-  userInfo: UserInfoResponse;
+  userInfo?: UserInfoResponse;
 }
 
 interface ProfileInputs {
@@ -33,7 +32,7 @@ const numberFormatOptions = [
   { value: NumberFormatEnum.APOSTROPHE_AND_DOT, label: "apostrophe-and-dot" },
 ];
 
-const SettingsTab: FC<SettingsTabProps> = ({ t, userInfo }) => {
+const PreferencesTab: FC<SettingsTabProps> = ({ t, userInfo }) => {
   const { showSuccessToast } = UseSuccessToast({
     title: t("user-details-updated"),
     duration: 5000,
@@ -55,7 +54,7 @@ const SettingsTab: FC<SettingsTabProps> = ({ t, userInfo }) => {
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const payload: UpdateUserPayload = {
-      userId: userInfo.userId,
+      userId: userInfo?.userId,
       preferredLanguage: data.preferredLanguage ?? LANGUAGES.en,
       numberFormat: data.numberFormat ?? NumberFormatEnum.COMMA_AND_DOT,
     };
@@ -150,4 +149,4 @@ const SettingsTab: FC<SettingsTabProps> = ({ t, userInfo }) => {
   );
 };
 
-export default SettingsTab;
+export default PreferencesTab;

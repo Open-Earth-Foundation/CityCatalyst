@@ -272,14 +272,19 @@ The calendar above holds only if:
 
 ### 5.7 Week 0 — pre-kickoff checklist
 
-| # | Item | Owner | Why now |
-|---|---|---|---|
-| 1 | **Run the Global API coverage audit** over the full Chilean locode list — probe `city_attributes`, `action-policy-scores`, `action-mitigation-feasibility-scores`, `climate-finance/feasibility` for each locode and report the gaps | Backend | **Highest priority.** ~1 day of work, and the only item that can invalidate the plan. Also defines the "verified city set" that §5.5 ships against |
-| 2 | Decide the locode scheme for comunas without a UN/LOCODE (**B**) | Backend + product | Blocks onboarding, Global API lookups, and `hiap-meed`'s `^[A-Za-z]{2}\s[A-Za-z]{3}$` validation |
-| 3 | Extract the shared API contract from the prototype's `lib/hiapApi.ts` into CityCatalyst types | Backend | Unlocks true frontend/backend parallelism — frontend builds against a mock |
-| 4 | Decide MEED+ palette vs CityCatalyst semantic tokens (**C**) | Design | Affects every component; changing it mid-port is expensive |
-| 5 | Decide proxy-vs-extend-`hiap-meed` (**A**) | Backend + full-stack lead | Determines whether ~1 sprint of Python enters scope |
-| 6 | **Feature-freeze the prototype** and agree the kickoff date (**E**) | All | Anything added to the Vite app after kickoff is built twice |
+The few items that unblock the three parallel tracks. Tick as each lands.
+
+- [ ] **Run the Global API coverage audit** over the full Chilean locode list — probe
+  `city_attributes`, `action-policy-scores`, `action-mitigation-feasibility-scores`,
+  `climate-finance/feasibility` per locode and report the gaps. *Highest priority: ~1 day, the only
+  item that can invalidate the plan, and it defines the "verified city set" §5.5 ships against.*
+  Suggested lead: Amanda / data.
+- [ ] **Decide the locode scheme** for comunas without a UN/LOCODE (**B**). Suggested lead: Amanda + product.
+- [ ] **Extract the shared API contract** from the prototype's `lib/hiapApi.ts` into CityCatalyst
+  types. *Unlocks frontend/backend parallelism — frontend builds against a mock.* Suggested lead: Milan.
+- [ ] **Decide MEED+ palette vs CityCatalyst design system / tokens** (**C**). Suggested lead: Carlos + design.
+- [ ] **Decide proxy-vs-extend `hiap-meed`** (**A**). Suggested lead: Mirco + Milan.
+- [ ] **Feature-freeze the prototype and agree the kickoff date** (**E**). All.
 
 **Excluded from all of the above:** MEED/HIAP product convergence, any methodology change
 (#2690), and design work on the MEED+ brand vs CityCatalyst theme question.
@@ -363,13 +368,23 @@ See [`MeedModuleMigration-Interop.md`](./MeedModuleMigration-Interop.md).
 
 ## 7. Open questions
 
-| | Question | Why it matters |
-|---|---|---|
-| **A** | Proxy the Global API from CityCatalyst, or extend `hiap-meed` to serve the enriched context it already assembles (`services/report_context_enrichment.py`) so CityCatalyst proxies *one* upstream? | Highest-leverage decision in the plan. Determines whether screen/report consistency is guaranteed **by construction** or merely by convention. |
-| **B** | Locode scheme for Chilean comunas without a UN/LOCODE | Blocks onboarding, Global API lookups, and `hiap-meed`'s validation regex |
-| **C** | MEED+ brand palette (navy `#001EA7`, green `#16A34A`, amber `#F59E0B`) vs CityCatalyst theme — adopt CC semantic tokens, or a module-scoped Chakra recipe? | Needed before screen work starts; affects every component |
-| **D** | Do MEED and the existing HIAP module converge later? | Two prioritizers behind two cards with overlapping purpose. Relates to [#2690](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/2690) |
-| **E** | Kickoff date, and the prototype feature-freeze that goes with it | Every feature added to the Vite app after kickoff is built twice |
+To be decided together — tick each once resolved, and record the decision inline or in a PR comment.
+
+- [ ] **A — Proxy vs extend `hiap-meed`.** Proxy the Global API from CityCatalyst, or extend
+  `hiap-meed` to serve the enriched context it already assembles
+  (`services/report_context_enrichment.py`) so CityCatalyst proxies *one* upstream?
+  *Highest-leverage decision in the plan — determines whether screen/report consistency is
+  guaranteed by construction or merely by convention.* Suggested lead: Mirco + Milan.
+- [ ] **B — Locode scheme** for Chilean comunas without a UN/LOCODE. *Blocks onboarding, Global API
+  lookups, and `hiap-meed`'s `^[A-Za-z]{2}\s[A-Za-z]{3}$` validation.* Suggested lead: Amanda + product.
+- [ ] **C — Palette vs theme.** MEED+ brand palette (navy `#001EA7`, green `#16A34A`, amber
+  `#F59E0B`) vs CityCatalyst design system — adopt CC components/tokens, or a module-scoped recipe?
+  *Needed before screen work starts; affects every component.* Suggested lead: Carlos + design.
+- [ ] **D — MEED/HIAP convergence.** Do MEED and the existing HIAP module converge later? *Two
+  prioritizers behind two cards with overlapping purpose. Relates to
+  [#2690](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/2690).* Suggested lead: product + Mirco.
+- [ ] **E — Kickoff + freeze.** Kickoff date, and the prototype feature-freeze that goes with it.
+  *Every feature added to the Vite app after kickoff is built twice.* All.
 
 ---
 

@@ -45,6 +45,8 @@ Recommended baseline env vars:
 ```env
 MLFLOW_ENABLED=true
 MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
+MLFLOW_TRACKING_USERNAME=<service-user>
+MLFLOW_TRACKING_PASSWORD=<service-password>
 MLFLOW_EXPERIMENT_NAME=<service-name>
 MLFLOW_ENVIRONMENT=dev
 GIT_PYTHON_REFRESH=quiet
@@ -55,10 +57,18 @@ Recommended meanings:
 
 - `MLFLOW_ENABLED`: master on/off switch for MLflow logging
 - `MLFLOW_TRACKING_URI`: shared MLflow backend URL
+- `MLFLOW_TRACKING_USERNAME`: shared non-admin service-account username
+- `MLFLOW_TRACKING_PASSWORD`: matching password; keep real values out of Git
 - `MLFLOW_EXPERIMENT_NAME`: usually the service name, for example `hiap-meed`
 - `MLFLOW_ENVIRONMENT`: `dev`, `test`, or `prod`
 - `GIT_PYTHON_REFRESH=quiet`: suppresses GitPython warnings when the service runtime has no `git` executable
 - `MLFLOW_ASYNC_LOGGING_ENABLED`: enables async logging for tags, params, and metrics where supported
+
+For Kubernetes deployments, store the credentials in GitHub Secrets and follow
+the service's established credential-injection pattern. HIAP-MEED and Climate
+Advisor add them through their existing `kubectl set env` deployment commands.
+Never put a real password in a manifest, example file, container image, or
+README.
 
 ## What To Log
 

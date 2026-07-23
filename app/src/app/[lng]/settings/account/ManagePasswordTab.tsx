@@ -69,7 +69,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   };
 
   return (
-    <Box backgroundColor="white" p={6}>
+    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
       <VStack alignItems={"space-between"} justifyContent={"space-between"}>
         <TitleMedium>{t("manage-password")}</TitleMedium>
         <Text my={4} color="content.tertiary">

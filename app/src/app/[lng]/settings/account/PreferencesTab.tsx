@@ -69,6 +69,8 @@ const PreferencesTab = ({
       display="flex"
       flexDirection="column"
       gap="24px"
+      borderRadius="8px"
+      boxShadow="shadow-lg"
     >
       {!userInfo ? (
         <ProgressLoader />

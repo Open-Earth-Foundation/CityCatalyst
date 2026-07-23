@@ -39,10 +39,10 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         <TabTrigger value="manage-password">{t("manage-password")}</TabTrigger>
         <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
       </Tabs.List>
-      <TabContent value="brand-settings">
+      <TabContent value="brand-settings" p={0}>
         <BrandSettingsTab t={t} />
       </TabContent>
-      <TabContent value="account-details">
+      <TabContent value="account-details" p={0}>
         {isUserInfoLoading ? (
           <ProgressLoader />
         ) : (
@@ -57,12 +57,12 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
           </Box>
         )}
       </TabContent>
-      <TabContent value="manage-password">
+      <TabContent value="manage-password" p={0}>
         <Box bg="background.default">
           <ManagePasswordTab t={t} />
         </Box>
       </TabContent>
-      <TabContent value="preferences">
+      <TabContent value="preferences" p={0}>
         <PreferencesTab t={t} userInfo={userInfo} />
       </TabContent>
     </Tabs.Root>

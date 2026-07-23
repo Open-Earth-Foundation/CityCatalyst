@@ -66,11 +66,13 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
 
   return (
     <Box
-      backgroundColor="white"
       p={6}
       display="flex"
       flexDirection="column"
       gap="24px"
+      borderRadius="8px"
+      boxShadow="shadow-lg"
+      backgroundColor="white"
     >
       {!userInfo ? (
         <ProgressLoader />

@@ -144,7 +144,7 @@ const BrandSettingsTab = ({ t }: { t: TFunction }) => {
   if (isLoading || isOrganizationLoading) return <ProgressLoader />;
 
   return (
-    <Box backgroundColor="white" p={6}>
+    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
       <Text
         color="content.primary"
         fontWeight="semibold"

@@ -8,7 +8,7 @@ import type {
   DataSourceMethodology,
   DataSourceMethodologyId,
 } from "./DataSourceMethodology";
-import { EmissionsFactor, EmissionsFactorId } from "./EmissionsFactor";
+import { EmissionsFactor } from "./EmissionsFactor";
 
 export interface MethodologyAttributes {
   methodologyId: string;

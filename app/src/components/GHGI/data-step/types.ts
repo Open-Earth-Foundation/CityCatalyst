@@ -110,28 +110,6 @@ export type DataSourceWithRelations = DataSourceAttributes & {
   scopes: Scope[];
 };
 
-export type DataSourceData = {
-  totals: {
-    emissions: {
-      co2_mass: string;
-      co2_co2eq: string;
-      ch4_mass: string;
-      ch4_co2eq_100yr: string;
-      ch4_co2eq_20yr: string;
-      n2o_mass: string;
-      n2o_co2eq_100yr: string;
-      n2o_co2eq_20yr: string;
-      co2eq_100yr: string;
-      co2eq_20yr: string;
-      gpc_quality: string;
-    };
-  };
-  points?: any;
-  scaleFactor: number;
-  issue: string | null;
-  records: DataSourceActivityDataRecord[];
-};
-
 export interface DataSourceActivityDataGas {
   gas_name: string;
   emissions_value: number;
@@ -146,12 +124,20 @@ export interface DataSourceActivityDataGas {
 export interface GlobalAPISourceResponse {
   totals?: {
     emissions?: {
-      co2eq_100yr: string;
       co2_mass: string;
-      n2o_mass: string;
+      co2_co2eq: string;
       ch4_mass: string;
+      ch4_co2eq_100yr: string;
+      ch4_co2eq_20yr: string;
+      n2o_mass: string;
+      n2o_co2eq_100yr: string;
+      n2o_co2eq_20yr: string;
+      co2eq_100yr: string;
+      co2eq_20yr: string;
+      gpc_quality: string;
     };
   };
+  points?: unknown;
   records?: DataSourceActivityDataRecord[];
   // inserted from DataSourceService.getSourceWithData
   scaleFactor?: number;

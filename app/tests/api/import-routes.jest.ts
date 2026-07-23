@@ -29,7 +29,8 @@ import { SubSector } from "@/models/SubSector";
 import { SubCategory } from "@/models/SubCategory";
 import { Op } from "sequelize";
 import Excel from "exceljs";
-import { expectStatusCode, expectStatusCodes } from "../helpers";
+import { expectStatusCode, expectStatusCodes, mockRequest } from "../helpers";
+import { Scope } from "@/models/init-models";
 
 // Test helpers (avoiding helpers.ts due to import.meta.url ESM issue)
 const mockUrl = "http://localhost:3000/api/v1";
@@ -85,24 +86,6 @@ async function createMockXLSXFile(options?: {
   return Buffer.from(buffer);
 }
 
-export function mockRequest(
-  body?: any,
-  searchParams?: Record<string, string>,
-  headers?: Record<string, string>,
-): NextRequest {
-  const request = new NextRequest(new URL(mockUrl));
-  request.json = jest.fn(() =>
-    Promise.resolve(body),
-  ) as unknown as typeof request.json;
-  for (const param in searchParams) {
-    request.nextUrl.searchParams.append(param, searchParams[param]);
-  }
-  for (const header in headers) {
-    request.headers.append(header, headers[header]);
-  }
-  return request;
-}
-
 export function setupTests() {
   const projectDir = process.cwd();
   // Load env config - this is essential for database connection
@@ -144,8 +127,8 @@ describe("Import Routes API", () => {
   let sector: Sector;
   let subsector: SubSector;
   let subcategory: SubCategory;
-  let subsectorScope: any;
-  let subcategoryScope: any;
+  let subsectorScope: Scope;
+  let subcategoryScope: Scope;
 
   beforeAll(async () => {
     setupTests();
@@ -291,7 +274,7 @@ describe("Import Routes API", () => {
       // No file appended
 
       const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
+      req.formData = jest.fn(() => Promise.resolve(formData));
 
       const res = await uploadImportFile(req, {
         params: Promise.resolve({
@@ -316,7 +299,7 @@ describe("Import Routes API", () => {
       formData.append("file", mockFile);
 
       const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
+      req.formData = jest.fn(() => Promise.resolve(formData));
 
       try {
         await uploadImportFile(req, {
@@ -326,7 +309,7 @@ describe("Import Routes API", () => {
           }),
         });
         assert.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         assert.ok(error);
       }
     });
@@ -344,7 +327,7 @@ describe("Import Routes API", () => {
       formData.append("file", mockFile);
 
       const req = mockRequest();
-      req.formData = jest.fn(() => Promise.resolve(formData)) as any;
+      req.formData = jest.fn(() => Promise.resolve(formData));
 
       try {
         await uploadImportFile(req, {
@@ -354,7 +337,7 @@ describe("Import Routes API", () => {
           }),
         });
         assert.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         assert.ok(error);
       }
     });
@@ -728,7 +711,7 @@ describe("Import Routes API", () => {
           }),
         });
         assert.fail("Should have thrown an error");
-      } catch (error: any) {
+      } catch (error) {
         assert.ok(error);
       }
     });
@@ -785,7 +768,7 @@ describe("Import Routes API", () => {
       // Note: In a real test environment, you would mock these services
       // For now, we'll let the test run and handle failures gracefully
 
-      const res = await approveImport(req, {
+      await approveImport(req, {
         params: Promise.resolve({
           city: city.cityId,
           inventory: inventory.inventoryId,
@@ -794,7 +777,7 @@ describe("Import Routes API", () => {
 
       // Verify mapping overrides were stored
       await importedFile.reload();
-      const config = importedFile.mappingConfiguration as any;
+      const config = importedFile.mappingConfiguration;
       expect(config?.overrides).toBeTruthy();
     });
   });

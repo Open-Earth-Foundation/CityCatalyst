@@ -103,18 +103,6 @@ jobs:
       - name: Testing connection to EKS
         run: kubectl get pods -n default
 
-      - name: Create or update MLflow credentials
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
-        run: |
-          : "${MLFLOW_TRACKING_USERNAME:?Set GitHub secret MLFLOW_TRACKING_USERNAME}"
-          : "${MLFLOW_TRACKING_PASSWORD:?Set GitHub secret MLFLOW_TRACKING_PASSWORD}"
-          kubectl -n default create secret generic mlflow-client-credentials \
-            --from-literal=username="${MLFLOW_TRACKING_USERNAME}" \
-            --from-literal=password="${MLFLOW_TRACKING_PASSWORD}" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Deploying test service
         run: |
           kubectl apply -f hiap-meed/k8s/deployment-test.yml
@@ -123,7 +111,9 @@ jobs:
           kubectl set env deployment/hiap-meed-test \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_HIAP_MEED_TEST}} \
             AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID_HIAP_MEED_DEV}} \
-            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP_MEED_DEV}}
+            AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY_HIAP_MEED_DEV}} \
+            MLFLOW_TRACKING_USERNAME=${{secrets.MLFLOW_TRACKING_USERNAME}} \
+            MLFLOW_TRACKING_PASSWORD=${{secrets.MLFLOW_TRACKING_PASSWORD}}
 
           kubectl rollout restart deployment hiap-meed-test -n default
           kubectl rollout status deployment/hiap-meed-test -n default

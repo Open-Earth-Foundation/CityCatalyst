@@ -168,18 +168,6 @@ jobs:
       - name: Test connection to EKS
         run: kubectl get pods -n default
 
-      - name: Create or update MLflow credentials
-        env:
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
-        run: |
-          : "${MLFLOW_TRACKING_USERNAME:?Set GitHub secret MLFLOW_TRACKING_USERNAME}"
-          : "${MLFLOW_TRACKING_PASSWORD:?Set GitHub secret MLFLOW_TRACKING_PASSWORD}"
-          kubectl -n default create secret generic mlflow-client-credentials \
-            --from-literal=username="${MLFLOW_TRACKING_USERNAME}" \
-            --from-literal=password="${MLFLOW_TRACKING_PASSWORD}" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Deploy test service
         run: |
           kubectl apply -f climate-advisor/k8s/db-configmap-test.yml -n default
@@ -196,6 +184,8 @@ jobs:
             CC_BASE_URL=https://citycatalyst-test.openearth.dev \
             CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC \
             MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME}" \
+            MLFLOW_TRACKING_USERNAME=${{secrets.MLFLOW_TRACKING_USERNAME}} \
+            MLFLOW_TRACKING_PASSWORD=${{secrets.MLFLOW_TRACKING_PASSWORD}} \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default

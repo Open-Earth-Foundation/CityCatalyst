@@ -34,16 +34,6 @@ spec:
               value: "true"
             - name: MLFLOW_TRACKING_URI
               value: "https://mlflow-dev.openearth.dev"
-            - name: MLFLOW_TRACKING_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mlflow-client-credentials
-                  key: username
-            - name: MLFLOW_TRACKING_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mlflow-client-credentials
-                  key: password
             - name: MLFLOW_ENVIRONMENT
               value: "test"
             - name: MLFLOW_EXPERIMENT_NAME

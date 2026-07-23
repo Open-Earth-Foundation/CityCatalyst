@@ -449,7 +449,7 @@ language, or client-side fallback behavior. The boundary is:
   `https://mlflow-dev.openearth.dev`
 - `MLFLOW_TRACKING_USERNAME` - Non-admin MLflow service-account username
 - `MLFLOW_TRACKING_PASSWORD` - Service-account password; store real values only
-  in local `.env`, GitHub Secrets, or a Kubernetes Secret
+  in local `.env` or GitHub Secrets
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
   default `Clima`
@@ -848,15 +848,14 @@ helpers with in-memory fakes, but they do not send runs or traces to the remote
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
 because the value is a non-sensitive experiment name. The Kubernetes manifests
-still keep the same default. A direct `kubectl apply` deployment requires the
-`mlflow-client-credentials` Kubernetes Secret to exist first.
+still keep the same default.
 
 The authentication values are different: deployment workflows read
 `MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` from GitHub Secrets,
-create or update the `mlflow-client-credentials` Kubernetes Secret, and the
-Deployment consumes its `username` and `password` keys through `secretKeyRef`.
-Use the shared non-admin service account; do not use the MLflow admin account or
-Flask signing secret.
+then add them to the existing per-environment `kubectl set env` command
+alongside the other service credentials. A manual deployment must set the same
+environment variables after applying the manifests. Use the shared non-admin
+service account; do not use the MLflow admin account or Flask signing secret.
 
 Before enabling MLflow in an environment:
 

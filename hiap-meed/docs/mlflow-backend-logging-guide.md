@@ -64,10 +64,11 @@ Recommended meanings:
 - `GIT_PYTHON_REFRESH=quiet`: suppresses GitPython warnings when the service runtime has no `git` executable
 - `MLFLOW_ASYNC_LOGGING_ENABLED`: enables async logging for tags, params, and metrics where supported
 
-For Kubernetes deployments, store the credentials in GitHub Secrets and have
-the deployment workflow create or update a Kubernetes Secret. Pods should read
-the credentials with `secretKeyRef`; never put a real password in a manifest,
-example file, container image, or README.
+For Kubernetes deployments, store the credentials in GitHub Secrets and follow
+the service's established credential-injection pattern. HIAP-MEED and Climate
+Advisor add them through their existing `kubectl set env` deployment commands.
+Never put a real password in a manifest, example file, container image, or
+README.
 
 ## What To Log
 

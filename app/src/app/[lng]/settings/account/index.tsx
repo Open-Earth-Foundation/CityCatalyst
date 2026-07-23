@@ -26,7 +26,7 @@ import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
-import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
+import ManagePasswordTabContent from "@/app/[lng]/settings/account/ManagePasswordTabContent";
 import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
@@ -35,7 +35,7 @@ import { trackEvent } from "@/lib/analytics";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
-import AccountDetailsTabPanel from "@/components/Tabs/MyProfileTab/AccountDetailsTabPanel";
+import AccountDetailsTabPanel from "@/app/[lng]/settings/account/AccountDetailsTabPanel";
 
 const KeyColorMapping = {
   blue_theme: "#001EA7",

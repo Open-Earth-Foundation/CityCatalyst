@@ -4,9 +4,9 @@ import { Box, Tabs, Text } from "@chakra-ui/react";
 import { FC } from "react";
 import { UserAttributes } from "@/models/User";
 import { TFunction } from "i18next";
-import AccountDetailsTabPanel from "./AccountDetailsTabPanel";
+import AccountDetailsTabPanel from "@/app/[lng]/settings/account/AccountDetailsTabPanel";
 import ManageCitiesTabPanel from "./ManageCitiesTabPanel";
-import ManagePasswordTabContent from "./ManagePasswordTabContent";
+import ManagePasswordTabContent from "@/app/[lng]/settings/account/ManagePasswordTabContent";
 
 interface MyProfileTabProps {
   t: TFunction;

@@ -30,7 +30,7 @@ export function OrganizationSelector({
       mb={4}
       width="300px"
       style={{
-        fontFamily: "Poppins",
+        fontFamily: "heading",
         fontSize: "button.md",
         fontWeight: 600,
         lineHeight: "16px",

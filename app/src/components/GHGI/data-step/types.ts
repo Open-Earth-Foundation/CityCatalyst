@@ -1,11 +1,11 @@
 import type { DataSourceI18nAttributes as DataSourceAttributes } from "@/models/DataSourceI18n";
 import type { GasValueAttributes } from "@/models/GasValue";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
-import { Publisher } from "@/models/Publisher";
-import { Scope, ScopeAttributes } from "@/models/Scope";
+import type { Publisher } from "@/models/Publisher";
+import type { Scope, ScopeAttributes } from "@/models/Scope";
 import type { SectorAttributes } from "@/models/Sector";
-import { SubCategoryAttributes } from "@/models/SubCategory";
-import { SubSectorAttributes } from "@/models/SubSector";
+import type { SubCategoryAttributes } from "@/models/SubCategory";
+import type { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
 import type { ElementType } from "react";
 

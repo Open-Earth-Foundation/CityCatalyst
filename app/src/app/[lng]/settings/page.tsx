@@ -21,6 +21,30 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
   const { data: userInfo } = api.useGetUserInfoQuery();
   const isAdmin = userInfo?.role === Roles.Admin;
 
+  // TODO enable this when global organization dropdown exists
+  /*
+  const { data: orgData, isLoading: isOrgDataFetching } =
+    api.useGetOrganizationQuery(id, {
+      skip: !id,
+    });
+
+  const { setOrganization, organization } = useOrganizationContext();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    if (orgData) {
+      const newOrgState = normalizeOrganizationState(orgData);
+
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
+      }
+      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
+    } else {
+      setTheme("blue_theme");
+    }
+  }, [isOrgDataFetching, orgData, organization, setOrganization, setTheme]);
+  */
+
   return (
     <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`}>

@@ -68,11 +68,13 @@ const TeamSettings = ({ lng }: { lng: string }) => {
   const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
-    api.useGetOrganizationQuery(selectedOrganization);
+    api.useGetOrganizationQuery(selectedOrganization!, {
+      skip: !selectedOrganization,
+    });
 
   const { data: projectsData, isLoading } = api.useGetProjectsQuery(
     {
-      organizationId: selectedOrganization,
+      organizationId: selectedOrganization!,
     },
     {
       skip: !selectedOrganization,

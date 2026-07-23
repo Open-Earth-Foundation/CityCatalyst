@@ -15,50 +15,64 @@ def write_output_plan_llm_artifacts(
     This helper owns report-specific artifact layout. `ArtifactWriter` remains
     generic and only handles JSON/text file persistence.
     """
-    chapters = llm_io.get("chapters")
-    if isinstance(chapters, list):
-        for chapter in chapters:
-            if not isinstance(chapter, dict):
+    languages = llm_io.get("languages")
+    if isinstance(languages, dict):
+        for language, language_io in languages.items():
+            if not isinstance(language_io, dict):
                 continue
-            chapter_key = str(chapter.get("chapter") or "unknown")
-            prompt_text = chapter.get("prompt_text")
-            if isinstance(prompt_text, str):
-                artifact_writer.write_run_text_file(
-                    f"llm/{chapter_key}_prompt.txt",
-                    prompt_text,
-                )
+            chapters = language_io.get("chapters")
+            if not isinstance(chapters, list):
+                continue
+            for chapter in chapters:
+                if not isinstance(chapter, dict):
+                    continue
+                chapter_key = str(chapter.get("chapter") or "unknown")
+                prompt_text = chapter.get("prompt_text")
+                if isinstance(prompt_text, str):
+                    artifact_writer.write_run_text_file(
+                        f"llm/{language}/{chapter_key}_prompt.txt",
+                        prompt_text,
+                    )
     artifact_writer.write_run_file("llm/output_plan_io.json", llm_io)
 
 
-def build_output_plan_markdown(response: CityActionReportApiResponse) -> str:
-    """Build a reader-friendly Markdown document from generated report chapters."""
+def build_output_plan_markdown(
+    response: CityActionReportApiResponse, language: str
+) -> str:
+    """Build one reader-friendly Markdown document in the requested language."""
+    if language not in response.language:
+        raise ValueError(f"Language `{language}` is not present in the report")
     parts = [
         f"# Output Plan: {response.action_id}",
         "",
         f"- City: {response.locode}",
         f"- Action ID: {response.action_id}",
-        f"- Language: {response.language}",
+        f"- Language: {language}",
         "",
     ]
     for chapter in response.chapters:
-        chapter_markdown = chapter.markdown.strip()
+        chapter_title = chapter.title[language]
+        chapter_markdown = chapter.markdown[language].strip()
         if not chapter_markdown:
             continue
-        if not chapter_markdown.startswith("#"):
-            parts.extend([f"## {chapter.title}", "", chapter_markdown, ""])
+        expected_heading = f"## {chapter_title}"
+        first_line = chapter_markdown.splitlines()[0].strip()
+        if first_line.casefold() == expected_heading.casefold():
+            parts.extend([chapter_markdown, ""])
             continue
-        parts.extend([chapter_markdown, ""])
+        parts.extend([expected_heading, "", chapter_markdown, ""])
     return "\n".join(parts).rstrip() + "\n"
 
 
 def write_output_plan_markdown_artifact(
     *, artifact_writer: ArtifactWriter, response: CityActionReportApiResponse
 ) -> None:
-    """Write the concatenated Markdown report artifact for local files and MLflow."""
-    artifact_writer.write_run_text_file(
-        "output_plan.md",
-        build_output_plan_markdown(response),
-    )
+    """Write one concatenated Markdown report artifact per generated language."""
+    for language in response.language:
+        artifact_writer.write_run_text_file(
+            f"output_plan.{language}.md",
+            build_output_plan_markdown(response, language),
+        )
 
 
 def write_city_action_report_error_artifacts(

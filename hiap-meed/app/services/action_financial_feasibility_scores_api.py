@@ -13,9 +13,7 @@ from app.modules.prioritizer.internal_models import (
     ActionFinancialFeasibilityScoreRecord,
     ActionFinancialFeasibilityScoresFetchResult,
 )
-from app.modules.prioritizer.models import (
-    ActionFinancialFeasibilityScoresApiResponse,
-)
+from app.modules.prioritizer.models import ActionFinancialFeasibilityScoresApiResponse
 from app.services.http_client import UpstreamApiError, get_json_with_retries
 
 logger = logging.getLogger(__name__)

@@ -121,6 +121,7 @@ export interface UserInfoResponse {
   defaultInventoryId: string | null;
   defaultCityId: string | null;
   role: Roles;
+  title?: string;
   email?: string;
   preferredLanguage?: string;
   numberFormat?: string;
@@ -497,6 +498,7 @@ export type CityResponse = {
 export type ProjectWithCities = {
   projectId: string;
   name: string;
+  organizationId: string;
   description?: string;
   cityCountLimit?: Number;
   cities: CityResponse[];
@@ -555,9 +557,9 @@ export type OrganizationWithThemeResponse = {
 };
 
 export interface UpdateUserPayload {
-  name: string;
-  email: string;
-  userId: string;
+  userId?: string;
+  name?: string;
+  email?: string;
   title?: string;
   preferredLanguage?: string;
   numberFormat?: string;
@@ -993,3 +995,9 @@ export interface PersonalAccessTokenCreateResponse {
   expiresAt: string | null;
   created: string;
 }
+
+export type UserOrganizationsResponse = {
+  organizationId: string;
+  name: string;
+  role: OrganizationRole;
+}[];

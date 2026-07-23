@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Badge, HStack, Text } from "@chakra-ui/react";
 import { FiTrash2 } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
@@ -71,7 +71,9 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
     isDeletingProjectUser || isDeletingCityUser || isDeletingOrgAdmin;
 
   const selectedProjectData = useMemo(() => {
-    return projectData.find((project) => project.projectId === selectedProject);
+    return projectData?.find(
+      (project) => project.projectId === selectedProject,
+    );
   }, [projectData, selectedProject]);
 
   const selectedCityData = useMemo(() => {

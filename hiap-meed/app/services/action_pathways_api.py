@@ -65,9 +65,10 @@ class ActionPathwaysApiService:
         """Resolve the upstream action pathways host from config when omitted."""
         if self.base_url is None:
             self.base_url = get_action_pathways_base_url()
+
     def _build_action_pathways_url(self) -> str:
-        """Return the full upstream action pathways URL without query parameters."""
-        return f"{self.base_url.rstrip('/')}/api/v1/action-pathways"
+        """Return the upstream URL requesting all available localized fields."""
+        return f"{self.base_url.rstrip('/')}/api/v1/action-pathways?lang=all"
 
     def _base_source_metadata(
         self,

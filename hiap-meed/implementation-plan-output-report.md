@@ -29,7 +29,7 @@ Current structure:
 
 The template also flags open items:
 
-- comparable action/project comparison is deferred to frontend exploration for now; the backend can query a future comparable-actions/projects endpoint when it exists
+- comparable project examples come from the live climate-finance projects catalogue for the selected action
 - no reliable per-action city-level `tCO2e` estimate yet
 - legal data does not cover permits or SEIA applicability
 - risk register, governance actor map, and monitoring should stay lightweight unless product wants deeper outputs
@@ -48,13 +48,15 @@ Recommended first response:
 {
   "locode": "CL ZAL",
   "action_id": "icare_0040",
-  "language": "en",
-  "format": "json_chapters_markdown",
+  "language": ["en", "es"],
+  "format": "json_chapters_markdown_i18n",
   "chapters": [
     {
       "key": "snapshot",
-      "title": "Snapshot",
-      "markdown": "..."
+      "title": {"en": "Snapshot", "es": "Resumen"},
+      "markdown": {"en": "...", "es": "..."},
+      "limitations": {"en": [], "es": []},
+      "source_refs": ["ranking_snapshot", "city"]
     }
   ],
   "metadata": {
@@ -94,7 +96,7 @@ Recommended request, stateless snapshot-replay variant:
   "requestData": {
     "locode": "CL ZAL",
     "actionId": "icare_0040",
-    "language": "en",
+    "language": ["en", "es"],
     "prioritizationSnapshot": {
       "request": {
         "...full original /v1/prioritize request...": "..."
@@ -112,9 +114,9 @@ For the prototype, the frontend should send the full data returned by `/v1/prior
 
 This lets the report use the same ranking basis as the prioritization result while keeping `hiap-meed` stateless. The backend should still query additional source data for report sections because the frontend does not receive every upstream field needed by the output-plan template.
 
-The request must include `locode`, `actionId`, and `language` in `requestData` because these are domain inputs, not metadata. The `meta` envelope should stay aligned with existing caller metadata where possible: `requestId`, `generatedAtUtc`, `backendConsumer`, `upstreamProvider`, `apiContext.endpoint`, and `totalRecords`. The current `/v1/prioritize` request uses `apiContext.locodes` because it can carry multiple cities in `requestData.cityDataList`; the output-plan request is intentionally single-city, so `locode` belongs in `requestData`.
+The request must include `locode`, `actionId`, and a non-empty `language` list in `requestData` because these are domain inputs, not metadata. The initial supported report languages are `en` and `es`; scalar language values are rejected. The `meta` envelope should stay aligned with existing caller metadata where possible: `requestId`, `generatedAtUtc`, `backendConsumer`, `upstreamProvider`, `apiContext.endpoint`, and `totalRecords`. The current `/v1/prioritize` request uses `apiContext.locodes` because it can carry multiple cities in `requestData.cityDataList`; the output-plan request is intentionally single-city, so `locode` belongs in `requestData`.
 
-The backend should validate that `locode` matches the selected city in the supplied prioritization snapshot and that `actionId` exists in the supplied ranking for that city. The requested report `language` is an output choice. If it was not part of the original prioritization request's `requestedLanguages`, the backend should keep a limitation/warning note rather than reject the request.
+The backend should validate that `locode` matches the selected city in the supplied prioritization snapshot and that `actionId` exists in the supplied ranking for that city. Requested report languages are output choices. If one was not part of the original prioritization request's `requestedLanguages`, the backend should keep a diagnostic limitation note rather than reject the request.
 
 If `locode`, `actionId`, `language`, or the required prioritization snapshot is missing or malformed, the backend should reject the request with a clear 4xx response instead of falling back to a current-data-only report.
 
@@ -122,7 +124,7 @@ If `locode`, `actionId`, `language`, or the required prioritization snapshot is 
 
 `hiap-meed` stays stateless. It does not persist prioritization snapshots, report snapshots, generated reports, or report history as product data.
 
-For the prototype, the frontend stores the prioritization snapshot in browser `localStorage` and resends it to `POST /v1/reports/output-plan` together with one `locode`, one `actionId`, and one `language`. Later, when the external frontend moves into CityCatalyst, CityCatalyst should store the prioritization/report snapshot in its own database, likely Postgres, and still send the required snapshot data to `hiap-meed` in the report request.
+For the prototype, the frontend stores the prioritization snapshot in browser `localStorage` and resends it to `POST /v1/reports/output-plan` together with one `locode`, one `actionId`, and a language list. Later, when the external frontend moves into CityCatalyst, CityCatalyst should store the prioritization/report snapshot in its own database, likely Postgres, and still send the required snapshot data to `hiap-meed` in the report request.
 
 MLflow and local artifacts may still record request/response details for observability and debugging, but they are not the product read path and should not be treated as durable report storage.
 
@@ -188,15 +190,14 @@ Available now:
 
 Gaps / needs:
 
-- "the ask" likely needs a deterministic rule plus prompt wording, and may need product input
-- track record / comparable project count is deferred until a comparable-actions/projects endpoint exists
+- city-level quantified action emissions remain unavailable
 
 Plan:
 
 - build snapshot from `ReportContext`, not directly from `RankedActionResult`
-- derive signal labels with deterministic score-to-band helpers
-- generate tension and ask as chapter text using curated fields
-- omit track-record detail from the first version or keep it generic until a real source is wired
+- derive the ask deterministically from action, finance, and legal facts
+- provide six ordered signal rows and render `What we checked | Reading | Detail`
+- use the finance evidence count and named comparable projects when available
 
 ### 2. The Action
 
@@ -264,15 +265,11 @@ Available now:
 - frontend snapshot provides the selected action's mitigation feasibility score, rank context, and explanation where returned by `/v1/prioritize`
 - live backend refetch can provide mitigation feasibility `breakdown`, `dimension_scores`, and `CityData.city_context` indicator rows
 
-Gaps / needs:
-
-- mapping local indicators into "support" versus "limit" statements requires either existing upstream breakdown semantics or a new deterministic interpretation layer
-
 Plan:
 
 - include detailed mitigation feasibility breakdown in `ReportContext`
-- start with deterministic selection of top supporting and limiting indicators
-- let the LLM only turn selected indicators into concise prose
+- deterministically split indicators by contribution and join them to city values
+- render separate supporting and limiting tables with indicator, city value, and implication
 - keep the output conservative if city-context indicators are sparse
 
 ### 5. Policy Backing
@@ -296,9 +293,9 @@ Gaps / needs:
 
 Plan:
 
-- report endpoint should live-refetch policy scores and policy evidence
+- report endpoint live-refetches policy scores and policy evidence
+- render document name, page, signal relation/type, and supplied evidence excerpt
 - enforce a strict prompt rule: only cite policy statements present in `policy_evidence`
-- implement a minimal version first; if policy evidence is sparse, produce a conservative policy-backing section rather than invented policy text
 
 ### 6. Legal Mandate & Delivery
 
@@ -318,13 +315,13 @@ Available now:
 Gaps / needs:
 
 - permits / SEIA applicability are not available
-- "who leads" is partly inferable from legal ownership/restrictions but may require prompt conventions or a product-approved actor taxonomy
+- actor detail remains limited to what ownership, restrictions, and justification explicitly state
 
 Plan:
 
 - use existing legal fields directly
 - include a standard caveat that permit/SEIA applicability is out of scope unless new legal data is added
-- generate "can do / needs coordination" from ownership and restrictions descriptions
+- render a two-column municipal/external delivery table and a separate `Who leads` statement
 - do not override a `blocked` verdict with optimistic language
 
 ### 7. Financing, Precedents & Pathway
@@ -340,19 +337,14 @@ Available now:
 
 - frontend snapshot can include compact financial feasibility evidence such as route, reason, sector, score presence, and component score
 - internal grouped feasibility evidence includes financial `inputs` and `links`
-- README notes the first financial feasibility implementation consumes compact batch evidence only and does not fetch linked named opportunities or projects
-
-Gaps / needs:
-
-- reachable funds and comparable projects shown in examples are not guaranteed in the frontend snapshot
-- comparable project count/source is deferred until a new comparable-actions/projects endpoint exists
+- linked climate-finance endpoints provide named opportunities, funders, instruments, public URLs, and comparable projects with jurisdictions
 
 Plan:
 
 - live-refetch financial feasibility context in the first implementation
-- include route/reason in the first implementation
-- use financial `inputs` and `links` if they contain fund/project references
-- defer comparable actions/projects until the future endpoint exists, then query it live as additional report context
+- follow the selected score row's sector/action links to fetch a capped set of named municipality-relevant opportunities and comparable projects
+- render funder, type, status, and public link for opportunities, plus project name, location, stage, and funding for precedents
+- treat unavailable detail endpoints as a visible data gap rather than inventing rows
 - generate a conservative suggested pathway from legal verdict, funding route, and action type
 
 ### 8. Where The Information Comes From
@@ -375,8 +367,9 @@ Gaps / needs:
 
 Plan:
 
-- normalize source metadata into a report `sources` list
-- include analyst figures in a dedicated appendix-like chapter
+- normalize public datasource metadata and evidence references into categorized source rows
+- include analyst scores, verdict components, ranking weights, and scoring mappings in a separate subsection
+- render plain-language data gaps separately from sources and analyst figures
 - distinguish runtime errors from sparse-but-valid source data
 
 ## Additional Data Inputs To Flag
@@ -389,7 +382,7 @@ Expected frontend-supplied prototype inputs:
 - city data used by prioritization
 - preferences, weights, excluded actions, strategic sectors, timeframes, co-benefit preferences, requested languages, and original `topN`
 - one selected `actionId`
-- one report `language`
+- one non-empty report `language` list
 
 These should be live-refetched by the backend because they are not fully available in the frontend snapshot or need richer source context:
 
@@ -458,7 +451,7 @@ A plain Python orchestrator with per-chapter functions is consistent with the cu
 Each report chapter should have a clear, modular implementation contract:
 
 - one chapter input model that contains only the curated fields needed by that chapter
-- one chapter output model with `key`, `title`, `markdown`, and optional `source_refs` / `limitations`
+- one internal single-language chapter output model and one public model where `title`, `markdown`, and `limitations` are dictionaries keyed by every requested language; `source_refs` remains untranslated provenance metadata
 - one prompt file or deterministic builder per chapter, not one monolithic report prompt
 - one chapter builder function that maps `ReportContext` into the chapter input model
 - one generator function that accepts the chapter input model and returns the chapter output model
@@ -472,7 +465,7 @@ Every chapter builder and generator function must have a docstring that states:
 - which Notion template items are intentionally missing or deferred in the first implementation
 - which unsupported claims the prompt must not make
 
-Prompt files should follow the repository prompt conventions: explicit role/task/input/output sections, constrained use of supplied evidence, and a stable output contract. The implementation should follow [AGENTS.md](AGENTS.md) and [.cursor/rules/general.mdc](../.cursor/rules/general.mdc): keep the code simple, use module-level models, use absolute imports, add docstrings to all functions, add short logical block comments in non-trivial orchestration functions, avoid unnecessary abstraction, and update README/service documentation when behavior changes.
+Prompt files should follow the repository prompt conventions: explicit role/task/input/output sections, constrained use of supplied evidence, and a stable output contract. Generated Markdown is the finished frontend report, so it must use reader-facing attribution such as `the prioritization`, `the legal review`, and `the financing assessment`; it must not narrate inputs, backend preparation, screening, prompt context, or model behavior. Those details belong only in structured metadata and diagnostic artifacts. The implementation should follow [AGENTS.md](AGENTS.md) and [.cursor/rules/general.mdc](../.cursor/rules/general.mdc): keep the code simple, use module-level models, use absolute imports, add docstrings to all functions, add short logical block comments in non-trivial orchestration functions, avoid unnecessary abstraction, and update README/service documentation when behavior changes.
 
 ## LLM Strategy
 
@@ -481,10 +474,10 @@ Avoid writing the full report in one go.
 First implementation:
 
 - deterministic context builder prepares facts, source status, and limitations
-- deterministic label helpers convert scores to qualitative bands
+- deterministic terminology from the shared `app/modules/prioritizer/translations.yaml` catalogue supplies report and action-explanation labels, including chapter titles, headings, table labels, co-benefits, GPC sectors and subsectors, indicators, score labels, and other recurring terms
 - chapter prompts receive constrained context
-- LLM returns structured chapter output
-- backend returns structured JSON with Markdown chapter bodies
+- the LLM returns one structured chapter output per language so language contexts never share one generation call
+- the backend validates dominant language and exact language-key coverage before aggregating localized dictionaries
 - backend records source status, prompt inputs, and chapter outputs as artifacts
 
 Suggested chapter grouping:
@@ -500,6 +493,9 @@ Validation rules:
 - legal blocked/conditional/enabled language must match legal verdict
 - policy quotes must come from policy evidence
 - funds/projects must come from supplied or refetched finance/precedent context
+- every requested language must be present in every chapter `title`, `markdown`, and `limitations` dictionary
+- recurring terminology must be copied from the translation catalogue, not translated by the LLM
+- official names remain in their source form; full descriptive sentences must use the requested language
 
 ## Implementation Phases
 
@@ -510,7 +506,7 @@ Validation rules:
 - Add pure context builders that normalize:
   - required `locode`
   - required `actionId`
-  - required `language`
+  - required non-empty `language: list[str]`
   - required prototype `prioritizationSnapshot.request`
   - required prototype `prioritizationSnapshot.response`
 - Add `services/report_context_enrichment.py` for live enrichment from upstream clients:
@@ -526,7 +522,7 @@ Validation rules:
 
 - Create chapter input builders.
 - Create one input model per chapter, scoped to only the fields that chapter needs.
-- Create one output model per chapter with `key`, `title`, `markdown`, and optional `source_refs` / `limitations`.
+- Create a single-language internal draft and an aggregated public chapter model with localized `title`, `markdown`, and `limitations` dictionaries.
 - Add score-to-label helpers for:
   - climate benefit
   - city fit
@@ -545,6 +541,7 @@ Validation rules:
 - Keep prompts modular: one prompt or deterministic builder per chapter, each with explicit role/task/input/output sections and a stable output contract.
 - Use OpenAI structured outputs, following the existing explanation-generation pattern.
 - Generate one selected action report per request.
+- Generate each requested language independently and retry once when output is clearly in the wrong dominant language.
 - Store per-chapter prompt and output artifacts.
 
 ### Phase 4: API Route, Artifacts, And Observability
@@ -555,14 +552,14 @@ Validation rules:
   - endpoint
   - selected action ID
   - generated chapter count
-  - report language
+  - requested report languages
   - source prioritization request ID if supplied
 - Write artifacts:
   - `input_snapshot.json`
   - `report_context.json`
-  - `llm/<chapter>_prompt.txt`
-  - `llm/<chapter>_io.json`
-  - `output_plan.md`
+  - `llm/<language>/<chapter>_prompt.txt`
+  - `llm/output_plan_io.json`
+  - `output_plan.<language>.md`
   - `response_full.json`
   - `manifest.json`
 
@@ -574,6 +571,7 @@ Validation rules:
 - Unit-test sparse-but-valid source behavior, ensuring the report stays conservative without turning normal sparse data into runtime warnings.
 - Unit-test legal verdict wording guardrails.
 - Unit-test score-to-label helpers.
+- Unit-test translation-catalogue coverage, exact response language keys, scalar-language rejection, and wrong-language generation rejection/retry.
 - Integration-test endpoint with mock clients and one selected action.
 - Integration-test multiple frontend-selected actions as separate endpoint calls to confirm per-action isolation.
 - Add prompt/service tests with mocked OpenAI client responses.
@@ -600,14 +598,23 @@ Resolved decisions:
 - Generate one report per selected action.
 - The frontend selects which action gets a report.
 - The endpoint is `POST /v1/reports/output-plan`.
-- The request contains one `actionId`, one `language`, and the full prioritization snapshot.
+- The request contains one `actionId`, a non-empty `language` list, and the full prioritization snapshot.
 - The first snapshot schema is raw request/response pass-through plus frontend-held input data, not a normalized `report_context`.
 - `hiap-meed` returns immediate outputs only and does not persist generated reports as product data.
 - Later persistence belongs in CityCatalyst's database, not in `hiap-meed`.
 - The response is JSON with ordered chapters and Markdown chapter bodies.
+- Chapter `title`, `markdown`, and frontend-visible `limitations` are keyed by every requested language; `source_refs` and metadata remain untranslated.
+- Official names remain in their source form. Full descriptive sentences use the requested language.
+- Recurring terminology is maintained in one editable backend translation catalogue and is never invented or translated by the LLM.
 - Report language is an output choice; if it differs from the original prioritization `requestedLanguages`, the backend should include a limitation/warning note rather than reject the request.
-- Comparable actions/projects are deferred. When the future endpoint exists, the report endpoint should query it live as additional context.
-- Policy backing should start with a minimal evidence-grounded version.
+- The Snapshot chapter should start with a prominent evidence-derived `**The ask:**` line based on supplied action, finance, and legal facts.
+- Finance opportunities are fetched live and screened to five active municipal candidates by country, sector, climate relevance, municipal application route, and compatibility with the selected action's finance route; they are explicitly not described as action-matched because the upstream opportunity catalogue does not support that filter. If the selected action has no financial-feasibility sector, the opportunity lookup is skipped so the report cannot display unrelated cross-sector programmes. Closed programmes with supplied recurrence are separated into an additional monitoring table instead of being presented as currently available. Comparable projects are filtered by the selected action and capped at five rows. Financial scores, opportunities, and projects have endpoint-specific services; opportunity and project failures are handled independently so one optional catalogue cannot erase successful data from the other.
+- Policy backing renders only supplied document/page/signal/excerpt evidence.
+- City Fit retains upstream units and frames indicator implications as contributions to the feasibility assessment, rather than asserting unsupported real-world causation.
+- City Fit uses the dedicated action mitigation-feasibility result for its headline, not the combined legal/financial/mitigation score, and omits table rows without a measured city value.
+- Co-benefit labels are normalized through the shared taxonomy and must not be broadened or renamed in report prose.
+- Financing receives finance-specific evidence and reader-ready legal delivery statements; the overall feasibility score is not part of that chapter's model context.
+- Public links are rendered only when supplied upstream. Source names remain readable plain text when no URL exists, and missing optional links are not reported as data gaps. The current legal classification CSV contains legal-reference labels but no URL fields, so legal links require an upstream schema/data change and must not be synthesized in `hiap-meed`.
 - User-edited assumptions are a frontend concern; the backend only validates and uses the request it receives.
 - Legally blocked high-ranking actions are not a special report-generation problem; the report should accurately reflect the legal verdict in the supplied/refetched evidence.
 - Missing or malformed snapshots should be rejected with a clear 4xx response.
@@ -615,7 +622,6 @@ Resolved decisions:
 Deferred topics:
 
 - Exact frontend staleness warning copy and metadata comparison rules.
-- Approved wording for "the ask".
 - Mandatory report caveats.
 - Whether report generation should stay synchronous or move to background jobs if latency becomes too high.
 
@@ -624,10 +630,10 @@ Deferred topics:
 Build the smallest useful vertical slice:
 
 1. Stateless `POST /v1/reports/output-plan`
-2. Request includes one `actionId`, one `language`, and the full frontend-held prioritization snapshot
-3. JSON response with ordered chapters and Markdown chapter bodies
-4. Backend builds ranking-run context from the supplied `/v1/prioritize` request, `/v1/prioritize` response, emissions profile, city data, and preferences
-5. Backend always refetches additional action, city, policy, legal, mitigation feasibility, and financial feasibility context for the selected action
+2. Request includes one `actionId`, a non-empty `language` list, and the full frontend-held prioritization snapshot
+3. JSON response with ordered chapters and localized `title`, `markdown`, and `limitations` dictionaries
+4. Backend builds ranking-run context from the supplied `/v1/prioritize` request, `/v1/prioritize` response, emissions profile, city data, preferences, and an evidence-derived ask line for the Snapshot chapter
+5. Backend always refetches additional action, city, policy, legal, mitigation feasibility, and financial feasibility context, then independently best-effort fetches screened finance candidates and action-matched comparable projects
 6. Response metadata separates ranking basis from live enrichment basis through `source_context`
 7. Context-provider boundary in place from day one
 8. Per-chapter generation with strict context slicing
@@ -640,10 +646,11 @@ The frontend code is outside this repository, but the report endpoint depends on
 
 1. Store a prioritization snapshot after every successful `/v1/prioritize` call. In the prototype this can stay in browser `localStorage`; after the external frontend is moved into CityCatalyst, store the snapshot in the CityCatalyst database.
 2. The snapshot should contain the full `/v1/prioritize` response, the full `/v1/prioritize` request, emissions profile, city data, preferences, weights, exclusions, requested languages, original `topN`, generated timestamps, and request IDs.
-3. When the user generates a report, send the stored snapshot plus one `actionId` and one `language` to `POST /v1/reports/output-plan`.
+3. When the user generates a report, send the stored snapshot plus one `actionId` and a language list to `POST /v1/reports/output-plan`.
 4. If the user selects multiple actions, call the endpoint separately for each action.
-5. Render only `chapters[].markdown` as the user-facing report body. The concatenated `output_plan.md` artifact is the same reader-facing content for QA and export checks.
-6. Treat response metadata, `source_context`, chapter `limitations`, local artifacts, and MLflow artifacts as diagnostic/source-status data unless product explicitly approves specific copy for the UI.
-7. Do not reconstruct the snapshot by live-querying current frontend state unless the UX clearly says the report is based on current data, not the earlier prioritization.
-8. Track whether inputs changed after the stored prioritization snapshot. The exact staleness warning is deferred, but the frontend should eventually warn if agreed metadata shows divergence.
-9. Keep the backend contract stateless from the frontend perspective: the backend receives report inputs in the request and can query additional source data where needed, but it should not depend on browser storage, CityCatalyst storage, or a specific frontend persistence implementation.
+5. Render `chapters[].title[selectedLanguage]`, `chapters[].markdown[selectedLanguage]`, and approved `chapters[].limitations[selectedLanguage]`. Per-language `output_plan.<language>.md` artifacts provide the same reader-facing content for QA and export checks.
+6. Use a Markdown renderer that supports tables, headings, numbered lists, and safe external links; do not convert the structured report tables back into prose.
+7. Treat `source_refs`, response metadata, `source_context`, local artifacts, and MLflow artifacts as diagnostic/provenance data; do not translate or render them as report prose.
+8. Do not reconstruct the snapshot by live-querying current frontend state unless the UX clearly says the report is based on current data, not the earlier prioritization.
+9. Track whether inputs changed after the stored prioritization snapshot. The exact staleness warning is deferred, but the frontend should eventually warn if agreed metadata shows divergence.
+10. Keep the backend contract stateless from the frontend perspective: the backend receives report inputs in the request and can query additional source data where needed, but it should not depend on browser storage, CityCatalyst storage, or a specific frontend persistence implementation.

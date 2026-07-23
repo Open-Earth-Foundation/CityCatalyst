@@ -104,7 +104,16 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     )
     app.dependency_overrides[get_action_pathways_data_api_client] = (
         lambda: MockActionPathwaysDataApiClient(
-            actions=[Action(action_id="A_1", action_name="Bus electrification")]
+            actions=[
+                Action(
+                    action_id="A_1",
+                    action_name="Bus electrification",
+                    name_i18n={
+                        "en": "Bus electrification",
+                        "es": "Electrificación de autobuses",
+                    },
+                )
+            ]
         )
     )
     app.dependency_overrides[get_legal_data_api_client] = lambda: MockLegalDataApiClient()
@@ -131,9 +140,14 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     body = response.json()
     assert body["locode"] == "CL-SCL"
     assert body["action_id"] == "A_1"
-    assert body["language"] == "en"
-    assert body["format"] == "json_chapters_markdown"
+    assert body["language"] == ["en", "es"]
+    assert body["format"] == "json_chapters_markdown_i18n"
     assert len(body["chapters"]) == 8
+    assert body["chapters"][0]["title"] == {"en": "Snapshot", "es": "Resumen"}
+    for chapter in body["chapters"]:
+        assert set(chapter["title"]) == {"en", "es"}
+        assert set(chapter["markdown"]) == {"en", "es"}
+        assert set(chapter["limitations"]) == {"en", "es"}
     assert body["metadata"]["source_context"]["ranking_basis"] == (
         "frontend_prioritization_snapshot"
     )
@@ -152,6 +166,18 @@ def test_output_plan_endpoint_rejects_action_not_in_snapshot() -> None:
     assert "actionId" in response.json()["detail"]["error"]
 
 
+@pytest.mark.integration
+def test_output_plan_endpoint_rejects_scalar_language() -> None:
+    """The breaking multilingual contract should reject a scalar language value."""
+    payload = _report_request_payload()
+    payload["requestData"]["language"] = "en"  # type: ignore[index]
+
+    with TestClient(app) as test_client:
+        response = test_client.post("/v1/reports/output-plan", json=payload)
+
+    assert response.status_code == 422
+
+
 def _report_request_payload(*, action_id: str = "A_1") -> dict[str, object]:
     """Build one valid output-plan request payload for integration tests."""
     return {
@@ -166,7 +192,7 @@ def _report_request_payload(*, action_id: str = "A_1") -> dict[str, object]:
         "requestData": {
             "locode": "CL-SCL",
             "actionId": action_id,
-            "language": "en",
+            "language": ["en", "es"],
             "debugContextOnly": True,
             "prioritizationSnapshot": {
                 "request": {

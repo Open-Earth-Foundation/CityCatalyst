@@ -11,9 +11,55 @@ from app.modules.prioritizer.services.explanations import (
     ExplanationItem,
     _build_prompt,
     _build_curated_action_payload,
+    _display_label_for_co_benefit,
+    _display_label_for_sector,
+    _display_label_for_subsector,
     _rows_to_explanations,
+    _validate_explanation_languages,
+    _validate_explanation_coverage,
     _warn_if_prompt_is_large,
+    generate_explanations,
 )
+
+
+def test_explanation_terms_use_shared_spanish_catalogue() -> None:
+    """Explanation labels should reuse deterministic shared translations."""
+    assert _display_label_for_sector("II", "es") == "Transporte"
+    assert _display_label_for_subsector("II.1", "es") == (
+        "transporte por carretera"
+    )
+    assert _display_label_for_co_benefit("air_quality", "es") == (
+        "Calidad del aire"
+    )
+
+
+def test_generate_explanations_populates_each_requested_language(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The public generator should run one complete batch per requested language."""
+
+    def fake_language_batch(**kwargs: object) -> tuple[dict[str, str], dict[str, object]]:
+        language = str(kwargs["language"])
+        return {"A_1": f"text-{language}"}, {"language": language}
+
+    monkeypatch.setattr(
+        explanations_service,
+        "_generate_explanations_for_language",
+        fake_language_batch,
+    )
+    localized, llm_io = generate_explanations(
+        locode="CL IQQ",
+        languages=["en", "es"],
+        scored_actions=[],
+        city_preference_sectors=[],
+        city_preference_co_benefit_keys=[],
+    )
+
+    assert localized == {
+        "en": {"A_1": "text-en"},
+        "es": {"A_1": "text-es"},
+    }
+    assert set(llm_io["languages"]) == {"en", "es"}
 
 
 def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:
@@ -103,7 +149,9 @@ def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:
         },
     )
 
-    payload = _build_curated_action_payload(scored_action=scored_action)
+    payload = _build_curated_action_payload(
+        scored_action=scored_action, language="en"
+    )
 
     assert payload["action_id"] == "A_1"
     assert payload["action_name"] == "Electrify municipal bus fleet"
@@ -125,7 +173,7 @@ def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:
         "sector_label": "Transportation",
         "share_of_city_percent": 31.0,
         "share_phrase": "31%",
-        "impact_band": "high",
+        "impact_band": "High",
     }
     assert slots["alignment_driver"]["policy"]["document_name"] == (
         "National Fleet Electrification Plan"
@@ -135,15 +183,15 @@ def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:
     ]
     assert slots["alignment_driver"]["co_benefit_priority"][
         "city_selected_co_benefits"
-    ] == ["air quality"]
+    ] == ["Air quality"]
     assert slots["alignment_driver"]["timeframe"]["status"] == "aligned"
     assert slots["feasibility_driver"] == {
         "kind": "weakest_component",
         "stance": "constraint",
         "component": "financial_feasibility",
         "component_label": "financial feasibility",
-        "bucket": "weak",
-        "route": "needs co-financing",
+        "bucket": "Weak",
+        "route": "Needs co-financing",
         "reason": "Capital-intensive investment likely needs external co-financing.",
     }
     assert payload["known_limitations"] == []
@@ -204,12 +252,15 @@ def test_build_curated_action_payload_allows_supportive_feasibility_slot() -> No
                     },
                 },
             },
-        )
+        ),
+        language="en",
     )
 
     slots = payload["explanation_slots"]
     assert slots["impact_driver"]["subsector_label"] == "livestock"
-    assert slots["impact_driver"]["sector_label"] == "AFOLU"
+    assert slots["impact_driver"]["sector_label"] == (
+        "Agriculture, forestry and other land use"
+    )
     assert slots["impact_driver"]["share_phrase"] == "11%"
     assert slots["alignment_driver"]["policy"]["status"] == "not_present"
     assert slots["alignment_driver"]["sector_priority"]["matched_sectors"] == []
@@ -219,8 +270,8 @@ def test_build_curated_action_payload_allows_supportive_feasibility_slot() -> No
         "stance": "support",
         "component": "financial_feasibility",
         "component_label": "financial feasibility",
-        "bucket": "very_strong",
-        "route": "self-deliverable",
+        "bucket": "Very strong",
+        "route": "Self-deliverable",
         "reason": "Low-capital action the city can deliver itself.",
     }
 
@@ -257,7 +308,8 @@ def test_build_curated_action_payload_keeps_known_limitations() -> None:
                     },
                 },
             },
-        )
+        ),
+        language="en",
     )
 
     assert payload["known_limitations"] == [
@@ -283,6 +335,26 @@ def test_rows_to_explanations_filters_unknown_ids_and_empty_text() -> None:
     assert result == {"A_1": "First explanation."}
 
 
+def test_explanation_language_validation_rejects_wrong_dominant_language() -> None:
+    """A confidently wrong-language explanation should fail before aggregation."""
+    with pytest.raises(ValueError, match="instead of `es`"):
+        _validate_explanation_languages(
+            {
+                "A_1": (
+                    "This action addresses transport emissions and benefits local "
+                    "air quality, but financing remains a material constraint."
+                )
+            },
+            "es",
+        )
+
+
+def test_explanation_coverage_requires_every_action_in_each_language() -> None:
+    """A localized batch must populate every requested action explanation."""
+    with pytest.raises(ValueError, match=r"missing action IDs: \['A_2'\]"):
+        _validate_explanation_coverage({"A_1": "Texto."}, {"A_1", "A_2"}, "es")
+
+
 def test_warn_if_prompt_is_large_logs_warning(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -299,16 +371,18 @@ def test_warn_if_prompt_is_large_logs_warning(
     assert any("Large explanation prompt detected" in message for message in warning_messages)
 
 
-def test_build_prompt_is_canonical_english_only() -> None:
-    """Prompt should explicitly anchor explanation generation in English."""
+def test_build_prompt_requires_the_requested_language() -> None:
+    """Prompt should explicitly anchor explanation generation in one language."""
     prompt = _build_prompt(
         locode="CL IQQ",
+        language="es",
         city_preference_sectors=["waste"],
         city_preference_co_benefit_keys=["air_quality", "mobility"],
         curated_actions=[],
     )
 
-    assert "Write every explanation in English." in prompt
+    assert "Write every explanation in the requested `language`." in prompt
+    assert "- `language`: es" in prompt
     assert "Core grounding rules:" in prompt
     assert "Sentence plan:" in prompt
     assert "Sentence 1 rendering rules:" in prompt

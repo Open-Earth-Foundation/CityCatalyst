@@ -84,7 +84,7 @@ This is the right choice as long as the orchestrator, report context enrichment,
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
-| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog plus fetch metadata; `mock` is file-backed and returns the same shape | Global API |
+| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways?lang=all` and returns the full upstream catalog, multilingual text maps, and fetch metadata; `mock` is file-backed and returns the same shape | Global API |
 | Legal data client         | `get_action_legal_assessments(country_code)` | S3/mock/deprecated API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `s3` is the default and reads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`; `mock` is file-backed; `api` raises before HTTP as a deprecated guard | private S3 legal classification CSV |
 | Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API |
 | Action mitigation feasibility scores data client | `get_action_mitigation_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; `mock` is file-backed | Global API |
@@ -93,7 +93,7 @@ This is the right choice as long as the orchestrator, report context enrichment,
 Clients are injected via FastAPI's `Depends()` pattern. The city, action, action policy scores, mitigation feasibility, and financial feasibility clients default to their live upstream APIs. The legal client defaults to the internal S3-backed CSV source.
 
 Action API note:
-- `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
+- `GET /api/v1/action-pathways` is called with `lang=all` and without `limit` so all available localized text maps are retained
 - the old live legal endpoint `GET /api/v1/action-legal-assessments?countryCode=...` is intentionally retained only as a deprecated failure path; legal rows now come from the internal S3 CSV and are mapped into the existing legal record contract
 - legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return an upstream dependency error instead of running ranking with neutral legal defaults
 - mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
@@ -141,18 +141,22 @@ sequenceDiagram
     participant LLM as OpenAI
 
     FE->>API: POST /v1/reports/output-plan CityActionReportApiRequest
-    Note over API: Validates one locode, one actionId, one language field, and full prioritization snapshot
+    Note over API: Validates one locode, one actionId, a language list, and the full prioritization snapshot
     API->>Context: build_enriched_report_context(...)
     Context->>Context: Validate selected city/action against snapshot
     Context->>Clients: Fetch live city/action/policy/legal/feasibility enrichment
     Clients-->>Context: Source data and source metadata
     Context-->>API: ReportContext
-    API->>LLM: One isolated prompt per chapter
-    LLM-->>API: Structured chapter markdown
-    API-->>FE: 200 CityActionReportApiResponse (chapters[] for one action)
+    loop Each requested language
+        API->>Context: Localize source fields and deterministic terminology
+        API->>LLM: One isolated prompt per chapter and language
+        LLM-->>API: Structured single-language chapter markdown
+    end
+    Note over API: Validate language coverage and aggregate localized dictionaries
+    API-->>FE: 200 CityActionReportApiResponse (localized chapters[] for one action)
 ```
 
-The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report.
+The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report. Reports, post-ranking action explanations, and the separate explanation-translation endpoint share recurring frontend terminology from `app/modules/prioritizer/translations.yaml`; official names remain unchanged while descriptive prose is generated or translated in each requested language.
 
 Freshness caveat: the report exactly reflects the prioritization run only if the supplied snapshot is the one used for that run. Frontend/product still need to define staleness checks and user warnings when inputs or upstream source data changed after prioritization.
 

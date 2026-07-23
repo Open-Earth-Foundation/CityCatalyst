@@ -1,3 +1,13 @@
+"""
+Translate prioritizer explanation text into additional languages.
+
+Uses OpenAI structured outputs (`chat.completions.parse`) and returns an
+application-owned `Explanation`. The OpenAI client is intentionally not
+wrapped with LangSmith `wrap_openai` to avoid Pydantic serializer warnings on
+the SDK `parsed` field (ON-6039). Function-level `@traceable` still records
+helper inputs/outputs.
+"""
+
 import json
 import logging
 import os
@@ -5,7 +15,6 @@ from typing import Any, Dict, Optional, Type, cast
 
 from dotenv import load_dotenv
 from langsmith import traceable
-from langsmith.wrappers import wrap_openai
 from openai import OpenAI
 from pydantic import BaseModel, create_model
 
@@ -32,6 +41,7 @@ if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
 
 
 def _get_openai_timeout_seconds() -> float:
+    """Return OpenAI request timeout in seconds from env (default 60)."""
     try:
         return float(os.getenv("OPENAI_TIMEOUT_SECONDS", "60"))
     except Exception:
@@ -39,18 +49,18 @@ def _get_openai_timeout_seconds() -> float:
 
 
 def _get_openai_max_retries() -> int:
+    """Return OpenAI max retries from env (default 3)."""
     try:
         return int(os.getenv("OPENAI_MAX_RETRIES", "3"))
     except Exception:
         return 3
 
 
-openai_client = wrap_openai(
-    OpenAI(
-        api_key=OPENAI_API_KEY,
-        timeout=_get_openai_timeout_seconds(),
-        max_retries=_get_openai_max_retries(),
-    )
+# Plain OpenAI client for structured parse — avoid wrap_openai serializing `parsed`
+openai_client = OpenAI(
+    api_key=OPENAI_API_KEY,
+    timeout=_get_openai_timeout_seconds(),
+    max_retries=_get_openai_max_retries(),
 )
 
 
@@ -95,6 +105,9 @@ def translate_explanation_text(
 ) -> Optional[Explanation]:
     """
     Translate an existing explanation text from source_language into target_languages.
+
+    Returns:
+        Explanation with translated texts, or None if translation/parsing fails.
     """
     if not explanation_text.strip():
         logger.warning("translate_explanation_text received empty explanation text.")
@@ -137,6 +150,7 @@ def translate_explanation_text(
                 response_format=TranslationModel,
                 timeout=_get_openai_timeout_seconds(),
             )
+            # Extract application-owned data immediately; do not log/serialize `completion`
             parsed = completion.choices[0].message.parsed
 
             # If parsing into the expected Pydantic model fails (wrong type), we log

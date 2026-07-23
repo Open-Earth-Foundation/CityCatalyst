@@ -243,6 +243,58 @@ class ActionFinancialFeasibilityScoresFetchResult(BaseModel):
     warning: str | None = None
 
 
+class ClimateFinanceOpportunityRecord(BaseModel):
+    """Report-ready climate-finance opportunity from the upstream catalogue."""
+
+    opportunity_name: str
+    funder_name: str | None = None
+    instrument: str | None = None
+    status: str | None = None
+    status_as_of: str | None = None
+    recurrence: str | None = None
+    report_category: str = "current"
+    source_url: str | None = None
+    amount_note: str | None = None
+    city_application: list[str] = Field(default_factory=list)
+    climate_relevance: str | None = None
+
+
+class ClimateFinanceProjectRecord(BaseModel):
+    """Report-ready comparable climate project from the upstream catalogue."""
+
+    project_name: str
+    project_name_i18n: dict[str, str] = Field(default_factory=dict)
+    jurisdiction: str | None = None
+    lifecycle_stage: str | None = None
+    funding_channel: str | None = None
+    funding_sources: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ClimateFinanceOpportunitiesFetchResult(BaseModel):
+    """One independently fetched opportunities-catalogue result."""
+
+    opportunities: list[ClimateFinanceOpportunityRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
+class ClimateFinanceProjectsFetchResult(BaseModel):
+    """One independently fetched projects-catalogue result."""
+
+    projects: list[ClimateFinanceProjectRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warning: str | None = None
+
+
+class ClimateFinanceReportEvidenceFetchResult(BaseModel):
+    """Selected-action finance opportunities and precedents for report writing."""
+
+    opportunities: list[ClimateFinanceOpportunityRecord] = Field(default_factory=list)
+    projects: list[ClimateFinanceProjectRecord] = Field(default_factory=list)
+    source_metadata: dict[str, Any] = Field(default_factory=dict)
+    warnings: list[str] = Field(default_factory=list)
+
+
 class ScoredAction(BaseModel):
     """Action scores after weighted aggregation and ranking."""
 

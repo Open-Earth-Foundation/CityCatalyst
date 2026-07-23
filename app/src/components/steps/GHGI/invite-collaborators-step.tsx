@@ -65,8 +65,17 @@ const InviteCollaboratorsStep = forwardRef<
   }, [invitedMembers.length]);
 
   useEffect(() => {
-    onValidityChange?.(invitedMembers.length > 0 && selectedProject.length > 0);
-  }, [invitedMembers.length, selectedProject.length, onValidityChange]);
+    onValidityChange?.(
+      invitedMembers.length > 0 &&
+        selectedProject.length > 0 &&
+        selectedCities.length > 0,
+    );
+  }, [
+    invitedMembers.length,
+    selectedProject.length,
+    selectedCities.length,
+    onValidityChange,
+  ]);
 
   const { data: projectsData } = useGetUserProjectsQuery({});
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
@@ -93,14 +102,6 @@ const InviteCollaboratorsStep = forwardRef<
       project?.cities.map((c) => ({ cityId: c.cityId, name: c.name })) ?? []
     );
   }, [projectsData, selectedProject]);
-
-  useEffect(() => {
-    if (selectedRole === "admin" && cityData.length > 0) {
-      setSelectedCities(cityData.map((c) => c.cityId));
-    } else if (selectedRole === "collaborator") {
-      setSelectedCities([]);
-    }
-  }, [selectedRole, cityData]);
 
   const validateEmail = (email: string) =>
     z.string().email().safeParse(email).success;
@@ -129,7 +130,12 @@ const InviteCollaboratorsStep = forwardRef<
 
   useImperativeHandle(ref, () => ({
     sendInvites: async () => {
-      if (!invitedMembers.length || !selectedProject.length) return;
+      if (
+        !invitedMembers.length ||
+        !selectedProject.length ||
+        !selectedCities.length
+      )
+        return;
       await inviteUsers({
         projectId: selectedProject[0],
         cityIds: selectedCities,
@@ -360,14 +366,6 @@ const InviteCollaboratorsStep = forwardRef<
             px={6}
             py={4}
           >
-            {selectedRole === "admin" && (
-              <HStack mb={4}>
-                <Icon as={MdInfoOutline} color="interactive.secondary" boxSize={4} />
-                <Text fontSize="body.sm" color="content.tertiary">
-                  {t("invite-collaborators-admin-cities-info")}
-                </Text>
-              </HStack>
-            )}
             <Checkbox
               checked={
                 cityData.length > 0 &&
@@ -380,7 +378,6 @@ const InviteCollaboratorsStep = forwardRef<
                   setSelectedCities(cityData.map((c) => c.cityId));
                 }
               }}
-              disabled={selectedRole === "admin"}
               mb={4}
             >
               <Text
@@ -410,7 +407,6 @@ const InviteCollaboratorsStep = forwardRef<
                     key={cityId}
                     checked={selectedCities.includes(cityId)}
                     onChange={() => handleCityToggle(cityId)}
-                    disabled={selectedRole === "admin"}
                   >
                     <Text
                       color="content.secondary"

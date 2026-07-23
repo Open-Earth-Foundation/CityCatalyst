@@ -1,4 +1,7 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { Project } from "@/models/Project";
+import { User } from "@/models/User";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Container,
@@ -6,15 +9,10 @@ import {
   Head,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Text,
 } from "@react-email/components";
-import { User } from "@/models/User";
-import { Project } from "@/models/Project";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
 
 export default function ProjectDeletedNotificationTemplate({
   url,
@@ -97,15 +95,6 @@ const brandHeading = {
   lineHeight: "1.5",
   fontWeight: "700",
   color: "#2351DC",
-};
-
-
-const heading = {
-  fontSize: "24px",
-  lineHeight: "1.3",
-  fontWeight: "700",
-  color: "#484848",
-  marginTop: "50px",
 };
 
 const headingGreen = {

@@ -1,19 +1,17 @@
 import { ExcelFileIcon } from "@/components/icons";
+import i18next from "@/i18n/server";
 import { bytesToMB } from "@/util/helpers";
-import { UserFileResponse } from "@/util/types";
-import React from "react";
+import { LANGUAGES, UserFileResponse } from "@/util/types";
 import {
   Body,
   Container,
   Head,
+  Hr,
   Html,
   Link,
   Preview,
   Text,
-  Hr,
 } from "@react-email/components";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
 
 export default function AdminNotificationTemplate({
   user,

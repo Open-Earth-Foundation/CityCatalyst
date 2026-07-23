@@ -1,4 +1,3 @@
-import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -20,14 +19,12 @@ export function InviteUserToMultipleCitiesTemplate({
   url,
   email,
   cities,
-  invitingUser,
   brandInformation,
   language,
 }: {
   url?: string;
   email: string;
   cities: City[];
-  invitingUser: { name: string; email: string };
   brandInformation?: {
     color: string;
     logoUrl: string;
@@ -35,7 +32,6 @@ export function InviteUserToMultipleCitiesTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
       <Head>
@@ -159,14 +155,6 @@ const brandHeading = {
   lineHeight: "1.5",
   fontWeight: "700",
   color: "#2351DC",
-};
-
-const heading = {
-  fontSize: "24px",
-  lineHeight: "1.3",
-  fontWeight: "700",
-  color: "#484848",
-  marginTop: "50px",
 };
 
 const greeting = {

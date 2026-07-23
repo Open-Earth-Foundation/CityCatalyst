@@ -268,6 +268,7 @@ export function NavigationBar({
                   <Button
                     color="base.light"
                     minW="120px"
+                    minH="48px"
                     variant="ghost"
                     textTransform="none"
                     whiteSpace="nowrap"
@@ -335,32 +336,37 @@ export function NavigationBar({
                 >
                   <MenuTrigger
                     asChild
-                    minW="220px"
                     whiteSpace="nowrap"
                     textTransform="none"
+                    ml={8}
                   >
-                    <Button variant="ghost" ml={8}>
-                      <Avatar
-                        size="sm"
-                        bg="interactive.connected"
-                        color="base.light"
-                        name={session.user?.name!}
-                        src={session.user?.image!}
-                      />
-                      <Text
-                        w="120px"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                        fontSize="title.md"
-                        fontWeight="bold"
-                      >
-                        {session.user?.name}
-                      </Text>
-                      <Icon
-                        as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
-                        boxSize={6}
-                      />
+                    <Button variant="ghost" p={2} minW="220px" minH="48px">
+                      <Box display="flex" alignItems="center" gap="4">
+                        <Avatar
+                          height="32px"
+                          width="32px"
+                          bg="interactive.connected"
+                          color="base.light"
+                          name={session.user?.name ?? ""}
+                          src={session.user?.image}
+                        />
+                        <Text
+                          w="120px"
+                          overflow="hidden"
+                          textOverflow="ellipsis"
+                          whiteSpace="nowrap"
+                          fontSize="title.sm"
+                          fontWeight="medium"
+                          letterSpacing="wide"
+                          lineHeight="20"
+                        >
+                          {session.user?.name}
+                        </Text>
+                        <Icon
+                          as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                          boxSize={6}
+                        />
+                      </Box>
                     </Button>
                   </MenuTrigger>
 
@@ -368,7 +374,7 @@ export function NavigationBar({
                     paddingTop="8px"
                     paddingBottom="8px"
                     shadow="2dp"
-                    minW="150px"
+                    minW="220px"
                     display="flex"
                     flexDirection="column"
                     justifyContent="space-around"

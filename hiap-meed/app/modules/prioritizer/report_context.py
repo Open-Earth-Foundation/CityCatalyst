@@ -19,6 +19,12 @@ from app.modules.prioritizer.models import (
     PrioritizerApiCityResult,
     RankedActionResult,
 )
+from app.modules.prioritizer.localization import (
+    chapter_terms,
+    chapter_title,
+    localized_source_value,
+    translate_term,
+)
 from app.modules.prioritizer.report_models import ReportChapterInput, ReportContext
 from app.modules.prioritizer.scoring_config import (
     ALIGNMENT_WEIGHT_OTHER,
@@ -33,23 +39,6 @@ from app.modules.prioritizer.scoring_config import (
     IMPACT_WEIGHT_REDUCTION_SHARE,
     IMPACT_WEIGHT_TIMELINE,
 )
-from app.modules.prioritizer.utils.co_benefit_taxonomy import (
-    CO_BENEFIT_DISPLAY_LABELS,
-)
-
-
-REPORT_CHAPTERS: tuple[tuple[str, str], ...] = (
-    ("snapshot", "Snapshot"),
-    ("the_action", "The Action"),
-    ("action_impact", "Action Impact"),
-    ("city_fit", "City Fit"),
-    ("policy_backing", "Policy Backing"),
-    ("legal_mandate_delivery", "Legal Mandate & Delivery"),
-    ("financing_precedents_pathway", "Financing, Precedents & Pathway"),
-    ("sources_assumptions", "Where The Information Comes From"),
-)
-
-
 def validate_report_snapshot(
     request: CityActionReportApiRequest,
 ) -> tuple[PrioritizerApiCityResult, RankedActionResult, str]:
@@ -104,7 +93,8 @@ def build_report_context(
         locode=request.requestData.locode,
         country_code=country_code,
         action_id=request.requestData.actionId,
-        language=request.requestData.language.strip().lower(),
+        language=request.requestData.language[0],
+        requested_languages=request.requestData.language,
         prioritization_request=request.requestData.prioritizationSnapshot.request,
         prioritization_city_result=city_result,
         ranked_action=ranked_action,
@@ -210,10 +200,10 @@ def _build_report_limitations(
         )
         if language.strip()
     }
-    report_language = request.requestData.language.strip().lower()
-    if requested_languages and report_language not in requested_languages:
+    report_languages = set(request.requestData.language)
+    if requested_languages and not report_languages.issubset(requested_languages):
         limitations.append(
-            "The report language differs from the languages used in the original "
+            "One or more report languages differ from the languages used in the original "
             "prioritization."
         )
     if policy_score is None:
@@ -248,7 +238,7 @@ def _build_snapshot_input(context: ReportContext) -> ReportChapterInput:
     }
     return _chapter_input(
         key="snapshot",
-        title="Snapshot",
+        title=chapter_title("snapshot", context.language),
         context=context,
         facts=facts,
         source_refs=["ranking_snapshot", "city", "action_pathways"],
@@ -275,7 +265,7 @@ def _build_the_action_input(context: ReportContext) -> ReportChapterInput:
     """
     return _chapter_input(
         key="the_action",
-        title="The Action",
+        title=chapter_title("the_action", context.language),
         context=context,
         facts={"action": _action_facts(context)},
         source_refs=["action_pathways"],
@@ -303,7 +293,7 @@ def _build_action_impact_input(context: ReportContext) -> ReportChapterInput:
     """
     return _chapter_input(
         key="action_impact",
-        title="Action Impact",
+        title=chapter_title("action_impact", context.language),
         context=context,
         facts={
             "action": _action_impact_facts(context),
@@ -327,9 +317,10 @@ def _build_city_fit_input(context: ReportContext) -> ReportChapterInput:
     Implements fit signal from ranking feasibility and live city/mitigation
     feasibility indicators. Supports/limits are derived only from available rows.
     """
+    condition_tables = _city_fit_table_rows(context)
     return _chapter_input(
         key="city_fit",
-        title="City Fit",
+        title=chapter_title("city_fit", context.language),
         context=context,
         facts={
             "action": _action_identity_facts(context),
@@ -337,14 +328,9 @@ def _build_city_fit_input(context: ReportContext) -> ReportChapterInput:
                 context.mitigation_feasibility, context.city.city_context
             ),
             "mitigation_feasibility": _city_fit_mitigation_facts(
-                context.mitigation_feasibility
+                context.mitigation_feasibility, context.language
             ),
-            "supporting_conditions": _city_fit_table_rows(
-                context, keep_positive=True
-            ),
-            "limiting_conditions": _city_fit_table_rows(
-                context, keep_positive=False
-            ),
+            **condition_tables,
         },
         source_refs=["city", "mitigation_feasibility"],
         limitations=["Local implementation capacity has not been assessed."],
@@ -352,6 +338,7 @@ def _build_city_fit_input(context: ReportContext) -> ReportChapterInput:
             "overall fit",
             "supporting local conditions",
             "limiting local conditions",
+            "mixed local conditions when contribution signs conflict",
         ],
         notion_deferred=[],
         unsupported_claims=["Do not infer local conditions beyond available indicators."],
@@ -367,7 +354,7 @@ def _build_policy_backing_input(context: ReportContext) -> ReportChapterInput:
     """
     return _chapter_input(
         key="policy_backing",
-        title="Policy Backing",
+        title=chapter_title("policy_backing", context.language),
         context=context,
         facts={
             "action": _action_identity_facts(context),
@@ -395,7 +382,7 @@ def _build_legal_mandate_input(context: ReportContext) -> ReportChapterInput:
     """
     return _chapter_input(
         key="legal_mandate_delivery",
-        title="Legal Mandate & Delivery",
+        title=chapter_title("legal_mandate_delivery", context.language),
         context=context,
         facts={
             "action": _action_identity_facts(context),
@@ -426,7 +413,7 @@ def _build_financing_pathway_input(context: ReportContext) -> ReportChapterInput
     """
     return _chapter_input(
         key="financing_precedents_pathway",
-        title="Financing, Precedents & Pathway",
+        title=chapter_title("financing_precedents_pathway", context.language),
         context=context,
         facts={
             "action": _action_identity_facts(context),
@@ -464,7 +451,7 @@ def _build_sources_input(context: ReportContext) -> ReportChapterInput:
     source_limitations = _source_chapter_limitations(context)
     return _chapter_input(
         key="sources_assumptions",
-        title="Where The Information Comes From",
+        title=chapter_title("sources_assumptions", context.language),
         context=context,
         facts={
             "source_summary": _source_summary_facts(context),
@@ -506,6 +493,7 @@ def _chapter_input(
         key=key,  # type: ignore[arg-type]
         title=title,
         language=context.language,
+        terminology=chapter_terms(key, context.language),
         facts=_drop_empty_values(facts),
         source_refs=list(dict.fromkeys(source_refs)),
         limitations=list(dict.fromkeys(limitations)),
@@ -530,16 +518,20 @@ def _action_facts(context: ReportContext) -> dict[str, Any]:
     """Return display-friendly selected action facts."""
     return {
         "action_id": context.action.action_id,
-        "name": context.action.action_name,
+        "name": _localized_action_value(context, "name"),
         "type": context.action.action_type,
-        "description": context.action.description,
-        "intervention_summary": context.action.intervention_summary,
-        "outcome_summary": context.action.outcome_summary,
+        "description": _localized_action_value(context, "description"),
+        "intervention_summary": _localized_action_value(
+            context, "intervention_summary"
+        ),
+        "outcome_summary": _localized_action_value(context, "outcome_summary"),
         "intervention_type": context.action.intervention_type,
         "action_role": context.action.action_role,
         "investment_cost": context.action.investment_cost,
         "implementation_timeline": context.action.implementation_timeline,
-        "co_benefits": _reader_co_benefit_facts(context.action.co_benefits),
+        "co_benefits": _reader_co_benefit_facts(
+            context.action.co_benefits, context.language
+        ),
     }
 
 
@@ -547,8 +539,29 @@ def _action_identity_facts(context: ReportContext) -> dict[str, Any]:
     """Return minimal selected-action identity for chapters that need a subject."""
     return {
         "action_id": context.action.action_id,
-        "name": context.action.action_name,
+        "name": _localized_action_value(context, "name"),
     }
+
+
+def _localized_action_value(context: ReportContext, field: str) -> str | None:
+    """Select one action-pathway field in the active report language."""
+    localized_by_field = {
+        "name": context.action.name_i18n,
+        "description": context.action.description_i18n,
+        "intervention_summary": context.action.intervention_summary_i18n,
+        "outcome_summary": context.action.outcome_summary_i18n,
+    }
+    fallback_by_field = {
+        "name": context.action.action_name,
+        "description": context.action.description,
+        "intervention_summary": context.action.intervention_summary,
+        "outcome_summary": context.action.outcome_summary,
+    }
+    return localized_source_value(
+        language=context.language,
+        localized=localized_by_field[field],
+        fallback=fallback_by_field[field],
+    )
 
 
 def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
@@ -559,16 +572,20 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
     project_count = financial.get("comparable_project_count")
     emissions = context.action.emissions
     impact_band = emissions.get("impact_text") if isinstance(emissions, dict) else None
+    localized_impact_band = translate_term(
+        "score_labels", impact_band, context.language
+    )
     local_fit_score = (
         context.mitigation_feasibility.action_score
         if context.mitigation_feasibility is not None
         else None
     )
-    city_fit_label = _reader_score_label(
+    score = (
         local_fit_score
         if local_fit_score is not None
         else context.ranked_action.feasibility_score
     )
+    city_fit_label = _reader_score_label(score, context.language)
     city_fit_detail = (
         f"The local feasibility assessment rates this action as "
         f"{str(city_fit_label).lower()}."
@@ -582,8 +599,10 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
     )
     return [
         {
-            "what_we_checked": "Climate benefit",
-            "reading": impact_band or context.ranked_action.impact_score,
+            "what_we_checked": translate_term(
+                "signal_labels", "climate_benefit", context.language
+            ),
+            "reading": localized_impact_band or context.ranked_action.impact_score,
             "detail": (
                 f"The prioritization rates the action's direct emissions-reduction "
                 f"potential as {impact_band}."
@@ -592,30 +611,46 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             ),
         },
         {
-            "what_we_checked": "City fit",
+            "what_we_checked": translate_term(
+                "signal_labels", "city_fit", context.language
+            ),
             "reading": city_fit_label,
             "detail": city_fit_detail,
         },
         {
-            "what_we_checked": "Policy backing",
-            "reading": policy.get("policy_support_category") or policy.get(
+            "what_we_checked": translate_term(
+                "signal_labels", "policy_backing", context.language
+            ),
+            "reading": translate_term(
+                "score_labels", policy.get("policy_support_category"), context.language
+            ) or policy.get(
                 "policy_support_score"
             ),
             "detail": _policy_snapshot_detail(policy),
         },
         {
-            "what_we_checked": "Legal room to act",
-            "reading": legal.get("verdict_category"),
+            "what_we_checked": translate_term(
+                "signal_labels", "legal_room", context.language
+            ),
+            "reading": translate_term(
+                "score_labels", legal.get("verdict_category"), context.language
+            ),
             "detail": legal.get("ownership_description")
             or legal.get("restrictions_description"),
         },
         {
-            "what_we_checked": "Funding",
-            "reading": financial.get("route"),
+            "what_we_checked": translate_term(
+                "signal_labels", "funding", context.language
+            ),
+            "reading": translate_term(
+                "finance_routes", financial.get("route"), context.language
+            ),
             "detail": _reader_finance_detail(financial),
         },
         {
-            "what_we_checked": "Track record",
+            "what_we_checked": translate_term(
+                "signal_labels", "track_record", context.language
+            ),
             "reading": project_count,
             "detail": (
                 f"{project_count} comparable projects are recorded, with "
@@ -669,9 +704,9 @@ def _ask_facts(context: ReportContext) -> dict[str, Any]:
         "summary": _ask_summary(context),
         "support_needed": _ask_support_needed(context),
         "action_to_take_forward": (
-            context.action.intervention_summary
-            or context.action.outcome_summary
-            or context.action.action_name
+            _localized_action_value(context, "intervention_summary")
+            or _localized_action_value(context, "outcome_summary")
+            or _localized_action_value(context, "name")
         ),
         "legal_position": _ask_legal_position(context),
     }
@@ -692,9 +727,10 @@ def _ask_summary(context: ReportContext) -> str:
 def _ask_action_phrase(context: ReportContext) -> str:
     """Return an action phrase suitable after `to` in the ask sentence."""
     summary = (
-        context.action.intervention_summary
-        or context.action.outcome_summary
-        or context.action.action_name
+        _localized_action_value(context, "intervention_summary")
+        or _localized_action_value(context, "outcome_summary")
+        or _localized_action_value(context, "name")
+        or ""
     ).strip()
     lowered = summary[0].lower() + summary[1:] if summary else summary
 
@@ -848,25 +884,32 @@ def _action_impact_facts(context: ReportContext) -> dict[str, Any]:
     """Return action fields needed for qualitative impact prose."""
     return {
         "action_id": context.action.action_id,
-        "name": context.action.action_name,
-        "description": context.action.description,
-        "intervention_summary": context.action.intervention_summary,
-        "outcome_summary": context.action.outcome_summary,
+        "name": _localized_action_value(context, "name"),
+        "description": _localized_action_value(context, "description"),
+        "intervention_summary": _localized_action_value(
+            context, "intervention_summary"
+        ),
+        "outcome_summary": _localized_action_value(context, "outcome_summary"),
         "implementation_timeline": context.action.implementation_timeline,
         "emissions": context.action.emissions,
-        "co_benefits": _reader_co_benefit_facts(context.action.co_benefits),
+        "co_benefits": _reader_co_benefit_facts(
+            context.action.co_benefits, context.language
+        ),
     }
 
 
 def _reader_co_benefit_facts(
     co_benefits: dict[str, dict[str, Any]],
+    language: str,
 ) -> list[dict[str, Any]]:
     """Return co-benefits with stable reader labels and source-backed detail."""
     return [
         {
-            "label": CO_BENEFIT_DISPLAY_LABELS.get(key, key.replace("_", " ")),
+            "label": translate_term("co_benefits", key, language),
             "relationship": payload.get("impact_relationship"),
-            "strength": payload.get("impact_text"),
+            "strength": translate_term(
+                "score_labels", payload.get("impact_text"), language
+            ),
         }
         for key, payload in co_benefits.items()
     ]
@@ -874,6 +917,7 @@ def _reader_co_benefit_facts(
 
 def _city_fit_mitigation_facts(
     mitigation: ActionMitigationFeasibilityScoreRecord | None,
+    language: str,
 ) -> dict[str, Any] | None:
     """Return the dedicated local-fit result without raw indicator mappings."""
     if mitigation is None:
@@ -881,7 +925,7 @@ def _city_fit_mitigation_facts(
 
     return {
         "action_id": mitigation.action_id,
-        "overall_fit": _reader_score_label(mitigation.action_score),
+        "overall_fit": _reader_score_label(mitigation.action_score, language),
     }
 
 
@@ -895,10 +939,7 @@ def _city_fit_city_context(
 
     referenced_indicators = {
         row["city_indicator"]
-        for row in (
-            _city_fit_condition_rows(mitigation.breakdown, keep_positive=True)
-            + _city_fit_condition_rows(mitigation.breakdown, keep_positive=False)
-        )
+        for row in _city_fit_condition_rows(mitigation.breakdown)
         if row.get("city_indicator")
     }
     if not referenced_indicators:
@@ -931,10 +972,8 @@ def _city_fit_city_context(
 
 def _city_fit_condition_rows(
     breakdown: dict[str, Any],
-    *,
-    keep_positive: bool,
 ) -> list[dict[str, Any]]:
-    """Extract compact supporting or limiting city-indicator rows."""
+    """Extract compact non-neutral city-indicator contribution rows."""
     rows: list[dict[str, Any]] = []
     for dimension_name, dimension_payload in breakdown.items():
         if not isinstance(dimension_payload, dict):
@@ -952,9 +991,11 @@ def _city_fit_condition_rows(
                 if not isinstance(city_indicator, dict):
                     continue
                 contribution = city_indicator.get("contribution")
-                if not isinstance(contribution, int | float):
-                    continue
-                if keep_positive != (contribution > 0):
+                if (
+                    not isinstance(contribution, int | float)
+                    or isinstance(contribution, bool)
+                    or contribution == 0
+                ):
                     continue
                 rows.append(
                     {
@@ -973,42 +1014,76 @@ def _city_fit_condition_rows(
 
 
 def _city_fit_table_rows(
-    context: ReportContext, *, keep_positive: bool
-) -> list[dict[str, Any]]:
-    """Join feasibility conditions to city values for the two City Fit tables."""
+    context: ReportContext,
+) -> dict[str, list[dict[str, Any]]]:
+    """
+    Group city indicators into supporting, limiting, and mixed table rows.
+
+    Each measured city indicator appears at most once. Its implication preserves
+    every distinct upstream criterion while neutral contributions are omitted.
+    """
+    tables: dict[str, list[dict[str, Any]]] = {
+        "supporting_conditions": [],
+        "limiting_conditions": [],
+        "mixed_conditions": [],
+    }
     mitigation = context.mitigation_feasibility
     if mitigation is None:
-        return []
+        return tables
     city_rows = {
         row.get("attribute_name"): row
         for row in context.city.city_context
         if row.get("attribute_name")
     }
-    table_rows: list[dict[str, Any]] = []
-    for condition in _city_fit_condition_rows(
-        mitigation.breakdown, keep_positive=keep_positive
-    ):
-        city_row = city_rows.get(condition.get("city_indicator"), {})
+    grouped_conditions: dict[str, list[dict[str, Any]]] = {}
+    for condition in _city_fit_condition_rows(mitigation.breakdown):
+        city_indicator = condition.get("city_indicator")
+        if not isinstance(city_indicator, str) or not city_indicator:
+            continue
+        grouped_conditions.setdefault(city_indicator, []).append(condition)
+
+    for city_indicator, conditions in grouped_conditions.items():
+        city_row = city_rows.get(city_indicator, {})
         if city_row.get("attribute_value") is None:
             continue
-        table_rows.append(
+
+        positive_dimensions = _city_fit_dimension_labels(
+            conditions, positive=True, language=context.language
+        )
+        negative_dimensions = _city_fit_dimension_labels(
+            conditions, positive=False, language=context.language
+        )
+        if positive_dimensions and negative_dimensions:
+            table_key = "mixed_conditions"
+        elif positive_dimensions:
+            table_key = "supporting_conditions"
+        else:
+            table_key = "limiting_conditions"
+
+        tables[table_key].append(
             {
-                "indicator": condition.get("city_indicator"),
+                "indicator": translate_term(
+                    "indicators", city_indicator, context.language
+                ),
                 "display_value": _city_fit_display_value(
-                    indicator=condition.get("city_indicator"),
+                    indicator=city_indicator,
                     value=city_row.get("attribute_value"),
                     unit=city_row.get("attribute_units"),
                     category=city_row.get("attribute_category")
-                    or condition.get("category"),
+                    or conditions[0].get("category"),
+                    language=context.language,
                 ),
-                "implication": _city_fit_implication(condition),
+                "implication": _city_fit_implication(
+                    positive_dimensions=positive_dimensions,
+                    negative_dimensions=negative_dimensions,
+                ),
             }
         )
-    return table_rows
+    return tables
 
 
 def _city_fit_display_value(
-    *, indicator: Any, value: Any, unit: Any, category: Any
+    *, indicator: Any, value: Any, unit: Any, category: Any, language: str
 ) -> str:
     """Format one city indicator without adding unsupported units."""
     if value is None:
@@ -1034,55 +1109,73 @@ def _city_fit_display_value(
     elif value is not None and normalized_indicator == "home_ownership":
         rendered_value = f"{rendered_value}%"
 
-    return f"{rendered_value} ({category})" if category else rendered_value
-
-
-def _city_fit_implication(condition: dict[str, Any]) -> str:
-    """Turn a signed fit contribution into an unambiguous reader-facing statement."""
-    contribution = condition.get("contribution")
-    dimension = _reader_dimension_label(
-        condition.get("global_indicator") or condition.get("dimension")
-    )
-    if isinstance(contribution, (int, float)) and contribution > 0:
-        return f"In the feasibility assessment, this indicator strengthens {dimension}."
-    if isinstance(contribution, (int, float)) and contribution < 0:
-        return f"In the feasibility assessment, this indicator weakens {dimension}."
+    localized_category = translate_term("score_labels", category, language)
     return (
-        f"In the feasibility assessment, this indicator has a neutral effect on "
-        f"{dimension}."
+        f"{rendered_value} ({localized_category.lower()})"
+        if localized_category
+        else rendered_value
     )
 
 
-def _reader_dimension_label(value: Any) -> str:
+def _city_fit_dimension_labels(
+    conditions: list[dict[str, Any]], *, positive: bool, language: str
+) -> list[str]:
+    """Return distinct reader labels for one contribution sign."""
+    labels: list[str] = []
+    for condition in conditions:
+        contribution = condition.get("contribution")
+        if not isinstance(contribution, int | float) or (contribution > 0) != positive:
+            continue
+        label = _reader_dimension_label(
+            condition.get("global_indicator") or condition.get("dimension"),
+            language,
+        ).lower()
+        if label and label not in labels:
+            labels.append(label)
+    return labels
+
+
+def _city_fit_implication(
+    *, positive_dimensions: list[str], negative_dimensions: list[str]
+) -> str:
+    """Describe all supporting and limiting effects of one city indicator."""
+    prefix = "In the feasibility assessment, this indicator"
+    positive_text = _natural_language_list(positive_dimensions)
+    negative_text = _natural_language_list(negative_dimensions)
+    if positive_text and negative_text:
+        return f"{prefix} strengthens {positive_text}, but weakens {negative_text}."
+    if positive_text:
+        return f"{prefix} strengthens {positive_text}."
+    return f"{prefix} weakens {negative_text}."
+
+
+def _natural_language_list(values: list[str]) -> str:
+    """Join distinct labels as an English list for later report translation."""
+    if len(values) < 2:
+        return "".join(values)
+    if len(values) == 2:
+        return " and ".join(values)
+    return f"{', '.join(values[:-1])}, and {values[-1]}"
+
+
+def _reader_dimension_label(value: Any, language: str) -> str:
     """Return a plain-language label for a feasibility dimension."""
-    labels = {
-        "cost_effectiveness": "affordability and value for money",
-        "cost-effectiveness": "affordability and value for money",
-        "economic": "affordability and value for money",
-        "technical_scalability": "technical delivery",
-        "technological": "technical delivery",
-        "public_acceptance": "public acceptance",
-        "social_acceptance": "public acceptance",
-        "socio_cultural": "public acceptance",
-        "institutional": "institutional delivery",
-    }
-    normalized = str(value or "overall fit").strip().lower()
-    return labels.get(normalized, normalized.replace("_", " "))
+    return translate_term("feasibility_dimensions", value or "overall_fit", language) or ""
 
 
-def _reader_score_label(score: float | None) -> str | None:
+def _reader_score_label(score: float | None, language: str) -> str | None:
     """Translate a normalized score into a stable reader-facing strength label."""
     if score is None:
         return None
     if score >= 0.8:
-        return "Strong"
+        return translate_term("score_labels", "strong", language)
     if score >= 0.6:
-        return "Good"
+        return translate_term("score_labels", "good", language)
     if score >= 0.4:
-        return "Moderate"
+        return translate_term("score_labels", "moderate", language)
     if score >= 0.2:
-        return "Limited"
-    return "Very limited"
+        return translate_term("score_labels", "limited", language)
+    return translate_term("score_labels", "very_limited", language)
 
 
 def _policy_facts(
@@ -1162,16 +1255,30 @@ def _legal_facts(context: ReportContext) -> dict[str, Any] | None:
         return {
             "action_id": legal.action_id,
             "country_code": legal.country_code,
-            "gpc_sector": legal.gpc_sector,
+            "gpc_sector": translate_term(
+                "gpc_sectors", legal.gpc_sector, context.language
+            ),
             "verdict_category": legal.verdict_category,
             "verdict_score": legal.verdict_score,
             "ownership_category": legal.ownership_category,
             "ownership_score": legal.ownership_score,
-            "ownership_description": legal.ownership_description,
+            "ownership_description": localized_source_value(
+                language=context.language,
+                localized=legal.ownership_description_i18n,
+                fallback=legal.ownership_description,
+            ),
             "restrictions_category": legal.restrictions_category,
             "restrictions_score": legal.restrictions_score,
-            "restrictions_description": legal.restrictions_description,
-            "legal_justification": legal.legal_justification,
+            "restrictions_description": localized_source_value(
+                language=context.language,
+                localized=legal.restrictions_description_i18n,
+                fallback=legal.restrictions_description,
+            ),
+            "legal_justification": localized_source_value(
+                language=context.language,
+                localized=legal.legal_justification_i18n,
+                fallback=legal.legal_justification,
+            ),
             "legal_references": legal.legal_references,
         }
 
@@ -1254,9 +1361,13 @@ def _financial_facts(context: ReportContext) -> dict[str, Any] | None:
         financial = context.financial_feasibility
         return {
             "action_id": financial.action_id,
-            "sector": financial.sector,
+            "sector": translate_term(
+                "gpc_sectors", financial.sector, context.language
+            ),
             "financial_feasibility": financial.financial_feasibility,
-            "route": financial.route,
+            "route": translate_term(
+                "finance_routes", financial.route, context.language
+            ),
             "reason": financial.reason,
             "comparable_project_count": financial.inputs.get("evidence", {}).get(
                 "n_existing_projects"
@@ -1272,7 +1383,9 @@ def _financial_facts(context: ReportContext) -> dict[str, Any] | None:
         "component_score": snapshot_financial.component_score,
         "score_present": snapshot_financial.score_present,
         "score_missing": snapshot_financial.score_missing,
-        "route": snapshot_financial.route,
+        "route": translate_term(
+            "finance_routes", snapshot_financial.route, context.language
+        ),
         "reason": snapshot_financial.reason,
     }
 
@@ -1289,12 +1402,19 @@ def _finance_opportunity_facts(
             "opportunity_name": opportunity.opportunity_name,
             "funder_name": opportunity.funder_name,
             "instrument": opportunity.instrument,
-            "status": opportunity.status,
+            "status": translate_term(
+                "finance_statuses", opportunity.status, context.language
+            ),
             "status_as_of": opportunity.status_as_of,
-            "recurrence": opportunity.recurrence,
+            "recurrence": translate_term(
+                "finance_statuses", opportunity.recurrence, context.language
+            ),
             "source_url": opportunity.source_url,
             "amount_note": opportunity.amount_note,
-            "city_application": opportunity.city_application,
+            "city_application": [
+                translate_term("application_routes", route, context.language)
+                for route in opportunity.city_application
+            ],
         }
         if report_category == "monitor":
             row["reader_note"] = (
@@ -1319,7 +1439,9 @@ def _comparable_project_facts(context: ReportContext) -> list[dict[str, Any]]:
             {
                 "project_name": name,
                 "jurisdiction": project.jurisdiction,
-                "lifecycle_stage": project.lifecycle_stage,
+                "lifecycle_stage": translate_term(
+                    "lifecycle_stages", project.lifecycle_stage, context.language
+                ),
                 "funding_summary": _project_funding_summary(project),
             }
         )

@@ -2,19 +2,48 @@
 import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, HStack, Tabs, Text } from "@chakra-ui/react";
+import { Box, Heading, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
-import MyTokensTab from "@/components/Tabs/my-tokens-tab";
+import MyTokensTab from "@/app/[lng]/settings/my-tokens-tab";
+import { api } from "@/services/api";
+import { Roles } from "@/util/types";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
+import MyAppsTab from "@/app/[lng]/settings/my-apps-tab";
 
 // TODO create tabs component with recipe
-const AccountSettingsPage = (props: {
-  params: Promise<{ lng: string; id: string }>;
-}) => {
-  const { lng, id } = use(props.params);
+const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "settings");
+
+  const { data: userInfo } = api.useGetUserInfoQuery();
+  const isAdmin = userInfo?.role === Roles.Admin;
+
+  // TODO enable this when global organization dropdown exists
+  /*
+  const { data: orgData, isLoading: isOrgDataFetching } =
+    api.useGetOrganizationQuery(id, {
+      skip: !id,
+    });
+
+  const { setOrganization, organization } = useOrganizationContext();
+  const { setTheme } = useTheme();
+
+  useEffect(() => {
+    if (orgData) {
+      const newOrgState = normalizeOrganizationState(orgData);
+
+      if (hasOrganizationChanged(organization, newOrgState)) {
+        setOrganization(newOrgState);
+      }
+      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
+    } else {
+      setTheme("blue_theme");
+    }
+  }, [isOrgDataFetching, orgData, organization, setOrganization, setTheme]);
+  */
 
   return (
     <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
@@ -101,22 +130,50 @@ const AccountSettingsPage = (props: {
                   {t("projects")}
                 </Text>
               </Tabs.Trigger>
-              <Tabs.Trigger
-                value="my-tokens"
-                _selected={{
-                  borderColor: "content.link",
-                  borderBottomWidth: "2px",
-                  boxShadow: "none",
-                  fontWeight: "bold",
-                  borderRadius: "0",
-                  color: "content.link",
-                  backgroundColor: "background.backgroundLight",
-                }}
-              >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
-                  {t("api-tokens")}
-                </Text>
-              </Tabs.Trigger>
+              {isAdmin && (
+                <Tabs.Trigger
+                  value="my-tokens"
+                  _selected={{
+                    borderColor: "content.link",
+                    borderBottomWidth: "2px",
+                    boxShadow: "none",
+                    fontWeight: "bold",
+                    borderRadius: "0",
+                    color: "content.link",
+                    backgroundColor: "background.backgroundLight",
+                  }}
+                >
+                  <Text
+                    fontSize="title.md"
+                    fontStyle="normal"
+                    lineHeight="24px"
+                  >
+                    {t("api-tokens")}
+                  </Text>
+                </Tabs.Trigger>
+              )}
+              {isAdmin && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
+                <Tabs.Trigger
+                  value="my-apps"
+                  _selected={{
+                    borderColor: "content.link",
+                    borderBottomWidth: "2px",
+                    boxShadow: "none",
+                    fontWeight: "bold",
+                    borderRadius: "0",
+                    color: "content.link",
+                    backgroundColor: "background.backgroundLight",
+                  }}
+                >
+                  <Text
+                    fontSize="title.md"
+                    fontStyle="normal"
+                    lineHeight="24px"
+                  >
+                    {t("apps")}
+                  </Text>
+                </Tabs.Trigger>
+              )}
             </Tabs.List>
             <Tabs.Content value="account">
               <Box
@@ -142,12 +199,15 @@ const AccountSettingsPage = (props: {
               </Box>
             </Tabs.Content>
             <Tabs.Content value="team">
-              <TeamSettings lng={lng} id={id} />
+              <TeamSettings lng={lng} />
             </Tabs.Content>
             <Tabs.Content value="project">
-              <ProjectSettings lng={lng} id={id} />
+              <ProjectSettings lng={lng} />
             </Tabs.Content>
-            <MyTokensTab lng={lng} />
+            {isAdmin && <MyTokensTab lng={lng} />}
+            {isAdmin && hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
+              <MyAppsTab lng={lng} />
+            )}
           </Tabs.Root>
         </Box>
       </Box>

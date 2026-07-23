@@ -4,7 +4,7 @@ import { Box, Tabs, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
-import { AppCard } from "../Cards/AppCard";
+import { AppCard } from "../../../components/Cards/AppCard";
 import { useTranslation } from "@/i18n/client";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge } from "@/components/package/Texts/Body";

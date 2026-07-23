@@ -13,7 +13,13 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
-import { MdContentCopy, MdDelete, MdAdd, MdVisibility, MdVisibilityOff } from "react-icons/md";
+import {
+  MdContentCopy,
+  MdDelete,
+  MdAdd,
+  MdVisibility,
+  MdVisibilityOff,
+} from "react-icons/md";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
@@ -54,13 +60,15 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
 
   const [createToken, { isLoading: isCreating }] =
     useCreatePersonalAccessTokenMutation();
-  const [deleteToken, { isLoading: isDeleting }] = useDeletePersonalAccessTokenMutation();
+  const [deleteToken, { isLoading: isDeleting }] =
+    useDeletePersonalAccessTokenMutation();
 
   // Modal state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isTokenDisplayModalOpen, setIsTokenDisplayModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [tokenToDelete, setTokenToDelete] = useState<PersonalAccessToken | null>(null);
+  const [tokenToDelete, setTokenToDelete] =
+    useState<PersonalAccessToken | null>(null);
 
   // Form state
   const [tokenName, setTokenName] = useState("");
@@ -178,7 +186,11 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
     <>
       <Tabs.Content value="my-tokens">
         <Box display="flex" flexDirection="column" gap="48px" marginTop="32px">
-          <Box display="flex" justifyContent="space-between" alignItems="center">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Box>
               <HeadlineSmall text={t("api-tokens") || "API Tokens"} />
               <BodyLarge
@@ -190,10 +202,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             </Box>
             {/* Show button here only when no tokens exist */}
             {(!tokens || tokens.length === 0) && !isTokensLoading && (
-              <Button
-                onClick={() => setIsCreateModalOpen(true)}
-                h="48px"
-              >
+              <Button onClick={() => setIsCreateModalOpen(true)} h="48px">
                 <Icon as={MdAdd} boxSize={5} mr="8px" />
                 {t("create-token") || "Create Token"}
               </Button>
@@ -251,10 +260,16 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 data={tokens}
                 columns={[
                   { header: t("token-name"), accessor: "name" },
-                  { header: t("token-prefix") || "Token", accessor: "tokenPrefix" },
+                  {
+                    header: t("token-prefix") || "Token",
+                    accessor: "tokenPrefix",
+                  },
                   { header: t("scopes") || "Scopes", accessor: "scopes" },
                   { header: t("expires") || "Expires", accessor: "expiresAt" },
-                  { header: t("last-used") || "Last Used", accessor: "lastUsedAt" },
+                  {
+                    header: t("last-used") || "Last Used",
+                    accessor: "lastUsedAt",
+                  },
                   { header: t("created") || "Created", accessor: "created" },
                   { header: "", accessor: null },
                 ]}
@@ -269,16 +284,24 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text color="content.secondary">{formatScopes(token.scopes)}</Text>
+                      <Text color="content.secondary">
+                        {formatScopes(token.scopes)}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text color="content.secondary">{formatDate(token.expiresAt)}</Text>
+                      <Text color="content.secondary">
+                        {formatDate(token.expiresAt)}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text color="content.secondary">{formatDate(token.lastUsedAt)}</Text>
+                      <Text color="content.secondary">
+                        {formatDate(token.lastUsedAt)}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text color="content.secondary">{formatDate(token.created)}</Text>
+                      <Text color="content.secondary">
+                        {formatDate(token.created)}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
                       <IconButton
@@ -308,14 +331,18 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       >
         <DialogContent minW="500px">
           <DialogHeader>
-            <DialogTitle>{t("create-new-token") || "Create New Token"}</DialogTitle>
+            <DialogTitle>
+              {t("create-new-token") || "Create New Token"}
+            </DialogTitle>
           </DialogHeader>
           <DialogCloseTrigger />
           <DialogBody>
             <VStack gap="24px" align="stretch">
               <Field label={t("token-name") || "Token Name"}>
                 <Input
-                  placeholder={t("token-name-placeholder") || "e.g., MCP Client Token"}
+                  placeholder={
+                    t("token-name-placeholder") || "e.g., MCP Client Token"
+                  }
                   value={tokenName}
                   onChange={(e) => setTokenName(e.target.value)}
                 />
@@ -328,9 +355,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                     onCheckedChange={(e) => setReadScope(!!e.checked)}
                   >
                     <Text>
-                      <Text as="span" fontWeight="medium">{t("scope-read")}</Text>
+                      <Text as="span" fontWeight="medium">
+                        {t("scope-read")}
+                      </Text>
                       {" - "}
-                      {t("read-scope-description") || "Access to read data (GET requests)"}
+                      {t("read-scope-description") ||
+                        "Access to read data (GET requests)"}
                     </Text>
                   </Checkbox>
                 </VStack>
@@ -446,7 +476,9 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                         aria-label="Copy token"
                         variant="ghost"
                         size="sm"
-                        onClick={() => createdToken && copyToClipboard(createdToken)}
+                        onClick={() =>
+                          createdToken && copyToClipboard(createdToken)
+                        }
                       >
                         <Icon as={MdContentCopy} />
                       </IconButton>
@@ -455,7 +487,11 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 </Box>
               </Field>
 
-              <Field label={t("mcp-usage-example") || "MCP Client Configuration Example:"}>
+              <Field
+                label={
+                  t("mcp-usage-example") || "MCP Client Configuration Example:"
+                }
+              >
                 <Box
                   p="16px"
                   bg="background.neutral"
@@ -473,32 +509,34 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                     position="absolute"
                     top="8px"
                     right="8px"
-                    onClick={() => copyToClipboard(`{
+                    onClick={() =>
+                      copyToClipboard(`{
   "mcpServers": {
     "citycatalyst": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
-        "${typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/mcp",
+        "${typeof window !== "undefined" ? window.location.origin : ""}/api/v1/mcp",
         "--header",
         "Authorization: Bearer ${createdToken}"
       ]
     }
   }
-}`)}
+}`)
+                    }
                   >
                     <Icon as={MdContentCopy} />
                   </IconButton>
                   <Text color="content.secondary">
-{`{
+                    {`{
   "mcpServers": {
     "citycatalyst": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
-        "${typeof window !== 'undefined' ? window.location.origin : ''}/api/v1/mcp",
+        "${typeof window !== "undefined" ? window.location.origin : ""}/api/v1/mcp",
         "--header",
         "Authorization: Bearer <your-token>"
       ]
@@ -543,7 +581,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             >
               {t("cancel") || "Cancel"}
             </Button>
-            <Button h="48px" colorPalette="red" onClick={handleDeleteToken} loading={isDeleting}>
+            <Button
+              h="48px"
+              colorPalette="red"
+              onClick={handleDeleteToken}
+              loading={isDeleting}
+            >
               {t("delete") || "Delete"}
             </Button>
           </DialogFooter>

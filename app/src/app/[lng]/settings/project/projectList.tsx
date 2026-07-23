@@ -1,5 +1,5 @@
 import { ProjectWithCities } from "@/util/types";
-import React, { useState } from "react";
+import React from "react";
 import { Accordion, Box, Button, Icon, Tabs, Text } from "@chakra-ui/react";
 import {
   AccordionItem,
@@ -54,6 +54,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
               w="full"
               hideIndicator
               padding="0px"
+              asChild
             >
               <Button
                 rounded={0}

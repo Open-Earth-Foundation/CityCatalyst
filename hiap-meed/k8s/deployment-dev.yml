@@ -94,12 +94,12 @@ spec:
               value: "false"
           resources:
             requests:
-              cpu: "50m"
-              memory: "128Mi"
+              cpu: "250m"
+              memory: "1Gi"
               ephemeral-storage: "256Mi"
             limits:
-              cpu: "250m"
-              memory: "256Mi"
+              cpu: "500m"
+              memory: "1Gi"
               ephemeral-storage: "512Mi"
           livenessProbe:
             httpGet:

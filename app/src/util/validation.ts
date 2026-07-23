@@ -193,7 +193,7 @@ export const AcceptOrganizationInvite = z.object({
 
 export const CreateUsersInvite = z.object({
   projectId: z.string().uuid(),
-  cityIds: z.array(z.string()),
+  cityIds: z.array(z.string()).min(1),
   invites: z.array(z.object({
     email: z.string().email(),
     role: z.enum(["admin", "collaborator"]),

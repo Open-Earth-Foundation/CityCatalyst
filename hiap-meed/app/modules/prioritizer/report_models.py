@@ -17,7 +17,6 @@ from app.modules.prioritizer.internal_models import (
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
-    CityActionReportChapter,
     PrioritizerApiCityResult,
     PrioritizerApiRequest,
     RankedActionResult,
@@ -49,6 +48,7 @@ class ReportContext(BaseModel):
     country_code: str
     action_id: str
     language: str
+    requested_languages: list[str] = Field(default_factory=list)
     prioritization_request: PrioritizerApiRequest
     prioritization_city_result: PrioritizerApiCityResult
     ranked_action: RankedActionResult
@@ -72,6 +72,7 @@ class ReportChapterInput(BaseModel):
     key: ChapterKey
     title: str
     language: str
+    terminology: dict[str, str] = Field(default_factory=dict)
     facts: dict[str, Any] = Field(default_factory=dict)
     source_refs: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
@@ -93,5 +94,5 @@ class ReportChapterDraft(BaseModel):
 class ReportGenerationResult(BaseModel):
     """Chapter drafts plus provider I/O diagnostics."""
 
-    chapters: list[CityActionReportChapter]
+    chapters: list[ReportChapterDraft]
     llm_io: dict[str, Any] = Field(default_factory=dict)

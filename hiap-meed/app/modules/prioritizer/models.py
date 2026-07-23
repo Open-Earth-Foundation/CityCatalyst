@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.modules.prioritizer.localization import supported_languages
 from app.modules.prioritizer.scoring_config import resolve_impact_text_multiplier
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
@@ -271,7 +272,7 @@ class PrioritizerRequestData(BaseModel):
 
     requestedLanguages: list[str] = Field(
         default_factory=lambda: ["en"],
-        description="Languages to include in the explanation output. English is always canonical.",
+        description="Languages to generate for every explanation, in display order.",
     )
     topN: int | None = Field(
         default=None,
@@ -299,9 +300,18 @@ class PrioritizerRequestData(BaseModel):
         normalized_languages = [
             str(item).strip().lower() for item in value if str(item).strip()
         ]
-        if not normalized_languages:
-            return ["en"]
-        return list(dict.fromkeys(normalized_languages))
+        normalized_languages = normalized_languages or ["en"]
+        deduplicated = list(dict.fromkeys(normalized_languages))
+        supported = set(supported_languages())
+        unsupported = [
+            language for language in deduplicated if language not in supported
+        ]
+        if unsupported:
+            raise ValueError(
+                "requestedLanguages contains unsupported languages: "
+                f"{unsupported}; supported languages are {sorted(supported)}"
+            )
+        return deduplicated
 
 
 class PrioritizerApiRequest(BaseModel):
@@ -356,7 +366,10 @@ class ExplanationTranslationRequestData(BaseModel):
     )
     targetLanguages: list[str] = Field(
         min_length=1,
-        description="Non-English language codes to translate the canonical explanations into.",
+        description=(
+            "Non-English target languages configured in the shared terminology "
+            "catalogue."
+        ),
     )
     rankedActions: list[ExplanationTranslationActionInput] = Field(
         min_length=1,
@@ -386,11 +399,18 @@ class ExplanationTranslationRequestData(BaseModel):
     @field_validator("targetLanguages")
     @classmethod
     def _validate_target_languages(cls, value: list[str]) -> list[str]:
-        """Ensure translation targets are non-empty and do not include English."""
+        """Require non-English targets supported by the shared terminology catalogue."""
         if not value:
             raise ValueError("targetLanguages must contain at least one language")
         if "en" in value:
             raise ValueError("targetLanguages must not include `en`")
+        supported = set(supported_languages())
+        unsupported = [language for language in value if language not in supported]
+        if unsupported:
+            raise ValueError(
+                "targetLanguages contains unsupported languages: "
+                f"{unsupported}; supported languages are {sorted(supported - {'en'})}"
+            )
         return value
 
     @model_validator(mode="after")
@@ -1411,14 +1431,19 @@ class PrioritizationExplanationMetadata(BaseModel):
         description="Whether the caller requested explanation generation."
     )
     generated: int = Field(
-        description="Number of ranked actions with generated canonical explanations."
+        description=(
+            "Number of ranked actions with explanations in every requested language."
+        )
     )
     requested_languages: list[str] = Field(
         default_factory=list,
         description="Languages requested by the caller for explanations.",
     )
     canonical_language: str = Field(
-        description="Canonical source language used for explanation generation."
+        description=(
+            "Stable English reference language; this does not select or order generated "
+            "languages."
+        )
     )
     generated_languages: list[str] = Field(
         default_factory=list,
@@ -1426,7 +1451,7 @@ class PrioritizationExplanationMetadata(BaseModel):
     )
     translation_warnings: list[str] = Field(
         default_factory=list,
-        description="Human-readable warnings from explanation translation.",
+        description="Human-readable explanation-generation warnings.",
     )
 
 
@@ -1704,7 +1729,7 @@ class PrioritizerApiCityResult(BaseModel):
     )
     warnings: list[str] = Field(
         default_factory=list,
-        description="Top-level warnings for this city's explanation/translation flow.",
+        description="Top-level warnings for this city's explanation flow.",
     )
 
 
@@ -1727,7 +1752,7 @@ class PrioritizerApiResponse(BaseModel):
 #   - requestData: CityActionReportRequestData
 #     - locode: str
 #     - actionId: str
-#     - language: str
+#     - language: list[str]
 #     - prioritizationSnapshot: CityActionPrioritizationSnapshot
 #       - request: PrioritizerApiRequest
 #       - response: PrioritizerApiResponse
@@ -1736,8 +1761,8 @@ class PrioritizerApiResponse(BaseModel):
 # - CityActionReportApiResponse
 #   - locode: str
 #   - action_id: str
-#   - language: str
-#   - format: Literal["json_chapters_markdown"]
+#   - language: list[str]
+#   - format: Literal["json_chapters_markdown_i18n"]
 #   - chapters: list[CityActionReportChapter]
 #   - metadata: CityActionReportMetadata
 #     - source_context: CityActionReportSourceContext
@@ -1776,9 +1801,9 @@ class CityActionReportRequestData(BaseModel):
 
     locode: str = Field(min_length=1, description="UN/LOCODE for the ranked city.")
     actionId: str = Field(min_length=1, description="Selected ranked action ID.")
-    language: str = Field(
-        min_length=2,
-        description="Requested report language, usually one of requestedLanguages.",
+    language: list[str] = Field(
+        min_length=1,
+        description="Requested report languages in frontend display order.",
     )
     prioritizationSnapshot: CityActionPrioritizationSnapshot = Field(
         description="Original prioritization request and response snapshot."
@@ -1802,9 +1827,21 @@ class CityActionReportRequestData(BaseModel):
 
     @field_validator("language")
     @classmethod
-    def _normalize_language(cls, value: str) -> str:
-        """Normalize report language casing and reject blank values."""
-        return _normalize_required_lower_string(value, "language")
+    def _normalize_languages(cls, value: list[str]) -> list[str]:
+        """Normalize, deduplicate, and validate requested report languages."""
+        normalized = [
+            _normalize_required_lower_string(language, "language")
+            for language in value
+        ]
+        deduplicated = list(dict.fromkeys(normalized))
+        supported = set(supported_languages())
+        unsupported = [language for language in deduplicated if language not in supported]
+        if unsupported:
+            raise ValueError(
+                "language contains unsupported report languages: "
+                f"{unsupported}; supported languages are {sorted(supported)}"
+            )
+        return deduplicated
 
 
 class CityActionReportApiRequest(BaseModel):
@@ -1819,18 +1856,18 @@ class CityActionReportApiRequest(BaseModel):
 
 
 class CityActionReportChapter(BaseModel):
-    """One Markdown chapter in the output-plan response."""
+    """One localized Markdown chapter in the output-plan response."""
 
     key: str = Field(description="Stable chapter key.")
-    title: str = Field(description="Human-readable chapter title.")
-    markdown: str = Field(description="Markdown body for the chapter.")
+    title: dict[str, str] = Field(description="Chapter title keyed by language.")
+    markdown: dict[str, str] = Field(description="Markdown body keyed by language.")
     source_refs: list[str] = Field(
         default_factory=list,
         description="Source identifiers used by this chapter when available.",
     )
-    limitations: list[str] = Field(
-        default_factory=list,
-        description="Chapter-specific diagnostic limitations for source-status handling.",
+    limitations: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Frontend-visible chapter limitations keyed by language.",
     )
 
 
@@ -1887,8 +1924,8 @@ class CityActionReportApiResponse(BaseModel):
 
     locode: str = Field(description="UN/LOCODE for the report city.")
     action_id: str = Field(description="Selected action ID.")
-    language: str = Field(description="Report language.")
-    format: Literal["json_chapters_markdown"] = "json_chapters_markdown"
+    language: list[str] = Field(description="Languages generated for this report.")
+    format: Literal["json_chapters_markdown_i18n"] = "json_chapters_markdown_i18n"
     chapters: list[CityActionReportChapter] = Field(
         default_factory=list,
         description="Ordered report chapters with Markdown bodies.",
@@ -1896,5 +1933,34 @@ class CityActionReportApiResponse(BaseModel):
     metadata: CityActionReportMetadata = Field(
         description="Request correlation and source-context metadata."
     )
+
+    @model_validator(mode="after")
+    def _validate_localized_chapter_coverage(self) -> CityActionReportApiResponse:
+        """Require every frontend-visible chapter field in every requested language."""
+        expected = set(self.language)
+        if not expected:
+            raise ValueError("language must contain at least one generated language")
+        for chapter in self.chapters:
+            localized_fields = {
+                "title": chapter.title,
+                "markdown": chapter.markdown,
+                "limitations": chapter.limitations,
+            }
+            for field_name, localized in localized_fields.items():
+                if set(localized) != expected:
+                    raise ValueError(
+                        f"chapters[{chapter.key}].{field_name} must contain exactly "
+                        f"the requested languages {self.language}"
+                    )
+            for language in self.language:
+                if not chapter.title[language].strip():
+                    raise ValueError(
+                        f"chapters[{chapter.key}].title[{language}] must not be blank"
+                    )
+                if not chapter.markdown[language].strip():
+                    raise ValueError(
+                        f"chapters[{chapter.key}].markdown[{language}] must not be blank"
+                    )
+        return self
 
 

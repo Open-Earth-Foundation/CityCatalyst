@@ -11,11 +11,13 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `city_fit`
 - `title` (string): chapter title
 - `language` (string): requested report language
+- `terminology` (object): exact localized subsection and table labels
 - `facts.action` (object): selected action ID and name. Use this as the chapter subject.
 - `facts.city_context` (array): only city indicator rows referenced by selected-action fit evidence
 - `facts.mitigation_feasibility` (object or null): selected-action local-fit label when available
-- `facts.supporting_conditions` (array): table rows with indicator, display-ready city value, and a prepared implication
-- `facts.limiting_conditions` (array): table rows with indicator, display-ready city value, and a prepared implication
+- `facts.supporting_conditions` (array, omitted when empty): grouped positive-only indicator rows with display-ready city value and a prepared implication
+- `facts.limiting_conditions` (array, omitted when empty): grouped negative-only indicator rows with display-ready city value and a prepared implication
+- `facts.mixed_conditions` (array, omitted when empty): grouped indicator rows that have both positive and negative implications
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
 
@@ -25,7 +27,7 @@ Runtime input:
 
 <output>
 Use the shared OutputPlanChapterResponse contract:
-- `markdown` (string): Start with one concise overall-fit sentence using `facts.mitigation_feasibility.overall_fit` when available. Then include `### Local conditions that support the action` and a Markdown table with `Indicator | City's value | What it implies`. Follow it with `### Local conditions that limit the action` and the same table structure. Use every listed row, render indicator names in plain language, copy `display_value` faithfully, and copy the meaning of the prepared `implication` without reinterpreting whether the condition supports or limits the action. If either array is empty, say that no measured local conditions were identified for that table. Do not mention indicators omitted because they lack a city value.
+- `markdown` (string): Start with one concise overall-fit sentence using `facts.mitigation_feasibility.overall_fit` when available. Then use `terminology.supporting_heading` and a Markdown table with `terminology.indicator | terminology.city_value | terminology.implication`. Follow it with `terminology.limiting_heading` and the same table structure. If `facts.mixed_conditions` is present, add `terminology.mixed_heading` and the same table structure; omit the mixed heading and table entirely when that field is absent. Copy these backend-localized headings, table labels, and prepared indicator names exactly. Use every listed row, copy `display_value` faithfully, and translate the meaning of each prepared `implication` into `language` without reinterpreting whether the condition supports, limits, or has mixed effects on the action. If either the supporting or limiting field is absent, say in `language` that no measured local conditions were identified for that table. Do not mention indicators omitted because they lack a city value or a non-neutral contribution.
 - `limitations` (array of strings): relevant city-fit limitations.
 
 Use `facts.action.name` as the action being assessed. Do not rename the action from feasibility taxonomy or indicator labels. Do not infer local political support, implementation capacity, infrastructure status, or socioeconomic conditions beyond the listed facts.

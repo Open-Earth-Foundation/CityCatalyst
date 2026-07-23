@@ -16,34 +16,9 @@ import { useTheme } from "next-themes";
 
 export default function OrganizationSettingsLayout(props: {
   children: React.ReactNode;
-  params: Promise<{ lng: string; id: string }>;
+  params: Promise<{ lng: string }>;
 }) {
-  const { lng, id } = use(props.params);
-
-  const { data: orgData, isLoading: isOrgDataFetching } =
-    useGetOrganizationQuery(id, {
-      skip: !id,
-    });
-
-  const { setOrganization, organization } = useOrganizationContext();
-  const { setTheme } = useTheme();
-
-  useEffect(() => {
-    if (orgData) {
-      const newOrgState = normalizeOrganizationState(orgData);
-
-      if (hasOrganizationChanged(organization, newOrgState)) {
-        setOrganization(newOrgState);
-      }
-      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
-    } else {
-      setTheme("blue_theme");
-    }
-  }, [isOrgDataFetching, orgData, organization, setOrganization, setTheme]);
-
-  if (isOrgDataFetching) {
-    return <ProgressLoader />;
-  }
+  const { lng } = use(props.params);
 
   return (
     <Box

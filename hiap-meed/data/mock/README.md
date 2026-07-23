@@ -71,13 +71,15 @@ This payload shape is modeled by:
 This includes:
 
 - source language (must currently be `en`)
-- target languages (non-English translation targets)
+- target languages (non-English languages configured in `app/modules/prioritizer/translations.yaml`; currently `es`)
 - ranked actions with:
   - `actionId`
   - `canonicalExplanation`
 
 `meta.apiContext.endpoint` reflects the translation route:
 - `POST /v1/explanations/translate`
+
+The endpoint injects the shared deterministic terminology into its LLM prompt and rejects target languages until their catalogue entries are complete.
 
 # output_plan_request_mock.json:
 
@@ -110,6 +112,19 @@ the output-plan LLM.
 
 `meta.apiContext.endpoint` reflects the report route:
 - `POST /v1/reports/output-plan`
+
+# output_plan_grouped_city_fit_request_mock.json:
+
+This report request uses the same stored Iquique prioritization snapshot as
+`output_plan_request_mock.json`, but selects action `icare_0121`. The live
+mitigation-feasibility response currently maps its poverty-rate value to
+cost-effectiveness, distributional effects, and inclusiveness, so this fixture
+exercises the report's grouping of repeated city indicators into one row.
+
+This request depends on the live mitigation-feasibility API for that repeated
+mapping. Synthetic mixed-sign and neutral-contribution cases are covered by
+`tests/unit/test_report_context.py`, because the live response currently has no
+mixed-sign city indicators.
 
 # city_api_mock.json:
 
@@ -147,7 +162,7 @@ This payload shape is modeled by:
 
 Action API note:
 
-- This mock matches `GET /api/v1/action-pathways` with no query parameters.
+- This mock matches `GET /api/v1/action-pathways?lang=all`, including multilingual text maps.
 - It includes the action fields used by the current prioritization flow and action-pathways client.
 - The prioritization pipeline keeps mitigation actions only; current mock rows are mitigation actions.
 

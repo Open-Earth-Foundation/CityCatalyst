@@ -2,13 +2,14 @@
 Agent Service for managing OpenAI Agents SDK lifecycle.
 
 This service provides a centralized way to create and manage AI agents
-through OpenRouter, with custom tool integration and configuration
+with OpenRouter compatibility, custom tool integration, and configuration
 management.
 """
 
 from __future__ import annotations
 
 import logging
+from urllib.parse import urlparse
 from typing import Dict, Optional, Sequence, Union
 from uuid import UUID
 
@@ -110,14 +111,20 @@ class AgentService:
 
         orchestrator_model = self.settings.llm.models.orchestrator
         agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
-        self.default_model = orchestrator_model.name
-        self.agentic_flow_model = agentic_flow_model.name
+        self.raw_default_model = orchestrator_model.name
+        self.raw_agentic_flow_model = agentic_flow_model.name
+        self.default_model = self._resolve_chat_model_name(self.raw_default_model)
+        self.agentic_flow_model = self._resolve_chat_model_name(
+            self.raw_agentic_flow_model
+        )
         self.default_temperature = orchestrator_model.temperature
         self.agentic_flow_temperature = agentic_flow_model.temperature
 
         logger.info(
-            "AgentService initialized with default_model=%s, agentic_flow_model=%s, base_url=%s, temperature=%s, agentic_flow_temperature=%s, cc_token=%s",
+            "AgentService initialized with raw_default_model=%s, default_model=%s, raw_agentic_flow_model=%s, agentic_flow_model=%s, base_url=%s, temperature=%s, agentic_flow_temperature=%s, cc_token=%s",
+            self.raw_default_model,
             self.default_model,
+            self.raw_agentic_flow_model,
             self.agentic_flow_model,
             self._chat_base_url,
             self.default_temperature,
@@ -135,9 +142,28 @@ class AgentService:
             return self.agentic_flow_model
         return self.default_model
 
-    def _temperature_for_model(self, model: str) -> float:
+    def _chat_base_hostname(self) -> str:
+        """Return the hostname for the active chat-completions base URL."""
+        if not self._chat_base_url:
+            return ""
+        return (urlparse(self._chat_base_url).hostname or "").lower()
+
+    def _uses_openai_model_names(self) -> bool:
+        """Return whether the active chat provider expects raw OpenAI model IDs."""
+        return self._chat_base_hostname() == "api.openai.com"
+
+    def _resolve_chat_model_name(self, model: str) -> str:
+        """Normalize provider-prefixed model IDs for the active chat provider."""
+        if self._uses_openai_model_names() and model.startswith("openai/"):
+            return model.split("/", 1)[1]
+        return model
+
+    def _temperature_for_model(self, *, raw_model: str, resolved_model: str) -> float:
         """Return the configured temperature for the selected chat model."""
-        if model == self.agentic_flow_model:
+        if (
+            raw_model == self.raw_agentic_flow_model
+            or resolved_model == self.agentic_flow_model
+        ):
             return self.agentic_flow_temperature
         return self.default_temperature
 
@@ -201,8 +227,12 @@ class AgentService:
             Configured Agent instance
         """
         # Resolve model and instruction settings before registering workflow tools.
-        agent_model = model or self.default_model
-        agent_temperature = self._temperature_for_model(agent_model)
+        raw_agent_model = model or self.raw_default_model
+        agent_model = self._resolve_chat_model_name(raw_agent_model)
+        agent_temperature = self._temperature_for_model(
+            raw_model=raw_agent_model,
+            resolved_model=agent_model,
+        )
         if instructions:
             agent_instructions = instructions
         elif self._uses_stationary_energy_review_prompt:
@@ -308,7 +338,8 @@ class AgentService:
         )
 
         logger.info(
-            "Created agent with model=%s, temperature=%s (from config), tools=%s",
+            "Created agent with raw_model=%s, resolved_model=%s, temperature=%s (from config), tools=%s",
+            raw_agent_model,
             agent_model,
             agent_temperature,
             [tool.name for tool in agent.tools] if hasattr(agent, "tools") else [],

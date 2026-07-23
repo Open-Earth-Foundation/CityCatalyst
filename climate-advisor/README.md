@@ -4,8 +4,9 @@ Climate Advisor (CA) is a standalone FastAPI microservice that powers the
 conversational experience for CityCatalyst (CC). The service lives under
 `climate-advisor/service` and exposes versioned APIs under `/v1/*`.
 
-- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible client
-  routed exclusively through OpenRouter
+- **Agentic AI**: Uses OpenAI's Agents SDK with an OpenAI-compatible chat
+  client; OpenRouter is the default router and direct OpenAI chat endpoints are
+  also supported
 - **Persistent Threads And Messages**: PostgreSQL-backed conversation history
 - **Vector Search**: Semantic search over climate knowledge base using pgvector
 - **Tool Integration**:
@@ -21,7 +22,7 @@ conversational experience for CityCatalyst (CC). The service lives under
 - **Streaming Responses**: Server-Sent Events (SSE) for real-time message
   delivery
 - **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
-  model-call logging
+  OpenAI trace logging
 - **Offline CNB Research Review**: Firecrawl-backed funding research plus a
   local static editor for selecting, correcting, and saving review updates
 
@@ -470,8 +471,7 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, and Stationary Energy review chat-context prompt budgets.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
-such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`. LLM
-requests use OpenRouter, while vector embeddings continue to use OpenAI directly.
+such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
 
 Prompt paths are also configured in `llm_config.yaml`:
 

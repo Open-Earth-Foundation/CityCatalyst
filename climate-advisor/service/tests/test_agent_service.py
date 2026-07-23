@@ -98,6 +98,25 @@ class AgentServiceInitializationTests(unittest.TestCase):
             self.assertEqual(service.default_temperature, 0.0)
 
     @patch("app.services.agent_service.get_settings")
+    def test_agent_service_normalizes_openai_model_ids_for_openai_base_url(
+        self,
+        mock_get_settings,
+    ) -> None:
+        """Test provider-prefixed model IDs are normalized for direct OpenAI calls."""
+        mock_settings = build_mock_settings(
+            base_url="https://api.openai.com/v1",
+            default_model="openai/gpt-4.1",
+            agentic_flow_model="openai/gpt-5.4",
+        )
+        mock_get_settings.return_value = mock_settings
+
+        with patch("app.services.agent_service.AsyncOpenAI"):
+            service = AgentService()
+
+        self.assertEqual(service.default_model, "gpt-4.1")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
+
+    @patch("app.services.agent_service.get_settings")
     def test_agent_service_keeps_provider_prefix_for_openrouter_base_url(
         self,
         mock_get_settings,
@@ -121,6 +140,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
     ) -> None:
         """Test the agentic-flow model comes from llm_config even if an env override is set."""
         mock_settings = build_mock_settings(
+            base_url="https://api.openai.com/v1",
             default_model="openai/gpt-4.1",
             agentic_flow_model="openai/gpt-5.4",
         )
@@ -132,7 +152,7 @@ class AgentServiceInitializationTests(unittest.TestCase):
             with patch("app.services.agent_service.AsyncOpenAI"):
                 service = AgentService()
 
-        self.assertEqual(service.agentic_flow_model, "openai/gpt-5.4")
+        self.assertEqual(service.agentic_flow_model, "gpt-5.4")
 
     @patch("app.services.agent_service.get_settings")
     def test_agent_service_raises_without_api_key(self, mock_get_settings) -> None:
@@ -316,6 +336,24 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
 
                     call_kwargs = mock_agent_class.call_args[1]
                     self.assertEqual(call_kwargs["model"].model, "openai/gpt-4-turbo")
+                    self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
+
+    async def test_create_agent_strips_provider_prefix_for_openai_base_url(
+        self,
+    ) -> None:
+        """Test agent creation strips provider prefixes for direct OpenAI calls."""
+        mock_settings = build_mock_settings(base_url="https://api.openai.com/v1")
+
+        with patch(
+            "app.services.agent_service.get_settings", return_value=mock_settings
+        ):
+            with patch("app.services.agent_service.AsyncOpenAI"):
+                with patch("app.services.agent_service.Agent") as mock_agent_class:
+                    service = AgentService()
+                    await service.create_agent(model="openai/gpt-4.1")
+
+                    call_kwargs = mock_agent_class.call_args[1]
+                    self.assertEqual(call_kwargs["model"].model, "gpt-4.1")
                     self.assertEqual(call_kwargs["model_settings"].temperature, 0.0)
 
     async def test_create_agent_uses_agentic_flow_temperature(self) -> None:

@@ -157,6 +157,7 @@ def test_redact_payload_removes_credentials_without_redacting_token_counts() -> 
             "authorization": "Bearer abc.def.ghi",
             "token_count": 42,
             "nested": {
+                "OPENAI_API_KEY": "sk-secretvalue",
                 "OPENROUTER_API_KEY": "sk-secretvalue",
                 "text": "Use Bearer abcdefghijklmnopqrstuvwxyz.abcdefghijkl.abcdef",
             },
@@ -166,6 +167,7 @@ def test_redact_payload_removes_credentials_without_redacting_token_counts() -> 
     assert payload["access_token"] == mlflow_logging.REDACTED_VALUE
     assert payload["authorization"] == mlflow_logging.REDACTED_VALUE
     assert payload["token_count"] == 42
+    assert payload["nested"]["OPENAI_API_KEY"] == mlflow_logging.REDACTED_VALUE
     assert payload["nested"]["OPENROUTER_API_KEY"] == mlflow_logging.REDACTED_VALUE
     assert mlflow_logging.REDACTED_VALUE in payload["nested"]["text"]
 

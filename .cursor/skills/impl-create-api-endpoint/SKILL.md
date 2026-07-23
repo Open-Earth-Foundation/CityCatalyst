@@ -1,5 +1,5 @@
 ---
-name: create-api-endpoint
+name: impl-create-api-endpoint
 description: Create a new REST API endpoint in CityCatalyst. Use when the user asks to create, add, or implement a new API route, endpoint, or backend handler.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: pr-review-gate
+name: dev-pr-review-gate
 description: Review pull requests for high-impact issues only. Use when the user asks to review a PR, especially requests like "do a review of PR <id>", "review PR <id>", or "PR review". Evaluate security, AGENTS.md alignment, repository structure, reuse over reimplementation, complexity, and regression risk. Return only actionable comments worth changing.
 ---
 

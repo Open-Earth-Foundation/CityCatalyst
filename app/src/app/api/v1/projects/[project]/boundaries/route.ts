@@ -64,6 +64,7 @@ import { db } from "@/models";
 import CityBoundaryService, {
   CityBoundary,
 } from "@/backend/CityBoundaryService";
+import { resolveDemoBoundaryLocode } from "@/backend/DemoInventoryService";
 import type { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { PermissionService } from "@/backend/permissions/PermissionService";
@@ -99,8 +100,10 @@ export const GET = apiHandler(async (req, { params, session }) => {
       .filter((city) => !!city.locode)
       .map(async (city) => {
         let boundary: CityBoundary | null = null;
+        const lookupLocode =
+          resolveDemoBoundaryLocode(city.locode!) ?? city.locode!;
         try {
-          boundary = await CityBoundaryService.getCityBoundary(city.locode!);
+          boundary = await CityBoundaryService.getCityBoundary(lookupLocode);
         } catch (error: any) {
           const message =
             error instanceof Error ? error.message : "unknown-error";

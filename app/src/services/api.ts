@@ -66,6 +66,7 @@ import {
   CityDashboardResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  ProvisionDemoInventoryResponse,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -1196,6 +1197,19 @@ export const api = createApi({
         }),
         transformResponse: (response: any) => response,
       }),
+      provisionDemoInventory: builder.mutation<
+        ProvisionDemoInventoryResponse,
+        { projectId: string; templateId: string }
+      >({
+        query: (data: { projectId: string; templateId: string }) => ({
+          url: `/admin/demo-inventory`,
+          method: "POST",
+          body: data,
+        }),
+        transformResponse: (response: ProvisionDemoInventoryResponse) =>
+          response,
+        invalidatesTags: ["Projects", "Organizations"],
+      }),
       markCitiesPublic: builder.mutation({
         query: (data: { projectId: string }) => ({
           url: `/admin/mark-cities-public`,
@@ -2156,6 +2170,7 @@ export const {
   useDeleteProjectMutation,
   useCreateBulkInventoriesMutation,
   useConnectDataSourcesMutation,
+  useProvisionDemoInventoryMutation,
   useGetDataSourcePreviewQuery,
   useConnectAllInventoryDataSourcesMutation,
   useMarkCitiesPublicMutation,

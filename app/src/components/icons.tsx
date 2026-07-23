@@ -1829,7 +1829,7 @@ export const AskAiIconOutline = () => {
     >
       <path
         fillRule="evenodd"
-        clip-rule="evenodd"
+        clipRule="evenodd"
         d="M13.5 1C13.4892 3.8272 14.868 5.44 18 5.5C15.0924 5.4892 13.6476 7.0492 13.5 10C13.4748 7.216 12.228 5.5 9 5.5C11.8884 5.4604 13.4892 4.066 13.5 1Z"
         stroke="#2351DC"
         strokeWidth="2"
@@ -1837,7 +1837,7 @@ export const AskAiIconOutline = () => {
         strokeLinejoin="round"
       />
       <path
-        fill-rule="evenodd"
+        fillRule="evenodd"
         clipRule="evenodd"
         d="M7.00057 9C6.9858 13.0827 8.81789 15.3985 13 15.5006C9.12115 15.4846 7.19707 17.7376 7.00057 22C6.96309 17.9788 5.30364 15.4945 1 15.5006C4.85045 15.4416 6.9858 13.4285 7.00057 9Z"
         stroke="#2351DC"
@@ -1906,22 +1906,22 @@ export const AskAiIconOutline2 = () => {
       fill="none"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M15.5 2C15.4892 4.8272 16.868 6.44 20 6.5C17.0924 6.4892 15.6476 8.0492 15.5 11C15.4748 8.216 14.228 6.5 11 6.5C13.8884 6.4604 15.4892 5.066 15.5 2Z"
         stroke="#008600"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M9.00057 10C8.9858 14.0827 10.8179 16.3985 15 16.5006C11.1212 16.4846 9.19707 18.7376 9.00057 23C8.96309 18.9788 7.30364 16.4945 3 16.5006C6.85045 16.4416 8.9858 14.4285 9.00057 10Z"
         stroke="#008600"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

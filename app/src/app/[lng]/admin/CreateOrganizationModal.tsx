@@ -8,22 +8,39 @@ import {
 } from "@/components/ui/dialog";
 import React, { FC, useState } from "react";
 import { TFunction } from "i18next";
-import { Box, Flex, HStack, Icon, Input, Tabs, Text } from "@chakra-ui/react";
-import { useForm } from "react-hook-form";
+import {
+  Box,
+  Checkbox,
+  Flex,
+  HStack,
+  Icon,
+  Input,
+  NativeSelect,
+  Tabs,
+  Text,
+} from "@chakra-ui/react";
+import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Field } from "@/components/ui/field";
-import FormattedNumberInput from "@/components/formatted-number-input";
 import { MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
-import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
-import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
 import { trackEvent } from "@/lib/analytics";
 
-type CustomError = CustomInviteError | CustomOrganizationError;
+type ApiErrorData = {
+  errorKey?: string;
+  message?: string;
+  emails?: string[];
+};
+
+type ApiMutationError = {
+  data?: {
+    error?: string | { data?: ApiErrorData };
+  };
+};
 
 interface CreateOrganizationModalProps {
   isOpen: boolean;
@@ -37,10 +54,14 @@ const schema = z.object({
   name: z.string().min(3, "required"),
   projectName: z.string().min(3, "required"),
   description: z.string().min(3, "required"),
-  cityCountLimit: z.number().min(1, "required"),
+  cityCountLimit: z.coerce.number().min(1, "required"),
+  includeDemoInventory: z.boolean().optional(),
+  demoInventoryTemplateId: z.string().optional(),
 });
 
 type Schema = z.infer<typeof schema>;
+
+const DEFAULT_DEMO_INVENTORY_TEMPLATE_ID = "porto-alegre-2022";
 
 const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   isOpen,
@@ -52,23 +73,23 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
 
   const {
     register,
-    handleSubmit,
     reset,
     watch,
-    setError,
-    clearErrors,
-    setFocus,
-    setValue,
-    control,
-    getValues,
     trigger,
+    getValues,
+    control,
     formState: { errors },
   } = useForm<Schema>({
     mode: "all",
     resolver: zodResolver(schema),
+    defaultValues: {
+      includeDemoInventory: false,
+      demoInventoryTemplateId: DEFAULT_DEMO_INVENTORY_TEMPLATE_ID,
+    },
   });
 
   const orgName = watch("name");
+  const includeDemoInventory = watch("includeDemoInventory");
 
   const { showErrorToast } = UseErrorToast({
     title: t("error-message"),
@@ -88,11 +109,56 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   const [createOrganizationInvite, { isLoading: isInviteLoading }] =
     api.useCreateOrganizationInviteMutation();
 
-  const isSubmitting = isLoading || isProjectLoading || isInviteLoading;
+  const [provisionDemoInventory, { isLoading: isDemoInventoryLoading }] =
+    api.useProvisionDemoInventoryMutation();
+
+  const isSubmitting =
+    isLoading || isProjectLoading || isInviteLoading || isDemoInventoryLoading;
 
   const handleNext = async () => {
     const valid = await trigger(["name", "email"]);
     if (valid) setStep(2);
+  };
+
+  const handlePrimaryAction = async () => {
+    console.log("[CreateOrgModal] primary action click", {
+      step,
+      values: getValues(),
+    });
+    if (step === 1) {
+      await handleNext();
+      return;
+    }
+
+    const valid = await trigger([
+      "projectName",
+      "description",
+      "cityCountLimit",
+      "includeDemoInventory",
+      "demoInventoryTemplateId",
+    ]);
+
+    if (!valid) {
+      console.warn("[CreateOrgModal] validation failed", errors);
+      const fieldErrors = Object.entries(errors)
+        .map(([field, fieldError]) => `${field}: ${fieldError?.message}`)
+        .join("; ");
+      showErrorToast({
+        title: t("error-message"),
+        description: fieldErrors || t("unknown-error"),
+      });
+      return;
+    }
+
+    try {
+      await handleFormSubmit(getValues());
+    } catch (err) {
+      console.error("[CreateOrgModal] submit threw", err);
+      showErrorToast({
+        title: t("error-message"),
+        description: err instanceof Error ? err.message : String(err),
+      });
+    }
   };
 
   const closeFunction = () => {
@@ -101,10 +167,18 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     reset();
   };
 
-  const handleCustomError = (error: any, fallbackTitle: string) => {
-    const errorBody = error?.data?.error;
-    const errorData = errorBody?.data;
-    const errorKey = errorData?.errorKey || "unknown-error";
+  const isApiMutationError = (error: unknown): error is ApiMutationError =>
+    typeof error === "object" && error !== null && "data" in error;
+
+  const handleCustomError = (error: unknown, fallbackTitle: string) => {
+    const errorBody = isApiMutationError(error) ? error.data?.error : undefined;
+    const errorData =
+      typeof errorBody === "object" && errorBody !== null
+        ? errorBody?.data
+        : undefined;
+    const errorKey =
+      errorData?.errorKey ||
+      (typeof errorBody === "string" ? errorBody : "unknown-error");
     const message = errorData?.message || errorKey;
 
     // Handle specific error data based on error type
@@ -123,7 +197,15 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   };
 
   const handleFormSubmit = async (data: Schema) => {
-    const { name, email, projectName, description, cityCountLimit } = data;
+    const {
+      name,
+      email,
+      projectName,
+      description,
+      cityCountLimit,
+      includeDemoInventory,
+      demoInventoryTemplateId,
+    } = data;
 
     const response = await createOrganization({
       name,
@@ -138,6 +220,22 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         cityCountLimit,
         organizationId: orgId,
       });
+      if (projectResponse.data && includeDemoInventory) {
+        const demoInventoryResponse = await provisionDemoInventory({
+          projectId: projectResponse.data.projectId,
+          templateId:
+            demoInventoryTemplateId || DEFAULT_DEMO_INVENTORY_TEMPLATE_ID,
+        });
+
+        if (demoInventoryResponse.error) {
+          handleCustomError(
+            demoInventoryResponse.error,
+            "demo-inventory-error",
+          );
+          return;
+        }
+      }
+
       const inviteResponse = await createOrganizationInvite({
         organizationId: orgId,
         role: OrganizationRole.ORG_ADMIN,
@@ -155,20 +253,20 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         if (inviteResponse.data.inviteUrls) {
           const inviteUrls = Object.values(inviteResponse.data.inviteUrls);
           if (inviteUrls.length > 0) {
-            const urlsText = inviteUrls.join('\n');
+            const urlsText = inviteUrls.join("\n");
             navigator.clipboard.writeText(urlsText).catch(() => {
               // Fallback if clipboard API fails
-              console.warn('Failed to copy to clipboard');
+              console.warn("Failed to copy to clipboard");
             });
           }
         }
         showSuccessToast();
         closeFunction();
       } else if (inviteResponse.error) {
-        handleCustomError(inviteResponse.error as CustomError, "error-invite");
+        handleCustomError(inviteResponse.error, "error-invite");
       }
     } else if (response.error) {
-      handleCustomError(response.error as CustomError, "error-organization");
+      handleCustomError(response.error, "error-organization");
     } else {
       showErrorToast();
     }
@@ -178,7 +276,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => onOpenChange(e.open)}
+      onOpenChange={(e: { open: boolean }) => onOpenChange(e.open)}
       onExitComplete={closeFunction}
     >
       <DialogBackdrop />
@@ -331,18 +429,17 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                   )}
                 </Field>
                 <Field labelClassName="font-semibold" label={t("city-limit")}>
-                  <FormattedNumberInput
-                    placeholder="00"
-                    max={99999}
-                    setError={setError}
-                    clearErrors={clearErrors}
+                  <Input
+                    type="number"
                     min={1}
-                    control={control}
-                    name={`cityCountLimit`}
-                    t={t}
-                    w="full"
+                    max={99999}
+                    placeholder="00"
+                    borderColor={
+                      errors?.cityCountLimit ? "sentiment.negativeDefault" : ""
+                    }
+                    {...register("cityCountLimit", { valueAsNumber: true })}
                   />
-                  {errors.description && (
+                  {errors.cityCountLimit && (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text color="error" fontSize="body.sm">
@@ -351,6 +448,54 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                     </Box>
                   )}
                 </Field>
+                <Controller
+                  control={control}
+                  name="includeDemoInventory"
+                  render={({ field }) => (
+                    <Checkbox.Root
+                      checked={field.value ?? false}
+                      onCheckedChange={(details) =>
+                        field.onChange(details.checked === true)
+                      }
+                    >
+                      <Checkbox.HiddenInput
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        ref={field.ref}
+                      />
+                      <Checkbox.Control />
+                      <Checkbox.Label
+                        fontSize="body.lg"
+                        color="content.secondary"
+                        fontWeight="semibold"
+                      >
+                        {t("include-demo-inventory")}
+                      </Checkbox.Label>
+                    </Checkbox.Root>
+                  )}
+                />
+                {includeDemoInventory && (
+                  <Field
+                    labelClassName="font-semibold"
+                    label={t("demo-inventory-template")}
+                  >
+                    <NativeSelect.Root>
+                      <NativeSelect.Field
+                        h="56px"
+                        boxShadow="1dp"
+                        {...register("demoInventoryTemplateId")}
+                      >
+                        <option value={DEFAULT_DEMO_INVENTORY_TEMPLATE_ID}>
+                          {t("porto-alegre-2022-demo-inventory")}
+                        </option>
+                      </NativeSelect.Field>
+                      <NativeSelect.Indicator />
+                    </NativeSelect.Root>
+                    <Text mt={2} color="content.tertiary" fontSize="body.sm">
+                      {t("demo-inventory-template-help")}
+                    </Text>
+                  </Field>
+                )}
               </HStack>
             </Tabs.Content>
           </Tabs.Root>
@@ -364,6 +509,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
         >
           <Flex gap={6}>
             <Button
+              type="button"
               onClick={step === 2 ? () => setStep(1) : closeFunction}
               w="200px"
               h="64px"
@@ -372,7 +518,8 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
               {step === 1 ? t("cancel") : t("back")}
             </Button>
             <Button
-              onClick={step === 2 ? handleSubmit(handleFormSubmit) : handleNext}
+              type="button"
+              onClick={handlePrimaryAction}
               w="200px"
               h="64px"
               loading={isSubmitting}

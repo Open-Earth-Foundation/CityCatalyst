@@ -162,7 +162,7 @@ const CitiesPage = (props: { params: Promise<{ lng: string }> }) => {
                 <Table.Cell>{item?.orgEmail ?? t("n-a")}</Table.Cell>
                 <Table.Cell>
                   <MenuRoot>
-                    <MenuTrigger>
+                    <MenuTrigger asChild>
                       <IconButton
                         data-testid="activity-more-icon"
                         aria-label="more-icon"

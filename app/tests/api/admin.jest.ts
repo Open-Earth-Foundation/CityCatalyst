@@ -1,6 +1,7 @@
 import { POST as changeRole } from "@/app/api/v1/auth/role/route";
 import { POST as createBulkInventories } from "@/app/api/v1/admin/bulk/route";
 import { POST as bulkConnectDataSources } from "@/app/api/v1/admin/connect-sources/route";
+import { POST as provisionDemoInventory } from "@/app/api/v1/admin/demo-inventory/route";
 import { db } from "@/models";
 import {
   beforeAll,
@@ -27,6 +28,8 @@ import {
 import { Op } from "sequelize";
 import _ from "lodash";
 import { DEFAULT_PROJECT_ID } from "@/util/constants";
+import { randomUUID } from "node:crypto";
+import { ProvisionDemoInventoryResponse } from "@/util/types";
 
 const mockSession: AppSession = {
   user: { id: testUserID, role: Roles.User },
@@ -57,6 +60,55 @@ const mockConnectSourcesRequest: BulkInventoryUpdateProps = {
 };
 
 const emptyParams = { params: Promise.resolve({}) };
+
+const createDemoProject = async (cityCountLimit = 2) => {
+  const organization = await db.models.Organization.create({
+    organizationId: randomUUID(),
+    name: `Demo Inventory Test Org ${randomUUID()}`,
+    contactEmail: `demo-${randomUUID()}@example.com`,
+    active: true,
+  });
+  const project = await db.models.Project.create({
+    projectId: randomUUID(),
+    name: "Demo Inventory Test Project",
+    description: "Project for demo inventory provisioning tests",
+    cityCountLimit,
+    organizationId: organization.organizationId,
+  });
+
+  return { organization, project };
+};
+
+const countDemoInventoryData = async (inventoryId: string) => {
+  const inventoryValues = await db.models.InventoryValue.count({
+    where: { inventoryId },
+  });
+  const gasValues = await db.models.GasValue.count({
+    include: [
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValue",
+        where: { inventoryId },
+        required: true,
+      },
+    ],
+  });
+  const activityValues = await db.models.ActivityValue.count({
+    include: [
+      {
+        model: db.models.InventoryValue,
+        as: "inventoryValue",
+        where: { inventoryId },
+        required: true,
+      },
+    ],
+  });
+  const unavailableValues = await db.models.InventoryValue.count({
+    where: { inventoryId, unavailableReason: "not-estimated" },
+  });
+
+  return { inventoryValues, gasValues, activityValues, unavailableValues };
+};
 
 describe("Admin API", () => {
   let prevGetServerSession = Auth.getServerSession;
@@ -158,6 +210,106 @@ describe("Admin API", () => {
     // expect(body.errors.length).toBe(0);
     console.error(body.errors.slice(0, 10));
   }, 60000);
+
+  it("should provision a demo inventory for admin users", async () => {
+    const { project } = await createDemoProject();
+    const req = mockRequest({
+      projectId: project.projectId,
+      templateId: "porto-alegre-2022",
+    });
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+
+    const res = await provisionDemoInventory(req, emptyParams);
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as ProvisionDemoInventoryResponse;
+
+    expect(body.templateId).toBe("porto-alegre-2022");
+    expect(body.createdCity).toBe(true);
+    expect(body.createdInventory).toBe(true);
+    expect(body.importedRows).toBe(70);
+    expect(body.skippedRows).toBe(2);
+
+    const city = await db.models.City.findByPk(body.cityId);
+    expect(city?.name).toBe("Porto Alegre Demo");
+    expect(city?.locode).toBe(`DEMO-porto-alegre-2022-${project.projectId}`);
+
+    const inventory = await db.models.Inventory.findByPk(body.inventoryId);
+    expect(inventory?.inventoryName).toBe("Porto Alegre 2022 Demo Inventory");
+    expect(inventory?.year).toBe(2022);
+
+    const counts = await countDemoInventoryData(body.inventoryId);
+    expect(counts.inventoryValues).toBe(46);
+    expect(counts.gasValues).toBe(36);
+    expect(counts.activityValues).toBe(44);
+    expect(counts.unavailableValues).toBe(26);
+  }, 30000);
+
+  it("should not duplicate an existing demo inventory", async () => {
+    const { project } = await createDemoProject();
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+
+    const firstRes = await provisionDemoInventory(
+      mockRequest({
+        projectId: project.projectId,
+        templateId: "porto-alegre-2022",
+      }),
+      emptyParams,
+    );
+    expect(firstRes.status).toBe(200);
+    const firstBody = (await firstRes.json()) as ProvisionDemoInventoryResponse;
+
+    const secondRes = await provisionDemoInventory(
+      mockRequest({
+        projectId: project.projectId,
+        templateId: "porto-alegre-2022",
+      }),
+      emptyParams,
+    );
+    expect(secondRes.status).toBe(200);
+    const secondBody =
+      (await secondRes.json()) as ProvisionDemoInventoryResponse;
+
+    expect(secondBody.cityId).toBe(firstBody.cityId);
+    expect(secondBody.inventoryId).toBe(firstBody.inventoryId);
+    expect(secondBody.createdCity).toBe(false);
+    expect(secondBody.createdInventory).toBe(false);
+    expect(secondBody.importedRows).toBe(0);
+    expect(secondBody.warnings).toContain(
+      "Demo inventory already had imported values; import skipped.",
+    );
+
+    const cityCount = await db.models.City.count({
+      where: { locode: `DEMO-porto-alegre-2022-${project.projectId}` },
+    });
+    const inventoryCount = await db.models.Inventory.count({
+      where: { cityId: firstBody.cityId, year: 2022 },
+    });
+    expect(cityCount).toBe(1);
+    expect(inventoryCount).toBe(1);
+  }, 30000);
+
+  it("should reject demo inventory provisioning for non-admin users", async () => {
+    const { project } = await createDemoProject();
+    const req = mockRequest({
+      projectId: project.projectId,
+      templateId: "porto-alegre-2022",
+    });
+
+    const res = await provisionDemoInventory(req, emptyParams);
+    expect(res.status).toBe(401);
+  });
+
+  it("should reject demo inventory provisioning when the project city limit is reached", async () => {
+    const { project } = await createDemoProject(0);
+    const req = mockRequest({
+      projectId: project.projectId,
+      templateId: "porto-alegre-2022",
+    });
+    Auth.getServerSession = jest.fn(() => Promise.resolve(mockAdminSession));
+
+    const res = await provisionDemoInventory(req, emptyParams);
+    expect(res.status).toBe(400);
+  });
 
   it("should change the user role when logged in as admin", async () => {
     const req = mockRequest({

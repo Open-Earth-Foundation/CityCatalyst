@@ -24,11 +24,15 @@ import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 import CityBoundaryService from "@/backend/CityBoundaryService";
+import { resolveDemoBoundaryLocode } from "@/backend/DemoInventoryService";
 import createHttpError from "http-errors";
 
 export const GET = apiHandler(async (_req, { params }) => {
   try {
-    const boundaryData = await CityBoundaryService.getCityBoundary(params.city);
+    const lookupLocode =
+      resolveDemoBoundaryLocode(params.city) ?? params.city;
+    const boundaryData =
+      await CityBoundaryService.getCityBoundary(lookupLocode);
 
     return NextResponse.json({ ...boundaryData });
   } catch (error: any) {

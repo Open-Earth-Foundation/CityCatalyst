@@ -49,7 +49,7 @@ const TeamSettings = ({ lng }: { lng: string }) => {
   const TagMapping = {
     [OrganizationRole.ORG_ADMIN]: {
       color: "blue",
-      text: t("admin"),
+      text: t("owner"),
     },
     [OrganizationRole.ADMIN]: {
       color: "blue",
@@ -360,7 +360,7 @@ const TeamSettings = ({ lng }: { lng: string }) => {
                         TagMapping[item.role as OrganizationRole].color
                       }
                     >
-                      {TagMapping[item.role as OrganizationRole].text}
+                      {t(TagMapping[item.role as OrganizationRole].text)}
                     </Tag>
                   </Table.Cell>
 

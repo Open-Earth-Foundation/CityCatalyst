@@ -1,47 +1,24 @@
 import { GET as listClientAuthz } from "@/app/api/v1/user/clients/route";
 
 import {
-  GET as getClientAuthz,
   DELETE as deleteClientAuthz,
+  GET as getClientAuthz,
 } from "@/app/api/v1/user/clients/[client]/route";
 
 import { db } from "@/models";
 
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  jest,
-} from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
-import { OAuthClient, OAuthClientAttributes } from "@/models/OAuthClient";
+import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
+import { OAuthClientI18N } from "@/models/OAuthClientI18N";
+import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
+import { expectStatusCode, mockRequest, setupTests } from "../helpers";
 import {
-  OAuthClientI18N,
-  OAuthClientI18NAttributes,
-} from "@/models/OAuthClientI18N";
-import {
-  OAuthClientAuthz,
-  OAuthClientAuthzAttributes,
-} from "@/models/OAuthClientAuthz";
-import { User, UserAttributes } from "@/models/User";
-import {
-  cascadeDeleteDataSource,
-  createRequest,
-  expectStatusCode,
-  expectToBeLooselyEqual,
-  mockRequest,
-  setupTests,
-  testUserID,
-} from "../helpers";
-import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import {
-  testClients,
-  testClientI18Ns,
-  testOAuthClientAuthzs,
   testClientDNE,
+  testClientI18Ns,
+  testClients,
+  testOAuthClientAuthzs,
 } from "./fixtures/oauth_client_authz";
 
 describe("OAuth Client Authz API", () => {
@@ -95,7 +72,8 @@ describe("OAuth Client Authz API", () => {
       expect(data.length).toEqual(testOAuthClientAuthzs.length);
       for (const clientAuthz of testOAuthClientAuthzs) {
         const authz = data.find(
-          (authz: any) => authz.client.clientId == clientAuthz.clientId,
+          (authz: { client: { clientId: string } }) =>
+            authz.client.clientId == clientAuthz.clientId,
         );
         expect(authz).toBeDefined();
         expect(authz.client).toBeDefined();
@@ -165,7 +143,8 @@ describe("OAuth Client Authz API", () => {
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
       const found = data.find(
-        (cl: any) => cl.client.clientId === "test-client-3",
+        (cl: { client: { clientId: string } }) =>
+          cl.client.clientId === "test-client-3",
       );
       expect(found).toBeUndefined();
     });

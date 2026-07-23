@@ -154,7 +154,7 @@ Known data quirks the transform already compensates for, which must survive the 
 | `FinancialFeasibility.tsx` | 981 | `MEED/[inventory]/finance` | Via `…/meed/finance/*` |
 | `PreflightCheck.tsx` | 900 | `MEED/[inventory]/preflight` | Weights + confirmed exclusions |
 | `Processing.tsx` | 296 | `MEED/[inventory]/processing` | Polls job status |
-| `Recommendations.tsx` | **2,134** | `MEED/[inventory]/results` | **Largest single item — decompose into sections, don't transliterate** |
+| `Recommendations.tsx` | **2,134** | `MEED/[inventory]/results` | **Largest single item.** Already 8 components in one file (`ReductionBar`, `ScoreBar`, `EmptyState`, `DetailPanel` ~429 LOC, `TopPickCard`, `RankingTable`, `ContextBreakdownTab`, `Recommendations`) — split each into its own file when porting so the sub-components can be worked in parallel |
 | `Methodology.tsx` | 510 | `app/[lng]/methodologies/` | Fold into the existing methodologies page |
 | `About.tsx` | 226 | — | Funder/partner credits (CORFO, SSG, OEF); relocate or drop |
 | `not-found.tsx` | 23 | **drop** | CityCatalyst provides it |
@@ -206,12 +206,13 @@ Checked against CityCatalyst `app/package.json` on `develop`:
 | `@radix-ui/*` (23 packages) | ❌ | Replaced by CityCatalyst's Chakra primitives |
 | `wouter` | ❌ | Replaced by the App Router |
 | `@tanstack/react-query` | ❌ (CC uses RTK Query) | Data layer rewrite |
-| `recharts` | ❌ (CC uses `@nivo/*`) | **No impact** — see below |
+| `recharts` | ❌ | Unused dead dependency — delete |
 
-**`recharts` is not actually used.** It is imported only by `src/components/ui/chart.tsx`, an
-unused shadcn boilerplate file; no page or component imports it. Every visualization in the app is
-hand-rolled markup, so there is **no chart-library migration** — a cost that would otherwise have
-fallen on `Recommendations` and `FinancialFeasibility`, the two largest screens.
+**The app has no charts.** `recharts` is imported only by `src/components/ui/chart.tsx`, an unused
+shadcn boilerplate file that no page or component references — delete it. What visual elements the
+app does have are score/reduction bars built from plain styled `<div>`s (`ReductionBar`,
+`ScoreBar` in `Recommendations.tsx`), which port directly to Chakra markup. There is no
+visualization library to migrate.
 
 ---
 

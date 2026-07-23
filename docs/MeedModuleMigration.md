@@ -123,11 +123,10 @@ The full-stack lead reviewed the prototype independently. Confirming and correct
 
   Two dependency findings make this cheaper than it first looks:
 
-  - **No charting library is actually in use.** `recharts` appears only in the unused shadcn
-    boilerplate file `components/ui/chart.tsx`; every visualization in the real pages is
-    hand-rolled markup. CityCatalyst uses `@nivo/*`, so a chart-library migration across
-    `Recommendations` and `FinancialFeasibility` would have been a significant hidden cost. It
-    doesn't exist.
+  - **The app has no charts.** `recharts` appears only in the unused shadcn boilerplate file
+    `components/ui/chart.tsx` — dead code to delete. The only visual elements are score/reduction
+    bars built from plain styled `<div>`s, which port directly to Chakra. There is no
+    visualization library to migrate.
   - **Much of the stack is already shared.** CityCatalyst already depends on `framer-motion`,
     `react-icons`, `react-hook-form` + `@hookform/resolvers`, `zod`, and — notably — `jspdf` +
     `jspdf-autotable`. So animation, form and validation code ports directly, and
@@ -223,7 +222,7 @@ rather than re-deriving it in CityCatalyst — see open question **A**.*
 | Item | Days | Agent leverage |
 |---|---|---|
 | Chakra/theme foundation, wizard shell, module route scaffolding | 3 | Medium |
-| `Recommendations` (2,134 LOC — decompose, don't transliterate) | 5 | Medium — mechanical pass yes, decomposition no |
+| `Recommendations` (2,134 LOC — already 8 components in one file; split each into its own file when porting) | 5 | Medium — mechanical pass yes, choosing the split no |
 | Radix→Chakra pass across the other 9 screens | 8–10 | **High** — independent screens, fan out |
 | `Methodology` + `About` folded into the existing methodologies page | 1 | High |
 | i18n rewrite → i18next EN keys | 1–2 | **Highest in the plan** — near-ideal agent task |

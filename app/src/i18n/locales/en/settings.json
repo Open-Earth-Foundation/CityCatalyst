@@ -138,6 +138,7 @@
   "position": "Position",
   "position-description": "Indicate your title or profession.",
   "owner": "Owner",
+  "admin": "Admin",
   "collaborator": "Collaborator",
   "plan-details": "Plan details",
   "plan-details-caption": "<bold>{{name}}</bold> currently has <bold>{{num_projects}}</bold> projects and a count of <bold>{{num_cities}} / {{total_cities}}</bold> cities",
@@ -211,5 +212,7 @@
   "comma-and-dot": "Comma and dot (e.g.: 1,000,000.50)",
   "dot-and-comma": "Dot and comma (e.g.: 1.000.000,50)",
   "space-and-comma": "Space and comma (e.g.: 1 000 000,50)",
-  "apostrophe-and-dot": "Apostrophe and dot (e.g.: 1’000’000.50)"
+  "apostrophe-and-dot": "Apostrophe and dot (e.g.: 1’000’000.50)",
+  "preferences": "Preferences",
+  "preferences-updated": "Preferences updated"
 }

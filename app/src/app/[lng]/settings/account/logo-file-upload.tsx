@@ -1,6 +1,4 @@
-// FileUploadCard.tsx
 import {
-  FileUploadRoot,
   FileUploadDropzone,
   FileUploadList,
 } from "@/components/ui/file-upload";
@@ -9,11 +7,10 @@ import {
   Icon,
   IconButton,
   Image,
-  Text,
   useFileUploadContext,
 } from "@chakra-ui/react";
-import { MdMoreVert, MdOutlineAddAPhoto } from "react-icons/md";
-import React, { useEffect } from "react";
+import { MdOutlineAddAPhoto } from "react-icons/md";
+import { useEffect } from "react";
 import { CiCircleRemove } from "react-icons/ci";
 
 const LogoUploadCard = ({

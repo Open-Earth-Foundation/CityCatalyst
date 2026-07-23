@@ -365,7 +365,7 @@ const TeamSettings = ({ lng }: { lng: string }) => {
                   <Table.Cell>
                     {sessionData.data?.user.email !== item.email && (
                       <MenuRoot>
-                        <MenuTrigger>
+                        <MenuTrigger asChild>
                           <IconButton
                             data-testid="activity-more-icon"
                             aria-label="more-icon"

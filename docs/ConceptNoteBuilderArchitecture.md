@@ -26,13 +26,14 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-07-16): only GHGI inventory PDFs are currently
-enqueued in CC. The generic CC OCR/delivery model and the authenticated CA
-Markdown-ingest contract are implemented, but `ConceptNoteUpload`, CC Concept
-Note upload routes/UI, the datateam repository adapter, downstream indexing,
-and a CA/CNB database migration remain deferred. The production CA repository
-provider therefore returns `503 cnb_storage_unavailable` after request and
-identity validation.
+Implementation baseline (2026-07-23): only GHGI inventory PDFs are currently
+enqueued in CC. The generic CC OCR/delivery model, authenticated CA
+Markdown-ingest contract, and compact CNB GHGI city-context route are
+implemented. The city-context adapter uses the documented datateam CNB tables
+when that database exposes them; Climate Advisor does not create or migrate
+those tables. `ConceptNoteUpload`, CC Concept Note upload routes/UI, the
+Markdown datateam repository adapter, downstream indexing, and the broader CNB
+database migration remain deferred.
 
 In scope:
 
@@ -78,7 +79,7 @@ flowchart TB
         CCBridge["CNB bridge routes"]
         CCUpload["Authenticated upload routes"]
         CCOCR["Durable PDF OCR service"]
-        CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, HIAP"]
+        CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, MEED"]
         CCData[("CC PostgreSQL")]
     end
 
@@ -171,14 +172,14 @@ flowchart LR
 
     Research["Funder profile<br/>criteria<br/>similar projects"] --> Context
 
-    CCData["CC data<br/>city, GHGI, CCRA, HIAP"] --> Context
+    CCData["CC data<br/>city, GHGI, CCRA, MEED"] --> Context
 ```
 
 ## State Ownership
 
 | State                                                                      | Owner                          | Reason                                                                                           |
 | -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| City profile, project, GHGI, CCRA, HIAP                                    | CityCatalyst                   | Existing product source of truth and permission model.                                           |
+| City profile, project, GHGI, CCRA, and supplied MEED context               | CityCatalyst                   | Existing product source of truth and permission model.                                           |
 | Chat threads and messages                                                  | Climate Advisor                | Existing CA conversation model.                                                                  |
 | Concept-note run state                                                     | datateam managed CNB database  | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure.          |
 | Context bundle snapshot                                                    | datateam managed CNB database  | Reusable run input/output for this workflow.                                                     |
@@ -412,7 +413,7 @@ It should only carry the context the model and document workspace need.
 ```mermaid
 flowchart TB
     Bundle["context_bundle"]
-    Bundle --> CCSummary["cc_context<br/>city, GHGI, CCRA, HIAP"]
+    Bundle --> CCSummary["cc_context<br/>city, GHGI, CCRA, MEED"]
     Bundle --> Sources["selected_sources<br/>grounded excerpts,<br/>source locations"]
     Bundle --> Funder["funder_context<br/>template, rubric, eligibility,<br/>scoring criteria"]
     Bundle --> Examples["similar_projects<br/>project summaries,<br/>award evidence, fit reasons"]
@@ -428,7 +429,7 @@ Recommended high-level shape:
     "project": {},
     "ghgi": {},
     "ccra": {},
-    "hiap": {}
+    "meed": {}
   },
   "selected_sources": [
     {
@@ -455,6 +456,153 @@ Recommended high-level shape:
   "document_context": {
     "chapters": [],
     "gaps": []
+  }
+}
+```
+
+### CNB City Context API
+
+During `assembling_context`, CNB calls Climate Advisor with the active run and
+the CityCatalyst city selected for that run:
+
+```http
+POST /v1/concept-notes/{run_id}/cc-context
+Authorization: Bearer <CityCatalyst user token>
+Content-Type: application/json
+
+{
+  "city_id": "uuid"
+}
+```
+
+Climate Advisor validates the CC identity, CNB run ownership, immutable run/city
+binding, and city access. It then selects the newest accessible inventory by
+inventory year, last update, and stable inventory UUID tie-break. A successful
+response has this bounded shape:
+
+```json
+{
+  "run_id": "uuid",
+  "city_id": "uuid",
+  "context_bundle": {
+    "cc_context": {
+      "ghgi": {
+        "availability": "available",
+        "inventory": {
+          "id": "uuid",
+          "year": 2024,
+          "type": "gpc_basic",
+          "gwp": "ar6"
+        },
+        "emissions": {
+          "total_tco2e": 83950,
+          "sectors": [
+            {
+              "gpc": "I",
+              "name": "Stationary Energy",
+              "emissions_tco2e": 40399,
+              "share_pct": 48.12,
+              "completion_pct": 92,
+              "required": 25,
+              "filled": 23,
+              "missing": 2,
+              "data_state": {
+                "third_party": 1,
+                "manual_or_uploaded": 20,
+                "not_estimated": 1,
+                "not_occurring": 1
+              }
+            }
+          ],
+          "top_sources": []
+        }
+      },
+      "meed": {}
+    }
+  }
+}
+```
+
+GHGI always contains GPC sectors I-V in order and caps `top_sources` at five.
+Source-state counts remain sector-specific; the CNB contract has no aggregate
+`source_mix`. CityCatalyst converts its kilogram-based inventory storage to
+tonnes CO2e before returning the GHGI capability payload. `availability` is
+`partial` when required GHGI values are missing and `missing` with null
+inventory/emissions when the city has no accessible inventory.
+
+`meed` remains `{}` until a ranking snapshot is supplied through the separate
+MEED delivery path. When populated, it contains the city and inventory input,
+execution timestamp, bounded data-source labels, resolved pillar weights,
+pipeline counts, and at most 10 ordered actions. Each action contains its ID,
+name, sector, timeline, investment cost, final and pillar scores, legal
+verdict, and finance route. CNB does not trigger MEED during city-context
+assembly. Legacy HIAP data, routes, and tables are not part of this contract.
+
+The repository update replaces only `context_bundle.cc_context.ghgi` and
+the supplied `.meed`, preserving every other assembled section. Once saved,
+later interactions for the run reuse the snapshot rather than querying GHGI
+again. `run_id` and `city_id` remain in the API envelope and are not duplicated
+inside the stored bundle.
+
+The current caller supplies `city_id`. The future CityCatalyst UI should list
+accessible choices through `GET /api/v1/user/projects`, bind the selection when
+starting the run, and submit that same UUID to context assembly.
+
+#### Iquique local execution example
+
+The following is a compact example from a local end-to-end execution for
+Iquique. It proves the GHGI-to-MEED-to-CNB integration path; it is not production
+city truth. The inventory is `partial` because the checked-in MEED fixture
+provided 8 of the 48 required GHGI values. MEED used live dev Global API inputs
+and the checked-in Chile legal fixture.
+
+```json
+{
+  "run_id": "af6430b9-cfd7-4009-aed3-5f545dff960a",
+  "city_id": "b6a15059-ddfa-42d8-9daf-450713a86b0d",
+  "context_bundle": {
+    "cc_context": {
+      "ghgi": {
+        "availability": "partial",
+        "inventory": {
+          "id": "2edd677c-1ec6-4bc6-a052-a634b195f4df",
+          "year": 2022,
+          "type": "gpc_basic_plus",
+          "gwp": "ar6"
+        },
+        "emissions": {
+          "total_tco2e": 9076427.28,
+          "sectors": ["I", "II", "III", "IV", "V"],
+          "top_sources": 5
+        }
+      },
+      "meed": {
+        "availability": "available",
+        "city": {
+          "name": "Iquique",
+          "locode": "CL IQQ"
+        },
+        "counts": {
+          "total_actions": 102,
+          "valid_actions": 82,
+          "discarded_excluded": 1,
+          "discarded_legal": 19,
+          "ranked_actions": 10
+        },
+        "actions": [
+          "icare_0016",
+          "icare_0028",
+          "c40_0010",
+          "icare_0121",
+          "icare_0002",
+          "c40_0035",
+          "ipcc_0105",
+          "icare_0040",
+          "c40_0012",
+          "icare_0120"
+        ]
+      }
+    }
   }
 }
 ```
@@ -1159,7 +1307,7 @@ Context loaded:
 - Project summary.
 - GHGI summary if available.
 - CCRA risk summary if available.
-- HIAP actions/status if available.
+- Compact supplied MEED context with no more than 10 ranked actions.
 - Module availability and known missing pieces.
 - Selected source excerpts from uploads.
 - Funder rubric/template and selected opportunity criteria.
@@ -1769,6 +1917,7 @@ agent tool.
 
 ```text
 POST /v1/concept-notes/start
+POST /v1/concept-notes/{run_id}/cc-context
 GET  /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
@@ -1800,9 +1949,10 @@ POST /api/v1/cron/process-pdf-ocr-jobs
 
 POST /api/v1/internal/ca/capabilities/city/load-context
 POST /api/v1/internal/ca/capabilities/project/load-context
-POST /api/v1/internal/ca/capabilities/ghgi/summary
+POST /api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible
+POST /api/v1/internal/ca/capabilities/ghgi/inventory/status-overview
+POST /api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context
 POST /api/v1/internal/ca/capabilities/ccra/summary
-POST /api/v1/internal/ca/capabilities/hiap/summary
 ```
 
 ## Implementation Responsibilities
@@ -1817,9 +1967,9 @@ file layout.
 | Funding reference access      | datateam managed CNB database    | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables.                                                                                              |
 | Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                       |
 | Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result pointers. No storage pointer or signed result URL is handed to CA.                             |
-| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                  |
+| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                    |
 | CNB Markdown ingestion        | Climate Advisor                  | Optionally accepts completed Markdown, durably registers its digest and metadata, then performs CN-specific excerpt selection, indexing, summarization, and context-bundle updates. It owns no OCR state. |
-| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities.                                                                                                             |
+| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, and CCRA summaries through internal capabilities; preserves a separately supplied compact MEED top-10 snapshot without triggering MEED during assembly.             |
 | CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                               |
 | Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                |
 | UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                        |
@@ -1873,6 +2023,11 @@ Minimum test surface:
 - CC-to-CA Markdown handoff contract tests covering authentication, digest
   verification, `202` durable registration, same-digest idempotency, and
   different-digest `409` conflicts.
+- CNB city-context contract tests covering deterministic inventory selection,
+  GPC I-V ordering, sector-local source states, five-source capping, missing and
+  partial GHGI, immutable run/city binding, targeted bundle merging, cached
+  reuse, an empty MEED state, and preservation and validation of supplied
+  compact MEED results capped at 10 actions.
 - Failure tests distinguishing `cc_ocr_failed` from
   `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
   repeat successful OCR.

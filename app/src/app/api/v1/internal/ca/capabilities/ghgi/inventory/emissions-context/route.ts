@@ -91,15 +91,15 @@ import {
   inventoryCapabilityInputSchema,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import {
+  requireClimateAdvisorIntegrationEnabled,
   requireClimateAdvisorServiceRequest,
-  requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Inventory } from "@/models/Inventory";
 import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
-  requireStationaryEnergyAgenticEnabled();
+  requireClimateAdvisorIntegrationEnabled();
   requireClimateAdvisorServiceRequest(req);
 
   const body = inventoryCapabilityInputSchema.parse(await req.json());

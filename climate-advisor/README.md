@@ -471,6 +471,26 @@ interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
 the datateam repository adapter is configured, the production provider returns
 `503 cnb_storage_unavailable`; contract tests inject an in-memory repository.
 
+### Concept Note city-context baseline
+
+`POST /v1/concept-notes/{run_id}/cc-context` accepts a CityCatalyst `city_id`,
+validates the CC-issued user token and immutable CNB run/city binding, then uses
+the internal CityCatalyst GHGI inventory capabilities to select the newest
+accessible inventory and build a compact context snapshot. The snapshot always
+contains ordered GPC sectors I-V, sector-local completion and source-state
+counts, and no more than five top sources. `meed` stays `{}` until a compact
+externally produced ranking is supplied; a populated snapshot contains at most
+10 ordered actions with scores, legal verdict, finance route, inventory
+provenance, and pipeline counts. This endpoint never calls MEED or legacy HIAP.
+
+The repository adapter reads and updates the documented datateam-managed
+`concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
+`cc_context.ghgi` and the supplied `cc_context.meed`, preserving the rest of
+the bundle, and reuses a valid stored snapshot on later interactions. If the
+configured database does not expose those external CNB tables, the route
+returns `503 cnb_storage_unavailable` without creating CA-owned replacement
+tables.
+
 ## Database Schema
 
 ### Thread Table

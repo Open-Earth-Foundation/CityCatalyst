@@ -426,3 +426,68 @@ on the backend can land in parallel with the screen work.
 6. **Report latency** — 10–30 s LLM calls must not run inside a request handler.
 7. **Parallel development** — if the Vite app keeps gaining features after kickoff, each one is
    built twice. Freeze at kickoff.
+
+---
+
+## 10. Suggested next steps and ownership
+
+The mapping below is a **suggestion for discussion**, not an assignment. It pairs each strand of
+work with the person best placed to lead it given who owns the surrounding systems, and it's meant
+as a starting point for the team to adjust. The three tracks (data ingestion, backend, frontend)
+are designed to run **in parallel** once the week-0 items are settled.
+
+### The trigger: one thing to start this week
+
+**Run the Global API coverage audit over the full Chilean locode list.** It's roughly a day of
+work, it defines the *verified city set* the module ships against (§5.5), and it's the only item
+that can invalidate the plan — so it's worth doing before anything else commits. A natural lead is
+whoever owns the Global API and its data (**Amanda / data team**).
+
+### Week 0 — the few decisions that unblock everyone
+
+These are small but gating; the parallel tracks below assume they're resolved first.
+
+| Decision | Suggested lead | Unblocks |
+|---|---|---|
+| Global API coverage audit (above) | Data / Amanda | The city set to build and test against |
+| Locode scheme for comunas without a UN/LOCODE (**B**) | Data / Amanda, with product | Onboarding, Global API lookups, `hiap-meed` validation |
+| Extract the shared API contract from `lib/hiapApi.ts` | Full-stack / Milan | Frontend building against a mock — the key to parallelism |
+| Proxy-vs-extend `hiap-meed` (**A**) | AI eng / Mirco, with Milan | Whether ~1 sprint of Python enters scope; report/screen consistency guarantee |
+| MEED+ palette vs CityCatalyst tokens (**C**) | Design / Carlos | Every screen component |
+| Feature-freeze the prototype + kickoff date (**E**) | All | Avoids building post-freeze features twice |
+
+### Parallel tracks after week 0
+
+**Frontend — the critical path (suggested: Carlos + agents).** Screen ports, Radix→Chakra, the
+i18n rewrite, the `Recommendations` split, PDF move, and the visual QA that agents can't do.
+Builds against the shared contract and a mock, so it doesn't wait on the backend. Detail in §8.
+
+**Backend / CityCatalyst integration (suggested: Milan, full-stack team).** `MeedApiService`, the
+proxy routes, persistence models + migrations, module registration, async report job, env/k8s
+wiring — mostly pattern-following against existing CityCatalyst precedents. The one piece to keep
+un-rushed is `MeedInventoryService` + its golden test, the correctness-critical bridge. Milan also
+a natural owner of the module provider contract in the [interop doc](./MeedModuleMigration-Interop.md).
+
+**Prioritizer / AI backend (suggested: Mirco, AI eng team).** Decision **A** is his to call, and
+the report-generation async pattern is a constraint on his service. Question **D** (MEED/HIAP
+convergence) relates to his open PR
+[#2690](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/2690) and is a product + AI
+call, not on the critical path.
+
+**Data ingestion (suggested: Amanda, data team) — kept off the deadline.** The locode scheme, the
+coverage audit, and the bulk city+inventory onboarding for ~345 comunas. Per §5.5 this is a
+**rolling data operation** that runs alongside and after the module ships, not a blocker for it —
+because the module reads through the inventory layer, nothing about it changes as more cities land.
+
+**Domain knowledge (suggested: Ayinawu, prototype author).** Not on the build, but the source that
+de-risks it: the scoring and data quirks the port must preserve (the IPPU sub-sector relabelling,
+the locode edge cases, what the backend now owns vs the dead `scoringPipeline.ts`). A short
+knowledge-transfer before kickoff would keep the implicit decisions from getting lost in the
+rewrite.
+
+### The one dependency to keep in view
+
+Everything parallelizes except this: the frontend needs **the shared contract** and **the verified
+city set** before it can build and test against something real. Both are week-0 items. Land those,
+freeze the prototype, and the three tracks can run largely independently to an end-of-August
+target.

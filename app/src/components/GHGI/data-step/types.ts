@@ -143,6 +143,24 @@ export interface DataSourceActivityDataGas {
   emissions_value_20yr: number;
 }
 
+export interface GlobalAPISourceResponse {
+  totals?: {
+    emissions?: {
+      co2eq_100yr: string;
+      co2_mass: string;
+      n2o_mass: string;
+      ch4_mass: string;
+    };
+  };
+  records?: DataSourceActivityDataRecord[];
+  // inserted from DataSourceService.getSourceWithData
+  scaleFactor?: number;
+  issue?: string | null;
+  // for notation key sources, they don't have other keys
+  notation_key_name?: string;
+  unavailable_explanation?: string;
+}
+
 export interface DataSourceActivityDataRecord {
   methodology_name: string;
   emissions_geometry: string;

@@ -13,6 +13,9 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # MacOS
 .DS_Store
 
+# Linear CLI local config
+.linear.toml
+
 # vim temporary files
 *~
 .*.sw?

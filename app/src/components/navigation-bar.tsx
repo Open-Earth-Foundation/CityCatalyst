@@ -137,18 +137,6 @@ export function NavigationBar({
     () => getCityHomePath(lng, currentCityId ?? ""),
     [lng, currentCityId],
   );
-  const settingsPath = useMemo(
-    () =>
-      currentCityId && currentInventoryId
-        ? getGhgiInventoryPath(
-            lng,
-            currentCityId,
-            currentInventoryId,
-            "/settings",
-          )
-        : null,
-    [lng, currentCityId, currentInventoryId],
-  );
   const { setTheme } = useTheme();
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
@@ -446,9 +434,7 @@ export function NavigationBar({
                         paddingTop="12px"
                         paddingBottom="12px"
                         px="16px"
-                        onClick={() =>
-                          settingsPath && router.push(settingsPath)
-                        }
+                        onClick={() => router.push(`/${lng}/settings`)}
                       >
                         <Box display="flex" alignItems="center">
                           {" "}
@@ -466,37 +452,6 @@ export function NavigationBar({
                         </Box>
                       </MenuItem>
                     )}
-                    {userAccessStatus?.isOrgOwner &&
-                      !restrictAccess &&
-                      hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
-                        <MenuItem
-                          paddingTop="12px"
-                          paddingBottom="12px"
-                          value="account-settings"
-                          px="16px"
-                          onClick={() => {
-                            router.push(
-                              `/${lng}/organization/${userAccessStatus.organizationId}/account-settings`,
-                            );
-                          }}
-                        >
-                          <Box display="flex" alignItems="center">
-                            <Icon
-                              as={TbSettingsCog}
-                              boxSize={6}
-                              color={
-                                userMenuHighlight === "account-settings"
-                                  ? "background.neutral"
-                                  : "content.alternative"
-                              }
-                              mr={4}
-                            />
-                            <Text fontSize="title.md">
-                              {t("account-settings")}
-                            </Text>
-                          </Box>
-                        </MenuItem>
-                      )}
                     <MenuItem
                       paddingTop="12px"
                       paddingBottom="12px"

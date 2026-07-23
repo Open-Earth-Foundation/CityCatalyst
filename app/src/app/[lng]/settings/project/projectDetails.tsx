@@ -39,10 +39,9 @@ import { FiFolder } from "react-icons/fi";
 import ProjectHeader from "./projectHeader";
 import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
-import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
-const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
+const getInventoryLastUpdated = (lastUpdated: Date, t: TFunction) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
     return <p>{t("no-date-available")}</p>;
   }

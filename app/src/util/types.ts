@@ -994,3 +994,9 @@ export interface PersonalAccessTokenCreateResponse {
   expiresAt: string | null;
   created: string;
 }
+
+export type UserOrganizationsResponse = {
+  organizationId: string;
+  name: string;
+  role: OrganizationRole;
+}[];

@@ -322,7 +322,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         </Box>
       </TabContent>
       <TabContent value="preferences">
-        <PreferencesTab />
+        <PreferencesTab t={t} userInfo={userInfo} />
       </TabContent>
     </Tabs.Root>
   );

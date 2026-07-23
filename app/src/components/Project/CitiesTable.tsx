@@ -29,6 +29,7 @@ export default function CitiesTable({
     <DataTable
       data={cities}
       searchable
+      searchPlaceholder={t("search-by-city-name")}
       pagination
       itemsPerPage={20}
       columns={[
@@ -45,17 +46,37 @@ export default function CitiesTable({
               href={`/${lng}/cities/${item.cityId}`}
               color="content.link"
               textDecoration="underline"
+              fontFamily="body"
             >
               {item.name}
             </Link>
           </Table.Cell>
-          <Table.Cell>{item.region}</Table.Cell>
-          <Table.Cell>{item.country}</Table.Cell>
+          <Table.Cell
+            color="content.secondary"
+            fontFamily="body"
+            fontSize="body.md"
+            fontWeight="regular"
+            lineHeight="20"
+            letterSpacing="wide"
+          >
+            {item.region}
+          </Table.Cell>
+          <Table.Cell
+            color="content.secondary"
+            fontFamily="body"
+            fontSize="body.md"
+            fontWeight="regular"
+            lineHeight="20"
+            letterSpacing="wide"
+          >
+            {item.country}
+          </Table.Cell>
           <Table.Cell>
             <Link
               href={`/${lng}/organization/${organizationId}/account-settings?tab=team&project=${projectId}&city=${item.cityId}`}
               color="content.link"
               textDecoration="underline"
+              fontFamily="body"
             >
               {t("view-full-list")}
             </Link>

@@ -29,6 +29,7 @@ type DataTableProps<T> = {
   onSelectRow?: (selectedRowKeys: Array<T[keyof T]>) => void;
   selectKey?: keyof T;
   subtitle?: string | React.ReactNode;
+  searchPlaceholder?: string;
 };
 
 function isLabelValueOption<TValue>(
@@ -57,6 +58,7 @@ function DataTable<T extends Record<string, any>>({
   onSelectRow,
   selectKey,
   subtitle,
+  searchPlaceholder,
 }: DataTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,7 +92,21 @@ function DataTable<T extends Record<string, any>>({
     filteredData.length > 0 ? Math.ceil(filteredData.length / itemsPerPage) : 1;
 
   return (
-    <Box bg="white" p={6} borderRadius={2} mt={12} w="full">
+    <Box
+      bg="white"
+      display="flex"
+      flexDirection="column"
+      alignItems="flex-start"
+      alignSelf="stretch"
+      gap={3}
+      py={9}
+      px={6}
+      borderRadius="rounded-xl"
+      border="1px solid"
+      borderColor="border.neutral"
+      mt={12}
+      w="full"
+    >
       {title && (
         <Text fontWeight="bold" fontSize="title.md" mb={2}>
           {title}
@@ -102,19 +118,26 @@ function DataTable<T extends Record<string, any>>({
         </Text>
       )}
 
-      <Flex mb={4} justifyContent="space-between">
-        <Flex gap={2} alignItems="center">
+      <Flex mb={4} justifyContent="space-between" gap={6}>
+        <Flex gap={2} alignItems="center" flex="1 0 0">
           {searchable && (
             <InputGroup
+              flex="1 0 0"
               startElement={
                 <Icon as={MdSearch} color="interactive.control" boxSize={6} />
               }
             >
               <Input
                 minWidth="350px"
-                placeholder={t("search-records")}
+                placeholder={searchPlaceholder ?? t("search-records")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                borderRadius="minimal"
+                border="1px solid"
+                borderColor="border.neutral"
+                bg="background.default"
+                py={3}
+                pr={4}
               />
             </InputGroup>
           )}
@@ -141,7 +164,7 @@ function DataTable<T extends Record<string, any>>({
           )}
         </Flex>
 
-        {pagination && (
+        {pagination && totalPages > 1 && (
           <Flex mt={4} gap={2} align="center" verticalAlign="middle">
             <Text fontSize="body.md" color="content.tertiary">
               {t("table-pagination", {

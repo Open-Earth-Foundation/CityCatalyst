@@ -27,10 +27,11 @@
   "active-plan-tooltip": "La organización está actualmente suscrita a este plan.",
   "active-plan": "Plan Activo",
   "organization-load-failed": "No se puede cargar la organización",
-  "discover-cities-description": "Descubre las ciudades destacadas en este proyecto. Haz clic en cada ciudad para ver su panel de control y los módulos disponibles.",
+  "discover-cities-description": "Haz clic en cada ciudad para ver su panel de control y los módulos disponibles.",
   "country-name": "Nombre del país",
   "city-name": "Nombre de la ciudad",
   "state-name": "Nombre del estado",
   "view-full-list": "Ver lista completa",
+  "search-by-city-name": "Buscar por nombre de ciudad",
   "citycatalyst-demo": "CityCatalyst Demo"
 }

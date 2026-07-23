@@ -9,11 +9,16 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { Field } from "@/components/ui/field";
-import LogoUploadCard from "./logo-file-upload";
-import { FileUploadRoot } from "@/components/ui/file-upload";
-import { IoMdInformationCircleOutline } from "react-icons/io";
+import { useTheme } from "next-themes";
 import React, { useEffect, useMemo } from "react";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+
+import { TitleMedium } from "@/components/package/Texts/Title";
+import PlanDetailsBox from "@/components/PlanDetailsBox";
+import ProgressLoader from "@/components/ProgressLoader";
+import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
+import { FileUploadRoot } from "@/components/ui/file-upload";
 import {
   SelectContent,
   SelectItem,
@@ -21,21 +26,17 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { api } from "@/services/api";
-import ProgressLoader from "@/components/ProgressLoader";
-import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
-import { useTheme } from "next-themes";
-import ManagePasswordTab from "@/app/[lng]/settings/account/ManagePasswordTab";
-import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
-import { logger } from "@/services/logger";
-import { trackEvent } from "@/lib/analytics";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import PlanDetailsBox from "@/components/PlanDetailsBox";
-import AccountDetailsTab from "@/app/[lng]/settings/account/AccountDetailsTab";
+import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { trackEvent } from "@/lib/analytics";
+import { api } from "@/services/api";
+import { logger } from "@/services/logger";
+import AccountDetailsTab from "./AccountDetailsTab";
+import LogoUploadCard from "./logo-file-upload";
+import ManagePasswordTab from "./ManagePasswordTab";
+import OrganizationDetailsTab from "./organization-details-tab";
 import PreferencesTab from "./PreferencesTab";
 
 const KeyColorMapping = {

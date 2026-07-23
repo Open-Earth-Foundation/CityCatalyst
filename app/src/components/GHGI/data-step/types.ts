@@ -7,11 +7,12 @@ import type { SectorAttributes } from "@/models/Sector";
 import { SubCategoryAttributes } from "@/models/SubCategory";
 import { SubSectorAttributes } from "@/models/SubSector";
 import type { EmissionsFactorWithDataSources } from "@/util/types";
+import type { ElementType } from "react";
 
 export interface DataStep {
   name: string;
   description: string;
-  icon: any;
+  icon: ElementType;
   connectedProgress: number;
   addedProgress: number;
   reasonNEProgress: number;

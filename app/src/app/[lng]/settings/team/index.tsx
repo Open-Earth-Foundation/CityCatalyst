@@ -41,8 +41,9 @@ import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { Trans } from "react-i18next";
 import { useSession } from "next-auth/react";
+import { OrganizationSelector } from "../OrganizationSelector";
 
-const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
+const TeamSettings = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "settings");
 
   const TagMapping = {
@@ -60,19 +61,21 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
     },
   };
 
+  const [selectedOrganization, setSelectedOrganization] =
+    React.useState<string>();
   const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
   const [selectedCity, setSelectedCity] = React.useState<string | null>("");
   const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
-    api.useGetOrganizationQuery(id);
+    api.useGetOrganizationQuery(selectedOrganization);
 
   const { data: projectsData, isLoading } = api.useGetProjectsQuery(
     {
-      organizationId: id,
+      organizationId: selectedOrganization,
     },
     {
-      skip: !id,
+      skip: !selectedOrganization,
     },
   );
 
@@ -138,6 +141,11 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
 
   return (
     <Box>
+      <OrganizationSelector
+        value={selectedOrganization}
+        onValueChange={setSelectedOrganization}
+        t={t}
+      />
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Heading
@@ -209,6 +217,7 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
                   w="full"
                   hideIndicator
                   padding="0px"
+                  asChild
                 >
                   <Button
                     rounded={0}
@@ -421,7 +430,7 @@ const TeamSettings = ({ lng, id }: { lng: string; id: string }) => {
         lng={lng}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        organizationId={id}
+        organizationId={selectedOrganization}
       />
       <RemoveUserModal
         t={t}

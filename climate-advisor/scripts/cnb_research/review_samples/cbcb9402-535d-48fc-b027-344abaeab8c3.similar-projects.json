@@ -1,19 +1,22 @@
 {
   "artifact_type": "cnb_similar_project_search",
   "schema_version": "1.0",
-  "run_id": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18",
-  "generated_at": "2026-07-22T09:56:05.408449Z",
+  "run_id": "cbcb9402-535d-48fc-b027-344abaeab8c3",
+  "generated_at": "2026-07-23T12:36:48.154946Z",
   "run_metadata": {
-    "model_name": "gpt-5.6-terra",
+    "model_name": "openai/gpt-5.4",
     "reasoning_effort": "medium",
-    "prompt_sha256": "6fe8b11f844172b4c219df50dc405fc88b893771fb84d8d9e97431b3e7563103",
+    "prompt_sha256": "9ea32555e5797f5950a25017ce357e5c59ed43d43fe1befb979d9b02cdd517c7",
     "input_mode": "local_review_snapshot",
-    "source_bundle": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18.broad-discovery-sources.json"
+    "source_bundle": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18.broad-discovery-sources.json",
+    "reviewed_artifact_provenance": null
   },
   "search_request": {
-    "run_id": "e9b38f84-e47b-47d9-bfbd-d86dcdd3ef18",
+    "run_id": "cbcb9402-535d-48fc-b027-344abaeab8c3",
     "funder_id": "9ff7de16-a654-59f4-b4bb-b31315d8bbdd",
     "funder_scope": "cross_funder",
+    "project_name": "Smart-controlled community-integrated photovoltaic-plus-storage and electric mobility infrastructure for municipality-owned sites",
+    "project_summary": "Nicosia was selected under EUCF Call 7 for an investment concept combining smart-controlled photovoltaic generation, battery storage, and electric-mobility infrastructure at municipality-owned sites.",
     "category": "Renewable energy and sustainable urban mobility",
     "sector": "Municipal energy and transport",
     "region": "Southern Europe",
@@ -35,9 +38,11 @@
       "investment-concept"
     ],
     "known_gaps": [
-      "The target project's underlying investment value and implementation status are not confirmed."
+      "The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+      "No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+      "No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept."
     ],
-    "limit": 34
+    "limit": 7
   },
   "candidates": [
     {
@@ -1575,65 +1580,13 @@
     "status": "completed",
     "matches": [
       {
-        "funding_record_id": "0598216c-4d81-54cc-8815-6d594cc35b75",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority EUCF investment concepts in municipal energy and transport, including transport decarbonisation.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-0598216c4d8154cc",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[0598216c-4d81-54cc-8815-6d594cc35b75].summary",
-            "source_location": "Call 7 beneficiary table, Partiz\u00e1nske row",
-            "quote_or_summary": "The official table lists Partiz\u00e1nske, Slovakia: Decarbonisation of the district heating system, transport and increasing the energy efficiency of buildings."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "06f6dad3-c301-5562-9f63-bf309ccb3927",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led investment concepts supported through the same EUCF route in municipal energy and transport.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-06f6dad3c3015562",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[06f6dad3-c301-5562-9f63-bf309ccb3927].summary",
-            "source_location": "Call 7 beneficiary table, Barcelona Metropolitan Area row",
-            "quote_or_summary": "The official table lists Barcelona Metropolitan Area, Spain: Carbon Neutral Municipalities."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate title does not specify solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
         "funding_record_id": "085e33db-c8c2-5635-a402-a4763e7dfdbd",
         "decision": "selected",
-        "fit_rationale": "Both are municipal EUCF investment concepts in the same sector and include electric-mobility relevance.",
+        "fit_rationale": "This is a close same-program comparator: a municipality in the same category, sector, finance route, and instrument, with supplied title and tags supporting a combined energy-and-mobility investment concept.",
         "matched_tags": [
+          "electric-mobility",
           "local-authority",
-          "investment-concept",
-          "electric-mobility"
+          "investment-concept"
         ],
         "evidence": [
           {
@@ -1646,207 +1599,18 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The retained evidence does not specify the candidate's solar, storage, or charging measures.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "0d34fb78-a1f5-50b9-8290-a113db615a03",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led EUCF investment concepts with renewable-energy relevance in the same sector.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-0d34fb78a1f550b9",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[0d34fb78-a1f5-50b9-8290-a113db615a03].summary",
-            "source_location": "Call 7 beneficiary table, Radzionk\u00f3w row",
-            "quote_or_summary": "The official table lists Radzionk\u00f3w, Poland: Silesian synergy: renewable energy solutions for Radzionk\u00f3w and \u015awierklaniec."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "0d3f762f-a0e3-5b8f-9209-c33accf7e13a",
-        "decision": "selected",
-        "fit_rationale": "Both are municipal projects integrating solar PV and battery storage on municipally owned facilities.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "local-authority"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-0d3f762fa0e35b8f",
-            "source_ref": "source-9b4abb5c3543569d88ee5def78d8c540",
-            "target_path": "funding_records[0d3f762f-a0e3-5b8f-9209-c33accf7e13a].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "The CEC final report documents a completed solar and battery microgrid at the City of Santa Rosa wastewater facility."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The candidate does not include electric-mobility measures.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "1467a52f-fa72-565f-a25b-91114dd2fe1f",
-        "decision": "selected",
-        "fit_rationale": "Both combine solar generation, battery storage, and EV charging for a vehicle-related facility.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-1467a52ffa72565f",
-            "source_ref": "source-aa9bff97d4cf511da2d4a7810a364c3f",
-            "target_path": "funding_records[1467a52f-fa72-565f-a25b-91114dd2fe1f].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "NYSERDA awarded $500,000 for a vehicle-fleet facility combining charging, solar, wind, and battery storage."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "162ba3d7-8940-5fc1-b727-aa8aa58a0e52",
-        "decision": "selected",
-        "fit_rationale": "Both integrate solar PV, battery storage, and bidirectional or other EV charging within an energy system.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-162ba3d789405fc1",
-            "source_ref": "source-48347326ee91587281116f7ef22d4731",
-            "target_path": "funding_records[162ba3d7-8940-5fc1-b727-aa8aa58a0e52].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "The CEC final report describes a 100% renewable airport microgrid with solar arrays, lithium-ion storage, and four bidirectional EV chargers."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The candidate is an airport community microgrid rather than a municipal-building project.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "1d0d31b7-86e0-556b-981d-acea22330c5b",
-        "decision": "selected",
-        "fit_rationale": "Both link battery storage with electric-mobility infrastructure and surplus solar energy in public-sector settings.",
-        "matched_tags": [
-          "battery-storage",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-1d0d31b786e0556b",
-            "source_ref": "source-850f1925b26d59fda6207e792c0e87c3",
-            "target_path": "funding_records[1d0d31b7-86e0-556b-981d-acea22330c5b].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "ARENA records a public-transport battery pilot linked to surplus solar, public EV charging, and bus-depot electrification."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The candidate does not establish municipal solar PV installations on buildings.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "3a5853a3-8357-5b0a-863c-987901dc11a4",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority EUCF investment concepts for municipal renewable-energy transition.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-3a5853a383575b0a",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[3a5853a3-8357-5b0a-863c-987901dc11a4].summary",
-            "source_location": "Call 7 beneficiary table, Nemesn\u00e1dudvar row",
-            "quote_or_summary": "The official table lists Nemesn\u00e1dudvar, Hungary: Duna Valley Energy Community - Sustainable future."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "4b962599-67bc-5fe8-a255-35c133bb7fb9",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led EUCF investment concepts for renewable-energy transition in the same sector.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-4b96259967bc5fe8",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[4b962599-67bc-5fe8-a255-35c133bb7fb9].summary",
-            "source_location": "Call 7 beneficiary table, Omi\u0161 row",
-            "quote_or_summary": "The official table lists Omi\u0161, Croatia: Sustainable Power and Leisure Advancements in Shoreline & Hinterland - SPLASH."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
+          "Evidence retained for the candidate is limited to a beneficiary-table title and selection status.",
+          "The official beneficiary list does not establish implementation status or underlying investment value."
         ]
       },
       {
         "funding_record_id": "4fb6a58c-1a85-5cf3-8804-5e57e92d79bf",
         "decision": "selected",
-        "fit_rationale": "Both are local-authority projects combining rooftop solar, battery storage, and EV charging at municipal buildings.",
+        "fit_rationale": "This is a close municipal-site comparison because the funded town hall package combines rooftop solar, battery storage, and EV charging at a local-authority facility.",
         "matched_tags": [
           "municipal-solar",
           "battery-storage",
@@ -1864,49 +1628,22 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "51b43194-7d8e-59c0-b33f-3943cb7bc237",
-        "decision": "selected",
-        "fit_rationale": "Both integrate solar canopies, battery storage, and EV charging infrastructure.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-51b431947d8e59c0",
-            "source_ref": "source-35d5cd45c85a52f7b5d670a9ce391662",
-            "target_path": "funding_records[51b43194-7d8e-59c0-b33f-3943cb7bc237].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "CEC approved a $10 million grant for a solar-powered battery-backed electric-truck charging hub at the Port of San Diego."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The candidate is a freight-charging hub rather than a municipal-building project.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+          "Finance route and instrument differ from the current EUCF investment-concept grant.",
+          "The retained official page does not establish every later implementation milestone or operating result."
         ]
       },
       {
         "funding_record_id": "648802a1-6686-5fbf-b7a8-ecf10225d041",
         "decision": "selected",
-        "fit_rationale": "Both are local-authority EUCF investment concepts in municipal energy and transport, with charging infrastructure relevance.",
+        "fit_rationale": "This is a useful same-EUCF comparator because it is a municipal investment concept in the same category and sector, with the title explicitly centered on fleet decarbonisation and charging infrastructure.",
         "matched_tags": [
+          "electric-mobility",
           "local-authority",
-          "investment-concept",
-          "electric-mobility"
+          "investment-concept"
         ],
         "evidence": [
           {
@@ -1919,70 +1656,18 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV or battery storage.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "65bdfa93-3572-5a11-afd7-08633b8a08da",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority projects combining solar-powered, battery-backed EV charging infrastructure.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "electric-mobility",
-          "local-authority"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-65bdfa9335725a11",
-            "source_ref": "source-ad470edcf89553ceb9662c1a1e632577",
-            "target_path": "funding_records[65bdfa93-3572-5a11-afd7-08633b8a08da].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "The DOE EECBG award example records solar-powered, battery-backed EV chargers at City Hall and the public library."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "65e88580-62ad-5c1d-bcb0-f0bbcde9fb4b",
-        "decision": "selected",
-        "fit_rationale": "Both are Cyprus local-authority investment concepts under the same EUCF grant route for municipal energy transition.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-65e8858062ad5c1d",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[65e88580-62ad-5c1d-bcb0-f0bbcde9fb4b].summary",
-            "source_location": "Call 7 beneficiary table, Lythrodontas row",
-            "quote_or_summary": "The official table lists Lythrodontas, Cyprus: Catalyzing a Renewable Future: Technological Innovation and Smart Connectivity for the Sustainable Transformation of the Machairas Complex."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate title does not specify solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
+          "Evidence retained for the candidate is limited to a beneficiary-table title and selection status.",
+          "The official beneficiary list does not establish implementation status or underlying investment value."
         ]
       },
       {
         "funding_record_id": "69ae8727-e76d-5c93-a9d8-5da3a41712ea",
         "decision": "selected",
-        "fit_rationale": "Both are municipality-focused investment-concept efforts involving rooftop solar and electric-vehicle interventions.",
+        "fit_rationale": "This is a useful planning-stage comparator because the supplied summary describes municipal concept support for rooftop solar and electric-vehicle upgrades, aligning with the current project's investment-concept character.",
         "matched_tags": [
           "municipal-solar",
           "electric-mobility",
@@ -2000,315 +1685,20 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The USD 250 million figure is downstream project value, not a published Gap Fund technical-assistance award.",
           "Candidate gap: The retained source does not evidence battery storage.",
-          "The candidate does not evidence battery storage.",
-          "The USD 250 million figure is downstream project value, not a published technical-assistance award.",
-          "The target project's underlying investment value and implementation status are not confirmed."
-        ]
-      },
-      {
-        "funding_record_id": "6d39c742-1cf7-5da5-8e2d-ae6c2f2d45f2",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority projects deploying solar PV and battery storage at public buildings.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "local-authority"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-6d39c7421cf75da5",
-            "source_ref": "source-542981972fde502588503bc85441b7a7",
-            "target_path": "funding_records[6d39c742-1cf7-5da5-8e2d-ae6c2f2d45f2].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "The official mayoral decision approved a DESNZ grant for nine solar PV and battery storage installations in West London public buildings."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The candidate does not include electric-mobility measures.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "71e75736-7cbf-5702-8175-c69ca416707f",
-        "decision": "selected",
-        "fit_rationale": "Both combine city-oriented solar generation, battery storage, and electric-mobility measures.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-71e757367cbf5702",
-            "source_ref": "source-892f24e91f0355e1b69990aabaf337ee",
-            "target_path": "funding_records[71e75736-7cbf-5702-8175-c69ca416707f].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "CORDIS results document city demonstrations combining locally produced solar, V2G mobility, batteries, and smart energy management."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "75b95b00-9d9f-5b60-9252-79ba13a5f576",
-        "decision": "selected",
-        "fit_rationale": "Both are Cyprus municipality investment concepts supported through the same EUCF grant route.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-75b95b009d9f5b60",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[75b95b00-9d9f-5b60-9252-79ba13a5f576].summary",
-            "source_location": "Call 7 beneficiary table, Strovolos row",
-            "quote_or_summary": "The official table lists Strovolos, Cyprus: I.S.S.M: Fostering Energy Solidarity and Sustainability."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate title does not specify solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "8e5ef80a-76f0-5921-a2d3-78bd96316919",
-        "decision": "selected",
-        "fit_rationale": "Both combine solar generation, battery storage, and electric-mobility measures in a public-sector context.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-8e5ef80a76f05921",
-            "source_ref": "source-e7c09b782e2a52079be135078e89b3a7",
-            "target_path": "funding_records[8e5ef80a-76f0-5921-a2d3-78bd96316919].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "The CEC grant notice describes a disadvantaged-community project integrating solar, storage, resilience, EV charging, and shared electric mobility."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "98bebe64-e9f5-50ff-b075-4a224db9be25",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority investment concepts in the same EUCF municipal energy and transport context, with electric-mobility focus.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-98bebe64e9f550ff",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[98bebe64-e9f5-50ff-b075-4a224db9be25].summary",
-            "source_location": "Call 7 beneficiary table, Wexford row",
-            "quote_or_summary": "The official table lists Wexford, Ireland: Exploring the Potential of Fleet Electrification and Infrastructure to support Public Private Vehicle Switch."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV or battery storage.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "a467475e-6c64-5741-8dd9-dbad7d3496d4",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led EUCF investment concepts for renewable-energy transition in the same municipal energy and transport sector.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-a467475e6c645741",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[a467475e-6c64-5741-8dd9-dbad7d3496d4].summary",
-            "source_location": "Call 7 beneficiary table, Lamego row",
-            "quote_or_summary": "The official table lists Lamego, Portugal: Empowering Lamego: A Sustainable Energy Transition through Renewable Integration and Efficiency."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "a792f55e-5885-5ece-905b-ff0d881cec19",
-        "decision": "selected",
-        "fit_rationale": "Both involve municipal solar PV and battery storage installations at local-authority facilities.",
-        "matched_tags": [
-          "municipal-solar",
-          "battery-storage",
-          "local-authority"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-a792f55e58855ece",
-            "source_ref": "source-2da6cdca8f58568aab1757979f716193",
-            "target_path": "funding_records[a792f55e-5885-5ece-905b-ff0d881cec19].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "CEC funded the City of Fremont partnership to install solar and battery emergency microgrids at municipal fire stations."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The candidate does not include electric-mobility measures.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "b0520d94-d7c5-587a-81a3-629fceedf7d0",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority investment-concept efforts involving EV charging infrastructure and financing planning.",
-        "matched_tags": [
-          "electric-mobility",
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-c06b7a6286e825ba",
-            "source_ref": "source-f087aa3c19956f9b315cc11f3c677fbf",
-            "target_path": "funding_records[b0520d94-d7c5-587a-81a3-629fceedf7d0].summary",
-            "source_location": "Buenos Aires e-mobility narrative and downstream-results table, Argentina row",
-            "quote_or_summary": "Gap Fund technical assistance produced a Buenos Aires e-mobility roadmap, charging-infrastructure analysis, and financing recommendations, identifying USD 96 million in charging needs by 2030."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The USD 96 million figure is identified charging-infrastructure need, not a published Gap Fund technical-assistance award.",
-          "Candidate gap: The retained source does not evidence solar generation or battery storage.",
-          "The candidate does not evidence solar generation or battery storage.",
-          "The USD 96 million figure is identified charging-infrastructure need, not a published technical-assistance award.",
-          "The target project's underlying investment value and implementation status are not confirmed."
-        ]
-      },
-      {
-        "funding_record_id": "c367cb74-2219-5029-aa53-787c38ff73c2",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led EUCF investment concepts involving integrated local energy planning.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-c367cb7422195029",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[c367cb74-2219-5029-aa53-787c38ff73c2].summary",
-            "source_location": "Call 7 beneficiary table, Opole row",
-            "quote_or_summary": "The official table lists Opole, Poland: The investment concept for the creation of integrated investments of the Opole Energy Cluster."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "c4d44963-4f73-579b-94ab-fe92add35f13",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority EUCF investment concepts addressing municipal renewable and smart-energy transition.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-c4d449634f73579b",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[c4d44963-4f73-579b-94ab-fe92add35f13].summary",
-            "source_location": "Call 7 beneficiary table, Jakabsz\u00e1ll\u00e1s row",
-            "quote_or_summary": "The official table lists Jakabsz\u00e1ll\u00e1s, Hungary: Sustainable Energy Hub: Powering Rural Growth."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV, battery storage, or EV charging.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "cca9afa2-a170-5013-a93d-c272aab3a0d1",
-        "decision": "selected",
-        "fit_rationale": "Both involve municipal-scale photovoltaic charging and electric-mobility integration.",
-        "matched_tags": [
-          "municipal-solar",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-cca9afa2a1705013",
-            "source_ref": "source-a4b3f777e2575c9a85c65d3619214cc3",
-            "target_path": "funding_records[cca9afa2-a170-5013-a93d-c272aab3a0d1].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "CORDIS describes a Horizon project developing PV-integrated vehicles and charging stations with municipal pilots across Europe."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The candidate does not evidence battery storage.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+          "The retained source does not evidence battery storage.",
+          "Finance route and instrument differ from the current EUCF investment-concept grant.",
+          "The USD 250 million figure is downstream project value, not a published Gap Fund technical-assistance award."
         ]
       },
       {
         "funding_record_id": "d7d0383e-e9b5-5dae-972d-8c2b98861107",
         "decision": "selected",
-        "fit_rationale": "Both integrate municipal solar, battery storage, and EV charging infrastructure.",
+        "fit_rationale": "This is a strong infrastructure comparator because it combines a council-site solar carport, battery storage, and EV chargers in one smart-energy package.",
         "matched_tags": [
           "municipal-solar",
           "battery-storage",
@@ -2326,71 +1716,18 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "dd60e11d-7167-5da6-9ae7-f2828a92a8fe",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led EUCF investment concepts in the same sector and include electric-mobility objectives.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-dd60e11d71675da6",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[dd60e11d-7167-5da6-9ae7-f2828a92a8fe].summary",
-            "source_location": "Call 7 beneficiary table, Innsbruck row",
-            "quote_or_summary": "The official table lists Innsbruck, Austria: Zero-Emission Urban Transport for Innsbruck."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV or battery storage.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "dd822a4a-a6e4-5f15-9a53-48dbd9b126c8",
-        "decision": "selected",
-        "fit_rationale": "Both are local-authority investment-concept efforts for solar PV on public buildings.",
-        "matched_tags": [
-          "municipal-solar",
-          "local-authority",
-          "investment-concept"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-c7a267b64333b92e",
-            "source_ref": "source-308cf7f60db5089374ef238b1e508e06",
-            "target_path": "funding_records[dd822a4a-a6e4-5f15-9a53-48dbd9b126c8].summary",
-            "source_location": "Results table, Bodu/Lagos, Nigeria - Energy row",
-            "quote_or_summary": "The Gap Fund report describes technical assistance in Bodu/Lagos that analysed public-school and healthcare-centre energy systems, assessed solar PV business models, and recommended wider deployment in Lagos State."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official report does not provide a distinct formal project title, award amount, or award year.",
-          "Candidate gap: The retained source does not evidence battery storage or electric-vehicle charging.",
-          "The candidate does not evidence battery storage or electric-vehicle charging.",
-          "The official report does not provide a distinct formal project title, award amount, or award year.",
-          "The target project's underlying investment value and implementation status are not confirmed."
+          "Finance route and instrument differ from the current EUCF investment-concept grant.",
+          "The retained official page does not establish every later implementation milestone or operating result."
         ]
       },
       {
         "funding_record_id": "e96b9e65-924f-5a2a-886b-ada382c8820a",
         "decision": "selected",
-        "fit_rationale": "Both are municipality-led projects integrating solar power, battery storage, and public EV charging.",
+        "fit_rationale": "This is a useful technical comparator because it combines rapid EV chargers, battery storage, and a solar carport at a municipal site for public use.",
         "matched_tags": [
           "municipal-solar",
           "battery-storage",
@@ -2408,16 +1745,18 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+          "Finance route and instrument differ from the current EUCF investment-concept grant.",
+          "The retained official page does not establish every later implementation milestone or operating result."
         ]
       },
       {
         "funding_record_id": "f25c9277-631b-59df-bfd8-06fb50411dd3",
         "decision": "selected",
-        "fit_rationale": "Both combine municipal solar generation, battery storage, and EV charging infrastructure.",
+        "fit_rationale": "This is a strong technical comparator because the supplied summary explicitly describes municipal EV charging deployments integrating solar generation and battery storage.",
         "matched_tags": [
           "municipal-solar",
           "battery-storage",
@@ -2435,65 +1774,12 @@
         ],
         "caveats": [
           "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
+          "Current project gap: The official source establishes selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+          "Current project gap: No captured official source identifies downstream financing for Nicosia's underlying photovoltaic, storage, or electric-mobility investment.",
+          "Current project gap: No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept.",
           "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
-        ]
-      },
-      {
-        "funding_record_id": "f2e93e4c-6b1c-5ee8-a0bb-30253a7311d9",
-        "decision": "selected",
-        "fit_rationale": "Both are municipality-led EUCF investment concepts in the same sector and address electric mobility.",
-        "matched_tags": [
-          "local-authority",
-          "investment-concept",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-f2e93e4c6b1c5ee8",
-            "source_ref": "source-33f6933754d95ee29053e50feaf0db95",
-            "target_path": "funding_records[f2e93e4c-6b1c-5ee8-a0bb-30253a7311d9].summary",
-            "source_location": "Call 7 beneficiary table, Las Palmas de Gran Canaria row",
-            "quote_or_summary": "The official table lists Las Palmas de Gran Canaria, Spain: Facilitating metropolitan e-mobility solutions: An integrated Island Capital Mobility Hub."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The official beneficiary list establishes selection and title, not implementation status or underlying investment value.",
-          "The candidate evidence does not establish solar PV or battery storage.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The candidate's implementation status and underlying investment value are not established."
-        ]
-      },
-      {
-        "funding_record_id": "f63e0b15-987c-56b9-80d0-e31305c1eac9",
-        "decision": "selected",
-        "fit_rationale": "Both involve photovoltaic systems supporting EV charging infrastructure.",
-        "matched_tags": [
-          "municipal-solar",
-          "electric-mobility"
-        ],
-        "evidence": [
-          {
-            "evidence_ref": "evidence-f63e0b15987c56b9",
-            "source_ref": "source-8b8db8f6b0d7584a91583dc458be3d3b",
-            "target_path": "funding_records[f63e0b15-987c-56b9-80d0-e31305c1eac9].summary",
-            "source_location": "Official award, decision, or project description",
-            "quote_or_summary": "CORDIS records a funded solar-carport innovation project designed to supply direct photovoltaic EV charging."
-          }
-        ],
-        "caveats": [
-          "Candidate is missing region for direct comparison.",
-          "Candidate is missing applicant_type for direct comparison.",
-          "Current project gap: The target project's underlying investment value and implementation status are not confirmed.",
-          "Candidate gap: The retained official page does not establish every later implementation milestone or operating result.",
-          "Candidate is missing applicant type for direct comparison.",
-          "The candidate does not evidence battery storage and is a solar-carport innovation project rather than a municipal authority project.",
-          "The target project's underlying investment value and implementation status are not confirmed.",
-          "The retained candidate evidence does not establish every later implementation milestone or operating result."
+          "Finance route and instrument differ from the current EUCF investment-concept grant.",
+          "The retained official page does not establish every later implementation milestone or operating result."
         ]
       }
     ],

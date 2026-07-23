@@ -175,7 +175,7 @@ Known data quirks the transform already compensates for, which must survive the 
 | File | LOC | Proposed |
 |---|---|---|
 | `scoringPipeline.ts` | 874 | **delete** — dead client-side scoring, superseded by `hiap-meed` |
-| `reportGenerator.ts` | 592 | Re-platform onto `PDFExportService` / `PrintableActionPlanPDF` |
+| `reportGenerator.ts` | 592 | Port onto `PDFExportService` / `PrintableActionPlanPDF` — **`jspdf` and `jspdf-autotable` are already CityCatalyst dependencies**, so this is close to a move |
 | `pipelineRunner.ts` | 526 | Split: input building → `MeedInventoryService` (server); response adaptation → shared types |
 | `cityInventory.ts` | 289 | → `MeedInventoryService` (server) |
 | `hiapApi.ts` | 201 | → `MeedApiService` (server); types become shared contracts |
@@ -189,6 +189,29 @@ Known data quirks the transform already compensates for, which must survive the 
 **55** shadcn/Radix components in `src/components/ui/`. These are **replaced**, not ported —
 CityCatalyst has its own set in `app/src/components/ui/` on Chakra v3. The real work is rewriting
 the ~8,600 LOC of pages written against the Radix/Tailwind API.
+
+### Dependency overlap — what ports directly
+
+Checked against CityCatalyst `app/package.json` on `develop`:
+
+| Prototype dependency | In CityCatalyst? | Consequence |
+|---|---|---|
+| `framer-motion` | ✅ | Animation code ports directly |
+| `react-icons` | ✅ | Icon usage ports directly |
+| `react-hook-form` + `@hookform/resolvers` | ✅ | Form logic ports directly |
+| `zod` | ✅ | Validation schemas port directly |
+| `jspdf` (+ `jspdf-autotable` in CC) | ✅ | `reportGenerator.ts` is close to a move |
+| `lucide-react` | ❌ (CC uses `react-icons`) | Icon-by-icon swap — mechanical |
+| `tailwindcss` + `@tailwindcss/typography` | ❌ | Removed; styling moves to Chakra recipes/tokens |
+| `@radix-ui/*` (23 packages) | ❌ | Replaced by CityCatalyst's Chakra primitives |
+| `wouter` | ❌ | Replaced by the App Router |
+| `@tanstack/react-query` | ❌ (CC uses RTK Query) | Data layer rewrite |
+| `recharts` | ❌ (CC uses `@nivo/*`) | **No impact** — see below |
+
+**`recharts` is not actually used.** It is imported only by `src/components/ui/chart.tsx`, an
+unused shadcn boilerplate file; no page or component imports it. Every visualization in the app is
+hand-rolled markup, so there is **no chart-library migration** — a cost that would otherwise have
+fallen on `Recommendations` and `FinancialFeasibility`, the two largest screens.
 
 ---
 

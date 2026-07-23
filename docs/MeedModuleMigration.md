@@ -121,6 +121,25 @@ The full-stack lead reviewed the prototype independently. Confirming and correct
   `src/components/ui/`, plus **8,632 LOC across 14 page files** (7,873 of it the 11 wizard steps)
   written against them.
 
+  Two dependency findings make this cheaper than it first looks:
+
+  - **No charting library is actually in use.** `recharts` appears only in the unused shadcn
+    boilerplate file `components/ui/chart.tsx`; every visualization in the real pages is
+    hand-rolled markup. CityCatalyst uses `@nivo/*`, so a chart-library migration across
+    `Recommendations` and `FinancialFeasibility` would have been a significant hidden cost. It
+    doesn't exist.
+  - **Much of the stack is already shared.** CityCatalyst already depends on `framer-motion`,
+    `react-icons`, `react-hook-form` + `@hookform/resolvers`, `zod`, and — notably — `jspdf` +
+    `jspdf-autotable`. So animation, form and validation code ports directly, and
+    `reportGenerator.ts` (592 LOC) is closer to a move than a re-platform.
+
+  What genuinely carries over is the majority of the intellectual content: page logic, derived
+  computations, information architecture, and every English string (which become the EN i18next
+  values). What does not carry over is the markup layer — shadcn primitives are `className`-styled
+  copy-ins while Chakra v3 uses recipes, semantic tokens and a different slot API, so
+  `<Card>` → `<Card.Root>` / `<Card.Body>` is not a rename — plus all state management and all data
+  fetching.
+
 - **"Vite instead of Next — probably less work than the UI."**
   Agreed on routing: `wouter` → App Router is genuinely small. One nuance worth budgeting: the
   larger change is the **state model**, not the routing. The wizard is entirely localStorage-driven
@@ -178,55 +197,93 @@ assumed and with much lower variance. **The critical path is the frontend, not t
 
 ## 5. Effort estimate
 
-Engineer-days, one engineer per track. 1 sprint = 2 weeks.
+Target: **a working module by end of August / first week of September 2026** — roughly 5–6 weeks
+from 2026-07-23.
 
-### Backend track — ~20–27 days (2–3 sprints)
+Estimates below assume **contract-first parallel execution** (see §5.4) and **heavy agent
+assistance on the mechanical work**, with human review and visual QA left uncompressed.
 
-| Item | Days |
-|---|---|
-| `MeedApiService` — wrap the 4 `hiap-meed` endpoints (mirror `HiapApiService`) | 2–3 |
-| `MeedInventoryService` — GPC-level inventory→payload bridge, locode normalization, golden test against the bundled snapshots | 3–4 |
-| ~7 Global API proxy routes via `apiHandler`, with swagger JSDoc + Jest | 4–5 |
-| Data model — 4–5 tables, `.cjs` migrations, `init-models`, RTK Query endpoints | 4–5 |
-| `MeedService` orchestration + async report job + cron wiring | 4–5 |
-| Module registration — migration, seed entry, `constants.ts`, `ProjectModules` grant | 1–2 |
-| Env/k8s wiring, review, iteration | 2–3 |
+### 5.1 Backend track — ~13–16 days
+
+| Item | Days | Agent leverage |
+|---|---|---|
+| `MeedApiService` — wrap the 4 `hiap-meed` endpoints (mirrors `HiapApiService`) | 1–2 | High — pattern-following |
+| `MeedInventoryService` — GPC-level bridge, locode normalization, golden test vs the bundled snapshots | 3 | **Low — do not compress.** This is the safety net for the whole bridge |
+| ~7 Global API proxy routes via `apiHandler` + swagger JSDoc + Jest | 2 | High — near-identical routes |
+| Data model — 4–5 tables, `.cjs` migrations, `init-models`, RTK Query endpoints | 2–3 | High — patterns from `HighImpactActionRanking` |
+| `MeedService` orchestration + async report job + cron wiring | 3 | Low — integration judgment |
+| Module registration — migration, seed entry, `constants.ts`, `ProjectModules` grant | 1 | High |
+| Env/k8s wiring, review, iteration | 2 | None — human review |
 
 *Add ~1 sprint of Python work if we choose to extend `hiap-meed` to serve the enriched context
 rather than re-deriving it in CityCatalyst — see open question **A**.*
 
-### Frontend track — ~35–40 days (3.5–4 sprints)
+### 5.2 Frontend track — ~22–26 days
 
-| Item | Days |
-|---|---|
-| Chakra/theme foundation, wizard shell, module route scaffolding | 5 |
-| `Recommendations` (2,134 LOC — decompose, don't transliterate) | 7–8 |
-| `FinancialFeasibility` (981) + `PreflightCheck` (900) | 5 |
-| `SocioeconomicContext` (694) + `RegulationsLaws` (612) + `PolicyAlignment` (596) | 5 |
-| `StrategicPreferences` (526) + `CityProfile` (379) + `EmissionsReview` (330) + `Processing` (296) | 5 |
-| `Methodology` + `About` folded into the existing methodologies page | 2 |
-| i18n rewrite → i18next EN keys | 5 |
-| PDF export re-platform (jsPDF → `PDFExportService` / `PrintableActionPlanPDF`) | 2–3 |
-| QA, Playwright happy path, polish | 5 |
+| Item | Days | Agent leverage |
+|---|---|---|
+| Chakra/theme foundation, wizard shell, module route scaffolding | 3 | Medium |
+| `Recommendations` (2,134 LOC — decompose, don't transliterate) | 5 | Medium — mechanical pass yes, decomposition no |
+| Radix→Chakra pass across the other 9 screens | 8–10 | **High** — independent screens, fan out |
+| `Methodology` + `About` folded into the existing methodologies page | 1 | High |
+| i18n rewrite → i18next EN keys | 1–2 | **Highest in the plan** — near-ideal agent task |
+| PDF export (`jspdf` already a CityCatalyst dependency — a move, not a re-platform) | 1 | High |
+| QA, visual review across 11 screens, Playwright happy path | 5 | **None.** Chakra conversion produces plausible-but-wrong layouts constantly |
 
-The screens are largely independent, so this compresses well with parallelism and agent
-assistance. The figure above is sequential, single-engineer.
+### 5.3 Integration — ~5–7 days
 
-### Onboarding track — ~15–20 days (1.5–2 sprints), runs in parallel
+End-to-end wiring against real CityCatalyst data, schema-mismatch debugging, and the
+screen-vs-report consistency check. Does not compress; budget it explicitly.
 
-| Item | Days |
-|---|---|
-| Locode scheme decision + Global API coverage audit (**blocking**) | 5 |
-| Bulk city + inventory creation and import for ~345 comunas | 7–10 |
-| Boundaries/population backfill, verification | 3–5 |
+### 5.4 Calendar
 
-### Calendar
+Contract-first is what unlocks the parallelism: the request/response types **already exist** in
+the prototype's `lib/hiapApi.ts`. Extract them into a shared contract in week 1 and the frontend
+builds against a mock while the backend builds the real thing — neither waits.
 
-With one backend and one frontend engineer working in parallel, and onboarding running alongside:
-**~8–10 weeks (4–5 sprints)** to a working native module. Frontend is the critical path.
+| Staffing | Calendar | Lands |
+|---|---|---|
+| 1 backend + 2 frontend | **~5 weeks** | ~27 Aug |
+| 1 backend + 1 frontend | **~6.5 weeks** | ~8 Sep |
 
-**Excluded:** MEED/HIAP product convergence, any methodology change (#2690), and design work on
-the MEED+ brand vs CityCatalyst theme question.
+### 5.5 What does *not* fit the deadline: onboarding all ~345 comunas
+
+| Item | Days | Agent leverage |
+|---|---|---|
+| Locode scheme decision | 5 | **None** — a decision, not a task |
+| Global API coverage audit across the full locode list | 1–2 | High to run; **the result may invalidate the plan** |
+| Bulk city + inventory creation and import | 4–6 | Medium — script yes, data cleanup no |
+| Boundaries/population backfill, verification | 3–5 | Low |
+
+**Recommendation: decouple onboarding from the deadline, not the module.** Ship the module by end
+of August against a *verified* city set — the pilot 20 plus whatever passes the coverage audit —
+and run full onboarding as a rolling data operation afterwards. Because the module reads through
+the inventory layer, **nothing about it changes when more cities arrive.** That is precisely the
+property that makes decoupling safe.
+
+### 5.6 Conditions
+
+The calendar above holds only if:
+
+1. **The three blocking decisions land in week 1**, not week 3: locode scheme (**B**), theme
+   (**C**), and the shared API contract.
+2. **Onboarding is descoped from the deadline** per §5.5.
+3. **Review bandwidth is allocated.** Agent-assisted delivery moves the bottleneck from writing
+   code to reviewing it. This is the condition most likely to be overlooked.
+
+### 5.7 Week 0 — pre-kickoff checklist
+
+| # | Item | Owner | Why now |
+|---|---|---|---|
+| 1 | **Run the Global API coverage audit** over the full Chilean locode list — probe `city_attributes`, `action-policy-scores`, `action-mitigation-feasibility-scores`, `climate-finance/feasibility` for each locode and report the gaps | Backend | **Highest priority.** ~1 day of work, and the only item that can invalidate the plan. Also defines the "verified city set" that §5.5 ships against |
+| 2 | Decide the locode scheme for comunas without a UN/LOCODE (**B**) | Backend + product | Blocks onboarding, Global API lookups, and `hiap-meed`'s `^[A-Za-z]{2}\s[A-Za-z]{3}$` validation |
+| 3 | Extract the shared API contract from the prototype's `lib/hiapApi.ts` into CityCatalyst types | Backend | Unlocks true frontend/backend parallelism — frontend builds against a mock |
+| 4 | Decide MEED+ palette vs CityCatalyst semantic tokens (**C**) | Design | Affects every component; changing it mid-port is expensive |
+| 5 | Decide proxy-vs-extend-`hiap-meed` (**A**) | Backend + full-stack lead | Determines whether ~1 sprint of Python enters scope |
+| 6 | **Feature-freeze the prototype** and agree the kickoff date (**E**) | All | Anything added to the Vite app after kickoff is built twice |
+
+**Excluded from all of the above:** MEED/HIAP product convergence, any methodology change
+(#2690), and design work on the MEED+ brand vs CityCatalyst theme question.
 
 ---
 
@@ -319,12 +376,41 @@ See [`MeedModuleMigration-Interop.md`](./MeedModuleMigration-Interop.md).
 
 ## 8. Ownership split
 
-**Frontend / design** — workstream C in full: screen ports, Chakra theming, MEED+ brand mapping,
-i18next rewrite, wizard UX, module card copy and logo, `Recommendations` decomposition, empty and
-precondition states.
+### Frontend / design — can start immediately, agent-heavy
 
-**Backend / full-stack** — workstreams A, B, D, E: services, proxy routes, models and migrations,
-async report jobs, env and k8s wiring, onboarding pipeline, the module provider contract.
+Everything here builds against the shared contract (week-0 item 3) and a mock, so it does **not**
+wait on the backend.
+
+| Work | Agent-suitability |
+|---|---|
+| Chakra/theme foundation, wizard shell, module route scaffolding | Medium — set the pattern by hand, then replicate |
+| Radix→Chakra pass across the 9 mid-size screens | **High** — independent, repetitive, verified by typecheck/lint/build |
+| i18n extraction → i18next EN keys | **Highest** — mechanical and fully checkable |
+| PDF export move (`jspdf` already present) | High |
+| Module card copy, tagline and description in 5 languages | High |
+| `Recommendations` decomposition (2,134 LOC) | Medium — the split is a judgement call; the rewrite that follows is not |
+| Visual QA across 11 screens, empty and precondition states | **None** — human eyes required |
+| MEED+ palette vs CityCatalyst tokens (**C**) | None — a design decision |
+
+### Backend / full-stack — the gating work
+
+| Work | Agent-suitability |
+|---|---|
+| Global API coverage audit (week 0) | High to write and run; the *result* needs human judgement |
+| Shared API contract extraction (week 0) | High — types already exist in `lib/hiapApi.ts` |
+| Locode scheme (**B**) and proxy-vs-extend (**A**) decisions | **None** — architecture decisions |
+| `MeedApiService`, proxy routes, models + migrations, module registration | **High** — all pattern-following against existing CityCatalyst precedents |
+| `MeedInventoryService` + golden test | **Low** — the correctness-critical piece |
+| `MeedService` orchestration + async report job + cron | Low — integration judgement |
+| Env + k8s wiring, DB migration review, deploy | None |
+| Onboarding pipeline for ~345 comunas | Medium — script yes, data cleanup no |
+| Module provider contract ([interop doc](./MeedModuleMigration-Interop.md)) | Low — a design decision first |
+
+### The dependency that matters
+
+Only two backend items block the frontend, and both are week-0 work: **the shared API contract**
+and **the coverage audit** (which defines the city set to build and test against). Everything else
+on the backend can land in parallel with the screen work.
 
 ---
 

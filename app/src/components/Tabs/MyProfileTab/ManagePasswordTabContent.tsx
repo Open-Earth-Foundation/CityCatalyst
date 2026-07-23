@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 
 import { Box, Text, VStack } from "@chakra-ui/react";
 import { TitleMedium } from "@/components/package/Texts/Title";
@@ -6,7 +6,6 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { TFunction } from "i18next";
 import PasswordInput from "@/components/password-input";
 import { Button } from "@/components/ui/button";
-import { useSearchParams } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/services/api";
 import { Toaster } from "@/components/ui/toaster";
@@ -23,7 +22,6 @@ type Inputs = {
 };
 
 const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
-  const searchParams = useSearchParams();
   const [error, setError] = useState("");
 
   const {

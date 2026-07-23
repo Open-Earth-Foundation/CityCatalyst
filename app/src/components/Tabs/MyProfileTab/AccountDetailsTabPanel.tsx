@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
 import { Box, Button, HStack } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ProfileInputs } from "@/components/GHGI/inventory-pages/settings-page";

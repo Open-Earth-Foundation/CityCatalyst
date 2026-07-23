@@ -22,17 +22,11 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import {
-  useGetOrganizationQuery,
-  useGetThemesQuery,
-  useGetUserAccessStatusQuery,
-  useSetOrgWhiteLabelMutation,
-} from "@/services/api";
+import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useTheme } from "next-themes";
 import ManagePasswordTabContent from "@/components/Tabs/MyProfileTab/ManagePasswordTabContent";
-import AccountDetailsTab from "./account-details-tab";
 import OrganizationDetailsTab from "./organization-details-tab";
 import TabContent from "@/components/ui/tab-content";
 import TabTrigger from "@/components/ui/tab-trigger";
@@ -41,6 +35,16 @@ import { trackEvent } from "@/lib/analytics";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
+import AccountDetailsTabPanel from "@/components/Tabs/MyProfileTab/AccountDetailsTabPanel";
+
+const KeyColorMapping = {
+  blue_theme: "#001EA7",
+  light_brown_theme: "#B0901C",
+  dark_orange_theme: "#B0661C",
+  green_theme: "#7FB01C",
+  light_blue_theme: "#1CAEB0",
+  violet_theme: "#7F1CB0",
+};
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { showErrorToast } = UseErrorToast({
@@ -51,19 +55,10 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     duration: 1200,
   });
 
-  const KeyColorMapping = {
-    blue_theme: "#001EA7",
-    light_brown_theme: "#B0901C",
-    dark_orange_theme: "#B0661C",
-    green_theme: "#7FB01C",
-    light_blue_theme: "#1CAEB0",
-    violet_theme: "#7F1CB0",
-  };
-
   type themeType = keyof typeof KeyColorMapping;
 
   const { data: themeOptions, isLoading: isThemeOptionsLoading } =
-    useGetThemesQuery({});
+    api.useGetThemesQuery({});
 
   const options = useMemo(() => {
     return createListCollection({
@@ -76,7 +71,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
           }))
         : [],
     });
-  }, [themeOptions]);
+  }, [themeOptions, t]);
 
   const [selectedTheme, setSelectedTheme] =
     React.useState<string>("blue_theme");
@@ -86,15 +81,20 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { setTheme } = useTheme();
   const { setOrganization } = useOrganizationContext();
 
-  const { data: userAccessStatus, isLoading } = useGetUserAccessStatusQuery({});
+  const { data: userAccessStatus, isLoading } = api.useGetUserAccessStatusQuery(
+    {},
+  );
 
   const { data: organization, isLoading: isOrganizationLoading } =
-    useGetOrganizationQuery(userAccessStatus?.organizationId as string, {
+    api.useGetOrganizationQuery(userAccessStatus?.organizationId as string, {
       skip: !userAccessStatus?.organizationId,
     });
 
+  const { data: userInfo, isLoading: isUserInfoLoading } =
+    api.useGetUserInfoQuery();
+
   const [setWhiteLabel, { isLoading: isSettingWhiteLabel }] =
-    useSetOrgWhiteLabelMutation();
+    api.useSetOrgWhiteLabelMutation();
 
   const blueTheme = useMemo(() => {
     return themeOptions?.find((theme) => theme.themeKey === "blue_theme");
@@ -161,6 +161,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         <TabTrigger value="account-details">{t("account-details")}</TabTrigger>
         <TabTrigger value="brand-settings">{t("brand-settings")}</TabTrigger>
         <TabTrigger value="manage-password">{t("manage-password")}</TabTrigger>
+        <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
       </Tabs.List>
       <TabContent value="organization-details">
         <OrganizationDetailsTab organization={organization} />
@@ -299,7 +300,11 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         </Box>
       </TabContent>
       <TabContent value="account-details">
-        <AccountDetailsTab />
+        {isUserInfoLoading ? (
+          <ProgressLoader />
+        ) : (
+          <AccountDetailsTabPanel t={t} userInfo={userInfo} showTitle />
+        )}
         {userAccessStatus?.isOrgOwner && (
           <Box backgroundColor="white" p={6} marginTop={4}>
             <TitleMedium color="content.secondary">
@@ -313,6 +318,9 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         <Box bg="background.default">
           <ManagePasswordTabContent t={t} />
         </Box>
+      </TabContent>
+      <TabContent value="preferences">
+        <PreferencesTab />
       </TabContent>
     </Tabs.Root>
   );

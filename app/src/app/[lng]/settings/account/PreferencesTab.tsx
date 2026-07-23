@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { useEffect } from "react";
 import { Box, Button } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useSetCurrentUserDataMutation } from "@/services/api";
@@ -15,11 +15,6 @@ import {
 } from "@/components/ui/native-select";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
-interface SettingsTabProps {
-  t: TFunction;
-  userInfo?: UserInfoResponse;
-}
-
 interface ProfileInputs {
   preferredLanguage?: string;
   numberFormat?: string;
@@ -32,7 +27,13 @@ const numberFormatOptions = [
   { value: NumberFormatEnum.APOSTROPHE_AND_DOT, label: "apostrophe-and-dot" },
 ];
 
-const PreferencesTab: FC<SettingsTabProps> = ({ t, userInfo }) => {
+const PreferencesTab = ({
+  t,
+  userInfo,
+}: {
+  t: TFunction;
+  userInfo?: UserInfoResponse;
+}) => {
   const { showSuccessToast } = UseSuccessToast({
     title: t("preferences-updated"),
     duration: 5000,

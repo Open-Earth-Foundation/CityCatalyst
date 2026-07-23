@@ -36,7 +36,6 @@ import { logger } from "@/services/logger";
 import AccountDetailsTab from "./AccountDetailsTab";
 import LogoUploadCard from "./logo-file-upload";
 import ManagePasswordTab from "./ManagePasswordTab";
-import OrganizationDetailsTab from "./organization-details-tab";
 import PreferencesTab from "./PreferencesTab";
 
 const KeyColorMapping = {
@@ -165,9 +164,6 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
         <TabTrigger value="manage-password">{t("manage-password")}</TabTrigger>
         <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
       </Tabs.List>
-      <TabContent value="organization-details">
-        <OrganizationDetailsTab organization={organization} />
-      </TabContent>
       <TabContent value="brand-settings">
         <Box backgroundColor="white" p={6}>
           <Text

@@ -39,6 +39,8 @@ LOG_DIR=logs
 LOCAL_ARTIFACTS_ENABLED=true
 MLFLOW_ENABLED=true
 MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
+MLFLOW_TRACKING_USERNAME=<service-user>
+MLFLOW_TRACKING_PASSWORD=<service-password>
 MLFLOW_EXPERIMENT_NAME=hiap-meed
 MLFLOW_ENVIRONMENT=dev
 MLFLOW_HTTP_REQUEST_TIMEOUT=3
@@ -76,6 +78,8 @@ Variables:
 - `LOCAL_ARTIFACTS_ENABLED`: if `true`, writes per-request artifact files under `LOG_DIR/requests/...`
 - `MLFLOW_ENABLED`: if `true`, enables best-effort MLflow run, direct artifact, and OpenAI trace logging
 - `MLFLOW_TRACKING_URI`: MLflow tracking server URL. The standard default is the hosted dev MLflow at `https://mlflow-dev.openearth.dev`. Override it to `http://mlflow:5000` only when running the fully local Docker Compose stack, or to `http://localhost:5000` when using `kubectl port-forward`.
+- `MLFLOW_TRACKING_USERNAME`: non-admin service-account username used by MLflow clients
+- `MLFLOW_TRACKING_PASSWORD`: service-account password; keep the real value only in local `.env`, GitHub Secrets, or a Kubernetes Secret
 - `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
 - `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
 - `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. Keep this low, for example `3`, so bad or unreachable tracking URLs fail fast instead of blocking startup or the first traced request for minutes.
@@ -116,6 +120,13 @@ LLM-specific non-secret settings now live in `llm_config.yaml`, including:
 - `openai.max_retries`
 
 When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. MLflow initialization is lazy and happens only when a request enters an MLflow-backed run. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient failures do not disable logging for the lifetime of the worker.
+
+The hosted server requires `MLFLOW_TRACKING_USERNAME` and
+`MLFLOW_TRACKING_PASSWORD`. Deployment workflows read these values from GitHub
+Secrets, create or update the `mlflow-client-credentials` Kubernetes Secret in
+the target cluster, and the Deployment reads the two keys through
+`secretKeyRef`. Use a shared non-admin service account, not the MLflow admin
+account or Flask signing secret.
 
 If the `hiap-meed` process or `hiap-meed` container that writes to MLflow does not have `git` installed, MLflow's GitPython integration may warn that Git SHA metadata is unavailable. This warning is about the MLflow client side in `hiap-meed`, not the MLflow server container. Setting `GIT_PYTHON_REFRESH=quiet` suppresses that warning. It does not install `git` or restore Git SHA capture; it only keeps logs quieter.
 

@@ -165,6 +165,17 @@ jobs:
         run: aws eks update-kubeconfig --name ${{secrets.EKS_DEV_NAME}} --region us-east-1
       - name: Testing connection to EKS
         run: kubectl get pods -n default
+      - name: Create or update MLflow credentials
+        env:
+          MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+          MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+        run: |
+          : "${MLFLOW_TRACKING_USERNAME:?Set GitHub secret MLFLOW_TRACKING_USERNAME}"
+          : "${MLFLOW_TRACKING_PASSWORD:?Set GitHub secret MLFLOW_TRACKING_PASSWORD}"
+          kubectl -n default create secret generic mlflow-client-credentials \
+            --from-literal=username="${MLFLOW_TRACKING_USERNAME}" \
+            --from-literal=password="${MLFLOW_TRACKING_PASSWORD}" \
+            --dry-run=client -o yaml | kubectl apply -f -
       - name: Deploying service
         run: |
           kubectl apply -f climate-advisor/k8s/db-configmap-dev.yml -n default

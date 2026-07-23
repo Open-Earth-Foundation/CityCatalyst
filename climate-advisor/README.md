@@ -397,6 +397,7 @@ CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climat
 CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
+OPENAI_API_KEY=your-openai-api-key
 LANGSMITH_API_KEY=your-langsmith-key
 
 # Optional - CityCatalyst integration
@@ -469,8 +470,8 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, and Stationary Energy review chat-context prompt budgets.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
-such as `OPENROUTER_API_KEY` and `LANGSMITH_API_KEY`. All LLM and embedding
-requests use OpenRouter.
+such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`. LLM
+requests use OpenRouter, while vector embeddings continue to use OpenAI directly.
 
 Prompt paths are also configured in `llm_config.yaml`:
 
@@ -511,11 +512,12 @@ language, or client-side fallback behavior. The boundary is:
 
 ### Environment Variables
 
-- `OPENROUTER_API_KEY` - OpenRouter API key for LLM and embedding access
+- `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
+- `OPENAI_API_KEY` - OpenAI API key for embeddings
 - `LANGSMITH_API_KEY` - LangSmith API key when tracing is enabled
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
 - `CC_API_KEY` - Service credential used when CA asks CC to validate the

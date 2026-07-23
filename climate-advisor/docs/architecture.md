@@ -337,10 +337,10 @@ Stationary Energy chat also has a dedicated prompt budget:
 
 ### LLM Providers
 
-- OpenRouter is the sole LLM and embedding gateway.
+- OpenRouter is the sole LLM gateway.
 - OpenAI-compatible SDK clients retain provider-prefixed model IDs and route
-  requests through the configured OpenRouter base URL.
-- OpenRouter-hosted embeddings power `climate_vector_search`.
+  LLM requests through the configured OpenRouter base URL.
+- OpenAI embeddings power `climate_vector_search`.
 
 ### CityCatalyst
 

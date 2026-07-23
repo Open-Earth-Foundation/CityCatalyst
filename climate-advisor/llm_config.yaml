@@ -59,7 +59,13 @@ api:
     timeout_ms: 30000
     retry_attempts: 3
     retry_delay_ms: 1000
-    embedding_model: "openai/text-embedding-3-large"
+
+  # OpenAI configuration for embeddings
+  openai:
+    base_url: "https://api.openai.com/v1"
+    # API key should be set via environment variable OPENAI_API_KEY
+    timeout_ms: 30000
+    embedding_model: "text-embedding-3-large"
 
   # Request configuration
   requests:

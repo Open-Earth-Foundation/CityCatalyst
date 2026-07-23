@@ -1,8 +1,8 @@
 """
-OpenRouter embedding service for generating vector embeddings from text.
+OpenAI embedding service for generating vector embeddings from text.
 
 This service provides functionality to:
-- Generate embeddings through OpenRouter
+- Generate embeddings using OpenAI's embedding models
 - Handle batch processing of text chunks
 - Manage API rate limits and retries
 """
@@ -22,7 +22,6 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'service'))
 
 from app.config.settings import get_settings
-from app.services.openrouter_client import build_openrouter_client_options
 
 # Import embedding configuration
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -42,25 +41,26 @@ class EmbeddingResult:
 
 class EmbeddingService:
     """
-    Service for generating text embeddings through OpenRouter.
+    Service for generating text embeddings using OpenAI's API.
 
     Handles rate limiting, batching, and error handling for embedding generation.
     """
 
-    def __init__(self) -> None:
-        """Initialize the embedding service with an OpenRouter client."""
+    def __init__(self):
+        """Initialize the embedding service with OpenAI client."""
         self.settings = get_settings()
         self.config = get_embedding_config()
 
-        client_options = build_openrouter_client_options(
-            self.settings,
-            missing_api_key_message=(
-                "OPENROUTER_API_KEY environment variable is required "
-                "for embedding service"
-            ),
+        # Check if OpenAI API key is available
+        if not self.settings.openai_api_key:
+            raise ValueError("OPENAI_API_KEY environment variable is required for embedding service")
+
+        self.client = AsyncOpenAI(
+            api_key=self.settings.openai_api_key,
+            base_url=self.settings.llm.api.openai.base_url,
+            timeout=self.settings.llm.api.openai.timeout_ms / 1000 if self.settings.llm.api.openai.timeout_ms else 30.0
         )
-        self.client = AsyncOpenAI(**client_options.kwargs)
-        self.model = self.settings.llm.api.openrouter.embedding_model
+        self.model = self.settings.llm.api.openai.embedding_model
         self.batch_size = self.config.batch_size
         self.requests_per_minute = self.config.requests_per_minute
         self.min_delay = 60.0 / self.requests_per_minute  # Minimum delay between requests

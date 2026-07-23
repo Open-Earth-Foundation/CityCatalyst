@@ -69,8 +69,6 @@ def test_cnb_research_configuration_matches_runtime_contract() -> None:
 
     assert config.models.funding_research.name == "openai/gpt-5.4"
     assert config.models.funding_research.reasoning_effort == "medium"
-    assert config.api.openrouter.embedding_model == "openai/text-embedding-3-large"
-    assert not hasattr(config.api, "openai")
     assert "`current_filled_object`" in prompt_text
     assert "`missing_data`" in prompt_text
     assert "`funding_records`" in prompt_text

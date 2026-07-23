@@ -41,7 +41,10 @@ def build_mock_settings(
             base_url=base_url,
             timeout_ms=30000,
             retry_attempts=3,
-            embedding_model="openai/text-embedding-3-small",
+        ),
+        openai=SimpleNamespace(
+            base_url="https://api.openai.com/v1",
+            embedding_model="text-embedding-3-small",
         ),
     )
 

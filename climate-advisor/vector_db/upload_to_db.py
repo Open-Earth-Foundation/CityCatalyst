@@ -3,7 +3,7 @@
 PDF Upload and Embedding Script for Climate Advisor Vector Database
 
 This script processes PDF files, extracts text, splits into chunks,
-generates embeddings through OpenRouter, and stores everything in a PostgreSQL
+generates embeddings using OpenAI, and stores everything in a PostgreSQL
 database with pgvector support.
 
 USAGE:
@@ -27,7 +27,7 @@ PREREQUISITES:
     1. PostgreSQL database with pgvector extension installed
     2. Environment variables configured in ../.env:
        - CA_DATABASE_URL: PostgreSQL connection string
-       - OPENROUTER_API_KEY: OpenRouter API key for embeddings
+       - OPENAI_API_KEY: OpenAI API key for embeddings
 
     3. Required Python packages installed:
        uv sync --locked
@@ -46,7 +46,7 @@ OUTPUT:
     1. Initialize pgvector extension in the database
     2. Process each PDF file in the specified directory
     3. Extract text content and split into chunks
-    4. Generate embeddings through OpenRouter
+    4. Generate embeddings using OpenAI's text-embedding-3-large model
     5. Store documents, chunks, and embeddings in the database
     6. Display progress and summary statistics
 
@@ -256,8 +256,8 @@ async def main():
         print("Error: CA_DATABASE_URL environment variable is required")
         sys.exit(1)
 
-    if not os.getenv("OPENROUTER_API_KEY"):
-        print("Error: OPENROUTER_API_KEY environment variable is required")
+    if not os.getenv("OPENAI_API_KEY"):
+        print("Error: OPENAI_API_KEY environment variable is required")
         sys.exit(1)
 
     # Process and store documents

@@ -1,4 +1,4 @@
-"""Embedding service for generating text embeddings through OpenRouter."""
+"""Embedding service for generating text embeddings using OpenAI."""
 from __future__ import annotations
 
 import logging
@@ -22,37 +22,29 @@ class EmbeddingResult:
 
 
 class EmbeddingService:
-    """Service for generating embeddings through the OpenRouter API."""
-
-    def __init__(
-        self,
-        api_key: Optional[str] = None,
-        model: Optional[str] = None,
-    ) -> None:
+    """Service for generating embeddings using OpenAI API."""
+    
+    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
         settings = get_settings()
-        self.api_key = api_key or settings.openrouter_api_key
-        self.model = model or settings.llm.api.openrouter.embedding_model
-        self.base_url = (
-            settings.openrouter_base_url or settings.llm.api.openrouter.base_url
-        )
-
+        self.api_key = api_key or settings.openai_api_key
+        self.model = model or settings.llm.api.openai.embedding_model
+        self.base_url = settings.llm.api.openai.base_url
+        
         if not self.api_key:
-            logger.warning(
-                "OpenRouter API key not configured - embedding service will not work"
-            )
-
+            logger.warning("OpenAI API key not configured - embedding service will not work")
+    
     async def generate_embedding(self, text: str) -> EmbeddingResult:
         """Generate an embedding for the given text."""
         if not self.api_key:
             return EmbeddingResult(
                 success=False,
-                error="OpenRouter API key not configured",
+                error="OpenAI API key not configured"
             )
-
+        
         if not text or not text.strip():
             return EmbeddingResult(
                 success=False,
-                error="Empty text provided",
+                error="Empty text provided"
             )
         
         try:

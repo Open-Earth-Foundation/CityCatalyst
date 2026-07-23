@@ -1,6 +1,6 @@
 # Climate Advisor Vector Database
 
-This directory contains the vector database functionality for the Climate Advisor service, enabling document storage, text chunking, and semantic search using embeddings routed through OpenRouter and pgvector.
+This directory contains the vector database functionality for the Climate Advisor service, enabling document storage, text chunking, and semantic search using OpenAI embeddings and pgvector.
 
 ## Project Structure
 
@@ -11,7 +11,7 @@ vector_db/
 │   └── document.py         # Document, DocumentChunk, DocumentEmbedding models
 ├── services/               # Business logic and external API clients
 │   ├── __init__.py
-│   └── embedding_service.py # OpenRouter embedding generation service
+│   └── embedding_service.py # OpenAI embedding generation service
 ├── utils/                  # Utility functions and helpers
 │   ├── __init__.py
 │   └── text_processing.py  # PDF processing and text splitting utilities
@@ -32,7 +32,7 @@ The vector database system provides:
 
 - **PDF Processing**: Extract text content from PDF files
 - **Text Chunking**: Split documents into manageable chunks for embedding
-- **Embedding Generation**: Create vector embeddings through OpenRouter
+- **Embedding Generation**: Create vector embeddings using OpenAI's models
 - **Vector Storage**: Store documents and embeddings in PostgreSQL with pgvector
 - **Similarity Search**: Enable semantic search across document content
 
@@ -46,8 +46,8 @@ The vector database uses the centralized `.env` file from the main `climate-advi
 # Database Configuration
 CA_DATABASE_URL="postgresql://climateadvisor:climateadvisor@ca-postgres:5432/climateadvisor"
 
-# OpenRouter Configuration for Embeddings
-OPENROUTER_API_KEY="your-openrouter-api-key-here"
+# OpenAI Configuration for Embeddings
+OPENAI_API_KEY="your-openai-api-key-here"
 ```
 
 Copy `.env.example` to `.env` and fill in your actual values:
@@ -118,7 +118,7 @@ uv run python vector_db/upload_to_db.py --directory vector_db/files
 
 ### Services (`services/`)
 
-**embedding_service.py**: OpenRouter embedding generation service:
+**embedding_service.py**: OpenAI embedding generation service:
 
 - Handles API rate limiting and batch processing
 - Supports both single text and batch embedding generation
@@ -249,14 +249,14 @@ async def search_similar(session, query_embedding, limit=5):
 
 ## Configuration
 
-### OpenRouter Settings
+### OpenAI Settings
 
 Configure embedding settings in `../llm_config.yaml`:
 
 ```yaml
 api:
-  openrouter:
-    embedding_model: "openai/text-embedding-3-large"
+  openai:
+    embedding_model: "text-embedding-3-large"
     timeout_ms: 30000
 ```
 
@@ -267,7 +267,7 @@ All embedding and chunking parameters are now centralized in `embedding_config.y
 ```yaml
 # Text Processing Configuration
 text_processing:
-  # Maximum token limit for the configured embedding model
+  # Maximum token limit for OpenAI embeddings (text-embedding-3-large supports up to 8191 tokens)
   max_token_limit: 8000
 
 # Document Chunking Configuration
@@ -283,7 +283,7 @@ file_processing:
 # Embedding Service Configuration
 embedding_service:
   batch_size: 100 # Number of chunks to process in parallel
-  requests_per_minute: 3000 # Rate limit for the embedding API
+  requests_per_minute: 3000 # Rate limit for OpenAI API
 ```
 
 **Important Notes:**
@@ -291,7 +291,7 @@ embedding_service:
 - Documents are automatically chunked by LangChain's recursive text splitter before embedding
 - The `max_token_limit` is used for validation only - chunks should already be under this limit
 - If you see warnings about chunks exceeding the token limit, reduce `default_chunk_size` in the config
-- Token counting is done using `tiktoken` for model-aware token calculation
+- Token counting is done using `tiktoken` for accurate OpenAI token calculation
 
 To modify these values, edit `embedding_config.yml`. The configuration is loaded automatically by the scripts and services.
 
@@ -392,7 +392,7 @@ uv run python -c "from vector_db.models.document import Document; print('Models 
 
 1. **Import Errors**: Ensure all dependencies are installed and paths are correct
 2. **Database Connection**: Verify `CA_DATABASE_URL` environment variable
-3. **OpenRouter API Limits**: Implement rate limiting and error handling
+3. **OpenAI API Limits**: Implement rate limiting and error handling
 4. **Memory Issues**: Reduce chunk sizes for large documents
 5. **pgvector Extension Missing**:
    ```bash

@@ -12,7 +12,7 @@ Optional flags:
   --include-events Include raw SSE events in the output JSON (default: false)
 
 Required environment:
-  CA_DATABASE_URL, OPENROUTER_API_KEY, CC_BASE_URL, CA_E2E_CC_TOKEN
+  CA_DATABASE_URL, OPENROUTER_API_KEY, OPENAI_API_KEY, CC_BASE_URL, CA_E2E_CC_TOKEN
 
 Getting a user_id and JWT token for CA_E2E_CC_TOKEN:
   1) Find the user_id (pick one option):
@@ -318,6 +318,7 @@ def main() -> int:
     required_env = [
         "CA_DATABASE_URL",
         "OPENROUTER_API_KEY",
+        "OPENAI_API_KEY",
         "CC_BASE_URL",
         "CA_E2E_CC_TOKEN",
     ]

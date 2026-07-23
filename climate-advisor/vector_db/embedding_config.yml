@@ -5,7 +5,7 @@
 
 # Text Processing Configuration
 text_processing:
-  # Maximum token limit for the configured OpenRouter embedding model
+  # Maximum token limit for embedding generation (OpenAI text-embedding-3-large limit)
   max_token_limit: 8000
 
 # Document Chunking Configuration

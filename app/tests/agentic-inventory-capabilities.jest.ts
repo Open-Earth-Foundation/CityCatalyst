@@ -170,6 +170,7 @@ describe("GHGI inventory internal CA capability routes", () => {
     await db.models.InventoryValue.bulkCreate(
       inventoryValuesData.map((value, index) => ({
         ...value,
+        co2eq: value.co2eq == null ? value.co2eq : value.co2eq * 1000n,
         datasourceId: index === 0 ? thirdPartySource.datasourceId : null,
       })),
     );
@@ -179,8 +180,7 @@ describe("GHGI inventory internal CA capability routes", () => {
   beforeEach(() => {
     setupTests();
     process.env.CC_SERVICE_API_KEY = serviceKey;
-    process.env.NEXT_PUBLIC_FEATURE_FLAGS =
-      "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
+    process.env.NEXT_PUBLIC_FEATURE_FLAGS = "CA_SERVICE_INTEGRATION";
   });
 
   afterEach(() => {
@@ -265,6 +265,7 @@ describe("GHGI inventory internal CA capability routes", () => {
             expect.objectContaining({
               inventory_id: inventory.inventoryId,
               year: 2024,
+              updated_at: expect.any(String),
             }),
             expect.objectContaining({
               inventory_id: priorYearInventory.inventoryId,
@@ -328,10 +329,28 @@ describe("GHGI inventory internal CA capability routes", () => {
 
     expect(payload.data.total_cities).toBeGreaterThanOrEqual(1);
     expect(payload.data.filters).toEqual({
+      city_id: null,
       city_query: null,
       year: null,
       include_all_city_years: false,
     });
+  });
+
+  it("filters inventories by exact city id", async () => {
+    const res = await listAccessibleRoute(
+      listAccessibleRequest({
+        city_id: city.cityId,
+        include_all_city_years: true,
+      }),
+      { params: Promise.resolve({}) },
+    );
+
+    await expectStatusCode(res, 200);
+    const payload = await res.json();
+
+    expect(payload.data.cities).toHaveLength(1);
+    expect(payload.data.cities[0].city_id).toBe(city.cityId);
+    expect(payload.data.filters.city_id).toBe(city.cityId);
   });
 
   it("lists project-admin inventories without direct city membership", async () => {
@@ -458,6 +477,7 @@ describe("GHGI inventory internal CA capability routes", () => {
       }),
     ]);
     expect(payload.data.filters).toEqual({
+      city_id: null,
       city_query: "york",
       year: 2024,
       include_all_city_years: false,
@@ -484,6 +504,7 @@ describe("GHGI inventory internal CA capability routes", () => {
       matchingCity.inventories.map(({ year }: { year: number }) => year),
     ).toEqual([2024, 2023]);
     expect(payload.data.filters).toEqual({
+      city_id: null,
       city_query: "new york",
       year: 2024,
       include_all_city_years: true,
@@ -537,7 +558,7 @@ describe("GHGI inventory internal CA capability routes", () => {
           sector: "Stationary Energy",
           reference: "I",
           emissions_tco2e: "40399",
-          share_percent: 48,
+          share_percent: 48.12,
         }),
       ]),
     );
@@ -547,7 +568,7 @@ describe("GHGI inventory internal CA capability routes", () => {
         subsector: "Residential buildings",
         scope: "Scope 1",
         emissions_tco2e: "40399",
-        share_percent: 48,
+        share_percent: 48.12,
       }),
     );
     expect(payload.data.source_summary.third_party_values).toBe(1);

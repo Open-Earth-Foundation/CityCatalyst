@@ -1,4 +1,5 @@
 import createHttpError from "http-errors";
+import Decimal from "decimal.js";
 
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import { ProjectService } from "@/backend/ProjectsService";
@@ -22,6 +23,7 @@ type AccessibleInventory = {
   year: number | null;
   type: string | null;
   gwp: string | null;
+  updated_at: string | null;
 };
 
 type AccessibleInventoryCity = {
@@ -58,6 +60,7 @@ type AccessibleInventoryList = {
    */
   access_scope: "platform" | "projects";
   filters: {
+    city_id: string | null;
     city_query: string | null;
     year: number | null;
     include_all_city_years: boolean;
@@ -70,6 +73,7 @@ type InventoryListInventory = {
   year?: number | null;
   inventoryType?: string | null;
   globalWarmingPotentialType?: string | null;
+  lastUpdated?: Date | string | null;
 };
 
 type InventoryListCity = {
@@ -199,11 +203,13 @@ const SECTOR_REFERENCE_BY_DB_NAME: Record<string, string> = {
  */
 export async function buildAccessibleInventoryList({
   userId,
+  cityId,
   cityQuery,
   year,
   includeAllCityYears = false,
 }: {
   userId: string;
+  cityId?: string;
   cityQuery?: string;
   year?: number;
   includeAllCityYears?: boolean;
@@ -221,12 +227,14 @@ export async function buildAccessibleInventoryList({
     user.role === Roles.Admin ? "platform" : "projects";
   const normalizedQuery = normalizeSearch(cityQuery);
   const cities = (await candidateCitiesForUser(user.userId, user.role))
+    .filter((city) => cityId == null || city.cityId === cityId)
     .filter((city) => cityMatchesQuery(city, normalizedQuery))
     .map((city) => accessibleCity(city, year, includeAllCityYears))
     .filter((city) => city.inventories.length > 0)
     .sort((a, b) => citySortLabel(a).localeCompare(citySortLabel(b)));
 
   return summarizeAccessibleInventoryList(cities, accessScope, {
+    city_id: cityId ?? null,
     city_query: cityQuery?.trim() || null,
     year: year ?? null,
     include_all_city_years: includeAllCityYears,
@@ -312,7 +320,8 @@ async function citiesWithInventories(): Promise<InventoryListCity[]> {
       locode: city.locode,
       projectId: project?.projectId ?? null,
       projectName: project?.name ?? null,
-      organizationId: organization?.organizationId ?? project?.organizationId ?? null,
+      organizationId:
+        organization?.organizationId ?? project?.organizationId ?? null,
       organizationName: organization?.name ?? null,
       inventories: city.inventories as InventoryListInventory[],
     };
@@ -422,9 +431,16 @@ export async function buildInventoryEmissionsContext(
   return {
     city: overview.city,
     inventory: overview.inventory,
-    total_emissions_tco2e: valueToString(results.totalEmissions) ?? "0",
-    by_sector: emissionSectors(results.totalEmissionsBySector ?? []),
-    top_emitters: topEmitters(results.topEmissionsBySubSector ?? []),
+    total_emissions_tco2e:
+      kilogramsToTonnesString(results.totalEmissions) ?? "0",
+    by_sector: emissionSectors(
+      results.totalEmissionsBySector ?? [],
+      results.totalEmissions,
+    ),
+    top_emitters: topEmitters(
+      results.topEmissionsBySubSector ?? [],
+      results.totalEmissions,
+    ),
     source_summary: sourceSummaryFromSectors(overview.by_sector),
   };
 }
@@ -467,16 +483,14 @@ function accessibleCity(
     .filter((inventory: InventoryListInventory) => {
       return includeAllCityYears || year == null || inventory.year === year;
     })
-    .sort(
-      (a: InventoryListInventory, b: InventoryListInventory) =>
-        Number(b.year ?? 0) - Number(a.year ?? 0),
-    )
+    .sort(compareInventoriesNewestFirst)
     .map((inventory: InventoryListInventory) => ({
       inventory_id: inventory.inventoryId,
       inventory_name: inventory.inventoryName ?? null,
       year: inventory.year ?? null,
       type: inventory.inventoryType ?? null,
       gwp: inventory.globalWarmingPotentialType ?? null,
+      updated_at: inventoryTimestamp(inventory.lastUpdated),
     }));
 
   return {
@@ -491,6 +505,42 @@ function accessibleCity(
     organization_name: city.organizationName ?? null,
     inventories,
   };
+}
+
+function compareInventoriesNewestFirst(
+  a: InventoryListInventory,
+  b: InventoryListInventory,
+): number {
+  const yearDifference = Number(b.year ?? 0) - Number(a.year ?? 0);
+  if (yearDifference !== 0) {
+    return yearDifference;
+  }
+
+  const updatedDifference =
+    timestampValue(b.lastUpdated) - timestampValue(a.lastUpdated);
+  if (updatedDifference !== 0) {
+    return updatedDifference;
+  }
+
+  return a.inventoryId.localeCompare(b.inventoryId);
+}
+
+function timestampValue(value: Date | string | null | undefined): number {
+  if (!value) {
+    return 0;
+  }
+  const timestamp = value instanceof Date ? value.getTime() : Date.parse(value);
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+function inventoryTimestamp(
+  value: Date | string | null | undefined,
+): string | null {
+  if (!value) {
+    return null;
+  }
+  const date = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
 function metadataForInventory(inventory: Inventory): InventoryMetadata {
@@ -538,6 +588,7 @@ function dataStateFromProgress(progress: ProgressSector): DataState {
 
 function emissionSectors(
   sectors: EmissionSector[],
+  totalEmissions: unknown,
 ): InventoryEmissionsContext["by_sector"] {
   return sectors.map((sector) => {
     const reference = sectorReferenceForName(sector.sectorName);
@@ -547,14 +598,15 @@ function emissionSectors(
         sectorName: sector.sectorName,
       }),
       reference,
-      emissions_tco2e: valueToString(sector.co2eq) ?? "0",
-      share_percent: Number(sector.percentage ?? 0),
+      emissions_tco2e: kilogramsToTonnesString(sector.co2eq) ?? "0",
+      share_percent: sharePercent(sector.co2eq, totalEmissions),
     };
   });
 }
 
 function topEmitters(
   emitters: TopEmitter[],
+  totalEmissions: unknown,
 ): InventoryEmissionsContext["top_emitters"] {
   return emitters.slice(0, 10).map((emitter) => {
     const reference = sectorReferenceForName(emitter.sectorName);
@@ -565,8 +617,8 @@ function topEmitters(
       }),
       subsector: emitter.subsectorName ?? "Unknown subsector",
       scope: scopeLabel(emitter.scopeName),
-      emissions_tco2e: valueToString(emitter.co2eq) ?? "0",
-      share_percent: Number(emitter.percentage ?? 0),
+      emissions_tco2e: kilogramsToTonnesString(emitter.co2eq) ?? "0",
+      share_percent: sharePercent(emitter.co2eq, totalEmissions),
     };
   });
 }
@@ -655,6 +707,25 @@ function valueToString(value: unknown): string | null {
     return null;
   }
   return String(value);
+}
+
+function kilogramsToTonnesString(value: unknown): string | null {
+  const kilograms = valueToString(value);
+  return kilograms == null
+    ? null
+    : new Decimal(kilograms).dividedBy(1000).toString();
+}
+
+function sharePercent(value: unknown, total: unknown): number {
+  const denominator = new Decimal(valueToString(total) ?? 0);
+  if (denominator.lessThanOrEqualTo(0)) {
+    return 0;
+  }
+  return new Decimal(valueToString(value) ?? 0)
+    .times(100)
+    .dividedBy(denominator)
+    .toDecimalPlaces(2)
+    .toNumber();
 }
 
 function normalizeSearch(value: string | null | undefined): string | null {

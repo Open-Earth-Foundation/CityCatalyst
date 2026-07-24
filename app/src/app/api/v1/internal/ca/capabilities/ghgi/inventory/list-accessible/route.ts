@@ -32,6 +32,9 @@
  *           schema:
  *             type: object
  *             properties:
+ *               city_id:
+ *                 type: string
+ *                 format: uuid
  *               city_query:
  *                 type: string
  *               year:
@@ -61,8 +64,8 @@ import {
   inventoryListAccessibleInputSchema,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import {
+  requireClimateAdvisorIntegrationEnabled,
   requireClimateAdvisorServiceRequest,
-  requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import type { AppSession } from "@/lib/auth";
@@ -73,7 +76,7 @@ type AccessibleInventoryList = Awaited<
 >;
 
 export const POST = apiHandler(async (req, { session }) => {
-  requireStationaryEnergyAgenticEnabled();
+  requireClimateAdvisorIntegrationEnabled();
   requireClimateAdvisorServiceRequest(req);
 
   const body = inventoryListAccessibleInputSchema.parse(await req.json());
@@ -81,11 +84,17 @@ export const POST = apiHandler(async (req, { session }) => {
   if (!userId) {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
+  if (body.city_id) {
+    await PermissionService.canAccessCity(session, body.city_id, {
+      includeResource: false,
+    });
+  }
 
   const accessibleInventoryList = await filterByInventoryPermission(
     session,
     await buildAccessibleInventoryList({
       userId,
+      cityId: body.city_id,
       cityQuery: body.city_query,
       year: body.year,
       includeAllCityYears: body.include_all_city_years,

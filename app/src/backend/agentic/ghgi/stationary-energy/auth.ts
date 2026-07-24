@@ -4,6 +4,12 @@ import type { NextRequest } from "next/server";
 import type { AppSession } from "@/lib/auth";
 import { FeatureFlags, hasServerFeatureFlag } from "@/util/feature-flags";
 
+export function requireClimateAdvisorIntegrationEnabled(): void {
+  if (!hasServerFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION)) {
+    throw new createHttpError.NotFound("Not found");
+  }
+}
+
 export function requireStationaryEnergyAgenticEnabled(): void {
   if (
     !hasServerFeatureFlag(FeatureFlags.CA_SERVICE_INTEGRATION) ||

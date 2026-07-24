@@ -43,7 +43,15 @@ import { Trans } from "react-i18next";
 import { useSession } from "next-auth/react";
 import { OrganizationSelector } from "../OrganizationSelector";
 
-const TeamSettings = ({ lng }: { lng: string }) => {
+const TeamSettings = ({
+  lng,
+  initialProjectId,
+  initialCityId,
+}: {
+  lng: string;
+  initialProjectId?: string | null;
+  initialCityId?: string | null;
+}) => {
   const { t } = useTranslation(lng, "settings");
 
   const TagMapping = {
@@ -63,8 +71,12 @@ const TeamSettings = ({ lng }: { lng: string }) => {
 
   const [selectedOrganization, setSelectedOrganization] =
     React.useState<string>();
-  const [selectedProject, setSelectedProject] = React.useState<string[]>([]);
-  const [selectedCity, setSelectedCity] = React.useState<string | null>("");
+  const [selectedProject, setSelectedProject] = React.useState<string[]>(
+    initialProjectId ? [initialProjectId] : [],
+  );
+  const [selectedCity, setSelectedCity] = React.useState<string | null>(
+    initialCityId ?? "",
+  );
   const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
@@ -108,9 +120,14 @@ const TeamSettings = ({ lng }: { lng: string }) => {
   }, [projectUsers, selectedCity]);
 
   useEffect(() => {
-    if (projectsData && projectsData.length > 0) {
+    if (
+      projectsData &&
+      projectsData.length > 0 &&
+      selectedProject.length === 0
+    ) {
       setSelectedProject([projectsData[0].projectId]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
 
   const selectedCityData = useMemo(() => {

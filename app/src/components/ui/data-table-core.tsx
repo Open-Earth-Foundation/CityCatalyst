@@ -1,6 +1,6 @@
 // DataTableCore.tsx
 import React from "react";
-import { Table, Text } from "@chakra-ui/react";
+import { Box, Table, Text } from "@chakra-ui/react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CheckedChangeDetails } from "@zag-js/checkbox";
 import { useTranslation } from "@/i18n/client";
@@ -58,84 +58,86 @@ function DataTableCore<T>({
   };
 
   return (
-    <Table.Root
-      px={0}
+    <Box
       w="full"
-      variant="line"
-      overflowX="hidden"
-      rounded="20px"
+      overflow="hidden"
+      borderRadius="rounded"
       borderWidth="1px"
+      borderColor="border.overlay"
+      bg="background.backgroundLight"
     >
-      <Table.Header>
-        <Table.Row>
-          {selectable && (
-            <Table.ColumnHeader>
-              <Checkbox
-                checked={someSelected ? "indeterminate" : allSelected}
-                onCheckedChange={toggleSelectAll}
-                onClick={(e) => e.stopPropagation()}
-              />
-            </Table.ColumnHeader>
-          )}
-          {columns.map((col) => (
-            <Table.ColumnHeader
-              truncate
-              fontWeight="bold"
-              fontFamily="heading"
-              textTransform="uppercase"
-              fontSize="body.sm"
-              color="content.secondary"
-              bg="background.neutral"
-              key={String(col.accessor ?? col.header)}
-            >
-              {col.header}
-            </Table.ColumnHeader>
-          ))}
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {data.length === 0 && (
+      <Table.Root px={0} w="full" variant="line" overflowX="hidden">
+        <Table.Header>
           <Table.Row>
-            <Table.Cell colSpan={columns.length}>
-              <Text fontSize="body.md" color="content.tertiary">
-                {t("no-data")}
-              </Text>
-            </Table.Cell>
+            {selectable && (
+              <Table.ColumnHeader>
+                <Checkbox
+                  checked={someSelected ? "indeterminate" : allSelected}
+                  onCheckedChange={toggleSelectAll}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </Table.ColumnHeader>
+            )}
+            {columns.map((col) => (
+              <Table.ColumnHeader
+                truncate
+                fontWeight="bold"
+                fontFamily="heading"
+                textTransform="uppercase"
+                fontSize="body.sm"
+                color="content.secondary"
+                bg="background.neutral"
+                key={String(col.accessor ?? col.header)}
+              >
+                {col.header}
+              </Table.ColumnHeader>
+            ))}
           </Table.Row>
-        )}
-        {data.map((item, idx) => {
-          const renderedRow = renderRow(item, idx);
-          if (
-            selectable &&
-            selectKey &&
-            React.isValidElement(renderedRow) &&
-            renderedRow.type === Table.Row
-          ) {
-            const rowKey = item[selectKey];
-            const isSelected = selectedRowKeys.includes(rowKey);
-            const rowProps = renderedRow.props as {
-              children: React.ReactNode | React.ReactNode[];
-            };
-            const cells = React.Children.toArray(rowProps.children);
-            return React.cloneElement(
-              renderedRow,
-              { key: rowKey as string },
-              <>
-                <Table.Cell>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={(e) => handleSelect(e, rowKey)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                </Table.Cell>
-                {cells}
-              </>,
-            );
-          }
-          return renderedRow;
-        })}
-      </Table.Body>
-    </Table.Root>
+        </Table.Header>
+        <Table.Body>
+          {data.length === 0 && (
+            <Table.Row>
+              <Table.Cell colSpan={columns.length}>
+                <Text fontSize="body.md" color="content.tertiary">
+                  {t("no-data")}
+                </Text>
+              </Table.Cell>
+            </Table.Row>
+          )}
+          {data.map((item, idx) => {
+            const renderedRow = renderRow(item, idx);
+            if (
+              selectable &&
+              selectKey &&
+              React.isValidElement(renderedRow) &&
+              renderedRow.type === Table.Row
+            ) {
+              const rowKey = item[selectKey];
+              const isSelected = selectedRowKeys.includes(rowKey);
+              const rowProps = renderedRow.props as {
+                children: React.ReactNode | React.ReactNode[];
+              };
+              const cells = React.Children.toArray(rowProps.children);
+              return React.cloneElement(
+                renderedRow,
+                { key: rowKey as string },
+                <>
+                  <Table.Cell>
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={(e) => handleSelect(e, rowKey)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </Table.Cell>
+                  {cells}
+                </>,
+              );
+            }
+            return renderedRow;
+          })}
+        </Table.Body>
+      </Table.Root>
+    </Box>
   );
 }
 

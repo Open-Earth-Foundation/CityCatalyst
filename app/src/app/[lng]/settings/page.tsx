@@ -4,6 +4,7 @@ import { use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Heading, Tabs, Text } from "@chakra-ui/react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import AccountSettingsTab from "./account";
 import TeamSettings from "./team";
 import ProjectSettings from "./project/index";
@@ -17,6 +18,8 @@ import MyAppsTab from "@/app/[lng]/settings/my-apps-tab";
 const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "settings");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") ?? "account";
 
   const { data: userInfo } = api.useGetUserInfoQuery();
   const isAdmin = userInfo?.role === Roles.Admin;
@@ -76,7 +79,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
           {t("account-settings")}
         </Text>
         <Box marginTop="48px" borderBottomColor={"border.overlay"}>
-          <Tabs.Root defaultValue="account" variant="enclosed">
+          <Tabs.Root defaultValue={initialTab} variant="enclosed">
             <Tabs.List
               p={0}
               w="full"
@@ -199,7 +202,11 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               </Box>
             </Tabs.Content>
             <Tabs.Content value="team">
-              <TeamSettings lng={lng} />
+              <TeamSettings
+                lng={lng}
+                initialProjectId={searchParams.get("project")}
+                initialCityId={searchParams.get("city")}
+              />
             </Tabs.Content>
             <Tabs.Content value="project">
               <ProjectSettings lng={lng} />

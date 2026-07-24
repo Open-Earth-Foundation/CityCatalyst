@@ -14,7 +14,7 @@ dependencies = [
     "openai>=2.44.0",
     "pyyaml>=6.0.3",
     "python-dotenv>=1.2.2",
-    "uvicorn>=0.48.0",
+    "uvicorn>=0.51.0",
     "langdetect>=1.0.9",
 ]
 

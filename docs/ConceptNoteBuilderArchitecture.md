@@ -145,8 +145,13 @@ The first part of the workflow is context bundle building. The
 - Loading what CityCatalyst already knows.
 - Ingesting what the user uploads at intake or mid-flow.
 - Retrieving the selected funder's profile, rubric, and template.
-- Matching the project against comparable funded projects.
+- After the user's project upload has been ingested, matching the extracted
+  project information against comparable funded projects.
 - Identifying decisions or missing facts that cannot be grounded.
+
+Matching is internal preparation. Completing a match does not immediately show
+the user a list of projects. A stored example is surfaced only when it is useful
+for the current interview question, chapter draft, or evidence review.
 
 The agent and document workspace then use that context bundle to:
 
@@ -169,7 +174,9 @@ flowchart LR
     Ingest --> Context
     Ingest --> Draft
 
-    Research["Funder profile<br/>criteria<br/>similar projects"] --> Context
+    Ingest --> Match["Match after project data ingest"]
+    Research["Curated funder profile,<br/>criteria + funded projects"] --> Match
+    Match --> Context
 
     CCData["CC data<br/>city, GHGI, CCRA, HIAP"] --> Context
 ```
@@ -371,7 +378,7 @@ flowchart TB
     Start([Start]) --> Scope["selecting_scope"]
     Scope --> Ingest["ingesting_user_files<br/>receive + process Markdown"]
     Ingest --> Funder["profiling_funder"]
-    Funder --> Match["matching_examples"]
+    Funder --> Match["matching_examples<br/>after project upload ingest"]
     Match --> Context["assembling_context<br/>build context bundle"]
     Context --> Interview["interviewing"]
     Interview --> Draft["drafting_document"]
@@ -392,7 +399,7 @@ flowchart TB
 | `selecting_scope`      | user, city, project candidates                                                                      | workflow control, CC project reads               |
 | `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts                        | deterministic document ingest operations; no LLM |
 | `profiling_funder`     | selected funder, template, criteria                                                                 | CNB reference table tools                        |
-| `matching_examples`    | project profile, funder profile, project KB filters                                                 | matching tools                                   |
+| `matching_examples`    | ingested project-upload fields, funder profile, project KB filters                                  | internal `ProjectMatchingService`; no agent tools |
 | `assembling_context`   | CC summaries, selected upload excerpts, funder rubric/template, matched funded projects, known gaps | internal `ContextBundleService`; no agent tools  |
 | `interviewing`         | gaps, known facts, required template fields                                                         | interview tools, document read tools             |
 | `drafting_document`    | chapter plan, evidence map, examples                                                                | chapter draft tools, evidence tools              |
@@ -654,6 +661,7 @@ erDiagram
         uuid funding_record_id
         string decision
         text fit_rationale
+        jsonb matched_tags
         jsonb evidence
         jsonb caveats
     }
@@ -763,6 +771,7 @@ erDiagram
         int award_year
         string status
         text summary
+        jsonb project_tags
     }
 
     funder_templates {
@@ -810,27 +819,54 @@ criteria. Rows with `is_opportunity = false` hold one complete funded-project
 example and its award information. Templates and criteria may reference only an
 opportunity record.
 
+Every funded-project row must reference one canonical existing `funder_id`.
+Local research may discover a project whose reported funder has not yet been
+linked to the canonical funder table. Before import, a separate funder-identity
+matching scan proposes existing funder records and the static review website
+requires the reviewer to select the correct link. If no existing funder is
+correct, that funder must be researched, reviewed, and imported first.
+The importer rejects missing or unknown funder IDs. Funded projects do not need
+an opportunity-record relationship for this matching flow.
+
+Funded-project discovery itself is project-first: its CLI requires a substantive
+current-project profile and uses that profile to guide queries and candidate
+prioritization. A canonical-funder snapshot is optional at this stage and must
+not narrow discovery. It becomes mandatory only when identities are resolved
+for approved review and import.
+
 ## Research Ingest Pipeline
 
-The ingest pipeline should turn curated research into stable records with
-provenance, not just embeddings.
+The ingest pipeline should reuse the same local script, JSON review bundle,
+static review website, and local importer for funders and funded projects. It
+turns curated research into stable records with provenance, not just embeddings.
 
 ```mermaid
 flowchart LR
-    Sources["NOFOs, program pages,<br/>award lists, reports,<br/>template docs"] --> Fetch["Fetch or upload source"]
-    Fetch --> Convert["Normalize source<br/>HTML/PDF/DOCX to markdown"]
-    Convert --> Extract["Extract structured facts"]
-    Extract --> Curate["Human curation"]
-    Curate --> Validate["Schema validation<br/>license check<br/>dedupe"]
-    Validate --> Store["CNB funding reference tables"]
+    Target["Current project profile"] --> Script
+    Sources["NOFOs, program pages,<br/>award lists, reports,<br/>template docs"] --> Script["Local research script<br/>fetch + normalize + extract"]
+    Script --> HasFunders{"Canonical funder snapshot supplied?"}
+    HasFunders -->|No| ResearchJSON["Research JSON<br/>run_id"]
+    HasFunders -->|Yes| FunderMatch["Funder-identity scan"]
+    ExistingFunders["Existing canonical funders"] --> FunderMatch
+    FunderMatch --> ResearchJSON
+    ResearchJSON --> Review["Static human-review website<br/>edit fields + tags + funder link"]
+    Review --> ReviewJSON["Review JSON<br/>same run_id"]
+    ResearchJSON --> Import["Local reviewed-data importer"]
+    ReviewJSON --> Import
+    Import --> Store["CNB funding reference tables"]
     Store --> Index["Lexical/vector index"]
     Store --> Tools["Runtime reference tools"]
 ```
+
+The research and review files both contain the same `run_id`, and the importer
+rejects mismatched IDs. A SHA check is not required for this pairing.
 
 Required ingest outputs:
 
 - Source document record with URL, title, date, license status, and hash.
 - Funder record and funding records for opportunities and funded projects.
+- A reviewer-selected canonical `funder_id` for every funded project.
+- Reviewer-curated `project_tags` for funded projects used in matching.
 - Template chapter schema.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
@@ -847,21 +883,27 @@ a calibrated numeric score yet.
 The matching dataset should support a curated tag system as an option. Each
 funded project can carry tags such as sector, hazard, intervention type, finance
 route, applicant type, geography, beneficiary group, and implementation stage.
-The user project profile should be normalized to the same tag vocabulary where
-possible. Matching can then compare tag combinations to find the closest funded
-examples before the later scoring model is calibrated.
+The current project fields used for matching should be normalized to the same
+tag vocabulary where possible. Matching can then compare tag combinations to
+find the closest funded examples before the later scoring model is calibrated.
+Runtime retrieval uses `same_funder` by default. An explicit `cross_funder`
+scope can broaden discovery across reviewed funded-project records while
+retaining each candidate's canonical funder identity and the same evidence
+gate.
 
 ```mermaid
 flowchart TB
-    Project["User project profile"] --> Tags["Normalize project tags"]
+    Project["Current project matching fields"] --> Tags["Normalize project tags"]
     Tags --> Bundle["Context bundle"]
-    Funder["Selected funder/opportunity"] --> Bundle
+    Scope["Funder scope<br/>same-funder default or explicit cross-funder"] --> Bundle
     Bundle --> CandidateSet["Candidate funded projects<br/>from CNB reference tables"]
     CandidateSet --> TagCompare["Compare curated tag combinations"]
     TagCompare --> AgentDecision["V1: LLM agent match decision<br/>select examples + explain fit"]
     AgentDecision --> StoreMatch["Persist matched examples<br/>rationale + caveats + evidence"]
-    StoreMatch --> UI["Show examples in interview"]
-    StoreMatch --> Draft["Use examples in chapter drafting"]
+    StoreMatch --> Context["Add matches to internal context"]
+    Context --> Relevant["Relevant interview question,<br/>chapter, or evidence review"]
+    Relevant --> UI["Surface useful example"]
+    Relevant --> Draft["Use example in chapter drafting"]
 
     CandidateSet -.-> FutureFilters
 
@@ -873,7 +915,7 @@ flowchart TB
     end
 
     subgraph FilterExamples["Example future hard filters"]
-        ProgramGate["selected funder/opportunity scope"]
+        FunderGate["selected canonical funder"]
         GeographyGate["eligible geography"]
         InstrumentGate["finance route / instrument type"]
         CategoryGate["project category"]
@@ -909,6 +951,11 @@ V1 matching result should include:
 - text snippets safe to show as examples
 - caveats or missing fields
 
+The matching operation starts only after the user's project upload has been
+ingested into the current project fields. Match completion remains internal and
+does not create a standalone user-facing result. The workflow surfaces a stored
+example only when the active interview or document context makes it relevant.
+
 The tag vocabulary should be curated data, not invented at runtime by the model.
 The LLM can reason over tags already assigned to projects, but new tags or tag
 weights should be added through the datateam managed CNB database process.
@@ -922,7 +969,7 @@ need to pass the applicable gates before it can be scored.
 
 | Hard filter                     | What it excludes before scoring                                                                                                 |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Funder/opportunity scope        | Projects from unrelated funders, programs, or opportunity families when the user selected a specific funder/opportunity.        |
+| Canonical funder                | Projects whose required `funder_id` does not match the selected funder.                                                          |
 | Eligible geography              | Projects outside the configured geography fallback path for the opportunity, such as Minnesota, Midwest, then US.               |
 | Finance route / instrument type | Examples from the wrong funding route, such as comparing a loan against a competitive grant.                                    |
 | Project category                | Projects in unrelated sectors or categories.                                                                                    |
@@ -1083,13 +1130,18 @@ preflight and generation routes.
 | --------------------- | ---------------------------------- | ------------------ | -------- | -------------------------- |
 | Workflow tools        | start, resume, retry               | yes                | no       | no                         |
 | Reference tools       | funder profile, template, criteria | no                 | no       | yes                        |
-| Matching tools        | find and explain similar projects  | yes                | no       | yes                        |
 | Document tools        | chapters, text, evidence, gaps     | yes                | no       | optional                   |
 | Export button actions | preflight and generate DOCX/PDF    | yes                | no       | no                         |
 
 Markdown receipt and downstream source processing are deterministic service
 operations. They are not agent tools and do not give CA any conversion
 capability.
+
+Similar-project matching is also an internal workflow operation. It reads the
+curated CNB reference tables during `matching_examples` after project-upload
+ingestion, persists the selected matches, and gives the result to
+`ContextBundleService`; it is not registered as an agent tool or surfaced as a
+standalone result.
 
 ### Workflow Tools
 
@@ -1183,10 +1235,11 @@ Rules:
 ### Internal Research Capabilities
 
 These are internal service capabilities, not user-facing tools. They are invoked
-by `ContextBundleService` during context bundle assembly, or by chapter creation
-when the document workspace needs a funder-driven chapter schema. The user sees
-the results as assembled context, matched examples, evidence links, gaps, and
-draft chapter content, not as standalone tools.
+by workflow orchestration during funder profiling, similar-project matching, and
+context bundle assembly, or by chapter creation when the document workspace
+needs a funder-driven chapter schema. The user sees the results as assembled
+context, matched examples, evidence links, gaps, and draft chapter content, not
+as standalone tools.
 
 #### `funder_get_profile`
 
@@ -1231,16 +1284,19 @@ Output example:
 
 #### `similar_projects_search`
 
-Finds comparable funded projects during context bundle assembly so chapter
-drafting can use grounded examples.
+Finds comparable funded projects as an internal operation during
+`matching_examples`, after the user's project upload has been ingested, so
+context assembly and chapter drafting can use grounded examples when relevant.
 
 Input:
 
 ```json
 {
   "run_id": "uuid",
+  "funder_scope": "same_funder",
   "funder_id": "uuid",
-  "selected_funding_record_id": "uuid",
+  "project_name": "Municipal stormwater resilience programme",
+  "project_summary": "Green infrastructure addressing flood and heat risk.",
   "category": "stormwater",
   "region": "MN",
   "instrument_type": "grant",
@@ -1270,6 +1326,9 @@ Output:
 Rules:
 
 - Retrieve candidate funding records where `is_opportunity = false`.
+- Require `funder_id` for `same_funder`; an explicit `cross_funder` request may
+  omit the current project's funder while every reviewed candidate retains its
+  own canonical funder identity.
 - Use curated project tags when available to find close tag combinations.
 - Use the LLM agent to select comparable examples and explain fit.
 - Do not return calibrated numeric scores in v1.
@@ -1660,11 +1719,9 @@ sequenceDiagram
 flowchart TB
     Step["Current workflow_step"] --> Registry["CNB capability registry"]
     Registry --> ReferenceTools["Reference tools"]
-    Registry --> MatchingTools["Matching tools"]
     Registry --> DocTools["Document tools"]
 
     ReferenceTools --> Agent["Scoped CNB agent"]
-    MatchingTools --> Agent
     DocTools --> Agent
 
     Agent --> Rules["Tool policy in prompt<br/>step-specific only"]
@@ -1675,7 +1732,6 @@ Example registry rows:
 | Capability id                          | Step                | Operation      | Writes             | Confirmation               |
 | -------------------------------------- | ------------------- | -------------- | ------------------ | -------------------------- |
 | `concept_note.funder.get_profile`      | `profiling_funder`  | query          | no                 | no                         |
-| `concept_note.projects.search_similar` | `matching_examples` | query/workflow | CNB matches        | no                         |
 | `concept_note.document.add_chapter`    | `drafting_document` | command        | CNB document       | sometimes                  |
 | `concept_note.document.delete_chapter` | `editing_document`  | command        | CNB document       | yes for non-empty/required |
 | `concept_note.document.edit_text`      | `editing_document`  | command        | CNB revision       | sometimes                  |
@@ -1684,6 +1740,8 @@ Example registry rows:
 Export preflight, DOCX generation, and PDF generation are button-triggered route
 actions. They are not registered in the scoped agent tool registry.
 Markdown receipt and processing are deterministic backend operations and are
+also excluded from the agent capability registry.
+`similar_projects_search` is invoked internally by workflow orchestration and is
 also excluded from the agent capability registry.
 
 ## Prompt Model
@@ -1719,7 +1777,7 @@ The UI needs typed events for chat and document state.
 | Event                                    | Purpose                                                                                                                            |
 | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `concept_note_run_started`               | Run id and initial status.                                                                                                         |
-| `concept_note_context_bundle_ready`      | Context bundle is ready. This is the only user-visible event for upload ingest, funder/template load, and similar-project refresh. |
+| `concept_note_context_bundle_ready`      | Context bundle is ready. This generic readiness event does not expose matched-project details.                                    |
 | `document_chapter_added`                 | Chapter inserted.                                                                                                                  |
 | `document_chapter_deleted`               | Chapter soft-deleted.                                                                                                              |
 | `document_chapter_restored`              | Chapter restored.                                                                                                                  |

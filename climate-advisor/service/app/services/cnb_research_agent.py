@@ -7,7 +7,7 @@ import json
 import logging
 
 from openai import OpenAI
-from pydantic import JsonValue
+from pydantic import JsonValue, ValidationError
 
 from app.models.cnb_research import (
     AgentTurn,
@@ -21,6 +21,8 @@ from app.models.cnb_research import (
 from app.services.cnb_research_bundle import (
     convert_agent_result,
     evidence_covers,
+    exclude_target_project_self_matches,
+    material_paths,
     uncovered_material_paths,
 )
 from app.tools.firecrawl import (
@@ -31,6 +33,8 @@ from app.tools.firecrawl import (
 )
 
 logger = logging.getLogger(__name__)
+TARGET_FUNDED_PROJECTS_GAP_PATH = "funding_records.target_funded_projects"
+MAX_STRUCTURED_OUTPUT_RETRIES = 2
 
 FINAL_GAP_AUDIT = (
     "Before returning the final object, systematically audit: award minima and "
@@ -109,7 +113,10 @@ def run_agent_loop(
 ) -> AgentLoopOutcome:
     """Run model-selected Firecrawl turns followed by one explicit gap audit."""
     # Initialize the validated working dossier and first-turn payload.
-    current_filled_object = request.current_filled_object or empty_result(request)
+    current_filled_object = exclude_target_project_self_matches(
+        request=request,
+        result=request.current_filled_object or empty_result(request),
+    )
     missing_data = find_missing_data(
         current_filled_object,
         request=request,
@@ -177,7 +184,44 @@ def run_agent_loop(
             not is_final_audit,
             len(missing_data),
         )
-        response = openai_client.responses.parse(**request_kwargs)
+        # Repair transient schema-invalid output without spending another agent turn.
+        parse_attempt = 0
+        while True:
+            try:
+                response = openai_client.responses.parse(**request_kwargs)
+                break
+            except ValidationError as exc:
+                if (
+                    exc.title != FundingOpportunityResearchResult.__name__
+                    or parse_attempt >= MAX_STRUCTURED_OUTPUT_RETRIES
+                ):
+                    raise
+                parse_attempt += 1
+                logger.warning(
+                    "CNB research model returned invalid structured output on "
+                    "turn %s; correction retry %s/%s",
+                    turn_number,
+                    parse_attempt,
+                    MAX_STRUCTURED_OUTPUT_RETRIES,
+                )
+                trace.append(
+                    AgentTurn(
+                        turn=turn_number,
+                        action="structured_output_retry",
+                        query_or_url="",
+                        result_summary=(
+                            "Structured output validation failed; correction retry "
+                            f"{parse_attempt}/{MAX_STRUCTURED_OUTPUT_RETRIES} stayed "
+                            "within the current turn."
+                        ),
+                    )
+                )
+                request_kwargs["input"] = structured_output_retry_input(
+                    current_input=current_input,
+                    validation_error=exc,
+                )
+                request_kwargs.pop("tools", None)
+                request_kwargs.pop("parallel_tool_calls", None)
         tool_calls = [item for item in response.output if item.type == "function_call"]
 
         # Accept structured checkpoints and decide whether another turn is useful.
@@ -186,13 +230,23 @@ def run_agent_loop(
                 raise RuntimeError(
                     "Research model returned neither a tool call nor structured output"
                 )
-            current_filled_object = response.output_parsed
+            captured_source_refs = {
+                source.source_ref for source in firecrawl.captured_sources
+            }
+            current_filled_object = preserve_evidence_qualified_funded_projects(
+                previous_result=current_filled_object,
+                candidate_result=response.output_parsed,
+                captured_source_refs=captured_source_refs,
+                target_funded_projects=request.target_funded_projects,
+            )
+            current_filled_object = exclude_target_project_self_matches(
+                request=request,
+                result=current_filled_object,
+            )
             missing_data = find_missing_data(
                 current_filled_object,
                 request=request,
-                captured_source_refs={
-                    source.source_ref for source in firecrawl.captured_sources
-                },
+                captured_source_refs=captured_source_refs,
             )
             trace.append(
                 AgentTurn(
@@ -213,9 +267,7 @@ def run_agent_loop(
                     result=current_filled_object,
                     turns_used=turn_number,
                     termination_reason=(
-                        "coverage_complete"
-                        if finalizing_for_coverage or not missing_data
-                        else "turn_limit"
+                        "coverage_complete" if not missing_data else "turn_limit"
                     ),
                     missing_data=missing_data,
                 )
@@ -240,6 +292,180 @@ def run_agent_loop(
         current_input = tool_outputs
 
     raise RuntimeError("Research model exhausted turns without a structured result")
+
+
+def structured_output_retry_input(
+    *,
+    current_input: str | list[dict[str, JsonValue]],
+    validation_error: ValidationError,
+) -> str | list[dict[str, JsonValue]]:
+    """Add a compact correction instruction for a schema-invalid model result."""
+    errors = validation_error.errors(include_url=False, include_input=False)
+    error_lines = []
+    for error in errors:
+        location = ".".join(str(part) for part in error["loc"]) or "result"
+        error_lines.append(f"- {location}: {error['msg']}")
+    error_details = "\n".join(error_lines)
+    correction = (
+        "<structured_output_correction>\n"
+        "The previous response for this same agent turn failed schema validation.\n"
+        "Validation errors:\n"
+        f"{error_details}\n"
+        "Return one complete corrected FundingOpportunityResearchResult. Reuse only "
+        "references defined in that same object. Do not call tools. This correction "
+        "retry does not consume another agent turn or change the turn budget.\n"
+        "</structured_output_correction>"
+    )
+    if isinstance(current_input, str):
+        return f"{current_input}\n\n{correction}"
+    return [*current_input, {"role": "user", "content": correction}]
+
+
+def preserve_evidence_qualified_funded_projects(
+    *,
+    previous_result: FundingOpportunityResearchResult,
+    candidate_result: FundingOpportunityResearchResult,
+    captured_source_refs: set[str],
+    target_funded_projects: int,
+) -> FundingOpportunityResearchResult:
+    """Restore omitted rows with only facts supported by current-run evidence."""
+    candidate_record_refs = {
+        record.funding_record_ref for record in candidate_result.funding_records
+    }
+    omitted_records = [
+        record
+        for record in previous_result.funding_records
+        if not record.is_opportunity
+        and record.funding_record_ref not in candidate_record_refs
+    ]
+    if not omitted_records:
+        return candidate_result
+
+    # Derive material paths with the same rules used by final bundle validation.
+    funder, funding_records, funder_templates, funder_criteria = convert_agent_result(
+        previous_result
+    )
+    previous_material_paths = list(
+        material_paths(
+            funder=funder,
+            funding_records=funding_records,
+            funder_templates=funder_templates,
+            funder_criteria=funder_criteria,
+        )
+    )
+
+    # Require a supported project name, then retain only supported optional facts.
+    restored_records: list[FundingRecordResearchResult] = []
+    restored_evidence = []
+    for record in omitted_records:
+        row_path = f"funding_records[{record.funding_record_ref}]"
+        name_path = f"{row_path}.name"
+        row_material_paths = [
+            path
+            for path in previous_material_paths
+            if path.startswith(f"{row_path}.") or path.startswith(f"{row_path}[")
+        ]
+        qualifying_evidence = [
+            evidence
+            for evidence in previous_result.evidence
+            if evidence.funding_record_ref == record.funding_record_ref
+            and evidence.source_ref in captured_source_refs
+            and bool(evidence.quote_or_summary.strip())
+            and (
+                evidence.target_path == row_path
+                or evidence.target_path.startswith(f"{row_path}.")
+                or evidence.target_path.startswith(f"{row_path}[")
+            )
+        ]
+        evidence_paths = {evidence.target_path for evidence in qualifying_evidence}
+        parent_evidence = row_path in evidence_paths
+        if not record.name.strip() or not (
+            parent_evidence or name_path in evidence_paths
+        ):
+            continue
+
+        retained_material_paths = {
+            path
+            for path in row_material_paths
+            if path in evidence_paths
+        }
+        record_data = {
+            "funding_record_ref": record.funding_record_ref,
+            "funder_ref": record.funder_ref,
+            "is_opportunity": False,
+            "name": record.name,
+        }
+        previous_record_data = record.model_dump(mode="python")
+        for field_name in FundingRecordResearchResult.model_fields:
+            field_path = f"{row_path}.{field_name}"
+            if field_path in retained_material_paths:
+                record_data[field_name] = previous_record_data[field_name]
+        restored_records.append(FundingRecordResearchResult.model_validate(record_data))
+
+        relevant_evidence_paths = {
+            row_path,
+            name_path,
+            *retained_material_paths,
+        }
+        restored_evidence.extend(
+            evidence
+            for evidence in qualifying_evidence
+            if evidence.target_path in relevant_evidence_paths
+        )
+
+    if not restored_records:
+        return candidate_result
+
+    # Re-key retained evidence deterministically if the candidate reused an ID.
+    used_evidence_refs = {
+        evidence.evidence_ref for evidence in candidate_result.evidence
+    }
+    rekeyed_evidence = []
+    for evidence in restored_evidence:
+        evidence_ref = evidence.evidence_ref
+        if evidence_ref in used_evidence_refs:
+            suffix = 1
+            while f"{evidence_ref}-retained-{suffix}" in used_evidence_refs:
+                suffix += 1
+            evidence_ref = f"{evidence_ref}-retained-{suffix}"
+            evidence = evidence.model_copy(update={"evidence_ref": evidence_ref})
+        used_evidence_refs.add(evidence_ref)
+        rekeyed_evidence.append(evidence)
+
+    # Restore assessments needed to classify the retained current-run evidence.
+    retained_source_refs = {evidence.source_ref for evidence in rekeyed_evidence}
+    candidate_assessment_refs = {
+        assessment.source_ref for assessment in candidate_result.source_assessments
+    }
+    restored_assessments = [
+        assessment
+        for assessment in previous_result.source_assessments
+        if assessment.source_ref in retained_source_refs
+        and assessment.source_ref not in candidate_assessment_refs
+    ]
+
+    # Validate the merged checkpoint against all record and evidence invariants.
+    merged_data = candidate_result.model_dump(mode="python")
+    merged_data["funding_records"].extend(
+        record.model_dump(mode="python") for record in restored_records
+    )
+    merged_data["evidence"].extend(
+        evidence.model_dump(mode="python") for evidence in rekeyed_evidence
+    )
+    merged_data["source_assessments"].extend(
+        assessment.model_dump(mode="python") for assessment in restored_assessments
+    )
+    # Clear the shortfall only when the merged checkpoint actually reaches its target.
+    funded_record_count = sum(
+        not record["is_opportunity"] for record in merged_data["funding_records"]
+    )
+    if funded_record_count >= target_funded_projects:
+        merged_data["gaps"] = [
+            gap
+            for gap in merged_data["gaps"]
+            if gap["target_path"] != TARGET_FUNDED_PROJECTS_GAP_PATH
+        ]
+    return FundingOpportunityResearchResult.model_validate(merged_data)
 
 
 def empty_result(
@@ -363,7 +589,16 @@ def next_step(missing_data: list[str], *, final_audit: bool) -> str:
     """Choose a compact stage-specific instruction for the next model action."""
     if final_audit:
         return "Run the systematic final gap audit and return structured output."
-    if any("deep funded project" in item for item in missing_data):
+    if any("distinct funded-project rows" in item for item in missing_data):
+        return (
+            "Stay in breadth discovery until the funded-project target is met or "
+            "a precise target-count gap is recorded."
+        )
+    if any(
+        "deep funded project" in item
+        or "complete funded-project row" in item
+        for item in missing_data
+    ):
         return (
             "Build one deeply evidenced funded-project chain before researching "
             "additional examples."
@@ -373,7 +608,13 @@ def next_step(missing_data: list[str], *, final_audit: bool) -> str:
 
 def research_stage(missing_data: list[str]) -> str:
     """Describe the current research priority without controlling model content."""
-    if any("deep funded project" in item for item in missing_data):
+    if any("distinct funded-project rows" in item for item in missing_data):
+        return "breadth_funded_projects"
+    if any(
+        "deep funded project" in item
+        or "complete funded-project row" in item
+        for item in missing_data
+    ):
         return "deep_funded_project"
     if missing_data:
         return "required_coverage"
@@ -434,8 +675,26 @@ def find_missing_data(
     funded_records = [
         item for item in result.funding_records if not item.is_opportunity
     ]
-    if not funded_records and not gap_covers(result, "funding_records[funded-project]"):
-        missing.append("Find at least one officially documented funded project.")
+    funded_record_refs = {item.funding_record_ref for item in funded_records}
+    if len(funded_record_refs) < request.target_funded_projects and not gap_covers(
+        result, TARGET_FUNDED_PROJECTS_GAP_PATH
+    ):
+        if request.target_funded_projects == 1:
+            missing.append("Find at least one officially documented funded project.")
+        else:
+            missing.append(
+                "Find officially documented distinct funded-project rows until the "
+                f"target of {request.target_funded_projects} is met, or record a "
+                f"precise gap at {TARGET_FUNDED_PROJECTS_GAP_PATH}."
+            )
+    for record in funded_records:
+        target_path = (
+            f"funding_records[{record.funding_record_ref}].reported_funder_name"
+        )
+        if not record.reported_funder_name and not gap_covers(result, target_path):
+            missing.append(
+                f"Resolve {target_path} from a project source or record a precise gap."
+            )
     if not has_deep_project(result) and not gap_covers(
         result, "funding_records.deep_funded_project"
     ):

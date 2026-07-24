@@ -21,7 +21,6 @@ from tests.cnb_research_helpers import build_request, build_result
 
 
 def test_material_paths_use_funding_record_reference() -> None:
-    """Evidence paths use the shared funding-record identity."""
     base = build_result()
     project = FundingRecordResearchResult(
         funding_record_ref="project-001",
@@ -55,7 +54,6 @@ def test_material_paths_use_funding_record_reference() -> None:
 
 
 def test_material_paths_use_criterion_template_and_chapter_references() -> None:
-    """Nested records use their own identity instead of the opportunity link."""
     result = build_result().model_copy(
         update={
             "funder_templates": [
@@ -102,7 +100,6 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
 
 
 def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
-    """Evidence cannot attach to a different current-run source by ordinal ID."""
     evidence = FieldEvidence(
         evidence_ref="prior-evidence",
         funding_record_ref="opportunity-001",
@@ -122,7 +119,7 @@ def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
     now = datetime.now(timezone.utc)
     metadata = ResearchRunMetadata(
         pipeline_version="2.0",
-        model_name="gpt-5.6-terra",
+        model_name="test-model",
         reasoning_effort="medium",
         prompt_sha256="prompt-hash",
         started_at=now,

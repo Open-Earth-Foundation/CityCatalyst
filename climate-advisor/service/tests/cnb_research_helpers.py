@@ -9,7 +9,6 @@ from app.models.cnb_research import (
     FundingRecordResearchResult,
 )
 
-
 def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
     """Create a valid no-template request for tests."""
     return FundingOpportunityResearchRequest(

@@ -82,15 +82,15 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
 
     prompts = SimpleNamespace(get_prompt=lambda _name: "Research prompt")
     fake_settings = SimpleNamespace(
-        openai_api_key="test-openai-key",
+        openrouter_api_key="test-openrouter-key",
         firecrawl_api_key="test-firecrawl-key",
         llm=SimpleNamespace(
             api=SimpleNamespace(
-                openai=SimpleNamespace(base_url="https://api.openai.com/v1")
+                openrouter=SimpleNamespace(base_url="https://openrouter.ai/api/v1")
             ),
             models=SimpleNamespace(
                 funding_research=SimpleNamespace(
-                    name="gpt-5.6-terra",
+                    name="openai/gpt-5.4",
                     reasoning_effort="medium",
                 )
             ),
@@ -197,10 +197,10 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         (run_directory / "research_bundle.json").read_text(encoding="utf-8")
     )
     assert saved_bundle["request"]["program_name"] == "Example Program"
-    assert saved_bundle["run_metadata"]["model_name"] == "gpt-5.6-terra"
+    assert saved_bundle["run_metadata"]["model_name"] == "openai/gpt-5.4"
     assert (run_directory / "review.md").exists()
     assert (run_directory / "agent_trace.jsonl").exists()
-    assert fake_openai.responses.calls[0]["model"] == "gpt-5.6-terra"
+    assert fake_openai.responses.calls[0]["model"] == "openai/gpt-5.4"
     assert fake_openai.responses.calls[0]["reasoning"] == {"effort": "medium"}
     assert "tools" not in fake_openai.responses.calls[0]
     model_input = json.loads(fake_openai.responses.calls[0]["input"])
@@ -210,7 +210,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert "current_filled_object" not in model_input["research_request"]
     assert model_input["missing_data"]
     assert model_input["turn_budget"]["final_audit"] is True
-    assert bundle.run_metadata.model_name == "gpt-5.6-terra"
+    assert bundle.run_metadata.model_name == "openai/gpt-5.4"
     assert bundle.run_metadata.reasoning_effort == "medium"
     assert bundle.run_metadata.mlflow_run_id == "mlflow-001"
     assert bundle.run_metadata.prompt_sha256

@@ -122,7 +122,7 @@ export function Hero({
                   _hover={{ textDecoration: "underline" }}
                   textUnderlineOffset="8px"
                 >
-                  {t("citycatalyst")}
+                  {t("breadcrumb-tools")}
                 </Text>
               </Link>
             </BreadcrumbLink>

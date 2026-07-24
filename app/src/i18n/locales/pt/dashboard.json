@@ -309,7 +309,7 @@
   "status-beta": "Beta",
   "status-active": "Ativo",
   "legend": "Legenda",
-  "citycatalyst": "CityCatalyst",
+  "breadcrumb-tools": "Ferramentas",
   "breadcrumb-hiap": "Actions & Plans",
   "start-here": "Comece aqui",
   "inventory-versions-action-change": "{{name}} alterou a ação {{actionName}} para a posição {{rank}} e {{selectionStatus}}",

@@ -26,7 +26,6 @@ import {
   MdAspectRatio,
   MdCheck,
   MdLogout,
-  MdOpenInNew,
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
@@ -258,17 +257,6 @@ export function NavigationBar({
                 <Heading size="md" ml={6}>
                   {t("dashboard")}
                 </Heading>
-              </Link>
-              <Link
-                variant={"nav" as "plain"}
-                rel="help noopener"
-                target="_blank"
-                href="https://citycatalyst.openearth.org/learning-hub"
-              >
-                <Heading size="md" whiteSpace="nowrap">
-                  {t("learning-hub")}
-                </Heading>
-                <Icon as={MdOpenInNew} boxSize={4} />
               </Link>
               <Separator
                 orientation="vertical"

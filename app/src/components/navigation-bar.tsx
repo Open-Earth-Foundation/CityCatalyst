@@ -42,13 +42,11 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
 import ProjectDrawer from "@/components/GHGIHomePage/ProjectDrawer";
-import { TbSettingsCog } from "react-icons/tb";
 import { useTheme } from "next-themes";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getGhgiInventoryPath } from "@/util/ghgi-routes";
 import { getCityHomePath, getDashboardPath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { getParamValue } from "@/util/helpers";
@@ -136,18 +134,6 @@ export function NavigationBar({
   const homePath = useMemo(
     () => getCityHomePath(lng, currentCityId ?? ""),
     [lng, currentCityId],
-  );
-  const settingsPath = useMemo(
-    () =>
-      currentCityId && currentInventoryId
-        ? getGhgiInventoryPath(
-            lng,
-            currentCityId,
-            currentInventoryId,
-            "/settings",
-          )
-        : null,
-    [lng, currentCityId, currentInventoryId],
   );
   const { setTheme } = useTheme();
 
@@ -280,6 +266,7 @@ export function NavigationBar({
                   <Button
                     color="base.light"
                     minW="120px"
+                    minH="48px"
                     variant="ghost"
                     textTransform="none"
                     whiteSpace="nowrap"
@@ -347,32 +334,37 @@ export function NavigationBar({
                 >
                   <MenuTrigger
                     asChild
-                    minW="220px"
                     whiteSpace="nowrap"
                     textTransform="none"
+                    ml={8}
                   >
-                    <Button variant="ghost" ml={8}>
-                      <Avatar
-                        size="sm"
-                        bg="interactive.connected"
-                        color="base.light"
-                        name={session.user?.name!}
-                        src={session.user?.image!}
-                      />
-                      <Text
-                        w="120px"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                        fontSize="title.md"
-                        fontWeight="bold"
-                      >
-                        {session.user?.name}
-                      </Text>
-                      <Icon
-                        as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
-                        boxSize={6}
-                      />
+                    <Button variant="ghost" p={2} minW="220px" minH="48px">
+                      <Box display="flex" alignItems="center" gap="4">
+                        <Avatar
+                          height="32px"
+                          width="32px"
+                          bg="interactive.connected"
+                          color="base.light"
+                          name={session.user?.name ?? ""}
+                          src={session.user?.image}
+                        />
+                        <Text
+                          w="120px"
+                          overflow="hidden"
+                          textOverflow="ellipsis"
+                          whiteSpace="nowrap"
+                          fontSize="title.sm"
+                          fontWeight="medium"
+                          letterSpacing="wide"
+                          lineHeight="20"
+                        >
+                          {session.user?.name}
+                        </Text>
+                        <Icon
+                          as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                          boxSize={6}
+                        />
+                      </Box>
                     </Button>
                   </MenuTrigger>
 
@@ -380,7 +372,7 @@ export function NavigationBar({
                     paddingTop="8px"
                     paddingBottom="8px"
                     shadow="2dp"
-                    minW="150px"
+                    minW="220px"
                     display="flex"
                     flexDirection="column"
                     justifyContent="space-around"
@@ -446,9 +438,7 @@ export function NavigationBar({
                         paddingTop="12px"
                         paddingBottom="12px"
                         px="16px"
-                        onClick={() =>
-                          settingsPath && router.push(settingsPath)
-                        }
+                        onClick={() => router.push(`/${lng}/settings`)}
                       >
                         <Box display="flex" alignItems="center">
                           {" "}
@@ -466,37 +456,6 @@ export function NavigationBar({
                         </Box>
                       </MenuItem>
                     )}
-                    {userAccessStatus?.isOrgOwner &&
-                      !restrictAccess &&
-                      hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
-                        <MenuItem
-                          paddingTop="12px"
-                          paddingBottom="12px"
-                          value="account-settings"
-                          px="16px"
-                          onClick={() => {
-                            router.push(
-                              `/${lng}/organization/${userAccessStatus.organizationId}/account-settings`,
-                            );
-                          }}
-                        >
-                          <Box display="flex" alignItems="center">
-                            <Icon
-                              as={TbSettingsCog}
-                              boxSize={6}
-                              color={
-                                userMenuHighlight === "account-settings"
-                                  ? "background.neutral"
-                                  : "content.alternative"
-                              }
-                              mr={4}
-                            />
-                            <Text fontSize="title.md">
-                              {t("account-settings")}
-                            </Text>
-                          </Box>
-                        </MenuItem>
-                      )}
                     <MenuItem
                       paddingTop="12px"
                       paddingBottom="12px"

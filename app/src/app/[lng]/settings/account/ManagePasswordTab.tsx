@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 
 import { Box, Text, VStack } from "@chakra-ui/react";
 import { TitleMedium } from "@/components/package/Texts/Title";
@@ -6,7 +6,6 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { TFunction } from "i18next";
 import PasswordInput from "@/components/password-input";
 import { Button } from "@/components/ui/button";
-import { useSearchParams } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/services/api";
 import { Toaster } from "@/components/ui/toaster";
@@ -22,8 +21,7 @@ type Inputs = {
   confirmPassword: string;
 };
 
-const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
-  const searchParams = useSearchParams();
+const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const [error, setError] = useState("");
 
   const {
@@ -71,7 +69,7 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
   };
 
   return (
-    <Box backgroundColor="white" p={6}>
+    <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
       <VStack alignItems={"space-between"} justifyContent={"space-between"}>
         <TitleMedium>{t("manage-password")}</TitleMedium>
         <Text my={4} color="content.tertiary">
@@ -117,4 +115,4 @@ const ManagePasswordTabContent: FC<ManagePasswordProps> = ({ t }) => {
   );
 };
 
-export default ManagePasswordTabContent;
+export default ManagePasswordTab;

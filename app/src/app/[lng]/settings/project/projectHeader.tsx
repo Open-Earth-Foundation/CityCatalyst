@@ -1,10 +1,10 @@
 import { CityResponse, ProjectWithCities } from "@/util/types";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Box,
   BreadcrumbItem,
+  BreadcrumbList,
   Button,
-  Flex,
   HStack,
   Icon,
   Text,
@@ -14,7 +14,7 @@ import {
   BreadcrumbLink,
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
-import { MdAdd, MdChevronRight, MdOutlineFolder } from "react-icons/md";
+import { MdAdd, MdChevronRight } from "react-icons/md";
 import { CircleFlag } from "react-circle-flags";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
@@ -81,61 +81,63 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               />
             }
           >
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                onClick={() => {
-                  onSetSelectedCity(null);
-                  setSelectedInventory(null);
-                }}
-                color="content.secondary"
-                fontWeight="normal"
-                truncate
-                cursor="pointer"
-                textTransform="capitalize"
-              >
-                {view === "project-view" ? (
-                  <Text
-                    fontSize="title.lg"
-                    fontWeight="bold"
-                    color="content.secondary"
-                  >
-                    {selectedProjectData?.name}
-                  </Text>
-                ) : (
-                  <Text>{selectedProjectData?.name}</Text>
-                )}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-            {selectedCityData && (
+            <BreadcrumbList>
               <BreadcrumbItem>
-                {view === "city-view" ? (
-                  <BreadcrumbCurrentLink color="content.link">
-                    {selectedCityData?.name}
-                  </BreadcrumbCurrentLink>
-                ) : (
-                  <BreadcrumbLink
-                    onClick={() => {
-                      onSetSelectedCity(selectedCityData?.cityId as string);
-                      setSelectedInventory(null);
-                    }}
-                    color="content.secondary"
-                    fontWeight="normal"
-                    truncate
-                    cursor="pointer"
-                    textTransform="capitalize"
-                  >
-                    {selectedCityData?.name}{" "}
-                  </BreadcrumbLink>
-                )}
+                <BreadcrumbLink
+                  onClick={() => {
+                    onSetSelectedCity(null);
+                    setSelectedInventory(null);
+                  }}
+                  color="content.secondary"
+                  fontWeight="normal"
+                  truncate
+                  cursor="pointer"
+                  textTransform="capitalize"
+                >
+                  {view === "project-view" ? (
+                    <Text
+                      fontSize="title.lg"
+                      fontWeight="bold"
+                      color="content.secondary"
+                    >
+                      {selectedProjectData?.name}
+                    </Text>
+                  ) : (
+                    <Text>{selectedProjectData?.name}</Text>
+                  )}
+                </BreadcrumbLink>
               </BreadcrumbItem>
-            )}
-            {selectedInventory && (
-              <BreadcrumbCurrentLink color="content.link">
-                <Text truncate lineClamp={1} textTransform="capitalize">
-                  {t("ghg-inventory-year", { year: selectedInventory?.year })}
-                </Text>
-              </BreadcrumbCurrentLink>
-            )}
+              {selectedCityData && (
+                <BreadcrumbItem>
+                  {view === "city-view" ? (
+                    <BreadcrumbCurrentLink color="content.link">
+                      {selectedCityData?.name}
+                    </BreadcrumbCurrentLink>
+                  ) : (
+                    <BreadcrumbLink
+                      onClick={() => {
+                        onSetSelectedCity(selectedCityData?.cityId as string);
+                        setSelectedInventory(null);
+                      }}
+                      color="content.secondary"
+                      fontWeight="normal"
+                      truncate
+                      cursor="pointer"
+                      textTransform="capitalize"
+                    >
+                      {selectedCityData?.name}{" "}
+                    </BreadcrumbLink>
+                  )}
+                </BreadcrumbItem>
+              )}
+              {selectedInventory && (
+                <BreadcrumbCurrentLink color="content.link">
+                  <Text truncate lineClamp={1} textTransform="capitalize">
+                    {t("ghg-inventory-year", { year: selectedInventory?.year })}
+                  </Text>
+                </BreadcrumbCurrentLink>
+              )}
+            </BreadcrumbList>
           </BreadcrumbRoot>
         </Box>
         {view !== "project-view" && (

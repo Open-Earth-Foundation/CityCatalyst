@@ -82,6 +82,7 @@ import type {
   ImportedFileResponse,
   ImportStatusResponse,
   VersionHistoryResponse,
+  UserOrganizationsResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -2060,6 +2061,13 @@ export const api = createApi({
           method: "DELETE",
         }),
         invalidatesTags: ["AdminModules", "Modules"],
+      }),
+
+      getUserOrganizations: builder.query<UserOrganizationsResponse, void>({
+        query: () => "user/organizations",
+        transformResponse: (response: { data: UserOrganizationsResponse }) =>
+          response.data,
+        providesTags: ["Organizations"],
       }),
     };
   },

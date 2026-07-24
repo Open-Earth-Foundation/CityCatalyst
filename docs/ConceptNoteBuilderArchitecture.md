@@ -428,8 +428,7 @@ Recommended high-level shape:
     "city": {},
     "project": {},
     "ghgi": {},
-    "ccra": {},
-    "meed": {}
+    "ccra": {}
   },
   "selected_sources": [
     {
@@ -471,7 +470,8 @@ Authorization: Bearer <CityCatalyst user token>
 Content-Type: application/json
 
 {
-  "city_id": "uuid"
+  "city_id": "uuid",
+  "include_meed": false
 }
 ```
 
@@ -516,8 +516,7 @@ response has this bounded shape:
           ],
           "top_sources": []
         }
-      },
-      "meed": {}
+      }
     }
   }
 }
@@ -530,23 +529,29 @@ tonnes CO2e before returning the GHGI capability payload. `availability` is
 `partial` when required GHGI values are missing and `missing` with null
 inventory/emissions when the city has no accessible inventory.
 
-`meed` remains `{}` until a ranking snapshot is supplied through the separate
-MEED delivery path. When populated, it contains the city and inventory input,
-execution timestamp, bounded data-source labels, resolved pillar weights,
-pipeline counts, and at most 10 ordered actions. Each action contains its ID,
-name, sector, timeline, investment cost, final and pillar scores, legal
-verdict, and finance route. CNB does not trigger MEED during city-context
-assembly. Legacy HIAP data, routes, and tables are not part of this contract.
+`include_meed` defaults to `false`. In that case the response omits the `meed`
+key entirely. When it is `true`, the response includes the separately supplied
+MEED snapshot or `meed: {}` if no snapshot exists. A populated snapshot contains
+the city and inventory input, execution timestamp, bounded data-source labels,
+resolved pillar weights, pipeline counts, and at most 10 ordered actions. Each
+action contains its ID, name, sector, timeline, investment cost, final and
+pillar scores, legal verdict, and finance route. This flag only controls the
+response projection: it does not trigger MEED or delete a stored snapshot.
+Legacy HIAP data, routes, and tables are not part of this contract.
 
-The repository update replaces only `context_bundle.cc_context.ghgi` and
-the supplied `.meed`, preserving every other assembled section. Once saved,
-later interactions for the run reuse the snapshot rather than querying GHGI
-again. `run_id` and `city_id` remain in the API envelope and are not duplicated
-inside the stored bundle.
+The repository update replaces only `context_bundle.cc_context.ghgi`. It reads
+the current bundle under the write lock so a separately supplied `.meed`
+snapshot and every other assembled section are preserved. Incomplete CC
+capability payloads fail with `503 invalid_cc_context` and are not persisted.
+Once saved, later interactions for the run reuse the snapshot rather than
+querying GHGI again. `run_id` and `city_id` remain in the API envelope and are
+not duplicated inside the stored bundle.
 
-The current caller supplies `city_id`. The future CityCatalyst UI should list
+The current caller supplies `city_id` and opts into MEED with
+`include_meed: true` when needed. The future CityCatalyst UI should list
 accessible choices through `GET /api/v1/user/projects`, bind the selection when
-starting the run, and submit that same UUID to context assembly.
+starting the run, and submit that same UUID and MEED preference to context
+assembly.
 
 #### Iquique local execution example
 
@@ -554,7 +559,8 @@ The following is a compact example from a local end-to-end execution for
 Iquique. It proves the GHGI-to-MEED-to-CNB integration path; it is not production
 city truth. The inventory is `partial` because the checked-in MEED fixture
 provided 8 of the 48 required GHGI values. MEED used live dev Global API inputs
-and the checked-in Chile legal fixture.
+and the checked-in Chile legal fixture. This example used
+`include_meed: true`.
 
 ```json
 {
@@ -2026,8 +2032,9 @@ Minimum test surface:
 - CNB city-context contract tests covering deterministic inventory selection,
   GPC I-V ordering, sector-local source states, five-source capping, missing and
   partial GHGI, immutable run/city binding, targeted bundle merging, cached
-  reuse, an empty MEED state, and preservation and validation of supplied
-  compact MEED results capped at 10 actions.
+  reuse, omission of MEED by default, an empty MEED state when requested, and
+  preservation and validation of supplied compact MEED results capped at 10
+  actions.
 - Failure tests distinguishing `cc_ocr_failed` from
   `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
   repeat successful OCR.

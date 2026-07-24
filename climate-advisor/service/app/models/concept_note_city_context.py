@@ -14,9 +14,10 @@ class StrictContract(BaseModel):
 
 
 class ConceptNoteCityContextRequest(StrictContract):
-    """City selected for the concept-note run."""
+    """City selected for the run and optional MEED response projection."""
 
     city_id: UUID
+    include_meed: bool = False
 
 
 class GhgiDataState(StrictContract):

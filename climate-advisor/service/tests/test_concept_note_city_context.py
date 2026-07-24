@@ -12,11 +12,12 @@ from app.repositories.concept_note_city_context import (
     ConceptNoteCityContextRepositoryError,
     ConceptNoteRunContext,
     get_concept_note_city_context_repository,
-    merge_context_bundle,
+    merge_ghgi_into_bundle,
 )
 from app.routes.concept_note_city_context import get_citycatalyst_client
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.concept_note_city_context import (
+    ConceptNoteCityContextDataError,
     compact_ghgi_context,
     select_newest_inventory,
 )
@@ -45,6 +46,7 @@ class FakeCityContextRepository(ConceptNoteCityContextRepository):
             "selected_sources": [{"label": "Preserved source"}],
         }
         self.merge_calls = 0
+        self.meed_before_merge: dict[str, Any] | None = None
 
     async def load_run_context(
         self,
@@ -60,20 +62,24 @@ class FakeCityContextRepository(ConceptNoteCityContextRepository):
             context_bundle=deepcopy(self.context_bundle),
         )
 
-    async def merge_cc_context(
+    async def merge_ghgi_context(
         self,
         *,
         user_id: str,
         run_id: UUID,
         city_id: UUID,
-        cc_context: dict[str, Any],
+        ghgi_context: dict[str, Any],
     ) -> dict[str, Any]:
         """Apply the same targeted merge as the production adapter."""
         self._validate(user_id=user_id, run_id=run_id, city_id=city_id)
         self.merge_calls += 1
-        self.context_bundle = merge_context_bundle(
+        if self.meed_before_merge is not None:
+            self.context_bundle["cc_context"]["meed"] = deepcopy(
+                self.meed_before_merge
+            )
+        self.context_bundle = merge_ghgi_into_bundle(
             current_bundle=self.context_bundle,
-            cc_context=cc_context,
+            ghgi_context=ghgi_context,
         )
         return deepcopy(self.context_bundle)
 
@@ -108,6 +114,7 @@ class FakeCityCatalystClient:
         self.emissions_calls = 0
         self.no_inventories = False
         self.reject_city = False
+        self.invalid_emissions = False
 
     async def validate_user_identity(self, token: str) -> str:
         """Resolve test bearer tokens without external authentication."""
@@ -159,6 +166,8 @@ class FakeCityCatalystClient:
         """Return emissions rows in deliberately unsorted source order."""
         self.emissions_calls += 1
         assert request_payload["inventory_id"] == str(INVENTORY_ID)
+        if self.invalid_emissions:
+            return capability({})
         return capability(emissions_data())
 
 
@@ -183,12 +192,16 @@ def post_context(
     run_id: UUID = RUN_ID,
     city_id: UUID = CITY_ID,
     token: str | None = "owner-user",
+    include_meed: bool | None = None,
 ):
     """Post one city-context request with an optional bearer token."""
     headers = {"Authorization": f"Bearer {token}"} if token else {}
+    payload: dict[str, Any] = {"city_id": str(city_id)}
+    if include_meed is not None:
+        payload["include_meed"] = include_meed
     return client.post(
         f"/v1/concept-notes/{run_id}/cc-context",
-        json={"city_id": str(city_id)},
+        json=payload,
         headers=headers,
     )
 
@@ -199,14 +212,14 @@ def test_builds_persists_and_reuses_compact_city_context(
     client, repository, cc_client = city_context_client
 
     first = post_context(client)
-    second = post_context(client)
+    second = post_context(client, include_meed=False)
 
     assert first.status_code == second.status_code == 200
     payload = first.json()
     ghgi = payload["context_bundle"]["cc_context"]["ghgi"]
     assert payload["run_id"] == str(RUN_ID)
     assert payload["city_id"] == str(CITY_ID)
-    assert payload["context_bundle"]["cc_context"]["meed"] == {}
+    assert "meed" not in payload["context_bundle"]["cc_context"]
     assert ghgi["availability"] == "partial"
     assert ghgi["inventory"] == {
         "id": str(INVENTORY_ID),
@@ -235,7 +248,13 @@ def test_builds_persists_and_reuses_compact_city_context(
     ] == [40399.0, 20000.0, 10000.0, 8000.0, 4000.0]
 
     serialized = first.text.lower()
-    for forbidden in ("source_mix", "limitations", "removed_summary", '"hiap"'):
+    for forbidden in (
+        "source_mix",
+        "limitations",
+        "removed_summary",
+        '"hiap"',
+        '"meed"',
+    ):
         assert forbidden not in serialized
 
     assert repository.merge_calls == 1
@@ -266,12 +285,38 @@ def test_returns_missing_ghgi_without_detail_calls(city_context_client) -> None:
             "availability": "missing",
             "inventory": None,
             "emissions": None,
-        },
-        "meed": {},
+        }
     }
     assert repository.merge_calls == 1
     assert cc_client.status_calls == 0
     assert cc_client.emissions_calls == 0
+
+
+def test_returns_empty_meed_only_when_requested(city_context_client) -> None:
+    client, repository, cc_client = city_context_client
+
+    without_meed = post_context(client)
+    with_meed = post_context(client, include_meed=True)
+
+    assert without_meed.status_code == with_meed.status_code == 200
+    assert "meed" not in without_meed.json()["context_bundle"]["cc_context"]
+    assert with_meed.json()["context_bundle"]["cc_context"]["meed"] == {}
+    assert repository.merge_calls == 1
+    assert cc_client.list_calls == 1
+
+
+def test_omits_unrequested_meed_without_deleting_it(
+    city_context_client,
+) -> None:
+    client, repository, _ = city_context_client
+    stored_meed = meed_data()
+    repository.context_bundle["cc_context"]["meed"] = stored_meed
+
+    response = post_context(client)
+
+    assert response.status_code == 200
+    assert "meed" not in response.json()["context_bundle"]["cc_context"]
+    assert repository.context_bundle["cc_context"]["meed"] == stored_meed
 
 
 def test_preserves_supplied_meed_while_building_ghgi(
@@ -280,7 +325,7 @@ def test_preserves_supplied_meed_while_building_ghgi(
     client, repository, cc_client = city_context_client
     repository.context_bundle["cc_context"]["meed"] = meed_data()
 
-    response = post_context(client)
+    response = post_context(client, include_meed=True)
 
     assert response.status_code == 200
     meed = response.json()["context_bundle"]["cc_context"]["meed"]
@@ -290,6 +335,43 @@ def test_preserves_supplied_meed_while_building_ghgi(
     assert repository.context_bundle["cc_context"]["meed"] == meed
     assert repository.merge_calls == 1
     assert cc_client.list_calls == 1
+
+
+def test_preserves_newer_meed_written_during_ghgi_loading(
+    city_context_client,
+) -> None:
+    client, repository, _ = city_context_client
+    repository.context_bundle["cc_context"]["meed"] = meed_data()
+    newer_meed = meed_data()
+    newer_meed["actions"][0]["action_id"] = "newer-action"
+    repository.meed_before_merge = newer_meed
+
+    response = post_context(client, include_meed=True)
+
+    assert response.status_code == 200
+    response_meed = response.json()["context_bundle"]["cc_context"]["meed"]
+    assert response_meed["actions"][0]["action_id"] == "newer-action"
+    assert repository.context_bundle["cc_context"]["meed"] == newer_meed
+
+
+def test_rejects_incomplete_ghgi_capability_data(
+    city_context_client,
+) -> None:
+    client, repository, cc_client = city_context_client
+    cc_client.invalid_emissions = True
+
+    response = post_context(client)
+
+    assert response.status_code == 503
+    assert response.json()["code"] == "invalid_cc_context"
+    assert repository.merge_calls == 0
+
+    with pytest.raises(ConceptNoteCityContextDataError):
+        compact_ghgi_context(
+            inventory=inventory_choices()[0],
+            status_data={},
+            emissions_data=emissions_data(),
+        )
 
 
 def test_auth_run_binding_and_city_access_errors(city_context_client) -> None:

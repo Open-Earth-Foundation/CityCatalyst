@@ -52,6 +52,7 @@ def problem(status_code: int, code: str, message: str) -> JSONResponse:
 @router.post(
     "/concept-notes/{run_id}/cc-context",
     response_model=ConceptNoteCityContextResponse,
+    response_model_exclude_unset=True,
 )
 async def build_concept_note_city_context(
     run_id: UUID,
@@ -66,7 +67,7 @@ async def build_concept_note_city_context(
         Depends(get_citycatalyst_client),
     ],
 ) -> JSONResponse | ConceptNoteCityContextResponse:
-    """Build, persist, and return the run's compact GHGI context snapshot."""
+    """Build GHGI and optionally return the run's stored MEED snapshot."""
     authorization = request.headers.get("Authorization", "")
     if not authorization.startswith("Bearer ") or not authorization[7:].strip():
         return problem(401, "invalid_bearer_token", "Bearer token is required")
@@ -99,7 +100,10 @@ async def build_concept_note_city_context(
     except ConceptNoteCityContextRepositoryError as exc:
         return problem(exc.status_code, exc.code, str(exc))
 
-    cached_context = cached_cc_context(run_context.context_bundle)
+    cached_context = cached_cc_context(
+        run_context.context_bundle,
+        include_meed=payload.include_meed,
+    )
     if cached_context is not None:
         return response_for(
             run_id=run_id,
@@ -136,22 +140,23 @@ async def build_concept_note_city_context(
             "CityCatalyst returned invalid GHGI context",
         )
 
-    cc_context = ConceptNoteCcContext(
-        ghgi=ghgi_context,
-        meed=saved_meed_context(run_context.context_bundle),
-    )
-
-    # Persist only the targeted keys, preserving the rest of the bundle.
+    # Persist GHGI under lock without replacing separately supplied MEED.
     try:
-        await repository.merge_cc_context(
+        merged_bundle = await repository.merge_ghgi_context(
             user_id=user_id,
             run_id=run_id,
             city_id=payload.city_id,
-            cc_context=cc_context.model_dump(mode="json"),
+            ghgi_context=ghgi_context.model_dump(mode="json"),
         )
     except ConceptNoteCityContextRepositoryError as exc:
         return problem(exc.status_code, exc.code, str(exc))
 
+    cc_context = ConceptNoteCcContext(ghgi=ghgi_context)
+    if payload.include_meed:
+        cc_context = ConceptNoteCcContext(
+            ghgi=ghgi_context,
+            meed=saved_meed_context(merged_bundle),
+        )
     return response_for(
         run_id=run_id,
         city_id=payload.city_id,

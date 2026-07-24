@@ -137,6 +137,17 @@ def compact_ghgi_context(
     emissions_data: Mapping[str, Any],
 ) -> GhgiContext:
     """Merge status and emissions into five ordered GPC sectors."""
+    completion = status_data.get("completion")
+    if not isinstance(completion, Mapping) or completion.get("missing") is None:
+        raise ConceptNoteCityContextDataError(
+            "Inventory completion is missing required fields"
+        )
+    total_emissions = emissions_data.get("total_emissions_tco2e")
+    if total_emissions is None:
+        raise ConceptNoteCityContextDataError(
+            "Inventory emissions total is missing"
+        )
+
     status_by_sector = records_by_reference(status_data.get("by_sector"))
     emissions_by_sector = records_by_reference(emissions_data.get("by_sector"))
 
@@ -171,12 +182,7 @@ def compact_ghgi_context(
             )
         )
 
-    completion = status_data.get("completion")
-    if completion is not None and not isinstance(completion, Mapping):
-        raise ConceptNoteCityContextDataError(
-            "Inventory completion must be an object"
-        )
-    overall_missing = count(completion.get("missing")) if completion else 0
+    overall_missing = count(completion.get("missing"))
     availability = (
         "partial"
         if overall_missing > 0 or any(sector.missing > 0 for sector in sectors)
@@ -192,9 +198,7 @@ def compact_ghgi_context(
                 gwp=optional_string(inventory.get("gwp")),
             ),
             emissions=GhgiEmissions(
-                total_tco2e=number(
-                    emissions_data.get("total_emissions_tco2e")
-                ),
+                total_tco2e=number(total_emissions),
                 sectors=sectors,
                 top_sources=top_sources(emissions_data.get("top_emitters")),
             ),
@@ -207,18 +211,19 @@ def compact_ghgi_context(
 
 def cached_cc_context(
     context_bundle: Mapping[str, Any],
+    *,
+    include_meed: bool,
 ) -> ConceptNoteCcContext | None:
-    """Return an already persisted GHGI and MEED snapshot when valid."""
+    """Return persisted GHGI with MEED only when the caller requests it."""
     cc_context = context_bundle.get("cc_context")
     if not isinstance(cc_context, Mapping):
         return None
+    payload: dict[str, Any] = {"ghgi": cc_context.get("ghgi")}
+    if include_meed:
+        meed = cc_context.get("meed")
+        payload["meed"] = {} if meed is None else meed
     try:
-        return ConceptNoteCcContext.model_validate(
-            {
-                "ghgi": cc_context.get("ghgi"),
-                "meed": cc_context.get("meed"),
-            }
-        )
+        return ConceptNoteCcContext.model_validate(payload)
     except ValidationError:
         return None
 
@@ -275,8 +280,6 @@ def parse_timestamp(value: Any) -> datetime:
 
 def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
     """Index known GPC records while ignoring unknown sector rows."""
-    if value is None:
-        return {}
     if not isinstance(value, list):
         raise ConceptNoteCityContextDataError("Sector data must be an array")
     indexed: dict[str, Mapping[str, Any]] = {}
@@ -293,8 +296,6 @@ def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
 
 def top_sources(value: Any) -> list[GhgiTopSource]:
     """Return at most five emitters ordered by emissions descending."""
-    if value is None:
-        return []
     if not isinstance(value, list):
         raise ConceptNoteCityContextDataError("Top emitters must be an array")
 

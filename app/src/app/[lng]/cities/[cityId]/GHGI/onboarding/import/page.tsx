@@ -1002,7 +1002,7 @@ export default function ImportPage(props: {
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
                     onImport={() => {
-                      router.push(`/${lng}/cities/${cityId}/GHGI`);
+                      router.push(`/${lng}/cities/${cityId}/GHGI/${inventoryId}`);
                     }}
                     t={t}
                   />

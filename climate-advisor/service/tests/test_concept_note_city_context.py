@@ -47,6 +47,8 @@ class FakeCityContextRepository(ConceptNoteCityContextRepository):
         }
         self.merge_calls = 0
         self.meed_before_merge: dict[str, Any] | None = None
+        self.load_error: ConceptNoteCityContextRepositoryError | None = None
+        self.merge_error: ConceptNoteCityContextRepositoryError | None = None
 
     async def load_run_context(
         self,
@@ -56,6 +58,8 @@ class FakeCityContextRepository(ConceptNoteCityContextRepository):
         city_id: UUID,
     ) -> ConceptNoteRunContext:
         """Validate the fake run and return a detached bundle copy."""
+        if self.load_error is not None:
+            raise self.load_error
         self._validate(user_id=user_id, run_id=run_id, city_id=city_id)
         return ConceptNoteRunContext(
             city_id=str(self.city_id),
@@ -71,6 +75,8 @@ class FakeCityContextRepository(ConceptNoteCityContextRepository):
         ghgi_context: dict[str, Any],
     ) -> dict[str, Any]:
         """Apply the same targeted merge as the production adapter."""
+        if self.merge_error is not None:
+            raise self.merge_error
         self._validate(user_id=user_id, run_id=run_id, city_id=city_id)
         self.merge_calls += 1
         if self.meed_before_merge is not None:
@@ -372,6 +378,56 @@ def test_rejects_incomplete_ghgi_capability_data(
             status_data={},
             emissions_data=emissions_data(),
         )
+
+
+@pytest.mark.parametrize("failure_point", ["load", "merge"])
+def test_repository_error_details_are_not_exposed(
+    city_context_client,
+    failure_point: str,
+) -> None:
+    client, repository, _ = city_context_client
+    internal_detail = "SECRET_DATABASE_DETAIL"
+    error = ConceptNoteCityContextRepositoryError(
+        "cnb_storage_unavailable",
+        599,
+        internal_detail,
+    )
+    if failure_point == "load":
+        repository.load_error = error
+    else:
+        repository.merge_error = error
+
+    response = post_context(client)
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "code": "cnb_storage_unavailable",
+        "detail": "Concept Note context storage is not available",
+        "status": 503,
+    }
+    assert internal_detail not in response.text
+
+
+def test_unknown_repository_error_uses_safe_public_fallback(
+    city_context_client,
+) -> None:
+    client, repository, _ = city_context_client
+    internal_detail = "SECRET_DATABASE_DETAIL"
+    repository.load_error = ConceptNoteCityContextRepositoryError(
+        "internal_database_failure",
+        599,
+        internal_detail,
+    )
+
+    response = post_context(client)
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "code": "cnb_storage_unavailable",
+        "detail": "Concept Note context storage is not available",
+        "status": 503,
+    }
+    assert internal_detail not in response.text
 
 
 def test_auth_run_binding_and_city_access_errors(city_context_client) -> None:

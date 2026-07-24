@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
@@ -29,6 +30,28 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+REPOSITORY_PROBLEMS: dict[str, tuple[int, str]] = {
+    "concept_note_run_not_found": (404, "Concept Note run was not found"),
+    "concept_note_run_forbidden": (
+        403,
+        "Concept Note run belongs to another user",
+    ),
+    "run_city_mismatch": (
+        409,
+        "Requested city does not match the Concept Note run",
+    ),
+    "cnb_storage_unavailable": (
+        503,
+        "Concept Note context storage is not available",
+    ),
+}
+DEFAULT_REPOSITORY_PROBLEM = (
+    503,
+    "cnb_storage_unavailable",
+    "Concept Note context storage is not available",
+)
 
 
 async def get_citycatalyst_client() -> AsyncIterator[CityCatalystClient]:
@@ -47,6 +70,22 @@ def problem(status_code: int, code: str, message: str) -> JSONResponse:
         content={"code": code, "detail": message, "status": status_code},
         media_type="application/problem+json",
     )
+
+
+def repository_problem(error: ConceptNoteCityContextRepositoryError) -> JSONResponse:
+    """Translate a repository error without exposing its internal message."""
+    public_problem = REPOSITORY_PROBLEMS.get(error.code)
+    if public_problem is None:
+        logger.error(
+            "Unhandled city-context repository error code: %s",
+            error.code,
+            exc_info=error,
+        )
+        status_code, code, message = DEFAULT_REPOSITORY_PROBLEM
+        return problem(status_code, code, message)
+
+    status_code, message = public_problem
+    return problem(status_code, error.code, message)
 
 
 @router.post(
@@ -98,7 +137,7 @@ async def build_concept_note_city_context(
             city_id=payload.city_id,
         )
     except ConceptNoteCityContextRepositoryError as exc:
-        return problem(exc.status_code, exc.code, str(exc))
+        return repository_problem(exc)
 
     cached_context = cached_cc_context(
         run_context.context_bundle,
@@ -149,7 +188,7 @@ async def build_concept_note_city_context(
             ghgi_context=ghgi_context.model_dump(mode="json"),
         )
     except ConceptNoteCityContextRepositoryError as exc:
-        return problem(exc.status_code, exc.code, str(exc))
+        return repository_problem(exc)
 
     cc_context = ConceptNoteCcContext(ghgi=ghgi_context)
     if payload.include_meed:

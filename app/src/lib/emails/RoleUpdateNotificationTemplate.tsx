@@ -1,4 +1,5 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Container,
@@ -12,8 +13,6 @@ import {
   Section,
   Text,
 } from "@react-email/components";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
 
 export function RoleUpdateNotificationTemplate({
   url,
@@ -32,7 +31,6 @@ export function RoleUpdateNotificationTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
       <Head>
@@ -136,14 +134,6 @@ const brandHeading = {
   color: "#2351DC",
 };
 
-const heading = {
-  fontSize: "24px",
-  lineHeight: "1.3",
-  fontWeight: "700",
-  color: "#484848",
-  marginTop: "50px",
-};
-
 const greeting = {
   fontSize: "14px",
   lineHeight: "1.4",
@@ -171,25 +161,6 @@ const footerText = {
   lineHeight: "16px",
   fontWeight: "400",
   color: "#79797A",
-};
-
-const cityBox = {
-  display: "flex",
-  padding: "16px",
-  alignItems: "center",
-  gap: "16px",
-  borderRadius: "8px",
-  border: "1px solid #E6E7FF",
-  margin: "32px",
-};
-
-const cityNameText = {
-  fontSize: "14px",
-  fontStyle: "normal",
-  fontWeight: "500",
-  lineHeight: "32px", // Match this with the flag height
-  letterSpacing: "0.5px",
-  color: "#484848",
 };
 
 const headingGreen = {

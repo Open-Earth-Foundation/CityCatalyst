@@ -89,7 +89,7 @@ describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
   let testData: TestData;
 
   beforeAll(async () => {

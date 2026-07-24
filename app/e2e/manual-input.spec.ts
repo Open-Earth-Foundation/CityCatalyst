@@ -38,7 +38,7 @@ const createInventory = async (request: APIRequestContext): Promise<string> => {
   });
   expect(cityResult.ok()).toBeTruthy();
   const cityData = await cityResult.json();
-  let cityId = cityData.data.cityId;
+  const cityId = cityData.data.cityId;
 
   // add population data
   const populationResult = await request.post(

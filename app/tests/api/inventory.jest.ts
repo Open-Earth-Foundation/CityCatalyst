@@ -114,7 +114,7 @@ describe("Inventory API", () => {
     expires: "1h",
   };
 
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();

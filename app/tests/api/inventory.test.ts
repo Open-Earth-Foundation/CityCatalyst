@@ -44,20 +44,6 @@ const inventoryData: CreateInventoryRequest = {
   inventoryType: InventoryTypeEnum.GPC_BASIC,
 };
 
-const inventoryData2: CreateInventoryRequest = {
-  inventoryName,
-  year: 3001,
-  totalEmissions: 1338,
-  globalWarmingPotentialType: GlobalWarmingPotentialTypeEnum.ar6,
-  inventoryType: InventoryTypeEnum.GPC_BASIC,
-};
-
-const invalidInventory = {
-  inventoryName: "",
-  year: 0,
-  totalEmissions: "246kg co2eq",
-};
-
 const inventoryValue = {
   activityValue: 20,
   activityUnits: "km",
@@ -201,6 +187,7 @@ describe("Inventory API", () => {
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
     assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
     const body = await res.blob();
+    assert.ok(body.size > 0);
   });
 
   it(

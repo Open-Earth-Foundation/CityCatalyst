@@ -173,20 +173,20 @@ export default class CSVDownloadService {
 
       const finalActivityValues: CSVActivityEntry[] = activityValues.map(
         (activityValue) => {
-          let activityTitleKey = activityValue.metadata?.activityTitle;
-          let data_quality = activityValue.metadata?.dataQuality;
-          let dataSource = activityValue.activityData?.["data-source"];
+          const activityTitleKey = activityValue.metadata?.activityTitle;
+          const data_quality = activityValue.metadata?.dataQuality;
+          const dataSource = activityValue.activityData?.["data-source"];
 
-          let activity_type = t(activityValue?.activityData?.[activityTypeKey]); // activityValue.metadata?.activityId;
+          const activity_type = t(activityValue?.activityData?.[activityTypeKey]); // activityValue.metadata?.activityId;
           console.log(
             { activityTypeKey, activity_type },
             activityValue?.activityData?.[activityTypeKey],
             "tried translatin",
           );
-          let activity_amount =
+          const activity_amount =
             activityValue.activityData?.[activityTitleKey] ??
             activityValue.activityData?.["activity-value"];
-          let activity_unit = t(
+          const activity_unit = t(
             activityValue.activityData?.[`${activityTitleKey}-unit`] ??
               activityValue.activityData?.["activity-unit"],
           );
@@ -205,9 +205,9 @@ export default class CSVDownloadService {
           let emission_n2o = null;
 
           if (activityValue.gasValues) {
-            let co2_gas = activityValue.gasValues.find((g) => g.gas === "CO2");
-            let ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
-            let n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
+            const co2_gas = activityValue.gasValues.find((g) => g.gas === "CO2");
+            const ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
+            const n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
 
             emission_factor_co2 =
               co2_gas?.emissionsFactor?.emissionsPerActivity;
@@ -220,13 +220,13 @@ export default class CSVDownloadService {
             emission_n2o = n2o_gas?.gasAmount;
           }
           // if there is an existing emission factor value
-          let usesEmissionFactor =
+          const usesEmissionFactor =
             inventoryValue.gpcReferenceNumber?.split(".")?.includes("I") ||
             inventoryValue.gpcReferenceNumber?.split(".").includes("II");
           let emission_factor_unit: string | null = null;
 
           if (usesEmissionFactor) {
-            let scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
+            const scope = inventoryValue.gpcReferenceNumber?.split(".")[2];
             emission_factor_unit = scope === "1" ? "kg/m3" : "kg/TJ";
           }
 
@@ -307,14 +307,14 @@ export default class CSVDownloadService {
   > {
     const subsectorKeys = Object.keys(MANUAL_INPUT_HIERARCHY);
     const result: Record<string, Record<string, string>> = {};
-    for (let subsectorKey of subsectorKeys) {
-      let methodologyMapping: Record<string, string> = {};
+    for (const subsectorKey of subsectorKeys) {
+      const methodologyMapping: Record<string, string> = {};
       const subsector = MANUAL_INPUT_HIERARCHY[subsectorKey];
       if (
         "methodologies" in subsector &&
         Array.isArray(subsector.methodologies)
       ) {
-        for (let methodology of subsector.methodologies) {
+        for (const methodology of subsector.methodologies) {
           methodologyMapping[methodology.id] =
             methodology.activityTypeField as string;
         }

@@ -42,7 +42,7 @@ export function resolve(
   obj: Record<string, any>,
   separator: string = ".",
 ) {
-  var properties = Array.isArray(path) ? path : path.split(separator);
+  const properties = Array.isArray(path) ? path : path.split(separator);
   return properties.reduce((prev, curr) => prev?.[curr], obj);
 }
 
@@ -272,8 +272,8 @@ export function findClosestYear(
       if (!prev) {
         return curr;
       }
-      let prevDelta = Math.abs(year - prev.year);
-      let currDelta = Math.abs(year - curr.year);
+      const prevDelta = Math.abs(year - prev.year);
+      const currDelta = Math.abs(year - curr.year);
       return prevDelta < currDelta ? prev : curr;
     },
     null as PopulationEntry | null,

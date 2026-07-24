@@ -10,7 +10,7 @@ import {
 import type { TFunction } from "i18next";
 import { RefObject } from "react";
 import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
-import type { DataSourceData, DataSourceWithRelations } from "./types";
+import type { DataSourceWithRelations, GlobalAPISourceResponse } from "./types";
 import { getTranslationFromDict } from "@/i18n";
 import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
 import {
@@ -48,7 +48,7 @@ export function SourceDrawer({
 }: {
   hideActions?: boolean;
   source?: DataSourceWithRelations;
-  sourceData?: DataSourceData | null;
+  sourceData?: GlobalAPISourceResponse | null;
   sector?: { sectorName?: string };
   loading?: boolean;
   isOpen: boolean;

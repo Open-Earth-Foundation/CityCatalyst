@@ -81,7 +81,7 @@ describe("City API", () => {
   let project: Project;
   let organizationId: string;
 
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();

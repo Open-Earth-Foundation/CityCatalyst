@@ -103,7 +103,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     defaultValue: null,
   });
 
-  let { data: wasteCompositionValues, isLoading: wasteCompositionLoading } =
+  const { data: wasteCompositionValues, isLoading: wasteCompositionLoading } =
     api.useGetWasteCompositionValuesQuery(
       {
         inventoryId: inventoryId as string,

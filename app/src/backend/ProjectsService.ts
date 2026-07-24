@@ -8,7 +8,7 @@ interface ProjectInfo {
   name: string;
   organizationId: string;
   description?: string | null;
-  cityCountLimit?: Number;
+  cityCountLimit?: number;
 }
 
 export class ProjectService {

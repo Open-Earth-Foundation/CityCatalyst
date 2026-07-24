@@ -121,7 +121,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
         // Create or update invite BEFORE attempting to send email so the
         // invite URL is always available even when SMTP is unavailable.
-        let preExistingInvite = await OrganizationInvite.findOne({
+        const preExistingInvite = await OrganizationInvite.findOne({
           where: { email: normalizedEmail, organizationId },
         });
         let invite;

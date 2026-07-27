@@ -24,6 +24,7 @@ import {
   MdArrowDropDown,
   MdArrowDropUp,
   MdAspectRatio,
+  MdCardTravel,
   MdCheck,
   MdLogout,
   MdOutlineMenu,
@@ -47,7 +48,7 @@ import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getCityHomePath, getDashboardPath } from "@/util/routes";
+import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { getParamValue } from "@/util/helpers";
 
@@ -132,10 +133,6 @@ export function NavigationBar({
   );
 
   // Memoize paths to recompute when pathname or IDs change
-  const dashboardPath = useMemo(
-    () => getDashboardPath(lng, currentCityId ?? ""),
-    [lng, currentCityId],
-  );
   const homePath = useMemo(
     () => getCityHomePath(lng, currentCityId ?? ""),
     [lng, currentCityId],
@@ -250,21 +247,6 @@ export function NavigationBar({
 
         {/* Menu Items */}
         <Box display="flex" gap="48px" alignItems="center">
-          {showNav && !isPublic && (
-            <>
-              {" "}
-              <Link href={dashboardPath} variant={"nav" as "plain"}>
-                <Heading size="md" ml={6}>
-                  {t("dashboard")}
-                </Heading>
-              </Link>
-              <Separator
-                orientation="vertical"
-                height="6"
-                backgroundColor="background.overlay"
-              />
-            </>
-          )}
           {children}
           <Box display="flex">
             <Box display="flex">
@@ -352,7 +334,17 @@ export function NavigationBar({
                       whiteSpace="nowrap"
                     >
                       <Box display="flex" alignItems="center" gap="3">
-                        <Icon as={MdApartment} boxSize={5} />
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          boxSize="32px"
+                          borderRadius="full"
+                          bg="interactive.connected"
+                          color="base.light"
+                        >
+                          <Icon as={MdCardTravel} boxSize={4} />
+                        </Box>
                         <Text
                           maxW="140px"
                           overflow="hidden"

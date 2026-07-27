@@ -31,7 +31,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Tag } from "@/components/ui/tag";
 import { BsDownload } from "react-icons/bs";
 import { TagMapping } from "./index";
-import DeleteCityModal from "@/app/[lng]/organization/[id]/account-settings/project/deleteCityModal";
+import DeleteCityModal from "@/app/[lng]/settings/project/deleteCityModal";
 import { TFunction } from "i18next";
 import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import InventoryView from "./InventoryView";
@@ -39,10 +39,9 @@ import { FiFolder } from "react-icons/fi";
 import ProjectHeader from "./projectHeader";
 import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
-import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
-const getInventoryLastUpdated = (lastUpdated: Date, t: Function) => {
+const getInventoryLastUpdated = (lastUpdated: Date, t: TFunction) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
     return <p>{t("no-date-available")}</p>;
   }
@@ -249,7 +248,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                     <Table.Cell>{item.inventories.length}</Table.Cell>
                     <Table.Cell w="10">
                       <MenuRoot>
-                        <MenuTrigger>
+                        <MenuTrigger asChild>
                           <IconButton
                             data-testid="activity-more-icon"
                             aria-label="more-icon"
@@ -317,7 +316,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 columns={[
                   { header: t("email"), accessor: "email" },
                   { header: t("role"), accessor: "role" },
-                  { header: "", accessor: null },
+                  { header: " ", accessor: null },
                   { header: "", accessor: null },
                 ]}
                 renderRow={(item, idx) => (
@@ -330,12 +329,12 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           TagMapping[item.role as OrganizationRole].color
                         }
                       >
-                        {TagMapping[item.role as OrganizationRole].text}
+                        {t(TagMapping[item.role as OrganizationRole].text)}
                       </Tag>
                     </Table.Cell>
                     <Table.Cell w="10">
                       <MenuRoot>
-                        <MenuTrigger>
+                        <MenuTrigger asChild>
                           <IconButton
                             data-testid="activity-more-icon"
                             aria-label="more-icon"

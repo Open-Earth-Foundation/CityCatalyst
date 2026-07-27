@@ -1803,7 +1803,10 @@ class CityActionReportRequestData(BaseModel):
     actionId: str = Field(min_length=1, description="Selected ranked action ID.")
     language: list[str] = Field(
         min_length=1,
-        description="Requested report languages in frontend display order.",
+        description=(
+            "Report languages in frontend display order. English is always "
+            "included first as the canonical generation language."
+        ),
     )
     prioritizationSnapshot: CityActionPrioritizationSnapshot = Field(
         description="Original prioritization request and response snapshot."
@@ -1828,11 +1831,13 @@ class CityActionReportRequestData(BaseModel):
     @field_validator("language")
     @classmethod
     def _normalize_languages(cls, value: list[str]) -> list[str]:
-        """Normalize, deduplicate, and validate requested report languages."""
+        """Normalize report languages and prepend canonical English."""
         normalized = [
             _normalize_required_lower_string(language, "language")
             for language in value
         ]
+        if not normalized:
+            raise ValueError("language must contain at least one requested language")
         deduplicated = list(dict.fromkeys(normalized))
         supported = set(supported_languages())
         unsupported = [language for language in deduplicated if language not in supported]
@@ -1841,7 +1846,7 @@ class CityActionReportRequestData(BaseModel):
                 "language contains unsupported report languages: "
                 f"{unsupported}; supported languages are {sorted(supported)}"
             )
-        return deduplicated
+        return ["en", *[language for language in deduplicated if language != "en"]]
 
 
 class CityActionReportApiRequest(BaseModel):

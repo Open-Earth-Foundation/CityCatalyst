@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import Iterator
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -37,10 +38,15 @@ from app.modules.prioritizer.report_context import build_chapter_inputs
 from app.modules.prioritizer.services.report_context_enrichment import (
     build_report_context_with_live_enrichment,
 )
+from app.modules.prioritizer.services.report_concurrency import (
+    ReportGenerationCapacityError,
+    reserve_report_generation_slot,
+)
 from app.modules.prioritizer.services.report_generation import (
     aggregate_localized_chapters,
     generate_output_plan_chapters,
 )
+from app.modules.prioritizer.services.report_translation import translate_output_plan
 from app.modules.prioritizer.utils.subsector_mapping import (
     normalize_gpc_reference_to_subsector_key,
 )
@@ -81,6 +87,18 @@ from app.utils.mlflow_logging import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["prioritization"])
+
+
+def get_output_plan_generation_slot() -> Iterator[None]:
+    """Hold one per-pod report slot for the lifetime of an output-plan request."""
+    try:
+        with reserve_report_generation_slot():
+            yield
+    except ReportGenerationCapacityError as error:
+        raise HTTPException(
+            status_code=429,
+            detail={"error": str(error)},
+        ) from error
 
 
 def _error_payload(request_id: str, message: str) -> dict[str, str]:
@@ -552,10 +570,12 @@ def prioritize(
         "Generates one JSON-with-Markdown-chapters output plan for one selected "
         "ranked action. The endpoint is stateless: callers must provide the "
         "original prioritization request/response snapshot plus one locode, "
-        "one actionId, and a non-empty language list."
+        "one actionId, and a non-empty language list. English is always added "
+        "as the canonical report language."
     ),
     responses={
         200: {"description": "Output plan generated for the selected action."},
+        429: {"description": "Per-pod report generation queue is full or timed out."},
         422: {"description": "Validation error in request or prioritization snapshot."},
         500: {"description": "Internal server error while generating the output plan."},
     },
@@ -582,13 +602,14 @@ def generate_output_plan(
         MockActionFinancialFeasibilityScoresDataApiClient
         | ApiActionFinancialFeasibilityScoresDataApiClient
     ) = Depends(get_action_financial_feasibility_scores_data_api_client),
+    _generation_slot: None = Depends(get_output_plan_generation_slot),
 ) -> CityActionReportApiResponse:
     """
     Generate one stateless output plan from a prioritization snapshot.
 
     The route validates that the selected city/action belong to the supplied
-    snapshot, refetches live source context, then generates isolated report
-    chapters independently in every requested language for that single action.
+    snapshot, refetches live source context, generates the English chapters in
+    parallel, then translates the completed report into all target languages.
     """
     request_trace_id = request.meta.requestId
     internal_request_id = uuid4()
@@ -653,22 +674,49 @@ def generate_output_plan(
                 report_context.model_dump(mode="json"),
             )
 
-            # Step 2: localize and generate each language independently.
-            chapter_inputs_by_language = {}
-            generation_by_language = {}
-            llm_io_by_language = {}
+            # Step 2: generate canonical English chapters, then translate once.
+            english_context = report_context.model_copy(update={"language": "en"})
+            english_chapter_inputs = build_chapter_inputs(english_context)
+            chapter_inputs_by_language = {"en": english_chapter_inputs}
+            english_generation = generate_output_plan_chapters(
+                chapter_inputs=english_chapter_inputs,
+                use_llm=not request.requestData.debugContextOnly,
+            )
+            generation_by_language = {"en": english_generation.chapters}
+            llm_io_payload: dict[str, object] = {
+                "languages": {"en": english_generation.llm_io}
+            }
+
+            target_chapter_inputs = {}
             for language in report_context.requested_languages:
+                if language == "en":
+                    continue
                 localized_context = report_context.model_copy(
                     update={"language": language}
                 )
-                chapter_inputs = build_chapter_inputs(localized_context)
-                chapter_inputs_by_language[language] = chapter_inputs
-                generation_result = generate_output_plan_chapters(
-                    chapter_inputs=chapter_inputs,
-                    use_llm=not request.requestData.debugContextOnly,
+                target_chapter_inputs[language] = build_chapter_inputs(
+                    localized_context
                 )
-                generation_by_language[language] = generation_result.chapters
-                llm_io_by_language[language] = generation_result.llm_io
+            chapter_inputs_by_language.update(target_chapter_inputs)
+
+            if request.requestData.debugContextOnly:
+                for language, chapter_inputs in target_chapter_inputs.items():
+                    generation_result = generate_output_plan_chapters(
+                        chapter_inputs=chapter_inputs,
+                        use_llm=False,
+                    )
+                    generation_by_language[language] = generation_result.chapters
+                llm_io_payload["translation"] = {
+                    "status": "skipped",
+                    "reason": "debug_context_only",
+                }
+            else:
+                translations, translation_llm_io = translate_output_plan(
+                    canonical_chapters=english_generation.chapters,
+                    target_chapter_inputs=target_chapter_inputs,
+                )
+                generation_by_language.update(translations)
+                llm_io_payload["translation"] = translation_llm_io
 
             artifact_writer.write_run_file(
                 "chapter_inputs.json",
@@ -681,7 +729,7 @@ def generate_output_plan(
             )
             write_output_plan_llm_artifacts(
                 artifact_writer=artifact_writer,
-                llm_io={"languages": llm_io_by_language},
+                llm_io=llm_io_payload,
             )
 
             # Step 3: aggregate only after every requested language is complete.

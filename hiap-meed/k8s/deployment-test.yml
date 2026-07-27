@@ -70,6 +70,10 @@ spec:
               value: "2"
             - name: UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS
               value: "0.5"
+            - name: OUTPUT_PLAN_MAX_CONCURRENT_REPORTS
+              value: "3"
+            - name: OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS
+              value: "120"
             - name: CCGLOBAL_API_BASE_URL
               value: "https://api.citycatalyst.io/"
             - name: HIAP_MEED_CITY_DATA_SOURCE

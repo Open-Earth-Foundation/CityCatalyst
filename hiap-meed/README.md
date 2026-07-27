@@ -54,6 +54,8 @@ CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
 UPSTREAM_HTTP_MAX_RETRIES=2
 UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
+OUTPUT_PLAN_MAX_CONCURRENT_REPORTS=3
+OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS=120
 HIAP_MEED_LEGAL_DATA_SOURCE=s3
 HIAP_MEED_LEGAL_S3_BUCKET=test-global-api
 HIAP_MEED_LEGAL_S3_KEY=raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/legal-classification-v2.csv
@@ -91,6 +93,8 @@ Variables:
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
 - `UPSTREAM_HTTP_MAX_RETRIES`: shared retry count for transient upstream HTTP failures (default `2`)
 - `UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS`: fixed sleep between upstream HTTP retry attempts (default `0.5`)
+- `OUTPUT_PLAN_MAX_CONCURRENT_REPORTS`: maximum active output-plan requests per service process/pod (default `3`)
+- `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS`: maximum time an output-plan request waits for a per-pod generation slot before HTTP `429` (default `120`)
 - `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`s3`, `mock`, or deprecated `api`; default `s3`)
 - `HIAP_MEED_LEGAL_S3_BUCKET`: private S3 bucket for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
 - `HIAP_MEED_LEGAL_S3_KEY`: private S3 object key for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
@@ -297,7 +301,7 @@ Design note:
 
 - `requestData.locode`: the single city locode
 - `requestData.actionId`: the selected action ID
-- `requestData.language`: a non-empty list of requested report languages; currently `en` and `es` are supported
+- `requestData.language`: a non-empty list of requested report languages; currently `en` and `es` are supported. The backend normalizes this list to include canonical English first.
 - `requestData.prioritizationSnapshot.request`: the full original `/v1/prioritize` request
 - `requestData.prioritizationSnapshot.response`: the full `/v1/prioritize` response returned to the frontend
 
@@ -307,11 +311,13 @@ The backend uses the supplied prioritization snapshot as the ranking basis and r
 
 The Snapshot chapter starts with a prominent `**The ask:**` line. The backend derives that line from supplied action pathway, financial-feasibility, and legal-assessment facts so the wording stays defensible: for example, technical-assistance wording is used only when the finance route supports it, and direct municipal-leadership wording is used only when the legal facts show enabled ownership.
 
-The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users. Each language is generated in an isolated chapter call and then aggregated into `chapters[].title`, `chapters[].markdown`, and `chapters[].limitations` dictionaries keyed by language. The response `language` list exactly matches the requested language list, and response validation rejects incomplete language coverage. Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, groups repeated uses of the same city indicator into one row, separates supporting and limiting conditions, adds a mixed-effects table only when an indicator has both contribution signs, retains source units, and omits indicators without a measured city value or non-neutral contribution; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and excerpt; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Official programme, document, agency, law, legal-citation, and place names remain in their source form. Full descriptive sentences are generated in the requested language. Chapter titles, headings, table labels, co-benefits, GPC sectors, indicators, score labels, and other recurring terminology come from the editable `app/modules/prioritizer/translations.yaml` catalogue rather than LLM translation. Report prose must not narrate backend preparation or describe information as supplied to a model. Missing substantive evidence is never filled from model knowledge.
+The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users. The eight canonical English chapters are generated concurrently from isolated chapter inputs. After all English chapters pass schema, source-reference, and language validation, one structured translation call translates the complete report into every additional requested language. The translation stage must preserve chapter order, facts, qualifications, Markdown structure, URLs, and source references while applying deterministic recurring terminology from `app/modules/prioritizer/translations.yaml`. The response `language` list contains canonical `en` first followed by the caller's deduplicated non-English languages, and response validation rejects incomplete language coverage. Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, groups repeated uses of the same city indicator into one row, separates supporting and limiting conditions, adds a mixed-effects table only when an indicator has both contribution signs, retains source units, and omits indicators without a measured city value or non-neutral contribution; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and excerpt; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Official programme, document, agency, law, legal-citation, and place names remain in their source form. Report prose must not narrate backend preparation or describe information as supplied to a model. Missing substantive evidence is never filled from model knowledge.
 
 Source links are rendered only when the corresponding upstream record supplies a public URL. Optional policy-evidence `link` values are preserved when returned upstream; the current action-policy mock does not include them. The current legal classification CSV provides `legal_reference_1` through `legal_reference_6` as citation labels but has no URL columns, so these legal references appear as plain source names. Adding legal links requires an upstream legal-data schema change rather than inferred or hard-coded URLs in `hiap-meed`.
 
-Each LLM chapter call uses an explicit strict JSON Schema and validates the returned JSON with Pydantic before building the public response. Source references must be a subset of those provided to the chapter, and a lightweight dominant-language check retries clearly wrong-language output once before failing closed. The report path uses a standard OpenAI chat completion rather than the SDK's generic parsed-completion wrapper so MLflow autologging can serialize traces without `message.parsed` type warnings.
+Each English LLM chapter call uses an explicit strict JSON Schema and validates the returned JSON with Pydantic before building the canonical report. Source references must be a subset of those provided to the chapter, and a lightweight dominant-language check retries clearly wrong-language output once before failing closed. The batched translation call has its own strict schema and fails closed on missing languages, changed chapter order, wrong-language output, or changed URLs. Both report stages use standard OpenAI chat completions rather than the SDK's generic parsed-completion wrapper so MLflow autologging can serialize traces without `message.parsed` type warnings.
+
+Output-plan admission control is local to each pod. At most `OUTPUT_PLAN_MAX_CONCURRENT_REPORTS` requests actively enrich and generate reports in one pod; later requests wait without creating chapter workers. Each active production request uses up to eight concurrent English chapter calls followed by one translation call. A waiting request that exceeds `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS` receives HTTP `429`. Kubernetes replicas remain independent, so additional pods increase total throughput without duplicating reports.
 
 Frontend-facing content is `chapters[].title`, `chapters[].markdown`, and `chapters[].limitations` for the selected language. The frontend renderer must support standard Markdown tables, headings, numbered lists, and links, and should preserve chapter order. Chapter `source_refs`, response metadata, `source_context`, `chapter_inputs.json`, `report_context.json`, and MLflow artifacts are diagnostic/provenance surfaces and should not be rendered as report prose.
 
@@ -763,7 +769,8 @@ What each local request run folder contains:
   - `report_context.json`: normalized context for the selected city/action report
   - `chapter_inputs.json`: the isolated per-language, per-chapter inputs retained for diagnostics, including internal guardrails not rendered as report prose
   - `llm/output_plan_io.json`: output-plan LLM request/response diagnostics, or a skipped marker when `debugContextOnly=true`
-  - `llm/<language>/<chapter>_prompt.txt`: rendered prompt for each language/chapter pair
+  - `llm/en/<chapter>_prompt.txt`: rendered prompt for each canonical English chapter
+  - `llm/report_translation_prompt.txt`: one rendered full-report translation prompt when non-English languages are requested
   - `output_plan.<language>.md`: one reader-friendly concatenated Markdown report per generated language
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic

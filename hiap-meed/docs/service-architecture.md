@@ -52,21 +52,25 @@ graph TD
     Fetch["Fetch additional source data through data clients"]
     Sources["Global API and private S3 legal CSV"]
     Context["ReportContext enrichment"]
-    ChapterInputs["Per-chapter input builder"]
-    LLM["Output-plan chapter generation"]
+    Queue["Per-pod report slots (3)"]
+    ChapterInputs["English per-chapter input builder"]
+    LLM["8 concurrent English chapter calls"]
+    Translate["One batched translation call"]
     Response["CityActionReportApiResponse returned to caller"]
 
     FE --> Request
     Request --> Snapshot
     Request --> Router
-    Router --> Validate
+    Router --> Queue
+    Queue --> Validate
     Snapshot --> Validate
     Validate --> Fetch
     Fetch --> Sources
     Sources --> Context
     Context --> ChapterInputs
     ChapterInputs --> LLM
-    LLM --> Response
+    LLM --> Translate
+    Translate --> Response
 ```
 
 ---
@@ -74,6 +78,8 @@ graph TD
 ## Concurrency model
 
 The `/v1/prioritize` and `/v1/reports/output-plan` routes are **synchronous** FastAPI routes (`def`, not `async def`). FastAPI automatically offloads sync routes to a threadpool worker, so the event loop thread remains free to accept and dispatch other requests.
+
+Output-plan requests use a per-process bounded semaphore before enrichment or LLM work. Each pod admits three active report requests by default (`OUTPUT_PLAN_MAX_CONCURRENT_REPORTS=3`); additional callers wait up to `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS=120` without creating chapter workers, then receive HTTP `429`. Every admitted production report runs its eight isolated English chapter calls through an eight-worker pool, assembles and validates the canonical report, and makes one additional translation call covering all non-English target languages. Each pod owns its semaphore, so multiple Kubernetes replicas increase throughput independently.
 
 This is the right choice as long as the orchestrator, report context enrichment, and data clients are synchronous. If the data clients are later replaced with async counterparts (e.g. `httpx.AsyncClient`), the orchestrator, report path, and routes should be converted to `async def` / `await` end-to-end.
 
@@ -141,22 +147,25 @@ sequenceDiagram
     participant LLM as OpenAI
 
     FE->>API: POST /v1/reports/output-plan CityActionReportApiRequest
-    Note over API: Validates one locode, one actionId, a language list, and the full prioritization snapshot
+    Note over API: Queue for one of 3 per-pod report slots and prepend canonical en
     API->>Context: build_enriched_report_context(...)
     Context->>Context: Validate selected city/action against snapshot
     Context->>Clients: Fetch live city/action/policy/legal/feasibility enrichment
     Clients-->>Context: Source data and source metadata
     Context-->>API: ReportContext
-    loop Each requested language
-        API->>Context: Localize source fields and deterministic terminology
-        API->>LLM: One isolated prompt per chapter and language
-        LLM-->>API: Structured single-language chapter markdown
+    API->>Context: Build 8 isolated English chapter inputs
+    par Eight English chapter calls
+        API->>LLM: Generate one strict structured English chapter
+        LLM-->>API: Validated English chapter
     end
-    Note over API: Validate language coverage and aggregate localized dictionaries
+    API->>Context: Build deterministic terminology for target languages
+    API->>LLM: Translate complete English report into all target languages
+    LLM-->>API: Strict batched translation response
+    Note over API: Validate language/chapter coverage, order, URLs, and aggregate localized dictionaries
     API-->>FE: 200 CityActionReportApiResponse (localized chapters[] for one action)
 ```
 
-The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report. Reports, post-ranking action explanations, and the separate explanation-translation endpoint share recurring frontend terminology from `app/modules/prioritizer/translations.yaml`; official names remain unchanged while descriptive prose is generated or translated in each requested language.
+The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report. Report requests always include canonical English in their normalized response language list. English chapters are generated once, while all additional requested languages are faithful translations of that completed report. Reports, post-ranking action explanations, and the separate explanation-translation endpoint share recurring frontend terminology from `app/modules/prioritizer/translations.yaml`; official names remain unchanged while descriptive prose is generated or translated.
 
 Freshness caveat: the report exactly reflects the prioritization run only if the supplied snapshot is the one used for that run. Frontend/product still need to define staleness checks and user warnings when inputs or upstream source data changed after prioritization.
 

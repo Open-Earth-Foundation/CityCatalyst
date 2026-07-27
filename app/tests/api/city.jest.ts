@@ -77,7 +77,6 @@ const emptyParams = { params: Promise.resolve({}) };
 describe("City API", () => {
   let city: City;
   let collaboratorUser: User;
-  let orgAdminUser: User;
   let project: Project;
   let organizationId: string;
 
@@ -92,7 +91,7 @@ describe("City API", () => {
       userId: collaboratorUserId,
       name: "COLLABORATOR_USER",
     });
-    [orgAdminUser] = await db.models.User.upsert({
+    await db.models.User.upsert({
       userId: orgAdminUserId,
       name: "ORG_ADMIN_USER",
     });
@@ -139,7 +138,7 @@ describe("City API", () => {
           { where: { defaultCityId: city.cityId } },
         );
         await city.destroy();
-      } catch (error) {
+      } catch (_error) {
         // Ignore errors if city was already deleted
       }
     }

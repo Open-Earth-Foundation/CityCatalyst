@@ -149,10 +149,14 @@ describe("Stationary Energy draft routes", () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     const gasToCo2EqSpy = jest.spyOn(db.models.GasToCO2Eq, "findAll");
     gasToCo2EqSpy.mockResolvedValue([
-      { gas: "CO2", co2eqPerKg: 1, co2eqYears: 100 },
-      { gas: "CH4", co2eqPerKg: 28, co2eqYears: 100 },
-      { gas: "N2O", co2eqPerKg: 265, co2eqYears: 100 },
-    ] as any);
+      new db.models.GasToCO2Eq({ gas: "CO2", co2eqPerKg: 1, co2eqYears: 100 }),
+      new db.models.GasToCO2Eq({ gas: "CH4", co2eqPerKg: 28, co2eqYears: 100 }),
+      new db.models.GasToCO2Eq({
+        gas: "N2O",
+        co2eqPerKg: 265,
+        co2eqYears: 100,
+      }),
+    ]);
     fetchMock
       .mockResolvedValueOnce(
         jsonResponse({

@@ -19,7 +19,9 @@ import { POST as postAllowedCapabilities } from "@/app/api/v1/internal/ca/capabi
 import { POST as postUserToken } from "@/app/api/v1/internal/ca/user-token/route";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { db } from "@/models";
-import { Roles } from "@/util/types";
+import { Roles, UserRole } from "@/util/types";
+import { WhereOptions } from "sequelize";
+import { randomUUID } from "node:crypto";
 
 const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
 const mockCommitAcceptedStationaryEnergyRows =
@@ -62,14 +64,18 @@ let postListNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/g
 let postCommitNotationKeys: typeof import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route").POST;
 
 beforeAll(async () => {
-  ({ POST: postLoadContext } =
-    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"));
-  ({ POST: postCommitAccepted } =
-    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"));
-  ({ POST: postListNotationKeys } =
-    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"));
-  ({ POST: postCommitNotationKeys } =
-    await import("@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"));
+  ({ POST: postLoadContext } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context/route"
+  ));
+  ({ POST: postCommitAccepted } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-accepted/route"
+  ));
+  ({ POST: postListNotationKeys } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys/route"
+  ));
+  ({ POST: postCommitNotationKeys } = await import(
+    "@/app/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys/route"
+  ));
 });
 
 const USER_ID = "11111111-1111-4111-8111-111111111111";
@@ -228,27 +234,33 @@ describe("internal CA service auth contract", () => {
 
     jest.spyOn(db.models.User, "findByPk").mockImplementation(
       async (userId) =>
-        ({
+        new db.models.User({
           email: `${String(userId)}@example.test`,
           name: `User ${String(userId)}`,
-          pictureUrl: null,
+          pictureUrl: undefined,
           role: Roles.User,
-          userId,
-        }) as any,
+          userId: userId as string,
+        }),
     );
     jest.spyOn(db.models.User, "findOne").mockImplementation(
-      async (options: any) =>
-        ({
+      async (options?: { where?: WhereOptions & { userId?: string } }) =>
+        new db.models.User({
           email: `${String(options?.where?.userId)}@example.test`,
           name: `User ${String(options?.where?.userId)}`,
-          pictureUrl: null,
+          pictureUrl: undefined,
           role: Roles.User,
-          userId: options?.where?.userId,
-        }) as any,
+          userId: options?.where?.userId ?? "",
+        }),
     );
     jest.spyOn(PermissionService, "canEditInventory").mockResolvedValue({
-      resource: { cityId: CITY_ID },
-    } as any);
+      hasAccess: true,
+      organizationId: randomUUID(),
+      userRole: UserRole.COLLABORATOR,
+      resource: new db.models.Inventory({
+        cityId: CITY_ID,
+        inventoryId: randomUUID(),
+      }),
+    });
     mockBuildStationaryEnergyContext.mockResolvedValue({
       city: {},
       current_values: [],
@@ -313,7 +325,7 @@ describe("internal CA service auth contract", () => {
       db.models.User.findByPk as jest.MockedFunction<
         typeof db.models.User.findByPk
       >
-    ).mockResolvedValueOnce(null as any);
+    ).mockResolvedValueOnce(null);
 
     const response = await postUserToken(
       makeRequest(

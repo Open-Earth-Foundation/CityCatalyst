@@ -215,7 +215,7 @@ describe("DataSource API", () => {
 
   it("should delete an inventory value", async () => {
     const datasource = await db.models.DataSource.findOne({
-      // @ts-ignore
+      // @ts-expect-error URL can be null
       where: {
         url: {
           [Op.ne]: null,

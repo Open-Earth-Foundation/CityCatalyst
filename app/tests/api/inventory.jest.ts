@@ -17,7 +17,6 @@ import {
   expectToBeLooselyEqual,
   mockRequest,
   setupTests,
-  testUserID,
 } from "../helpers";
 import {
   createTestData,
@@ -375,7 +374,7 @@ describe("Inventory API", () => {
     expect(
       res.headers.get("content-disposition")?.startsWith("attachment"),
     ).toBeTruthy();
-    const body = await res.blob();
+    await res.blob();
   });
 
   it("should not find non-existing inventories as org admin", async () => {

@@ -12,7 +12,6 @@ import { GET as getImportStatus } from "@/app/api/v1/city/[city]/inventory/[inve
 import { POST as approveImport } from "@/app/api/v1/city/[city]/inventory/[inventory]/import/approve/route";
 import { db } from "@/models";
 import assert from "node:assert";
-import { NextRequest } from "next/server";
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
 import { Roles } from "@/util/types";
@@ -33,7 +32,6 @@ import { expectStatusCode, expectStatusCodes, mockRequest } from "../helpers";
 import { Scope } from "@/models/init-models";
 
 // Test helpers (avoiding helpers.ts due to import.meta.url ESM issue)
-const mockUrl = "http://localhost:3000/api/v1";
 export const testUserID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 
 /**

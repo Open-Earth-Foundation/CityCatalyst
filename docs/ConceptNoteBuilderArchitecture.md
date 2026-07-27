@@ -751,6 +751,8 @@ erDiagram
 
     funding_records {
         uuid funding_record_id
+        string source_run_id
+        string source_record_ref
         uuid funder_id
         bool is_opportunity
         string name
@@ -827,6 +829,12 @@ requires the reviewer to select the correct link. If no existing funder is
 correct, that funder must be researched, reviewed, and imported first.
 The importer rejects missing or unknown funder IDs. Funded projects do not need
 an opportunity-record relationship for this matching flow.
+
+Imported funded projects retain the local research identity as
+`source_run_id` plus `source_record_ref`. The managed database must enforce a
+unique constraint on that pair. Replaying an approved import returns the
+existing `funding_record_id` and does not insert duplicate evidence; revised
+reference data requires a new research run.
 
 Funded-project discovery itself is project-first: its CLI requires a substantive
 current-project profile and uses that profile to guide queries and candidate

@@ -133,9 +133,12 @@ uv run python -m scripts.cnb_research.import_reviewed_reference_data `
 
 Remove `--dry-run` only after validation. This importer is the sole database
 writer in the research/review workflow; Climate Advisor does not create or
-migrate the managed CNB tables. Pairing deliberately does not use a file hash.
-If no proposed canonical funder is valid, research and import that funder before
-retrying the funded-project import.
+migrate the managed CNB tables. The managed `funding_records` contract must
+persist `source_run_id` and `source_record_ref` and enforce uniqueness on that
+pair. Retrying the same run returns the existing project IDs without inserting
+duplicate evidence. Pairing deliberately does not use a file hash. Use a new
+research run for a revised import. If no proposed canonical funder is valid,
+research and import that funder before retrying the funded-project import.
 
 The tracked reference output is
 `output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.

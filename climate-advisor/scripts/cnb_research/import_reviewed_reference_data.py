@@ -15,8 +15,9 @@ Inputs:
 
 Outputs:
 - Validates reviewer approval, canonical funder IDs, curated tags, sources, and
-  evidence. Without `--dry-run`, transactionally inserts funded projects,
-  source documents, and evidence into the managed reference tables.
+  evidence. Without `--dry-run`, transactionally inserts new funded projects,
+  source documents, and evidence into the managed reference tables, or returns
+  existing project IDs when the same run and stable record refs are retried.
 - Writes no local artifact and never creates or migrates database tables.
 
 Usage (from project root):
@@ -154,7 +155,7 @@ def main() -> None:
     except Exception:
         logger.exception("Reviewed reference-data import failed")
         raise SystemExit(1) from None
-    logger.info("Imported funding record IDs: %s", ", ".join(map(str, imported_ids)))
+    logger.info("Funding record IDs: %s", ", ".join(map(str, imported_ids)))
 
 
 if __name__ == "__main__":

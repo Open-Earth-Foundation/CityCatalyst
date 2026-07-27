@@ -122,7 +122,7 @@ class ReviewedReferenceDataWriter(Protocol):
         """Return the requested IDs that exist in the canonical funder table."""
 
     def import_projects(self, payload: ReviewedReferenceImport) -> list[UUID]:
-        """Atomically persist reviewed projects, sources, and evidence."""
+        """Idempotently persist reviewed projects, sources, and evidence."""
 
 
 def selected_funder_ids(review: ReviewedReferenceDataArtifact) -> set[UUID]:
@@ -447,59 +447,33 @@ class PostgresReviewedReferenceDataWriter:
             return {UUID(str(row[0])) for row in cursor.fetchall()}
 
     def import_projects(self, payload: ReviewedReferenceImport) -> list[UUID]:
-        """Insert all reviewed records and evidence in one database transaction."""
+        """Insert new reviewed records or reuse IDs from the same research run."""
         from psycopg2.extras import Json
 
         imported_ids: list[UUID] = []
+        inserted_count = 0
+        reused_count = 0
         with self._connect() as connection, connection.cursor() as cursor:
-            # Resolve each immutable source once for the whole paired run.
+            # Resolve immutable sources lazily so a replay performs no source writes.
             source_ids: dict[str, UUID] = {}
-            for project in payload.projects:
-                for retained in project.evidence:
-                    source = retained.source
-                    if source.source_ref in source_ids:
-                        continue
-                    cursor.execute(
-                        "SELECT source_document_id FROM source_documents "
-                        "WHERE content_hash = %s AND url = %s LIMIT 1",
-                        (source.content_hash, str(source.url)),
-                    )
-                    row = cursor.fetchone()
-                    if row is None:
-                        cursor.execute(
-                            "INSERT INTO source_documents "
-                            "(source_type, url, title, license_status, "
-                            "content_hash, fetched_at) "
-                            "VALUES (%s, %s, %s, %s, %s, %s) "
-                            "RETURNING source_document_id",
-                            (
-                                source.source_type,
-                                str(source.url),
-                                source.title,
-                                source.license_status,
-                                source.content_hash,
-                                source.fetched_at,
-                            ),
-                        )
-                        row = cursor.fetchone()
-                    if row is None:
-                        raise RuntimeError("source insert did not return an ID")
-                    source_ids[source.source_ref] = UUID(str(row[0]))
 
-            # Insert reviewed funded-project rows and their source-grounded claims.
+            # Insert each stable run/record identity once and reuse it on retries.
             for project in payload.projects:
                 record = project.record
                 cursor.execute(
                     "INSERT INTO funding_records "
-                    "(funder_id, is_opportunity, name, applicant_name, city, "
-                    "state_region, country, category, hazards, interventions, "
-                    "finance_route, instrument_type, region_scope, min_award, "
-                    "max_award, award_amount, currency, award_year, status, "
-                    "summary, project_tags) "
-                    "VALUES (%s, FALSE, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
-                    "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+                    "(source_run_id, source_record_ref, funder_id, is_opportunity, "
+                    "name, applicant_name, city, state_region, country, category, "
+                    "hazards, interventions, finance_route, instrument_type, "
+                    "region_scope, min_award, max_award, award_amount, currency, "
+                    "award_year, status, summary, project_tags) "
+                    "VALUES (%s, %s, %s, FALSE, %s, %s, %s, %s, %s, %s, %s, "
+                    "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+                    "ON CONFLICT (source_run_id, source_record_ref) DO NOTHING "
                     "RETURNING funding_record_id",
                     (
+                        payload.run_id,
+                        record.funding_record_ref,
                         str(record.selected_funder_id),
                         record.name,
                         record.applicant_name,
@@ -524,12 +498,56 @@ class PostgresReviewedReferenceDataWriter:
                 )
                 row = cursor.fetchone()
                 if row is None:
-                    raise RuntimeError("funding-record insert did not return an ID")
+                    cursor.execute(
+                        "SELECT funding_record_id FROM funding_records "
+                        "WHERE source_run_id = %s AND source_record_ref = %s",
+                        (payload.run_id, record.funding_record_ref),
+                    )
+                    row = cursor.fetchone()
+                    if row is None:
+                        raise RuntimeError(
+                            "funding-record conflict did not resolve to an existing ID"
+                        )
+                    imported_ids.append(UUID(str(row[0])))
+                    reused_count += 1
+                    continue
+
                 funding_record_id = UUID(str(row[0]))
                 imported_ids.append(funding_record_id)
+                inserted_count += 1
 
+                # Persist evidence only for a newly inserted project record.
                 for retained in project.evidence:
                     evidence = retained.evidence
+                    source = retained.source
+                    if source.source_ref not in source_ids:
+                        cursor.execute(
+                            "SELECT source_document_id FROM source_documents "
+                            "WHERE content_hash = %s AND url = %s LIMIT 1",
+                            (source.content_hash, str(source.url)),
+                        )
+                        source_row = cursor.fetchone()
+                        if source_row is None:
+                            cursor.execute(
+                                "INSERT INTO source_documents "
+                                "(source_type, url, title, license_status, "
+                                "content_hash, fetched_at) "
+                                "VALUES (%s, %s, %s, %s, %s, %s) "
+                                "RETURNING source_document_id",
+                                (
+                                    source.source_type,
+                                    str(source.url),
+                                    source.title,
+                                    source.license_status,
+                                    source.content_hash,
+                                    source.fetched_at,
+                                ),
+                            )
+                            source_row = cursor.fetchone()
+                        if source_row is None:
+                            raise RuntimeError("source insert did not return an ID")
+                        source_ids[source.source_ref] = UUID(str(source_row[0]))
+
                     cursor.execute(
                         "INSERT INTO funding_record_evidence "
                         "(funding_record_id, source_document_id, claim, "
@@ -551,8 +569,11 @@ class PostgresReviewedReferenceDataWriter:
                     )
 
         logger.info(
-            "Imported %s reviewed funded projects for research run %s",
+            "Prepared %s reviewed funded projects for research run %s: "
+            "%s inserted, %s already present",
             len(imported_ids),
             payload.run_id,
+            inserted_count,
+            reused_count,
         )
         return imported_ids

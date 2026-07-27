@@ -1,6 +1,7 @@
 """Tests for validated CNB reviewed-reference imports."""
 
 from datetime import datetime, timezone
+from unittest.mock import MagicMock
 from uuid import UUID
 
 import pytest
@@ -17,6 +18,7 @@ from app.models.cnb_research import (
     SourceDocumentDraft,
 )
 from app.services.cnb_review_import import (
+    PostgresReviewedReferenceDataWriter,
     ReviewFieldDecision,
     ReviewedReferenceData,
     ReviewedReferenceDataArtifact,
@@ -199,3 +201,58 @@ def test_import_rejects_populated_data_without_a_decision() -> None:
             review=review,
             known_funder_ids={FUNDER_ID},
         )
+
+
+def test_postgres_writer_reuses_project_and_evidence_on_retry(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    research, review = _build_pair(reviewed_project_name="Evidence-backed name")
+    payload = prepare_reviewed_reference_import(
+        research=research,
+        review=review,
+        known_funder_ids={FUNDER_ID},
+    )
+    record_id = UUID("22222222-2222-4222-8222-222222222222")
+    source_id = UUID("33333333-3333-4333-8333-333333333333")
+    connection = MagicMock()
+    connection.__enter__.return_value = connection
+    cursor = connection.cursor.return_value.__enter__.return_value
+    cursor.fetchone.side_effect = [
+        (record_id,),
+        None,
+        (source_id,),
+        None,
+        (record_id,),
+    ]
+    writer = PostgresReviewedReferenceDataWriter("postgresql://example.invalid/cnb")
+    monkeypatch.setattr(writer, "_connect", lambda: connection)
+
+    first_ids = writer.import_projects(payload)
+    retried_ids = writer.import_projects(payload)
+
+    assert retried_ids == first_ids
+    statements = [
+        " ".join(call.args[0].split()) for call in cursor.execute.call_args_list
+    ]
+    funding_insert_calls = [
+        call
+        for call in cursor.execute.call_args_list
+        if call.args[0].startswith("INSERT INTO funding_records")
+    ]
+    assert len(funding_insert_calls) == 2
+    assert all(
+        "ON CONFLICT (source_run_id, source_record_ref) DO NOTHING" in call.args[0]
+        for call in funding_insert_calls
+    )
+    assert all(
+        call.args[0].count("%s") == len(call.args[1])
+        for call in funding_insert_calls
+    )
+    assert sum(
+        statement.startswith("INSERT INTO source_documents")
+        for statement in statements
+    ) == 1
+    assert sum(
+        statement.startswith("INSERT INTO funding_record_evidence")
+        for statement in statements
+    ) == 1

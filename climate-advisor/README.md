@@ -81,23 +81,23 @@ selected run writes the normal per-run artifact without replacing the full batch
 index. Run the commands from `climate-advisor/`:
 
 ```powershell
-uv run python -m scripts.cnb_research.research_funding_opportunity `
+uv run python -m scripts.cnb.research_funding_opportunity `
   --input path/to/research-request.json `
   --output output/cnb_research
 
-uv run python -m scripts.cnb_research.research_funded_projects `
+uv run python -m scripts.cnb.research_funded_projects `
   --project path/to/current-project.json `
   --input path/to/research-request.json `
   --output output/cnb_research
 
 # Optional identity enrichment for later review/import preparation.
-uv run python -m scripts.cnb_research.research_funded_projects `
+uv run python -m scripts.cnb.research_funded_projects `
   --project path/to/current-project.json `
   --input path/to/award-portfolio-batch.json `
   --funders path/to/canonical-funders.json `
   --output output/cnb_research
 
-uv run python -m scripts.cnb_research.run_similar_project_matching `
+uv run python -m scripts.cnb.run_similar_project_matching `
   --search-request path/to/search-request.json `
   --funders path/to/canonical-funders.json `
   --research path/to/run-a.research.json --review path/to/run-a.review.json `
@@ -107,7 +107,7 @@ uv run python -m scripts.cnb_research.run_similar_project_matching `
 uv run python -m http.server 8080
 ```
 
-Visit `http://localhost:8080/scripts/cnb_research/review.html`, load a generated
+Visit `http://localhost:8080/scripts/cnb/review.html`, load a generated
 `<run_id>.research.json` or `<run_id>.similar-projects.json`, and browse its
 collapsible sections. Corpus review edits findings and reviewer-curated tags,
 selects one proposed canonical funder for every funded project, and saves
@@ -125,7 +125,7 @@ retained evidence for every imported project. Set `CNB_DATABASE_URL` to the
 externally managed CNB PostgreSQL database and validate before writing:
 
 ```powershell
-uv run python -m scripts.cnb_research.import_reviewed_reference_data `
+uv run python -m scripts.cnb.import_reviewed_reference_data `
   --research output/cnb_research/<run_id>/<run_id>.research.json `
   --review output/cnb_research/<run_id>/<run_id>.review.json `
   --dry-run

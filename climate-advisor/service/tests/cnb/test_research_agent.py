@@ -3,18 +3,18 @@
 import json
 from types import SimpleNamespace
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FundingRecordResearchResult,
     ResearchGap,
 )
-from app.services.cnb_research_agent import (
+from app.services.cnb.research_agent import (
     TARGET_FUNDED_PROJECTS_GAP_PATH,
     find_missing_data,
     preserve_evidence_qualified_funded_projects,
     run_agent_loop,
 )
-from tests.cnb_research_helpers import build_request, build_result
+from tests.cnb.helpers import build_request, build_result
 
 
 def test_missing_data_allows_multinational_funder_country_to_remain_null() -> None:

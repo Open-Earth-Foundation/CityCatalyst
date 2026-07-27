@@ -12,7 +12,7 @@ from openai import OpenAI
 from pydantic import JsonValue
 
 from app.config import get_settings
-from app.models.cnb_similar_projects import (
+from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
     CnbSimilarProjectEvidence,
     CnbSimilarProjectLlmDecision,
@@ -22,8 +22,8 @@ from app.models.cnb_similar_projects import (
     CnbSimilarProjectSearchResult,
     CnbSimilarProjectSearchRunResult,
 )
-from app.services.cnb_project_tag_normalizer import normalize_project_tags
-from app.services.cnb_reference_data_client import (
+from app.services.cnb.project_tag_normalizer import normalize_project_tags
+from app.services.cnb.reference_data_client import (
     CnbReferenceDataClient,
     UnavailableCnbReferenceDataClient,
 )
@@ -80,7 +80,7 @@ class ProjectMatchingService:
         model_name: str,
         prompt: str,
         reasoning_effort: str = "medium",
-        store_responses: bool = True,
+        store_responses: bool = False,
         reference_data_client: CnbReferenceDataClient | None = None,
     ) -> None:
         """Store injected dependencies for deterministic retrieval and matching."""
@@ -101,7 +101,7 @@ class ProjectMatchingService:
         openai_client: OpenAI,
         workflow_store: CnbSimilarProjectsWorkflowStore,
         reference_data_client: CnbReferenceDataClient | None = None,
-        store_responses: bool = True,
+        store_responses: bool = False,
     ) -> "ProjectMatchingService":
         """Build the matcher from the configured research model and matching prompt."""
         settings = get_settings()

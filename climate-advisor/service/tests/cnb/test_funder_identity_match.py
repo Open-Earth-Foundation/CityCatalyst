@@ -8,8 +8,8 @@ from uuid import uuid4
 
 import pytest
 
-from app.models.cnb_research import CanonicalFunder, FundingRecordDraft
-from app.services.cnb_funder_identity_match import (
+from app.models.cnb.research import CanonicalFunder, FundingRecordDraft
+from app.services.cnb.funder_identity_match import (
     FunderIdentityLlmDecision,
     FunderIdentityLlmDecisionSet,
     FunderIdentityLlmMatch,

@@ -6,7 +6,7 @@ import logging
 from typing import Protocol
 from uuid import UUID
 
-from app.models.cnb_similar_projects import CnbSimilarProjectCandidate
+from app.models.cnb.similar_projects import CnbSimilarProjectCandidate
 
 logger = logging.getLogger(__name__)
 

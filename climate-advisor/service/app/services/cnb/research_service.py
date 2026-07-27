@@ -12,20 +12,20 @@ from uuid import uuid4
 from openai import OpenAI
 
 from app.config import Settings, get_settings
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     AgentTurn,
     FundingOpportunityResearchBundle,
     FundingOpportunityResearchRequest,
     ResearchGap,
     ResearchRunMetadata,
 )
-from app.services.cnb_research_agent import AgentLoopOutcome, run_agent_loop
-from app.services.cnb_research_agent import scrape_seed_sources
-from app.services.cnb_research_artifacts import (
+from app.services.cnb.research_agent import AgentLoopOutcome, run_agent_loop
+from app.services.cnb.research_agent import scrape_seed_sources
+from app.services.cnb.research_artifacts import (
     render_review,
     write_research_artifacts,
 )
-from app.services.cnb_research_bundle import build_research_bundle
+from app.services.cnb.research_bundle import build_research_bundle
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.firecrawl import FirecrawlClient
 from app.utils.mlflow_logging import (

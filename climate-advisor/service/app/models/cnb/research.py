@@ -9,7 +9,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, JsonValue, model_validator
 
-from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
+from app.models.cnb.similar_projects import CnbSimilarProjectSearchRequest
 
 
 def _ensure_unique(values: list[str], field_name: str) -> None:

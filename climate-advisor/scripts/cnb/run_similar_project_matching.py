@@ -38,11 +38,11 @@ Outputs:
   command is a local review harness, not the production workflow adapter.
 
 Usage (from ``climate-advisor/``):
-- ``uv run python -m scripts.cnb_research.run_similar_project_matching \
+- ``uv run python -m scripts.cnb.run_similar_project_matching \
     --input path/to/similar-project-input.json \
     --source-bundle output/cnb_research/<source-run>/research_bundle.json \
     --output output/cnb_research``
-- ``uv run python -m scripts.cnb_research.run_similar_project_matching \
+- ``uv run python -m scripts.cnb.run_similar_project_matching \
     --search-request path/to/search-request.json \
     --funders path/to/canonical-funders.json \
     --research path/to/research-a.json --review path/to/review-a.json \
@@ -220,7 +220,7 @@ def ensure_service_directory_on_path() -> None:
 
 def load_run_input(path: Path) -> Any:
     """Read and strictly validate one local review input document."""
-    from app.models.cnb_similar_projects import CnbSimilarProjectReviewRunInput
+    from app.models.cnb.similar_projects import CnbSimilarProjectReviewRunInput
 
     payload = json.loads(path.read_text(encoding="utf-8"))
     return CnbSimilarProjectReviewRunInput.model_validate(payload)
@@ -228,7 +228,7 @@ def load_run_input(path: Path) -> Any:
 
 def load_search_request(path: Path) -> Any:
     """Read and strictly validate one local similar-project search request."""
-    from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
+    from app.models.cnb.similar_projects import CnbSimilarProjectSearchRequest
 
     payload = json.loads(path.read_text(encoding="utf-8"))
     return CnbSimilarProjectSearchRequest.model_validate(payload)
@@ -236,7 +236,7 @@ def load_search_request(path: Path) -> Any:
 
 def load_research_bundle(path: Path) -> Any:
     """Read and strictly validate one local funding research bundle."""
-    from app.models.cnb_research import FundingOpportunityResearchBundle
+    from app.models.cnb.research import FundingOpportunityResearchBundle
 
     payload = json.loads(path.read_text(encoding="utf-8"))
     return FundingOpportunityResearchBundle.model_validate(payload)
@@ -244,7 +244,7 @@ def load_research_bundle(path: Path) -> Any:
 
 def load_review_artifact(path: Path) -> Any:
     """Read and strictly validate one reviewed reference-data artifact."""
-    from app.services.cnb_review_import import ReviewedReferenceDataArtifact
+    from app.services.cnb.review_import import ReviewedReferenceDataArtifact
 
     payload = json.loads(path.read_text(encoding="utf-8"))
     return ReviewedReferenceDataArtifact.model_validate(payload)
@@ -257,7 +257,7 @@ def build_run_input_from_reviewed_pairs(
     known_funder_ids: set[UUID],
 ) -> Any:
     """Build local input while preserving the runner's import-level API."""
-    from app.services.cnb_similar_project_review import (
+    from app.services.cnb.similar_project_review import (
         build_run_input_from_reviewed_pairs as build_reviewed_input,
     )
 
@@ -295,7 +295,7 @@ def load_run_input_from_args(args: argparse.Namespace) -> Any:
         (load_research_bundle(research_path), load_review_artifact(review_path))
         for research_path, review_path in zip(research_paths, review_paths, strict=True)
     ]
-    from scripts.cnb_research.research_funded_projects import (
+    from scripts.cnb.research_funded_projects import (
         load_canonical_funders,
     )
 
@@ -315,7 +315,7 @@ def build_run_metadata(
     prompt_sha256: str,
 ) -> Any:
     """Build strict, mode-specific provenance for the emitted artifact."""
-    from app.models.cnb_similar_projects import (
+    from app.models.cnb.similar_projects import (
         CnbSimilarProjectReviewedArtifactPair,
         CnbSimilarProjectReviewedArtifactProvenance,
         CnbSimilarProjectReviewRunMetadata,
@@ -374,12 +374,12 @@ def main() -> None:
     from openai import OpenAI
 
     from app.config import get_settings
-    from app.models.cnb_similar_projects import (
+    from app.models.cnb.similar_projects import (
         CnbSimilarProjectReviewRunArtifact,
         CnbSimilarProjectReviewState,
     )
     from app.services.openrouter_client import build_openrouter_client_options
-    from app.services.cnb_similar_project_search import ProjectMatchingService
+    from app.services.cnb.similar_project_search import ProjectMatchingService
 
     # Step 2: reject malformed input or missing provenance before a provider call.
     try:

@@ -6,7 +6,7 @@ from uuid import UUID
 
 import pytest
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FunderDraft,
     FunderIdentityCandidate,
@@ -17,14 +17,14 @@ from app.models.cnb_research import (
     ReviewState,
     SourceDocumentDraft,
 )
-from app.services.cnb_review_import import (
+from app.services.cnb.review_import import (
     PostgresReviewedReferenceDataWriter,
     ReviewFieldDecision,
     ReviewedReferenceData,
     ReviewedReferenceDataArtifact,
     prepare_reviewed_reference_import,
 )
-from tests.cnb_research_helpers import build_request
+from tests.cnb.helpers import build_request
 
 FUNDER_ID = UUID("11111111-1111-4111-8111-111111111111")
 NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)

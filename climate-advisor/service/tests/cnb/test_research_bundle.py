@@ -2,7 +2,7 @@
 
 from datetime import datetime, timezone
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FunderCriterionResearchResult,
     FunderTemplateResearchResult,
@@ -11,13 +11,13 @@ from app.models.cnb_research import (
     ResearchRunMetadata,
     TemplateChapterDraft,
 )
-from app.services.cnb_research_bundle import (
+from app.services.cnb.research_bundle import (
     build_research_bundle,
     convert_agent_result,
     material_paths,
 )
 from app.tools.firecrawl import CapturedSource
-from tests.cnb_research_helpers import build_request, build_result
+from tests.cnb.helpers import build_request, build_result
 
 
 def test_material_paths_use_funding_record_reference() -> None:

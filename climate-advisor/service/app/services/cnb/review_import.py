@@ -11,7 +11,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, JsonValue, model_validator
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FunderCriterionDraft,
     FunderDraft,
@@ -22,7 +22,7 @@ from app.models.cnb_research import (
     ReviewState,
     SourceDocumentDraft,
 )
-from app.services.cnb_project_tag_normalizer import normalize_project_tags
+from app.services.cnb.project_tag_normalizer import normalize_project_tags
 
 logger = logging.getLogger(__name__)
 _PATH_TOKEN_PATTERN = re.compile(r"[^.\[\]]+|\[[^\]]*\]")

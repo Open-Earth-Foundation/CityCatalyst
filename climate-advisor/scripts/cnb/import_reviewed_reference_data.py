@@ -21,7 +21,7 @@ Outputs:
 - Writes no local artifact and never creates or migrates database tables.
 
 Usage (from project root):
-- uv run python -m scripts.cnb_research.import_reviewed_reference_data \
+- uv run python -m scripts.cnb.import_reviewed_reference_data \
     --research output/cnb_research/<run_id>/<run_id>.research.json \
     --review output/cnb_research/<run_id>/<run_id>.review.json --dry-run
 """
@@ -91,8 +91,8 @@ def main() -> None:
     if str(service_directory) not in sys.path:
         sys.path.insert(0, str(service_directory))
 
-    from app.models.cnb_research import FundingOpportunityResearchBundle
-    from app.services.cnb_review_import import (
+    from app.models.cnb.research import FundingOpportunityResearchBundle
+    from app.services.cnb.review_import import (
         PostgresReviewedReferenceDataWriter,
         ReviewedReferenceDataArtifact,
         prepare_reviewed_reference_import,

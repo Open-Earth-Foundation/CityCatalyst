@@ -9,7 +9,7 @@ import unicodedata
 
 from pydantic import JsonValue
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     AgentTurn,
     FieldEvidence,
     FunderCriterionDraft,

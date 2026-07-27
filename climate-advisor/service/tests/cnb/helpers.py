@@ -1,6 +1,6 @@
 """Shared object builders for Concept Note Builder research tests."""
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FunderProfileResearchResult,
     FunderResearchResult,

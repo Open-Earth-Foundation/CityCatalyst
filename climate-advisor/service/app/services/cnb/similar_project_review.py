@@ -2,23 +2,25 @@
 
 from __future__ import annotations
 
+import logging
 from decimal import Decimal
 from uuid import UUID, uuid5
 
-from app.models.cnb_research import FundingOpportunityResearchBundle, FundingRecordDraft
-from app.models.cnb_similar_projects import (
+from app.models.cnb.research import FundingOpportunityResearchBundle, FundingRecordDraft
+from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
     CnbSimilarProjectEvidence,
     CnbSimilarProjectReviewRunInput,
     CnbSimilarProjectReviewSource,
     CnbSimilarProjectSearchRequest,
 )
-from app.services.cnb_review_import import (
+from app.services.cnb.review_import import (
     ReviewedFundedProjectImport,
     ReviewedReferenceDataArtifact,
     prepare_reviewed_reference_import,
 )
 
+logger = logging.getLogger(__name__)
 LOCAL_REVIEW_ID_NAMESPACE = UUID("a5321519-d7fb-4ac3-b8c1-68c8f667eb2f")
 _CandidateEntry = tuple[CnbSimilarProjectCandidate, str, str]
 
@@ -244,7 +246,7 @@ def _build_reviewed_candidate(
 def _merge_candidate_entries(
     entries: list[_CandidateEntry],
 ) -> CnbSimilarProjectCandidate:
-    """Merge equivalent candidates while retaining the richest scalar record."""
+    """Merge equivalent candidates and expose duplicate consolidation as a caveat."""
     # Select the stable scalar base before combining repeatable reviewed fields.
     best_candidate, _, _ = min(
         entries,
@@ -256,6 +258,25 @@ def _merge_candidate_entries(
         ),
     )
     candidates = [candidate for candidate, _, _ in entries]
+    known_gaps = [
+        value for candidate in candidates for value in candidate.known_gaps
+    ]
+
+    # Make semantic duplicate consolidation visible in logs and review artifacts.
+    if len(entries) > 1:
+        origins = sorted(f"{run_id}:{record_ref}" for _, run_id, record_ref in entries)
+        origin_list = ", ".join(origins)
+        logger.warning(
+            "Merged %s semantically equivalent CNB reviewed project records "
+            "into candidate %s: %s",
+            len(entries),
+            best_candidate.funding_record_id,
+            origin_list,
+        )
+        known_gaps.append(
+            f"Merged {len(entries)} reviewed records with the same semantic "
+            f"identity: {origin_list}."
+        )
 
     # Preserve first-seen list ordering across every equivalent review record.
     return best_candidate.model_copy(
@@ -277,9 +298,7 @@ def _merge_candidate_entries(
                     for value in candidate.project_tags
                 ]
             ),
-            "known_gaps": _ordered_unique_strings(
-                [value for candidate in candidates for value in candidate.known_gaps]
-            ),
+            "known_gaps": _ordered_unique_strings(known_gaps),
             "evidence": _deduplicate_evidence(
                 [value for candidate in candidates for value in candidate.evidence]
             ),

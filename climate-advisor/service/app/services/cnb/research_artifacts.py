@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from app.models.cnb_research import FundingOpportunityResearchBundle
+from app.models.cnb.research import FundingOpportunityResearchBundle
 
 
 def write_research_artifacts(

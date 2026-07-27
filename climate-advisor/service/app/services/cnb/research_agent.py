@@ -9,7 +9,7 @@ import logging
 from openai import OpenAI
 from pydantic import JsonValue, ValidationError
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     AgentTurn,
     FunderProfileResearchResult,
     FunderResearchResult,
@@ -18,7 +18,7 @@ from app.models.cnb_research import (
     FundingOpportunityResearchResult,
     ResearchGap,
 )
-from app.services.cnb_research_bundle import (
+from app.services.cnb.research_bundle import (
     convert_agent_result,
     evidence_covers,
     exclude_target_project_self_matches,

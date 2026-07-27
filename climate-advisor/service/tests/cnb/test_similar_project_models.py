@@ -6,7 +6,7 @@ from openai.lib._pydantic import to_strict_json_schema
 from pydantic import ValidationError
 import pytest
 
-from app.models.cnb_similar_projects import (
+from app.models.cnb.similar_projects import (
     CnbSimilarProjectLlmDecision,
     CnbSimilarProjectLlmDecisionSet,
     CnbSimilarProjectSearchRequest,

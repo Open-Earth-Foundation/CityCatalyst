@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 import pytest
 
-from app.models.cnb_similar_projects import (
+from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
     CnbSimilarProjectEvidence,
     CnbSimilarProjectLlmDecision,
@@ -14,7 +14,8 @@ from app.models.cnb_similar_projects import (
     CnbSimilarProjectMatch,
     CnbSimilarProjectSearchRequest,
 )
-from app.services.cnb_similar_project_search import (
+from app.services.cnb import similar_project_search
+from app.services.cnb.similar_project_search import (
     ProjectMatchingService,
     rebuild_similar_projects_section,
 )
@@ -128,6 +129,48 @@ def _service(
     )
 
 
+def test_service_does_not_store_provider_responses_by_default(
+    monkeypatch,
+) -> None:
+    direct_service, _ = _service(
+        store=FakeStore(),
+        reference_data=FakeReferenceData([]),
+        decisions=None,
+    )
+    fake_settings = SimpleNamespace(
+        llm=SimpleNamespace(
+            models=SimpleNamespace(
+                funding_research=SimpleNamespace(
+                    name="test-model",
+                    reasoning_effort="low",
+                )
+            ),
+            prompts=SimpleNamespace(
+                get_prompt=lambda prompt_name: f"Prompt: {prompt_name}"
+            ),
+        )
+    )
+    monkeypatch.setattr(
+        similar_project_search,
+        "get_settings",
+        lambda: fake_settings,
+    )
+
+    configured_service = ProjectMatchingService.from_settings(
+        openai_client=SimpleNamespace(responses=FakeResponses(None)),
+        workflow_store=FakeStore(),
+    )
+    opted_in_service = ProjectMatchingService.from_settings(
+        openai_client=SimpleNamespace(responses=FakeResponses(None)),
+        workflow_store=FakeStore(),
+        store_responses=True,
+    )
+
+    assert direct_service.store_responses is False
+    assert configured_service.store_responses is False
+    assert opted_in_service.store_responses is True
+
+
 def test_service_skips_until_the_project_upload_is_ingested() -> None:
     store = FakeStore(ingested=False)
     reference_data = FakeReferenceData([])
@@ -206,6 +249,7 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     assert store.context == (result.result.matches, [])
     assert reference_data.calls == [(request.funder_id, 5)]
     payload = json.loads(responses.calls[0]["input"])
+    assert responses.calls[0]["store"] is False
     assert [item["funding_record_id"] for item in payload["candidates"]] == [
         str(selected.funding_record_id),
         str(less_related.funding_record_id),

@@ -23,11 +23,11 @@ Outputs:
 - Performs no database reads or writes.
 
 Usage (from ``climate-advisor/``):
-- uv run python -m scripts.cnb_research.research_funded_projects \
+- uv run python -m scripts.cnb.research_funded_projects \
     --input path/to/research-request.json \
     --project path/to/target-project.json \
     --output output/cnb_research
-- uv run python -m scripts.cnb_research.research_funded_projects \
+- uv run python -m scripts.cnb.research_funded_projects \
     --input path/to/research-batch.json \
     --project path/to/target-project.json \
     --request-index 3 \
@@ -171,7 +171,7 @@ def extract_snapshot_items(payload: object) -> list[object]:
 def load_target_project(path: Path) -> Any:
     """Validate the required target-project profile used by discovery."""
     ensure_service_directory_on_path()
-    from app.models.cnb_similar_projects import CnbSimilarProjectSearchRequest
+    from app.models.cnb.similar_projects import CnbSimilarProjectSearchRequest
 
     return CnbSimilarProjectSearchRequest.model_validate(read_json(path))
 
@@ -186,7 +186,7 @@ def apply_similar_project_defaults(payload: object) -> object:
 def load_request(path: Path, *, target_project: Any) -> Any:
     """Validate one request or batch and attach the target project to each."""
     ensure_service_directory_on_path()
-    from app.models.cnb_research import FundingOpportunityResearchRequest
+    from app.models.cnb.research import FundingOpportunityResearchRequest
 
     payload = read_json(path)
     if isinstance(payload, dict) and (
@@ -217,7 +217,7 @@ def load_request(path: Path, *, target_project: Any) -> Any:
 def load_canonical_funders(path: Path) -> list[Any]:
     """Validate the canonical-funder snapshot against the shared model."""
     ensure_service_directory_on_path()
-    from app.models.cnb_research import CanonicalFunder
+    from app.models.cnb.research import CanonicalFunder
 
     payload = read_json(path)
     items = extract_snapshot_items(payload)
@@ -370,11 +370,11 @@ def main() -> None:
     from openai import OpenAI
 
     from app.config import get_settings
-    from app.services.cnb_funder_identity_match import (
+    from app.services.cnb.funder_identity_match import (
         propose_funder_identity_candidates,
     )
     from app.services.openrouter_client import build_openrouter_client_options
-    from app.services.cnb_research_service import run_funding_opportunity_research
+    from app.services.cnb.research_service import run_funding_opportunity_research
 
     # Step 3: validate the target project, research manifest, and optional selection.
     selected_batch_position: tuple[int, int] | None = None

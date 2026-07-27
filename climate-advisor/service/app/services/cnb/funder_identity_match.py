@@ -9,7 +9,7 @@ from uuid import UUID
 from openai import OpenAI
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     CanonicalFunder,
     FunderIdentityCandidate,
     FundingRecordDraft,

@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from app.services import cnb_research_service
-from app.services.cnb_research_service import run_funding_opportunity_research
+from app.services.cnb import research_service
+from app.services.cnb.research_service import run_funding_opportunity_research
 from app.tools.firecrawl import CapturedSource
-from tests.cnb_research_helpers import build_request, build_result
+from tests.cnb.helpers import build_request, build_result
 
 
 def test_service_writes_pending_review_artifacts_on_final_turn(
@@ -103,9 +103,9 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
             ),
         ),
     )
-    monkeypatch.setattr(cnb_research_service, "get_settings", lambda: fake_settings)
+    monkeypatch.setattr(research_service, "get_settings", lambda: fake_settings)
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "FirecrawlClient",
         FakeFirecrawl,
     )
@@ -117,7 +117,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         return nullcontext(fake_mlflow_run)
 
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "start_run",
         fake_start_run,
     )
@@ -134,18 +134,18 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         yield span
 
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "start_trace_span",
         fake_start_trace_span,
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "set_span_outputs",
         lambda span, outputs: setattr(span, "outputs", outputs),
     )
     trace_context_updates: list[dict[str, object]] = []
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "update_current_trace_context",
         lambda **kwargs: trace_context_updates.append(kwargs),
     )
@@ -153,22 +153,22 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     logged_json_artifacts: list[str] = []
     logged_directories: list[tuple[Path, str]] = []
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_metrics",
         lambda metrics: logged_metrics.append(metrics),
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_json_artifact",
         lambda artifact_file, _payload: logged_json_artifacts.append(artifact_file),
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_text_artifact",
         lambda *_args, **_kwargs: None,
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_directory_artifacts",
         lambda path, *, artifact_path: logged_directories.append(
             (path, artifact_path)

@@ -1,6 +1,6 @@
 """Tests for deterministic Concept Note Builder project-tag normalization."""
 
-from app.services.cnb_project_tag_normalizer import (
+from app.services.cnb.project_tag_normalizer import (
     normalize_project_tag,
     normalize_project_tags,
 )

@@ -447,6 +447,9 @@ language, or client-side fallback behavior. The boundary is:
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
+- `MLFLOW_TRACKING_USERNAME` - Non-admin MLflow service-account username
+- `MLFLOW_TRACKING_PASSWORD` - Service-account password; store real values only
+  in local `.env` or GitHub Secrets
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
   default `Clima`
@@ -816,6 +819,7 @@ still preserving per-turn trace detail.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
+`MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD`,
 `MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`, the
 `MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
 `MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
@@ -844,8 +848,14 @@ helpers with in-memory fakes, but they do not send runs or traces to the remote
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
 because the value is a non-sensitive experiment name. The Kubernetes manifests
-still keep the same default so direct `kubectl apply` deployments work without
-GitHub.
+still keep the same default.
+
+The authentication values are different: deployment workflows read
+`MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` from GitHub Secrets,
+then add them to the existing per-environment `kubectl set env` command
+alongside the other service credentials. A manual deployment must set the same
+environment variables after applying the manifests. Use the shared non-admin
+service account; do not use the MLflow admin account or Flask signing secret.
 
 Before enabling MLflow in an environment:
 

@@ -214,5 +214,7 @@
   "space-and-comma": "Space and comma (e.g.: 1 000 000,50)",
   "apostrophe-and-dot": "Apostrophe and dot (e.g.: 1’000’000.50)",
   "preferences": "Preferences",
-  "preferences-updated": "Preferences updated"
+  "preferences-updated": "Preferences updated",
+  "preferences-info-update-title": "You can now configure your preferences",
+  "preferences-info-update-description": "In the preference section you will now find the language selection and numerical formats."
 }

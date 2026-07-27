@@ -530,6 +530,7 @@ export const appTheme = createSystem(defaultConfig, {
           default: { value: "#FFFFFF" }, // validated
           neutral: { value: "#E8EAFB" }, // validated
           alternative: { value: "#EFFDE5" }, // validated
+          info: { value: "#DBEAFE" },
           overlay: { value: "#C5CBF5" }, // validated
           transparentGrey: { value: "rgba(232, 234, 251, 0.20)" },
           backgroundLight: { value: "#FAFAFA" },

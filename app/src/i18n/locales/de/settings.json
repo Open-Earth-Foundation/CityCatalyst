@@ -219,5 +219,7 @@
   "comma-and-dot": "Komma und Punkt (z.B.: 1,000,000.50)",
   "dot-and-comma": "Punkt und Komma (z.B.: 1.000.000,50)",
   "space-and-comma": "Leerzeichen und Komma (z.B.: 1 000 000,50)",
-  "apostrophe-and-dot": "Apostroph und Punkt (z.B.: 1’000’000.50)"
+  "apostrophe-and-dot": "Apostroph und Punkt (z.B.: 1’000’000.50)",
+  "preferences-info-update-title": "Sie konnen jetzt Ihre Einstellungen konfigurieren",
+  "preferences-info-update-description": "Im Bereich Einstellungen finden Sie jetzt die Sprachauswahl und Zahlenformate."
 }

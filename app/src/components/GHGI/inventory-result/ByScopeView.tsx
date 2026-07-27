@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Decimal from "decimal.js";
 import { Box, Table, useDisclosure, Icon } from "@chakra-ui/react";
 import { ActivityDataByScope } from "@/util/types";
 import type { TFunction } from "i18next";
@@ -52,10 +53,13 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
     groupedData[subsector].push(item);
   });
 
-  // Calculate sector total emissions for correct percentage calculation
+  // Calculate sector total emissions for correct percentage calculation.
+  // Uses Decimal (matching ResultsService.ts's calculatePercentage) instead of
+  // Number, since AFOLU-style negative/offsetting subsectors need the same
+  // precision the backend percentages were computed with.
   const sectorTotalEmissions = data.reduce(
-    (sum, item) => sum + Number(item.totalEmissions),
-    0,
+    (sum, item) => sum.plus(new Decimal(item.totalEmissions)),
+    new Decimal(0),
   );
 
   const toggleSubsector = (subsector: string) => {
@@ -131,11 +135,18 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
 
     // Multiple activities - create manual accordion
     const totalEmissions = activities.reduce(
-      (sum, item) => sum + Number(item.totalEmissions),
-      0,
+      (sum, item) => sum.plus(new Decimal(item.totalEmissions)),
+      new Decimal(0),
     );
-    // Calculate correct percentage based on subsector total emissions relative to sector total
-    const totalPercentage = (totalEmissions / sectorTotalEmissions) * 100;
+    // Calculate correct percentage based on subsector total emissions relative
+    // to sector total, matching ResultsService.ts's calculatePercentage
+    const totalPercentage = sectorTotalEmissions.lessThanOrEqualTo(0)
+      ? 0
+      : totalEmissions
+          .times(100)
+          .div(sectorTotalEmissions)
+          .round()
+          .toNumber();
     const uniqueSources = [
       ...new Set(activities.map((item) => item.datasource_name)),
     ];
@@ -172,8 +183,8 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
               <BodyMedium color="content.secondary">
                 {convertKgToTonnes(
                   activities.reduce(
-                    (sum, item) => sum + Number(item.scopes[s] || 0),
-                    0,
+                    (sum, item) => sum.plus(new Decimal(item.scopes[s] || 0)),
+                    new Decimal(0),
                   ),
                   numberFormat,
                 )}

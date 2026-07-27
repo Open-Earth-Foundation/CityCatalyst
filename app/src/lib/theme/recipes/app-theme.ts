@@ -99,6 +99,10 @@ export const appTheme = createSystem(defaultConfig, {
               _violet_theme: "{colors.violet_theme.content.primary}",
             },
           },
+          /** Disabled primary button label. */
+          disabled: {
+            value: "#6E6E6E",
+          },
         },
         interactive: {
           secondary: {
@@ -206,6 +210,10 @@ export const appTheme = createSystem(defaultConfig, {
           /** Disabled controls and non-interactive surfaces. */
           backgroundDisabled: {
             value: "#D9D9D9",
+          },
+          /** Disabled primary button background. */
+          disabledDefault: {
+            value: "#EBEBEB",
           },
         },
         border: {
@@ -493,6 +501,7 @@ export const appTheme = createSystem(defaultConfig, {
           tertiary: { value: "#7A7B9A" }, // validated
           link: { value: "#2351DC" }, // validated
           alternative: { value: "#001EA7" }, // validated
+          disabled: { value: "#6E6E6E" },
         },
 
         sectors: {
@@ -537,6 +546,7 @@ export const appTheme = createSystem(defaultConfig, {
           backgroundGreyFlat: { value: "#FAFBFE" },
           backgroundLoading: { value: "#E8EAFB" },
           backgroundDisabled: { value: "#D9D9D9" },
+          disabledDefault: { value: "#EBEBEB" },
         },
 
         interactive: {

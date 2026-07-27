@@ -88,7 +88,7 @@ export function SourceDrawer({
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
     let totalEmissions = emissionsData
       ? formatNumber(
-          (Number(emissionsData) * sourceData?.scaleFactor) / 1000,
+          (Number(emissionsData) * (sourceData?.scaleFactor ?? 1.0)) / 1000,
           numberFormat,
           2,
         )
@@ -215,7 +215,7 @@ export function SourceDrawer({
                             content={
                               t("total-emissions-tooltip") +
                               ".\nScale factor: " +
-                              sourceData?.scaleFactor.toFixed(4)
+                              sourceData?.scaleFactor?.toFixed(4)
                             }
                             positioning={{ placement: "bottom-end" }}
                           >

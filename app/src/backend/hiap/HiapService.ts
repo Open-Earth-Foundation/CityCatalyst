@@ -24,6 +24,7 @@ import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
 import { Op } from "sequelize";
 import VersionHistoryService from "../VersionHistoryService";
+import { getTranslationFromDictionary } from "@/util/helpers";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info(`Using HIAP API at ${HIAP_API_URL}`);
@@ -579,12 +580,27 @@ function extractLocalizedString(
   field: string | Record<string, string> | null | undefined,
   lang: LANGUAGES,
 ): string | undefined {
-  if (!field) return undefined;
-  if (typeof field === "string") return field;
-  if (typeof field === "object" && field[lang]) return field[lang];
-  // Fallback to English if requested language not available
-  if (typeof field === "object" && field["en"]) return field["en"];
-  return undefined;
+  return getTranslationFromDictionary(field ?? undefined, lang);
+}
+
+/** Ensure ranked action text fields are strings for the requested language. */
+export function normalizeRankedActionForLang(action: any, lang: LANGUAGES) {
+  const plain = typeof action.toJSON === "function" ? action.toJSON() : action;
+  return {
+    ...plain,
+    name: getTranslationFromDictionary(plain.name, lang) ?? plain.name ?? "",
+    description:
+      getTranslationFromDictionary(plain.description, lang) ??
+      plain.description ??
+      "",
+    equityAndInclusionConsiderations:
+      getTranslationFromDictionary(
+        plain.equityAndInclusionConsiderations,
+        lang,
+      ) ??
+      plain.equityAndInclusionConsiderations ??
+      "",
+  };
 }
 
 async function fetchAndMergeRankedActions(
@@ -729,6 +745,8 @@ async function createRankedActionRecord(
         adaptationEffectivenessPerHazard:
           rankedAction.adaptationEffectivenessPerHazard,
         biome: rankedAction.biome,
+        // Keep selection in sync when copying ranked rows into a new language
+        isSelected: Boolean(rankedAction.isSelected),
       },
       { returning: true },
     );
@@ -1085,6 +1103,9 @@ async function getRankedActionsForLang(
   lang: LANGUAGES,
   type?: ACTION_TYPES,
 ) {
+  // Repair any pre-existing per-language selection drift before reading
+  await syncRankedActionSelectionsAcrossLanguages(ranking.id);
+
   const whereClause: any = { hiaRankingId: ranking.id, lang };
 
   // Add type filter only if type is provided
@@ -1097,7 +1118,7 @@ async function getRankedActionsForLang(
     order: [["rank", "ASC"]],
   });
 
-  return actions;
+  return actions.map((action) => normalizeRankedActionForLang(action, lang));
 }
 
 // Helper: Copy actions from any existing language to the requested language
@@ -1157,11 +1178,19 @@ export async function copyRankedActionsToLang(
     );
   }
 
+  // Propagate selection flags: an action selected in any language stays selected in the new one
+  const selectedActionIds = new Set(
+    allLangRanked
+      .filter((action) => action.isSelected)
+      .map((action) => action.actionId),
+  );
+
   const rankedActions = uniqueActions.map((r) => ({
     actionId: r.actionId,
     rank: r.rank,
     explanation: r.explanation, // Pass through explanation object with available languages
     type: r.type as ACTION_TYPES,
+    isSelected: selectedActionIds.has(r.actionId),
   }));
 
   // Fetch and merge action details in the requested language
@@ -1380,6 +1409,188 @@ export const readSelectedActionsFile = async (
     return [];
   }
 };
+
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/**
+ * Sync ranked action selection across all language rows for a ranking.
+ * Selection is keyed by stable actionId, not per-language row UUID.
+ */
+export async function syncRankedActionSelectionsAcrossLanguages(
+  hiaRankingId: string,
+): Promise<void> {
+  const rows = await db.models.HighImpactActionRanked.findAll({
+    where: { hiaRankingId },
+    attributes: ["actionId", "isSelected"],
+  });
+
+  const selectedActionIds = [
+    ...new Set(
+      rows.filter((row) => row.isSelected).map((row) => row.actionId),
+    ),
+  ];
+
+  if (selectedActionIds.length === 0) {
+    await db.models.HighImpactActionRanked.update(
+      { isSelected: false },
+      { where: { hiaRankingId } },
+    );
+    return;
+  }
+
+  await db.models.HighImpactActionRanked.update(
+    { isSelected: true },
+    {
+      where: {
+        hiaRankingId,
+        actionId: { [Op.in]: selectedActionIds },
+      },
+    },
+  );
+  await db.models.HighImpactActionRanked.update(
+    { isSelected: false },
+    {
+      where: {
+        hiaRankingId,
+        actionId: { [Op.notIn]: selectedActionIds },
+      },
+    },
+  );
+}
+
+/**
+ * Persist HIAP action selections for an inventory + action type.
+ * Ranked selections are applied by stable actionId across every language row.
+ * Unranked selections are written for all supported languages.
+ */
+export async function updateHiapActionSelections({
+  inventoryId,
+  actionType,
+  selectedIds,
+  authorId,
+}: {
+  inventoryId: string;
+  actionType: ACTION_TYPES;
+  selectedIds: string[];
+  authorId: string;
+}): Promise<number> {
+  const rankings = await db.models.HighImpactActionRanking.findAll({
+    where: { inventoryId, type: actionType },
+  });
+  const rankingIds = rankings.map((ranking) => ranking.id);
+
+  const rankedRecordIds: string[] = [];
+  const unrankedActionIds: string[] = [];
+
+  for (const selectedId of selectedIds) {
+    if (UUID_REGEX.test(selectedId)) {
+      rankedRecordIds.push(selectedId);
+    } else {
+      unrankedActionIds.push(selectedId);
+    }
+  }
+
+  let updatedCount = 0;
+
+  if (rankingIds.length > 0) {
+    // Resolve current-language row UUIDs to stable actionIds
+    const selectedRankedRows =
+      rankedRecordIds.length > 0
+        ? await db.models.HighImpactActionRanked.findAll({
+            where: {
+              id: rankedRecordIds,
+              hiaRankingId: rankingIds,
+            },
+            attributes: ["actionId"],
+          })
+        : [];
+
+    const selectedActionIds = [
+      ...new Set(selectedRankedRows.map((row) => row.actionId)),
+    ];
+
+    // Deselect every language row whose actionId is not selected
+    const deselectWhere =
+      selectedActionIds.length > 0
+        ? {
+            hiaRankingId: rankingIds,
+            actionId: { [Op.notIn]: selectedActionIds },
+          }
+        : { hiaRankingId: rankingIds };
+
+    const [_deselectedCount, changedDeselectedEntries] =
+      await db.models.HighImpactActionRanked.update(
+        { isSelected: false },
+        {
+          where: deselectWhere,
+          returning: true,
+        },
+      );
+
+    await VersionHistoryService.bulkCreateVersions(
+      inventoryId,
+      "HighImpactActionRanked",
+      authorId,
+      changedDeselectedEntries,
+      false,
+      undefined,
+      "hiap",
+    );
+
+    if (selectedActionIds.length > 0) {
+      // Select matching actionIds in every language for this action type
+      const [affectedCount, changedEntries] =
+        await db.models.HighImpactActionRanked.update(
+          { isSelected: true },
+          {
+            where: {
+              hiaRankingId: rankingIds,
+              actionId: { [Op.in]: selectedActionIds },
+            },
+            returning: true,
+          },
+        );
+      updatedCount += affectedCount;
+
+      await VersionHistoryService.bulkCreateVersions(
+        inventoryId,
+        "HighImpactActionRanked",
+        authorId,
+        changedEntries,
+        false,
+        undefined,
+        "hiap",
+      );
+    }
+  }
+
+  // Replace unranked selections for this inventory + action type only
+  await db.models.UnrankedActionSelection.destroy({
+    where: {
+      inventoryId,
+      actionType,
+    },
+  });
+
+  if (unrankedActionIds.length > 0) {
+    const languages = Object.values(LANGUAGES);
+    const unrankedSelections = unrankedActionIds.flatMap((actionId) =>
+      languages.map((lang) => ({
+        inventoryId,
+        actionId,
+        actionType,
+        lang,
+        isSelected: true,
+      })),
+    );
+
+    await db.models.UnrankedActionSelection.bulkCreate(unrankedSelections);
+    updatedCount += unrankedActionIds.length;
+  }
+
+  return updatedCount;
+}
 
 /**
  * Migrates HIAP action selections for all cities in a project.

@@ -1,9 +1,4 @@
-import {
-  ACTION_TYPES,
-  HIAction,
-  HighImpactActionRankingStatus,
-  LANGUAGES,
-} from "@/util/types";
+import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
 import { logger } from "@/services/logger";
 import {
   PrioritizerResponse,

@@ -15,37 +15,11 @@ class ReportGenerationCapacityError(RuntimeError):
     """Raised when a report cannot enter the per-pod generation queue in time."""
 
 
-def _positive_int_environment(name: str, default: int) -> int:
-    """Read a strictly positive integer environment setting."""
-    raw_value = os.getenv(name, str(default)).strip()
-    try:
-        value = int(raw_value)
-    except ValueError as error:
-        raise ValueError(f"{name} must be an integer") from error
-    if value <= 0:
-        raise ValueError(f"{name} must be greater than zero")
-    return value
-
-
-def _positive_float_environment(name: str, default: float) -> float:
-    """Read a strictly positive floating-point environment setting."""
-    raw_value = os.getenv(name, str(default)).strip()
-    try:
-        value = float(raw_value)
-    except ValueError as error:
-        raise ValueError(f"{name} must be a number") from error
-    if value <= 0:
-        raise ValueError(f"{name} must be greater than zero")
-    return value
-
-
-MAX_CONCURRENT_REPORTS = _positive_int_environment(
-    "OUTPUT_PLAN_MAX_CONCURRENT_REPORTS",
-    DEFAULT_MAX_CONCURRENT_REPORTS,
+MAX_CONCURRENT_REPORTS = int(
+    os.getenv("OUTPUT_PLAN_MAX_CONCURRENT_REPORTS", str(DEFAULT_MAX_CONCURRENT_REPORTS))
 )
-QUEUE_TIMEOUT_SECONDS = _positive_float_environment(
-    "OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS",
-    DEFAULT_QUEUE_TIMEOUT_SECONDS,
+QUEUE_TIMEOUT_SECONDS = float(
+    os.getenv("OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS", str(DEFAULT_QUEUE_TIMEOUT_SECONDS))
 )
 _REPORT_SLOTS = BoundedSemaphore(MAX_CONCURRENT_REPORTS)
 

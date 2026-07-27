@@ -153,7 +153,7 @@ What these are used for:
   - `long`
   - `no_preference`
 - `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
-- `requestData.requestedLanguages` controls the exact explanation languages and display order for post-ranking output.
+- `requestData.requestedLanguages` controls the requested non-English display languages for post-ranking output. The backend always prepends canonical English, generates explanations in English once, then translates that completed batch into the requested non-English languages.
 - The backend generates each requested language independently from the same curated evidence and deterministic terminology in `app/modules/prioritizer/translations.yaml`.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 - `activityType` rows are preserved for future activity-data-level matching and diagnostics, but they do not currently change ranking output.
@@ -1293,7 +1293,7 @@ Current behavior:
 - `{}` unless `requestData.createExplanations=true` and explanation generation succeeds
 - when generated, the field is an object keyed by language code
 - each requested language is generated independently using the shared terminology catalogue
-- `/v1/explanations/translate` remains available as a separate stateless endpoint for caller-supplied canonical English text; it accepts only catalogue-supported targets and injects the same deterministic terminology into its translation prompt, while the prioritization flow does not use it
+- `/v1/explanations/translate` remains available as a separate stateless endpoint for caller-supplied canonical English text; it accepts only catalogue-supported targets and injects the same deterministic terminology into its translation prompt. The prioritization flow uses the same translation service internally after generating its canonical English batch.
 
 Planned improvements:
 

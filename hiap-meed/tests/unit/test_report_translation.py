@@ -34,7 +34,8 @@ def test_translate_output_plan_uses_one_call_for_all_chapters(
                                     "key": "snapshot",
                                     "markdown": (
                                         "Este capítulo presenta la acción municipal "
-                                        "seleccionada y resume claramente sus resultados."
+                                        "seleccionada. Consulte la [fuente]([[URL_SNAPSHOT_1]]) "
+                                        "para conocer los resultados."
                                     ),
                                     "limitations": [
                                         "No se dispone de una estimación municipal."
@@ -69,7 +70,10 @@ def test_translate_output_plan_uses_one_call_for_all_chapters(
         ReportChapterDraft(
             key="snapshot",
             title="Snapshot",
-            markdown="This chapter summarizes the selected municipal action.",
+            markdown=(
+                "This chapter summarizes the selected municipal action. See "
+                "[source](https://correct.example) for details."
+            ),
             source_refs=["city"],
             limitations=["A municipal estimate is unavailable."],
         ),
@@ -107,12 +111,16 @@ def test_translate_output_plan_uses_one_call_for_all_chapters(
         "La acción",
     ]
     assert translated["es"][0].source_refs == ["city"]
+    assert "https://correct.example" in translated["es"][0].markdown
     assert llm_io["target_languages"] == ["es"]
     assert captured["response_format"] == report_translation._translation_response_format()
     schema = captured["response_format"]["json_schema"]["schema"]  # type: ignore[index]
     assert schema["additionalProperties"] is False
     assert schema["$defs"]["ReportLanguageTranslation"]["additionalProperties"] is False
     assert schema["$defs"]["ReportTranslatedChapter"]["additionalProperties"] is False
+    prompt = captured["messages"][1]["content"]  # type: ignore[index]
+    assert "[[URL_SNAPSHOT_1]]" in prompt
+    assert "https://correct.example" not in prompt
 
 
 def test_translate_output_plan_rejects_changed_urls(
@@ -155,7 +163,7 @@ def test_translate_output_plan_rejects_changed_urls(
     monkeypatch.setattr(report_translation, "create_openai_client", lambda: fake_client)
     monkeypatch.setattr(report_translation, "get_output_plan_model", lambda: "test-model")
 
-    with pytest.raises(ValueError, match="changed canonical URLs"):
+    with pytest.raises(ValueError, match="did not preserve URL placeholders"):
         translate_output_plan(
             canonical_chapters=[
                 ReportChapterDraft(

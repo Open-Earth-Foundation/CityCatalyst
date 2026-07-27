@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import logging
 import re
+from collections import Counter
 from pathlib import Path
 
 from app.modules.prioritizer.llm_config import (
@@ -25,7 +26,12 @@ PROMPT_DIR = Path(__file__).resolve().parents[1] / "prompts"
 SYSTEM_PROMPT_FILE_PATH = PROMPT_DIR / "city_action_report_translation_system.md"
 PROMPT_FILE_PATH = PROMPT_DIR / "city_action_report_translation.md"
 URL_PATTERN = re.compile(r"https?://[^\s)\]>]+")
+URL_PLACEHOLDER_PATTERN = re.compile(r"\[\[URL_[A-Z0-9_]+_\d+\]\]")
 MAX_TRANSLATION_ATTEMPTS = 2
+
+
+class ReportTranslationValidationError(ValueError):
+    """Raised when LLM translation output fails validation after its retry."""
 
 
 def translate_output_plan(
@@ -48,8 +54,9 @@ def translate_output_plan(
         canonical_chapters=canonical_chapters,
         target_chapter_inputs=target_chapter_inputs,
     )
+    protected_chapters, url_placeholders_by_chapter = _protect_urls(canonical_chapters)
     translation_payload = _build_translation_payload(
-        canonical_chapters=canonical_chapters,
+        canonical_chapters=protected_chapters,
         target_chapter_inputs=target_chapter_inputs,
     )
     prompt = _build_prompt(translation_payload)
@@ -91,10 +98,12 @@ def translate_output_plan(
                 parsed=candidate,
                 canonical_chapters=canonical_chapters,
                 target_chapter_inputs=target_chapter_inputs,
+                url_placeholders_by_chapter=url_placeholders_by_chapter,
             )
-        except ValueError:
+        except ValueError as error:
+            attempts.append({"attempt": attempt, "validation_error": str(error)})
             if attempt == MAX_TRANSLATION_ATTEMPTS:
-                raise
+                raise ReportTranslationValidationError(str(error)) from error
             prompt = _build_retry_prompt(prompt)
             continue
         parsed = candidate
@@ -156,6 +165,58 @@ def _build_translation_payload(
     }
 
 
+def _protect_urls(
+    canonical_chapters: list[ReportChapterDraft],
+) -> tuple[list[ReportChapterDraft], dict[str, dict[str, str]]]:
+    """Replace canonical URLs with stable placeholders for the translation call."""
+    placeholders_by_chapter: dict[str, dict[str, str]] = {}
+    protected_chapters: list[ReportChapterDraft] = []
+    for chapter in canonical_chapters:
+        placeholders: dict[str, str] = {}
+
+        def replace_url(match: re.Match[str]) -> str:
+            """Return the next stable placeholder for one canonical URL."""
+            placeholder = f"[[URL_{chapter.key.upper()}_{len(placeholders) + 1}]]"
+            placeholders[placeholder] = match.group(0)
+            return placeholder
+
+        protected_markdown = URL_PATTERN.sub(replace_url, chapter.markdown)
+        protected_chapters.append(
+            chapter.model_copy(update={"markdown": protected_markdown})
+        )
+        placeholders_by_chapter[chapter.key] = placeholders
+    return protected_chapters, placeholders_by_chapter
+
+
+def _restore_urls(
+    *,
+    translated_markdown: str,
+    placeholders: dict[str, str],
+    chapter_key: str,
+) -> str:
+    """Restore canonical URLs only when every placeholder is preserved exactly once."""
+    found_placeholders = URL_PLACEHOLDER_PATTERN.findall(translated_markdown)
+    unexpected_placeholders = sorted(set(found_placeholders) - set(placeholders))
+    invalid_urls = [
+        url
+        for placeholder, url in placeholders.items()
+        if translated_markdown.count(placeholder) != 1
+    ]
+    if invalid_urls or unexpected_placeholders:
+        details: list[str] = []
+        if invalid_urls:
+            details.append(f"missing or duplicated URLs: {invalid_urls}")
+        if unexpected_placeholders:
+            details.append(f"unexpected placeholders: {unexpected_placeholders}")
+        raise ValueError(
+            f"Translated chapter `{chapter_key}` did not preserve URL placeholders; "
+            + "; ".join(details)
+        )
+    for placeholder, url in placeholders.items():
+        translated_markdown = translated_markdown.replace(placeholder, url)
+    return translated_markdown
+
+
 def _build_prompt(translation_payload: dict[str, object]) -> str:
     """Render the report translation prompt from the runtime payload."""
     template = PROMPT_FILE_PATH.read_text(encoding="utf-8").strip()
@@ -185,7 +246,9 @@ def _build_retry_prompt(prompt: str) -> str:
     return (
         f"{prompt}\n\n"
         "Correction: return every requested language and chapter exactly once, "
-        "preserve canonical chapter order, URLs, limitations, facts, and Markdown, "
+        "preserve canonical chapter order, every [[URL_<CHAPTER>_<N>]] placeholder "
+        "exactly once, "
+        "limitations, facts, and Markdown, "
         "and write all descriptive prose in each declared target language."
     )
 
@@ -195,6 +258,7 @@ def _build_translated_drafts(
     parsed: ReportTranslationBatch,
     canonical_chapters: list[ReportChapterDraft],
     target_chapter_inputs: dict[str, list[ReportChapterInput]],
+    url_placeholders_by_chapter: dict[str, dict[str, str]],
 ) -> dict[str, list[ReportChapterDraft]]:
     """Validate the translation batch and build localized report drafts."""
     expected_languages = set(target_chapter_inputs)
@@ -222,9 +286,14 @@ def _build_translated_drafts(
             translated_rows,
             strict=True,
         ):
+            translated_markdown = _restore_urls(
+                translated_markdown=translated.markdown,
+                placeholders=url_placeholders_by_chapter[canonical.key],
+                chapter_key=canonical.key,
+            )
             _validate_translated_content(
                 canonical=canonical,
-                translated_markdown=translated.markdown,
+                translated_markdown=translated_markdown,
                 translated_limitations=translated.limitations,
                 language=language,
             )
@@ -232,7 +301,7 @@ def _build_translated_drafts(
                 ReportChapterDraft(
                     key=canonical.key,
                     title=target_input.title,
-                    markdown=translated.markdown,
+                    markdown=translated_markdown,
                     source_refs=canonical.source_refs,
                     limitations=translated.limitations,
                 )
@@ -263,6 +332,18 @@ def _validate_translated_content(
     canonical_urls = URL_PATTERN.findall(canonical.markdown)
     translated_urls = URL_PATTERN.findall(translated_markdown)
     if translated_urls != canonical_urls:
+        canonical_counts = Counter(canonical_urls)
+        translated_counts = Counter(translated_urls)
+        missing_urls = list((canonical_counts - translated_counts).elements())
+        unexpected_urls = list((translated_counts - canonical_counts).elements())
+        details: list[str] = []
+        if missing_urls:
+            details.append(f"missing URLs: {missing_urls}")
+        if unexpected_urls:
+            details.append(f"unexpected URLs: {unexpected_urls}")
+        if not details:
+            details.append("URL order changed")
         raise ValueError(
-            f"Translated chapter `{canonical.key}` changed canonical URLs"
+            f"Translated chapter `{canonical.key}` changed canonical URLs; "
+            + "; ".join(details)
         )

@@ -47,8 +47,6 @@ MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR=1
 MLFLOW_HTTP_REQUEST_BACKOFF_JITTER=0
 GIT_PYTHON_REFRESH=quiet
 MLFLOW_ASYNC_LOGGING_ENABLED=true
-HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=false
-HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL=gpt-5.4-mini
 HIAP_MEED_CITY_DATA_SOURCE=api
 CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
@@ -86,8 +84,6 @@ Variables:
 - `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER`: extra random delay added between MLflow retry attempts. Set this to `0` when you want deterministic fail-fast behavior during local testing.
 - `GIT_PYTHON_REFRESH`: set to `quiet` to suppress mlflow related GitPython warnings when the `hiap-meed` process or `hiap-meed` container does not have a `git` executable; this only silences the warning and does not restore Git SHA capture
 - `MLFLOW_ASYNC_LOGGING_ENABLED`: if `true`, MLflow tags, params, and metrics use async fluent logging; run open/close and artifact uploads remain synchronous
-- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED`: if `true`, exposes one test-only endpoint that forces a simple OpenAI tool-calling flow for MLflow tracing checks
-- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL`: model used only by the removable MLflow tool-call trace endpoint
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
@@ -128,22 +124,6 @@ Current MLflow sync vs async behavior:
 - request run lifecycle stays synchronous so runs still open and close deterministically
 - tags, params, and metrics use MLflow async fluent logging when `MLFLOW_ASYNC_LOGGING_ENABLED=true`
 - JSON and text artifact uploads stay synchronous because this helper path does not yet use a separate background queue
-
-Test-only MLflow tool trace endpoint:
-
-- `POST /v1/mlflow/trace-test/tool-calls` is intentionally isolated from the prioritization flow and exists only to inspect MLflow traces for OpenAI tool use
-- it is disabled by default and returns `404` unless `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=true`
-- the endpoint exposes exactly two local tools to the LLM: `add_numbers` and `reverse_text`
-- the endpoint logs one dedicated MLflow run named `mlflow_tool_trace_test_request` plus one MLflow JSON artifact containing the response payload
-- the endpoint is designed to be easy to remove later because all code lives under `app/modules/mlflow_trace_test/`
-
-Example test request:
-
-```bash
-curl -X POST http://localhost:8000/v1/mlflow/trace-test/tool-calls \
-  -H "Content-Type: application/json" \
-  -d "{\"left_number\": 2, \"right_number\": 3, \"text_to_reverse\": \"climate\"}"
-```
 
 MLflow tagging notes:
 
@@ -311,7 +291,7 @@ The backend uses the supplied prioritization snapshot as the ranking basis and r
 
 The Snapshot chapter starts with a prominent `**The ask:**` line. The backend derives that line from supplied action pathway, financial-feasibility, and legal-assessment facts so the wording stays defensible: for example, technical-assistance wording is used only when the finance route supports it, and direct municipal-leadership wording is used only when the legal facts show enabled ownership.
 
-The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users. The eight canonical English chapters are generated concurrently from isolated chapter inputs. After all English chapters pass schema, source-reference, and language validation, one structured translation call translates the complete report into every additional requested language. The translation stage must preserve chapter order, facts, qualifications, Markdown structure, URLs, and source references while applying deterministic recurring terminology from `app/modules/prioritizer/translations.yaml`. The response `language` list contains canonical `en` first followed by the caller's deduplicated non-English languages, and response validation rejects incomplete language coverage. Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, groups repeated uses of the same city indicator into one row, separates supporting and limiting conditions, adds a mixed-effects table only when an indicator has both contribution signs, retains source units, and omits indicators without a measured city value or non-neutral contribution; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and excerpt; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Official programme, document, agency, law, legal-citation, and place names remain in their source form. Report prose must not narrate backend preparation or describe information as supplied to a model. Missing substantive evidence is never filled from model knowledge.
+The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users. The eight canonical English chapters are generated concurrently from isolated chapter inputs. After all English chapters pass schema, source-reference, and language validation, one structured translation call translates the complete report into every additional requested language. The translation stage must preserve chapter order, facts, qualifications, Markdown structure, URLs, and source references while applying deterministic recurring terminology from `app/modules/prioritizer/translations.yaml`. URLs are replaced with chapter-specific placeholders before the LLM call and restored afterward, so URL destinations are not model-generated. A translation that still fails validation after one retry returns HTTP `502` with `retryable: true` and `Retry-After: 1`. The response `language` list contains canonical `en` first followed by the caller's deduplicated non-English languages, and response validation rejects incomplete language coverage. Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, groups repeated uses of the same city indicator into one row, separates supporting and limiting conditions, adds a mixed-effects table only when an indicator has both contribution signs, retains source units, and omits indicators without a measured city value or non-neutral contribution; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and excerpt; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Official programme, document, agency, law, legal-citation, and place names remain in their source form. Report prose must not narrate backend preparation or describe information as supplied to a model. Missing substantive evidence is never filled from model knowledge.
 
 Source links are rendered only when the corresponding upstream record supplies a public URL. Optional policy-evidence `link` values are preserved when returned upstream; the current action-policy mock does not include them. The current legal classification CSV provides `legal_reference_1` through `legal_reference_6` as citation labels but has no URL columns, so these legal references appear as plain source names. Adding legal links requires an upstream legal-data schema change rather than inferred or hard-coded URLs in `hiap-meed`.
 
@@ -333,9 +313,8 @@ Request body:
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
-- `requestData.requestedLanguages` is a list that controls the exact explanation languages and their display order. Supported values come from `app/modules/prioritizer/translations.yaml`.
-- The first list entry has no primary-language meaning. Explanation metadata uses English as a stable reference language even when English was not requested; this does not add English output to the response.
-- Each requested language is generated independently from the same curated ranking evidence; the normal prioritization flow no longer generates English first and translates it.
+- `requestData.requestedLanguages` is a list of requested display languages. Supported values come from `app/modules/prioritizer/translations.yaml`; the backend always prepends canonical English (`en`) to the normalized response language list.
+- The explanation stage generates one English batch from the curated ranking evidence, then makes one vocabulary-constrained translation call for all requested non-English languages.
 - GPC sectors and subsectors, co-benefits, timeframes, feasibility components, finance routes, score labels, and legal verdict terms are localized deterministically from the shared catalogue. Official names remain in their source form.
 - Every successful language batch must contain one non-empty explanation per ranked action and pass dominant-language validation; otherwise explanation generation fails open for that city.
 - Response metadata reports `generated_languages` as the languages actually present in the returned explanation payload.
@@ -473,8 +452,8 @@ Explanation stage behavior:
      when feasibility is not a constraint.
 - Explanation text intentionally avoids repeating the numeric score bars already
   returned on each ranked action.
-- Each requested explanation language is authored independently from the same evidence payload.
-- Recurring domain labels are copied from `app/modules/prioritizer/translations.yaml`, while full descriptive sentences are written by the LLM in the requested language.
+- English is the canonical explanation language. Each non-English explanation is translated from that canonical batch, preserving its claims and caveats.
+- The translation prompt receives exact source/target term pairs from `app/modules/prioritizer/translations.yaml`; recurring domain labels use the configured target value while full descriptive sentences are translated naturally.
 - Official document, programme, agency, law, place, and action names remain in their source form.
 - In response metadata, `generated_languages` is the response-level union of explanation languages actually returned across `ranked_actions[].explanations`.
 - Explanations receive the selected `cityStrategicPreferenceCoBenefitKeys` directly.
@@ -491,7 +470,7 @@ Explanation stage behavior:
 - `requestData.rankedActions[*]` includes:
   - `actionId`
   - `canonicalExplanation`
-- This separate endpoint remains stateless: the frontend sends canonical English explanations it wants translated. It is not used by the normal prioritization explanation flow.
+- This separate endpoint remains stateless: the frontend sends canonical English explanations it wants translated. The normal prioritization explanation flow uses the same translation service internally after canonical English generation.
 - The LLM receives English source terms and exact target terms from the shared catalogue. It must preserve official names and use catalogue terminology instead of inventing recurring labels.
 - Returned rows must cover every requested action and language and pass dominant-language validation.
 - The endpoint returns only the requested target-language translations, not the original English text.
@@ -758,9 +737,10 @@ What each local request run folder contains:
 - When MLflow is enabled, it uses the same default relative artifact paths as the optional local request folder so both outputs keep one consistent hierarchy
 - Prioritization request folders additionally include:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
-  - `llm/explanations/<language>_prompt.txt`: rendered user prompt for each requested explanation language (only when explanations are generated successfully)
+  - `llm/explanations/en_prompt.txt`: rendered canonical English explanation prompt (only when explanations are generated successfully)
+  - `llm/explanation_translations_prompt.txt`: rendered batched translation prompt when non-English languages are requested
   - `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
-- Prioritization explanation artifacts and response metadata record the original `requestedLanguages`, stable English reference language, and generated languages actually returned in the response.
+- Prioritization explanation artifacts and response metadata record canonical English, normalized requested languages, and generated languages actually returned in the response.
 - Explanation translation request folders additionally include:
   - `llm/explanation_translations_io.json`
   - `llm/explanation_translations_prompt.txt`

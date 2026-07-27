@@ -132,6 +132,10 @@ sequenceDiagram
     Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_scores / feasibility score fetches
     Clients-->>Orch: CityData / Action[] / legal assessments / action policy scores / mitigation and financial feasibility scores
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
+    Orch->>LLM: Generate one canonical English explanation batch
+    LLM-->>Orch: Validated English explanations
+    Orch->>LLM: Translate canonical batch into all non-English requested languages
+    LLM-->>Orch: Vocabulary-constrained translations
     Orch-->>API: PrioritizationResponse (per city)
     API-->>FE: 200 PrioritizerApiResponse (results[])
 ```

@@ -272,7 +272,10 @@ class PrioritizerRequestData(BaseModel):
 
     requestedLanguages: list[str] = Field(
         default_factory=lambda: ["en"],
-        description="Languages to generate for every explanation, in display order.",
+        description=(
+            "Requested display languages. English is always generated first as the "
+            "canonical source, followed by the requested non-English languages."
+        ),
     )
     topN: int | None = Field(
         default=None,
@@ -291,7 +294,7 @@ class PrioritizerRequestData(BaseModel):
     @field_validator("requestedLanguages", mode="before")
     @classmethod
     def _normalize_requested_languages(cls, value: object) -> object:
-        """Normalize missing/empty requested languages to a single English default."""
+        """Normalize languages and make English the canonical first language."""
         if value is None:
             return ["en"]
         if not isinstance(value, list):
@@ -311,7 +314,7 @@ class PrioritizerRequestData(BaseModel):
                 "requestedLanguages contains unsupported languages: "
                 f"{unsupported}; supported languages are {sorted(supported)}"
             )
-        return deduplicated
+        return ["en", *[language for language in deduplicated if language != "en"]]
 
 
 class PrioritizerApiRequest(BaseModel):

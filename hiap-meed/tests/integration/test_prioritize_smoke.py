@@ -161,6 +161,7 @@ class MockExplanationService:
     explanations_by_language: dict[str, dict[str, str]] | None = None
     should_raise: bool = False
     seen_action_ids: list[str] | None = None
+    seen_languages: list[str] | None = None
 
     def __call__(
         self,
@@ -181,6 +182,7 @@ class MockExplanationService:
             raise RuntimeError("simulated explanation provider failure")
         action_ids = [item.action.action_id for item in scored_actions]
         self.seen_action_ids = action_ids
+        self.seen_languages = list(languages)
         localized = self.explanations_by_language or {
             language: dict(self.explanations_by_action_id or {})
             for language in languages
@@ -1843,9 +1845,11 @@ def test_prioritize_generates_every_requested_explanation_language(
     mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
         explanations_by_language={
-            "es": {"A_1": "Explicación de prueba"},
             "en": {"A_1": "English explanation"},
         }
+    )
+    mock_translation_service = MockTranslationService(
+        translations_by_action_id={"A_1": {"es": "Explicación de prueba"}}
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
@@ -1858,6 +1862,11 @@ def test_prioritize_generates_every_requested_explanation_language(
         prioritizer_orchestrator,
         "generate_explanations",
         mock_explanation_service,
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "translate_explanations",
+        mock_translation_service,
     )
     try:
         with TestClient(app) as test_client:
@@ -1895,14 +1904,16 @@ def test_prioritize_generates_every_requested_explanation_language(
         assert response.status_code == 200
         result = response.json()["results"][0]
         assert mock_explanation_service.seen_action_ids == ["A_1"]
+        assert mock_explanation_service.seen_languages == ["en"]
+        assert mock_translation_service.seen_target_languages == ["es"]
         assert result["ranked_actions"][0]["explanations"] == {
-            "es": "Explicación de prueba",
             "en": "English explanation",
+            "es": "Explicación de prueba",
         }
-        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["requested_languages"] == ["en", "es"]
         assert result["metadata"]["explanations"]["canonical_language"] == "en"
         assert result["metadata"]["explanations"]["generated"] == 1
-        assert result["metadata"]["explanations"]["generated_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["generated_languages"] == ["en", "es"]
     finally:
         app.dependency_overrides.clear()
 
@@ -1928,6 +1939,7 @@ def test_prioritize_reports_only_successfully_generated_languages(
     mock_explanation_service = MockExplanationService(
         explanations_by_language={"en": {"A_1": "English explanation"}}
     )
+    mock_translation_service = MockTranslationService(should_raise=True)
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
     app.dependency_overrides[get_action_pathways_data_api_client] = lambda: mock_action_client
@@ -1939,6 +1951,11 @@ def test_prioritize_reports_only_successfully_generated_languages(
         prioritizer_orchestrator,
         "generate_explanations",
         mock_explanation_service,
+    )
+    monkeypatch.setattr(
+        prioritizer_orchestrator,
+        "translate_explanations",
+        mock_translation_service,
     )
     try:
         with TestClient(app) as test_client:
@@ -1976,13 +1993,11 @@ def test_prioritize_reports_only_successfully_generated_languages(
         assert response.status_code == 200
         result = response.json()["results"][0]
         assert mock_explanation_service.seen_action_ids == ["A_1"]
-        assert result["ranked_actions"][0]["explanations"] == {
-            "en": "English explanation"
-        }
-        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["ranked_actions"][0]["explanations"] == {}
+        assert result["metadata"]["explanations"]["requested_languages"] == ["en", "es"]
         assert result["metadata"]["explanations"]["canonical_language"] == "en"
         assert result["metadata"]["explanations"]["generated"] == 0
-        assert result["metadata"]["explanations"]["generated_languages"] == ["en"]
+        assert result["metadata"]["explanations"]["generated_languages"] == []
     finally:
         app.dependency_overrides.clear()
 

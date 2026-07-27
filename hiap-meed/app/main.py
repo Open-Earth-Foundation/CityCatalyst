@@ -16,7 +16,6 @@ import os
 import uvicorn
 from fastapi import FastAPI
 
-from app.modules.mlflow_trace_test.api import router as mlflow_trace_test_router
 from app.modules.prioritizer.api import router as prioritization_router
 from app.utils.logging_config import setup_logger
 from app.utils.mlflow_logging import initialize_mlflow
@@ -31,18 +30,42 @@ initialize_mlflow()
 
 app = FastAPI(
     title="HIAP-MEED",
-    description="HIAP-MEED prioritization service.",
+    description=(
+        "Climate-action prioritization and City Action Report generation service. "
+        "All workflow requests use a `meta` envelope for caller correlation and a "
+        "`requestData` payload for the operation-specific input. See each endpoint "
+        "for required input, response semantics, and retry guidance."
+    ),
     version="0.1.0",
+    openapi_tags=[
+        {
+            "name": "prioritization",
+            "description": (
+                "Rank city climate actions, preview exclusions, generate City Action "
+                "Reports, and translate completed explanations."
+            ),
+        },
+    ],
 )
 
 
-@app.get("/")
+@app.get(
+    "/",
+    summary="Get service entry-point details",
+    description="Returns a small discovery payload and the unauthenticated health URL.",
+    responses={200: {"description": "Service discovery payload returned."}},
+)
 async def root() -> dict[str, str]:
     """Root endpoint."""
     return {"message": "HIAP-MEED API", "status": "healthy", "health_url": "/health"}
 
 
-@app.get("/health")
+@app.get(
+    "/health",
+    summary="Check service health",
+    description="Unauthenticated liveness endpoint for load balancers and deployment probes.",
+    responses={200: {"description": "Process is running and able to serve requests."}},
+)
 async def health() -> dict[str, str]:
     """Health endpoint used for probes."""
     logger.info("Health check endpoint called")
@@ -50,7 +73,6 @@ async def health() -> dict[str, str]:
 
 
 app.include_router(prioritization_router)
-app.include_router(mlflow_trace_test_router)
 
 
 if __name__ == "__main__":

@@ -60,10 +60,6 @@ spec:
               value: "quiet"
             - name: MLFLOW_ASYNC_LOGGING_ENABLED
               value: "true"
-            - name: HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED
-              value: "false"
-            - name: HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL
-              value: "gpt-5.4-mini"
             - name: UPSTREAM_HTTP_TIMEOUT_SECONDS
               value: "30"
             - name: UPSTREAM_HTTP_MAX_RETRIES

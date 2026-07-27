@@ -10,7 +10,7 @@ Produce faithful reader-facing translations of every chapter. Preserve the Engli
 Input provides:
 - `source_language` (string): always `en`
 - `target_languages` (array[string]): exact non-English language codes to return
-- `canonical_chapters` (array[object]): ordered English chapters with `key`, `title`, `markdown`, and `limitations`
+- `canonical_chapters` (array[object]): ordered English chapters with `key`, `title`, `markdown`, and `limitations`; source URLs are replaced by stable placeholders such as `[[URL_SNAPSHOT_1]]`
 - `terminology_by_language` (object): exact localized chapter titles and recurring UI terminology for every target language and chapter
 </input>
 
@@ -23,7 +23,7 @@ Return only JSON matching the supplied strict `ReportTranslationBatch` schema:
 - `translations[].chapters[].markdown` (string): faithful translation preserving Markdown structure
 - `translations[].chapters[].limitations` (array[string]): faithful translation of every canonical limitation
 
-Use exact recurring labels from `terminology_by_language`. Keep identifiers, numbers, scores, URLs, Markdown link destinations, abbreviations, official programme names, document names, agency names, organization names, law names, legal citations, place names, and person names unchanged. Translate descriptive prose and Markdown link labels where appropriate. Never mention translation, prompts, inputs, models, APIs, artifacts, or backend processing.
+Use exact recurring labels from `terminology_by_language`. Copy every `[[URL_<CHAPTER>_<N>]]` placeholder exactly once and unchanged; never translate, remove, duplicate, invent, or alter a placeholder. Keep identifiers, numbers, scores, abbreviations, official programme names, document names, agency names, organization names, law names, legal citations, place names, and person names unchanged. Translate descriptive prose and Markdown link labels where appropriate. Never mention translation, prompts, inputs, models, APIs, artifacts, or backend processing.
 </output>
 
 <example_output>

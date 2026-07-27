@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import json
+from types import SimpleNamespace
+
 import pytest
 
+from app.modules.prioritizer.services import translation as translation_service
 from app.modules.prioritizer.services.translation import (
     ActionTranslationRow,
     TranslationItem,
     _build_prompt,
     _rows_to_translations,
     _validate_translation_languages,
+    translate_explanations,
 )
 
 
@@ -115,3 +120,69 @@ def test_translation_language_validation_rejects_wrong_language() -> None:
                 }
             }
         )
+
+
+def test_translate_explanations_uses_strict_chat_completion_schema(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Canonical translations should avoid parsed SDK completion objects."""
+    captured: dict[str, object] = {}
+
+    class FakeCompletions:
+        """Capture an ordinary structured chat-completion request."""
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Return one complete Spanish translation batch."""
+            captured.update(kwargs)
+            content = json.dumps(
+                {
+                    "translations": [
+                        {
+                            "action_id": "A_1",
+                            "translations": [
+                                {
+                                    "language": "es",
+                                    "text": (
+                                        "Esta acción mejora la calidad del aire "
+                                        "y mantiene una viabilidad clara."
+                                    ),
+                                }
+                            ],
+                            "source_language_warning": False,
+                        }
+                    ]
+                }
+            )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(translation_service, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(
+        translation_service,
+        "get_explanation_translations_model",
+        lambda: "test-model",
+    )
+    monkeypatch.setattr(
+        translation_service,
+        "get_explanation_translations_temperature",
+        lambda: 0.0,
+    )
+
+    translations, warnings, _ = translate_explanations(
+        canonical_explanations_by_action_id={
+            "A_1": "This action improves air quality and remains feasible."
+        },
+        target_languages=["es"],
+    )
+
+    assert translations == {
+        "A_1": {"es": "Esta acción mejora la calidad del aire y mantiene una viabilidad clara."}
+    }
+    assert warnings == []
+    schema = captured["response_format"]["json_schema"]["schema"]  # type: ignore[index]
+    assert schema["additionalProperties"] is False
+    assert schema["$defs"]["TranslationItem"]["additionalProperties"] is False

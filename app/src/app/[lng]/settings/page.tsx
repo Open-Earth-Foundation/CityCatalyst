@@ -167,6 +167,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               p={0}
               w="full"
               backgroundColor="background.backgroundLight"
+              mb="48px"
             >
               <Tabs.Trigger
                 value="account"
@@ -269,17 +270,28 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
                 justifyContent="space-between"
               >
                 <Box w="full">
-                  <Heading
-                    fontSize="headline.sm"
-                    mb={4}
-                    fontWeight="semibold"
-                    lineHeight="32px"
-                    fontStyle="normal"
-                    textTransform="capitalize"
-                    color="content.secondary"
-                  >
-                    {t("account")}
-                  </Heading>
+                  <Box mb="48px">
+                    <Heading
+                      fontSize="headline.sm"
+                      mb={4}
+                      fontWeight="semibold"
+                      lineHeight="32px"
+                      fontStyle="normal"
+                      textTransform="capitalize"
+                      color="content.secondary"
+                    >
+                      {t("account")}
+                    </Heading>
+                    <Text
+                      fontSize="body.lg"
+                      fontFamily="body"
+                      fontWeight="normal"
+                      lineHeight="16px"
+                      color="content.tertiary"
+                    >
+                      {t("account-description")}
+                    </Text>
+                  </Box>
                   <AccountSettingsTab t={t} />
                 </Box>
               </Box>

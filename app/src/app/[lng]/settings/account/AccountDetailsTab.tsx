@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Box, Button, HStack } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "@/components/form-input";
 import EmailInput from "@/components/email-input";
@@ -7,9 +7,8 @@ import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
-import { MdInfoOutline } from "react-icons/md";
-import { BodyMedium } from "@/components/package/Texts/Body";
-import { UpdateUserPayload, UserInfoResponse } from "@/util/types";
+import { Roles, UpdateUserPayload, UserInfoResponse } from "@/util/types";
+import { ProfessionSelect } from "./ProfessionSelect";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -100,21 +99,13 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             id="email"
           />
           {showTitle && (
-            <>
-              <FormInput
-                label={t("position")}
-                register={register}
-                error={errors.title}
-                id="title"
-                required={false}
-              />
-              <HStack>
-                <BodyMedium color={"content.link"}>
-                  <MdInfoOutline />
-                </BodyMedium>
-                <BodyMedium>{t("position-description")}</BodyMedium>
-              </HStack>
-            </>
+            <ProfessionSelect
+              t={t}
+              register={register}
+              error={errors.title}
+              defaultValue={userInfo.title}
+              showOefAdminOption={userInfo.role === Roles.Admin}
+            />
           )}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button

@@ -1,28 +1,32 @@
 "use client";
 
 import { Input, Text } from "@chakra-ui/react";
-import { FC } from "react";
-import { FieldError, FieldValues, UseFormRegister } from "react-hook-form";
+import {
+  FieldError,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
 import { Field } from "@/components/ui/field";
 import { useTranslation } from "react-i18next";
 
-interface FormInputProps {
+interface FormInputProps<TFieldValues extends FieldValues> {
   label: string;
   isDisabled?: boolean;
   error: FieldError | undefined;
-  register: UseFormRegister<FieldValues>;
-  id: string;
+  register: UseFormRegister<TFieldValues>;
+  id: Path<TFieldValues>;
   required?: boolean;
 }
 
-const FormInput: FC<FormInputProps> = ({
+function FormInput<TFieldValues extends FieldValues>({
   label,
   isDisabled,
   error,
   register,
   id,
   required = true,
-}) => {
+}: FormInputProps<TFieldValues>) {
   const { t } = useTranslation("inputs");
   return (
     <Field
@@ -70,6 +74,6 @@ const FormInput: FC<FormInputProps> = ({
       )}
     </Field>
   );
-};
+}
 
 export default FormInput;

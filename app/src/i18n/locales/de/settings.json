@@ -219,5 +219,7 @@
   "comma-and-dot": "Komma und Punkt (z.B.: 1,000,000.50)",
   "dot-and-comma": "Punkt und Komma (z.B.: 1.000.000,50)",
   "space-and-comma": "Leerzeichen und Komma (z.B.: 1 000 000,50)",
-  "apostrophe-and-dot": "Apostroph und Punkt (z.B.: 1’000’000.50)"
+  "apostrophe-and-dot": "Apostroph und Punkt (z.B.: 1’000’000.50)",
+  "preferences": "Einstellungen",
+  "preferences-updated": "Einstellungen aktualisiert"
 }

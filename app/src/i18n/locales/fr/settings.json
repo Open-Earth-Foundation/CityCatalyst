@@ -218,5 +218,7 @@
   "comma-and-dot": "Virgule et point (par exemple : 1,000,000.50)",
   "dot-and-comma": "Point et virgule (par exemple : 1.000.000,50)",
   "space-and-comma": "Espace et virgule (par exemple : 1 000 000,50)",
-  "apostrophe-and-dot": "Apostrophe et point (par ex. : 1'000'000,50)"
+  "apostrophe-and-dot": "Apostrophe et point (par ex. : 1'000'000,50)",
+  "preferences": "Préférences",
+  "preferences-updated": "Préférences mises à jour"
 }

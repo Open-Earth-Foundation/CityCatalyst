@@ -2,8 +2,9 @@ import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { InventoryService } from "@/backend/InventoryService";
 import { Op } from "sequelize";
-import { copyRankedActionsToLang } from "@/backend/hiap/HiapService";
+import { copyRankedActionsToLang, syncRankedActionSelectionsAcrossLanguages, normalizeRankedActionForLang } from "@/backend/hiap/HiapService";
 import GlobalAPIService from "@/backend/GlobalAPIService";
+import { getTranslationFromDictionary } from "@/util/helpers";
 import {
   HighImpactActionRankingStatus,
   type LANGUAGES,
@@ -62,6 +63,9 @@ export default class ActionService {
     }
 
     // Get existing actions for this language and type
+    // Repair any pre-existing per-language selection drift before reading
+    await syncRankedActionSelectionsAcrossLanguages(ranking.id);
+
     let rankedActions = await db.models.HighImpactActionRanked.findAll({
       where: {
         hiaRankingId: ranking.id,
@@ -70,6 +74,9 @@ export default class ActionService {
       },
       order: [["rank", "ASC"]],
     });
+    rankedActions = rankedActions.map((action) =>
+      normalizeRankedActionForLang(action, lng),
+    );
 
     // If ranking is successful but no actions exist for this language, copy them synchronously
     const hasActionsForLang = rankedActions.length > 0;
@@ -129,13 +136,12 @@ export default class ActionService {
         rankedActions.map((action: any) => action.actionId),
       );
 
-      // Get unranked action selections from database
+      // Get unranked action selections (any language — selections are shared)
       const unrankedSelections =
         await db.models.UnrankedActionSelection.findAll({
           where: {
             inventoryId: inventoryId,
             actionType: type,
-            lang: lng,
             isSelected: true,
           },
         });
@@ -154,9 +160,15 @@ export default class ActionService {
         const baseAction = {
           id: action.ActionID,
           actionId: action.ActionID,
-          name: action.ActionName,
+          name:
+            getTranslationFromDictionary(action.ActionName, lng) ??
+            action.ActionName ??
+            "",
           rank: rankedActions.length + index + 1,
-          description: action.Description || "",
+          description:
+            getTranslationFromDictionary(action.Description, lng) ??
+            action.Description ??
+            "",
           explanation: action.Explanation || {},
           isSelected: selectedUnrankedActionIds.has(action.ActionID),
           hiaRankingId: "", // Not applicable for unranked
@@ -192,7 +204,12 @@ export default class ActionService {
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
             equityAndInclusionConsiderations:
-              action.EquityAndInclusionConsiderations || "",
+              getTranslationFromDictionary(
+                action.EquityAndInclusionConsiderations,
+                lng,
+              ) ??
+              action.EquityAndInclusionConsiderations ??
+              "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",
@@ -215,7 +232,12 @@ export default class ActionService {
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
             equityAndInclusionConsiderations:
-              action.EquityAndInclusionConsiderations || "",
+              getTranslationFromDictionary(
+                action.EquityAndInclusionConsiderations,
+                lng,
+              ) ??
+              action.EquityAndInclusionConsiderations ??
+              "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",

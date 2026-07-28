@@ -163,21 +163,19 @@ const InventoryView = ({
           city={city}
           inventory={inventory}
         >
-          <HStack>
-            <IconButton
-              data-testid="download-inventory-icon"
-              aria-label="download-inventory"
-              color="interactive.secondary"
-              variant="ghost"
-            >
-              <HStack gap={2} px={2}>
-                <Icon as={BsDownload} size="lg" />
-                <Text color="interactive.secondary">
-                  {t("download-inventory")}
-                </Text>
-              </HStack>
-            </IconButton>
-          </HStack>
+          <IconButton
+            data-testid="download-inventory-icon"
+            aria-label="download-inventory"
+            color="interactive.secondary"
+            variant="ghost"
+          >
+            <HStack gap={2} px={2}>
+              <Icon as={BsDownload} size="lg" />
+              <Text color="interactive.secondary">
+                {t("download-inventory")}
+              </Text>
+            </HStack>
+          </IconButton>
         </DownloadButton>
       </HStack>
       <HStack gap={6} w="full" mt={6} mb={6}>

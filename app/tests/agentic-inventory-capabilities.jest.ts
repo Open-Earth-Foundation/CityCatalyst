@@ -551,13 +551,13 @@ describe("GHGI inventory internal CA capability routes", () => {
 
     expect(payload.action).toBe(INVENTORY_EMISSIONS_CONTEXT_CAPABILITY);
     expect(payload.success).toBe(true);
-    expect(payload.data.total_emissions_tco2e).toBe("83950");
+    expect(payload.data.total_emissions_kgco2e).toBe("83950000");
     expect(payload.data.by_sector).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           sector: "Stationary Energy",
           reference: "I",
-          emissions_tco2e: "40399",
+          emissions_kgco2e: "40399000",
           share_percent: 48.12,
         }),
       ]),
@@ -567,7 +567,7 @@ describe("GHGI inventory internal CA capability routes", () => {
         sector: "Stationary Energy",
         subsector: "Residential buildings",
         scope: "Scope 1",
-        emissions_tco2e: "40399",
+        emissions_kgco2e: "40399000",
         share_percent: 48.12,
       }),
     );

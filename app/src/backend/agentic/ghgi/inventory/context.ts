@@ -117,18 +117,18 @@ type InventoryStatusOverview = InventoryMetadata & {
 };
 
 type InventoryEmissionsContext = InventoryMetadata & {
-  total_emissions_tco2e: string;
+  total_emissions_kgco2e: string;
   by_sector: Array<{
     sector: string;
     reference: string | null;
-    emissions_tco2e: string;
+    emissions_kgco2e: string;
     share_percent: number;
   }>;
   top_emitters: Array<{
     sector: string;
     subsector: string;
     scope: string | null;
-    emissions_tco2e: string;
+    emissions_kgco2e: string;
     share_percent: number;
   }>;
   source_summary: {
@@ -431,8 +431,7 @@ export async function buildInventoryEmissionsContext(
   return {
     city: overview.city,
     inventory: overview.inventory,
-    total_emissions_tco2e:
-      kilogramsToTonnesString(results.totalEmissions) ?? "0",
+    total_emissions_kgco2e: valueToString(results.totalEmissions) ?? "0",
     by_sector: emissionSectors(
       results.totalEmissionsBySector ?? [],
       results.totalEmissions,
@@ -598,7 +597,7 @@ function emissionSectors(
         sectorName: sector.sectorName,
       }),
       reference,
-      emissions_tco2e: kilogramsToTonnesString(sector.co2eq) ?? "0",
+      emissions_kgco2e: valueToString(sector.co2eq) ?? "0",
       share_percent: sharePercent(sector.co2eq, totalEmissions),
     };
   });
@@ -617,7 +616,7 @@ function topEmitters(
       }),
       subsector: emitter.subsectorName ?? "Unknown subsector",
       scope: scopeLabel(emitter.scopeName),
-      emissions_tco2e: kilogramsToTonnesString(emitter.co2eq) ?? "0",
+      emissions_kgco2e: valueToString(emitter.co2eq) ?? "0",
       share_percent: sharePercent(emitter.co2eq, totalEmissions),
     };
   });
@@ -707,13 +706,6 @@ function valueToString(value: unknown): string | null {
     return null;
   }
   return String(value);
-}
-
-function kilogramsToTonnesString(value: unknown): string | null {
-  const kilograms = valueToString(value);
-  return kilograms == null
-    ? null
-    : new Decimal(kilograms).dividedBy(1000).toString();
 }
 
 function sharePercent(value: unknown, total: unknown): number {

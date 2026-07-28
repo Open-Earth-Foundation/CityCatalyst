@@ -8,18 +8,18 @@ from typing import Any
 from uuid import UUID
 
 from app.models.concept_note_city_context import (
-    ConceptNoteCcContext,
     GhgiContext,
     GhgiDataState,
     GhgiEmissions,
     GhgiInventory,
     GhgiSector,
     GhgiTopSource,
-    MeedContext,
-    MeedPlaceholder,
+    HiapCategoryContext,
+    HiapContext,
+    HiapCounts,
 )
 from app.services.citycatalyst_client import CityCatalystClient
-from pydantic import TypeAdapter, ValidationError
+from pydantic import ValidationError
 
 SECTORS: tuple[tuple[str, str], ...] = (
     ("I", "Stationary Energy"),
@@ -28,22 +28,22 @@ SECTORS: tuple[tuple[str, str], ...] = (
     ("IV", "IPPU"),
     ("V", "AFOLU"),
 )
+SECTOR_REFERENCES = frozenset(reference for reference, _ in SECTORS)
 UNIX_EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
-MEED_CONTEXT_ADAPTER = TypeAdapter(MeedPlaceholder | MeedContext)
 
 
 class ConceptNoteCityContextDataError(Exception):
     """Raised when a CityCatalyst capability returns an invalid contract."""
 
 
-async def load_ghgi_context(
+async def load_accessible_inventory(
     *,
     cc_client: CityCatalystClient,
     user_id: str,
     city_id: UUID,
     token: str,
-) -> GhgiContext:
-    """Select the newest accessible inventory and build compact GHGI context."""
+) -> Mapping[str, Any] | None:
+    """Select the newest inventory after revalidating live city access."""
     # Load the exact city's complete accessible inventory list.
     inventory_payload = await cc_client.load_inventory_list_accessible(
         request_payload={
@@ -53,10 +53,21 @@ async def load_ghgi_context(
         },
         token=token,
     )
-    selected_inventory = select_newest_inventory(
+    return select_newest_inventory(
         capability_data(inventory_payload),
         city_id=city_id,
     )
+
+
+async def load_ghgi_context(
+    *,
+    cc_client: CityCatalystClient,
+    user_id: str,
+    city_id: UUID,
+    selected_inventory: Mapping[str, Any] | None,
+    token: str,
+) -> GhgiContext:
+    """Build compact GHGI context for a prevalidated inventory selection."""
     if selected_inventory is None:
         return GhgiContext(
             availability="missing",
@@ -87,6 +98,63 @@ async def load_ghgi_context(
         inventory=selected_inventory,
         status_data=capability_data(status_payload),
         emissions_data=capability_data(emissions_payload),
+    )
+
+
+async def load_hiap_context(
+    *,
+    cc_client: CityCatalystClient,
+    user_id: str,
+    city_id: UUID,
+    selected_inventory: Mapping[str, Any],
+    language: str,
+    token: str,
+) -> HiapContext:
+    """Load persisted HIAP context without triggering prioritization."""
+    selected_inventory_id = inventory_uuid(selected_inventory)
+    payload = await cc_client.load_hiap_context(
+        request_payload={
+            "user_id": user_id,
+            "city_id": str(city_id),
+            "inventory_id": str(selected_inventory_id),
+            "language": language,
+        },
+        token=token,
+    )
+    try:
+        context = HiapContext.model_validate(capability_data(payload))
+    except ValidationError as exc:
+        raise ConceptNoteCityContextDataError(
+            "HIAP capability data does not match the CNB contract"
+        ) from exc
+    if context.inventory_id != selected_inventory_id:
+        raise ConceptNoteCityContextDataError(
+            "HIAP capability returned a different inventory"
+        )
+    if context.requested_language != language:
+        raise ConceptNoteCityContextDataError(
+            "HIAP capability returned a different requested language"
+        )
+    return context
+
+
+def missing_hiap_context(*, language: str) -> HiapContext:
+    """Return an explicit missing HIAP projection when no inventory exists."""
+    category = {
+        "status": "missing",
+        "ranking_id": None,
+        "updated_at": None,
+        "language": language,
+        "selection_mode": "none",
+        "counts": HiapCounts(ranked=0, selected=0, returned=0),
+        "actions": [],
+    }
+    return HiapContext(
+        availability="missing",
+        inventory_id=None,
+        requested_language=language,
+        mitigation=HiapCategoryContext(**category),
+        adaptation=HiapCategoryContext(**category),
     )
 
 
@@ -142,7 +210,7 @@ def compact_ghgi_context(
         raise ConceptNoteCityContextDataError(
             "Inventory completion is missing required fields"
         )
-    total_emissions = emissions_data.get("total_emissions_tco2e")
+    total_emissions = emissions_data.get("total_emissions_kgco2e")
     if total_emissions is None:
         raise ConceptNoteCityContextDataError(
             "Inventory emissions total is missing"
@@ -153,8 +221,8 @@ def compact_ghgi_context(
 
     sectors: list[GhgiSector] = []
     for reference, name in SECTORS:
-        status = status_by_sector.get(reference, {})
-        emissions = emissions_by_sector.get(reference, {})
+        status = status_by_sector[reference]
+        emissions = emissions_by_sector[reference]
         data_state = status.get("data_state")
         if not isinstance(data_state, Mapping):
             data_state = {}
@@ -163,7 +231,7 @@ def compact_ghgi_context(
             GhgiSector(
                 gpc=reference,
                 name=name,
-                emissions_tco2e=number(emissions.get("emissions_tco2e")),
+                emissions_kgco2e=number(emissions.get("emissions_kgco2e")),
                 share_pct=number(emissions.get("share_percent")),
                 completion_pct=bounded_percentage(
                     status.get("completion_percent")
@@ -198,7 +266,7 @@ def compact_ghgi_context(
                 gwp=optional_string(inventory.get("gwp")),
             ),
             emissions=GhgiEmissions(
-                total_tco2e=number(total_emissions),
+                total_kgco2e=number(total_emissions),
                 sectors=sectors,
                 top_sources=top_sources(emissions_data.get("top_emitters")),
             ),
@@ -209,35 +277,29 @@ def compact_ghgi_context(
         ) from exc
 
 
-def cached_cc_context(
+def cached_ghgi_context(
     context_bundle: Mapping[str, Any],
-    *,
-    include_meed: bool,
-) -> ConceptNoteCcContext | None:
-    """Return persisted GHGI with MEED only when the caller requests it."""
+) -> GhgiContext | None:
+    """Return a valid persisted GHGI snapshot when one exists."""
     cc_context = context_bundle.get("cc_context")
     if not isinstance(cc_context, Mapping):
         return None
-    payload: dict[str, Any] = {"ghgi": cc_context.get("ghgi")}
-    if include_meed:
-        meed = cc_context.get("meed")
-        payload["meed"] = {} if meed is None else meed
     try:
-        return ConceptNoteCcContext.model_validate(payload)
+        return GhgiContext.model_validate(cc_context.get("ghgi"))
     except ValidationError:
         return None
 
 
-def saved_meed_context(
+def cached_hiap_context(
     context_bundle: Mapping[str, Any],
-) -> MeedPlaceholder | MeedContext:
-    """Return a valid supplied MEED snapshot or the empty placeholder."""
+) -> HiapContext | None:
+    """Return a valid persisted HIAP snapshot when one exists."""
     cc_context = context_bundle.get("cc_context")
-    meed = cc_context.get("meed") if isinstance(cc_context, Mapping) else None
+    hiap = cc_context.get("hiap") if isinstance(cc_context, Mapping) else None
     try:
-        return MEED_CONTEXT_ADAPTER.validate_python(meed or {})
+        return HiapContext.model_validate(hiap)
     except ValidationError:
-        return MeedPlaceholder()
+        return None
 
 
 def capability_data(payload: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -279,7 +341,7 @@ def parse_timestamp(value: Any) -> datetime:
 
 
 def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
-    """Index known GPC records while ignoring unknown sector rows."""
+    """Require and index each canonical GPC sector exactly once."""
     if not isinstance(value, list):
         raise ConceptNoteCityContextDataError("Sector data must be an array")
     indexed: dict[str, Mapping[str, Any]] = {}
@@ -289,8 +351,19 @@ def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
                 "Sector data contains a non-object row"
             )
         reference = optional_string(item.get("reference"))
-        if reference in {sector[0] for sector in SECTORS}:
-            indexed[reference] = item
+        if reference not in SECTOR_REFERENCES:
+            raise ConceptNoteCityContextDataError(
+                "Sector data contains an unexpected GPC reference"
+            )
+        if reference in indexed:
+            raise ConceptNoteCityContextDataError(
+                "Sector data contains a duplicate GPC reference"
+            )
+        indexed[reference] = item
+    if set(indexed) != SECTOR_REFERENCES:
+        raise ConceptNoteCityContextDataError(
+            "Sector data must contain each GPC reference I through V"
+        )
     return indexed
 
 
@@ -310,7 +383,7 @@ def top_sources(value: Any) -> list[GhgiTopSource]:
                 sector=required_string(item.get("sector"), "sector"),
                 subsector=required_string(item.get("subsector"), "subsector"),
                 scope=optional_string(item.get("scope")),
-                emissions_tco2e=number(item.get("emissions_tco2e")),
+                emissions_kgco2e=number(item.get("emissions_kgco2e")),
                 share_pct=number(item.get("share_percent")),
             )
         )
@@ -318,7 +391,7 @@ def top_sources(value: Any) -> list[GhgiTopSource]:
     return sorted(
         normalized,
         key=lambda item: (
-            -item.emissions_tco2e,
+            -item.emissions_kgco2e,
             item.sector,
             item.subsector,
             item.scope or "",

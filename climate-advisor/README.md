@@ -575,22 +575,27 @@ validates the CC-issued user token and immutable CNB run/city binding, then uses
 the internal CityCatalyst GHGI inventory capabilities to select the newest
 accessible inventory and build a compact context snapshot. The snapshot always
 contains ordered GPC sectors I-V, sector-local completion and source-state
-counts, and no more than five top sources. Request `include_meed: true` to
-include a compact externally produced MEED ranking; otherwise the response
-omits the `meed` key. When requested without a stored snapshot it returns
-`meed: {}`. A populated snapshot contains at most 10 ordered actions with
-scores, legal verdict, finance route, inventory provenance, and pipeline counts.
-This endpoint never calls MEED or legacy HIAP.
+counts, and no more than five top sources. Both CityCatalyst capabilities and
+the persisted CNB snapshot keep emissions in the CityCatalyst base unit using
+explicit `kgco2e` fields; no kilogram-to-tonne conversion occurs. Request
+`include_hiap: true` to include persisted high-impact actions for that same
+inventory; otherwise the response omits the `hiap` key. `language` defaults to
+`en`. Mitigation and adaptation stay separate. Each category returns every
+explicitly city-selected action, or all persisted ranked actions when there is
+no selection. The route never starts or repairs HIAP prioritization and applies
+no hidden action cap.
 
 The repository adapter reads and updates the documented datateam-managed
 `concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
-`cc_context.ghgi`, preserving the current separately supplied
-`cc_context.meed` snapshot and the rest of the bundle under the same database
-lock. Incomplete CityCatalyst capability payloads return
+the GHGI and/or HIAP sections built by the current request, preserving the rest
+of the bundle under the same database lock. Before reusing either cached
+section, the route revalidates live city access and the selected inventory.
+GHGI status and emissions payloads must each contain GPC sectors I-V exactly
+once. Incomplete or noncanonical CityCatalyst capability payloads return
 `503 invalid_cc_context` without being persisted. A valid stored snapshot is
-reused on later interactions. If the configured database does not expose those
-external CNB tables, the route returns `503 cnb_storage_unavailable` without
-creating CA-owned replacement tables.
+reused on later interactions after that access check. If the configured
+database does not expose those external CNB tables, the route returns
+`503 cnb_storage_unavailable` without creating CA-owned replacement tables.
 
 ## Database Schema
 

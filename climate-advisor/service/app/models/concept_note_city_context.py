@@ -14,10 +14,11 @@ class StrictContract(BaseModel):
 
 
 class ConceptNoteCityContextRequest(StrictContract):
-    """City selected for the run and optional MEED response projection."""
+    """City selected for the run and optional persisted HIAP projection."""
 
     city_id: UUID
-    include_meed: bool = False
+    include_hiap: bool = False
+    language: Literal["en", "es", "pt", "de", "fr"] = "en"
 
 
 class GhgiDataState(StrictContract):
@@ -34,7 +35,7 @@ class GhgiSector(StrictContract):
 
     gpc: Literal["I", "II", "III", "IV", "V"]
     name: str
-    emissions_tco2e: float
+    emissions_kgco2e: float
     share_pct: float
     completion_pct: int = Field(ge=0, le=100)
     required: int = Field(ge=0)
@@ -49,7 +50,7 @@ class GhgiTopSource(StrictContract):
     sector: str
     subsector: str
     scope: str | None
-    emissions_tco2e: float
+    emissions_kgco2e: float
     share_pct: float
 
 
@@ -65,7 +66,7 @@ class GhgiInventory(StrictContract):
 class GhgiEmissions(StrictContract):
     """Compact inventory emissions suitable for the CNB context bundle."""
 
-    total_tco2e: float
+    total_kgco2e: float
     sectors: list[GhgiSector] = Field(min_length=5, max_length=5)
     top_sources: list[GhgiTopSource] = Field(max_length=5)
 
@@ -95,102 +96,104 @@ class GhgiContext(StrictContract):
         return self
 
 
-class MeedPlaceholder(StrictContract):
-    """Empty MEED state used until a ranking snapshot is supplied."""
+class HiapAction(StrictContract):
+    """One selected or persisted ranked high-impact action."""
 
-
-class MeedCity(StrictContract):
-    """City identity recorded by the supplied MEED ranking."""
-
-    name: str
-    locode: str
-
-
-class MeedInput(StrictContract):
-    """Inventory snapshot used as MEED ranking input."""
-
-    inventory_id: UUID
-    inventory_year: int
-    inventory_values: int = Field(ge=0)
-    emitting_values: int = Field(ge=0)
-
-
-class MeedDataSources(StrictContract):
-    """Bounded provenance labels for the MEED ranking inputs."""
-
-    inventory: str
-    city: str
-    actions: str
-    policy: str
-    mitigation_feasibility: str
-    financial_feasibility: str
-    legal: str
-
-
-class MeedWeights(StrictContract):
-    """Resolved MEED pillar weights."""
-
-    impact: float = Field(ge=0, le=1)
-    alignment: float = Field(ge=0, le=1)
-    feasibility: float = Field(ge=0, le=1)
-
-
-class MeedCounts(StrictContract):
-    """Compact action counts from the MEED pipeline."""
-
-    total_actions: int = Field(ge=0)
-    valid_actions: int = Field(ge=0)
-    discarded_excluded: int = Field(ge=0)
-    discarded_legal: int = Field(ge=0)
-    ranked_actions: int = Field(ge=0, le=10)
-
-
-class MeedScores(StrictContract):
-    """MEED final and pillar scores for one action."""
-
-    final: float = Field(ge=0, le=1)
-    impact: float = Field(ge=0, le=1)
-    alignment: float = Field(ge=0, le=1)
-    feasibility: float = Field(ge=0, le=1)
-
-
-class MeedAction(StrictContract):
-    """One compact ranked MEED action."""
-
-    rank: int = Field(ge=1, le=10)
     action_id: str
     name: str
-    sector: str | None
+    type: Literal["mitigation", "adaptation"]
+    rank: int | None = Field(default=None, ge=1)
+    selected: bool
+    source: Literal["ranked", "unranked"]
+    language: Literal["en", "es", "pt", "de", "fr"]
+    description: str | None
+    sectors: list[str]
+    hazards: list[str]
+    primary_purposes: list[str]
     timeline: str | None
     investment_cost: str | None
-    scores: MeedScores
-    legal_verdict: str | None
-    finance_route: str | None
-
-
-class MeedContext(StrictContract):
-    """Externally supplied compact MEED ranking snapshot."""
-
-    availability: Literal["available"]
-    city: MeedCity
-    executed_at_utc: datetime
-    input: MeedInput
-    data_sources: MeedDataSources
-    weights: MeedWeights
-    counts: MeedCounts
-    actions: list[MeedAction] = Field(min_length=1, max_length=10)
+    explanation: str | None
 
     @model_validator(mode="after")
-    def validate_action_summary(self) -> MeedContext:
-        """Require ordered unique actions and a matching ranked count."""
-        if self.counts.ranked_actions != len(self.actions):
-            raise ValueError("MEED ranked action count must match actions")
-        if [action.rank for action in self.actions] != list(
-            range(1, len(self.actions) + 1)
-        ):
-            raise ValueError("MEED actions must use consecutive ranks from one")
+    def validate_source_rank(self) -> HiapAction:
+        """Keep ranked and unranked action variants explicit."""
+        if self.source == "ranked" and self.rank is None:
+            raise ValueError("Ranked HIAP actions require a rank")
+        if self.source == "unranked" and self.rank is not None:
+            raise ValueError("Unranked HIAP actions must not contain a rank")
+        return self
+
+
+class HiapCounts(StrictContract):
+    """Counts that explain the selected or fallback HIAP projection."""
+
+    ranked: int = Field(ge=0)
+    selected: int = Field(ge=0)
+    returned: int = Field(ge=0)
+
+
+class HiapCategoryContext(StrictContract):
+    """Persisted HIAP state and projected actions for one action type."""
+
+    status: Literal["available", "pending", "failed", "missing"]
+    ranking_id: UUID | None
+    updated_at: datetime | None
+    language: Literal["en", "es", "pt", "de", "fr"]
+    selection_mode: Literal["city_selected", "ranked_fallback", "none"]
+    counts: HiapCounts
+    actions: list[HiapAction]
+
+    @model_validator(mode="after")
+    def validate_action_summary(self) -> HiapCategoryContext:
+        """Require unique actions and counts consistent with the projection."""
+        if self.counts.returned != len(self.actions):
+            raise ValueError("HIAP returned action count must match actions")
         if len({action.action_id for action in self.actions}) != len(self.actions):
-            raise ValueError("MEED action IDs must be unique")
+            raise ValueError("HIAP action IDs must be unique")
+        if self.selection_mode == "city_selected":
+            if not self.actions or not all(action.selected for action in self.actions):
+                raise ValueError("Selected HIAP projection requires selected actions")
+            if self.counts.selected != len(self.actions):
+                raise ValueError("HIAP selected count must match returned actions")
+        elif self.selection_mode == "ranked_fallback":
+            if any(action.selected for action in self.actions):
+                raise ValueError("HIAP fallback actions must not be selected")
+            if self.counts.selected != 0 or self.counts.ranked != len(self.actions):
+                raise ValueError("HIAP fallback must return every ranked action")
+        elif self.actions or self.counts.selected or self.counts.returned:
+            raise ValueError("Empty HIAP projection must have zero returned actions")
+        return self
+
+
+class HiapContext(StrictContract):
+    """Read-only HIAP context for the same inventory selected for GHGI."""
+
+    availability: Literal["available", "pending", "failed", "missing"]
+    inventory_id: UUID | None
+    requested_language: Literal["en", "es", "pt", "de", "fr"]
+    mitigation: HiapCategoryContext
+    adaptation: HiapCategoryContext
+
+    @model_validator(mode="after")
+    def validate_categories(self) -> HiapContext:
+        """Require category types and an availability consistent with both."""
+        if any(action.type != "mitigation" for action in self.mitigation.actions):
+            raise ValueError("Mitigation context contains another action type")
+        if any(action.type != "adaptation" for action in self.adaptation.actions):
+            raise ValueError("Adaptation context contains another action type")
+        statuses = {
+            self.mitigation.status,
+            self.adaptation.status,
+        }
+        expected = "missing"
+        for candidate in ("available", "pending", "failed"):
+            if candidate in statuses:
+                expected = candidate
+                break
+        if self.availability != expected:
+            raise ValueError("HIAP availability must match category status")
+        if self.inventory_id is None and self.availability != "missing":
+            raise ValueError("HIAP without an inventory must be missing")
         return self
 
 
@@ -198,7 +201,7 @@ class ConceptNoteCcContext(StrictContract):
     """CityCatalyst context fragment returned to CNB."""
 
     ghgi: GhgiContext
-    meed: MeedPlaceholder | MeedContext = Field(default_factory=MeedPlaceholder)
+    hiap: HiapContext | None = None
 
 
 class ConceptNoteContextBundleFragment(StrictContract):

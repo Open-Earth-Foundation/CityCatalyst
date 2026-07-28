@@ -1,12 +1,12 @@
 /**
  * @swagger
- * /api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context:
+ * /api/v1/internal/ca/capabilities/hiap/inventory/context:
  *   post:
  *     tags:
  *       - internal
- *     operationId: postInternalCaInventoryEmissionsContext
- *     summary: Load compact GHGI inventory emissions context for Climate Advisor
- *     description: Internal Climate Advisor capability route. Requires service-to-service headers plus a user-scoped bearer token, then verifies the requested user can read the inventory.
+ *     operationId: postInternalCaHiapInventoryContext
+ *     summary: Load compact persisted HIAP context for Climate Advisor
+ *     description: Read-only internal capability. It verifies service and user access, then returns selected actions or all persisted ranked actions as a fallback. It never starts prioritization or writes HIAP state.
  *     parameters:
  *       - in: header
  *         name: X-Service-Name
@@ -39,41 +39,15 @@
  *               inventory_id:
  *                 type: string
  *                 format: uuid
+ *               language:
+ *                 type: string
+ *                 enum: [en, es, pt, de, fr]
+ *                 default: en
  *     responses:
  *       200:
- *         description: Inventory emissions context returned successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 action:
- *                   type: string
- *                   enum: [ghgi.inventory.emissions_context]
- *                 success:
- *                   type: boolean
- *                   enum: [true]
- *                 data:
- *                   type: object
- *                   properties:
- *                     city:
- *                       type: string
- *                     inventory:
- *                       type: object
- *                     total_emissions_kgco2e:
- *                       type: string
- *                     by_sector:
- *                       type: array
- *                       items:
- *                         type: object
- *                     top_emitters:
- *                       type: array
- *                       items:
- *                         type: object
- *                     source_summary:
- *                       type: object
+ *         description: Persisted HIAP context returned successfully.
  *       400:
- *         description: Invalid request body or inventory/city scope mismatch.
+ *         description: Invalid body or inventory/city scope mismatch.
  *       401:
  *         description: Missing or invalid Climate Advisor service authentication.
  *       403:
@@ -85,11 +59,11 @@
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
-import { buildInventoryEmissionsContext } from "@/backend/agentic/ghgi/inventory/context";
+import { buildHiapInventoryContext } from "@/backend/agentic/hiap/context";
 import {
-  INVENTORY_EMISSIONS_CONTEXT_CAPABILITY,
-  inventoryCapabilityInputSchema,
-} from "@/backend/agentic/ghgi/inventory/registry";
+  HIAP_INVENTORY_CONTEXT_CAPABILITY,
+  hiapInventoryContextInputSchema,
+} from "@/backend/agentic/hiap/registry";
 import {
   requireClimateAdvisorIntegrationEnabled,
   requireClimateAdvisorServiceRequest,
@@ -102,8 +76,7 @@ export const POST = apiHandler(async (req, { session }) => {
   requireClimateAdvisorIntegrationEnabled();
   requireClimateAdvisorServiceRequest(req);
 
-  const body = inventoryCapabilityInputSchema.parse(await req.json());
-
+  const body = hiapInventoryContextInputSchema.parse(await req.json());
   const { resource } = await PermissionService.canAccessInventory(
     session,
     body.inventory_id,
@@ -116,8 +89,8 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   return NextResponse.json({
-    action: INVENTORY_EMISSIONS_CONTEXT_CAPABILITY,
+    action: HIAP_INVENTORY_CONTEXT_CAPABILITY,
     success: true,
-    data: await buildInventoryEmissionsContext(inventory),
+    data: await buildHiapInventoryContext(inventory.inventoryId, body.language),
   });
 });

@@ -81,7 +81,7 @@ flowchart TB
         CCBridge["CNB bridge routes"]
         CCUpload["Authenticated upload routes"]
         CCOCR["Durable PDF OCR service"]
-        CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, MEED"]
+        CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, HIAP"]
         CCChat[("Chat threads + messages")]
         CCData[("CC PostgreSQL")]
     end
@@ -183,14 +183,14 @@ flowchart LR
     Research["Curated funder profile,<br/>criteria + funded projects"] --> Match
     Match --> Context
 
-    CCData["CC data<br/>city, GHGI, CCRA, MEED"] --> Context
+    CCData["CC data<br/>city, GHGI, CCRA, HIAP"] --> Context
 ```
 
 ## State Ownership
 
 | State                                                                      | Owner                          | Reason                                                                                           |
 | -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| City profile, project, GHGI, CCRA, and supplied MEED context               | CityCatalyst                   | Existing product source of truth and permission model.                                           |
+| City profile, project, GHGI, CCRA, and persisted HIAP context              | CityCatalyst                   | Existing product source of truth and permission model.                                           |
 | Chat threads and messages                                                  | CityCatalyst                   | Keeps durable user conversation state with the product permission boundary.                      |
 | Concept-note run state                                                     | datateam managed CNB database  | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure.          |
 | Context bundle snapshot                                                    | datateam managed CNB database  | Reusable run input/output for this workflow.                                                     |
@@ -426,7 +426,7 @@ It should only carry the context the model and document workspace need.
 ```mermaid
 flowchart TB
     Bundle["context_bundle"]
-    Bundle --> CCSummary["cc_context<br/>city, GHGI, CCRA, MEED"]
+    Bundle --> CCSummary["cc_context<br/>city, GHGI, CCRA, HIAP"]
     Bundle --> Sources["selected_sources<br/>grounded excerpts,<br/>source locations"]
     Bundle --> Funder["funder_context<br/>template, rubric, eligibility,<br/>scoring criteria"]
     Bundle --> Examples["similar_projects<br/>project summaries,<br/>award evidence, fit reasons"]
@@ -484,7 +484,8 @@ Content-Type: application/json
 
 {
   "city_id": "uuid",
-  "include_meed": false
+  "include_hiap": false,
+  "language": "en"
 }
 ```
 
@@ -508,12 +509,12 @@ response has this bounded shape:
           "gwp": "ar6"
         },
         "emissions": {
-          "total_tco2e": 83950,
+          "total_kgco2e": 83950000,
           "sectors": [
             {
               "gpc": "I",
               "name": "Stationary Energy",
-              "emissions_tco2e": 40399,
+              "emissions_kgco2e": 40399000,
               "share_pct": 48.12,
               "completion_pct": 92,
               "required": 25,
@@ -537,43 +538,42 @@ response has this bounded shape:
 
 GHGI always contains GPC sectors I-V in order and caps `top_sources` at five.
 Source-state counts remain sector-specific; the CNB contract has no aggregate
-`source_mix`. CityCatalyst converts its kilogram-based inventory storage to
-tonnes CO2e before returning the GHGI capability payload. `availability` is
+`source_mix`. CityCatalyst returns its kilogram-based inventory values unchanged
+through explicit `kgco2e` fields, and CNB persists the same base unit. Both the
+status and emissions capability payloads must contain sectors I-V exactly once;
+malformed sets fail with `503 invalid_cc_context`. `availability` is
 `partial` when required GHGI values are missing and `missing` with null
 inventory/emissions when the city has no accessible inventory.
 
-`include_meed` defaults to `false`. In that case the response omits the `meed`
-key entirely. When it is `true`, the response includes the separately supplied
-MEED snapshot or `meed: {}` if no snapshot exists. A populated snapshot contains
-the city and inventory input, execution timestamp, bounded data-source labels,
-resolved pillar weights, pipeline counts, and at most 10 ordered actions. Each
-action contains its ID, name, sector, timeline, investment cost, final and
-pillar scores, legal verdict, and finance route. This flag only controls the
-response projection: it does not trigger MEED or delete a stored snapshot.
-Legacy HIAP data, routes, and tables are not part of this contract.
+`include_hiap` defaults to `false`; when false, the response omits `hiap`.
+When true, Climate Advisor calls the read-only
+`hiap.inventory.context` capability for the same inventory selected for GHGI.
+`language` defaults to `en` and can be `en`, `es`, `pt`, `de`, or `fr`.
+Mitigation and adaptation are separate. For each category, the projection
+returns every explicitly city-selected persisted action. If the city has no
+selection, it falls back to all persisted ranked actions without a hidden cap.
+The capability reports `available`, `pending`, `failed`, or `missing`, but never
+starts a ranking job, copies translations, repairs selection state, or writes
+CityCatalyst product data.
 
-The repository update replaces only `context_bundle.cc_context.ghgi`. It reads
-the current bundle under the write lock so a separately supplied `.meed`
-snapshot and every other assembled section are preserved. Incomplete CC
-capability payloads fail with `503 invalid_cc_context` and are not persisted.
-Once saved, later interactions for the run reuse the snapshot rather than
-querying GHGI again. `run_id` and `city_id` remain in the API envelope and are
-not duplicated inside the stored bundle.
+The repository update replaces only the GHGI and/or HIAP sections built by the
+current request. It reads the current bundle under the write lock so every
+other assembled section is preserved. Before using a cached section, Climate
+Advisor revalidates live access to the city and confirms that the cached
+inventory is still the selected inventory. Incomplete CC capability payloads
+fail with `503 invalid_cc_context` and are not persisted. `run_id` and `city_id`
+remain in the API envelope and are not duplicated inside the stored bundle.
 
-The current caller supplies `city_id` and opts into MEED with
-`include_meed: true` when needed. The future CityCatalyst UI should list
-accessible choices through `GET /api/v1/user/projects`, bind the selection when
-starting the run, and submit that same UUID and MEED preference to context
-assembly.
+The current caller supplies `city_id`, opts into HIAP with
+`include_hiap: true`, and can select a response language. The future
+CityCatalyst UI should list accessible choices through
+`GET /api/v1/user/projects`, bind the city selection when starting the run, and
+submit that same UUID and HIAP preference to context assembly.
 
-#### Iquique local execution example
+#### Compact GHGI and HIAP response example
 
-The following is a compact example from a local end-to-end execution for
-Iquique. It proves the GHGI-to-MEED-to-CNB integration path; it is not production
-city truth. The inventory is `partial` because the checked-in MEED fixture
-provided 8 of the 48 required GHGI values. MEED used live dev Global API inputs
-and the checked-in Chile legal fixture. This example used
-`include_meed: true`.
+This bounded example shows HIAP tied to the same inventory as GHGI. Explicit
+city selections win; the adaptation category demonstrates the ranked fallback.
 
 ```json
 {
@@ -590,36 +590,91 @@ and the checked-in Chile legal fixture. This example used
           "gwp": "ar6"
         },
         "emissions": {
-          "total_tco2e": 9076427.28,
+          "total_kgco2e": 9076427280,
           "sectors": ["I", "II", "III", "IV", "V"],
           "top_sources": 5
         }
       },
-      "meed": {
+      "hiap": {
         "availability": "available",
-        "city": {
-          "name": "Iquique",
-          "locode": "CL IQQ"
+        "inventory_id": "2edd677c-1ec6-4bc6-a052-a634b195f4df",
+        "requested_language": "en",
+        "mitigation": {
+          "status": "available",
+          "ranking_id": "uuid",
+          "updated_at": "2026-07-29T10:00:00Z",
+          "language": "en",
+          "selection_mode": "city_selected",
+          "counts": {
+            "ranked": 10,
+            "selected": 2,
+            "returned": 2
+          },
+          "actions": [
+            {
+              "action_id": "action-1",
+              "name": "Selected mitigation action",
+              "type": "mitigation",
+              "rank": 1,
+              "selected": true,
+              "source": "ranked",
+              "language": "en",
+              "description": null,
+              "sectors": ["Stationary Energy"],
+              "hazards": [],
+              "primary_purposes": ["Mitigation"],
+              "timeline": null,
+              "investment_cost": null,
+              "explanation": null
+            },
+            {
+              "action_id": "action-2",
+              "name": "City-added mitigation action",
+              "type": "mitigation",
+              "rank": null,
+              "selected": true,
+              "source": "unranked",
+              "language": "en",
+              "description": null,
+              "sectors": ["Transportation"],
+              "hazards": [],
+              "primary_purposes": ["Mitigation"],
+              "timeline": null,
+              "investment_cost": null,
+              "explanation": null
+            }
+          ]
         },
-        "counts": {
-          "total_actions": 102,
-          "valid_actions": 82,
-          "discarded_excluded": 1,
-          "discarded_legal": 19,
-          "ranked_actions": 10
-        },
-        "actions": [
-          "icare_0016",
-          "icare_0028",
-          "c40_0010",
-          "icare_0121",
-          "icare_0002",
-          "c40_0035",
-          "ipcc_0105",
-          "icare_0040",
-          "c40_0012",
-          "icare_0120"
-        ]
+        "adaptation": {
+          "status": "available",
+          "ranking_id": "uuid",
+          "updated_at": "2026-07-29T10:00:00Z",
+          "language": "en",
+          "selection_mode": "ranked_fallback",
+          "counts": {
+            "ranked": 1,
+            "selected": 0,
+            "returned": 1
+          },
+          "actions": [
+            {
+              "action_id": "action-3",
+              "name": "Ranked adaptation action",
+              "type": "adaptation",
+              "rank": 1,
+              "selected": false,
+              "source": "ranked",
+              "language": "en",
+              "description": null,
+              "sectors": [],
+              "hazards": ["Floods"],
+              "primary_purposes": ["Adaptation"],
+              "timeline": null,
+              "investment_cost": null,
+              "explanation": null
+            }
+          ]
+        }
       }
     }
   }
@@ -1379,7 +1434,7 @@ Context loaded:
 - Project summary.
 - GHGI summary if available.
 - CCRA risk summary if available.
-- Compact supplied MEED context with no more than 10 ranked actions.
+- Compact persisted HIAP context, separated into mitigation and adaptation.
 - Module availability and known missing pieces.
 - Selected source excerpts from uploads.
 - Funder rubric/template and selected opportunity criteria.
@@ -2048,7 +2103,7 @@ file layout.
 | Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result pointers. No storage pointer or signed result URL is handed to CA.                             |
 | PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                    |
 | CNB Markdown ingestion        | Climate Advisor                  | Optionally accepts completed Markdown, durably registers its digest and metadata, then performs CN-specific excerpt selection, indexing, summarization, and context-bundle updates. It owns no OCR state. |
-| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, and CCRA summaries through internal capabilities; preserves a separately supplied compact MEED top-10 snapshot without triggering MEED during assembly.             |
+| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                  |
 | CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                               |
 | Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                |
 | UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                        |
@@ -2105,9 +2160,9 @@ Minimum test surface:
 - CNB city-context contract tests covering deterministic inventory selection,
   GPC I-V ordering, sector-local source states, five-source capping, missing and
   partial GHGI, immutable run/city binding, targeted bundle merging, cached
-  reuse, omission of MEED by default, an empty MEED state when requested, and
-  preservation and validation of supplied compact MEED results capped at 10
-  actions.
+  reuse after live city-access revalidation, omission of HIAP by default,
+  mitigation/adaptation grouping, selected-action preference, uncapped ranked
+  fallback, and targeted GHGI/HIAP bundle merging.
 - Failure tests distinguishing `cc_ocr_failed` from
   `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
   repeat successful OCR.

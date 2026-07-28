@@ -60,15 +60,16 @@ class ConceptNoteCityContextRepository(ABC):
         """Validate the run binding and return the current context bundle."""
 
     @abstractmethod
-    async def merge_ghgi_context(
+    async def merge_cc_context(
         self,
         *,
         user_id: str,
         run_id: UUID,
         city_id: UUID,
-        ghgi_context: dict[str, Any],
+        ghgi_context: dict[str, Any] | None = None,
+        hiap_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Atomically replace GHGI while preserving the current MEED snapshot."""
+        """Atomically replace supplied CC sections and preserve all others."""
 
 
 class SqlAlchemyConceptNoteCityContextRepository(
@@ -119,15 +120,16 @@ class SqlAlchemyConceptNoteCityContextRepository(
             city_id=city_id,
         )
 
-    async def merge_ghgi_context(
+    async def merge_cc_context(
         self,
         *,
         user_id: str,
         run_id: UUID,
         city_id: UUID,
-        ghgi_context: dict[str, Any],
+        ghgi_context: dict[str, Any] | None = None,
+        hiap_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Lock the run and atomically persist the GHGI context update."""
+        """Lock the run and atomically persist supplied CC context updates."""
         try:
             async with self._session_factory() as session, session.begin():
                 run_row = (
@@ -165,9 +167,10 @@ class SqlAlchemyConceptNoteCityContextRepository(
                 current_bundle = (
                     bundle_row.get("context_bundle") if bundle_row else None
                 )
-                merged_bundle = merge_ghgi_into_bundle(
+                merged_bundle = merge_cc_context_into_bundle(
                     current_bundle=current_bundle,
                     ghgi_context=ghgi_context,
+                    hiap_context=hiap_context,
                 )
                 statement = text(
                     """
@@ -222,13 +225,14 @@ class UnavailableConceptNoteCityContextRepository(
         """Reject reads when the external CNB repository is unavailable."""
         raise ConceptNoteCityContextStorageUnavailable()
 
-    async def merge_ghgi_context(
+    async def merge_cc_context(
         self,
         *,
         user_id: str,
         run_id: UUID,
         city_id: UUID,
-        ghgi_context: dict[str, Any],
+        ghgi_context: dict[str, Any] | None = None,
+        hiap_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Reject writes when the external CNB repository is unavailable."""
         raise ConceptNoteCityContextStorageUnavailable()
@@ -270,12 +274,15 @@ def validated_run_context(
     )
 
 
-def merge_ghgi_into_bundle(
+def merge_cc_context_into_bundle(
     *,
     current_bundle: Any,
-    ghgi_context: dict[str, Any],
+    ghgi_context: dict[str, Any] | None = None,
+    hiap_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Replace GHGI while preserving MEED and unrelated bundle content."""
+    """Replace supplied CC sections while preserving unrelated bundle content."""
+    if ghgi_context is None and hiap_context is None:
+        raise ValueError("At least one CC context section must be supplied")
     if current_bundle is None:
         bundle: dict[str, Any] = {}
     elif isinstance(current_bundle, dict):
@@ -291,7 +298,10 @@ def merge_ghgi_into_bundle(
     else:
         raise ConceptNoteCityContextStorageUnavailable()
 
-    merged_cc_context["ghgi"] = copy.deepcopy(ghgi_context)
+    if ghgi_context is not None:
+        merged_cc_context["ghgi"] = copy.deepcopy(ghgi_context)
+    if hiap_context is not None:
+        merged_cc_context["hiap"] = copy.deepcopy(hiap_context)
     bundle["cc_context"] = merged_cc_context
     return bundle
 

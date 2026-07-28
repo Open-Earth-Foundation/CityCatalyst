@@ -9,12 +9,12 @@ import type {
 
 export interface ActivityValueAttributes {
   id: string;
-  activityData?: Record<string, object>;
+  activityData?: Record<string, number | string>;
   co2eq?: bigint;
   co2eqYears?: number;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: Record<string, object>;
+  metadata?: Record<string, number | string>;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -39,12 +39,12 @@ export class ActivityValue
   implements Partial<ActivityValueAttributes>
 {
   declare id: string;
-  declare activityData?: Record<string, object>;
+  declare activityData?: Record<string, number | string>;
   declare co2eq?: bigint;
   declare co2eqYears?: number;
   declare inventoryValueId?: string;
   declare datasourceId?: string;
-  declare metadata?: Record<string, object>;
+  declare metadata?: Record<string, number | string>;
   declare created?: Date;
   declare lastUpdated?: Date;
 

@@ -39,7 +39,10 @@ import { UserAttributes } from "@/models/User";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Router } from "next/router";
 
-const getInventoryLastUpdated = (lastUpdated: Date, t: TFunction) => {
+const getInventoryLastUpdated = (
+  lastUpdated: Date | string | null,
+  t: TFunction,
+) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
     return <p>{t("no-date-available")}</p>;
   }
@@ -344,7 +347,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                     </Table.Cell>
                     <Table.Cell>
                       <HStack gap={6} justifyContent="space-between">
-                        {getInventoryLastUpdated(new Date(item.lastUpdated), t)}
+                        {getInventoryLastUpdated(item.lastUpdated, t)}
                         <DownloadButton
                           lng={lng}
                           inventoryId={item.inventoryId}

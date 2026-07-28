@@ -1,7 +1,6 @@
 import { Accordion, Box, Icon, Link, Span, Text } from "@chakra-ui/react";
 import * as React from "react";
 import { BiChevronDown } from "react-icons/bi";
-import { GoArrowRight } from "react-icons/go";
 
 interface NavigationItem {
   label: string;
@@ -27,7 +26,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
   return (
     <Box w="full" display="flex" flexDirection="column" py="24px">
       <Accordion.Root collapsible defaultValue={defaultOpen ? ["section"] : []}>
-        <Accordion.Item value="section">
+        <Accordion.Item value="section" borderBottom="none">
           <Accordion.ItemTrigger
             w="full"
             display="flex"
@@ -37,7 +36,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
             pl="16px"
           >
             <Box display="flex" alignItems="center" gap="12px">
-              <Icon as={IconComponent} color={"content.tertiary"} boxSize={6} />
+              <Icon as={IconComponent} color={"interactive.secondary"} boxSize={6} />
               <Span
                 flex="1"
                 fontSize="body.lg"
@@ -48,7 +47,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
               </Span>
             </Box>
             <Accordion.ItemIndicator>
-              <Icon as={BiChevronDown} color={"content.tertiary"} boxSize={6} />
+              <Icon as={BiChevronDown} color={"interactive.secondary"} boxSize={6} />
             </Accordion.ItemIndicator>
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
@@ -61,7 +60,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
                   h="48px"
                   gap="12px"
                   display="flex"
-                  justifyContent="space-between"
+                  alignItems="center"
                   href={item.href}
                   onClick={item.onClick}
                   rel="noopener noreferrer"
@@ -70,11 +69,6 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
                   <Text fontSize="body.lg" color="content.primary">
                     {t(item.label)}
                   </Text>
-                  <Icon
-                    as={GoArrowRight}
-                    color={"interactive.control"}
-                    boxSize={6}
-                  />
                 </Link>
               ))}
             </Accordion.ItemBody>

@@ -2,7 +2,7 @@ import {
   useGetActionPlansQuery,
   useGetActionPlanByIdQuery,
 } from "@/services/api";
-import { HIAction } from "@/util/types";
+import { ActionPlanPDFData } from "@/services/PDFExportService";
 
 interface ActionPlan {
   id: string;
@@ -75,7 +75,7 @@ export const useActionPlan = ({
             adaptations: actionPlan.adaptations,
             sdgs: actionPlan.sdgs,
           },
-        },
+        } as ActionPlanPDFData,
       }
     : null;
 

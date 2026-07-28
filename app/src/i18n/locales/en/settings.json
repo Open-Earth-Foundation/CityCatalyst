@@ -21,7 +21,7 @@
   "role": "Role",
   "save-changes": "Save Changes",
   "my-files-sub-title": "Here you can find all your files uploaded, pending request harmonization, and included in the GHG Inventory",
-  "all-inventory-years": "All inventory years",
+  "inventories": "Inventories",
   "inventory-year": "Inventory Year",
   "files": "Files",
   "last-updated": "Last updated",
@@ -115,9 +115,6 @@
   "projects": "Projects",
   "projects-description": "{{orgName}} can currently set up to {{projectCount}} projects with {{cityCount}} cities",
   "no-project": "Unassigned Cities",
-  "all-cities": "All Cities ({{count}})",
-  "all-collaborators": "All Collaborators ({{count}})",
-  "all-inventories": "Inventories ({{count}})",
   "delete-city": "Delete City",
   "confirm-city-delete": "Are you sure you want to permanently delete <strong>{{name}}</strong>",
   "delete-all-inventories-warning": "All the inventories associated with this city will be deleted as well.",
@@ -214,5 +211,6 @@
   "space-and-comma": "Space and comma (e.g.: 1 000 000,50)",
   "apostrophe-and-dot": "Apostrophe and dot (e.g.: 1’000’000.50)",
   "preferences": "Preferences",
-  "preferences-updated": "Preferences updated"
+  "preferences-updated": "Preferences updated",
+  "search-by-project": "Search by project name"
 }

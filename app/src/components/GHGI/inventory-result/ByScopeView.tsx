@@ -14,7 +14,7 @@ interface ByScopeViewProps {
   tData: TFunction;
   tDashboard: TFunction;
   sectorName: string;
-  inventoryType: InventoryTypeEnum;
+  inventoryType?: InventoryTypeEnum;
   inventoryId: string;
   numberFormat?: string;
 }
@@ -28,9 +28,10 @@ const ByScopeView: React.FC<ByScopeViewProps> = ({
   inventoryId,
   numberFormat,
 }) => {
-  const scopes = SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[
-    inventoryType
-  ].scopes;
+  const scopes = inventoryType
+    ? SECTORS.find((s) => sectorName === s.name)!.inventoryTypes[inventoryType]
+        .scopes
+    : [];
   const [selectedSourceId, setSelectedSourceId] = useState<string>("");
   const [expandedSubsectors, setExpandedSubsectors] = useState<Set<string>>(
     new Set(),

@@ -151,12 +151,10 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
     isOrganizationLoading,
     projectsData,
     isProjectsLoading,
-    projectUsers,
     isProjectUsersLoading,
     totalCities,
     selectedProjectData,
     selectedCityData,
-    userList,
   } = useProjectData({
     organizationId: selectedOrganization,
     selectedProjectId:

@@ -68,7 +68,6 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           color="content.secondary"
           truncate
           cursor="pointer"
-          textTransform="capitalize"
         >
           {selectedProjectData?.name}
         </Text>

@@ -1444,10 +1444,14 @@ export const api = createApi({
       }),
       updateHiapSelection: builder.mutation<
         { success: boolean; updated: number },
-        { inventoryId: string; selectedActionIds: string[] }
+        {
+          inventoryId: string;
+          selectedActionIds: string[];
+          actionType: ACTION_TYPES;
+        }
       >({
-        query: ({ inventoryId, selectedActionIds }) => ({
-          url: `inventory/${inventoryId}/hiap`,
+        query: ({ inventoryId, selectedActionIds, actionType }) => ({
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}`,
           method: "PATCH",
           body: { selectedActionIds },
         }),

@@ -236,5 +236,7 @@
   "space-and-comma": "Espacio y coma (p. ej.: 1 000 000,50)",
   "apostrophe-and-dot": "Apóstrofe y punto (por ejemplo: 1’000’000.50)",
   "preferences-info-update-title": "Ahora puede configurar sus preferencias",
-  "preferences-info-update-description": "En la sección de preferencias ahora encontrará la selección de idioma y los formatos numéricos."
+  "preferences-info-update-description": "En la sección de preferencias ahora encontrará la selección de idioma y los formatos numéricos.",
+  "preferences": "Preferencias",
+  "preferences-updated": "Preferencias actualizadas"
 }

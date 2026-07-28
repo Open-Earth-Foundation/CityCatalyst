@@ -154,11 +154,13 @@ It waits for an ingested project upload and reads reviewed awards through the
 typed CNB reference-data contract. `same_funder` is the default retrieval scope;
 an explicit `cross_funder` request may compare reviewed awards from multiple
 canonical funders while retaining each candidate's real funder identity. It
-validates structured LLM
-selected/rejected decisions, persists selected matches through the external
-workflow-store contract, rebuilds only `context_bundle.similar_projects`, and
-returns the generic `concept_note_context_bundle_ready` signal. Missing or weak
-examples continue with a caveat rather than blocking the CNB workflow. The
+uses a first-version deterministic shortlist based on exact normalized fields
+and reviewed tag overlap. Product validation of field priority, a controlled
+taxonomy, and shortlist recall is required before production reliance. It validates
+structured LLM selected/rejected decisions, persists selected matches through the
+external workflow-store contract, rebuilds only `context_bundle.similar_projects`,
+and returns the generic `concept_note_context_bundle_ready` signal. Missing or
+weak examples continue with a caveat rather than blocking the CNB workflow. The
 datateam reference endpoint, filtering contract, and production storage adapters
 remain external integration points; the safe default returns no candidates.
 `run_similar_project_matching.py` is a provider-backed local QA harness over the

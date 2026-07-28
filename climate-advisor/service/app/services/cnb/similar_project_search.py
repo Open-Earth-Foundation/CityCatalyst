@@ -271,12 +271,14 @@ class ProjectMatchingService:
         candidate: CnbSimilarProjectCandidate,
         overlap_tags: list[str],
     ) -> tuple[object, ...]:
-        """Return a stable priority tuple without exposing any numeric score."""
+        """Return the V1 deterministic shortlist priority without a numeric score."""
         hazard_overlap = self._overlap_count(request.hazards, candidate.hazards)
         intervention_overlap = self._overlap_count(
             request.interventions,
             candidate.interventions,
         )
+        # V1 uses exact normalized, lexicographic field ordering. Product must
+        # validate field priority, taxonomy, and shortlist recall before production.
         return (
             -int(self._normalized_equal(request.category, candidate.category)),
             -int(self._normalized_equal(request.sector, candidate.sector)),

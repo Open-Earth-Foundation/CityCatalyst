@@ -227,13 +227,15 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
               mt={6}
               textTransform="uppercase"
               fontWeight="bold"
+              fontSize="label.md"
+              letterSpacing="widest"
             >
-              {t("all-inventory-years")}
+              {t("inventories")}
             </Text>
             <DataTableCore
               data={selectedCityData?.inventories ?? []}
               columns={[
-                { header: t("year"), accessor: "year" },
+                { header: t("inventory-year"), accessor: "year" },
                 { header: t("last-updated"), accessor: "lastUpdated" },
               ]}
               renderRow={(item, idx) => (

@@ -21,6 +21,7 @@ import type {
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type Decimal from "decimal.js";
+import { OrganizationPlanType } from "@/util/enums";
 import type {
   FailedSourceResult,
   RemovedSourceResult,
@@ -432,6 +433,8 @@ export type OrganizationResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
+  planType: OrganizationPlanType;
+  trialEndsAt?: string | null;
   themeId?: string;
   theme?: {
     themeId: string;

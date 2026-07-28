@@ -3,34 +3,38 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Review and edit CNB funding research." />
-    <title>CNB Research Review</title>
+    <meta name="description" content="Review CNB funded-project research and similar-project search results." />
+    <title>CNB Local Review</title>
     <link rel="stylesheet" href="review.css" />
+    <script src="review-support.js" defer></script>
+    <script src="review-renderer.js" defer></script>
     <script src="review.js" defer></script>
   </head>
   <body>
     <header class="topbar">
       <div class="brand">
         <span class="brand-mark">CNB</span>
-        <div><small>Concept Note Builder</small><h1>Research review</h1></div>
+        <div><small>Concept Note Builder</small><h1 id="pageTitle">Research review</h1></div>
       </div>
       <div class="actions">
         <span class="local-state">Local review</span>
-        <label class="button secondary" for="bundleInput">Open bundle</label>
+        <label class="button secondary" for="bundleInput">Open review JSON</label>
         <input id="bundleInput" type="file" accept="application/json,.json" hidden />
         <button id="saveButton" class="button primary" type="button" disabled>
-          Save update
+          Save review
         </button>
       </div>
     </header>
 
     <main>
       <section id="emptyState" class="empty-state">
-        <small>Pending-review bundle</small>
-        <h2>Open research_bundle.json</h2>
+        <small>Pending-review artifacts</small>
+        <h2>Open a CNB review artifact</h2>
         <p>
-          Choose what to keep, correct values, inspect the evidence, and save a
-          separate review update.
+          Choose a funded-project <code>&lt;run_id&gt;.research.json</code>, an
+          older <code>research_bundle.json</code>, or a matching
+          <code>&lt;run_id&gt;.similar-projects.json</code>. The page adapts the
+          fields, evidence, and saved review to that artifact.
         </p>
         <label class="button primary" for="bundleInput">Choose JSON file</label>
         <p id="loadError" class="error" role="alert"></p>
@@ -44,10 +48,10 @@
             <p id="runMeta"></p>
           </div>
           <dl class="counts">
-            <div><dt>Sources</dt><dd id="sourceCount">0</dd></div>
-            <div><dt>Evidence</dt><dd id="evidenceCount">0</dd></div>
-            <div><dt>Gaps</dt><dd id="gapCount">0</dd></div>
-            <div><dt>Conflicts</dt><dd id="conflictCount">0</dd></div>
+            <div><dt id="countLabel1">Sources</dt><dd id="sourceCount">0</dd></div>
+            <div><dt id="countLabel2">Evidence</dt><dd id="evidenceCount">0</dd></div>
+            <div><dt id="countLabel3">Gaps</dt><dd id="gapCount">0</dd></div>
+            <div><dt id="countLabel4">Conflicts</dt><dd id="conflictCount">0</dd></div>
           </dl>
         </div>
 
@@ -70,7 +74,7 @@
               <div id="inspectorContent"></div>
             </section>
             <section class="review-details">
-              <small>Review update</small>
+              <small>Review metadata</small>
               <label>Decision
                 <select id="reviewStatus">
                   <option value="pending_review">Pending review</option>
@@ -85,7 +89,10 @@
               <label>Notes
                 <textarea id="reviewNotes" rows="4" placeholder="One note per line"></textarea>
               </label>
-              <p class="muted">Saving creates a local JSON update. The bundle is unchanged.</p>
+              <p class="muted">
+                Saving creates a local <code>&lt;run_id&gt;.review.json</code> file.
+                The research JSON is unchanged and the browser never writes to the database.
+              </p>
             </section>
           </aside>
         </div>

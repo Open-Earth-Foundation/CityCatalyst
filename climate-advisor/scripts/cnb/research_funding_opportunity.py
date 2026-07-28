@@ -11,7 +11,7 @@ Inputs:
   optional application-template URL, an optional validated
   `current_filled_object`, and an optional positive `max_turns` value that
   defaults to 15.
-- Env vars: `OPENAI_API_KEY` calls the configured research model and
+- Env vars: `OPENROUTER_API_KEY` calls the configured research model and
   `FIRECRAWL_API_KEY` calls Firecrawl. Values are loaded from the Climate
   Advisor `.env` by shared settings and are never written to artifacts.
 
@@ -25,7 +25,7 @@ Outputs:
 - Performs no database reads or writes.
 
 Usage (from project root):
-- uv run python -m scripts.cnb_research.research_funding_opportunity \
+- uv run python -m scripts.cnb.research_funding_opportunity \
     --input path/to/research-request.json \
     --output output/cnb_research
 """
@@ -90,8 +90,8 @@ def main() -> None:
     if str(service_directory) not in sys.path:
         sys.path.insert(0, str(service_directory))
 
-    from app.models.cnb_research import FundingOpportunityResearchRequest
-    from app.services.cnb_research_service import run_funding_opportunity_research
+    from app.models.cnb.research import FundingOpportunityResearchRequest
+    from app.services.cnb.research_service import run_funding_opportunity_research
 
     # Step 3: validate the authoritative request before making external calls.
     try:

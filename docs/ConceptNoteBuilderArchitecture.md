@@ -61,8 +61,10 @@ Out of scope:
 Concept Note Builder should be implemented as a new Climate Advisor agentic
 workflow, following the same direction as the Stationary Energy workflow:
 
-1. CityCatalyst owns product data, user permissions, and committed module state.
-2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
+1. CityCatalyst owns product data, user permissions, durable chat threads and
+   messages, and committed module state.
+2. Climate Advisor orchestrates the conversation and pre-commit agentic
+   workflow, but does not own durable chat or CNB workflow storage.
 3. The datateam managed CNB database stores reusable funder and funded-project
    tables alongside CNB workflow tables.
 4. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
@@ -80,6 +82,7 @@ flowchart TB
         CCUpload["Authenticated upload routes"]
         CCOCR["Durable PDF OCR service"]
         CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, MEED"]
+        CCChat[("Chat threads + messages")]
         CCData[("CC PostgreSQL")]
     end
 
@@ -107,6 +110,7 @@ flowchart TB
     ExportStore["Object/file storage<br/>DOCX/PDF exports"]
 
     CCUI --> CCBridge
+    CCUI --> CCChat
     CCUI --> CCUpload
     CCUpload --> CCFiles
     CCUpload --> CCOCR
@@ -187,7 +191,7 @@ flowchart LR
 | State                                                                      | Owner                          | Reason                                                                                           |
 | -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
 | City profile, project, GHGI, CCRA, and supplied MEED context               | CityCatalyst                   | Existing product source of truth and permission model.                                           |
-| Chat threads and messages                                                  | Climate Advisor                | Existing CA conversation model.                                                                  |
+| Chat threads and messages                                                  | CityCatalyst                   | Keeps durable user conversation state with the product permission boundary.                      |
 | Concept-note run state                                                     | datateam managed CNB database  | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure.          |
 | Context bundle snapshot                                                    | datateam managed CNB database  | Reusable run input/output for this workflow.                                                     |
 | CN upload/run associations, received Markdown, and selected source context | datateam managed CNB database  | Registers the optional Markdown handoff and keeps selected context for review and export.        |
@@ -231,6 +235,7 @@ database.
 flowchart LR
     subgraph CCDB["CityCatalyst PostgreSQL"]
         Inventory["ImportedInventoryFile<br/>(existing inventory source)"]
+        Chat["Chat threads + messages<br/>(CC-owned conversation state)"]
         CNUpload["ConceptNoteUpload<br/>(new CNB source record)"]
         OCR["PdfOcrJob<br/>(new shared OCR job)"]
     end
@@ -249,6 +254,7 @@ flowchart LR
     CNUpload -.->|"concept_note_upload + upload_id"| OCR
     CNUpload --> Source
     OCR --> Markdown
+    Chat -.->|"thread_id integration identifier"| Run
     Run --> Received
     Markdown -.->|"optional API delivery using upload_id"| Received
 ```
@@ -708,7 +714,6 @@ only so the workflow state and curated funding/reference data are easier to read
 
 ```mermaid
 erDiagram
-    threads ||--o{ concept_note_runs : "optionally anchors"
     concept_note_runs ||--|| concept_note_context_bundles : "stores"
     concept_note_runs ||--o{ concept_note_uploads : "has"
     concept_note_runs ||--o{ concept_note_chapters : "contains"
@@ -717,12 +722,6 @@ erDiagram
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
-
-    threads {
-        uuid thread_id
-        string user_id
-        jsonb context
-    }
 
     concept_note_runs {
         uuid run_id
@@ -837,6 +836,11 @@ source records:
   `funding_records.funding_record_id`.
 - `concept_note_matched_projects.funding_record_id` references
   `funding_records.funding_record_id`.
+
+`concept_note_runs.thread_id` is a nullable integration identifier for the
+CityCatalyst-owned chat thread. The CNB database must not create a foreign key to
+a local `threads` table. CityCatalyst validates thread ownership before passing
+the identifier into the Climate Advisor workflow.
 
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
@@ -1339,6 +1343,8 @@ Output:
 Rules:
 
 - Creates `concept_note_runs`.
+- Accepts only a CityCatalyst-created `thread_id`; the value is stored as an
+  external integration identifier without a CNB-database foreign key.
 - Creates initial empty document from the selected funder template.
 - Reuses an active run if the same user, city, project, funder, and selected
   funding record already has one.
@@ -2034,6 +2040,7 @@ file layout.
 
 | Responsibility                | Owner                            | Boundary                                                                                                                                                                                                  |
 | ----------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                             |
 | Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                               |
 | CNB storage access            | datateam managed CNB database    | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations.                              |
 | Funding reference access      | datateam managed CNB database    | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables.                                                                                              |

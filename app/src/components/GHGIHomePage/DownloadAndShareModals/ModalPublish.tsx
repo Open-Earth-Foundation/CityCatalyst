@@ -5,7 +5,6 @@ import { api } from "@/services/api";
 import { useState } from "react";
 import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
 import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
-import { InventoryResponse } from "@/util/types";
 import { trackEvent } from "@/lib/analytics";
 import { toaster } from "@/components/ui/toaster";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";

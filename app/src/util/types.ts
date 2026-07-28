@@ -488,11 +488,7 @@ export type CityResponse = {
   region?: string;
   regionLocode?: string;
   locode: string;
-  inventories: {
-    inventoryId: string;
-    year: number;
-    lastUpdated: string;
-  }[];
+  inventories: InventoryResponse[];
 };
 
 export type ProjectWithCities = {
@@ -500,7 +496,7 @@ export type ProjectWithCities = {
   name: string;
   organizationId: string;
   description?: string;
-  cityCountLimit?: Number;
+  cityCountLimit?: number;
   cities: CityResponse[];
 };
 

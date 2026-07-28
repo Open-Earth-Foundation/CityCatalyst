@@ -99,16 +99,12 @@ const InventoryView = ({
     skip: !cityId,
   });
 
-  function getYearFromDate(dateString: string) {
-    return new Date(dateString).getFullYear();
-  }
-
   function filterDataByYear(
-    data: any,
+    data: { lastUpdated: string | Date }[] | undefined,
     selectedYear: number | null | undefined,
   ) {
-    return data?.filter((item: any) => {
-      return getYearFromDate(item?.lastUpdated) === selectedYear;
+    return data?.filter((item) => {
+      return new Date(item?.lastUpdated).getFullYear() === selectedYear;
     });
   }
 

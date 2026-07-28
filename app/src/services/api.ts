@@ -707,7 +707,7 @@ export const api = createApi({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse }) => {
+        transformResponse: (response: { data: UserFileResponse[] }) => {
           return response.data;
         },
 

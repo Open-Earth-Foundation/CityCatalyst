@@ -11,7 +11,7 @@ import type { InventoryResponse } from "@/util/types";
 interface DownloadButtonProps {
   inventoryId: string;
   city?: CityAttributes;
-  inventory: InventoryResponse;
+  inventory?: InventoryResponse;
   lng: string;
   children?: React.ReactNode;
 }

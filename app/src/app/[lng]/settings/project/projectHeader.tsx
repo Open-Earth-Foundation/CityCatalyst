@@ -76,6 +76,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             letterSpacing="widest"
             fontSize="14px"
             textTransform="uppercase"
+            mb="6"
             separator={
               <Icon
                 as={MdChevronRight}
@@ -93,14 +94,14 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                     setSelectedInventory(null);
                   }}
                   color="content.secondary"
-                  fontWeight="normal"
+                  fontWeight="bold"
                   truncate
                   cursor="pointer"
                   textTransform="capitalize"
                 >
                   {view === "project-view" ? (
                     <Text
-                      fontSize="title.lg"
+                      fontSize="title.md"
                       fontWeight="bold"
                       color="content.secondary"
                     >
@@ -114,7 +115,10 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               {selectedCityData && (
                 <BreadcrumbItem>
                   {view === "city-view" ? (
-                    <BreadcrumbCurrentLink color="content.link">
+                    <BreadcrumbCurrentLink
+                      color="content.link"
+                      textTransform="capitalize"
+                    >
                       {selectedCityData?.name}
                     </BreadcrumbCurrentLink>
                   ) : (
@@ -152,9 +156,10 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   ?.substring(0, 2)
                   .toLowerCase() || ""
               }
-              width={32}
+              width={24}
+              height={24}
             />
-            <Text fontWeight="bold" fontSize="title.md" mb={2}>
+            <Text fontWeight="bold" fontSize="title.lg" lineHeight="28">
               {selectedCityData?.name}
             </Text>
           </HStack>

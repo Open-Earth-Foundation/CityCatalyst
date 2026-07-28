@@ -469,7 +469,7 @@ const AdminOrganizationTeamPage = (props: {
 
                   <Table.Cell>
                     <MenuRoot>
-                      <MenuTrigger>
+                      <MenuTrigger asChild>
                         <IconButton
                           data-testid="activity-more-icon"
                           aria-label="more-icon"

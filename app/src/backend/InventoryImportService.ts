@@ -20,12 +20,14 @@ export type ImportECRFDataOptions = {
 
 /**
  * Maps eCRF notation keys to unavailableReason enum values
- * eCRF uses: NO, NE, C, IE
+ * eCRF uses: NO, NE, C, IE. Some CityCatalyst exports also include RN
+ * (relevant but not estimated), which maps to the same unavailable reason as NE.
  * Database uses: no-occurrance, not-estimated, confidential-information, included-elsewhere
  */
 const notationKeyMapping: Record<string, string> = {
   NO: "no-occurrance",
   NE: "not-estimated",
+  RN: "not-estimated",
   C: "confidential-information",
   IE: "included-elsewhere",
 };
@@ -326,19 +328,15 @@ export default class InventoryImportService {
 
         // If any of CO2, CH4, N2O exist: store totalCO2e and gas values together.
         // Otherwise: store only totalCO2e (no per-gas storage).
-        const co2Val =
-          row.co2 != null ? Number(row.co2) : undefined;
-        const ch4Val =
-          row.ch4 != null ? Number(row.ch4) : undefined;
-        const n2oVal =
-          row.n2o != null ? Number(row.n2o) : undefined;
+        const co2Val = row.co2 != null ? Number(row.co2) : undefined;
+        const ch4Val = row.ch4 != null ? Number(row.ch4) : undefined;
+        const n2oVal = row.n2o != null ? Number(row.n2o) : undefined;
         const hasAnyGas =
           (typeof co2Val === "number" && !isNaN(co2Val)) ||
           (typeof ch4Val === "number" && !isNaN(ch4Val)) ||
           (typeof n2oVal === "number" && !isNaN(n2oVal));
 
-        const gasSum =
-          (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
+        const gasSum = (co2Val ?? 0) + (ch4Val ?? 0) + (n2oVal ?? 0);
 
         let totalCO2e: number | undefined;
         if (hasAnyGas) {
@@ -441,7 +439,12 @@ export default class InventoryImportService {
           for (const gv of existingGasValues) {
             await gv.destroy();
           }
-          if (hasAnyGas && (typeof co2Val === "number" || typeof ch4Val === "number" || typeof n2oVal === "number")) {
+          if (
+            hasAnyGas &&
+            (typeof co2Val === "number" ||
+              typeof ch4Val === "number" ||
+              typeof n2oVal === "number")
+          ) {
             const toKg = (t: number) =>
               decimalToBigInt(new Decimal(t).mul(1000));
             const gases: { gas: "CO2" | "CH4" | "N2O"; val: number }[] = [];
@@ -640,8 +643,7 @@ export default class InventoryImportService {
               }
 
               // Default data quality to low when not provided
-              metadata.dataQuality =
-                row.activityDataQuality?.trim() || "low";
+              metadata.dataQuality = row.activityDataQuality?.trim() || "low";
 
               if (row.emissionFactorSource) {
                 metadata.emissionFactorName = row.emissionFactorSource;

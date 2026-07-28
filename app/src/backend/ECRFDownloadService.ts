@@ -11,6 +11,7 @@ import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
 import CityBoundaryService from "@/backend/CityBoundaryService";
+import { resolveDemoBoundaryLocode } from "@/backend/DemoInventoryService";
 import { logger } from "@/services/logger";
 import fs from "fs";
 import path from "path";
@@ -80,9 +81,11 @@ export default class ECRFDownloadService {
         city.cityId,
         year as number,
       );
-      cityBoundaryData = await CityBoundaryService.getCityBoundary(
-        city.locode as string,
-      );
+      const boundaryLocode =
+        resolveDemoBoundaryLocode(city.locode as string) ??
+        (city.locode as string);
+      cityBoundaryData =
+        await CityBoundaryService.getCityBoundary(boundaryLocode);
     } catch (e) {
       logger.warn("Failed to fetch city boundary or population");
     }

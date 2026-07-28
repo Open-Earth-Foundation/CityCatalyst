@@ -8,10 +8,15 @@ import {
   Table,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert, MdPublic } from "react-icons/md";
+import { MdAdd, MdMoreVert, MdOpenInNew, MdPublic } from "react-icons/md";
 import React, { useMemo, useState, use } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
-import { useGetOrganizationQuery, useGetProjectsQuery, useMarkCitiesPublicMutation } from "@/services/api";
+import {
+  useGetOrganizationQuery,
+  useGetProjectsQuery,
+  useMarkCitiesPublicMutation,
+} from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
@@ -35,6 +40,7 @@ const AdminOrganizationProjectsPage = (props: {
 }) => {
   const { lng, id } = use(props.params);
   const { t } = useTranslation(lng, "admin");
+  const router = useRouter();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -68,7 +74,7 @@ const AdminOrganizationProjectsPage = (props: {
       title: t("publishing-project"),
       type: "info",
     });
-    
+
     try {
       await markCitiesPublic({ projectId }).unwrap();
       toaster.dismiss();
@@ -84,6 +90,9 @@ const AdminOrganizationProjectsPage = (props: {
     if (!projects) return [];
     return projects.map((project) => {
       const totalCityCount = project.cities.length;
+      const latestInventory = project.cities
+        .flatMap((city) => city.inventories ?? [])
+        .sort((a, b) => b.year - a.year)[0];
       return {
         name: project.name,
         cities: `${totalCityCount}/${project.cityCountLimit}`,
@@ -91,6 +100,7 @@ const AdminOrganizationProjectsPage = (props: {
         admin: "N/A",
         cityCountLimit: project.cityCountLimit as number,
         projectId: project.projectId,
+        latestInventoryId: latestInventory?.inventoryId,
       };
     });
   }, [projects]);
@@ -198,7 +208,7 @@ const AdminOrganizationProjectsPage = (props: {
               </Table.Cell>
               <Table.Cell>
                 <MenuRoot>
-                  <MenuTrigger>
+                  <MenuTrigger asChild>
                     <IconButton
                       data-testid="activity-more-icon"
                       aria-label="more-icon"
@@ -209,6 +219,42 @@ const AdminOrganizationProjectsPage = (props: {
                     </IconButton>
                   </MenuTrigger>
                   <MenuContent w="auto" borderRadius="8px" shadow="2dp" px="0">
+                    {item.latestInventoryId && (
+                      <MenuItem
+                        value={t("open-inventory")}
+                        valueText={t("open-inventory")}
+                        p="16px"
+                        display="flex"
+                        alignItems="center"
+                        gap="16px"
+                        _hover={{
+                          bg: "content.link",
+                          cursor: "pointer",
+                        }}
+                        className="group"
+                        onClick={() =>
+                          router.push(`/${lng}/${item.latestInventoryId}`)
+                        }
+                      >
+                        <Icon
+                          _groupHover={{
+                            color: "white",
+                          }}
+                          color="interactive.control"
+                          as={MdOpenInNew}
+                          h="24px"
+                          w="24px"
+                        />
+                        <Text
+                          _groupHover={{
+                            color: "white",
+                          }}
+                          color="content.primary"
+                        >
+                          {t("open-inventory")}
+                        </Text>
+                      </MenuItem>
+                    )}
                     <MenuItem
                       value={t("edit-project")}
                       valueText={t("edit-project")}

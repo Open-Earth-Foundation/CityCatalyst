@@ -33,7 +33,6 @@ import FilesTable from "@/components/Files/fileTable";
 
 interface InventoryViewProps {
   inventoryId: string;
-  cityLocode: string;
   inventoryYear: number;
   cityId: string;
   t: TFunction;
@@ -43,7 +42,6 @@ interface InventoryViewProps {
 
 const InventoryView = ({
   inventoryId,
-  cityLocode,
   inventoryYear,
   cityId,
   t,
@@ -52,11 +50,6 @@ const InventoryView = ({
 }: InventoryViewProps) => {
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryId as string) || "default");
-
-  const { data: cityData, isLoading: isCityDataLoading } =
-    useGetOCCityDataQuery(cityLocode, {
-      skip: !cityLocode,
-    });
 
   const { data: population, isLoading: isPopulationLoading } =
     useGetCityPopulationQuery(
@@ -110,12 +103,7 @@ const InventoryView = ({
 
   const filteredData = filterDataByYear(userFiles, inventoryYear);
 
-  if (
-    isInventoryLoading ||
-    isCityDataLoading ||
-    isPopulationLoading ||
-    isInventoryProgressLoading
-  )
+  if (isInventoryLoading || isPopulationLoading || isInventoryProgressLoading)
     return <ProgressLoader />;
 
   return (

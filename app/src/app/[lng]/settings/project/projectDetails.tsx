@@ -81,7 +81,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   setSelectedCity,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDeleteUserModalOpen, setIsDeleteUserModal] = useState(false);
   const [cityToDelete, setCityToDelete] = useState<{
     cityName: string;
     cityId: string;
@@ -139,7 +138,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
         {selectedInventory ? (
           <InventoryView
             inventoryId={selectedInventory.inventoryId}
-            cityLocode={selectedCityData?.locode as string}
             inventoryYear={selectedInventory.year}
             cityId={selectedCityData?.cityId as string}
             t={t}

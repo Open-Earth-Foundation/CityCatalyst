@@ -1,6 +1,5 @@
 import {
   CityResponse,
-  OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
   Roles,
@@ -28,9 +27,7 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Tag } from "@/components/ui/tag";
 import { BsDownload } from "react-icons/bs";
-import { TagMapping } from "./index";
 import DeleteCityModal from "@/app/[lng]/settings/project/deleteCityModal";
 import { TFunction } from "i18next";
 import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
@@ -40,6 +37,7 @@ import ProjectHeader from "./projectHeader";
 import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { Router } from "next/router";
 
 const getInventoryLastUpdated = (lastUpdated: Date, t: TFunction) => {
   if (!lastUpdated || isNaN(new Date(lastUpdated).getTime())) {
@@ -51,7 +49,7 @@ const getInventoryLastUpdated = (lastUpdated: Date, t: TFunction) => {
 interface ProjectDetailsProps {
   t: TFunction;
   lng: string;
-  router: any;
+  router: Router;
   selectedCity: string | null;
   selectedProjectData: ProjectWithCities | null | undefined;
   selectedCityData: CityResponse | undefined;
@@ -199,21 +197,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                   </Text>
                 </Tabs.Trigger>
               )}
-              <Tabs.Trigger
-                value="collaborators"
-                _selected={{
-                  borderColor: "content.link",
-                  borderBottomWidth: "2px",
-                  boxShadow: "none",
-                  fontWeight: "bold",
-                  borderRadius: "0",
-                  color: "content.link",
-                }}
-              >
-                <Text fontSize="title.md" fontStyle="normal" lineHeight="24px">
-                  {t("all-collaborators", { count: projectUsers?.length })}
-                </Text>
-              </Tabs.Trigger>
             </Tabs.List>
             <Tabs.Content value="city">
               <DataTableCore
@@ -301,82 +284,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               color="content.primary"
                             >
                               {t("delete-city")}
-                            </Text>
-                          </MenuItem>
-                        </MenuContent>
-                      </MenuRoot>
-                    </Table.Cell>
-                  </Table.Row>
-                )}
-              />
-            </Tabs.Content>
-            <Tabs.Content value="collaborators">
-              <DataTableCore
-                data={userList ?? []}
-                columns={[
-                  { header: t("email"), accessor: "email" },
-                  { header: t("role"), accessor: "role" },
-                  { header: " ", accessor: null },
-                  { header: "", accessor: null },
-                ]}
-                renderRow={(item, idx) => (
-                  <Table.Row key={idx}>
-                    <Table.Cell>{item.email}</Table.Cell>
-                    <Table.Cell title={item.role}>
-                      <Tag
-                        size="lg"
-                        colorPalette={
-                          TagMapping[item.role as OrganizationRole].color
-                        }
-                      >
-                        {t(TagMapping[item.role as OrganizationRole].text)}
-                      </Tag>
-                    </Table.Cell>
-                    <Table.Cell w="10">
-                      <MenuRoot>
-                        <MenuTrigger asChild>
-                          <IconButton
-                            data-testid="activity-more-icon"
-                            aria-label="more-icon"
-                            variant="ghost"
-                            color="content.tertiary"
-                          >
-                            <Icon as={MdMoreVert} size="lg" />
-                          </IconButton>
-                        </MenuTrigger>
-                        <MenuContent
-                          w="auto"
-                          borderRadius="8px"
-                          shadow="2dp"
-                          px="0"
-                        >
-                          <MenuItem
-                            value={t("remove-user")}
-                            valueText={t("remove-user")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{ bg: "content.link", cursor: "pointer" }}
-                            className="group"
-                            onClick={() => {}}
-                          >
-                            <Icon
-                              _groupHover={{
-                                color: "white",
-                              }}
-                              color="sentiment.negativeDefault"
-                              as={RiDeleteBin6Line}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              _groupHover={{
-                                color: "white",
-                              }}
-                              color="content.primary"
-                            >
-                              {t("remove-user")}
                             </Text>
                           </MenuItem>
                         </MenuContent>

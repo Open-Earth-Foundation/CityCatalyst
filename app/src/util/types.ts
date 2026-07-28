@@ -48,8 +48,6 @@ export interface CountryEmissionsResponse {
   inventoryYear: number;
 }
 
-interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
-
 export type FullInventoryValue = InventoryValue & {
   activityValues: (ActivityValue & {
     gasValues: (GasValue & { emissionsFactor?: EmissionsFactor })[];
@@ -70,7 +68,7 @@ export type InventoryDownloadResponse = InventoryAttributes & {
   };
 };
 
-export type InventoryResponse = RequiredInventoryAttributes & {
+export type InventoryResponse = Required<InventoryAttributes> & {
   city: CityAttributes & {
     populationYear: number;
     population: number;

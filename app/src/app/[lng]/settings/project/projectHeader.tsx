@@ -1,4 +1,4 @@
-import { CityResponse, ProjectWithCities } from "@/util/types";
+import { CityResponse, ProjectWithCities, UserRole } from "@/util/types";
 import React, { useMemo } from "react";
 import {
   Box,
@@ -19,6 +19,7 @@ import { CircleFlag } from "react-circle-flags";
 import { TFunction } from "i18next";
 import { useRouter } from "next/navigation";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 interface ProjectHeaderProps {
   t: TFunction;
@@ -59,7 +60,10 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
     return "project-view";
   }, [selectedCityData, selectedInventory]);
 
-  const { isFrozenCheck } = useOrganizationContext();
+  const { isFrozenCheck, organization } = useOrganizationContext();
+  const { userRole } = useUserPermissions({
+    organizationId: organization?.organizationId,
+  });
 
   return (
     <HStack justifyContent="space-between" alignItems="center" mb={6}>
@@ -156,7 +160,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           </HStack>
         )}
       </Box>
-      {view !== "inventory-view" && (
+      {view !== "inventory-view" && userRole == UserRole.ORG_ADMIN && (
         <Button
           onClick={() =>
             isFrozenCheck()

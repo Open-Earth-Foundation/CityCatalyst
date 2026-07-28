@@ -6,6 +6,11 @@ import {
   ReactNode,
 } from "react";
 import AccountFrozenWarningModal from "@/components/Modals/account-frozen-warning-modal";
+import { useAppDispatch } from "@/lib/hooks";
+import {
+  set as setOrganizationAction,
+  clear as clearOrganizationAction,
+} from "@/features/organization/organizationSlice";
 
 type OrganizationState = {
   logoUrl: string | null;
@@ -70,6 +75,8 @@ export const OrganizationContextProvider = ({
 
   const [showFrozenModal, setShowFrozenModal] = useState(false);
 
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     const stored = localStorage.getItem("organization");
     if (stored) {
@@ -77,8 +84,9 @@ export const OrganizationContextProvider = ({
       setOrganizationState((prev) => {
         return hasOrganizationChanged(prev, parsed) ? parsed : prev;
       });
+      dispatch(setOrganizationAction(parsed));
     }
-  }, []);
+  }, [dispatch]);
 
   const setOrganization = (updates: Partial<OrganizationState>) => {
     setOrganizationState((prev) => {
@@ -89,6 +97,7 @@ export const OrganizationContextProvider = ({
       };
       const next = { ...baseState, ...updates };
       localStorage.setItem("organization", JSON.stringify(next));
+      dispatch(setOrganizationAction(next));
       return next;
     });
   };
@@ -96,6 +105,7 @@ export const OrganizationContextProvider = ({
   const clearOrganization = () => {
     setOrganizationState(null);
     localStorage.removeItem("organization");
+    dispatch(clearOrganizationAction());
   };
 
   const isFrozenCheck = (): boolean => {

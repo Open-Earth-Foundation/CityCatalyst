@@ -663,6 +663,7 @@ export const appTheme = createSystem(defaultConfig, {
         "xxl-4": { value: "64px" },
         "xxl-5": { value: "72px" },
         "xxl-6": { value: "80px" },
+        "xxl-7": { value: "100px" },
       },
 
       shadows: {

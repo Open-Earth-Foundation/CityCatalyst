@@ -52,13 +52,8 @@ const getInventoryLastUpdated = (
 interface ProjectDetailsProps {
   t: TFunction;
   lng: string;
-  router: Router;
-  selectedCity: string | null;
   selectedProjectData: ProjectWithCities | null | undefined;
   selectedCityData: CityResponse | undefined;
-  organizationName?: string;
-  projectUsers: ProjectUserResponse[] | undefined;
-  userList: ProjectUserResponse[] | undefined;
   isLoadingProjectUsers: boolean;
   tabValue: string;
   setTabValue: (value: string) => void;
@@ -68,13 +63,8 @@ interface ProjectDetailsProps {
 const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   t,
   lng,
-  router,
-  selectedCity,
   selectedProjectData,
   selectedCityData,
-  organizationName,
-  projectUsers,
-  userList,
   isLoadingProjectUsers,
   tabValue,
   setTabValue,

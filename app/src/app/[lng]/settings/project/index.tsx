@@ -231,13 +231,8 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
             <ProjectDetails
               t={t}
               lng={lng}
-              router={router}
-              selectedCity={selectedCityId}
               selectedProjectData={selectedProjectData}
               selectedCityData={selectedCityData}
-              organizationName={organization?.name}
-              projectUsers={projectUsers || []}
-              userList={userList}
               isLoadingProjectUsers={isProjectUsersLoading}
               tabValue={tabValue}
               setTabValue={setTabValue}

@@ -211,5 +211,6 @@
   "space-and-comma": "Space and comma (e.g.: 1 000 000,50)",
   "apostrophe-and-dot": "Apostrophe and dot (e.g.: 1’000’000.50)",
   "preferences": "Preferences",
-  "preferences-updated": "Preferences updated"
+  "preferences-updated": "Preferences updated",
+  "search-by-project": "Search by project name"
 }

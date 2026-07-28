@@ -245,7 +245,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                     onClick={() => {
                       setSelectedInventory({
                         inventoryId: item.inventoryId,
-                        year: item.year,
+                        year: item.year ?? 0,
                       });
                     }}
                   >
@@ -272,7 +272,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                 </Table.Cell>
                 <Table.Cell>
                   <HStack gap={6} justifyContent="space-between">
-                    {getInventoryLastUpdated(item.lastUpdated, t)}
+                    {getInventoryLastUpdated(item.lastUpdated ?? null, t)}
                     <DownloadButton
                       lng={lng}
                       inventoryId={item.inventoryId}
@@ -317,7 +317,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           onClick={() => {
                             setSelectedInventory({
                               inventoryId: item.inventoryId,
-                              year: item.year,
+                              year: item.year ?? 0,
                             });
                           }}
                         >

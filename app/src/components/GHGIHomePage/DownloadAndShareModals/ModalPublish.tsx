@@ -8,7 +8,6 @@ import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/
 import { trackEvent } from "@/lib/analytics";
 import { toaster } from "@/components/ui/toaster";
 import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard";
-
 import {
   DialogRoot,
   DialogContent,
@@ -16,6 +15,7 @@ import {
   DialogBody,
   DialogFooter,
 } from "@/components/ui/dialog";
+import type { InventoryResponse } from "@/util/types";
 
 const ModalPublish = ({
   t,
@@ -29,7 +29,7 @@ const ModalPublish = ({
   isPublishOpen: boolean;
   onPublishClose: () => void;
   inventoryId: string;
-  inventory: InventoryResponse;
+  inventory?: InventoryResponse;
   setModalOpen: (open: boolean) => void;
 }) => {
   const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
@@ -52,9 +52,9 @@ const ModalPublish = ({
           isPublishing ? "inventory_published" : "inventory_unpublished",
           {
             inventory_id: inventoryId,
-            inventory_year: inventory.year,
-            city_name: inventory.city?.name,
-            city_locode: inventory.city?.locode,
+            inventory_year: inventory?.year,
+            city_name: inventory?.city?.name,
+            city_locode: inventory?.city?.locode,
           },
         );
 

@@ -9,7 +9,6 @@ import {
   useGetProjectsQuery,
   useGetProjectUsersQuery,
 } from "@/services/api";
-import { useRouter } from "next/navigation";
 import { uniqBy } from "lodash";
 import { TFunction } from "i18next";
 import ProjectList from "@/app/[lng]/settings/project/projectList";
@@ -141,13 +140,11 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
 const ProjectSettings = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "settings");
-  const router = useRouter();
 
   const [selectedOrganization, setSelectedOrganization] =
     React.useState<string>();
   const [selectedProjectId, setSelectedProjectId] = useState<string[]>([]);
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
-  const [tabValue, setTabValue] = useState("city");
 
   const {
     organization,
@@ -173,14 +170,6 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
       setSelectedCityId(null);
     }
   }, [projectsData, selectedProjectId.length]);
-
-  useEffect(() => {
-    if (selectedCityId) {
-      setTabValue("inventories");
-    } else {
-      setTabValue("city");
-    }
-  }, [selectedCityId]);
 
   if (isOrganizationLoading || isProjectsLoading) {
     return <ProgressLoader />;
@@ -234,8 +223,6 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
               selectedProjectData={selectedProjectData}
               selectedCityData={selectedCityData}
               isLoadingProjectUsers={isProjectUsersLoading}
-              tabValue={tabValue}
-              setTabValue={setTabValue}
               setSelectedCity={setSelectedCityId}
             />
           </>

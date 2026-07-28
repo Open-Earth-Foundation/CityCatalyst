@@ -1,9 +1,4 @@
-import {
-  CityResponse,
-  ProjectUserResponse,
-  ProjectWithCities,
-  Roles,
-} from "@/util/types";
+import { CityResponse, ProjectWithCities, Roles } from "@/util/types";
 import React, { useEffect, useState } from "react";
 import {
   Box,
@@ -14,7 +9,6 @@ import {
   IconButton,
   Table,
   useDisclosure,
-  Tabs,
   Text,
 } from "@chakra-ui/react";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -37,7 +31,6 @@ import ProjectHeader from "./projectHeader";
 import DeleteInventoryModal from "@/components/Modals/delete-inventory-modal";
 import { UserAttributes } from "@/models/User";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { Router } from "next/router";
 
 const getInventoryLastUpdated = (
   lastUpdated: Date | string | null,
@@ -55,8 +48,6 @@ interface ProjectDetailsProps {
   selectedProjectData: ProjectWithCities | null | undefined;
   selectedCityData: CityResponse | undefined;
   isLoadingProjectUsers: boolean;
-  tabValue: string;
-  setTabValue: (value: string) => void;
   setSelectedCity: (value: string | null) => void;
 }
 
@@ -66,8 +57,6 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   selectedProjectData,
   selectedCityData,
   isLoadingProjectUsers,
-  tabValue,
-  setTabValue,
   setSelectedCity,
 }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -134,77 +123,137 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
             city={selectedCityData as CityResponse} // Still need to pass full city data
             lng={lng}
           />
-        ) : (
-          <Tabs.Root
-            value={tabValue}
-            onValueChange={(val) => setTabValue(val.value)}
-            defaultValue="city"
-            variant="enclosed"
-            background="base.light"
-          >
-            <Tabs.List p={0} w="full">
-              {selectedCityData ? (
-                <Tabs.Trigger
-                  value="inventories"
-                  _selected={{
-                    borderColor: "content.link",
-                    borderBottomWidth: "2px",
-                    boxShadow: "none",
-                    fontWeight: "bold",
-                    borderRadius: "0",
-                    color: "content.link",
-                  }}
-                >
-                  <Text
-                    fontSize="title.md"
-                    fontStyle="normal"
-                    lineHeight="24px"
-                  >
-                    {t("all-inventories", {
-                      count: selectedCityData?.inventories?.length,
-                    })}
-                  </Text>
-                </Tabs.Trigger>
-              ) : (
-                <Tabs.Trigger
-                  value="city"
-                  _selected={{
-                    borderColor: "content.link",
-                    borderBottomWidth: "2px",
-                    boxShadow: "none",
-                    fontWeight: "bold",
-                    borderRadius: "0",
-                    color: "content.link",
-                  }}
-                >
-                  <Text
-                    fontSize="title.md"
-                    fontStyle="normal"
-                    lineHeight="24px"
-                  >
-                    {t("all-cities", {
-                      count: selectedProjectData?.cities?.length,
-                    })}
-                  </Text>
-                </Tabs.Trigger>
-              )}
-            </Tabs.List>
-            <Tabs.Content value="city">
-              <DataTableCore
-                data={selectedProjectData?.cities ?? []}
-                columns={[
-                  { header: t("name"), accessor: "name" },
-                  { header: t("inventories"), accessor: null },
-                  { header: "", accessor: null },
-                ]}
-                renderRow={(item, idx) => (
-                  <Table.Row key={idx}>
-                    <Table.Cell>
-                      <Button
-                        variant="ghost"
-                        color="content.primary"
-                        onClick={() => setSelectedCity(item.cityId)}
+        ) : !selectedCityData ? (
+          <Box>
+            <DataTableCore
+              data={selectedProjectData?.cities ?? []}
+              columns={[
+                { header: t("name"), accessor: "name" },
+                { header: t("inventories"), accessor: null },
+                { header: "", accessor: null },
+              ]}
+              renderRow={(item, idx) => (
+                <Table.Row key={idx}>
+                  <Table.Cell>
+                    <Button
+                      variant="ghost"
+                      color="content.primary"
+                      onClick={() => setSelectedCity(item.cityId)}
+                    >
+                      <Text
+                        color="content.link"
+                        fontWeight="normal"
+                        textOverflow="ellipsis"
+                        overflow="hidden"
+                        whiteSpace="nowrap"
+                        textTransform="capitalize"
+                        textDecoration="underline"
+                        fontSize="label.lg"
                       >
+                        {item.name}
+                      </Text>
+                    </Button>
+                  </Table.Cell>
+                  <Table.Cell>{item.inventories.length}</Table.Cell>
+                  <Table.Cell w="10">
+                    <MenuRoot>
+                      <MenuTrigger asChild>
+                        <IconButton
+                          data-testid="activity-more-icon"
+                          aria-label="more-icon"
+                          variant="ghost"
+                          color="content.tertiary"
+                        >
+                          <Icon as={MdMoreVert} size="lg" />
+                        </IconButton>
+                      </MenuTrigger>
+                      <MenuContent
+                        w="auto"
+                        borderRadius="8px"
+                        shadow="2dp"
+                        px="0"
+                      >
+                        <MenuItem
+                          value={t("delete-city")}
+                          valueText={t("delete-city")}
+                          p="16px"
+                          display="flex"
+                          alignItems="center"
+                          gap="16px"
+                          _hover={{ bg: "content.link", cursor: "pointer" }}
+                          className="group"
+                          onClick={() => {
+                            if (isFrozenCheck()) {
+                              return;
+                            }
+                            setIsDeleteModalOpen(true);
+                            setCityToDelete({
+                              cityName: item.name,
+                              cityId: item.cityId,
+                              countryName: item.countryLocode,
+                            });
+                          }}
+                        >
+                          <Icon
+                            _groupHover={{
+                              color: "white",
+                            }}
+                            color="sentiment.negativeDefault"
+                            as={RiDeleteBin6Line}
+                            h="24px"
+                            w="24px"
+                          />
+                          <Text
+                            _groupHover={{
+                              color: "white",
+                            }}
+                            color="content.primary"
+                          >
+                            {t("delete-city")}
+                          </Text>
+                        </MenuItem>
+                      </MenuContent>
+                    </MenuRoot>
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            />
+          </Box>
+        ) : (
+          <Box>
+            <Text
+              color="content.tertiary"
+              mb={2}
+              mt={6}
+              textTransform="uppercase"
+              fontWeight="bold"
+            >
+              {t("all-inventory-years")}
+            </Text>
+            <DataTableCore
+              data={selectedCityData?.inventories ?? []}
+              columns={[
+                { header: t("year"), accessor: "year" },
+                { header: t("last-updated"), accessor: "lastUpdated" },
+              ]}
+              renderRow={(item, idx) => (
+                <Table.Row key={idx}>
+                  <Table.Cell>
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setSelectedInventory({
+                          inventoryId: item.inventoryId,
+                          year: item.year,
+                        });
+                      }}
+                    >
+                      <Flex gap={2} alignItems="center" w="300px">
+                        <Icon
+                          as={MdOutlineFolder}
+                          color="content.tertiary"
+                          size="lg"
+                        />
                         <Text
                           color="content.link"
                           fontWeight="normal"
@@ -215,14 +264,31 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           textDecoration="underline"
                           fontSize="label.lg"
                         >
-                          {item.name}
+                          {item.year}
                         </Text>
-                      </Button>
-                    </Table.Cell>
-                    <Table.Cell>{item.inventories.length}</Table.Cell>
-                    <Table.Cell w="10">
+                      </Flex>
+                    </Button>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <HStack gap={6} justifyContent="space-between">
+                      {getInventoryLastUpdated(item.lastUpdated, t)}
+                      <DownloadButton
+                        lng={lng}
+                        inventoryId={item.inventoryId}
+                        city={selectedCityData}
+                        inventory={item}
+                      >
+                        <IconButton
+                          data-testid="download-inventory-icon"
+                          aria-label="more-icon"
+                          variant="ghost"
+                          color="content.tertiary"
+                        >
+                          <Icon as={BsDownload} size="lg" />
+                        </IconButton>
+                      </DownloadButton>
                       <MenuRoot>
-                        <MenuTrigger asChild>
+                        <MenuTrigger>
                           <IconButton
                             data-testid="activity-more-icon"
                             aria-label="more-icon"
@@ -239,8 +305,42 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                           px="0"
                         >
                           <MenuItem
-                            value={t("delete-city")}
-                            valueText={t("delete-city")}
+                            value={t("open-inventory")}
+                            valueText={t("open-inventory")}
+                            p="16px"
+                            display="flex"
+                            alignItems="center"
+                            gap="16px"
+                            _hover={{ bg: "content.link", cursor: "pointer" }}
+                            className="group"
+                            onClick={() => {
+                              setSelectedInventory({
+                                inventoryId: item.inventoryId,
+                                year: item.year,
+                              });
+                            }}
+                          >
+                            <Icon
+                              _groupHover={{
+                                color: "white",
+                              }}
+                              color="content.secondary"
+                              as={FiFolder}
+                              h="24px"
+                              w="24px"
+                            />
+                            <Text
+                              _groupHover={{
+                                color: "white",
+                              }}
+                              color="content.primary"
+                            >
+                              {t("open-inventory")}
+                            </Text>
+                          </MenuItem>
+                          <MenuItem
+                            value={t("delete-inventory")}
+                            valueText={t("delete-inventory")}
                             p="16px"
                             display="flex"
                             alignItems="center"
@@ -251,12 +351,8 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               if (isFrozenCheck()) {
                                 return;
                               }
-                              setIsDeleteModalOpen(true);
-                              setCityToDelete({
-                                cityName: item.name,
-                                cityId: item.cityId,
-                                countryName: item.countryLocode,
-                              });
+                              setInventoryToDelete(item.inventoryId);
+                              onInventoryDeleteModalOpen();
                             }}
                           >
                             <Icon
@@ -274,178 +370,17 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                               }}
                               color="content.primary"
                             >
-                              {t("delete-city")}
+                              {t("delete-inventory")}
                             </Text>
                           </MenuItem>
                         </MenuContent>
                       </MenuRoot>
-                    </Table.Cell>
-                  </Table.Row>
-                )}
-              />
-            </Tabs.Content>
-            <Tabs.Content value="inventories">
-              <Text
-                color="content.tertiary"
-                mb={2}
-                mt={6}
-                textTransform="uppercase"
-                fontWeight="bold"
-              >
-                {t("all-inventory-years")}
-              </Text>
-              <DataTableCore
-                data={selectedCityData?.inventories ?? []}
-                columns={[
-                  { header: t("year"), accessor: "year" },
-                  { header: t("last-updated"), accessor: "lastUpdated" },
-                ]}
-                renderRow={(item, idx) => (
-                  <Table.Row key={idx}>
-                    <Table.Cell>
-                      <Button
-                        variant="ghost"
-                        onClick={() => {
-                          setSelectedInventory({
-                            inventoryId: item.inventoryId,
-                            year: item.year,
-                          });
-                        }}
-                      >
-                        <Flex gap={2} alignItems="center" w="300px">
-                          <Icon
-                            as={MdOutlineFolder}
-                            color="content.tertiary"
-                            size="lg"
-                          />
-                          <Text
-                            color="content.link"
-                            fontWeight="normal"
-                            textOverflow="ellipsis"
-                            overflow="hidden"
-                            whiteSpace="nowrap"
-                            textTransform="capitalize"
-                            textDecoration="underline"
-                            fontSize="label.lg"
-                          >
-                            {item.year}
-                          </Text>
-                        </Flex>
-                      </Button>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <HStack gap={6} justifyContent="space-between">
-                        {getInventoryLastUpdated(item.lastUpdated, t)}
-                        <DownloadButton
-                          lng={lng}
-                          inventoryId={item.inventoryId}
-                          city={selectedCityData}
-                          inventory={item}
-                        >
-                          <IconButton
-                            data-testid="download-inventory-icon"
-                            aria-label="more-icon"
-                            variant="ghost"
-                            color="content.tertiary"
-                          >
-                            <Icon as={BsDownload} size="lg" />
-                          </IconButton>
-                        </DownloadButton>
-                        <MenuRoot>
-                          <MenuTrigger>
-                            <IconButton
-                              data-testid="activity-more-icon"
-                              aria-label="more-icon"
-                              variant="ghost"
-                              color="content.tertiary"
-                            >
-                              <Icon as={MdMoreVert} size="lg" />
-                            </IconButton>
-                          </MenuTrigger>
-                          <MenuContent
-                            w="auto"
-                            borderRadius="8px"
-                            shadow="2dp"
-                            px="0"
-                          >
-                            <MenuItem
-                              value={t("open-inventory")}
-                              valueText={t("open-inventory")}
-                              p="16px"
-                              display="flex"
-                              alignItems="center"
-                              gap="16px"
-                              _hover={{ bg: "content.link", cursor: "pointer" }}
-                              className="group"
-                              onClick={() => {
-                                setSelectedInventory({
-                                  inventoryId: item.inventoryId,
-                                  year: item.year,
-                                });
-                              }}
-                            >
-                              <Icon
-                                _groupHover={{
-                                  color: "white",
-                                }}
-                                color="content.secondary"
-                                as={FiFolder}
-                                h="24px"
-                                w="24px"
-                              />
-                              <Text
-                                _groupHover={{
-                                  color: "white",
-                                }}
-                                color="content.primary"
-                              >
-                                {t("open-inventory")}
-                              </Text>
-                            </MenuItem>
-                            <MenuItem
-                              value={t("delete-inventory")}
-                              valueText={t("delete-inventory")}
-                              p="16px"
-                              display="flex"
-                              alignItems="center"
-                              gap="16px"
-                              _hover={{ bg: "content.link", cursor: "pointer" }}
-                              className="group"
-                              onClick={() => {
-                                if (isFrozenCheck()) {
-                                  return;
-                                }
-                                setInventoryToDelete(item.inventoryId);
-                                onInventoryDeleteModalOpen();
-                              }}
-                            >
-                              <Icon
-                                _groupHover={{
-                                  color: "white",
-                                }}
-                                color="sentiment.negativeDefault"
-                                as={RiDeleteBin6Line}
-                                h="24px"
-                                w="24px"
-                              />
-                              <Text
-                                _groupHover={{
-                                  color: "white",
-                                }}
-                                color="content.primary"
-                              >
-                                {t("delete-inventory")}
-                              </Text>
-                            </MenuItem>
-                          </MenuContent>
-                        </MenuRoot>
-                      </HStack>
-                    </Table.Cell>
-                  </Table.Row>
-                )}
-              />
-            </Tabs.Content>
-          </Tabs.Root>
+                    </HStack>
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            />
+          </Box>
         )}
       </Box>
       <DeleteCityModal

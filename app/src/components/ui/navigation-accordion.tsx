@@ -24,7 +24,7 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
   defaultOpen = false,
 }) => {
   return (
-    <Box w="full" display="flex" flexDirection="column" py="24px">
+    <Box w="full" display="flex" flexDirection="column">
       <Accordion.Root collapsible defaultValue={defaultOpen ? ["section"] : []}>
         <Accordion.Item value="section" borderBottom="none">
           <Accordion.ItemTrigger
@@ -33,7 +33,6 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
             alignItems="center"
             justifyContent="space-between"
             border="none"
-            pl="16px"
           >
             <Box display="flex" alignItems="center" gap="12px">
               <Icon as={IconComponent} color={"interactive.secondary"} boxSize={6} />
@@ -47,11 +46,11 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
               </Span>
             </Box>
             <Accordion.ItemIndicator>
-              <Icon as={BiChevronDown} color={"interactive.secondary"} boxSize={6} />
+              <Icon as={BiChevronDown} color={"icon.default"} boxSize={6} />
             </Accordion.ItemIndicator>
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
-            <Accordion.ItemBody border="none" pl="16px">
+            <Accordion.ItemBody border="none" pl="xl">
               {items.map((item, index) => (
                 <Link
                   key={index}

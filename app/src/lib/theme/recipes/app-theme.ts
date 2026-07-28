@@ -569,6 +569,10 @@ export const appTheme = createSystem(defaultConfig, {
         },
 
         body: { value: "#232640" },
+
+        icon: {
+          default: { value: "#1C1B1F" },
+        },
       },
 
       fonts: {

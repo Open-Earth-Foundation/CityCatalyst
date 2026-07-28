@@ -71,7 +71,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
   placeholder = "Select an option",
-  width = "347px",
+  width = "full",
   height = "300px",
   t,
   label,
@@ -99,7 +99,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   };
 
   return (
-    <Box position="relative" w="347px">
+    <Box position="relative" w={width}>
       <Text
         as="label"
         fontSize="label.md"
@@ -396,9 +396,8 @@ const ProjectFilterSection = ({
           <Box
             position="absolute"
             top="95px"
-            left="24px"
+            left="0"
             right="0"
-            w="347px"
             bg="base.light"
             border="1px solid"
             borderColor="border.neutral"
@@ -463,7 +462,7 @@ const ProjectFilterSection = ({
           </Box>
         )}
         {/* Project dropdown */}
-        <Box display="flex" flexDirection="column" px={4} gap="24px">
+        <Box display="flex" flexDirection="column" gap="24px">
           {/* Project Dropdown */}
           <CustomSelect
             options={filteredProjectOptions}
@@ -474,7 +473,6 @@ const ProjectFilterSection = ({
               setSearchTerm(""); // Clear search when project is selected
             }}
             placeholder={t("select-project")}
-            width="347px"
             height="300px"
             t={t}
             label={t("project")}
@@ -522,7 +520,6 @@ const ProjectFilterSection = ({
               }
             }}
             placeholder={t("select-city")}
-            width="347px"
             height="300px"
             t={t}
             label={t("city")}
@@ -705,8 +702,7 @@ const JNDrawer = ({
       <DrawerBackdrop />
       <DrawerContent
         borderRadius="0px 8px 8px 0px"
-        h="calc(100vh - 100px)"
-        my="auto"
+        h="100dvh"
         display="flex"
         flexDirection="column"
       >
@@ -874,7 +870,6 @@ const JNDrawer = ({
                     color="content.tertiary"
                     fontFamily="heading"
                     fontWeight="semibold"
-                    px={4}
                     pt={4}
                     flexShrink={0}
                   >
@@ -926,7 +921,6 @@ const JNDrawer = ({
             display="flex"
             flexDirection="column"
             gap="16px"
-            px={4}
             py={4}
             flexShrink={0}
           >

@@ -6,10 +6,10 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-from app.services import cnb_research_service
-from app.services.cnb_research_service import run_funding_opportunity_research
+from app.services.cnb import research_service
+from app.services.cnb.research_service import run_funding_opportunity_research
 from app.tools.firecrawl import CapturedSource
-from tests.cnb_research_helpers import build_request, build_result
+from tests.cnb.helpers import build_request, build_result
 
 
 def test_service_writes_pending_review_artifacts_on_final_turn(
@@ -82,15 +82,15 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
 
     prompts = SimpleNamespace(get_prompt=lambda _name: "Research prompt")
     fake_settings = SimpleNamespace(
-        openai_api_key="test-openai-key",
+        openrouter_api_key="test-openrouter-key",
         firecrawl_api_key="test-firecrawl-key",
         llm=SimpleNamespace(
             api=SimpleNamespace(
-                openai=SimpleNamespace(base_url="https://api.openai.com/v1")
+                openrouter=SimpleNamespace(base_url="https://openrouter.ai/api/v1")
             ),
             models=SimpleNamespace(
                 funding_research=SimpleNamespace(
-                    name="gpt-5.6-terra",
+                    name="openai/gpt-5.4",
                     reasoning_effort="medium",
                 )
             ),
@@ -103,9 +103,9 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
             ),
         ),
     )
-    monkeypatch.setattr(cnb_research_service, "get_settings", lambda: fake_settings)
+    monkeypatch.setattr(research_service, "get_settings", lambda: fake_settings)
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "FirecrawlClient",
         FakeFirecrawl,
     )
@@ -117,7 +117,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         return nullcontext(fake_mlflow_run)
 
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "start_run",
         fake_start_run,
     )
@@ -134,18 +134,18 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         yield span
 
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "start_trace_span",
         fake_start_trace_span,
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "set_span_outputs",
         lambda span, outputs: setattr(span, "outputs", outputs),
     )
     trace_context_updates: list[dict[str, object]] = []
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "update_current_trace_context",
         lambda **kwargs: trace_context_updates.append(kwargs),
     )
@@ -153,22 +153,22 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     logged_json_artifacts: list[str] = []
     logged_directories: list[tuple[Path, str]] = []
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_metrics",
         lambda metrics: logged_metrics.append(metrics),
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_json_artifact",
         lambda artifact_file, _payload: logged_json_artifacts.append(artifact_file),
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_text_artifact",
         lambda *_args, **_kwargs: None,
     )
     monkeypatch.setattr(
-        cnb_research_service,
+        research_service,
         "log_directory_artifacts",
         lambda path, *, artifact_path: logged_directories.append(
             (path, artifact_path)
@@ -197,10 +197,10 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
         (run_directory / "research_bundle.json").read_text(encoding="utf-8")
     )
     assert saved_bundle["request"]["program_name"] == "Example Program"
-    assert saved_bundle["run_metadata"]["model_name"] == "gpt-5.6-terra"
+    assert saved_bundle["run_metadata"]["model_name"] == "openai/gpt-5.4"
     assert (run_directory / "review.md").exists()
     assert (run_directory / "agent_trace.jsonl").exists()
-    assert fake_openai.responses.calls[0]["model"] == "gpt-5.6-terra"
+    assert fake_openai.responses.calls[0]["model"] == "openai/gpt-5.4"
     assert fake_openai.responses.calls[0]["reasoning"] == {"effort": "medium"}
     assert "tools" not in fake_openai.responses.calls[0]
     model_input = json.loads(fake_openai.responses.calls[0]["input"])
@@ -210,7 +210,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert "current_filled_object" not in model_input["research_request"]
     assert model_input["missing_data"]
     assert model_input["turn_budget"]["final_audit"] is True
-    assert bundle.run_metadata.model_name == "gpt-5.6-terra"
+    assert bundle.run_metadata.model_name == "openai/gpt-5.4"
     assert bundle.run_metadata.reasoning_effort == "medium"
     assert bundle.run_metadata.mlflow_run_id == "mlflow-001"
     assert bundle.run_metadata.prompt_sha256

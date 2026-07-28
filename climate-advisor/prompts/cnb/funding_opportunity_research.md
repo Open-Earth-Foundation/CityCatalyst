@@ -19,6 +19,24 @@ Preserve the supplied funder and program names exactly. Preserve the existing
 seed appears wrong, redirected, or inconsistent, retain it and record the
 suspected alternative in `conflicts`.
 
+When `research_request.target_project` is present, use it as the semantic
+search profile for the entire run. Build source queries from its populated
+`project_name`, `project_summary`, `category`, `sector`, `region`, `country`,
+`finance_route`, `instrument_type`, `applicant_type`, `hazards`,
+`interventions`, and `project_tags`. Expand useful synonyms for interventions
+and sectors, and combine several high-signal attributes instead of relying on
+one exact keyword. Do not over-constrain queries to the target geography or
+finance route when wider results could still be materially comparable.
+
+Use the target profile to prioritize which officially funded projects to retain
+and deepen. Prefer candidates with the strongest source-supported overlap in
+concrete interventions, sector or category, applicant type, hazards, financing
+approach, and geographic context. `funder_scope = cross_funder` means the
+project may omit `funder_id` and discovery must not be narrowed to one funder.
+The target profile is search context, not evidence: do not emit it as a funded
+project and do not copy its fields into a discovered row unless captured
+authoritative sources independently support those values.
+
 Research useful coverage of:
 
 - funder type, institutionally meaningful country and region, and stated or
@@ -47,13 +65,35 @@ For a multinational or multilateral organization, `country` may be null. Do
 not use the headquarters country as the funder's institutional country unless
 an authoritative source explicitly defines the organization that way.
 
-Before adding breadth, build one deeply supported funded-project row containing
-the project, its concrete interventions, its relationship to this exact program,
-and published award information. Unknown information must remain null or an
-empty list and must be reported in `gaps` when it limits useful coverage. Never
-infer a precise award, eligibility rule, weight, hard gate, date, project, or
-status without supporting source material. Retain material disagreements in
-`conflicts` rather than silently choosing one value.
+For the default one-project request, build one deeply supported funded-project
+row containing the project, its concrete interventions, its relationship to
+this exact program, and published award information. For a multi-project request
+(`target_funded_projects > 1`), enumerate breadth first: retain every distinct
+project that an authoritative captured source explicitly identifies as selected,
+awarded, or funded under this exact program, up to the requested target. When a
+target project is present and the authoritative portfolio contains more rows
+than the requested target, retain the most relevant candidates according to the
+target profile rather than arbitrary list order. Once that list is retained or
+the bounded authoritative yield is documented, deepen at least one of its rows.
+
+A breadth row may be sparse: an evidenced project name and evidenced
+relationship to the program are enough to retain it. Keep unknown applicant,
+location, amount, intervention, year, or status fields null or empty and record
+precise gaps when their absence matters. Do not discard an officially named
+project merely because optional project fields are missing. Never infer a
+precise award, eligibility rule, weight, hard gate, date, project, or status
+without supporting source material. Retain material disagreements in
+`conflicts` rather than silently choosing one value. A
+`funding_records.target_funded_projects` gap may explain why the requested
+target exceeds the published award list or the bounded research yield, but it
+must not replace rows for additional projects already named by captured
+authoritative evidence.
+
+For each sparse breadth row, retain at least one evidence item targeted at the
+parent path `funding_records[<funding_record_ref>]`. Its concise summary must
+state both the published project name and how the captured authoritative source
+identifies it as selected, awarded, or funded under this exact program. Add
+field-specific evidence only for optional values you populate.
 </task>
 
 <input>
@@ -61,7 +101,13 @@ Input is a JSON object with:
 
 - `research_request` (object): authoritative request containing `funder_name`,
   `funder_url`, `program_name`, `program_url`, optional
-  `application_template_url`, and the code-enforced `max_turns`
+  `application_template_url`, optional `target_project`, the code-enforced
+  `target_funded_projects`, and `max_turns`. `target_project`, when present, is
+  a `CnbSimilarProjectSearchRequest` object containing `run_id`, optional
+  `funder_id`, `funder_scope`, nullable `project_name`, `project_summary`,
+  `category`, `sector`, `region`, `country`, `finance_route`,
+  `instrument_type`, and `applicant_type`; arrays `hazards`, `interventions`,
+  `project_tags`, and `known_gaps`; and integer `limit`
 - `current_filled_object` (`FundingOpportunityResearchResult`): the best
   validated partial reference-data dossier available when this turn starts
 - `seed_sources` (array): Firecrawl outcomes for the supplied funder, program,
@@ -73,8 +119,8 @@ Input is a JSON object with:
   unresolved in the current object
 - `turn_budget` (object): `current_turn`, `max_turns`,
   `turns_remaining_after_this`, and `final_audit`
-- `research_stage` (string): the current priority: required coverage, one deep
-  funded project, or final gap audit
+- `research_stage` (string): the current priority: breadth funded-project
+  discovery, required coverage, one deep funded project, or final gap audit
 - `final_gap_audit` (string or null): code-owned final-turn checklist
 
 Treat `current_filled_object` as the working dossier, not an example. Preserve
@@ -94,7 +140,9 @@ Available tools:
 
 - `firecrawl_search`: discover official program guidance, requests for
   proposals, application materials, award lists, priority lists, and
-  funded-project reports; search snippets are leads and cannot be evidence
+  funded-project reports; when a target project is present, derive query terms
+  and useful synonyms from its populated profile fields; search snippets are
+  leads and cannot be evidence
 - `firecrawl_scrape`: capture a selected page or public document as Markdown
   and obtain a stable `source_ref`; use it before citing a search result
 - `firecrawl_extract`: extract targeted structure from a dense page or document
@@ -148,6 +196,8 @@ Every `funding_records` item must contain:
 - `funder_ref` (string): exact `funder.funder_ref`
 - `is_opportunity` (boolean)
 - `name` (string)
+- `reported_funder_name` (string or null): the funder name stated by the
+  project source; use null for the opportunity row or when no source states it
 - `applicant_name`, `city`, `state_region`, `country`, `category` (strings or
   null)
 - `hazards`, `interventions` (arrays of strings)
@@ -163,6 +213,9 @@ rows may contain award bounds but normally have no applicant or `award_amount`.
 Every funded-project row must have `is_opportunity = false`. Put its concrete
 actions in `interventions` and `summary`; put its actual published award in
 `award_amount`, `currency`, `award_year`, and `status`.
+
+`research_request.target_project` is input-only search context. Do not reproduce
+it as a `funding_records` row and do not cite it as evidence.
 
 Every `funder_templates` item must contain:
 
@@ -234,6 +287,7 @@ useful.
       "funder_ref": "funder-001",
       "is_opportunity": true,
       "name": "Example Program",
+      "reported_funder_name": null,
       "applicant_name": null,
       "city": null,
       "state_region": null,

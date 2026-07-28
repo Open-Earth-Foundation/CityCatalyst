@@ -232,31 +232,32 @@ describe("internal CA service auth contract", () => {
       "CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC";
     process.env.VERIFICATION_TOKEN_SECRET = "ci-jwt-secret";
 
-    jest.spyOn(db.models.User, "findByPk").mockImplementation(
-      async (userId) =>
-        new db.models.User({
-          email: `${String(userId)}@example.test`,
-          name: `User ${String(userId)}`,
-          pictureUrl: undefined,
-          role: Roles.User,
-          userId: userId as string,
-        }),
+    jest.spyOn(db.models.User, "findByPk").mockImplementation(async (userId) =>
+      db.models.User.build({
+        email: `${String(userId)}@example.test`,
+        name: `User ${String(userId)}`,
+        pictureUrl: undefined,
+        role: Roles.User,
+        userId: userId as string,
+      }),
     );
-    jest.spyOn(db.models.User, "findOne").mockImplementation(
-      async (options?: { where?: WhereOptions & { userId?: string } }) =>
-        new db.models.User({
-          email: `${String(options?.where?.userId)}@example.test`,
-          name: `User ${String(options?.where?.userId)}`,
-          pictureUrl: undefined,
-          role: Roles.User,
-          userId: options?.where?.userId ?? "",
-        }),
-    );
+    jest
+      .spyOn(db.models.User, "findOne")
+      .mockImplementation(
+        async (options?: { where?: WhereOptions & { userId?: string } }) =>
+          db.models.User.build({
+            email: `${String(options?.where?.userId)}@example.test`,
+            name: `User ${String(options?.where?.userId)}`,
+            pictureUrl: undefined,
+            role: Roles.User,
+            userId: options?.where?.userId ?? "",
+          }),
+      );
     jest.spyOn(PermissionService, "canEditInventory").mockResolvedValue({
       hasAccess: true,
       organizationId: randomUUID(),
       userRole: UserRole.COLLABORATOR,
-      resource: new db.models.Inventory({
+      resource: db.models.Inventory.build({
         cityId: CITY_ID,
         inventoryId: randomUUID(),
       }),

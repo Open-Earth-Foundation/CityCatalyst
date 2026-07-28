@@ -331,7 +331,7 @@ describe("Action Plan Generation", () => {
       const body = JSON.parse((startCall as { body: string }[])[1].body);
       expect(body).toMatchObject({
         countryCode: "BR",
-        actionId: "solar-action-456",
+        actionId: "test-action-123",
         language: "es",
         cityData: {
           cityContextData: MOCK_CITY_DATA.cityContextData,

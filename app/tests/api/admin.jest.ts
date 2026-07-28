@@ -93,7 +93,9 @@ describe("Admin API", () => {
     );
 
     // check inventories were created
-    const inventoryIds = body.results.flatMap((result: any) => result.result);
+    const inventoryIds = body.results.flatMap(
+      (result: { result: string[] }) => result.result,
+    );
     expect(inventoryIds.length).toBe(
       mockBulkInventoriesRequest.years.length *
         mockBulkInventoriesRequest.cityLocodes.length,

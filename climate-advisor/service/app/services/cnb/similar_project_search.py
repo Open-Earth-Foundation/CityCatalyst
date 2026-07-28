@@ -199,7 +199,12 @@ class ProjectMatchingService:
         request: CnbSimilarProjectSearchRequest,
         candidates: list[CnbSimilarProjectCandidate],
     ) -> list[CnbSimilarProjectCandidate]:
-        """Keep eligible funded-project rows, defaulting to same-funder only."""
+        """Apply V1 hard gates before preferred-field shortlist ordering."""
+        # V1 hard eligibility requires the requested funder scope, a funded
+        # non-opportunity record, and retained evidence. Category, sector,
+        # geography, finance route, instrument type, applicant type, hazards,
+        # interventions, and tags never exclude a candidate here; they are
+        # preferred signals only. Missing values receive caveats later.
         eligible: list[CnbSimilarProjectCandidate] = []
         for candidate in candidates:
             if (
@@ -228,7 +233,7 @@ class ProjectMatchingService:
         request: CnbSimilarProjectSearchRequest,
         candidates: list[CnbSimilarProjectCandidate],
     ) -> list[ShortlistedCandidate]:
-        """Sort candidates by structured alignment and curated-tag overlap."""
+        """Order V1 candidates by preferred fields without adding hard gates."""
         normalized_request_tags = normalize_project_tags(request.project_tags)
         ranked_candidates: list[tuple[tuple[object, ...], ShortlistedCandidate]] = []
 

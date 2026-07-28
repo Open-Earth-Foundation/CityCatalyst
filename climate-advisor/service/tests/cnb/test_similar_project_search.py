@@ -256,6 +256,77 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     ]
 
 
+def test_v1_policy_keeps_preferred_mismatches_and_unknowns_eligible() -> None:
+    """Preferred-field mismatches and gaps must not become implicit hard gates."""
+    request = _request().model_copy(
+        update={
+            "sector": "Water",
+            "region": "Region A",
+            "country": "Country A",
+            "finance_route": "Grant",
+            "instrument_type": "Capital grant",
+            "applicant_type": "Municipality",
+            "hazards": ["Flood"],
+            "interventions": ["Green infrastructure"],
+        }
+    )
+    mismatched = _candidate(request, name="Mismatched").model_copy(
+        update={
+            "category": "Transport",
+            "sector": "Mobility",
+            "state_region": "Region B",
+            "country": "Country B",
+            "finance_route": "Loan",
+            "instrument_type": "Debt",
+            "applicant_type": "Business",
+            "hazards": ["Heat"],
+            "interventions": ["Electric buses"],
+            "project_tags": ["mobility"],
+        }
+    )
+    unknown = _candidate(request, name="Unknown").model_copy(
+        update={
+            "category": None,
+            "sector": None,
+            "state_region": None,
+            "country": None,
+            "finance_route": None,
+            "instrument_type": None,
+            "applicant_type": None,
+            "hazards": [],
+            "interventions": [],
+            "project_tags": [],
+        }
+    )
+    service, _ = _service(
+        store=FakeStore(),
+        reference_data=FakeReferenceData([]),
+        decisions=None,
+    )
+
+    eligible = service._filter_eligible_candidates(
+        request=request,
+        candidates=[mismatched, unknown],
+    )
+    shortlist = service._build_shortlist(request=request, candidates=eligible)
+    shortlist_by_name = {item.candidate.name: item for item in shortlist}
+
+    assert eligible == [mismatched, unknown]
+    assert shortlist_by_name["Mismatched"].shortlist_caveats == ()
+    assert shortlist_by_name["Unknown"].shortlist_caveats == (
+        "Candidate is missing category for direct comparison.",
+        "Candidate is missing sector for direct comparison.",
+        "Candidate is missing region for direct comparison.",
+        "Candidate is missing country for direct comparison.",
+        "Candidate is missing finance_route for direct comparison.",
+        "Candidate is missing instrument_type for direct comparison.",
+        "Candidate is missing applicant_type for direct comparison.",
+        "Candidate is missing hazards for direct comparison.",
+        "Candidate is missing interventions for direct comparison.",
+        "Candidate is missing curated project_tags.",
+    )
+
+
 def test_cross_funder_mode_reads_all_funders() -> None:
     request = _request(funder_scope="cross_funder")
     candidate = _candidate(request, funder_id=uuid4())

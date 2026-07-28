@@ -2,7 +2,26 @@
 
 **Owner:** Carlos Graffi (design) · **Backend counterpart:** Piotr · **Date:** 2026-07-28 · **Status:** design complete, pending backend requests below
 
-**Design source of truth:** Figma file *"Agentic Flow - Concept Note Builder"*, page **"CNB v3 – 2026-07-27"**, sections 14–17 (sections 8–10 are the Stationary Energy reference; 11–13 are superseded). Styling source: Claude Design project *"CityCatalyst Terra UI"* (tokens + component specs, lifted from `app/src/lib/theme`). Companion artifacts (design workspace): SSE fixtures (`uc1-happy-path.sse.json`, `uc1-degraded.sse.json`) and the backend request doc (mirrored here as `ConceptNoteBuilderBackendRequests.md`).
+**Design source of truth:** Figma file *"Agentic Flow - Concept Note Builder"*, page **"CNB v3 – 2026-07-27"**, sections 14–17 (sections 8–10 are the Stationary Energy reference; 11–13 are superseded) — **entry flow superseded by v4, see the update box below**. Styling source: Claude Design project *"CityCatalyst Terra UI"* (tokens + component specs, lifted from `app/src/lib/theme`). Companion artifacts (design workspace): SSE fixtures (`uc1-happy-path.sse.json`, `uc1-degraded.sse.json`) and the backend request doc (mirrored here as `ConceptNoteBuilderBackendRequests.md`).
+
+> ### v4 update — 2026-07-28 (first handoff)
+> Figma page **"CNB v4 –– First Handoff"** (sections 18 · Journey, 19 · New & changed
+> components) supersedes the **entry flow** of this doc:
+> - **Everything at note creation is optional.** Screens **S2·a, S2 and S2·b no longer
+>   exist.** Creation is a modal (V2) where every setup field — project, funder,
+>   opportunity, even files — can be skipped; whatever is skipped becomes a **setup gap**
+>   that Clima resolves in chat (V3, SetupGapChatCard). "Assembly starts on the 4th
+>   pick" is dead: the run is created on the modal's CREATE, before uploads (which are
+>   run-scoped).
+> - **The home screen is now a dashboard (V1)** — note cards by name, shared-context
+>   strip, expanded ContextPanel. Workspace drafting runs at chat 480 / artifact 900.
+> - **Backend deltas:** §D of `ConceptNoteBuilderBackendRequests.md` is rewritten and
+>   §F–H are new (optional scope at `start_run` / `concept_note_set_scope` · setup-gap
+>   blocker values in the agent context · a `name` column on `concept_note_runs`). The
+>   amber "v4 backend deltas" card in Figma section 19 carries the same list.
+> Section 3's screen table is kept as the v3 record (read S2·a/S2/S2·b rows through
+> this box); §7 is updated in place. Everything else (principles, components, tool
+> moments, data model) carries over unchanged.
 
 ---
 
@@ -54,7 +73,7 @@ Amber SSE chips throughout = events that don't exist yet (see the requests doc).
 
 ## 7. Backend requests
 
-Full detail + plain-terms rationale in `ConceptNoteBuilderBackendRequests.md`. Summary: **4 SSE events** (per-upload status · workflow step changed · chapter ready · bundle re-assembly delta) + **4 tools/endpoints** (run listing · `context_annotate` · shared-context promotion · applicant eligibility validation). Auto-assembly trigger was reviewed and **downgraded to frontend behavior** (call `start_run` on the 4th selector pick). Suggested order: events 1+2 → run listing → events 3+4 → annotate + shared context → eligibility.
+Full detail + plain-terms rationale in `ConceptNoteBuilderBackendRequests.md`. Summary: **4 SSE events** (per-upload status · workflow step changed · chapter ready · bundle re-assembly delta) + **7 tools/endpoints/schema asks** (run listing · `context_annotate` · shared-context promotion · applicant eligibility validation · optional scope at `start_run` or `concept_note_set_scope` · setup-gap blocker values in the agent context · `name` column on `concept_note_runs`). The v3 "auto-assembly = frontend behavior on the 4th pick" note is **dead** — v4 creates the run on the modal's CREATE, before run-scoped uploads (`POST /concept-notes/{run_id}/uploads`); see the rewritten §D. Suggested order: events 1+2 → run listing + name column → optional scope → events 3+4 → annotate + shared context → setup-gap context → eligibility.
 
 ## 8. Open decisions
 

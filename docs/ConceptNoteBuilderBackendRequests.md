@@ -1,6 +1,6 @@
 # CNB — SSE events the UI needs
 
-**From:** Carlos (design) · **To:** Piotr (backend) · **Date:** 2026-07-24
+**From:** Carlos (design) · **To:** Piotr (backend) · **Date:** 2026-07-24 · **Updated:** 2026-07-28 (v4 first handoff — §D rewritten, §F–H added)
 **Companion to:** the UI Development Spec v2 and the two fixtures in [`fixtures/`](fixtures/).
 
 The architecture emits **eleven** SSE events, and states plainly that
@@ -126,9 +126,18 @@ which is the highest-severity UX problem today.
 
 # Tools / endpoints requested (beyond events)
 
-Added 2026-07-28 after the v3 design review. Each spot in the Figma file that depends on
-one of these carries an amber **NEEDS BACKEND** flag. Rationale is written in plain terms
-on purpose — it's the argument, not just the ask.
+§A–E added 2026-07-28 after the v3 design review; §D rewritten and §F–H added the same
+day after the **v4 first handoff** (Figma page "CNB v4 –– First Handoff", secs 18–19 —
+the amber "v4 backend deltas" card in sec 19 mirrors F–H). Each spot in the Figma file
+that depends on one of these carries an amber **NEEDS BACKEND** flag. Rationale is
+written in plain terms on purpose — it's the argument, not just the ask.
+
+**The one v4 fact that drives F, G and H:** everything at note creation is now optional.
+The v3 screens S2·a / S2 / S2·b died; creation is a modal where every setup field
+(project · funder · opportunity — even the files) can be skipped, and whatever was
+skipped becomes a **setup gap** that Clima resolves in chat. The v4 journey (V1
+dashboard → V2 creation modal → V3 setup-gaps first-open → V4 funder-chosen →
+V5 drafting → V6 export) is the design source for all three.
 
 ## A. Run listing endpoint  ⟶ unblocks **S1 Home**
 **Plainly:** the backend can only answer "here's an exact city + project + funder +
@@ -137,6 +146,10 @@ have?*" It's a filing cabinet with no drawer view: you can retrieve a note only 
 already re-type its exact scope. The home screen is literally a list of the city's notes
 with status and context-progress — one boring endpoint (`list runs for city`) makes it
 real. Without it, S1 is either empty or faked.
+
+**v4 note:** unchanged as an ask, but its weight went up — the v4 **dashboard (V1)** is
+built directly on this listing (note cards with name, status, context-progress). It's now
+the first screen of the whole flow, not one view among several.
 
 ## B. `context_annotate`  ⟶ unblocks the confirm-or-correct promise (C3, tool screen ⑪)
 **Plainly:** the tiles promise "confirm or correct — never re-enter." The user says
@@ -156,12 +169,20 @@ resolves the architecture's own open question (bundle run-scoped vs promotable) 
 **shared** — flagging it here so it lands as the product decision it is. Payoff: a
 second note costs minutes, not another assembly.
 
-## D. ~~Auto-assembly trigger~~ — DOWNGRADED to a behavior note
-**Plainly:** on review this is ~90% frontend: `start_run` already kicks off ingestion
-and assembly, so "no assemble button" just means the UI calls `start_run` the moment the
-fourth selector is picked. The only backend sliver — signaling *re*-assembly when scope
-is edited later — is covered by event #4 (bundle delta). **Nothing new requested.**
-The S2·a flag in Figma now reads BEHAVIOR, not NEEDS BACKEND.
+**v4 note:** unchanged as an ask, but the v4 **dashboard (V1)** shows the shared-context
+strip above the note list — so the dashboard depends on both A and C together.
+
+## D. Run creation timing — REWRITTEN for v4 (the v3 behavior note is dead)
+**Plainly:** v3 said "the UI calls `start_run` the moment the fourth selector is
+picked." That flow no longer exists — there is no fourth pick, because in v4 every
+setup field is optional. Instead, the creation modal (V2) has a single **CREATE**
+action, and the run must exist the moment it's pressed: everything after CREATE is
+run-scoped, starting with uploads (`POST /concept-notes/{run_id}/uploads` — there is
+no pre-run holding area for files, and source PDFs stay ≤ 20 MB). So the sequence is
+CREATE → `start_run` with whatever scope exists (possibly none — see F) → the modal's
+upload step attaches files to that run. Assembly still starts without an assemble
+button; it just starts from CREATE, with whatever context is present, and re-runs as
+scope and files arrive (event #4 covers the re-assembly signal, as before).
 
 ## E. Applicant eligibility validation  ⟶ unblocks the C5/S2 eligibility surface
 **Plainly:** the funder profile already lists *who may apply* — eligible applicant
@@ -172,8 +193,38 @@ three field comparisons at assembly time, and the design already shows where the
 goes (the ✓/✗ list on the funder card). It's the "check you're allowed to enter before
 standing in line for an hour" gate.
 
-**Suggested order:** events #1+#2 → A (run listing) → events #3+#4 → B+C (the
-shared-context model) → E.
+## F. Optional scope at `start_run` — nullable fields, or a `concept_note_set_scope` tool
+**Plainly:** the v4 creation modal lets a user create a note having picked *nothing* —
+no project, no funder, no opportunity. But `start_run` today demands the full scope up
+front, which would force the modal to lie or block. Two acceptable shapes, pick
+whichever costs less: **(1)** make the scope fields nullable at `start_run`, or
+**(2)** keep `start_run` minimal and add a `concept_note_set_scope` tool that Clima
+calls mid-chat when the user finally names the funder or project. Either way the
+requirement is the same: **scope must be settable after the run exists.** Skipped setup
+becomes a setup gap Clima resolves in conversation — not a wall at the door. (Setting
+the funder later is exactly the V4 moment: the template arrives and the pre-template
+draft re-maps onto it.)
+
+## G. Setup-gap blocker values in the always-on agent context  ⟶ unblocks **SetupGapChatCard (V3)**
+**Plainly:** when setup was skipped, Clima has to open the conversation knowing *what's
+missing and what it blocks* — "you haven't picked a funder yet; without one there's no
+template, so I'll draft against a generic structure and re-map when you choose." The
+agent's always-on context (which already carries the workflow step) should also carry
+the setup-gap state: which of project / funder / opportunity are unset, and the blocker
+value for each (what capability is gated). Without it, Clima either ignores the gaps or
+re-derives them by tool-poking every turn. This is what SetupGapChatCard and the
+ContextPanel blocker rows render.
+
+## H. A `name` column on `concept_note_runs`  ⟶ unblocks **NoteCard on the dashboard (V1)**
+**Plainly:** in v3 a run's identity *was* its scope tuple (city + project + funder +
+opportunity). In v4 a note can exist before any of those are chosen — so the tuple can
+no longer be the display identity. Users name the note at creation (the modal's one
+always-available field) and the dashboard lists notes by name. One column on
+`concept_note_runs`, accepted at `start_run` and editable (rename) afterwards.
+
+**Suggested order:** events #1+#2 → A + H (the dashboard: listing + names) → F
+(optional scope — the creation modal) → events #3+#4 → B+C (the shared-context model)
+→ G → E.
 
 **Explicitly out (Carlos, 2026-07-28):** per-field confidence levels and sub-field source
 structure (the Porto Alegre note's `### field` + confidence pattern) — not requested;

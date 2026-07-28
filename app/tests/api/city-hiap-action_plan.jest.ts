@@ -105,7 +105,7 @@ describe("City HIAP Prioritization API", () => {
         await db.models.ActionPlan.destroy({
           where: { cityLocode: "XX-APT" },
         });
-      } catch (e) {
+      } catch (_e) {
         // Table might not exist, that's okay
       }
       await db.models.Inventory.destroy({ where: { inventoryId } });
@@ -160,7 +160,7 @@ describe("City HIAP Prioritization API", () => {
         hiaRankingId: ranking.id,
         actionId: "test-action-123",
         rank: 1,
-        explanation: { en: "Test" } as any,
+        explanation: { explanations: { en: "Test" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action",
@@ -181,7 +181,7 @@ describe("City HIAP Prioritization API", () => {
 
       // Build URL with query params
       const url = `http://localhost:3000/api/v0/city/${testData.cityId}/hiap/action-plan?cityId=${testData.cityId}&language=en&actionId=${rankedAction.actionId}`;
-      const req = new Request(url) as any;
+      const req = mockRequest(url);
 
       const res = await getActionPlans(req, {
         params: Promise.resolve({ city: testData.cityId }),
@@ -240,7 +240,7 @@ describe("City HIAP Prioritization API", () => {
         hiaRankingId: ranking.id,
         actionId: "create-test-action",
         rank: 1,
-        explanation: { en: "Test" } as any,
+        explanation: { explanations: { en: "Test" } },
         lang: "en",
         type: "mitigation",
         name: "Create Test Action",
@@ -344,7 +344,7 @@ describe("City HIAP Prioritization API", () => {
         hiaRankingId: ranking.id,
         actionId: "get-by-id-action",
         rank: 1,
-        explanation: { en: "Test" } as any,
+        explanation: { explanations: { en: "Test" } },
         lang: "en",
         type: "mitigation",
         name: "Get By ID Action",
@@ -401,7 +401,7 @@ describe("City HIAP Prioritization API", () => {
         hiaRankingId: ranking.id,
         actionId: "patch-action",
         rank: 1,
-        explanation: { en: "Test" } as any,
+        explanation: { explanations: { en: "Test" } },
         lang: "en",
         type: "mitigation",
         name: "Patch Action",
@@ -477,7 +477,7 @@ describe("City HIAP Prioritization API", () => {
         hiaRankingId: ranking.id,
         actionId: "delete-action",
         rank: 1,
-        explanation: { en: "Test" } as any,
+        explanation: { explanations: { en: "Test" } },
         lang: "en",
         type: "mitigation",
         name: "Delete Action",
@@ -546,7 +546,7 @@ describe("City HIAP Prioritization API", () => {
         hiaRankingId: ranking.id,
         actionId: "generate-action",
         rank: 1,
-        explanation: { en: "Test" } as any,
+        explanation: { explanations: { en: "Test" } },
         lang: "en",
         type: "mitigation",
         name: "Generate Action",

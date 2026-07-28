@@ -2,6 +2,8 @@
 
 Open [`index.html`](./index.html) in a browser. No build, no server — it's self-contained.
 
+There's also a [hosted copy](https://claude.ai/code/artifact/3de11a51-9f25-4bf5-b73c-0e87849826f0) for anyone who'd rather not clone the repo. It's access-controlled and shared with the Open Earth team — if it asks you to sign in and you're outside the team, use the local file instead. It's a point-in-time snapshot, so treat `index.html` in this repo as the source of truth.
+
 ## What this is
 
 A structural comparison between the **CC Terra UI Guidelines** Figma library and the Chakra v3 theme in `app/src/lib/theme/`. It exists to answer three questions we couldn't answer before:

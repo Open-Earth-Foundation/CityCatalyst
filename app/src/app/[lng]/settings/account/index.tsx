@@ -36,7 +36,7 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       <Tabs.List display="flex" flexDirection="column" gap="12px">
         <TabTrigger value="account-details">{t("account-details")}</TabTrigger>
         <TabTrigger value="brand-settings">{t("brand-settings")}</TabTrigger>
-        <TabTrigger value="manage-password">{t("manage-password")}</TabTrigger>
+        <TabTrigger value="manage-password">{t("password")}</TabTrigger>
         <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
       </Tabs.List>
       <TabContent value="brand-settings" p={0}>

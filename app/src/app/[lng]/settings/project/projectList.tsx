@@ -103,17 +103,13 @@ const ProjectList: React.FC<ProjectListProps> = ({
                 w="full"
                 hideIndicator
                 padding="0px"
-                asChild
               >
-                <Button
-                  rounded={0}
-                  variant="plain"
+                <Box
                   display="flex"
                   justifyContent="space-between"
                   w="full"
                   minH="56px"
-                  p={4}
-                  pr={0}
+                  pl={4}
                   alignItems="center"
                   color={
                     selectedProjectId.includes(project.projectId)
@@ -125,6 +121,7 @@ const ProjectList: React.FC<ProjectListProps> = ({
                     fontSize="label.lg"
                     fontWeight="semibold"
                     color="currentcolor"
+                    textTransform="none"
                   >
                     {project.name}
                   </Text>
@@ -132,9 +129,9 @@ const ProjectList: React.FC<ProjectListProps> = ({
                     color="currentColor"
                     rotate={{ base: "-90deg", _open: "-180deg" }}
                   >
-                    <Icon as={LuChevronDown} color="currentColor" boxSize={4} />
+                    <Icon as={LuChevronDown} color="currentColor" boxSize={6} />
                   </Accordion.ItemIndicator>
-                </Button>
+                </Box>
               </AccordionItemTrigger>
               {selectedProjectId[0] === project.projectId && (
                 <AccordionItemContent padding="0px" pb={4}>
@@ -187,7 +184,9 @@ const ProjectList: React.FC<ProjectListProps> = ({
                               borderColor: "content.link",
                             }}
                           >
-                            {city.name}, {city.countryLocode}
+                            {city.name}
+                            {city.countryLocode ? ", " : ""}
+                            {city.countryLocode}
                           </Tabs.Trigger>
                         ))}
                       </Tabs.List>

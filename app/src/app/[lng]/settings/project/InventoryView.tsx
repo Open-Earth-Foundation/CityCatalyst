@@ -25,7 +25,7 @@ import {
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
 import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
-import { CityResponse } from "@/util/types";
+import { CityResponse, UserFileResponse } from "@/util/types";
 import { BsDownload } from "react-icons/bs";
 import { formatEmissions } from "@/util/helpers";
 import { MdArrowOutward, MdGroup, MdOutlineAspectRatio } from "react-icons/md";
@@ -93,7 +93,7 @@ const InventoryView = ({
   });
 
   function filterDataByYear(
-    data: { lastUpdated: string | Date }[] | undefined,
+    data: UserFileResponse[] | undefined,
     selectedYear: number | null | undefined,
   ) {
     return data?.filter((item) => {
@@ -251,8 +251,7 @@ const InventoryView = ({
                 fill="background.overlay"
               />
               <Box display="flex" gap={1}>
-                {inventory?.city.area === null ||
-                inventory?.city.area! === 0 ? (
+                {inventory?.city.area === null || inventory?.city.area === 0 ? (
                   <Text
                     fontFamily="heading"
                     color="border.neutral"
@@ -271,7 +270,7 @@ const InventoryView = ({
                     lineHeight="32"
                   >
                     {formatNumber(
-                      Math.round(inventory?.city.area!),
+                      Math.round(inventory?.city.area ?? 0),
                       userInfo?.numberFormat,
                     )}
                     {/* eslint-disable-next-line i18next/no-literal-string */}

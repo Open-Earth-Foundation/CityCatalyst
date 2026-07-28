@@ -1,4 +1,4 @@
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 
 export enum FeatureFlags {
   ENTERPRISE_MODE = "ENTERPRISE_MODE",

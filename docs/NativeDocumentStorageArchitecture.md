@@ -1,367 +1,359 @@
 # Native Document Storage Architecture
 
 > Draft for [CC-553](https://linear.app/openearth/issue/CC-553/create-architecture-for-agentic-native-document-storage) · 2026-07-22  
-> Status: **draft for stakeholder review** (clarifications 2026-07-23 Piotr/Mirco Slack; 2026-07-24 Mirco PR review)
+> Status: **draft for stakeholder review** (updated 2026-07-29 after architecture check with Mirco / Piotr)
 
 ## One-line intent
 
-CityCatalyst **modules** own city-provided documents and structured intakes (owner = module where the user uploaded / committed). Climate Advisor (Clima) never holds S3 keys; it discovers inputs via a pointer catalog and reads via **typed capabilities** (and optional Markdown access), then uses that context to guide downstream suggestions.
+CityCatalyst **modules** own city-provided documents and structured intakes (owner = module where the user uploaded / committed). Climate Advisor (Clima) never holds S3 keys; it discovers inputs via a **CityCatalyst Core** pointer catalog and reads via **typed capabilities** (and optional Markdown access).
+
+### Clear goal (why this exists)
+
+Make it easy to **discover** everything a city (or org) has uploaded or generated — at any module, at any time — **without** Climate Advisor (or the frontend) querying five services one by one (“do you have data?” × N).
+
+
+| With `NativeInputCatalog`                                                          | Without it                                                        |
+| ---------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| One **lookup table** in CC Core: what exists, who owns it, scope, where to resolve | CA must ask each module individually                              |
+| Then request only the needed items via existing CC auth + capabilities             | No single place to list “all inputs we hold” for settings / Clima |
+
+
+Secondary benefit: the same lookup can power a future CC frontend view (e.g. settings — “all data we have about this city/org”), including manage/delete flows later.
+
+Today many flows already know the target module; the catalog matters as modules and uploads grow (e.g. CNB).
 
 ### What this draft is (and is not)
 
-| This draft **is** | This draft **is not** |
-| --- | --- |
-| Ownership + access layer for city-native intakes (GHGI files, HIAP / HIAP-MEED prefs, CNB uploads) | The Stationary Energy ↔ CNB **context-exchange** design itself |
-| Rules so modules do not each invent their own upload cupboard | A requirement that Clima browse GHGI PDFs by default |
-| Prerequisite for later SE ↔ CNB / city-wide reuse | A centralized mega-database that stores everything for all services |
+
+| This draft **is**                                                                        | This draft **is not**                                          |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Ownership + access + **discovery** layer for city-native intakes and generated artifacts | The Stationary Energy ↔ CNB **context-exchange** design itself |
+| A **CC Core** catalog (lookup), plus module SoTs that still hold the real data           | A mega-database that copies every file/JSON into one store     |
+| Prerequisite for later SE ↔ CNB / city-wide reuse                                        | Climate Advisor owning the catalog or S3 credentials           |
+
 
 The **context bundle** (already how CA scopes context per service) **consumes** this layer — it is not the input store.
 
-**Naming note:** Title keeps “Native document storage” for ticket continuity. In-architecture name for the index is **`NativeInputCatalog`** — documents **and** structured intakes (preferences, selections), not only PDF bytes. Goal: joint foundation / data permeability across modules, without one DB mirroring every service.
-
-## Scope (from original product ask)
-
-Three intakes today / soon:
-
-1. **GHGI onboarding** — city uploads inventory file (source artifact). Clima’s default numbers come from **structured inventory**. Architecture must still allow a later pointer to OCR Markdown in CA context when a step needs it.
-2. **HIAP / HIAP-MEED** — preferences / selections (**structured Path A** today). Same conceptual treatment; **different services, schemas, and storage** — do not collapse them in implementation.
-3. **Concept Note Builder** — city uploads supporting docs (CAP, budget, letters…). CAP upload may also appear in other modules later (e.g. GHGI); ownership follows **upload module**.
-
-DoD: Mermaid + ownership + how Clima accesses + how inputs inform decisions → then follow-up tickets.
-
-**v1 services in diagram:** CityCatalyst app modules + Climate Advisor (+ hiap-meed as compute for MEED prioritization).  
-**`global-api`:** useful Clima resource when scoped via capability / context (usually not city-specific). Confirm with product + data which datasets to expose — prefer **in-scope for architecture**, not deferred indefinitely.
-
-**Related repo docs:** [ConceptNoteBuilderArchitecture.md](./ConceptNoteBuilderArchitecture.md) (CNB/OCR deep dive), [AgenticModuleScope.md](./AgenticModuleScope.md) (Stage-1 agentic scope — Path A capability payloads are the CC-facing contracts that feed those capability layers / module scope).
+**Naming note:** Ticket title keeps “Native document storage.” In-architecture name: **`NativeInputCatalog`** — files **and** structured / generated city data, not only PDF bytes.
 
 ---
 
-## DoD diagram — target input flow
+
+
+## Where the catalog lives (decision)
+
+**`NativeInputCatalog` lives in CityCatalyst Core** as an explicit **lookup table** in the **CC core database** (synced in the 2026-07-28 architecture check) — not in Climate Advisor, not as a separate microservice that owns city data, and not as a facade-only layer over module tables.
+
+
+| Option                                        | Verdict  | Why                                                                                                                                                                                         |
+| --------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **CC Core lookup table (chosen)**             | ✅        | Auth already lives in CC (JWT / module access). One register/lookup place for discovery. Modules keep SoTs; catalog stores pointers + owner + scope. Schema/migrations with Milan / Amanda. |
+| Catalog owned by Climate Advisor              | ❌        | CA should not become the system of record for “what the city uploaded.” Frontend/settings also need this list.                                                                              |
+| Separate catalog microservice with its own DB | ❌ for v1 | Risks bypassing CC auth (“query Mirco’s files without CC checks”).                                                                                                                          |
+
+
+**Auth reminder:** A row in the catalog means “this input exists.” It does **not** grant access. CC still verifies that the CA request (on behalf of a user) may read that module/file. Capability wrappers still decide what enters a given context bundle.
+
+---
+
+
+
+## Two kinds of city data (both register)
+
+Everything discoverable by Clima should appear in `NativeInputCatalog`. We split conceptually. The product modules in play are the original three intakes (**GHGI**, **HIAP / HIAP-MEED**, **CNB**) — same story as Mirco’s ask, without a separate “scope” section.
+
+
+| Kind                    | Examples (by module)                                                                                                              | Owner                     | SoT                      | Clima read                                                                                                                                                          | Catalog                                                            |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **City inputs**         | **GHGI:** inventory PDF/CSV/XLSX · **CNB:** CAP, budget, letters… · **HIAP/MEED:** prefs, exclusions, selections the user commits | Module of upload / commit | Module DB + S3 for files | **GHGI** default = structured inventory (**Path A**); optional later Markdown via pointer · **CNB** docs = **Path B** (excerpts) · **HIAP/MEED** prefs = **Path A** | Register pointer + owning module + scope                           |
+| **City generated data** | **HIAP / HIAP-MEED:** rankings, selected actions, output plans (and similar module-produced artifacts)                            | Module that produced it   | Module DB (structured)   | **Path A**                                                                                                                                                          | Register pointer so Clima can discover without knowing every table |
+
+
+**Both kinds must be registered** in `NativeInputCatalog` when they become durable / “finished” enough to reuse (see HIAP option A below).
+
+HIAP and HIAP-MEED stay **conceptually similar** for Path A, but **different services / schemas / storage** in implementation — do not merge them into one table by accident.
+
+**Registration path:** different modules, **same catalog contract** (one register/lookup pattern into CC Core). Diagram arrows from modules → catalog are the same kind of registration, not three different architectures.
+
+**Outside this catalog:** `global-api` remains an optional Clima resource (mostly shared / non-city-specific), capability-scoped — confirm datasets with product + data.
+
+**Related:** [ConceptNoteBuilderArchitecture.md](./ConceptNoteBuilderArchitecture.md), [AgenticModuleScope.md](./AgenticModuleScope.md).
+
+---
+
+
+
+## DoD diagrams
+
+
+
+### 1) Write path — persist + register
 
 ```mermaid
 flowchart TB
-  subgraph Intakes["City inputs"]
-    GHGI["1. GHGI module<br/>source file PDF / CSV / XLSX<br/>default agent SoT = inventory rows"]
-    HIAP["2. HIAP / HIAP-MEED<br/>prefs · selections · exclusions<br/>structured Path A"]
-    CNB["3. CNB module<br/>CAP, budget, letters…"]
+  subgraph CityData["1. City data"]
+    Inputs["City inputs<br/>files · prefs · exclusions · selections"]
+    Generated["City generated data<br/>rankings · selected actions · plans"]
   end
 
-  subgraph CC["CityCatalyst — modular owners"]
-    Catalog["NativeInputCatalog<br/>proposed · pointer index only<br/>what exists + where + owning module"]
-    S3["CC S3 bucket<br/>imports/… + pdf-ocr/results/…"]
-    OCR["PdfOcrJob queue<br/>CronJob → Mistral OCR"]
-    Prod["Module SoTs already in CC<br/>GHGI inventory DB · HIAP tables<br/>HIAP-MEED prefs · CNB upload rows"]
+  subgraph Modules["2. Modules hold the SoT"]
+    GHGI["GHGI<br/>inventory rows<br/>+ files in S3 if any"]
+    HIAP["HIAP / HIAP-MEED<br/>prefs · rankings · plans"]
+    CNB["CNB<br/>uploads · OCR markdown in S3"]
   end
 
-  subgraph Other["Other services"]
-    MEED["hiap-meed<br/>prioritize compute only"]
-    GlobalAPI["global-api<br/>shared / non-city data<br/>via capability scope"]
-    CNBDB["datateam CNB DB<br/>bundles · chapters · funder KB"]
+  Catalog["3. CC Core · NativeInputCatalog<br/>lookup row: what / where / owner / scope"]
+
+  Inputs --> GHGI
+  Inputs --> HIAP
+  Inputs --> CNB
+  Generated --> HIAP
+
+  GHGI -->|"register pointer"| Catalog
+  HIAP -->|"register pointer"| Catalog
+  CNB -->|"register pointer"| Catalog
+```
+
+
+
+
+
+### 2) Read path — who consumes the catalog
+
+Clima is the consumer. It **queries** `NativeInputCatalog`, then **requests** Path A / Path B. (Top → bottom = asker → lookup → fetch → bundle.)
+
+```mermaid
+flowchart TB
+  Clima["Clima needs context<br/>for a city / org / service run"]
+  Catalog["Queries NativeInputCatalog<br/>CC Core lookup · what exists?"]
+  Discover["Picks relevant rows<br/>capability wrapper scopes access"]
+
+  subgraph Paths["Then requests data via CC auth"]
+    PathA["Path A<br/>structured JSON<br/>from module SoT"]
+    PathB["Path B<br/>markdown bytes<br/>owning module reads S3<br/>Clima never gets S3 keys"]
   end
 
-  subgraph CA["Climate Advisor / Clima"]
-    PathA["Path A — Capabilities<br/>GET / request structured JSON"]
-    PathB["Path B — Markdown access<br/>CA requests .md via catalog<br/>+ capability · mainly files today"]
-    Bundle["Context bundle per service<br/>already exists · agent selects load"]
-    Agents["Agents / suggestions<br/>SE · CNB · future recs"]
-  end
+  Bundle["Context bundle per service<br/>wrapper decides what loads"]
+  GlobalAPI["global-api optional<br/>not in catalog"]
 
-  GHGI -->|"register pointer · owner=GHGI"| Catalog
-  HIAP -->|"register committed ids · owner=HIAP/MEED"| Catalog
-  CNB -->|"register pointer · owner=CNB"| Catalog
-
-  GHGI -->|"row extract →"| Prod
-  HIAP --> Prod
-  HIAP --> MEED
-  MEED -->|"ranking result"| Prod
-  CNB --> Prod
-
-  Catalog -.->|"points at"| Prod
-  Catalog -.->|"PDF kinds"| OCR
-  OCR --> S3
-
-  Catalog -->|"discover"| PathA
-  Catalog -->|"discover"| PathB
-  Prod -->|"resolve via hiap.summary / ghgi.*"| PathA
-  S3 -.->|"CA requests markdown bytes<br/>no S3 keys to Clima"| PathB
-  GlobalAPI -.->|"optional"| PathA
-
+  Clima --> Catalog
+  Catalog --> Discover
+  Discover --> PathA
+  Discover --> PathB
   PathA --> Bundle
   PathB --> Bundle
-  Bundle --> CNBDB
-  Bundle --> Agents
+  GlobalAPI -.-> PathA
 ```
+
+
+
+
 
 ### How to read this (30 seconds)
 
-1. City inputs enter a **CC module** first. **Owner = module of upload / commit** (metadata on the catalog row). Other modules may **read** when the capability wrapper allows — they do not become owner.
-2. **`NativeInputCatalog` = pointer index only** (“what we received” + “authoritative storage is at …” + owning module). It is **not** the SoT. SoT remains existing module databases (GHGI inventory, HIAP rankings/selections, HIAP-MEED prefs, CNB upload records, S3 objects).
-3. **Two layers for file intakes (e.g. GHGI):**
-   - **Storage:** source PDF (+ OCR Markdown in S3) owned by the upload module; catalog registers a pointer.
-   - **Clima read (default):** Path A from module SoT (inventory rows, HIAP selections). Optional later: capability step may also load Markdown via catalog pointer.
-4. Prefs/rankings stay **structured**. HIAP / HIAP-MEED are Path A today; Path B for HIAP is a **future possibility**, not required now.
-5. Clima **discovers** via catalog, then **requests** facts/files through capabilities (no S3 keys). Prefer “CA requests” over “CC pushes bytes” as the mental model; existing `POST .../markdown` shapes can remain as transport while ownership/access stay catalog + capability.
-6. **Context bundle** already exists per service: the agent / capability wrapper decides what loads. Services stay **self-contained** (e.g. CNB must not hard-depend on GHGI inputs) but can be **enriched** when catalog + capabilities make another module’s input available.
-7. Catalog is **proposed** (facade over existing tables first, or explicit table later) — not implemented.
+1. **Write:** city data → module SoT → **register** a pointer in `NativeInputCatalog` (CC Core).
+2. **Read:** Clima **queries** the catalog (consumer), picks allowed rows, then **requests** Path A (JSON) and/or Path B (markdown).
+3. S3 lives **under** GHGI/CNB ownership — no separate S3 box. Path B = module fetches markdown; Clima never gets keys.
+4. Catalog link ≠ access granted.
+5. `global-api` is optional and outside the catalog.
 
 ---
 
+
+
 ## Ownership
 
-| Input | What is stored | Owner (module) | Clima access |
-| --- | --- | --- | --- |
-| GHGI PDF + OCR `.md` | S3 + `ImportedInventoryFile` + `PdfOcrJob` | **GHGI** | Path A default (inventory). Markdown via catalog + capability when enabled |
-| File uploaded in CNB (CAP, etc.) | S3 + `ConceptNoteUpload` + `PdfOcrJob` | **CNB** | Path B / markdown request → excerpts in that service’s bundle. Other modules may read later if allowed |
-| File uploaded in another module later | Same S3 + module-local row | **That module** | Same pattern: owner module; readers via capability |
-| HIAP finished state | Last ranking, up to 3 selected actions, output plan (already in CC) | **HIAP** | Path A (`hiap.summary`) |
-| HIAP-MEED finished state | Prefs (0a), exclusions (0b), plus ranking / selections / output plan | **HIAP-MEED** (compute in hiap-meed; durable rows in CC) | Path A (MEED-aware summary / fields) — **separate schema from classic HIAP** |
-| Context bundle | Run-/service-scoped assembled context | CA orchestrates; datateam CNB DB for CNB runs | Internal |
-| Funder / similar projects | Curated research corpus | datateam CNB DB | CNB tools (not city-native) |
-| global-api datasets | Shared / mostly non-city | global-api | Optional Path A tools, capability-scoped |
+
+| Input / artifact                      | SoT                                               | Owner (module)                                                   | Clima access                                                |
+| ------------------------------------- | ------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------- |
+| GHGI PDF + OCR `.md`                  | S3 + GHGI import / `PdfOcrJob`                    | **GHGI**                                                         | Path A default (inventory); Markdown when capability allows |
+| CNB uploads                           | S3 + CNB upload rows                              | **CNB**                                                          | Path B / markdown request → excerpts                        |
+| File uploaded in another module later | That module’s rows + S3                           | **That module**                                                  | Same pattern                                                |
+| HIAP finished state                   | Ranking, ≤3 selected actions, output plan (in CC) | **HIAP**                                                         | Path A (`hiap.summary`)                                     |
+| HIAP-MEED finished state              | Prefs, exclusions, + ranking / selections / plan  | **HIAP-MEED** (compute may run in hiap-meed; durable rows in CC) | Path A (MEED-aware fields); **separate schema**             |
+| global-api datasets                   | global-api                                        | global-api                                                       | Optional Path A tools — **not** catalog rows                |
+| Context bundle                        | CA / datateam CNB DB for CNB runs                 | CA orchestrates                                                  | Internal                                                    |
+
 
 **Hard rules**
 
 1. Clima never gets S3 keys or signed URLs for source/OCR objects.
-2. **Owner = module where the user uploaded or committed.** Readers = any module / skill allowed by the capability wrapper. Store owning module on catalog metadata.
-3. A file in S3 **may** be made accessible to **all** services later — only through catalog discovery + CA capability / context scope (not open bucket browsing).
-4. Path B / markdown access is **opt-in** per use case. Today’s main file path is CNB; architecture stays **extendable** to GHGI and other modules.
-5. Re-upload = **new** immutable id; old row soft-deleted / superseded.
-6. No cross-DB foreign keys — only shared IDs over APIs. Modules stay self-contained; enrichment is additive.
+2. **Owner = module** of upload or generation; store on catalog metadata. Readers use capability — they do not become owner.
+3. Files in S3 **may** be readable cross-module later — only via catalog + CC auth + capability.
+4. Path B is opt-in; today mainly CNB; extendable to other module-owned files.
+5. Re-upload = new immutable id.
+6. No cross-DB FKs — API IDs only. Modules stay self-contained; enrichment is additive.
+7. **`NativeInputCatalog` is CC Core** — not CA-owned.
 
 ---
+
+
 
 ## How Clima gets access
 
-```mermaid
-sequenceDiagram
-  participant City as City user
-  participant Mod as CC module (GHGI / HIAP / CNB)
-  participant Cat as NativeInputCatalog
-  participant OCR as PdfOcrJob / Mistral
-  participant CA as Climate Advisor
-  participant Bundle as Context bundle
+In practice there are only two moments:
 
-  Note over City,Bundle: Path A — structured capabilities (default)
-  City->>Mod: Upload file / commit HIAP selection
-  Mod->>Mod: Persist module SoT
-  Mod->>Cat: Register pointer (owner module + stable ids)
-  CA->>Cat: Discover available inputs for this service scope
-  CA->>Mod: Request capability summary (e.g. hiap.summary)
-  Mod-->>CA: Bounded JSON facts
-  CA->>Bundle: Load selected facts
+1. **Something durable happens in a module** → module saves its SoT **and** inserts a row in `NativeInputCatalog`.
+2. **Clima needs context** → queries the catalog, picks allowed rows (capability wrapper), then **requests** either structured JSON (**Path A**), markdown (**Path B**), or both.
 
-  Note over City,Bundle: Path B — Markdown access (files; CA requests)
-  City->>Mod: Upload CAP PDF (owner = that module)
-  Mod->>OCR: Queue OCR
-  OCR->>Mod: Write .md to S3
-  Mod->>Cat: Register markdown-ready pointer
-  CA->>Cat: Discover file input
-  CA->>Mod: Request markdown bytes (via capability; no S3 key)
-  Mod-->>CA: Markdown + sha256 + upload_id
-  CA->>Bundle: Register + excerpt for this service run
-```
+Clima never receives S3 keys. A catalog row only answers “what exists / where / who owns it.”
 
-### Path A — capability payloads
+### Example 1 — GHGI inventory (Path A)
 
-Clima calls CC internal APIs (and optionally global-api tools). Payloads are the **CC-facing capability contracts** that feed Clima / [AgenticModuleScope](./AgenticModuleScope.md) layers / per-service context bundle assembly.
+1. City uploads a 2024 inventory PDF in **GHGI**.
+2. GHGI runs OCR / row extract, stores the approved inventory numbers in its DB (and the file in S3 as the source artifact).
+3. GHGI **registers** a catalog row, e.g. kind=`inventory_import`, owner=`ghgi`, pointer to inventory id (+ optional file id).
+4. Later, Clima (e.g. Stationary Energy) queries the catalog for that city, sees the GHGI row, and calls the existing capability (e.g. `emissions-context`).
+5. GHGI returns **bounded JSON** (totals / sectors). That is **Path A** — numbers from the inventory SoT, not “read the PDF in the prompt.”
 
-Live GHGI examples already exist under `/api/v1/internal/ca/capabilities/ghgi/…` (for example `emissions-context`, `list-accessible`). JSON below is **illustrative**.
+Optional later: if a CA step needs prose from the OCR markdown, Clima can request **Path B** for that same catalog file pointer still via GHGI, still without S3 keys.
 
-**GHGI emissions context (illustrative; live) — numbers from inventory SoT:**
+### Example 2 — HIAP / HIAP-MEED finished state (Path A)
 
-```json
-{
-  "capability": "ghgi.emissions_context",
-  "city_id": "city_msp_001",
-  "inventory_id": "inv_2024",
-  "year": 2024,
-  "status": "approved",
-  "total_emissions_tco2e": 4120000,
-  "sectors": {
-    "stationary_energy": 1800000,
-    "transportation": 1500000,
-    "waste": 820000
-  }
-}
-```
+1. User generates a ranking, selects up to 3 actions, maybe an output plan; on MEED also saves prefs + exclusions.
+2. Those finished states are stored in the HIAP / HIAP-MEED tables in CC.
+3. Module **registers** catalog rows for those artifacts (owner=`hiap` or `hiap-meed`).
+4. Clima queries the catalog, then requests something like `hiap.summary` and gets JSON (selected actions, prefs, exclusions, …).
 
-Optional enrichment: advertise related native **inputs** (pointer refs) without making PDF the default SoT — and allow a CA step to request Markdown later:
 
-```json
-{
-  "native_inputs": [
-    {
-      "native_input_id": "nin_ghgi_pdf_01",
-      "source_kind": "inventory_import",
-      "owning_module": "ghgi",
-      "label": "GHGI inventory PDF 2024",
-      "markdown_ready": true
-    }
-  ]
-}
-```
+| Service       | What Path A should expose (option A)                  |
+| ------------- | ----------------------------------------------------- |
+| **HIAP**      | Last ranking; up to 3 selected actions; output plan   |
+| **HIAP-MEED** | City prefs; exclusions; + ranking / selections / plan |
 
-**HIAP / HIAP-MEED summary (target — Path A; option A committed states):**
 
-Capture **finished** user actions only (not every ephemeral API round-trip):
+Same idea for Path A; **separate schemas** in implementation.
 
-| Service | Persist for Clima (Path A) |
-| --- | --- |
-| **HIAP** | (1) last ranking (already in CC) (2) up to 3 selected actions (already in CC) (3) generated output plan (already in CC) |
-| **HIAP-MEED** | (0a) city preference inputs (0b) excluded / blocked actions + (1)–(3) as above |
+### Example 3 — CNB supporting PDF (Path B)
 
-```json
-{
-  "capability": "hiap.summary",
-  "city_id": "city_msp_001",
-  "hiap_flavor": "classic_or_meed",
-  "selected_actions": [
-    {
-      "action_id": "hiap_sw_12",
-      "title": "Green stormwater infrastructure corridor",
-      "is_selected": true
-    }
-  ],
-  "strategic_preferences": {
-    "sectors": ["water", "infrastructure"],
-    "timeframes": ["near_term"],
-    "co_benefits": ["equity", "public_health"]
-  },
-  "excluded_action_ids": [],
-  "preference_snapshot_id": "nin_hiap_prefs_01"
-}
-```
+1. City uploads a Climate Action Plan inside **CNB**.
+2. CNB queues OCR, stores markdown in S3, keeps upload metadata in its SoT.
+3. CNB **registers** a catalog row (owner=`cnb`, `markdown_ready=true`, pointer to upload id).
+4. Clima for that CNB run queries the catalog, sees the CAP row, and **requests markdown** from the CNB module.
+5. CNB reads S3 internally and returns markdown bytes (+ hash / ids). Clima keeps **excerpts** in the run’s context bundle.
 
-### Path B — Markdown access (request-oriented)
+That is **Path B**. Prefs/rankings are not Path B — they stay Path A (Example 2).
 
-After OCR succeeds, Markdown lives in S3 under the **owning module**. Clima should **request** markdown through catalog + capability (no S3 key). An existing CNB-oriented `POST .../markdown` endpoint can remain as transport; the architecture mental model is **pull via capability**, not “CC owns pushing into CA.”
+### Example 4 — Same run, both paths
 
-Today’s primary file consumer is **CNB**. Same mechanism should extend if GHGI (or others) own uploads. HIAP reading Path B is a **future possibility**, not a v1 requirement. Prefs stay Path A.
+CNB drafting a concept note might:
 
-```http
-POST /v1/concept-notes/cnb_run_demo_001/uploads/upl_cap_001/markdown
-Authorization: Bearer <cc-to-ca-token>
-Content-Type: application/json
-```
+1. Query catalog → find GHGI inventory + HIAP selections + CAP upload.
+2. **Path A** for emissions + selected actions.
+3. **Path B** for CAP excerpts.
+4. Load only what the capability wrapper allows into the CNB context bundle.
 
-```json
-{
-  "markdown": "<!-- page: 1 -->\n# Minneapolis Climate Action Plan\n...\n<!-- page: 34 -->\nTarget: reduce CSO events 40% by 2030.\n",
-  "filename": "Minneapolis_CAP_2025.pdf",
-  "source_label": "Climate Action Plan",
-  "owning_module": "cnb",
-  "page_count": 120,
-  "sha256": "a3f1c9e8b7d64520123456789abcdef0123456789abcdef0123456789abcdef0"
-}
-```
+`global-api` can still feed optional Path A tools; it is **not** listed in `NativeInputCatalog`.
 
-CA keeps **excerpts** in the **service-scoped** bundle:
-
-```json
-{
-  "upload_id": "upl_cap_001",
-  "owning_module": "cnb",
-  "excerpts": [
-    {
-      "excerpt_id": "ex_34",
-      "page": 34,
-      "text": "Target: reduce CSO events 40% by 2030.",
-      "used_for": ["problem_statement"]
-    }
-  ]
-}
-```
+Contracts for Path A align with [AgenticModuleScope](./AgenticModuleScope.md). Live GHGI capabilities already exist under `/api/v1/internal/ca/capabilities/ghgi/…`. CNB may keep a `POST .../markdown` shape as transport; the model is always **Clima requests / CC module responds**.
 
 ---
 
-## Downstream decisions (why this storage matters)
 
-| Input | Informs today | Informs with this architecture |
-| --- | --- | --- |
-| GHGI structured inventory | Inventory UI, HIAP inputs, CA GHGI tools | Same + SE prefilling + CNB emissions context when capability allows |
-| GHGI / other module source PDF | Row extraction / module-local use | Catalog pointer; other modules may read Markdown if scoped; optional CA Markdown step |
-| HIAP / HIAP-MEED committed state | HIAP UI / prioritizer | Any Clima skill via Path A summary (separate schemas) |
-| CNB uploads | — (storage adapter pending) | Concept note draft, evidence, gaps |
-| global-api | Limited / TBD | Optional Clima tools after product+data agree |
-| Funder KB / similar projects | Research pipeline | CNB examples (curated) |
+
+## Downstream
 
 ```mermaid
 flowchart LR
-  Cat["NativeInputCatalog pointers"] --> Cap["Capability / context wrapper"]
+  Cat["NativeInputCatalog<br/>CC Core"] --> Cap["Capability / context wrapper"]
   Cap --> Bundle["Per-service context bundle"]
   Bundle --> SE["Stationary Energy"]
   Bundle --> CNBw["Concept Note Builder"]
   Bundle --> Recs["Future suggestions"]
 ```
 
-This matches the **existing** CA pattern: dedicated context bundle per service; the agent decides what loads. Catalog informs availability; wrappers enforce scope so services are not tightly coupled.
+
+
+Catalog informs **availability**; wrappers enforce **scope**. Services stay self-contained and can be enriched when another module’s input is allowed.
 
 ---
 
-## Current state vs target (short)
 
-| Intake | Now | Target |
-| --- | --- | --- |
-| GHGI PDF | S3 + `PdfOcrJob` + row extract; CA = Path A inventory | Owner = GHGI; catalog pointer; Path A default; optional Markdown capability later |
-| HIAP / HIAP-MEED | Rankings / selections / plans already in CC for classic HIAP; MEED prefs often weaker / request-scoped | **Option A:** expose finished states via Path A; keep HIAP vs HIAP-MEED schemas distinct |
-| CNB uploads | Ingest endpoint; `503 cnb_storage_unavailable` | Owner = CNB; OCR + CA markdown **request** + storage adapter |
-| global-api | Not in prior v1 cut | Architecture includes optional capability-scoped use; product+data pick datasets |
+
+## Current vs target
+
+
+| Area             | Now                                                | Target                                                |
+| ---------------- | -------------------------------------------------- | ----------------------------------------------------- |
+| Discovery        | Query modules ad hoc / know in advance what to ask | **CC Core** `NativeInputCatalog` lookup               |
+| GHGI             | S3 + OCR + inventory Path A                        | Same SoT; catalog registers file + inventory pointers |
+| HIAP / HIAP-MEED | Finished states partly in CC                       | Catalog registers those artifacts; Path A summaries   |
+| CNB              | Ingest; storage adapter pending                    | Owner CNB; register uploads; markdown request         |
+| global-api       | Separate                                           | Remains outside catalog; optional capabilities        |
+| Frontend         | No unified “all uploads” view                      | Can reuse catalog later (settings)                    |
+
 
 ---
+
+
 
 ## Integration — no breaking changes
 
-| Keep | Extend later (follow-up tickets) |
-| --- | --- |
-| `PdfOcrJob` + cron + Mistral | Resolvers per owning module; inventory no auto-delivery by default |
-| GHGI capability routes | `hiap.summary` (+ MEED fields); optional markdown request capability |
-| CNB `POST .../markdown` transport | Datateam storage adapter; align naming with “CA requests via catalog” |
-| HIAP + HIAP-MEED as separate stacks | Path A over **committed** CC rows; hiap-meed remains compute-only |
-| Per-service context bundles | Feed discovery from `NativeInputCatalog` |
 
-Suggested follow-ups: `NativeInputCatalog` facade · HIAP / HIAP-MEED Path A summaries · CNB upload + markdown access · CA storage adapter ([CC-570](https://linear.app/openearth/issue/CC-570/placeholder-implementation)) · optional Markdown for non-CNB owners · global-api capability shortlist with product/data · CA tool “summarize all context we hold for this city” (prefer over a net-new frontend page for v1 visibility).
+| Keep                        | Extend                                              |
+| --------------------------- | --------------------------------------------------- |
+| Module SoTs + `PdfOcrJob`   | Register into CC Core catalog                       |
+| GHGI capability routes      | `hiap.summary` (+ MEED); optional markdown request  |
+| Per-service context bundles | Feed discovery from catalog                         |
+| CC auth / JWT checks        | Catalog lookups + fetches stay inside that boundary |
+
+
+Suggested follow-ups: catalog table + register API (with Milan) · scoping with product · HIAP/MEED Path A · CNB markdown + [CC-570](https://linear.app/openearth/issue/CC-570/placeholder-implementation) · global-api shortlist · CA “summarize all my context” tool · S3 retention policy with product.
 
 ---
+
+
 
 ## Constraints
 
-| Constraint | Note |
-| --- | --- |
-| ~20 MB PDF working cap | Ops plan needed for larger files |
-| S3 required for PDF OCR | Missing bucket → 503 |
-| Permissions | Same city/project checks as module routes + capability scope |
-| Versioning | Immutable sources; new upload = new id |
-| Compliance | Follow CC file lifecycle until product/legal say otherwise |
-| Cross-DB | API IDs only — no FK across module/CNB DBs |
-| Module isolation | No hard cross-module dependency; enrichment only when available |
+
+| Constraint             | Note                                             |
+| ---------------------- | ------------------------------------------------ |
+| ~20 MB PDF working cap | Ops plan for larger files                        |
+| S3 for OCR             | Missing bucket → 503                             |
+| Auth                   | CC module / city / org checks + capability scope |
+| Versioning             | Immutable sources; new upload = new id           |
+| Cross-DB               | API IDs only                                     |
+| Module isolation       | No hard cross-module dependency                  |
+
 
 ---
 
-## Open questions (review)
 
-1. Catalog implementation: lean facade over existing tables first, or new `NativeInput` table now?
-2. Default for GHGI Markdown in CA: off until a specific step opts in? (Proposal: **yes** — inventory Path A default; architecture enables pointer → Markdown.)
-3. **HIAP / HIAP-MEED:** Option **A** adopted for review (committed finished states). Confirm field lists above match production tables; wire `hiap.summary` (+ MEED variant) without merging schemas.
-4. Bundle stays **per-service / per-run** in v1; catalog enables later city-wide discovery — confirm.
-5. Is `UserFile` BYTEA in-scope for agentic native inputs?
-6. **global-api:** which datasets first? (Architecture: in-scope when capability-scoped; needs product + data.)
-7. Extra retention/audit rules beyond current CC lifecycle?
-8. User-visible “we already received this”: prefer CA tool **“summarize all my context”** listing stored inputs + locations; new frontend page only if product requires it.
-9. Loop in **Milan** (and product) before locking implementation tickets?
+
+## Open points — questions and trade-offs
+
+Resolve with **product (Greta / Joaquin)** and **CC platform (Milan / Amanda)** before locking schema.
+
+
+| #   | Question                       | Option A                                                                                                 | Option B                                                                               | Lean / notes                                                                                                            |
+| --- | ------------------------------ | -------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Catalog row scope**          | Scope primarily by **city / inventory** (task-centric)                                                   | Scope by **organization** (multi-city teams, e.g. C40)                                 | Need **all three** personas long-term (user, org, city). Likely a `scope_type` + ids. Confirm with Greta + Milan.       |
+| 2   | **Who can see a catalog row?** | Same rules as today’s module access (user / org / project)                                               | New catalog-specific ACL                                                               | Prefer reuse existing CC auth; don’t rebuild permissions in CA.                                                         |
+| 3   | **Catalog table schema**       | Minimal columns first (id, kind, owning_module, scope_type + scope ids, pointer/location, created_at)    | Richer metadata up front (labels, markdown_ready, retention flags, …)                  | Table itself is decided; column set with Milan / Amanda. Start minimal if unsure.                                       |
+| 4   | **Register API shape**         | One shared **register/lookup** API in CC Core; modules call it when inputs/generated data become durable | Modules write SoT only; a side process backfills catalog rows                          | Meeting lean: same registration contract into Core at write time; not N different discovery protocols.                  |
+| 5   | **S3 retention**               | Keep source + OCR for later CNB / Clima (Joaquin’s rich-knowledge direction)                             | Ephemeral: extract inventory then delete / cleanup jobs (closer to today’s OCR intent) | Architecture must **allow** durable files; **product** decides which kinds we keep. Double-check existing cleanup jobs. |
+| 6   | **global-api datasets**        | Shortlist a few capability-scoped tools early                                                            | Defer until after catalog ships                                                        | In architecture scope; pick datasets with product + data.                                                               |
+| 7   | **GHGI Markdown for agents**   | Default off; enable per CA step via pointer                                                              | Always offer Markdown alongside inventory                                              | Proposal: default **inventory Path A only**.                                                                            |
+| 8   | **Frontend “all my data”**     | CA tool “summarize all my context” first                                                                 | Dedicated settings UI on catalog first                                                 | Prefer CA tool for v1 visibility; UI reuses same lookup later.                                                          |
+
 
 ---
+
+
 
 ## Document status
 
-| Item | Status |
-| --- | --- |
-| Mermaid: intakes → module SoTs → catalog → Clima | Updated (2026-07-24 Mirco PR notes) |
-| Ownership = upload module | Updated |
-| `NativeInputCatalog` pointer model | Updated |
-| Clima access Path A/B + request framing | Updated |
-| Downstream / existing context bundles | Updated |
-| HIAP option A + HIAP≠MEED | Updated |
-| global-api in architecture scope | Updated (dataset pick TBD) |
-| Constraints | Drafted |
-| Stakeholder review | Mirco **approved** PR with inline notes; Piotr Slack in progress |
-| Follow-up implementation tickets | Pending after doc sync + any remaining open Qs |
+
+| Item                                        | Status                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------ |
+| Goal: canonical discovery lookup            | Updated (2026-07-29)                                                           |
+| `NativeInputCatalog` in **CC Core**         | Decided in architecture check                                                  |
+| City inputs vs city generated data          | Updated — both register                                                        |
+| Write + read Mermaid (no separate S3 actor) | Updated                                                                        |
+| Path A/B + ownership + no S3 keys to Clima  | Unchanged intent                                                               |
+| Open points with trade-offs                 | Updated — Milan / Amanda / Greta                                               |
+| Stakeholder review                          | Mirco/Piotr architecture check done; **re-review after** product + Milan input |
+| Implementation tickets                      | After open points above                                                        |
+
+

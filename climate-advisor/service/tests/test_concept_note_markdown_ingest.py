@@ -10,7 +10,7 @@ from fastapi.testclient import TestClient
 from app.config import get_settings
 from app.main import get_app
 from app.models.concept_note_markdown import ConceptNoteMarkdownRequest
-from app.repositories.concept_note_markdown import (
+from app.persistence.concept_notes.markdown import (
     ConceptNoteMarkdownRepository,
     ConceptNoteMarkdownRepositoryError,
     get_concept_note_markdown_repository,

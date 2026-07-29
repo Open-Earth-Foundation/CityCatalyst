@@ -17,7 +17,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
-from app.services.concept_note_run_repository import ConceptNoteRunRepository
+from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 
 
 class ConceptNoteRunService:

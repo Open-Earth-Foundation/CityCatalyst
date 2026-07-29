@@ -27,6 +27,7 @@ export default function ProjectSearchInput({
       borderWidth="1px"
       borderStyle="solid"
       borderColor="border.neutral"
+      shadow="sm"
       startElement={
         <Icon
           as={MdSearch}
@@ -41,7 +42,7 @@ export default function ProjectSearchInput({
       <Input
         type="search"
         fontSize="body.md"
-        fontFamily="heading"
+        fontFamily="body"
         letterSpacing="wide"
         color="content.primary"
         placeholder={t("search-by-project")}

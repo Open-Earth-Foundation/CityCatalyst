@@ -142,6 +142,7 @@ function DataTableAlt<T extends Record<string, any>>({
               {searchable && (
                 <InputGroup
                   flex="1"
+                  gap="8px"
                   maxW="420px"
                   startElement={
                     <Icon as={MdSearch} color="content.tertiary" boxSize={5} />
@@ -157,6 +158,7 @@ function DataTableAlt<T extends Record<string, any>>({
                     bg="background.default"
                     fontSize="body.md"
                     h="48px"
+                    fontFamily="body"
                     w="365px"
                     _placeholder={{ color: "content.tertiary" }}
                     shadow="sm"
@@ -254,7 +256,7 @@ function DataTableAlt<T extends Record<string, any>>({
         overflow="hidden"
       >
         <Box maxH={maxHeight} overflowY="auto" w="full">
-          <Table.Root px={0} w="full" variant="line">
+          <Table.Root px={0} w="full" variant="outline">
             <Table.Header position="sticky" top={0} zIndex={1}>
               <Table.Row>
                 {columns.map((col) => (
@@ -266,7 +268,6 @@ function DataTableAlt<T extends Record<string, any>>({
                     textTransform="uppercase"
                     fontSize="body.sm"
                     color="content.secondary"
-                    bg="background.neutral"
                     letterSpacing="widest"
                     w={col.width}
                     maxW={col.width}

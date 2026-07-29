@@ -15,9 +15,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
-import {
-  AccordionItemContent,
-} from "@/components/ui/accordion";
+import { AccordionItemContent } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
 import DataTableAlt from "@/components/ui/data-table-alt";
 import {
@@ -39,6 +37,8 @@ import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUser
 import { useSession } from "next-auth/react";
 import { OrganizationSelector } from "../OrganizationSelector";
 import ProjectSearchInput from "./ProjectSearchInput";
+import { TagMapping } from "../project";
+import { TFunction } from "i18next";
 
 const TeamSettings = ({
   lng,
@@ -384,14 +384,7 @@ const TeamSettings = ({
                       </Text>
                     </Table.Cell>
                     <Table.Cell title={item.role}>
-                      <Tag
-                        size="lg"
-                        colorPalette={
-                          TagMapping[item.role as OrganizationRole].color
-                        }
-                      >
-                        {t(TagMapping[item.role as OrganizationRole].text)}
-                      </Tag>
+                      <CustomTag role={item.role} t={t} />
                     </Table.Cell>
                     <Table.Cell textAlign="right">
                       {sessionData.data?.user.email !== item.email && (
@@ -480,6 +473,34 @@ const TeamSettings = ({
         user={userToRemove}
         organization={organization}
       />
+    </Box>
+  );
+};
+
+export const SettingsTagMapping = {
+  [OrganizationRole.ORG_ADMIN]: { text: "owner" },
+  [OrganizationRole.ADMIN]: { text: "admin" },
+  [OrganizationRole.COLLABORATOR]: { color: "yellow", text: "collaborator" },
+};
+
+const CustomTag = ({ role, t }: { role: OrganizationRole; t: TFunction }) => {
+  const text = SettingsTagMapping[role].text;
+  return (
+    <Box
+      bg="background.neutral"
+      p="4px"
+      w="fit-content"
+      px="16px"
+      borderWidth="1px"
+      borderColor="content.alternative"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="30px"
+    >
+      <Text color="content.alternative" fontSize="body.md" fontWeight="medium">
+        {t(text)}
+      </Text>
     </Box>
   );
 };

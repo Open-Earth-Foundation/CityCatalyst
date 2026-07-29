@@ -155,6 +155,7 @@
   "no-data": "Keine Daten verfügbar",
   "owner": "Eigentümer",
   "collaborator": "Mitarbeiter",
+  "collaborators": "Mitarbeiter",
   "plan-details": "Plan Details",
   "plan-details-caption": "<bold>{{name}}</bold> hat derzeit <bold>{{num_projects}}</bold> Projekte und eine Anzahl von <bold>{{num_cities}} / {{total_cities}}</bold> Städten",
   "cities-in-use": "Städte in Nutzung",
@@ -240,5 +241,6 @@
   "preferences": "Einstellungen",
   "preferences-updated": "Einstellungen aktualisiert",
   "inventories": "Inventar",
-  "search-by-project": "Suche nach Projektname"
+  "search-by-project": "Suche nach Projektname",
+  "search-by-name-or-email": "Suche nach Name oder E-Mail-Adresse"
 }

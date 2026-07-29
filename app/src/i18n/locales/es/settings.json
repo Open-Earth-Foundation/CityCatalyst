@@ -155,6 +155,7 @@
   "no-data": "No hay datos disponibles",
   "owner": "Propietario",
   "collaborator": "Colaborador",
+  "collaborators": "Colaboradores",
   "plan-details": "Detalles del plan",
   "plan-details-caption": "<bold>{{name}}</bold> actualmente tiene <bold>{{num_projects}}</bold> proyectos y un recuento de <bold>{{num_cities}} / {{total_cities}}</bold> ciudades",
   "cities-in-use": "ciudades en uso",
@@ -240,5 +241,6 @@
   "preferences": "Preferencias",
   "preferences-updated": "Preferencias actualizadas",
   "inventories": "Inventarios",
-  "search-by-project": "Buscar por nombre de proyecto"
+  "search-by-project": "Buscar por nombre de proyecto",
+  "search-by-name-or-email": "Buscar por nombre o dirección de correo electrónico"
 }

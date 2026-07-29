@@ -154,6 +154,7 @@
   "position-description": "Indiquez votre titre ou profession.",
   "owner": "Propriétaire",
   "collaborator": "Collaborateur",
+  "collaborators": "Collaborateurs",
   "plan-details": "Détails du plan",
   "plan-details-caption": "<bold>{{name}}</bold> a actuellement <bold>{{num_projects}}</bold> projets et un décompte de <bold>{{num_cities}} / {{total_cities}}</bold> villes",
   "cities-in-use": "villes utilisées",
@@ -239,5 +240,6 @@
   "preferences": "Préférences",
   "preferences-updated": "Préférences mises à jour",
   "inventories": "Inventaires",
-  "search-by-project": "Recherche par nom de projet"
+  "search-by-project": "Recherche par nom de projet",
+  "search-by-name-or-email": "Rechercher par nom ou adresse e-mail"
 }

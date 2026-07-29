@@ -16,13 +16,10 @@ import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import {
-  AccordionItem,
   AccordionItemContent,
-  AccordionItemTrigger,
-  AccordionRoot,
 } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
-import DataTable from "@/components/ui/data-table";
+import DataTableAlt from "@/components/ui/data-table-alt";
 import {
   OrganizationRole,
   ProjectUserResponse,
@@ -39,7 +36,6 @@ import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
-import { Trans } from "react-i18next";
 import { useSession } from "next-auth/react";
 import { OrganizationSelector } from "../OrganizationSelector";
 import ProjectSearchInput from "./ProjectSearchInput";
@@ -131,25 +127,6 @@ const TeamSettings = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
-
-  const selectedCityData = useMemo(() => {
-    if (!projectsData || !selectedProject) return null;
-    const selectedProjectData = projectsData.find(
-      (project) => project.projectId === selectedProject[0],
-    );
-    if (!selectedProjectData) return null;
-    return selectedProjectData.cities.find(
-      (city) => city.cityId === selectedCity,
-    );
-  }, [selectedCity, selectedProject, projectsData]);
-
-  const selectedProjectData = useMemo(() => {
-    if (!projectsData) return null;
-    const selectedProjectData = projectsData.find(
-      (project) => project.projectId === selectedProject[0],
-    );
-    return selectedProjectData;
-  }, [selectedProject, projectsData]);
 
   const filteredProjectsData = useMemo(() => {
     if (!projectsData) return [];
@@ -372,108 +349,113 @@ const TeamSettings = ({
           {isLoadingProjectUsers ? (
             <ProgressLoader />
           ) : (
-            <DataTable
+            <DataTableAlt
               data={userList}
               searchable={true}
               pagination={true}
+              itemsPerPage={50}
+              searchPlaceholder={t("search-by-name-or-email")}
               filterOptions={Object.keys(TagMapping).map((item) => ({
                 value: item,
                 label: TagMapping[item as OrganizationRole].text,
               }))}
               filterProperty={"role"}
-              title={organization?.name as string}
-              subtitle={
-                <Trans
-                  i18nKey="collaborators-subheading"
-                  t={t}
-                  values={{
-                    name: selectedCityData?.name || selectedProjectData?.name,
-                  }}
-                  components={{
-                    bold: <strong />,
-                  }}
-                />
-              }
+              title={t("collaborators")}
               columns={[
-                { header: t("email"), accessor: "email" },
-                { header: t("role"), accessor: "role" },
-                { header: "", accessor: null },
+                { header: t("name"), accessor: "name", width: "30%" },
+                { header: t("email"), accessor: "email", width: "35%" },
+                { header: t("role"), accessor: "role", width: "20%" },
+                { header: "", accessor: null, width: "15%" },
               ]}
-              renderRow={(item, idx) => (
-                <Table.Row key={idx}>
-                  <Table.Cell>{item.email}</Table.Cell>
-                  <Table.Cell title={item.role}>
-                    {" "}
-                    <Tag
-                      size="lg"
-                      colorPalette={
-                        TagMapping[item.role as OrganizationRole].color
-                      }
-                    >
-                      {t(TagMapping[item.role as OrganizationRole].text)}
-                    </Tag>
-                  </Table.Cell>
+              renderRow={(item, idx) => {
+                const displayName =
+                  item.name?.trim() || item.email.split("@")[0] || "—";
 
-                  <Table.Cell>
-                    {sessionData.data?.user.email !== item.email && (
-                      <MenuRoot>
-                        <MenuTrigger asChild>
-                          <IconButton
-                            data-testid="activity-more-icon"
-                            aria-label="more-icon"
-                            variant="ghost"
-                            color="content.tertiary"
+                return (
+                  <Table.Row key={idx}>
+                    <Table.Cell maxW="0" title={displayName}>
+                      <Text truncate color="content.primary" fontSize="body.md">
+                        {displayName}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell maxW="0" title={item.email}>
+                      <Text truncate color="content.primary" fontSize="body.md">
+                        {item.email}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell title={item.role}>
+                      <Tag
+                        size="lg"
+                        colorPalette={
+                          TagMapping[item.role as OrganizationRole].color
+                        }
+                      >
+                        {t(TagMapping[item.role as OrganizationRole].text)}
+                      </Tag>
+                    </Table.Cell>
+                    <Table.Cell textAlign="right">
+                      {sessionData.data?.user.email !== item.email && (
+                        <MenuRoot>
+                          <MenuTrigger asChild>
+                            <IconButton
+                              data-testid="activity-more-icon"
+                              aria-label="more-icon"
+                              variant="ghost"
+                              color="content.tertiary"
+                              _hover={{ bg: "#E7E7ED" }}
+                              _expanded={{ bg: "#D1D1DC" }}
+                            >
+                              <Icon as={MdMoreVert} size="lg" />
+                            </IconButton>
+                          </MenuTrigger>
+                          <MenuContent
+                            w="auto"
+                            borderRadius="8px"
+                            shadow="2dp"
+                            px="0"
                           >
-                            <Icon as={MdMoreVert} size="lg" />
-                          </IconButton>
-                        </MenuTrigger>
-                        <MenuContent
-                          w="auto"
-                          borderRadius="8px"
-                          shadow="2dp"
-                          px="0"
-                        >
-                          <MenuItem
-                            value={t("remove-user")}
-                            valueText={t("remove-user")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => {
-                              setIsDeleteModalOpen(true);
-                              setUserToRemove(item);
-                            }}
-                          >
-                            <Icon
-                              color="sentiment.negativeDefault"
-                              as={RiDeleteBin6Line}
-                              h="24px"
-                              w="24px"
-                              _groupHover={{
-                                color: "white",
+                            <MenuItem
+                              value={t("remove-user")}
+                              valueText={t("remove-user")}
+                              p="16px"
+                              display="flex"
+                              alignItems="center"
+                              gap="16px"
+                              _hover={{
+                                bg: "content.link",
+                                cursor: "pointer",
                               }}
-                            />
-                            <Text
-                              color="content.primary"
-                              _groupHover={{
-                                color: "white",
+                              className="group"
+                              onClick={() => {
+                                setIsDeleteModalOpen(true);
+                                setUserToRemove(item);
                               }}
                             >
-                              {t("remove-user")}
-                            </Text>
-                          </MenuItem>
-                        </MenuContent>
-                      </MenuRoot>
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              )}
+                              <Icon
+                                color="sentiment.negativeDefault"
+                                as={RiDeleteBin6Line}
+                                h="24px"
+                                w="24px"
+                                _groupHover={{
+                                  color: "white",
+                                }}
+                              />
+                              <Text
+                                color="content.primary"
+                                _groupHover={{
+                                  color: "white",
+                                }}
+                              >
+                                {t("remove-user")}
+                              </Text>
+                            </MenuItem>
+                          </MenuContent>
+                        </MenuRoot>
+                      )}
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              }}
             />
           )}
         </Box>

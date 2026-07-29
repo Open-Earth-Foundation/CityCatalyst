@@ -36,6 +36,17 @@ export const buttonRecipe = defineRecipe({
           opacity: 0.5,
           bg: "content.link",
         },
+        _disabled: {
+          bg: "background.disabledDefault",
+          color: "content.disabled",
+          opacity: 1,
+          cursor: "not-allowed",
+          _hover: {
+            bg: "background.disabledDefault",
+            color: "content.disabled",
+            opacity: 1,
+          },
+        },
         _loading: {
           bg: "background.overlay",
           color: "content.link",

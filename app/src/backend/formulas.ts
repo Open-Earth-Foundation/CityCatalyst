@@ -209,18 +209,22 @@ export function handleDirectMeasureFormula(
     try {
       const unit = data[unitKey];
       const rawValue = data[key] ?? 0;
-      
+
       // Validate that we have a supported unit
-      if (unit && !["units-kilograms", "units-tonnes"].includes(unit)) {
+      if (
+        unit &&
+        !["units-kilograms", "units-tonnes"].includes(unit.toString())
+      ) {
         throw new createHttpError.BadRequest(
           `Unsupported unit '${unit}' for ${key}. Supported units: kg, tonnes`,
         );
       }
-      
+
       // Convert to kg (our storage standard)
-      amount = unit === "units-tonnes"
-        ? new Decimal(rawValue).mul(1000)
-        : new Decimal(rawValue);
+      amount =
+        unit === "units-tonnes"
+          ? new Decimal(rawValue).mul(1000)
+          : new Decimal(rawValue);
     } catch (error) {
       if (error instanceof createHttpError.BadRequest) {
         throw error;
@@ -271,7 +275,7 @@ export async function handleIncinerationWasteFormula(
     );
   }
 
-  const activityTitle = activityValue.metadata?.["activityTitle"];
+  const activityTitle = activityValue.metadata?.["activityTitle"] ?? "";
   const massOfIncineratedWaste = data[activityTitle] as number;
   const wastCompositionKey = formulaMapping["waste-composition"];
   const wasteComposition = data[wastCompositionKey];
@@ -549,7 +553,7 @@ export async function handleMethaneCommitmentFormula(
   const methaneCorrectionFactor =
     oxidationFactor === 0.1
       ? 1.0
-      : METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
+      : (METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6);
 
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
   const DOC_FRACTION = 0.6;
@@ -580,9 +584,10 @@ function getMassBasedActivityAmount(
 ): number {
   // For kg/kg fuels, we want MASS (kg) without density conversion
   const rawData = { ...activityValue.activityData };
-  const activityAmountKey = activityValue.metadata?.["activityTitle"];
-  const fuelAmount = rawData[activityAmountKey] || 0;
-  const fuelUnit = rawData[`${activityAmountKey}-unit`] || "units-kilograms";
+  const activityAmountKey = activityValue.metadata?.["activityTitle"] ?? "";
+  const fuelAmount = Number(rawData[activityAmountKey] || 0);
+  const fuelUnit =
+    rawData[`${activityAmountKey}-unit`].toString() || "units-kilograms";
 
   // Convert to kg if needed, but NO density conversion
   if (fuelUnit === "units-kilograms") {
@@ -610,7 +615,7 @@ function getVolumeBasedActivityAmount(
     inventoryValue.gpcReferenceNumber!,
   );
 
-  const activityAmountKey = activityValue.metadata?.["activityTitle"];
+  const activityAmountKey = activityValue.metadata?.["activityTitle"] ?? "";
   return data?.[activityAmountKey] || 0;
 }
 

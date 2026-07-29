@@ -9,12 +9,12 @@ import type {
 
 export interface ActivityValueAttributes {
   id: string;
-  activityData?: Record<string, number | string>;
+  activityData?: Record<string, number | string | string[]>;
   co2eq?: bigint;
   co2eqYears?: number;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: Record<string, number | string>;
+  metadata?: Record<string, number | string | string[]>;
   created?: Date;
   lastUpdated?: Date;
 }

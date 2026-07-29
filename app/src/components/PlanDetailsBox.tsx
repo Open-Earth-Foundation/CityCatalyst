@@ -48,28 +48,26 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
         <TitleMedium color="content.secondary" mb="16px">
           {organization.name}
         </TitleMedium>
-        <BodyLarge color="content.secondary">
-          <HStack gap="24px" flexWrap="wrap">
-            <HStack>
-              <Icon as={BiFolder} />
-              <Text>
-                {projectCount} {t("projects")}
-              </Text>
-            </HStack>
-            <HStack>
-              <Icon as={CitiesBuildingIcon} />
-              <Text>
-                {numCities} {t("cities-in-use")}
-              </Text>
-            </HStack>
-            <HStack>
-              <Icon as={CityLimitIcon} />
-              <Text>
-                {citySlotsRemaining} {t("city-slots-remaining")}
-              </Text>
-            </HStack>
+        <HStack gap="24px" flexWrap="wrap">
+          <HStack>
+            <Icon as={BiFolder} />
+            <BodyLarge color="content.secondary">
+              {projectCount} {t("projects")}
+            </BodyLarge>
           </HStack>
-        </BodyLarge>
+          <HStack>
+            <Icon as={CitiesBuildingIcon} />
+            <BodyLarge color="content.secondary">
+              {numCities} {t("cities-in-use")}
+            </BodyLarge>
+          </HStack>
+          <HStack>
+            <Icon as={CityLimitIcon} />
+            <BodyLarge color="content.secondary">
+              {citySlotsRemaining} {t("city-slots-remaining")}
+            </BodyLarge>
+          </HStack>
+        </HStack>
         <BodyLarge color="content.tertiary" mt="24px">
           {t("contact-us-to-upgrade")}{" "}
           <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}>

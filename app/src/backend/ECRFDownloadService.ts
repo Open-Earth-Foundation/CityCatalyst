@@ -374,10 +374,12 @@ export default class ECRFDownloadService {
           notation_key: inventoryValue.unavailableReason,
           input_methodology: t(inventoryValue.inputMethodology),
           activityValues: activityValues.map((activityValue) => {
-            const activityTitleKey = activityValue.metadata?.activityTitle;
+            const activityTitleKey =
+              activityValue.metadata?.activityTitle ?? "";
             const dataQuality = activityValue.metadata?.dataQuality;
             const dataSource = activityValue.activityData?.["data-source"];
-            const activityAmount = activityValue.activityData?.[activityTitleKey];
+            const activityAmount =
+              activityValue.activityData?.[activityTitleKey];
             const activityUnit = t(
               activityValue.activityData?.[`${activityTitleKey}-unit`],
             );

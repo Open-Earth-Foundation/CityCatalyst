@@ -15,11 +15,6 @@ module.exports = {
       allowNull: true,
       comment: "When the trial plan expires (trial plan only)",
     });
-
-    await queryInterface.bulkUpdate("Organization", {
-      plan_type: "full",
-      trial_ends_at: null,
-    });
   },
 
   async down(queryInterface) {

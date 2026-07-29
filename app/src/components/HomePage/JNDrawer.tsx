@@ -12,9 +12,9 @@ import {
   MdArrowDropUp,
   MdCardTravel,
   MdCheck,
+  MdInsertChart,
   MdOpenInNew,
   MdSearch,
-  MdSpaceDashboard,
 } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuLayoutGrid } from "react-icons/lu";
@@ -324,7 +324,7 @@ const ProjectFilterSection = ({
               }
               rounded="40"
               borderColor="interactive.secondary"
-              borderWidth="2px"
+              border="sm"
               h="48px"
               px={6}
               gap={2}
@@ -371,7 +371,7 @@ const ProjectFilterSection = ({
                 }}
                 rounded="40"
                 borderColor="interactive.secondary"
-                borderWidth="2px"
+                border="sm"
                 h="48px"
                 px={6}
                 gap={2}
@@ -396,7 +396,7 @@ const ProjectFilterSection = ({
               disabled={!selectedCity}
               rounded="40"
               borderColor="interactive.secondary"
-              borderWidth="2px"
+              border="sm"
               h="48px"
               px={6}
               gap={2}
@@ -404,7 +404,7 @@ const ProjectFilterSection = ({
               _hover={{ bg: "background.neutral" }}
             >
               <Icon
-                as={MdSpaceDashboard}
+                as={MdInsertChart}
                 color="interactive.secondary"
                 boxSize={5}
               />
@@ -695,7 +695,13 @@ const JNDrawer = ({
                 currentCityId={currentCityId}
                 organizationId={resolvedOrganizationId}
               />
-              <Box w="full" border="1px solid" borderColor="border.neutral" flexShrink={0} />
+              <Box
+                w="auto"
+                mx="-6"
+                borderBottom="1px solid"
+                borderColor="border.neutral"
+                flexShrink={0}
+              />
               {/* Dynamic Module Accordions - based on HomePage logic */}
               {modulesByStage && projectModules && selectedProject && (
                 <Box display="flex" flexDirection="column" flexShrink={0}>
@@ -745,8 +751,9 @@ const JNDrawer = ({
           )}
 
           <Box
-            w="full"
-            border="1px solid"
+            w="auto"
+            mx="-6"
+            borderBottom="1px solid"
             borderColor="border.neutral"
             flexShrink={0}
           />
@@ -773,12 +780,19 @@ const JNDrawer = ({
               display="flex"
               alignItems="center"
               gap="8px"
-              color="content.link"
+              color="content.tertiary"
             >
-              <Text fontSize="body.lg" color="content.link" fontWeight="bold">
+              <Text
+                fontFamily="body"
+                fontSize="body.lg"
+                fontWeight="regular"
+                lineHeight="24"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
                 {t("learning-hub")}
               </Text>
-              <Icon as={MdOpenInNew} boxSize={4} color="content.link" />
+              <Icon as={MdOpenInNew} boxSize="18px" color="content.link" />
             </Link>
           </Box>
         </DrawerBody>

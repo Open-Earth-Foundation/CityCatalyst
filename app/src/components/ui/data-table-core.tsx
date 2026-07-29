@@ -87,6 +87,7 @@ function DataTableCore<T>({
                 fontSize="body.sm"
                 color="content.secondary"
                 bg="background.neutral"
+                letterSpacing="widest"
                 key={String(col.accessor ?? col.header)}
               >
                 {col.header}

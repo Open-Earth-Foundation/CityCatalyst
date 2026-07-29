@@ -21,6 +21,7 @@ import type {
 } from "@/models/EmissionsFactor";
 import type { ActivityValue } from "@/models/ActivityValue";
 import type Decimal from "decimal.js";
+import { OrganizationPlanType } from "@/util/enums";
 import type {
   FailedSourceResult,
   RemovedSourceResult,
@@ -48,8 +49,6 @@ export interface CountryEmissionsResponse {
   inventoryYear: number;
 }
 
-interface RequiredInventoryAttributes extends Required<InventoryAttributes> {}
-
 export type FullInventoryValue = InventoryValue & {
   activityValues: (ActivityValue & {
     gasValues: (GasValue & { emissionsFactor?: EmissionsFactor })[];
@@ -70,7 +69,7 @@ export type InventoryDownloadResponse = InventoryAttributes & {
   };
 };
 
-export type InventoryResponse = RequiredInventoryAttributes & {
+export type InventoryResponse = InventoryAttributes & {
   city: CityAttributes & {
     populationYear: number;
     population: number;
@@ -432,6 +431,8 @@ export type OrganizationResponse = {
   last_updated: string;
   name: string;
   organizationId: string;
+  planType: OrganizationPlanType;
+  trialEndsAt?: string | null;
   themeId?: string;
   theme?: {
     themeId: string;
@@ -488,11 +489,7 @@ export type CityResponse = {
   region?: string;
   regionLocode?: string;
   locode: string;
-  inventories: {
-    inventoryId: string;
-    year: number;
-    lastUpdated: string;
-  }[];
+  inventories: InventoryResponse[];
 };
 
 export type ProjectWithCities = {
@@ -500,7 +497,7 @@ export type ProjectWithCities = {
   name: string;
   organizationId: string;
   description?: string;
-  cityCountLimit?: Number;
+  cityCountLimit?: number;
   cities: CityResponse[];
 };
 

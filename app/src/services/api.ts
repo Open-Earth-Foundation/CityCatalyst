@@ -10,6 +10,7 @@ import {
   ActionPlan,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
+import { OrganizationPlanType } from "@/util/enums";
 import {
   AcceptInviteRequest,
   AcceptInviteResponse,
@@ -707,7 +708,7 @@ export const api = createApi({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse }) => {
+        transformResponse: (response: { data: UserFileResponse[] }) => {
           return response.data;
         },
 
@@ -1034,7 +1035,11 @@ export const api = createApi({
         transformResponse: (response: any) => response.data,
       }),
       createOrganization: builder.mutation({
-        query: (data: { name: string; contactEmail: string }) => ({
+        query: (data: {
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+        }) => ({
           url: `/organizations`,
           method: "POST",
           body: { ...data },
@@ -1045,12 +1050,22 @@ export const api = createApi({
         invalidatesTags: ["Organizations"],
       }),
       updateOrganization: builder.mutation({
-        query: (data: { id: string; name: string; contactEmail: string }) => ({
+        query: (data: {
+          id: string;
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+          trialEndsAt?: string | null;
+        }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
           body: {
             name: data.name,
             contactEmail: data.contactEmail,
+            ...(data.planType !== undefined ? { planType: data.planType } : {}),
+            ...(data.trialEndsAt !== undefined
+              ? { trialEndsAt: data.trialEndsAt }
+              : {}),
           },
         }),
         transformResponse: (response: OrganizationResponse) => {

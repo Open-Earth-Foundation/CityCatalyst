@@ -24,8 +24,9 @@ import {
   MdArrowDropDown,
   MdArrowDropUp,
   MdAspectRatio,
+  MdCardTravel,
+  MdCheck,
   MdLogout,
-  MdOpenInNew,
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
@@ -47,7 +48,7 @@ import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getCityHomePath, getDashboardPath } from "@/util/routes";
+import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { getParamValue } from "@/util/helpers";
 
@@ -76,7 +77,8 @@ export function NavigationBar({
   const params = useParams();
   const activeLng = getParamValue(params.lng) ?? lng;
   const { t } = useTranslation(activeLng, "navigation");
-  const { organization, clearOrganization } = useOrganizationContext();
+  const { organization, setOrganization, clearOrganization } =
+    useOrganizationContext();
   const logoUrl = organization?.logoUrl;
   const isFrozen = organization != null && !organization.active;
   // Use custom hook to extract route params - more reliable for route changes
@@ -95,6 +97,10 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
+  const { data: organizations } = api.useGetUserOrganizationsQuery(undefined, {
+    skip: isPublic || status !== "authenticated",
+  });
+  const [getProjects] = api.useLazyGetProjectsQuery();
   const router = useRouter();
 
   const onChangeLanguage = async (language: string) => {
@@ -127,10 +133,6 @@ export function NavigationBar({
   );
 
   // Memoize paths to recompute when pathname or IDs change
-  const dashboardPath = useMemo(
-    () => getDashboardPath(lng, currentCityId ?? ""),
-    [lng, currentCityId],
-  );
   const homePath = useMemo(
     () => getCityHomePath(lng, currentCityId ?? ""),
     [lng, currentCityId],
@@ -139,10 +141,29 @@ export function NavigationBar({
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 
   const [userMenuHighlight, setUserMenuHighlight] = useState<string | null>();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const currentOrganizationName = organizations?.find(
+    (org) => org.organizationId === organization?.organizationId,
+  )?.name;
+
+  async function onChangeOrganization(organizationId: string) {
+    if (organizationId === organization?.organizationId) return;
+    setOrganization({ organizationId });
+    const projects = await getProjects({ organizationId })
+      .unwrap()
+      .catch(() => []);
+    const cityId = projects
+      .flatMap((project) => project.cities)
+      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
+    router.push(
+      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
+    );
+  }
 
   function logOut() {
     setTheme("blue_theme");
@@ -226,32 +247,6 @@ export function NavigationBar({
 
         {/* Menu Items */}
         <Box display="flex" gap="48px" alignItems="center">
-          {showNav && !isPublic && (
-            <>
-              {" "}
-              <Link href={dashboardPath} variant={"nav" as "plain"}>
-                <Heading size="md" ml={6}>
-                  {t("dashboard")}
-                </Heading>
-              </Link>
-              <Link
-                variant={"nav" as "plain"}
-                rel="help noopener"
-                target="_blank"
-                href="https://citycatalyst.openearth.org/learning-hub"
-              >
-                <Heading size="md" whiteSpace="nowrap">
-                  {t("learning-hub")}
-                </Heading>
-                <Icon as={MdOpenInNew} boxSize={4} />
-              </Link>
-              <Separator
-                orientation="vertical"
-                height="6"
-                backgroundColor="background.overlay"
-              />
-            </>
-          )}
           {children}
           <Box display="flex">
             <Box display="flex">
@@ -320,6 +315,88 @@ export function NavigationBar({
                 </MenuContent>
               </MenuRoot>
             </Box>
+            {organizations && organizations.length > 1 && (
+              <Box display="flex">
+                <MenuRoot
+                  onOpenChange={(details) => {
+                    setOrgMenuOpen(details.open);
+                  }}
+                  open={isOrgMenuOpen}
+                  variant="solid"
+                >
+                  <MenuTrigger asChild>
+                    <Button
+                      color="base.light"
+                      minW="160px"
+                      minH="48px"
+                      variant="ghost"
+                      textTransform="none"
+                      whiteSpace="nowrap"
+                    >
+                      <Box display="flex" alignItems="center" gap="3">
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          boxSize="32px"
+                          borderRadius="full"
+                          bg="interactive.connected"
+                          color="base.light"
+                        >
+                          <Icon as={MdCardTravel} boxSize={4} />
+                        </Box>
+                        <Text
+                          maxW="140px"
+                          overflow="hidden"
+                          textOverflow="ellipsis"
+                          whiteSpace="nowrap"
+                          fontSize="title.md"
+                          fontWeight="bold"
+                        >
+                          {currentOrganizationName}
+                        </Text>
+                        <Icon
+                          as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                          boxSize={6}
+                        />
+                      </Box>
+                    </Button>
+                  </MenuTrigger>
+                  <MenuContent minW="220px" zIndex={2000}>
+                    {organizations.map((org) => (
+                      <MenuItem
+                        value={org.organizationId}
+                        onClick={() => onChangeOrganization(org.organizationId)}
+                        key={org.organizationId}
+                      >
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          w="full"
+                        >
+                          <Text
+                            fontSize="title.md"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
+                          >
+                            {org.name}
+                          </Text>
+                          {org.organizationId === organization?.organizationId && (
+                            <Icon
+                              as={MdCheck}
+                              boxSize={5}
+                              color="interactive.secondary"
+                            />
+                          )}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </MenuContent>
+                </MenuRoot>
+              </Box>
+            )}
             <Box>
               {!isPublic && status === "authenticated" && session.user && (
                 <MenuRoot
@@ -338,7 +415,7 @@ export function NavigationBar({
                     textTransform="none"
                     ml={8}
                   >
-                    <Button variant="ghost" p={2} minW="220px" minH="48px">
+                    <Button variant="ghost" p="s" minW="220px" minH="48px">
                       <Box display="flex" alignItems="center" gap="4">
                         <Avatar
                           height="32px"

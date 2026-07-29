@@ -19,6 +19,7 @@ const FooterLink: FC<FooterLinkProps> = ({ title, url }) => {
       lineHeight="20"
       letterSpacing="wide"
       color="base.light"
+      whiteSpace="nowrap"
     >
       {title}
     </Link>

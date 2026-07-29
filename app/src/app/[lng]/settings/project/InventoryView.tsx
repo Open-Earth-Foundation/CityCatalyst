@@ -25,7 +25,7 @@ import {
 import { Trans } from "react-i18next/TransWithoutContext";
 import { TFunction } from "i18next";
 import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
-import { CityResponse } from "@/util/types";
+import { CityResponse, UserFileResponse } from "@/util/types";
 import { BsDownload } from "react-icons/bs";
 import { formatEmissions } from "@/util/helpers";
 import { MdArrowOutward, MdGroup, MdOutlineAspectRatio } from "react-icons/md";
@@ -33,7 +33,6 @@ import FilesTable from "@/components/Files/fileTable";
 
 interface InventoryViewProps {
   inventoryId: string;
-  cityLocode: string;
   inventoryYear: number;
   cityId: string;
   t: TFunction;
@@ -43,7 +42,6 @@ interface InventoryViewProps {
 
 const InventoryView = ({
   inventoryId,
-  cityLocode,
   inventoryYear,
   cityId,
   t,
@@ -52,11 +50,6 @@ const InventoryView = ({
 }: InventoryViewProps) => {
   const { data: inventory, isLoading: isInventoryLoading } =
     api.useGetInventoryQuery((inventoryId as string) || "default");
-
-  const { data: cityData, isLoading: isCityDataLoading } =
-    useGetOCCityDataQuery(cityLocode, {
-      skip: !cityLocode,
-    });
 
   const { data: population, isLoading: isPopulationLoading } =
     useGetCityPopulationQuery(
@@ -99,27 +92,18 @@ const InventoryView = ({
     skip: !cityId,
   });
 
-  function getYearFromDate(dateString: string) {
-    return new Date(dateString).getFullYear();
-  }
-
   function filterDataByYear(
-    data: any,
+    data: UserFileResponse[] | undefined,
     selectedYear: number | null | undefined,
   ) {
-    return data?.filter((item: any) => {
-      return getYearFromDate(item?.lastUpdated) === selectedYear;
+    return data?.filter((item) => {
+      return new Date(item?.lastUpdated).getFullYear() === selectedYear;
     });
   }
 
   const filteredData = filterDataByYear(userFiles, inventoryYear);
 
-  if (
-    isInventoryLoading ||
-    isCityDataLoading ||
-    isPopulationLoading ||
-    isInventoryProgressLoading
-  )
+  if (isInventoryLoading || isPopulationLoading || isInventoryProgressLoading)
     return <ProgressLoader />;
 
   return (
@@ -163,21 +147,19 @@ const InventoryView = ({
           city={city}
           inventory={inventory}
         >
-          <HStack>
-            <IconButton
-              data-testid="download-inventory-icon"
-              aria-label="download-inventory"
-              color="interactive.secondary"
-              variant="ghost"
-            >
-              <HStack gap={2} px={2}>
-                <Icon as={BsDownload} size="lg" />
-                <Text color="interactive.secondary">
-                  {t("download-inventory")}
-                </Text>
-              </HStack>
-            </IconButton>
-          </HStack>
+          <IconButton
+            data-testid="download-inventory-icon"
+            aria-label="download-inventory"
+            color="interactive.secondary"
+            variant="ghost"
+          >
+            <HStack gap={2} px={2}>
+              <Icon as={BsDownload} size="lg" />
+              <Text color="interactive.secondary">
+                {t("download-inventory")}
+              </Text>
+            </HStack>
+          </IconButton>
         </DownloadButton>
       </HStack>
       <HStack gap={6} w="full" mt={6} mb={6}>
@@ -269,8 +251,7 @@ const InventoryView = ({
                 fill="background.overlay"
               />
               <Box display="flex" gap={1}>
-                {inventory?.city.area === null ||
-                inventory?.city.area! === 0 ? (
+                {inventory?.city.area === null || inventory?.city.area === 0 ? (
                   <Text
                     fontFamily="heading"
                     color="border.neutral"
@@ -289,7 +270,7 @@ const InventoryView = ({
                     lineHeight="32"
                   >
                     {formatNumber(
-                      Math.round(inventory?.city.area!),
+                      Math.round(inventory?.city.area ?? 0),
                       userInfo?.numberFormat,
                     )}
                     {/* eslint-disable-next-line i18next/no-literal-string */}

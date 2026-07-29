@@ -6,7 +6,7 @@ import { City } from "@/models/City";
 export interface ProjectAttributes {
   projectId: string;
   name: string;
-  cityCountLimit: Number;
+  cityCountLimit: number;
   description?: string;
   organizationId: string;
   created?: Date;
@@ -29,7 +29,7 @@ export class Project
   implements Partial<ProjectAttributes>
 {
   declare organizationId: string;
-  declare cityCountLimit: Number;
+  declare cityCountLimit: number;
   declare projectId: string;
   declare name: string;
   declare description?: string;

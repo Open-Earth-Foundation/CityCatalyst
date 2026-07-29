@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { Box, Button, HStack } from "@chakra-ui/react";
+import { Box, Button } from "@chakra-ui/react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "@/components/form-input";
 import EmailInput from "@/components/email-input";
@@ -7,9 +7,8 @@ import { useSetCurrentUserDataMutation } from "@/services/api";
 import { TFunction } from "i18next";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
-import { MdInfoOutline } from "react-icons/md";
-import { BodyMedium } from "@/components/package/Texts/Body";
-import { UpdateUserPayload, UserInfoResponse } from "@/util/types";
+import { Roles, UpdateUserPayload, UserInfoResponse } from "@/util/types";
+import { ProfessionSelect } from "./ProfessionSelect";
 
 interface AccountDetailsFormProps {
   t: TFunction;
@@ -39,18 +38,20 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
   const {
     handleSubmit,
     register,
-    setValue,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<ProfileInputs>();
   const [setCurrentUserData] = useSetCurrentUserDataMutation();
 
   useEffect(() => {
     if (userInfo) {
-      setValue("name", userInfo.name);
-      setValue("email", userInfo.email);
-      setValue("title", userInfo.title);
+      reset({
+        name: userInfo.name,
+        email: userInfo.email,
+        title: userInfo.title ?? "",
+      });
     }
-  }, [setValue, userInfo]);
+  }, [reset, userInfo]);
 
   const onSubmit: SubmitHandler<ProfileInputs> = async (data) => {
     const payload: UpdateUserPayload = {
@@ -61,7 +62,14 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
     if (data.title) {
       payload.title = data.title;
     }
-    await setCurrentUserData(payload).then(() => showSuccessToast());
+    await setCurrentUserData(payload).then(() => {
+      showSuccessToast();
+      reset({
+        name: data.name,
+        email: data.email,
+        title: data.title ?? "",
+      });
+    });
   };
 
   return (
@@ -100,35 +108,25 @@ const AccountDetailsTab: FC<AccountDetailsFormProps> = ({
             id="email"
           />
           {showTitle && (
-            <>
-              <FormInput
-                label={t("position")}
-                register={register}
-                error={errors.title}
-                id="title"
-                required={false}
-              />
-              <HStack>
-                <BodyMedium color={"content.link"}>
-                  <MdInfoOutline />
-                </BodyMedium>
-                <BodyMedium>{t("position-description")}</BodyMedium>
-              </HStack>
-            </>
+            <ProfessionSelect
+              t={t}
+              register={register}
+              error={errors.title}
+              defaultValue={userInfo.title}
+              showOefAdminOption={userInfo.role === Roles.Admin}
+            />
           )}
           <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
             <Button
               type="submit"
               loading={isSubmitting}
-              h="48px"
+              disabled={!isDirty}
+              py="28px"
               w="auto"
-              paddingTop="16px"
-              paddingBottom="16px"
               px="24px"
               letterSpacing="widest"
               textTransform="uppercase"
               fontWeight="semibold"
-              fontSize="button.md"
             >
               {t("save-changes")}
             </Button>

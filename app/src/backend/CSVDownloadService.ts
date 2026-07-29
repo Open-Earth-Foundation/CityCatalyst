@@ -174,8 +174,9 @@ export default class CSVDownloadService {
       const finalActivityValues: CSVActivityEntry[] = activityValues.map(
         (activityValue) => {
           const activityTitleKey = activityValue.metadata?.activityTitle;
-          const data_quality = activityValue.metadata?.dataQuality;
-          const dataSource = activityValue.activityData?.["data-source"];
+          const data_quality = activityValue.metadata?.dataQuality.toString();
+          const dataSource =
+            activityValue.activityData?.["data-source"].toString();
 
           const activity_type = t(
             (activityValue?.activityData?.[activityTypeKey] ?? "").toString(),
@@ -185,9 +186,10 @@ export default class CSVDownloadService {
             activityValue?.activityData?.[activityTypeKey],
             "tried translatin",
           );
-          const activity_amount =
-            activityValue.activityData?.[activityTitleKey ?? ""] ??
-            activityValue.activityData?.["activity-value"];
+          const activity_amount = Number(
+            activityValue.activityData?.[activityTitleKey?.toString() ?? ""] ??
+              activityValue.activityData?.["activity-value"],
+          );
           const activity_unit = t(
             (
               activityValue.activityData?.[`${activityTitleKey}-unit`] ??

@@ -39,12 +39,12 @@ export class ActivityValue
   implements Partial<ActivityValueAttributes>
 {
   declare id: string;
-  declare activityData?: Record<string, number | string>;
+  declare activityData?: Record<string, number | string | string[]>;
   declare co2eq?: bigint;
   declare co2eqYears?: number;
   declare inventoryValueId?: string;
   declare datasourceId?: string;
-  declare metadata?: Record<string, number | string>;
+  declare metadata?: Record<string, number | string | string[]>;
   declare created?: Date;
   declare lastUpdated?: Date;
 

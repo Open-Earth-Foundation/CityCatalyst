@@ -375,7 +375,7 @@ export default class ECRFDownloadService {
           input_methodology: t(inventoryValue.inputMethodology),
           activityValues: activityValues.map((activityValue) => {
             const activityTitleKey =
-              activityValue.metadata?.activityTitle ?? "";
+              activityValue.metadata?.activityTitle.toString() ?? "";
             const dataQuality = activityValue.metadata?.dataQuality;
             const dataSource = activityValue.activityData?.["data-source"];
             const activityAmount =

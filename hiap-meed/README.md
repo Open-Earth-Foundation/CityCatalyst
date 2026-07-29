@@ -43,7 +43,7 @@ MLFLOW_TRACKING_USERNAME=<service-user>
 MLFLOW_TRACKING_PASSWORD=<service-password>
 MLFLOW_EXPERIMENT_NAME=hiap-meed
 MLFLOW_ENVIRONMENT=dev
-MLFLOW_HTTP_REQUEST_TIMEOUT=3
+MLFLOW_HTTP_REQUEST_TIMEOUT=10
 MLFLOW_HTTP_REQUEST_MAX_RETRIES=1
 MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR=1
 MLFLOW_HTTP_REQUEST_BACKOFF_JITTER=0
@@ -82,7 +82,7 @@ Variables:
 - `MLFLOW_TRACKING_PASSWORD`: service-account password; keep the real value only in local `.env` or GitHub Secrets
 - `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
 - `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
-- `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. Keep this low, for example `3`, so bad or unreachable tracking URLs fail fast instead of blocking startup or the first traced request for minutes.
+- `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. The default `10` accommodates short write bursts while keeping unavailable tracking calls bounded.
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES`: number of extra MLflow HTTP retry attempts after the initial failure. Keep this low, for example `1`, so unreachable tracking URLs do not delay startup or requests for several minutes.
 - `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR`: MLflow retry backoff multiplier. A value like `1` keeps the delay between retry attempts short and predictable.
 - `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER`: extra random delay added between MLflow retry attempts. Set this to `0` when you want deterministic fail-fast behavior during local testing.

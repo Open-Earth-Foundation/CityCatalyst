@@ -49,7 +49,7 @@ spec:
             - name: MLFLOW_ENVIRONMENT
               value: "test"
             - name: MLFLOW_HTTP_REQUEST_TIMEOUT
-              value: "3"
+              value: "10"
             - name: MLFLOW_HTTP_REQUEST_MAX_RETRIES
               value: "1"
             - name: MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR

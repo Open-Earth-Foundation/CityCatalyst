@@ -22,6 +22,7 @@ import { db } from "@/models";
 import { Roles, UserRole } from "@/util/types";
 import { WhereOptions } from "sequelize";
 import { randomUUID } from "node:crypto";
+import { setupTests } from "../helpers";
 
 const mockBuildStationaryEnergyContext = jest.fn<() => Promise<unknown>>();
 const mockCommitAcceptedStationaryEnergyRows =
@@ -218,14 +219,17 @@ async function expectJsonStatus(
 }
 
 describe("internal CA service auth contract", () => {
-  const originalDbInitialized = db.initialized;
   const originalFeatureFlags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
   const originalServiceKey = process.env.CC_SERVICE_API_KEY;
   const originalVerificationSecret = process.env.VERIFICATION_TOKEN_SECRET;
   const originalHost = process.env.HOST;
 
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+  });
+
   beforeEach(() => {
-    db.initialized = true;
     process.env.CC_SERVICE_API_KEY = "ci-shared-service-key";
     process.env.HOST = "http://localhost:3000";
     process.env.NEXT_PUBLIC_FEATURE_FLAGS =
@@ -291,8 +295,8 @@ describe("internal CA service auth contract", () => {
     mockCommitStationaryEnergyNotationKeys.mockReset();
   });
 
-  afterAll(() => {
-    db.initialized = originalDbInitialized;
+  afterAll(async () => {
+    if (db.sequelize) await db.sequelize.close();
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;
     process.env.VERIFICATION_TOKEN_SECRET = originalVerificationSecret;

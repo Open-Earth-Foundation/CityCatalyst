@@ -16,6 +16,7 @@ import { POST as startDraft } from "@/app/api/v1/stationary-energy-drafts/start/
 import { Auth, type AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import { Roles } from "@/util/types";
+import { setupTests } from "../helpers";
 
 const TEST_USER_ID = "beb9634a-b68c-4c1b-a20b-2ab0ced5e3c2";
 const TEST_CITY_ID = "11111111-1111-4111-8111-111111111111";
@@ -56,10 +57,12 @@ describe("Stationary Energy draft routes", () => {
   const originalCaBaseUrl = process.env.CA_BASE_URL;
   const originalServiceKey = process.env.CC_SERVICE_API_KEY;
   const originalHost = process.env.HOST;
-  const originalDbInitialized = db.initialized;
   let sessionSpy: ReturnType<typeof jest.spyOn>;
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    setupTests();
+    await db.initialize();
+
     const expires = new Date();
     expires.setDate(expires.getDate() + 1);
 
@@ -81,7 +84,6 @@ describe("Stationary Energy draft routes", () => {
     process.env.CA_BASE_URL = "http://ca.example";
     process.env.CC_SERVICE_API_KEY = "cc-service-key";
     process.env.HOST = "http://cc.example";
-    db.initialized = true;
     global.fetch = jest.fn() as unknown as typeof fetch;
   });
 
@@ -90,8 +92,8 @@ describe("Stationary Energy draft routes", () => {
     jest.clearAllMocks();
   });
 
-  afterAll(() => {
-    db.initialized = originalDbInitialized;
+  afterAll(async () => {
+    if (db.sequelize) await db.sequelize.close();
     process.env.NEXT_PUBLIC_FEATURE_FLAGS = originalFeatureFlags;
     process.env.CA_BASE_URL = originalCaBaseUrl;
     process.env.CC_SERVICE_API_KEY = originalServiceKey;

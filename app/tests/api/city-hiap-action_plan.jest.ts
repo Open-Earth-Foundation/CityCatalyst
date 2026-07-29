@@ -184,7 +184,11 @@ describe("City HIAP Prioritization API", () => {
       const req = mockRequest(url);
 
       const res = await getActionPlans(req, {
-        params: Promise.resolve({ city: testData.cityId }),
+        params: Promise.resolve({
+          city: testData.cityId,
+          language: "en",
+          actionId: rankedAction.actionId,
+        }),
       });
 
       await expectStatusCode(res, 200);

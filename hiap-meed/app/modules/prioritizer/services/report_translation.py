@@ -8,6 +8,8 @@ import re
 from collections import Counter
 from pathlib import Path
 
+from openai import APIConnectionError, APIStatusError
+
 from app.modules.prioritizer.llm_config import (
     get_output_plan_model,
     get_output_plan_temperature,
@@ -32,6 +34,10 @@ MAX_TRANSLATION_ATTEMPTS = 2
 
 class ReportTranslationValidationError(ValueError):
     """Raised when LLM translation output fails validation after its retry."""
+
+
+class ReportTranslationProviderError(RuntimeError):
+    """Raised when the translation provider fails transiently after SDK retries."""
 
 
 def translate_output_plan(
@@ -77,15 +83,26 @@ def translate_output_plan(
     parsed: ReportTranslationBatch | None = None
     translated_chapters: dict[str, list[ReportChapterDraft]] | None = None
     for attempt in range(1, MAX_TRANSLATION_ATTEMPTS + 1):
-        completion = client.chat.completions.create(
-            model=model_name,
-            temperature=get_output_plan_temperature(),
-            response_format=_translation_response_format(),
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt},
-            ],
-        )
+        try:
+            completion = client.chat.completions.create(
+                model=model_name,
+                temperature=get_output_plan_temperature(),
+                response_format=_translation_response_format(),
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+        except APIConnectionError as error:
+            raise ReportTranslationProviderError(
+                "Report translation provider is temporarily unavailable"
+            ) from error
+        except APIStatusError as error:
+            if error.status_code not in {408, 409, 429} and error.status_code < 500:
+                raise
+            raise ReportTranslationProviderError(
+                "Report translation provider is temporarily unavailable"
+            ) from error
         content = completion.choices[0].message.content
         try:
             if not content:
@@ -168,7 +185,7 @@ def _build_translation_payload(
 def _protect_urls(
     canonical_chapters: list[ReportChapterDraft],
 ) -> tuple[list[ReportChapterDraft], dict[str, dict[str, str]]]:
-    """Replace canonical URLs with stable placeholders for the translation call."""
+    """Protect URLs in canonical Markdown and limitations with stable placeholders."""
     placeholders_by_chapter: dict[str, dict[str, str]] = {}
     protected_chapters: list[ReportChapterDraft] = []
     for chapter in canonical_chapters:
@@ -181,8 +198,17 @@ def _protect_urls(
             return placeholder
 
         protected_markdown = URL_PATTERN.sub(replace_url, chapter.markdown)
+        protected_limitations = [
+            URL_PATTERN.sub(replace_url, limitation)
+            for limitation in chapter.limitations
+        ]
         protected_chapters.append(
-            chapter.model_copy(update={"markdown": protected_markdown})
+            chapter.model_copy(
+                update={
+                    "markdown": protected_markdown,
+                    "limitations": protected_limitations,
+                }
+            )
         )
         placeholders_by_chapter[chapter.key] = placeholders
     return protected_chapters, placeholders_by_chapter
@@ -191,16 +217,22 @@ def _protect_urls(
 def _restore_urls(
     *,
     translated_markdown: str,
+    translated_limitations: list[str],
     placeholders: dict[str, str],
     chapter_key: str,
-) -> str:
-    """Restore canonical URLs only when every placeholder is preserved exactly once."""
-    found_placeholders = URL_PLACEHOLDER_PATTERN.findall(translated_markdown)
+) -> tuple[str, list[str]]:
+    """Restore URLs after validating placeholders across one translated chapter."""
+    translated_fields = [translated_markdown, *translated_limitations]
+    found_placeholders = [
+        placeholder
+        for field in translated_fields
+        for placeholder in URL_PLACEHOLDER_PATTERN.findall(field)
+    ]
     unexpected_placeholders = sorted(set(found_placeholders) - set(placeholders))
     invalid_urls = [
         url
         for placeholder, url in placeholders.items()
-        if translated_markdown.count(placeholder) != 1
+        if sum(field.count(placeholder) for field in translated_fields) != 1
     ]
     if invalid_urls or unexpected_placeholders:
         details: list[str] = []
@@ -212,9 +244,15 @@ def _restore_urls(
             f"Translated chapter `{chapter_key}` did not preserve URL placeholders; "
             + "; ".join(details)
         )
-    for placeholder, url in placeholders.items():
-        translated_markdown = translated_markdown.replace(placeholder, url)
-    return translated_markdown
+    def restore_field_urls(field: str) -> str:
+        """Restore every canonical URL placeholder in one translated field."""
+        for placeholder, url in placeholders.items():
+            field = field.replace(placeholder, url)
+        return field
+
+    return restore_field_urls(translated_markdown), [
+        restore_field_urls(limitation) for limitation in translated_limitations
+    ]
 
 
 def _build_prompt(translation_payload: dict[str, object]) -> str:
@@ -247,7 +285,7 @@ def _build_retry_prompt(prompt: str) -> str:
         f"{prompt}\n\n"
         "Correction: return every requested language and chapter exactly once, "
         "preserve canonical chapter order, every [[URL_<CHAPTER>_<N>]] placeholder "
-        "exactly once, "
+        "exactly once in its corresponding Markdown or limitation field, "
         "limitations, facts, and Markdown, "
         "and write all descriptive prose in each declared target language."
     )
@@ -286,15 +324,16 @@ def _build_translated_drafts(
             translated_rows,
             strict=True,
         ):
-            translated_markdown = _restore_urls(
+            translated_markdown, translated_limitations = _restore_urls(
                 translated_markdown=translated.markdown,
+                translated_limitations=translated.limitations,
                 placeholders=url_placeholders_by_chapter[canonical.key],
                 chapter_key=canonical.key,
             )
             _validate_translated_content(
                 canonical=canonical,
                 translated_markdown=translated_markdown,
-                translated_limitations=translated.limitations,
+                translated_limitations=translated_limitations,
                 language=language,
             )
             drafts.append(
@@ -303,7 +342,7 @@ def _build_translated_drafts(
                     title=target_input.title,
                     markdown=translated_markdown,
                     source_refs=canonical.source_refs,
-                    limitations=translated.limitations,
+                    limitations=translated_limitations,
                 )
             )
         translated_by_language[language] = drafts
@@ -329,8 +368,12 @@ def _validate_translated_content(
         language,
         content_label=f"Translated chapter `{canonical.key}`",
     )
-    canonical_urls = URL_PATTERN.findall(canonical.markdown)
-    translated_urls = URL_PATTERN.findall(translated_markdown)
+    canonical_urls = URL_PATTERN.findall(
+        "\n".join([canonical.markdown, *canonical.limitations])
+    )
+    translated_urls = URL_PATTERN.findall(
+        "\n".join([translated_markdown, *translated_limitations])
+    )
     if translated_urls != canonical_urls:
         canonical_counts = Counter(canonical_urls)
         translated_counts = Counter(translated_urls)

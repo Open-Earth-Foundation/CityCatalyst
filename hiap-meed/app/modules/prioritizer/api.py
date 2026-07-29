@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
-from collections.abc import Iterator
+from collections.abc import AsyncIterator
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -47,6 +47,7 @@ from app.modules.prioritizer.services.report_generation import (
     generate_output_plan_chapters,
 )
 from app.modules.prioritizer.services.report_translation import (
+    ReportTranslationProviderError,
     ReportTranslationValidationError,
     translate_output_plan,
 )
@@ -90,12 +91,13 @@ from app.utils.mlflow_logging import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["prioritization"])
+REPORT_TRANSLATION_RETRY_AFTER_SECONDS = 5
 
 
-def get_output_plan_generation_slot() -> Iterator[None]:
-    """Hold one per-pod report slot for the lifetime of an output-plan request."""
+async def get_output_plan_generation_slot() -> AsyncIterator[None]:
+    """Asynchronously hold one per-pod slot for an output-plan request."""
     try:
-        with reserve_report_generation_slot():
+        async with reserve_report_generation_slot():
             yield
     except ReportGenerationCapacityError as error:
         raise HTTPException(
@@ -595,7 +597,7 @@ def prioritize(
         404: {"description": "The selected city or action was not found in required source data."},
         422: {"description": "The request, selected action, or prioritization snapshot is invalid."},
         502: {
-            "description": "A required upstream source failed, or LLM translation output failed validation after its retry. The latter response includes `retryable: true` and `Retry-After: 1`."
+            "description": "A required upstream source or report translation failed. Exhausted translation validation returns `error_code=report_translation_validation_failed` and `retryable=false`. Transient translation-provider failures return `error_code=report_translation_provider_unavailable`, `retryable=true`, and `Retry-After: 5`."
         },
         429: {"description": "The per-pod report generation queue is full or its wait timeout elapsed; retry later."},
         500: {"description": "Internal server error while generating the output plan."},
@@ -840,9 +842,33 @@ def generate_output_plan(
                 status_code=502,
                 detail={
                     **_error_payload(request_trace_id, str(error)),
+                    "error_code": "report_translation_validation_failed",
+                    "retryable": False,
+                },
+            ) from error
+        except ReportTranslationProviderError as error:
+            logger.warning(
+                "City action report translation provider unavailable request_id=%s error=%s",
+                request_trace_id,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="translation_provider_error",
+                error_message=str(error),
+                status_code=502,
+            )
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    **_error_payload(request_trace_id, str(error)),
+                    "error_code": "report_translation_provider_unavailable",
                     "retryable": True,
                 },
-                headers={"Retry-After": "1"},
+                headers={
+                    "Retry-After": str(REPORT_TRANSLATION_RETRY_AFTER_SECONDS)
+                },
             ) from error
         except ValueError as error:
             logger.warning(

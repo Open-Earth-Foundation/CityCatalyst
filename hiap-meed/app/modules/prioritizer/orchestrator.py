@@ -1222,19 +1222,40 @@ def run_prioritization(
                     "reason": "no_target_languages",
                 }
                 if target_languages:
-                    translations_by_action_id, explanation_warnings, translation_llm_io = (
-                        translate_explanations(
-                            canonical_explanations_by_action_id=(
-                                explanations_by_language["en"]
-                            ),
+                    try:
+                        (
+                            translations_by_action_id,
+                            explanation_warnings,
+                            translation_llm_io,
+                        ) = translate_explanations(
+                            canonical_explanations_by_action_id=explanations_by_language[
+                                "en"
+                            ],
                             target_languages=target_languages,
                         )
-                    )
-                    for action_id, translations in translations_by_action_id.items():
-                        for language, explanation in translations.items():
-                            explanations_by_language.setdefault(language, {})[
-                                action_id
-                            ] = explanation
+                    except Exception as translation_error:
+                        # Preserve canonical English when only localization fails.
+                        logger.warning(
+                            "Explanation translation failed; returning canonical English internal_request_id=%s locode=%s target_languages=%s error=%s",
+                            internal_request_id,
+                            locode,
+                            target_languages,
+                            translation_error,
+                        )
+                        explanation_warnings = [
+                            "Requested explanation translations could not be generated; canonical English explanations were returned."
+                        ]
+                        translation_llm_io = {
+                            "status": "failed",
+                            "target_languages": target_languages,
+                            "error": str(translation_error),
+                        }
+                    else:
+                        for action_id, translations in translations_by_action_id.items():
+                            for language, explanation in translations.items():
+                                explanations_by_language.setdefault(language, {})[
+                                    action_id
+                                ] = explanation
                 llm_io_payload = {
                     "languages": {
                         "en": canonical_llm_io.get("languages", {}).get("en", {})

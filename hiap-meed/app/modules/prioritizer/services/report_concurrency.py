@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
-from collections.abc import Iterator
-from contextlib import contextmanager
-from threading import BoundedSemaphore
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 DEFAULT_MAX_CONCURRENT_REPORTS = 3
 DEFAULT_QUEUE_TIMEOUT_SECONDS = 120.0
@@ -21,22 +21,27 @@ MAX_CONCURRENT_REPORTS = int(
 QUEUE_TIMEOUT_SECONDS = float(
     os.getenv("OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS", str(DEFAULT_QUEUE_TIMEOUT_SECONDS))
 )
-_REPORT_SLOTS = BoundedSemaphore(MAX_CONCURRENT_REPORTS)
+_REPORT_SLOTS = asyncio.BoundedSemaphore(MAX_CONCURRENT_REPORTS)
 
 
-@contextmanager
-def reserve_report_generation_slot() -> Iterator[None]:
+@asynccontextmanager
+async def reserve_report_generation_slot() -> AsyncIterator[None]:
     """
     Reserve one per-pod report slot or fail after the configured queue timeout.
 
-    Waiting callers hold no chapter workers or report-specific LLM resources.
+    Waiting callers suspend without holding FastAPI thread-pool workers, chapter
+    workers, or report-specific LLM resources.
     The slot is always released when report generation finishes or raises.
     """
-    acquired = _REPORT_SLOTS.acquire(timeout=QUEUE_TIMEOUT_SECONDS)
-    if not acquired:
+    try:
+        await asyncio.wait_for(
+            _REPORT_SLOTS.acquire(),
+            timeout=QUEUE_TIMEOUT_SECONDS,
+        )
+    except TimeoutError as error:
         raise ReportGenerationCapacityError(
             "Report generation is currently busy; retry shortly"
-        )
+        ) from error
     try:
         yield
     finally:

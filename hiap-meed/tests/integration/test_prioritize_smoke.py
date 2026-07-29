@@ -1993,11 +1993,16 @@ def test_prioritize_reports_only_successfully_generated_languages(
         assert response.status_code == 200
         result = response.json()["results"][0]
         assert mock_explanation_service.seen_action_ids == ["A_1"]
-        assert result["ranked_actions"][0]["explanations"] == {}
+        assert result["ranked_actions"][0]["explanations"] == {
+            "en": "English explanation"
+        }
         assert result["metadata"]["explanations"]["requested_languages"] == ["en", "es"]
         assert result["metadata"]["explanations"]["canonical_language"] == "en"
         assert result["metadata"]["explanations"]["generated"] == 0
-        assert result["metadata"]["explanations"]["generated_languages"] == []
+        assert result["metadata"]["explanations"]["generated_languages"] == ["en"]
+        assert result["metadata"]["explanations"]["translation_warnings"] == [
+            "Requested explanation translations could not be generated; canonical English explanations were returned."
+        ]
     finally:
         app.dependency_overrides.clear()
 

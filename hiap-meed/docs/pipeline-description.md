@@ -153,7 +153,7 @@ What these are used for:
   - `long`
   - `no_preference`
 - `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
-- `requestData.requestedLanguages` controls the requested non-English display languages for post-ranking output. The backend always prepends canonical English, generates explanations in English once, then translates that completed batch into the requested non-English languages.
+- `requestData.requestedLanguages` controls the requested non-English display languages for post-ranking output. The backend always prepends canonical English, generates explanations in English once, then translates that completed batch into the requested non-English languages. Invalid translation output is retried once; if translation still fails, the canonical English explanations remain in the response with a warning.
 - The backend generates each requested language independently from the same curated evidence and deterministic terminology in `app/modules/prioritizer/translations.yaml`.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 - `activityType` rows are preserved for future activity-data-level matching and diagnostics, but they do not currently change ranking output.

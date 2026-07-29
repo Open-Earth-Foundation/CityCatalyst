@@ -130,12 +130,12 @@ describe("City HIAP Prioritization API", () => {
     });
 
     it("returns 400 when cityId param is missing", async () => {
-      const req = mockRequest(undefined, {
-        language: "en",
-        actionId: "test-action-id",
-      });
+      const req = mockRequest();
       const res = await getActionPlans(req, {
-        params: Promise.resolve({ city: testData.cityId }),
+        params: Promise.resolve({
+          language: "en",
+          actionId: "test-action-id",
+        }),
       });
 
       await expectStatusCode(res, 400);

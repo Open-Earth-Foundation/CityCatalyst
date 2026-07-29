@@ -179,7 +179,7 @@ const TeamSettings = ({
           mt="auto"
         >
           <Icon as={MdOutlinePersonAddAlt} h={6} w={6} />
-          {t("invite-collaborator")}
+          {t("invite-team-member")}
         </Button>
       </Box>
       {projectsData?.length === 0 && (

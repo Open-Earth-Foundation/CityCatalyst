@@ -116,7 +116,7 @@
   "team": "Équipe",
   "teams": "Équipes",
   "teams-description": "Ici, vous pouvez voir qui fait partie de votre équipe.",
-  "invite-collaborator": "Inviter un Collaborateur",
+  "invite-team-member": "Inviter un membre de l'équipe",
   "no-cities": "Aucune ville",
   "collaborators-subheading": "<bold>Collaborateurs</bold> sur {{name}}",
   "projects": "Projets",

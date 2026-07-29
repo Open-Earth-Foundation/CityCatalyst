@@ -7,7 +7,7 @@ COPY package*.json ./
 FROM base AS full-build
 RUN npm install
 COPY . .
-RUN npm run build
+RUN npm run build && npm run openapi:build
 EXPOSE 3000
 CMD ["npm", "start"]
 

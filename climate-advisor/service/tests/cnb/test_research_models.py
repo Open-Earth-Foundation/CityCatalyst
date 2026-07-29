@@ -6,7 +6,7 @@ from openai.lib._pydantic import to_strict_json_schema
 from pydantic import ValidationError
 import pytest
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FunderTemplateResearchResult,
     FundingOpportunityResearchRequest,
@@ -14,7 +14,7 @@ from app.models.cnb_research import (
     FundingRecordResearchResult,
     ResearchConflictResult,
 )
-from tests.cnb_research_helpers import build_request, build_result
+from tests.cnb.helpers import build_request, build_result
 
 
 def _nested_keys(value: object) -> Iterator[str]:

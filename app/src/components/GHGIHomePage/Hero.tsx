@@ -138,10 +138,11 @@ export function Hero({
                   fontSize="body.md"
                   color="base.light"
                   lineHeight="20px"
-                  _hover={{ textDecoration: "underline" }}
+                  textDecoration="underline"
                   textUnderlineOffset="8px"
+                  _hover={{ opacity: 0.7 }}
                 >
-                  {t("citycatalyst")}
+                  {t("breadcrumb-tools")}
                 </Text>
               </Link>
             </BreadcrumbLink>

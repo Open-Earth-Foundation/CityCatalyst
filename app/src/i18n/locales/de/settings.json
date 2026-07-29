@@ -238,5 +238,7 @@
   "preferences-info-update-title": "Sie konnen jetzt Ihre Einstellungen konfigurieren",
   "preferences-info-update-description": "Im Bereich Einstellungen finden Sie jetzt die Sprachauswahl und Zahlenformate.",
   "preferences": "Einstellungen",
-  "preferences-updated": "Einstellungen aktualisiert"
+  "preferences-updated": "Einstellungen aktualisiert",
+  "inventories": "Inventar",
+  "search-by-project": "Suche nach Projektname"
 }

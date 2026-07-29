@@ -1,6 +1,6 @@
 """Shared object builders for Concept Note Builder research tests."""
 
-from app.models.cnb_research import (
+from app.models.cnb.research import (
     FieldEvidence,
     FunderProfileResearchResult,
     FunderResearchResult,
@@ -8,7 +8,6 @@ from app.models.cnb_research import (
     FundingOpportunityResearchResult,
     FundingRecordResearchResult,
 )
-
 
 def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
     """Create a valid no-template request for tests."""

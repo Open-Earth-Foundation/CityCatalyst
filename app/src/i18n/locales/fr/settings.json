@@ -237,5 +237,7 @@
   "preferences-info-update-title": "Vous pouvez maintenant configurer vos préférences",
   "preferences-info-update-description": "Dans la section des préférences, vous trouverez désormais la sélection de la langue et les formats numériques.",
   "preferences": "Préférences",
-  "preferences-updated": "Préférences mises à jour"
+  "preferences-updated": "Préférences mises à jour",
+  "inventories": "Inventaires",
+  "search-by-project": "Recherche par nom de projet"
 }

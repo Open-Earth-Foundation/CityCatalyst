@@ -126,7 +126,7 @@
   "position-description": "Indique su título o profesión.",
   "team": "Equipo",
   "teams": "Equipos",
-  "teams-description": "Aquí puedes invitar o asignar roles a tus colaboradores",
+  "teams-description": "Aquí puedes ver quién forma parte de tu equipo.",
   "invite-collaborator": "Invitar Colaborador",
   "no-cities": "Sin ciudades",
   "collaborators-subheading": "<bold>Colaboradores</bold> en {{name}}",

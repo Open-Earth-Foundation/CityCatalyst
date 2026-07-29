@@ -109,7 +109,7 @@
   "error-message": "An Error occurred",
   "team": "Team",
   "teams": "Teams",
-  "teams-description": "Here you can invite or assign roles to your collaborators",
+  "teams-description": "Here you can see who is part of your team.",
   "invite-collaborator": "Invite Collaborator",
   "no-cities": "No cities",
   "collaborators-subheading": "<bold>Collaborators</bold> on {{name}}",

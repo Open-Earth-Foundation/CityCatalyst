@@ -1,7 +1,6 @@
 import { Box, Tabs } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 
-import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
 import ProgressLoader from "@/components/ProgressLoader";
 import TabContent from "@/components/ui/tab-content";
@@ -11,6 +10,8 @@ import AccountDetailsTab from "./AccountDetailsTab";
 import ManagePasswordTab from "./ManagePasswordTab";
 import PreferencesTab from "./PreferencesTab";
 import BrandSettingsTab from "./BrandSettingsTab";
+import { UserRole } from "@/util/types";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
   const { data: userAccessStatus } = api.useGetUserAccessStatusQuery({});
@@ -20,6 +21,9 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
       skip: !userAccessStatus?.organizationId,
     },
   );
+  const { userRole } = useUserPermissions({
+    organizationId: organization?.organizationId,
+  });
 
   const { data: userInfo, isLoading: isUserInfoLoading } =
     api.useGetUserInfoQuery();
@@ -35,13 +39,17 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
     >
       <Tabs.List display="flex" flexDirection="column" gap="12px">
         <TabTrigger value="account-details">{t("account-details")}</TabTrigger>
-        <TabTrigger value="brand-settings">{t("brand-settings")}</TabTrigger>
+        {userRole === UserRole.ORG_ADMIN && (
+          <TabTrigger value="brand-settings">{t("brand-settings")}</TabTrigger>
+        )}
         <TabTrigger value="manage-password">{t("password")}</TabTrigger>
         <TabTrigger value="preferences">{t("preferences")}</TabTrigger>
       </Tabs.List>
-      <TabContent value="brand-settings" p={0}>
-        <BrandSettingsTab t={t} />
-      </TabContent>
+      {userRole === UserRole.ORG_ADMIN && (
+        <TabContent value="brand-settings" p={0}>
+          <BrandSettingsTab t={t} />
+        </TabContent>
+      )}
       <TabContent value="account-details" p={0}>
         {isUserInfoLoading ? (
           <ProgressLoader />

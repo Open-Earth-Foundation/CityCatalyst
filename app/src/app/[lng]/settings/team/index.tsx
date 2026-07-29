@@ -10,7 +10,7 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert } from "react-icons/md";
+import { MdAdd, MdMoreVert, MdOutlinePersonAddAlt } from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -42,6 +42,7 @@ import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUser
 import { Trans } from "react-i18next";
 import { useSession } from "next-auth/react";
 import { OrganizationSelector } from "../OrganizationSelector";
+import ProjectSearchInput from "./ProjectSearchInput";
 
 const TeamSettings = ({
   lng,
@@ -77,6 +78,7 @@ const TeamSettings = ({
   const [selectedCity, setSelectedCity] = React.useState<string | null>(
     initialCityId ?? "",
   );
+  const [projectSearchTerm, setProjectSearchTerm] = useState("");
   const sessionData = useSession();
 
   const { data: organization, isLoading: isOrganizationLoading } =
@@ -149,6 +151,16 @@ const TeamSettings = ({
     return selectedProjectData;
   }, [selectedProject, projectsData]);
 
+  const filteredProjectsData = useMemo(() => {
+    if (!projectsData) return [];
+    const query = projectSearchTerm.trim().toLowerCase();
+    if (!query) return projectsData;
+
+    return projectsData.filter((project) =>
+      project.name.toLowerCase().includes(query),
+    );
+  }, [projectsData, projectSearchTerm]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<ProjectUserResponse | null>(
@@ -160,6 +172,11 @@ const TeamSettings = ({
 
   return (
     <Box>
+      <OrganizationSelector
+        value={selectedOrganization}
+        onValueChange={setSelectedOrganization}
+        t={t}
+      />
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Heading
@@ -184,7 +201,7 @@ const TeamSettings = ({
           h="48px"
           mt="auto"
         >
-          <Icon as={MdAdd} h={8} w={8} />
+          <Icon as={MdOutlinePersonAddAlt} h={6} w={6} />
           {t("invite-collaborator")}
         </Button>
       </Box>
@@ -198,38 +215,57 @@ const TeamSettings = ({
           {t("no-data")}
         </Text>
       )}
-      <Box
-        display="flex"
-        gap={9}
-        mt={12}
-        alignItems="flex-start"
-        justifyContent="space-between"
-      >
-        <Box w="250px" overflowY="hidden">
+      <Box display="flex" gap="48px" mt={12} alignItems="flex-start">
+        <Box
+          w="271px"
+          overflowY="hidden"
+          display="flex"
+          flexDirection="column"
+          gap="24px"
+          px="16px"
+        >
           <Text
             fontSize="title.md"
-            mb={3}
             fontWeight="semibold"
             color="content.secondary"
           >
             {t("projects")}
           </Text>
-          <AccordionRoot
+          <ProjectSearchInput
+            value={projectSearchTerm}
+            onChange={setProjectSearchTerm}
+            t={t}
+          />
+          <Accordion.Root
             variant="plain"
             value={selectedProject}
             onValueChange={(val) => {
               setSelectedProject(val.value);
               setSelectedCity(null);
             }}
+            borderWidth="1px"
+            borderColor="border.overlay"
+            p="12px"
+            w="full"
+            h="full"
           >
-            {projectsData?.map((item) => (
-              <AccordionItem key={item.projectId} value={item.projectId}>
-                <AccordionItemTrigger
+            {filteredProjectsData.length === 0 && (
+              <Text
+                fontSize="body.md"
+                fontWeight="medium"
+                color="content.tertiary"
+                p={4}
+              >
+                {t("no-data")}
+              </Text>
+            )}
+            {filteredProjectsData.map((item) => (
+              <Accordion.Item key={item.projectId} value={item.projectId}>
+                <Accordion.ItemTrigger
                   onClick={() => {
                     setSelectedCity(null);
                   }}
                   w="full"
-                  hideIndicator
                   padding="0px"
                   asChild
                 >
@@ -259,6 +295,7 @@ const TeamSettings = ({
                     <Accordion.ItemIndicator
                       color="currentColor"
                       rotate={{ base: "-90deg", _open: "-180deg" }}
+                      mr="24px"
                     >
                       <Icon
                         as={LuChevronDown}
@@ -267,7 +304,7 @@ const TeamSettings = ({
                       />
                     </Accordion.ItemIndicator>
                   </Button>
-                </AccordionItemTrigger>
+                </Accordion.ItemTrigger>
                 <AccordionItemContent padding="0px" pb={4}>
                   {item.cities.length === 0 && (
                     <Text
@@ -299,18 +336,19 @@ const TeamSettings = ({
                           <Tabs.Trigger
                             key={city.cityId}
                             value={city.cityId}
-                            fontFamily="heading"
+                            fontFamily="body"
                             justifyContent={"left"}
                             letterSpacing={"wide"}
                             color="content.secondary"
                             lineHeight="20px"
                             fontStyle="normal"
-                            fontSize="label.lg"
+                            fontSize="body.md"
+                            fontWeight="medium"
                             minH="52px"
                             w="full"
                             _selected={{
                               color: "content.link",
-                              fontSize: "label.lg",
+                              fontSize: "body.md",
                               fontWeight: "medium",
                               backgroundColor: "background.neutral",
                               borderRadius: "8px",
@@ -326,11 +364,11 @@ const TeamSettings = ({
                     </Tabs.Root>
                   )}
                 </AccordionItemContent>
-              </AccordionItem>
+              </Accordion.Item>
             ))}
-          </AccordionRoot>
+          </Accordion.Root>
         </Box>
-        <Box w="full">
+        <Box w="723px">
           {isLoadingProjectUsers ? (
             <ProgressLoader />
           ) : (

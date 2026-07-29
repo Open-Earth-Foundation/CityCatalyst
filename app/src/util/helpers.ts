@@ -13,21 +13,22 @@ export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
   lng?: string,
 ): string | undefined => {
-  if (!!translations) {
-    if (translations instanceof String) {
-      return translations as string;
-    }
-    if (
-      typeof translations === "object" &&
-      !!Object.keys(translations).length
-    ) {
-      return (
-        (lng && translations[lng]) ||
-        translations["user"] ||
-        translations["en"] ||
-        Object.values(translations).find((t) => !!t)
-      );
-    }
+  if (!translations) {
+    return undefined;
+  }
+  if (typeof translations === "string") {
+    return translations;
+  }
+  if (
+    typeof translations === "object" &&
+    !!Object.keys(translations).length
+  ) {
+    return (
+      (lng && translations[lng]) ||
+      translations["user"] ||
+      translations["en"] ||
+      Object.values(translations).find((t) => !!t)
+    );
   }
 };
 

@@ -3,14 +3,6 @@ import { logger } from "@/services/logger";
 import { ProjectWithCities } from "@/util/types";
 import uniqBy from "lodash/uniqBy";
 
-interface ProjectInfo {
-  projectId: string;
-  name: string;
-  organizationId: string;
-  description?: string | null;
-  cityCountLimit?: number;
-}
-
 export class ProjectService {
   public static async fetchUserProjects(
     userId: string,

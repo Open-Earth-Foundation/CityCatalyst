@@ -330,6 +330,7 @@ export function HiapTab({
       await updateHiapSelection({
         inventoryId: inventory.inventoryId,
         selectedActionIds: allSelectedIds,
+        actionType: type,
       }).unwrap();
 
       setRowSelection(newRowSelection);
@@ -427,6 +428,7 @@ export function HiapTab({
       await updateHiapSelection({
         inventoryId: inventory.inventoryId,
         selectedActionIds: allSelectedIds,
+        actionType: type,
       }).unwrap();
 
       setUnrankedRowSelection(newUnrankedRowSelection);
@@ -919,6 +921,7 @@ export function HiapTab({
       await updateHiapSelection({
         inventoryId: inventory.inventoryId,
         selectedActionIds: [],
+        actionType: type,
       }).unwrap();
 
       setRowSelection({});

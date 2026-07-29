@@ -180,6 +180,8 @@ jobs:
             CC_BASE_URL=https://citycatalyst.openearth.dev \
             CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC \
             MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME}" \
+            MLFLOW_TRACKING_USERNAME=${{secrets.MLFLOW_TRACKING_USERNAME}} \
+            MLFLOW_TRACKING_PASSWORD=${{secrets.MLFLOW_TRACKING_PASSWORD}} \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default

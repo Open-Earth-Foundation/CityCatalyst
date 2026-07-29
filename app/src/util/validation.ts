@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum, OrganizationPlanType } from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
@@ -274,6 +274,7 @@ export const createOrganizationRequest = z.object({
       message: "Organization name cannot be 'cc_organization_default'",
     }),
   contactEmail: z.string().email().max(255),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
 });
 
 export type CreateOrganizationRequest = z.infer<
@@ -283,6 +284,8 @@ export type CreateOrganizationRequest = z.infer<
 export const updateOrganizationRequest = z.object({
   name: z.string().max(255).optional(),
   contactEmail: z.string().email().max(255).optional(),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
+  trialEndsAt: z.coerce.date().nullable().optional(),
 });
 
 export type UpdateOrganizationRequest = z.infer<

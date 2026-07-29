@@ -11,6 +11,7 @@ import {
   type ActionPlanAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
+import { OrganizationPlanType } from "@/util/enums";
 import {
   AcceptInviteRequest,
   AcceptInviteResponse,
@@ -721,7 +722,7 @@ export const api = createApi({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse }) => {
+        transformResponse: (response: { data: UserFileResponse[] }) => {
           return response.data;
         },
 
@@ -1052,7 +1053,11 @@ export const api = createApi({
         transformResponse: (response: any) => response.data,
       }),
       createOrganization: builder.mutation({
-        query: (data: { name: string; contactEmail: string }) => ({
+        query: (data: {
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+        }) => ({
           url: `/organizations`,
           method: "POST",
           body: { ...data },
@@ -1063,12 +1068,22 @@ export const api = createApi({
         invalidatesTags: ["Organizations"],
       }),
       updateOrganization: builder.mutation({
-        query: (data: { id: string; name: string; contactEmail: string }) => ({
+        query: (data: {
+          id: string;
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+          trialEndsAt?: string | null;
+        }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
           body: {
             name: data.name,
             contactEmail: data.contactEmail,
+            ...(data.planType !== undefined ? { planType: data.planType } : {}),
+            ...(data.trialEndsAt !== undefined
+              ? { trialEndsAt: data.trialEndsAt }
+              : {}),
           },
         }),
         transformResponse: (response: OrganizationResponse) => {
@@ -1447,10 +1462,14 @@ export const api = createApi({
       }),
       updateHiapSelection: builder.mutation<
         { success: boolean; updated: number },
-        { inventoryId: string; selectedActionIds: string[] }
+        {
+          inventoryId: string;
+          selectedActionIds: string[];
+          actionType: ACTION_TYPES;
+        }
       >({
-        query: ({ inventoryId, selectedActionIds }) => ({
-          url: `inventory/${inventoryId}/hiap`,
+        query: ({ inventoryId, selectedActionIds, actionType }) => ({
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}`,
           method: "PATCH",
           body: { selectedActionIds },
         }),

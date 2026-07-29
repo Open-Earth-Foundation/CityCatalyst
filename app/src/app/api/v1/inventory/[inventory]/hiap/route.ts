@@ -106,18 +106,18 @@
 import { apiHandler } from "@/util/api";
 import { LANGUAGES } from "@/util/types";
 import { ACTION_TYPES } from "@/util/types";
-import { fetchRanking } from "@/backend/hiap/HiapService";
+import {
+  fetchRanking,
+  updateHiapActionSelections,
+} from "@/backend/hiap/HiapService";
 import { NextRequest, NextResponse } from "next/server";
 import UserService from "@/backend/UserService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import { z } from "zod";
 import GlobalAPIService from "@/backend/GlobalAPIService";
-import VersionHistoryService from "@/backend/VersionHistoryService";
-import { Op } from "sequelize";
-
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+import createHttpError from "http-errors";
+import { getTranslationFromDictionary } from "@/util/helpers";
 
 export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
   if (!session) {
@@ -164,12 +164,11 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
       ),
     );
 
-    // Get unranked action selections from database
+    // Get unranked action selections from database (any language — selections are shared)
     const unrankedSelections = await db.models.UnrankedActionSelection.findAll({
       where: {
         inventoryId: params.inventory,
         actionType: type,
-        lang: lng,
         isSelected: true,
       },
     });
@@ -189,9 +188,15 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
         const baseAction = {
           id: action.ActionID,
           actionId: action.ActionID,
-          name: action.ActionName,
+          name:
+            getTranslationFromDictionary(action.ActionName, lng) ??
+            action.ActionName ??
+            "",
           rank: ((rankingData as any).rankedActions || []).length + index + 1,
-          description: action.Description || "",
+          description:
+            getTranslationFromDictionary(action.Description, lng) ??
+            action.Description ??
+            "",
           explanation: action.Explanation || {},
           isSelected: selectedUnrankedActionIds.has(action.ActionID),
           hiaRankingId: "", // Not applicable for unranked
@@ -227,7 +232,12 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
             equityAndInclusionConsiderations:
-              action.EquityAndInclusionConsiderations || "",
+              getTranslationFromDictionary(
+                action.EquityAndInclusionConsiderations,
+                lng,
+              ) ??
+              action.EquityAndInclusionConsiderations ??
+              "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",
@@ -250,7 +260,12 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             qualitativeEffectivenessEvidence: "",
             quantitativeEffectivenessEvidence: "",
             equityAndInclusionConsiderations:
-              action.EquityAndInclusionConsiderations || "",
+              getTranslationFromDictionary(
+                action.EquityAndInclusionConsiderations,
+                lng,
+              ) ??
+              action.EquityAndInclusionConsiderations ??
+              "",
             vulnerabilityAnalysisEvidence: "",
             riskReductionEvidence: "",
             socioEconomicImpacts: "",
@@ -296,8 +311,12 @@ const updateSelectionRequest = z.object({
  *       - inventory
  *       - hiap
  *     operationId: patchInventoryHiap
- *     summary: Update selection status of ranked actions.
- *     description: Updates the isSelected field for ranked actions. All actions not in the selectedActionIds array will be set to false.
+ *     summary: Update selection status of ranked and unranked actions.
+ *     description: >
+ *       Updates isSelected for the given action type. Ranked selections are
+ *       applied by stable actionId across all language rows. Unranked
+ *       selections are written for every supported language. Actions not in
+ *       selectedActionIds are cleared for this inventory + actionType.
  *     parameters:
  *       - in: path
  *         name: inventory
@@ -305,6 +324,12 @@ const updateSelectionRequest = z.object({
  *         schema:
  *           type: string
  *           format: uuid
+ *       - in: query
+ *         name: actionType
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [mitigation, adaptation]
  *     requestBody:
  *       required: true
  *       content:
@@ -317,7 +342,7 @@ const updateSelectionRequest = z.object({
  *                 type: array
  *                 items:
  *                   type: string
- *                   format: uuid
+ *                   description: Ranked row UUID or unranked Global API action ID
  *     responses:
  *       200:
  *         description: Selection updated successfully.
@@ -344,117 +369,31 @@ export const PATCH = apiHandler(
     );
     const authorId = session.user.id;
     const inventoryId = params.inventory;
+    const actionType = req.nextUrl.searchParams.get(
+      "actionType",
+    ) as ACTION_TYPES | null;
+
+    if (
+      !actionType ||
+      !Object.values(ACTION_TYPES).includes(actionType)
+    ) {
+      throw new createHttpError.BadRequest(
+        "Missing or invalid required query parameter: actionType",
+      );
+    }
 
     try {
-      // Get all ranked actions for this inventory
-      const rankings = await db.models.HighImpactActionRanking.findAll({
-        where: { inventoryId: params.inventory },
+      const updatedCount = await updateHiapActionSelections({
+        inventoryId,
+        actionType,
+        selectedIds: body.selectedActionIds,
+        authorId,
       });
-
-      const rankingIds = rankings.map((r) => r.id);
-
-      // Separate ranked action IDs (UUIDs) from unranked action IDs (regular strings)
-      const rankedActionIds: string[] = [];
-      const unrankedActionIds: string[] = [];
-
-      for (const actionId of body.selectedActionIds) {
-        // Check if it's a UUID (ranked action database record ID)
-        const isUuid = UUID_REGEX.test(actionId);
-
-        if (isUuid) {
-          rankedActionIds.push(actionId);
-        } else {
-          unrankedActionIds.push(actionId);
-        }
-      }
-
-      let updatedCount = 0;
-
-      // Handle ranked actions (existing logic)
-      if (rankings.length > 0) {
-        // First, set all ranked actions to not selected
-        const [_affectedCount, changedDeselectedEntries] =
-          await db.models.HighImpactActionRanked.update(
-            { isSelected: false },
-            {
-              where: {
-                id: { [Op.not]: rankedActionIds },
-                hiaRankingId: rankingIds,
-              },
-              returning: true,
-            },
-          );
-        await VersionHistoryService.bulkCreateVersions(
-          inventoryId,
-          "HighImpactActionRanked",
-          authorId,
-          changedDeselectedEntries,
-          false,
-          undefined,
-          "hiap",
-        );
-
-        // Then, set selected ranked actions to true
-        if (rankedActionIds.length > 0) {
-          const [affectedCount, changedEntries] =
-            await db.models.HighImpactActionRanked.update(
-              { isSelected: true },
-              {
-                where: {
-                  id: rankedActionIds,
-                  hiaRankingId: rankingIds,
-                },
-                returning: true,
-              },
-            );
-          updatedCount += affectedCount;
-
-          await VersionHistoryService.bulkCreateVersions(
-            inventoryId,
-            "HighImpactActionRanked",
-            authorId,
-            changedEntries,
-            false,
-            undefined,
-            "hiap",
-          );
-        }
-      }
-
-      // Handle unranked actions
-      // First, clear all existing unranked selections for this inventory
-      await db.models.UnrankedActionSelection.destroy({
-        where: {
-          inventoryId: params.inventory,
-        },
-      });
-
-      // Then, create new selections for selected unranked actions
-      if (unrankedActionIds.length > 0) {
-        // We need to determine the action type and language for unranked actions
-        // For now, we'll create records for all supported languages and types
-        // In a real implementation, you might want to be more specific
-        const searchParams = req.nextUrl.searchParams;
-        const type = searchParams.get("actionType") || "mitigation";
-        const lng = searchParams.get("lng") || "en";
-
-        const unrankedSelections = unrankedActionIds.map((actionId) => ({
-          inventoryId: params.inventory,
-          actionId,
-          actionType: type,
-          lang: lng,
-          isSelected: true,
-        }));
-
-        await db.models.UnrankedActionSelection.bulkCreate(unrankedSelections);
-        updatedCount += unrankedActionIds.length;
-      }
 
       logger.info(
         {
-          inventoryId: params.inventory,
-          rankedActionIds,
-          unrankedActionIds,
+          inventoryId,
+          actionType,
           totalSelected: body.selectedActionIds.length,
           updatedCount,
         },

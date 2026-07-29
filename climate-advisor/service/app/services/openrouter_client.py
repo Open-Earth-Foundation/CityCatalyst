@@ -14,7 +14,7 @@ DEFAULT_OPENROUTER_TITLE = "CityCatalyst Climate Advisor"
 
 @dataclass(frozen=True)
 class OpenRouterClientOptions:
-    """Resolved AsyncOpenAI constructor kwargs and normalized base URL."""
+    """Resolved OpenAI SDK constructor kwargs and normalized OpenRouter URL."""
 
     base_url: str
     kwargs: dict[str, Any]
@@ -27,7 +27,7 @@ def build_openrouter_client_options(
     error_cls: type[Exception] = ValueError,
     default_retries: int = 2,
 ) -> OpenRouterClientOptions:
-    """Resolve shared OpenRouter AsyncOpenAI settings from Climate Advisor config."""
+    """Resolve shared OpenRouter client settings from Climate Advisor config."""
 
     api_key = getattr(settings, "openrouter_api_key", None)
     if not api_key:

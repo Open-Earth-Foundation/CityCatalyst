@@ -1,16 +1,7 @@
 "use client";
 import { useTranslation } from "@/i18n/client";
 import { CityYearData, InventoryResponse, SectorEmission } from "@/util/types";
-import {
-  Box,
-  Card,
-  Center,
-  Heading,
-  HStack,
-  Icon,
-  Tabs,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Card, Heading, HStack, Icon, Tabs, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { MdOpenInNew } from "react-icons/md";
 import { useRouter } from "next/navigation";
@@ -21,13 +12,7 @@ import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
 import { isEmptyObject, toKebabCase } from "@/util/helpers";
-import React, {
-  ChangeEvent,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   api,
   useGetCityYearsQuery,
@@ -314,7 +299,8 @@ export function EmissionPerSectors({
     });
 
   const { data: cityYears, isLoading } = useGetCityYearsQuery(
-    inventory?.cityId,
+    inventory?.cityId!,
+    { skip: !inventory?.cityId },
   );
 
   const loadingState = isLoading || isLoadingYearlgyGhg;

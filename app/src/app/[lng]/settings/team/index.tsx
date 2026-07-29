@@ -160,11 +160,6 @@ const TeamSettings = ({
 
   return (
     <Box>
-      <OrganizationSelector
-        value={selectedOrganization}
-        onValueChange={setSelectedOrganization}
-        t={t}
-      />
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Heading

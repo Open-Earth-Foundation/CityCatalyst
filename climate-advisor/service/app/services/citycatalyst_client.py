@@ -605,6 +605,19 @@ class CityCatalystClient:
             token=token,
         )
 
+    async def load_hiap_context(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Load persisted HIAP context through the read-only CC capability route."""
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/hiap/inventory/context",
+            json_data=request_payload,
+            token=token,
+        )
+
     async def commit_stationary_energy_accepted(
         self,
         *,

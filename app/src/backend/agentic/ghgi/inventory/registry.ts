@@ -46,6 +46,7 @@ export const inventoryCapabilityInputSchema = z.object({
 });
 
 export const inventoryListAccessibleInputSchema = z.object({
+  city_id: z.string().uuid().optional(),
   city_query: z.preprocess(
     (value) => (value === null ? undefined : value),
     z.string().trim().min(1).optional(),

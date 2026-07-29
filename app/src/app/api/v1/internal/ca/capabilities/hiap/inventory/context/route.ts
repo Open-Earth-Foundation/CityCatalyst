@@ -1,12 +1,12 @@
 /**
  * @swagger
- * /api/v1/internal/ca/capabilities/ghgi/inventory/status-overview:
+ * /api/v1/internal/ca/capabilities/hiap/inventory/context:
  *   post:
  *     tags:
  *       - internal
- *     operationId: postInternalCaInventoryStatusOverview
- *     summary: Load compact GHGI inventory status for Climate Advisor
- *     description: Internal Climate Advisor capability route. Requires service-to-service headers plus a user-scoped bearer token, then verifies the requested user can read the inventory.
+ *     operationId: postInternalCaHiapInventoryContext
+ *     summary: Load compact persisted HIAP context for Climate Advisor
+ *     description: Read-only internal capability. It verifies service and user access, then returns selected actions or all persisted ranked actions as a fallback. It never starts prioritization or writes HIAP state.
  *     parameters:
  *       - in: header
  *         name: X-Service-Name
@@ -39,35 +39,15 @@
  *               inventory_id:
  *                 type: string
  *                 format: uuid
+ *               language:
+ *                 type: string
+ *                 enum: [en, es, pt, de, fr]
+ *                 default: en
  *     responses:
  *       200:
- *         description: Inventory status overview returned successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 action:
- *                   type: string
- *                   enum: [ghgi.inventory.status_overview]
- *                 success:
- *                   type: boolean
- *                   enum: [true]
- *                 data:
- *                   type: object
- *                   properties:
- *                     city:
- *                       type: string
- *                     inventory:
- *                       type: object
- *                     completion:
- *                       type: object
- *                     by_sector:
- *                       type: array
- *                       items:
- *                         type: object
+ *         description: Persisted HIAP context returned successfully.
  *       400:
- *         description: Invalid request body or inventory/city scope mismatch.
+ *         description: Invalid body or inventory/city scope mismatch.
  *       401:
  *         description: Missing or invalid Climate Advisor service authentication.
  *       403:
@@ -79,11 +59,11 @@
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 
-import { buildInventoryStatusOverview } from "@/backend/agentic/ghgi/inventory/context";
+import { buildHiapInventoryContext } from "@/backend/agentic/hiap/context";
 import {
-  INVENTORY_STATUS_OVERVIEW_CAPABILITY,
-  inventoryCapabilityInputSchema,
-} from "@/backend/agentic/ghgi/inventory/registry";
+  HIAP_INVENTORY_CONTEXT_CAPABILITY,
+  hiapInventoryContextInputSchema,
+} from "@/backend/agentic/hiap/registry";
 import {
   requireClimateAdvisorIntegrationEnabled,
   requireClimateAdvisorServiceRequest,
@@ -96,8 +76,7 @@ export const POST = apiHandler(async (req, { session }) => {
   requireClimateAdvisorIntegrationEnabled();
   requireClimateAdvisorServiceRequest(req);
 
-  const body = inventoryCapabilityInputSchema.parse(await req.json());
-
+  const body = hiapInventoryContextInputSchema.parse(await req.json());
   const { resource } = await PermissionService.canAccessInventory(
     session,
     body.inventory_id,
@@ -110,8 +89,8 @@ export const POST = apiHandler(async (req, { session }) => {
   }
 
   return NextResponse.json({
-    action: INVENTORY_STATUS_OVERVIEW_CAPABILITY,
+    action: HIAP_INVENTORY_CONTEXT_CAPABILITY,
     success: true,
-    data: await buildInventoryStatusOverview(inventory),
+    data: await buildHiapInventoryContext(inventory.inventoryId, body.language),
   });
 });

@@ -26,13 +26,14 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-07-16): only GHGI inventory PDFs are currently
-enqueued in CC. The generic CC OCR/delivery model and the authenticated CA
-Markdown-ingest contract are implemented, but `ConceptNoteUpload`, CC Concept
-Note upload routes/UI, the datateam repository adapter, downstream indexing,
-and a CA/CNB database migration remain deferred. The production CA repository
-provider therefore returns `503 cnb_storage_unavailable` after request and
-identity validation.
+Implementation baseline (2026-07-23): only GHGI inventory PDFs are currently
+enqueued in CC. The generic CC OCR/delivery model, authenticated CA
+Markdown-ingest contract, and compact CNB GHGI city-context route are
+implemented. The city-context adapter uses the documented datateam CNB tables
+when that database exposes them; Climate Advisor does not create or migrate
+those tables. `ConceptNoteUpload`, CC Concept Note upload routes/UI, the
+Markdown datateam repository adapter, downstream indexing, and the broader CNB
+database migration remain deferred.
 
 In scope:
 
@@ -60,8 +61,10 @@ Out of scope:
 Concept Note Builder should be implemented as a new Climate Advisor agentic
 workflow, following the same direction as the Stationary Energy workflow:
 
-1. CityCatalyst owns product data, user permissions, and committed module state.
-2. Climate Advisor owns conversation state and pre-commit agentic workflow state.
+1. CityCatalyst owns product data, user permissions, durable chat threads and
+   messages, and committed module state.
+2. Climate Advisor orchestrates the conversation and pre-commit agentic
+   workflow, but does not own durable chat or CNB workflow storage.
 3. The datateam managed CNB database stores reusable funder and funded-project
    tables alongside CNB workflow tables.
 4. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
@@ -79,6 +82,7 @@ flowchart TB
         CCUpload["Authenticated upload routes"]
         CCOCR["Durable PDF OCR service"]
         CCCaps["CC module capability wrappers<br/>city, project, GHGI, CCRA, HIAP"]
+        CCChat[("Chat threads + messages")]
         CCData[("CC PostgreSQL")]
     end
 
@@ -106,6 +110,7 @@ flowchart TB
     ExportStore["Object/file storage<br/>DOCX/PDF exports"]
 
     CCUI --> CCBridge
+    CCUI --> CCChat
     CCUI --> CCUpload
     CCUpload --> CCFiles
     CCUpload --> CCOCR
@@ -185,8 +190,8 @@ flowchart LR
 
 | State                                                                      | Owner                          | Reason                                                                                           |
 | -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
-| City profile, project, GHGI, CCRA, HIAP                                    | CityCatalyst                   | Existing product source of truth and permission model.                                           |
-| Chat threads and messages                                                  | Climate Advisor                | Existing CA conversation model.                                                                  |
+| City profile, project, GHGI, CCRA, and persisted HIAP context              | CityCatalyst                   | Existing product source of truth and permission model.                                           |
+| Chat threads and messages                                                  | CityCatalyst                   | Keeps durable user conversation state with the product permission boundary.                      |
 | Concept-note run state                                                     | datateam managed CNB database  | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure.          |
 | Context bundle snapshot                                                    | datateam managed CNB database  | Reusable run input/output for this workflow.                                                     |
 | CN upload/run associations, received Markdown, and selected source context | datateam managed CNB database  | Registers the optional Markdown handoff and keeps selected context for review and export.        |
@@ -230,6 +235,7 @@ database.
 flowchart LR
     subgraph CCDB["CityCatalyst PostgreSQL"]
         Inventory["ImportedInventoryFile<br/>(existing inventory source)"]
+        Chat["Chat threads + messages<br/>(CC-owned conversation state)"]
         CNUpload["ConceptNoteUpload<br/>(new CNB source record)"]
         OCR["PdfOcrJob<br/>(new shared OCR job)"]
     end
@@ -248,6 +254,7 @@ flowchart LR
     CNUpload -.->|"concept_note_upload + upload_id"| OCR
     CNUpload --> Source
     OCR --> Markdown
+    Chat -.->|"thread_id integration identifier"| Run
     Run --> Received
     Markdown -.->|"optional API delivery using upload_id"| Received
 ```
@@ -434,8 +441,7 @@ Recommended high-level shape:
     "city": {},
     "project": {},
     "ghgi": {},
-    "ccra": {},
-    "hiap": {}
+    "ccra": {}
   },
   "selected_sources": [
     {
@@ -462,6 +468,215 @@ Recommended high-level shape:
   "document_context": {
     "chapters": [],
     "gaps": []
+  }
+}
+```
+
+### CNB City Context API
+
+During `assembling_context`, CNB calls Climate Advisor with the active run and
+the CityCatalyst city selected for that run:
+
+```http
+POST /v1/concept-notes/{run_id}/cc-context
+Authorization: Bearer <CityCatalyst user token>
+Content-Type: application/json
+
+{
+  "city_id": "uuid",
+  "include_hiap": false,
+  "language": "en"
+}
+```
+
+Climate Advisor validates the CC identity, CNB run ownership, immutable run/city
+binding, and city access. It then selects the newest accessible inventory by
+inventory year, last update, and stable inventory UUID tie-break. A successful
+response has this bounded shape:
+
+```json
+{
+  "run_id": "uuid",
+  "city_id": "uuid",
+  "context_bundle": {
+    "cc_context": {
+      "ghgi": {
+        "availability": "available",
+        "inventory": {
+          "id": "uuid",
+          "year": 2024,
+          "type": "gpc_basic",
+          "gwp": "ar6"
+        },
+        "emissions": {
+          "total_kgco2e": 83950000,
+          "sectors": [
+            {
+              "gpc": "I",
+              "name": "Stationary Energy",
+              "emissions_kgco2e": 40399000,
+              "share_pct": 48.12,
+              "completion_pct": 92,
+              "required": 25,
+              "filled": 23,
+              "missing": 2,
+              "data_state": {
+                "third_party": 1,
+                "manual_or_uploaded": 20,
+                "not_estimated": 1,
+                "not_occurring": 1
+              }
+            }
+          ],
+          "top_sources": []
+        }
+      }
+    }
+  }
+}
+```
+
+GHGI always contains GPC sectors I-V in order and caps `top_sources` at five.
+Source-state counts remain sector-specific; the CNB contract has no aggregate
+`source_mix`. CityCatalyst returns its kilogram-based inventory values unchanged
+through explicit `kgco2e` fields, and CNB persists the same base unit. Both the
+status and emissions capability payloads must contain sectors I-V exactly once;
+malformed sets fail with `503 invalid_cc_context`. `availability` is
+`partial` when required GHGI values are missing and `missing` with null
+inventory/emissions when the city has no accessible inventory.
+
+`include_hiap` defaults to `false`; when false, the response omits `hiap`.
+When true, Climate Advisor calls the read-only
+`hiap.inventory.context` capability for the same inventory selected for GHGI.
+`language` defaults to `en` and can be `en`, `es`, `pt`, `de`, or `fr`.
+Mitigation and adaptation are separate. For each category, the projection
+returns every explicitly city-selected persisted action. If the city has no
+selection, it falls back to all persisted ranked actions without a hidden cap.
+The capability reports `available`, `pending`, `failed`, or `missing`, but never
+starts a ranking job, copies translations, repairs selection state, or writes
+CityCatalyst product data.
+
+The repository update replaces only the GHGI and/or HIAP sections built by the
+current request. It reads the current bundle under the write lock so every
+other assembled section is preserved. Before using a cached section, Climate
+Advisor revalidates live access to the city and confirms that the cached
+inventory is still the selected inventory. Incomplete CC capability payloads
+fail with `503 invalid_cc_context` and are not persisted. `run_id` and `city_id`
+remain in the API envelope and are not duplicated inside the stored bundle.
+
+The current caller supplies `city_id`, opts into HIAP with
+`include_hiap: true`, and can select a response language. The future
+CityCatalyst UI should list accessible choices through
+`GET /api/v1/user/projects`, bind the city selection when starting the run, and
+submit that same UUID and HIAP preference to context assembly.
+
+#### Compact GHGI and HIAP response example
+
+This bounded example shows HIAP tied to the same inventory as GHGI. Explicit
+city selections win; the adaptation category demonstrates the ranked fallback.
+
+```json
+{
+  "run_id": "af6430b9-cfd7-4009-aed3-5f545dff960a",
+  "city_id": "b6a15059-ddfa-42d8-9daf-450713a86b0d",
+  "context_bundle": {
+    "cc_context": {
+      "ghgi": {
+        "availability": "partial",
+        "inventory": {
+          "id": "2edd677c-1ec6-4bc6-a052-a634b195f4df",
+          "year": 2022,
+          "type": "gpc_basic_plus",
+          "gwp": "ar6"
+        },
+        "emissions": {
+          "total_kgco2e": 9076427280,
+          "sectors": ["I", "II", "III", "IV", "V"],
+          "top_sources": 5
+        }
+      },
+      "hiap": {
+        "availability": "available",
+        "inventory_id": "2edd677c-1ec6-4bc6-a052-a634b195f4df",
+        "requested_language": "en",
+        "mitigation": {
+          "status": "available",
+          "ranking_id": "uuid",
+          "updated_at": "2026-07-29T10:00:00Z",
+          "language": "en",
+          "selection_mode": "city_selected",
+          "counts": {
+            "ranked": 10,
+            "selected": 2,
+            "returned": 2
+          },
+          "actions": [
+            {
+              "action_id": "action-1",
+              "name": "Selected mitigation action",
+              "type": "mitigation",
+              "rank": 1,
+              "selected": true,
+              "source": "ranked",
+              "language": "en",
+              "description": null,
+              "sectors": ["Stationary Energy"],
+              "hazards": [],
+              "primary_purposes": ["Mitigation"],
+              "timeline": null,
+              "investment_cost": null,
+              "explanation": null
+            },
+            {
+              "action_id": "action-2",
+              "name": "City-added mitigation action",
+              "type": "mitigation",
+              "rank": null,
+              "selected": true,
+              "source": "unranked",
+              "language": "en",
+              "description": null,
+              "sectors": ["Transportation"],
+              "hazards": [],
+              "primary_purposes": ["Mitigation"],
+              "timeline": null,
+              "investment_cost": null,
+              "explanation": null
+            }
+          ]
+        },
+        "adaptation": {
+          "status": "available",
+          "ranking_id": "uuid",
+          "updated_at": "2026-07-29T10:00:00Z",
+          "language": "en",
+          "selection_mode": "ranked_fallback",
+          "counts": {
+            "ranked": 1,
+            "selected": 0,
+            "returned": 1
+          },
+          "actions": [
+            {
+              "action_id": "action-3",
+              "name": "Ranked adaptation action",
+              "type": "adaptation",
+              "rank": 1,
+              "selected": false,
+              "source": "ranked",
+              "language": "en",
+              "description": null,
+              "sectors": [],
+              "hazards": ["Floods"],
+              "primary_purposes": ["Adaptation"],
+              "timeline": null,
+              "investment_cost": null,
+              "explanation": null
+            }
+          ]
+        }
+      }
+    }
   }
 }
 ```
@@ -554,7 +769,6 @@ only so the workflow state and curated funding/reference data are easier to read
 
 ```mermaid
 erDiagram
-    threads ||--o{ concept_note_runs : "optionally anchors"
     concept_note_runs ||--|| concept_note_context_bundles : "stores"
     concept_note_runs ||--o{ concept_note_uploads : "has"
     concept_note_runs ||--o{ concept_note_chapters : "contains"
@@ -563,12 +777,6 @@ erDiagram
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
-
-    threads {
-        uuid thread_id
-        string user_id
-        jsonb context
-    }
 
     concept_note_runs {
         uuid run_id
@@ -683,6 +891,11 @@ source records:
   `funding_records.funding_record_id`.
 - `concept_note_matched_projects.funding_record_id` references
   `funding_records.funding_record_id`.
+
+`concept_note_runs.thread_id` is a nullable integration identifier for the
+CityCatalyst-owned chat thread. The CNB database must not create a foreign key to
+a local `threads` table. CityCatalyst validates thread ownership before passing
+the identifier into the Climate Advisor workflow.
 
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
@@ -1185,6 +1398,8 @@ Output:
 Rules:
 
 - Creates `concept_note_runs`.
+- Accepts only a CityCatalyst-created `thread_id`; the value is stored as an
+  external integration identifier without a CNB-database foreign key.
 - Creates initial empty document from the selected funder template.
 - Reuses an active run if the same user, city, project, funder, and selected
   funding record already has one.
@@ -1219,7 +1434,7 @@ Context loaded:
 - Project summary.
 - GHGI summary if available.
 - CCRA risk summary if available.
-- HIAP actions/status if available.
+- Compact persisted HIAP context, separated into mitigation and adaptation.
 - Module availability and known missing pieces.
 - Selected source excerpts from uploads.
 - Funder rubric/template and selected opportunity criteria.
@@ -1835,6 +2050,7 @@ agent tool.
 
 ```text
 POST /v1/concept-notes/start
+POST /v1/concept-notes/{run_id}/cc-context
 GET  /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
@@ -1866,9 +2082,10 @@ POST /api/v1/cron/process-pdf-ocr-jobs
 
 POST /api/v1/internal/ca/capabilities/city/load-context
 POST /api/v1/internal/ca/capabilities/project/load-context
-POST /api/v1/internal/ca/capabilities/ghgi/summary
+POST /api/v1/internal/ca/capabilities/ghgi/inventory/list-accessible
+POST /api/v1/internal/ca/capabilities/ghgi/inventory/status-overview
+POST /api/v1/internal/ca/capabilities/ghgi/inventory/emissions-context
 POST /api/v1/internal/ca/capabilities/ccra/summary
-POST /api/v1/internal/ca/capabilities/hiap/summary
 ```
 
 ## Implementation Responsibilities
@@ -1878,14 +2095,15 @@ file layout.
 
 | Responsibility                | Owner                            | Boundary                                                                                                                                                                                                  |
 | ----------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                             |
 | Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                               |
 | CNB storage access            | datateam managed CNB database    | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations.                              |
 | Funding reference access      | datateam managed CNB database    | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables.                                                                                              |
 | Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                       |
 | Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result pointers. No storage pointer or signed result URL is handed to CA.                             |
-| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                  |
+| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                    |
 | CNB Markdown ingestion        | Climate Advisor                  | Optionally accepts completed Markdown, durably registers its digest and metadata, then performs CN-specific excerpt selection, indexing, summarization, and context-bundle updates. It owns no OCR state. |
-| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and HIAP summaries through internal capabilities.                                                                                                             |
+| CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                  |
 | CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                               |
 | Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                |
 | UI workspace                  | CityCatalyst                     | Chat, chapter outline, editor, evidence/gap views, upload status, export controls.                                                                                                                        |
@@ -1939,6 +2157,12 @@ Minimum test surface:
 - CC-to-CA Markdown handoff contract tests covering authentication, digest
   verification, `202` durable registration, same-digest idempotency, and
   different-digest `409` conflicts.
+- CNB city-context contract tests covering deterministic inventory selection,
+  GPC I-V ordering, sector-local source states, five-source capping, missing and
+  partial GHGI, immutable run/city binding, targeted bundle merging, cached
+  reuse after live city-access revalidation, omission of HIAP by default,
+  mitigation/adaptation grouping, selected-action preference, uncapped ranked
+  fallback, and targeted GHGI/HIAP bundle merging.
 - Failure tests distinguishing `cc_ocr_failed` from
   `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
   repeat successful OCR.

@@ -10,7 +10,11 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert, MdOutlinePersonAddAlt } from "react-icons/md";
+import {
+  MdMoreVert,
+  MdOutlinePerson,
+  MdOutlinePersonAddAlt,
+} from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -22,6 +26,7 @@ import {
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
+  UserRole,
 } from "@/util/types";
 import {
   MenuContent,
@@ -34,8 +39,10 @@ import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
+import UpgradeToAdminModal from "./UpgradeToAdminModal";
 import { useSession } from "next-auth/react";
-import { OrganizationSelector } from "../OrganizationSelector";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
 import ProjectSearchInput from "./ProjectSearchInput";
 import { TagMapping } from "../project";
 import { TFunction } from "i18next";
@@ -66,8 +73,8 @@ const TeamSettings = ({
     },
   };
 
-  const [selectedOrganization, setSelectedOrganization] =
-    React.useState<string>();
+  const { organization: orgContext } = useOrganizationContext();
+  const selectedOrganization = orgContext?.organizationId;
   const [selectedProject, setSelectedProject] = React.useState<string[]>(
     initialProjectId ? [initialProjectId] : [],
   );
@@ -76,6 +83,11 @@ const TeamSettings = ({
   );
   const [projectSearchTerm, setProjectSearchTerm] = useState("");
   const sessionData = useSession();
+  const { userRole } = useUserPermissions({
+    organizationId: selectedOrganization,
+    skip: !selectedOrganization,
+  });
+  const canManageTeam = userRole === UserRole.ORG_ADMIN;
 
   const { data: organization, isLoading: isOrganizationLoading } =
     api.useGetOrganizationQuery(selectedOrganization!, {
@@ -138,22 +150,26 @@ const TeamSettings = ({
     );
   }, [projectsData, projectSearchTerm]);
 
+  const selectedProjectData = useMemo(() => {
+    return projectsData?.find(
+      (project) => project.projectId === selectedProject[0],
+    );
+  }, [projectsData, selectedProject]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<ProjectUserResponse | null>(
     null,
   );
+  const [userToUpgrade, setUserToUpgrade] =
+    useState<ProjectUserResponse | null>(null);
   if (isOrganizationLoading || isLoading) {
     return <ProgressLoader />;
   }
 
   return (
     <Box>
-      <OrganizationSelector
-        value={selectedOrganization}
-        onValueChange={setSelectedOrganization}
-        t={t}
-      />
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Heading
@@ -387,64 +403,102 @@ const TeamSettings = ({
                       <CustomTag role={item.role} t={t} />
                     </Table.Cell>
                     <Table.Cell textAlign="right">
-                      {sessionData.data?.user.email !== item.email && (
-                        <MenuRoot>
-                          <MenuTrigger asChild>
-                            <IconButton
-                              data-testid="activity-more-icon"
-                              aria-label="more-icon"
-                              variant="ghost"
-                              color="content.tertiary"
-                              _hover={{ bg: "#E7E7ED" }}
-                              _expanded={{ bg: "#D1D1DC" }}
+                      {canManageTeam &&
+                        sessionData.data?.user.email !== item.email && (
+                          <MenuRoot>
+                            <MenuTrigger asChild>
+                              <IconButton
+                                data-testid="activity-more-icon"
+                                aria-label="more-icon"
+                                variant="ghost"
+                                color="content.tertiary"
+                                _hover={{ bg: "#E7E7ED" }}
+                                _expanded={{ bg: "#D1D1DC" }}
+                              >
+                                <Icon as={MdMoreVert} size="lg" />
+                              </IconButton>
+                            </MenuTrigger>
+                            <MenuContent
+                              w="auto"
+                              borderRadius="8px"
+                              shadow="2dp"
+                              px="0"
                             >
-                              <Icon as={MdMoreVert} size="lg" />
-                            </IconButton>
-                          </MenuTrigger>
-                          <MenuContent
-                            w="auto"
-                            borderRadius="8px"
-                            shadow="2dp"
-                            px="0"
-                          >
-                            <MenuItem
-                              value={t("remove-user")}
-                              valueText={t("remove-user")}
-                              p="16px"
-                              display="flex"
-                              alignItems="center"
-                              gap="16px"
-                              _hover={{
-                                bg: "content.link",
-                                cursor: "pointer",
-                              }}
-                              className="group"
-                              onClick={() => {
-                                setIsDeleteModalOpen(true);
-                                setUserToRemove(item);
-                              }}
-                            >
-                              <Icon
-                                color="sentiment.negativeDefault"
-                                as={RiDeleteBin6Line}
-                                h="24px"
-                                w="24px"
-                                _groupHover={{
-                                  color: "white",
+                              {item.role === OrganizationRole.COLLABORATOR && (
+                                <MenuItem
+                                  value={t("upgrade-to-admin")}
+                                  valueText={t("upgrade-to-admin")}
+                                  p="16px"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap="16px"
+                                  _hover={{
+                                    bg: "content.link",
+                                    cursor: "pointer",
+                                  }}
+                                  className="group"
+                                  onClick={() => {
+                                    setIsUpgradeModalOpen(true);
+                                    setUserToUpgrade(item);
+                                  }}
+                                >
+                                  <Icon
+                                    as={MdOutlinePerson}
+                                    h="24px"
+                                    w="24px"
+                                    color="content.secondary"
+                                    _groupHover={{
+                                      color: "white",
+                                    }}
+                                  />
+                                  <Text
+                                    color="content.primary"
+                                    _groupHover={{
+                                      color: "white",
+                                    }}
+                                  >
+                                    {t("upgrade-to-admin")}
+                                  </Text>
+                                </MenuItem>
+                              )}
+                              <MenuItem
+                                value={t("remove-user")}
+                                valueText={t("remove-user")}
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
                                 }}
-                              />
-                              <Text
-                                color="content.primary"
-                                _groupHover={{
-                                  color: "white",
+                                className="group"
+                                onClick={() => {
+                                  setIsDeleteModalOpen(true);
+                                  setUserToRemove(item);
                                 }}
                               >
-                                {t("remove-user")}
-                              </Text>
-                            </MenuItem>
-                          </MenuContent>
-                        </MenuRoot>
-                      )}
+                                <Icon
+                                  color="sentiment.negativeDefault"
+                                  as={RiDeleteBin6Line}
+                                  h="24px"
+                                  w="24px"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
+                                />
+                                <Text
+                                  color="content.primary"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
+                                >
+                                  {t("remove-user")}
+                                </Text>
+                              </MenuItem>
+                            </MenuContent>
+                          </MenuRoot>
+                        )}
                     </Table.Cell>
                   </Table.Row>
                 );
@@ -472,6 +526,18 @@ const TeamSettings = ({
         selectedCity={selectedCity}
         user={userToRemove}
         organization={organization}
+      />
+      <UpgradeToAdminModal
+        t={t}
+        isOpen={isUpgradeModalOpen}
+        onClose={() => {
+          setIsUpgradeModalOpen(false);
+          setUserToUpgrade(null);
+        }}
+        onOpenChange={setIsUpgradeModalOpen}
+        user={userToUpgrade}
+        organizationId={selectedOrganization}
+        projectName={selectedProjectData?.name}
       />
     </Box>
   );

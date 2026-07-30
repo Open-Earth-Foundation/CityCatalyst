@@ -242,5 +242,9 @@
   "preferences-updated": "Preferências atualizadas",
   "inventories": "Inventários",
   "search-by-project": "Pesquisar por nome do projeto",
-  "search-by-name-or-email": "Pesquisar por nome ou endereço de e-mail"
+  "search-by-name-or-email": "Pesquisar por nome ou endereço de e-mail",
+  "upgrade-to-admin": "Promover a administrador",
+  "upgrade-member-to-admin-title": "Promover membro a administrador?",
+  "confirm-upgrade-to-admin": "Tem certeza de que deseja tornar <bold>{{userName}}</bold> um administrador de <bold>{{projectName}}</bold>?",
+  "user-upgraded-to-admin": "Usuário promovido a administrador com sucesso"
 }

@@ -282,7 +282,10 @@ export function apiHandler(
 ) {
   return async (
     req: NextRequest,
-    props: { params: Promise<Record<string, string>> },
+    props: {
+      params: Promise<Record<string, string>>;
+      searchParams?: Record<string, string>;
+    },
   ) => {
     const startTime = Date.now();
     let result: ApiResponse;
@@ -449,7 +452,8 @@ export function apiHandler(
       const { searchParams } = new URL(req.url);
       const context = {
         params: await props.params,
-        searchParams: Object.fromEntries(searchParams.entries()),
+        searchParams:
+          props.searchParams ?? Object.fromEntries(searchParams.entries()),
         session,
       };
 

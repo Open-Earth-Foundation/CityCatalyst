@@ -208,14 +208,23 @@ const TeamSettings = ({
           {t("no-data")}
         </Text>
       )}
-      <Box display="flex" gap="48px" mt={12} alignItems="flex-start">
+      <Box
+        display="flex"
+        gap="48px"
+        mt={12}
+        alignItems="flex-start"
+        borderWidth="1px"
+        borderColor="border.overlay"
+        borderRadius="8px"
+        p="16px"
+      >
         <Box
           w="271px"
           overflowY="hidden"
           display="flex"
           flexDirection="column"
           gap="24px"
-          px="16px"
+          h="500px"
         >
           <Text
             fontSize="title.md"
@@ -240,7 +249,8 @@ const TeamSettings = ({
             borderColor="border.overlay"
             p="12px"
             w="full"
-            h="full"
+            h="400px"
+            overflowY="scroll"
           >
             {filteredProjectsData.length === 0 && (
               <Text

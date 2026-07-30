@@ -372,7 +372,7 @@ const TeamSettings = ({
                   item.name?.trim() || item.email.split("@")[0] || "—";
 
                 return (
-                  <Table.Row key={idx}>
+                  <Table.Row key={idx} fontFamily="body">
                     <Table.Cell maxW="0" title={displayName}>
                       <Text truncate color="content.primary" fontSize="body.md">
                         {displayName}
@@ -498,7 +498,12 @@ const CustomTag = ({ role, t }: { role: OrganizationRole; t: TFunction }) => {
       justifyContent="center"
       borderRadius="30px"
     >
-      <Text color="content.alternative" fontSize="body.md" fontWeight="medium">
+      <Text
+        color="content.alternative"
+        fontSize="body.md"
+        fontWeight="medium"
+        fontFamily="body"
+      >
         {t(text)}
       </Text>
     </Box>

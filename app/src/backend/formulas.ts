@@ -168,9 +168,9 @@ function convertDataToDefaultUnit(
     data[activity?.["activity-title"] as string] = new Decimal(
       UnitConversionService.convertUnits(
         Number(val),
-        fromUnit.toString(),
+        fromUnit?.toString(),
         activity["default-units"],
-        fuelType.toString(),
+        fuelType?.toString(),
       ),
     );
   }
@@ -567,7 +567,7 @@ export async function handleMethaneCommitmentFormula(
   const methaneCorrectionFactor =
     oxidationFactor === 0.1
       ? 1.0
-      : (METHANE_CORRECTION_FACTORS[landfillType.toString()] ?? 0.6);
+      : (METHANE_CORRECTION_FACTORS[landfillType?.toString()] ?? 0.6);
 
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
   const DOC_FRACTION = 0.6;
@@ -599,10 +599,10 @@ function getMassBasedActivityAmount(
   // For kg/kg fuels, we want MASS (kg) without density conversion
   const rawData = { ...activityValue.activityData };
   const activityAmountKey =
-    activityValue.metadata?.["activityTitle"].toString() ?? "";
+    activityValue.metadata?.["activityTitle"]?.toString() ?? "";
   const fuelAmount = Number(rawData[activityAmountKey] || 0);
   const fuelUnit =
-    rawData[`${activityAmountKey}-unit`].toString() || "units-kilograms";
+    rawData[`${activityAmountKey}-unit`]?.toString() || "units-kilograms";
 
   // Convert to kg if needed, but NO density conversion
   if (fuelUnit === "units-kilograms") {

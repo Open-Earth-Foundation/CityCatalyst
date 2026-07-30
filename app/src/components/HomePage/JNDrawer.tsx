@@ -44,6 +44,7 @@ import { useTranslation } from "@/i18n/client";
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { CustomSelect } from "../ui/custom-select";
 import { Modules, StageNames } from "@/util/constants";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
@@ -322,7 +323,7 @@ const ProjectFilterSection = ({
                     : `/${lng}/cities`,
                 )
               }
-              rounded="40"
+              rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
               h="48px"
@@ -369,7 +370,7 @@ const ProjectFilterSection = ({
                     `/${lng}/cities/onboarding?project=${selectedProject}`,
                   );
                 }}
-                rounded="40"
+                rounded="pill"
                 borderColor="interactive.secondary"
                 border="sm"
                 h="48px"
@@ -394,7 +395,7 @@ const ProjectFilterSection = ({
               variant="outline"
               onClick={() => router.push(getDashboardPath(lng, selectedCity))}
               disabled={!selectedCity}
-              rounded="40"
+              rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
               h="48px"
@@ -718,8 +719,11 @@ const JNDrawer = ({
                   <Box maxH="500px" overflowY="auto">
                     {stageOrder.map((stage) => {
                       const modules = projectModules.filter((mod) => {
-                        // Filter out CCRA module
-                        if (mod.id === Modules.CCRA.id) {
+                        // Filter out CCRA module unless feature flag is enabled
+                        if (
+                          mod.id === Modules.CCRA.id &&
+                          !hasFeatureFlag(FeatureFlags.CCRA_MODULE)
+                        ) {
                           return false;
                         }
                         return mod.stage === stage;

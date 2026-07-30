@@ -711,7 +711,7 @@ export const appTheme = createSystem(defaultConfig, {
         rounded: { value: "8px" },
         "rounded-xl": { value: "16px" },
         "rounded-xxl": { value: "20px" },
-        "40": { value: "40px" },
+        pill: { value: "40px" },
       },
       borders: {
         inputBox: { value: "1px solid #D7D8FB" },

@@ -14,7 +14,7 @@ from app.models.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteMarkdownResponse,
 )
-from app.repositories.concept_note_markdown import (
+from app.persistence.concept_notes.markdown import (
     ConceptNoteMarkdownRepository,
     ConceptNoteMarkdownRepositoryError,
     get_concept_note_markdown_repository,

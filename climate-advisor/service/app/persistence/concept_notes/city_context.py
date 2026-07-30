@@ -28,7 +28,7 @@ class ConceptNoteCityContextRepositoryError(Exception):
 class ConceptNoteCityContextStorageUnavailable(
     ConceptNoteCityContextRepositoryError
 ):
-    """Raised when the datateam-managed CNB storage cannot be reached."""
+    """Raised when the configured CNB workflow storage cannot be reached."""
 
     def __init__(self) -> None:
         super().__init__(
@@ -47,7 +47,7 @@ class ConceptNoteRunContext:
 
 
 class ConceptNoteCityContextRepository(ABC):
-    """Typed access boundary for datateam-managed CNB run and bundle tables."""
+    """Typed access boundary for CNB run and context-bundle tables."""
 
     @abstractmethod
     async def load_run_context(
@@ -75,7 +75,7 @@ class ConceptNoteCityContextRepository(ABC):
 class SqlAlchemyConceptNoteCityContextRepository(
     ConceptNoteCityContextRepository
 ):
-    """Repository adapter for the datateam-managed CNB PostgreSQL schema."""
+    """Repository adapter for the configured CNB workflow schema."""
 
     def __init__(
         self,
@@ -222,7 +222,7 @@ class UnavailableConceptNoteCityContextRepository(
         run_id: UUID,
         city_id: UUID,
     ) -> ConceptNoteRunContext:
-        """Reject reads when the external CNB repository is unavailable."""
+        """Reject reads when CNB workflow storage is unavailable."""
         raise ConceptNoteCityContextStorageUnavailable()
 
     async def merge_cc_context(
@@ -234,7 +234,7 @@ class UnavailableConceptNoteCityContextRepository(
         ghgi_context: dict[str, Any] | None = None,
         hiap_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        """Reject writes when the external CNB repository is unavailable."""
+        """Reject writes when CNB workflow storage is unavailable."""
         raise ConceptNoteCityContextStorageUnavailable()
 
 

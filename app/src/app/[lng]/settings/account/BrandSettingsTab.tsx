@@ -29,6 +29,7 @@ import { trackEvent } from "@/lib/analytics";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
 import LogoUploadCard from "./logo-file-upload";
+import { OrganizationResponse } from "@/util/types";
 
 const KeyColorMapping = {
   blue_theme: "#001EA7",
@@ -40,15 +41,17 @@ const KeyColorMapping = {
 };
 type themeType = keyof typeof KeyColorMapping;
 
-const BrandSettingsTab = ({ t }: { t: TFunction }) => {
+const BrandSettingsTab = ({
+  t,
+  organization,
+}: {
+  t: TFunction;
+  organization?: OrganizationResponse;
+}) => {
   const [selectedTheme, setSelectedTheme] = useState<string>("blue_theme");
 
   const { data: themeOptions, isLoading: isThemeOptionsLoading } =
     api.useGetThemesQuery({});
-
-  const { data: userAccessStatus, isLoading } = api.useGetUserAccessStatusQuery(
-    {},
-  );
 
   const options = useMemo(() => {
     return createListCollection({
@@ -62,11 +65,6 @@ const BrandSettingsTab = ({ t }: { t: TFunction }) => {
         : [],
     });
   }, [themeOptions, t]);
-
-  const { data: organization, isLoading: isOrganizationLoading } =
-    api.useGetOrganizationQuery(userAccessStatus?.organizationId as string, {
-      skip: !userAccessStatus?.organizationId,
-    });
 
   const [file, setFile] = useState<File | null>(null);
   const [clearImage, setClearImage] = useState(false);
@@ -99,11 +97,11 @@ const BrandSettingsTab = ({ t }: { t: TFunction }) => {
   });
 
   const handleSubmit = async () => {
-    if (!userAccessStatus?.organizationId) return;
+    if (!organization?.organizationId) return;
 
     try {
       const response = await setWhiteLabel({
-        organizationId: userAccessStatus.organizationId,
+        organizationId: organization?.organizationId,
         whiteLabelData: {
           themeId: selectedTheme,
           logo: file ? file : undefined,
@@ -113,7 +111,7 @@ const BrandSettingsTab = ({ t }: { t: TFunction }) => {
 
       // Track white label customization
       trackEvent("white_label_customized", {
-        organization_id: userAccessStatus?.organizationId,
+        organization_id: organization?.organizationId,
       });
 
       setFile(null);
@@ -140,8 +138,6 @@ const BrandSettingsTab = ({ t }: { t: TFunction }) => {
       setSelectedTheme((organization?.themeId as string) ?? blueTheme?.themeId);
     }
   }, [organization, blueTheme, setSelectedTheme]);
-
-  if (isLoading || isOrganizationLoading) return <ProgressLoader />;
 
   return (
     <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">

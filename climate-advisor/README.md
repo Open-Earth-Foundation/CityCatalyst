@@ -564,9 +564,39 @@ CC-issued user token through CC before consuming the request, streams the body
 up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`, recomputes SHA-256, verifies contiguous
 page markers and their positive metadata count without imposing a page-count
 limit, and delegates atomic run/upload registration to a repository
-interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
-the datateam repository adapter is configured, the production provider returns
-`503 cnb_storage_unavailable`; contract tests inject an in-memory repository.
+interface. The production repository validates run ownership, preserves the
+immutable upload-to-run binding and Markdown digest, and stores the received
+artifact in `concept_note_uploads` through `CA_DATABASE_URL`. Repeating the same
+upload and digest is idempotent; changing its run or digest returns `409`. CA
+owns no OCR queue, Mistral dependency, S3 object, or S3 permission. An
+unavailable or unmigrated workflow database returns `503
+cnb_storage_unavailable`.
+
+### Concept Note run foundation
+
+`POST /v1/concept-notes/start` validates a CC-issued bearer token, verifies that
+the supplied `user_id` is the token's canonical user, and rechecks access to
+the selected city. It then creates a durable `concept_note_runs` row and its
+empty `concept_note_context_bundles` row in one transaction. The run starts as
+`active` at `assembling_context` and returns `next_action: load_context`.
+
+Creation is idempotent per `(user_id, idempotency_key)`. Replaying the same
+normalized request returns the original run with HTTP `200` and
+`created: false`; using that key with different input returns HTTP `409`.
+`GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
+revalidates current city access before responding. The Alembic revision
+`20260729_120000` provisions `concept_note_runs`,
+`concept_note_context_bundles`, and `concept_note_uploads` in
+`CA_DATABASE_URL`. When `thread_id` is supplied, the start operation also
+requires that durable chat thread to belong to the authenticated user; it
+remains an integration identifier rather than a run-table foreign key.
+
+CityCatalyst exposes authenticated proxy routes at
+`POST /api/v1/concept-notes/start` and
+`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the
+session, checks city access, issues the scoped CA token server-side, and
+preserves Climate Advisor response statuses. No frontend screens are part of
+this baseline.
 
 ### Concept Note city-context baseline
 
@@ -585,7 +615,7 @@ explicitly city-selected action, or all persisted ranked actions when there is
 no selection. The route never starts or repairs HIAP prioritization and applies
 no hidden action cap.
 
-The repository adapter reads and updates the documented datateam-managed
+The repository adapter reads and updates the migrated
 `concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
 the GHGI and/or HIAP sections built by the current request, preserving the rest
 of the bundle under the same database lock. Before reusing either cached
@@ -594,8 +624,8 @@ GHGI status and emissions payloads must each contain GPC sectors I-V exactly
 once. Incomplete or noncanonical CityCatalyst capability payloads return
 `503 invalid_cc_context` without being persisted. A valid stored snapshot is
 reused on later interactions after that access check. If the configured
-database does not expose those external CNB tables, the route returns
-`503 cnb_storage_unavailable` without creating CA-owned replacement tables.
+database has not been migrated or is unavailable, the route returns
+`503 cnb_storage_unavailable`.
 
 ## Database Schema
 

@@ -167,7 +167,7 @@ const TeamSettings = ({
           >
             {t("teams")}
           </Heading>
-          <Text color="content.tertiary" fontSize="body.lg">
+          <Text color="content.tertiary" fontSize="body.lg" fontFamily="body">
             {t("teams-description")}
           </Text>
         </Box>

@@ -2178,15 +2178,6 @@ Minimum test surface:
 - CC OCR tests covering upload authorization, durable job claims, lease recovery,
   three-attempt transient retries, ordered page merge, result persistence, and
   the 20 MB source-PDF upload limit.
-- CC-to-CA Markdown handoff contract tests covering authentication, digest
-  verification, `202` durable registration, same-digest idempotency, and
-  different-digest `409` conflicts.
-- CNB city-context contract tests covering deterministic inventory selection,
-  GPC I-V ordering, sector-local source states, five-source capping, missing and
-  partial GHGI, immutable run/city binding, targeted bundle merging, cached
-  reuse after live city-access revalidation, omission of HIAP by default,
-  mitigation/adaptation grouping, selected-action preference, uncapped ranked
-  fallback, and targeted GHGI/HIAP bundle merging.
 - Failure tests distinguishing `cc_ocr_failed` from
   `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
   repeat successful OCR.

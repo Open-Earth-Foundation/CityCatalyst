@@ -768,7 +768,8 @@ class CityCatalystClient:
         if not response.is_success:
             error_text = response.text[:200] if response.text else "Unknown error"
             raise CityCatalystClientError(
-                f"Failed to fetch city {city_id}: {response.status_code} - {error_text}"
+                f"Failed to fetch city {city_id}: {response.status_code} - {error_text}",
+                status_code=response.status_code,
             )
         
         try:

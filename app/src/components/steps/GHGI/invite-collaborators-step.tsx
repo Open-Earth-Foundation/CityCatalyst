@@ -170,7 +170,12 @@ const InviteCollaboratorsStep = forwardRef<
       </Box>
 
       <Box>
-        <Text fontFamily="heading" fontWeight="semibold" mb={2}>
+        <Text
+          fontFamily="heading"
+          fontWeight="semibold"
+          mb="16px"
+          fontSize="title.md"
+        >
           {tSettings("select-a-project")}
         </Text>
         <SelectRoot
@@ -239,9 +244,8 @@ const InviteCollaboratorsStep = forwardRef<
           >
             <Input
               flex={1}
-              borderWidth="1px"
-              borderColor="border.default"
               bg="transparent"
+              border="none"
               h="full"
               borderRadius={0}
               _focusVisible={{ boxShadow: "none" }}
@@ -259,19 +263,19 @@ const InviteCollaboratorsStep = forwardRef<
                 onChange={(e) =>
                   setSelectedRole(e.target.value as "admin" | "collaborator")
                 }
-                bg="background.neutral"
+                bg="brand.light"
                 border="none"
                 borderRadius="md"
                 ps={2}
                 pe={1}
+                maxW="fit-content"
                 mx={2}
                 h="28px"
-                color="content.secondary"
+                color="content.tertiary"
                 fontFamily="body"
                 fontSize="body.sm"
                 fontWeight="normal"
                 lineHeight="16px"
-                letterSpacing="0.5px"
                 cursor="pointer"
                 flexShrink={0}
                 _focus={{ outline: "none", boxShadow: "none" }}
@@ -302,11 +306,6 @@ const InviteCollaboratorsStep = forwardRef<
           </HStack>
         ) : (
           <HStack mt={2}>
-            <Icon
-              as={MdInfoOutline}
-              color="interactive.secondary"
-              boxSize={4}
-            />
             <Text fontSize="body.sm" color="content.tertiary">
               {t("invite-collaborators-info")}
             </Text>
@@ -321,37 +320,21 @@ const InviteCollaboratorsStep = forwardRef<
                 alignItems="center"
                 bg="background.neutral"
                 borderRadius="9999px"
-                borderWidth="1px"
-                borderColor="border.neutral"
                 py={1}
                 px={3}
                 gap={2}
+                fontSize="body.lg"
               >
                 <Text
                   color="content.alternative"
                   fontFamily="body"
-                  fontSize="body.lg"
                   fontWeight="normal"
                   lineHeight="24px"
                   letterSpacing="0.5px"
                 >
                   {member.email}
                 </Text>
-                <Box
-                  bg="background.graySubtle"
-                  borderRadius="md"
-                  px={1}
-                  display="inline-flex"
-                  alignItems="center"
-                >
-                  <Text
-                    fontSize="label.sm"
-                    color="content.secondary"
-                    fontWeight="medium"
-                  >
-                    {t(member.role)}
-                  </Text>
-                </Box>
+                <Text color="content.secondary">({t(member.role)})</Text>
                 <CloseButton
                   w="24px"
                   h="24px"
@@ -379,6 +362,7 @@ const InviteCollaboratorsStep = forwardRef<
             fontWeight="bold"
             fontSize="headline.sm"
             mb={4}
+            color="content.tertiary"
           >
             {t("invite-collaborators-select-cities")}
           </Text>

@@ -126,7 +126,7 @@ describe("City HIAP Prioritization API", () => {
 
       await expectStatusCode(res, 400);
       const body = await res.json();
-      expect(body?.error?.message).toMatch(/Invalid query parameters/i);
+      expect(body?.error?.message).toMatch(/Invalid request/i);
     });
 
     it("returns 400 when cityId param is missing", async () => {
@@ -140,7 +140,7 @@ describe("City HIAP Prioritization API", () => {
 
       await expectStatusCode(res, 400);
       const body = await res.json();
-      expect(body?.error?.message).toMatch(/Invalid query parameters/i);
+      expect(body?.error?.message).toMatch(/Invalid request/i);
     });
 
     it("returns action plan when it exists in database", async () => {
@@ -180,15 +180,15 @@ describe("City HIAP Prioritization API", () => {
       });
 
       // Build URL with query params
-      const url = `http://localhost:3000/api/v0/city/${testData.cityId}/hiap/action-plan?cityId=${testData.cityId}&language=en&actionId=${rankedAction.actionId}`;
+      const url = `http://localhost:3000/api/v0/city/${testData.cityId}/hiap/action-plan?language=en&actionId=${rankedAction.actionId}`;
       const req = mockRequest(url);
 
       const res = await getActionPlans(req, {
-        params: Promise.resolve({
-          city: testData.cityId,
+        params: Promise.resolve({ city: testData.cityId }),
+        searchParams: {
           language: "en",
           actionId: rankedAction.actionId,
-        }),
+        },
       });
 
       await expectStatusCode(res, 200);

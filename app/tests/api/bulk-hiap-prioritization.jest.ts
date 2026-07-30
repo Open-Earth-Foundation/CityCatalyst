@@ -54,8 +54,8 @@ function callHiapCronJobRoute() {
 describe("Bulk HIAP Prioritization API", () => {
   let testData: TestData;
   let projectId: string;
-  let inventoryIds: string[] = [];
-  let cityIds: string[] = [];
+  const inventoryIds: string[] = [];
+  const cityIds: string[] = [];
   let mockAdminSession: AppSession;
   let mockUserSession: AppSession;
 

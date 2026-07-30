@@ -139,7 +139,7 @@ export default function SetPopulationDataStep({
         logger.error("Failed to find population data for region");
         return;
       }
-      let [{ datasource }] = countryData.population;
+      const [{ datasource }] = countryData.population;
       setCountryPopulationSourceName(datasource.name);
       setValue("countryPopulation", population.population);
       setValue("countryPopulationYear", population.year);

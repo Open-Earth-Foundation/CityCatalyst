@@ -89,7 +89,7 @@ describe("DataSource API", () => {
   let city: City;
   let inventory: Inventory;
   let sector: Sector;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
   let testData: TestData;
 
   beforeAll(async () => {
@@ -215,7 +215,7 @@ describe("DataSource API", () => {
 
   it("should delete an inventory value", async () => {
     const datasource = await db.models.DataSource.findOne({
-      // @ts-ignore
+      // @ts-expect-error URL can be null
       where: {
         url: {
           [Op.ne]: null,

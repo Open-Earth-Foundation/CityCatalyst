@@ -37,8 +37,8 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
  *         description: Version not found.
  */
 export const POST = apiHandler(async (_req, { session, params }) => {
-  let inventoryId = params.inventory;
-  let versionId = z.string().uuid().parse(params.version);
+  const inventoryId = params.inventory;
+  const versionId = z.string().uuid().parse(params.version);
 
   // perform access control
   await PermissionService.canEditInventory(session, inventoryId);

@@ -9,10 +9,14 @@ import {
   GlobalWarmingPotentialTypeEnum,
 } from "@/util/enums";
 import { randomUUID } from "crypto";
-import { Decimal } from "decimal.js";
 import * as dotenv from "dotenv";
 import { TransportTestData, TestResult } from "@/data/transport-test-types";
 import transportSampleData from "@/data/transport-test-sample-data.json";
+import {
+  City,
+  EmissionsFactorAttributes,
+  Inventory,
+} from "@/models/init-models";
 
 // Test configuration constants
 const SAMPLE_SIZE = 29; // Test 20 random samples (adjust based on available data)
@@ -20,8 +24,8 @@ const TOLERANCE = 0.01; // ±0.01 tonnes CO2e tolerance
 
 describe("Transport Emission Factor Validation Tests", () => {
   let testData: TransportTestData[] = [];
-  let testInventory: any;
-  let testCity: any;
+  let testInventory: Inventory;
+  let testCity: City;
 
   beforeAll(async () => {
     // Load environment configuration
@@ -263,7 +267,7 @@ function sampleTestData(
 
 async function performTransportCalculationTest(
   testData: TransportTestData,
-  inventory: any,
+  inventory: Inventory,
 ): Promise<TestResult> {
   try {
     // Query emission factors
@@ -288,27 +292,31 @@ async function performTransportCalculationTest(
     }
 
     // Prepare gas values for CalculationService
-    const gasValues = availableFactors.map((gas) => ({
-      id: randomUUID(),
-      gas,
-      gasAmount: 0n, // Will be calculated
-      emissionsFactor: {
+    const gasValues = availableFactors.map((gas) => {
+      const gasValue = new db.models.GasValue({
+        id: randomUUID(),
+        gas,
+        gasAmount: 0n, // Will be calculated
+      });
+      gasValue.emissionsFactor = new db.models.EmissionsFactor({
+        id: randomUUID(),
         emissionsPerActivity: emissionFactors[gas].emissionsPerActivity,
         gas,
         units: emissionFactors[gas].units,
-      },
-    }));
+      });
+      return gasValue;
+    });
 
     // Create mock inventory value and activity value
-    const inventoryValue = {
+    const inventoryValue = new db.models.InventoryValue({
       id: randomUUID(),
       gpcReferenceNumber: testData.subsector,
       inputMethodology: testData.methodology_id,
       inventoryId: inventory.inventoryId,
       activityValue: testData.total_fuel_value,
-    };
+    });
 
-    const activityValue = {
+    const activityValue = new db.models.ActivityValue({
       id: randomUUID(),
       activityData: {
         "activity-total-fuel-consumption": testData.total_fuel_value,
@@ -322,7 +330,7 @@ async function performTransportCalculationTest(
         activityTitle: "activity-total-fuel-consumption",
       },
       inventoryValueId: inventoryValue.id,
-    };
+    });
 
     // Use the system's calculation method
     console.log(`   🧮 Using methodology ID: ${testData.methodology_id}`);
@@ -330,14 +338,18 @@ async function performTransportCalculationTest(
     let calculationResult;
     try {
       calculationResult = await CalculationService.calculateGasAmount(
-        inventoryValue as any,
-        activityValue as any,
+        inventoryValue,
+        activityValue,
         testData.methodology_id,
-        gasValues as any,
+        gasValues,
       );
-    } catch (error: any) {
+    } catch (error) {
       // Handle missing fuel density or other calculation errors
-      if (error.message && error.message.includes("Density for fuel type")) {
+      if (
+        error instanceof Error &&
+        error.message &&
+        error.message.includes("Density for fuel type")
+      ) {
         console.log(`   ⚠️  SKIPPED - ${error.message}`);
         return {
           success: false,
@@ -388,10 +400,11 @@ async function performTransportCalculationTest(
       availableFactors,
       emissionFactorValues: emissionFactors,
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      error: error.message || "Unknown error occurred",
+      error:
+        (error instanceof Error && error.message) || "Unknown error occurred",
       testData: formatTransportTestData(testData),
       expected: testData.expected_co2e_tonnes,
       tolerance: TOLERANCE,
@@ -403,7 +416,7 @@ async function performTransportCalculationTest(
 async function createTransportEmissionFactorsFromGlobalAPI(
   testData: TransportTestData,
 ) {
-  const emissionFactors: any = {};
+  const emissionFactors: Record<string, EmissionsFactorAttributes> = {};
 
   console.log(`   📊 Using Global API values from CSV:`);
   console.log(
@@ -419,6 +432,7 @@ async function createTransportEmissionFactorsFromGlobalAPI(
   // Create emission factor objects using Global API values from CSV
   if (testData.co2_global_api > 0) {
     emissionFactors["CO2"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.co2_global_api,
       gas: "CO2",
       units: testData.units_in_global_api,
@@ -431,6 +445,7 @@ async function createTransportEmissionFactorsFromGlobalAPI(
 
   if (testData.ch4_global_api > 0) {
     emissionFactors["CH4"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.ch4_global_api,
       gas: "CH4",
       units: testData.units_in_global_api,
@@ -443,6 +458,7 @@ async function createTransportEmissionFactorsFromGlobalAPI(
 
   if (testData.n2o_global_api > 0) {
     emissionFactors["N2O"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.n2o_global_api,
       gas: "N2O",
       units: testData.units_in_global_api,

@@ -66,30 +66,19 @@ const createActionPlanSchema = z.object({
  *                 data:
  *                   type: object
  */
-export const GET = apiHandler(async (req: NextRequest, { params }) => {
-  const url = new URL(req.url);
-  const queryParams = Object.fromEntries(url.searchParams.entries());
-
-  try {
-    const { language, actionId } = getActionPlansSchema.parse(queryParams);
-    const cityId = params.city as string;
+export const GET = apiHandler(
+  async (_req: NextRequest, { params, searchParams }) => {
+    const { language, actionId } = getActionPlansSchema.parse(searchParams);
 
     const actionPlans = await ActionPlanService.fetchOrTranslateActionPlan(
-      cityId,
+      params.city,
       language,
       actionId,
     );
 
     return NextResponse.json({ data: actionPlans });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      throw createHttpError.BadRequest(
-        `Invalid query parameters: ${error.message}`,
-      );
-    }
-    throw error;
-  }
-});
+  },
+);
 
 /**
  * @swagger

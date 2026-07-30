@@ -105,7 +105,6 @@ export default class EmailService {
       const html = await render(
         InviteToOrganizationTemplate({
           url,
-          organization,
           user,
           language: user?.preferredLanguage,
         }),
@@ -488,13 +487,11 @@ export default class EmailService {
   public static async sendInviteToMultipleCities({
     email,
     cities,
-    invitingUser,
     brandInformation,
     user,
   }: {
     email: string;
     cities: City[];
-    invitingUser: { name: string; email: string };
     brandInformation?: {
       color: string;
       logoUrl: string;
@@ -510,7 +507,6 @@ export default class EmailService {
           url,
           email,
           cities,
-          invitingUser,
           brandInformation,
           language: user?.preferredLanguage,
         }),
@@ -526,8 +522,8 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
-      logger.error(`Failed to send email to ${email}`);
+    } catch (error) {
+      logger.error({ error }, `Failed to send email to ${email}`);
     }
   }
 
@@ -575,18 +571,15 @@ export default class EmailService {
 
   public static async sendInviteToOrganization({
     url,
-    organization,
     user,
   }: {
     url: string;
-    organization: Organization;
     user: User | null;
   }) {
     try {
       const html = await render(
         InviteToOrganizationTemplate({
           url,
-          organization,
           user,
           language: user?.preferredLanguage,
         }),
@@ -817,7 +810,6 @@ export default class EmailService {
         HiapRankingReadyTemplate({
           url,
           user: user,
-          actionType,
           language: user.preferredLanguage,
         }),
       );

@@ -2,7 +2,7 @@ import { ActivityValue } from "@/models/ActivityValue";
 import { convertKgToTonnes } from "@/util/helpers";
 import { Box, Icon, IconButton, Table, TagLabel, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import React, { FC, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import { MdAdd, MdModeEditOutline, MdMoreVert } from "react-icons/md";
 import {
@@ -17,7 +17,6 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { useParams } from "next/navigation";
 import {
   MenuContent,
   MenuItem,
@@ -45,13 +44,12 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   showActivityModal,
   numberFormat,
 }) => {
-  const { lng } = useParams();
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
     .directMeasure as DirectMeasure;
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
   const tag = referenceNumber?.includes("II") ? "-transport-types" : "";
 
-  let groupBy = directMeasure?.["group-by"] as string;
+  const groupBy = directMeasure?.["group-by"] as string;
 
   const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
     if (!groupBy) return {};
@@ -157,11 +155,19 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
               <Table.Row key={i} fontSize="body.md">
                 {filteredFields.length > 0 && (
                   <Table.Cell
-                    title={t(activity?.activityData?.[filteredFields[0].id])}
+                    title={t(
+                      (
+                        activity?.activityData?.[filteredFields[0].id] ?? ""
+                      ).toString(),
+                    )}
                     truncate
                     maxWidth="200px"
                   >
-                    {t(activity?.activityData?.[filteredFields[0].id])}
+                    {t(
+                      (
+                        activity?.activityData?.[filteredFields[0].id] ?? ""
+                      ).toString(),
+                    )}
                   </Table.Cell>
                 )}
                 <Table.Cell>
@@ -178,7 +184,7 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                     }
                   >
                     <TagLabel textTransform="capitalize">
-                      {t(dataQuality!)}
+                      {t(dataQuality?.toString() ?? "")}
                     </TagLabel>
                   </Tag>
                 </Table.Cell>
@@ -191,8 +197,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                   {/*Direct measure entries are collected in tonnes by default*/}
                   {convertKgToTonnes(
                     activity?.activityData?.co2_unit === "units-tonnes"
-                      ? activity?.activityData?.co2_amount * 1000
-                      : activity?.activityData?.co2_amount,
+                      ? Number(activity?.activityData?.co2_amount) * 1000
+                      : Number(activity?.activityData?.co2_amount),
                     numberFormat,
                     "CO2e",
                   )}
@@ -200,8 +206,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
                     activity?.activityData?.n2o_unit === "units-tonnes"
-                      ? activity?.activityData?.n2o_amount * 1000
-                      : activity?.activityData?.n2o_amount,
+                      ? Number(activity?.activityData?.n2o_amount) * 1000
+                      : Number(activity?.activityData?.n2o_amount),
                     numberFormat,
                     "N2O",
                   )}
@@ -209,8 +215,8 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
                 <Table.Cell textAlign="end" truncate>
                   {convertKgToTonnes(
                     activity?.activityData?.ch4_unit === "units-tonnes"
-                      ? activity?.activityData?.ch4_amount * 1000
-                      : activity?.activityData?.ch4_amount,
+                      ? Number(activity?.activityData?.ch4_amount) * 1000
+                      : Number(activity?.activityData?.ch4_amount),
                     numberFormat,
                     "CH4",
                   )}

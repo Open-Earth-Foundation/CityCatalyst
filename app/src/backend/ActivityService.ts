@@ -39,9 +39,9 @@ export default class ActivityService {
     inventoryValueParams?: Omit<InventoryValueAttributes, "id"> | undefined;
     transaction: Transaction;
   }) {
-    let inventoryValueId = activityValue.inventoryValueId;
+    const inventoryValueId = activityValue.inventoryValueId;
 
-    let inventoryValue = await db.models.InventoryValue.findByPk(
+    const inventoryValue = await db.models.InventoryValue.findByPk(
       inventoryValueId,
       {
         transaction,
@@ -191,7 +191,7 @@ export default class ActivityService {
       );
     }
 
-    let datasourceId = activityValue.datasourceId;
+    const datasourceId = activityValue.datasourceId;
 
     // validate using the ManualInputValidationService
     await ManualInputValidationService.validateActivity({
@@ -218,7 +218,7 @@ export default class ActivityService {
           { transaction },
         );
 
-        let { totalCO2e, totalCO2eYears, gases } =
+        const { totalCO2e, totalCO2eYears, gases } =
           await CalculationService.calculateGasAmount(
             inventoryValue,
             activityValue,
@@ -342,7 +342,7 @@ export default class ActivityService {
           );
         }
 
-        let finalInventoryValueId = inventoryValueId || inventoryValue?.id;
+        const finalInventoryValueId = inventoryValueId || inventoryValue?.id;
         inventoryValue = await db.models.InventoryValue.findByPk(
           finalInventoryValueId,
           {
@@ -382,7 +382,7 @@ export default class ActivityService {
           },
           { transaction },
         );
-        let { totalCO2e, totalCO2eYears, gases } =
+        const { totalCO2e, totalCO2eYears, gases } =
           await CalculationService.calculateGasAmount(
             inventoryValue,
             activityValue,

@@ -6,7 +6,13 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import { Badge, Box, HStack, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Box,
+  HStack,
+  Text,
+  DialogOpenChangeDetails,
+} from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import React from "react";
@@ -32,7 +38,7 @@ const AccountFrozenWarningModal = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e: DialogOpenChangeDetails) => {
         onOpenChange(e.open);
         if (!e.open) {
           closeFunction();

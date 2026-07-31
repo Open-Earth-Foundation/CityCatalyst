@@ -58,6 +58,9 @@ jest.unstable_mockModule("@/services/logger", () => ({
 }));
 
 let enqueueInventoryPdfOcr: typeof import("@/backend/PdfOcrService").enqueueInventoryPdfOcr;
+let enqueueConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").enqueueConceptNotePdfOcr;
+let conceptNotePdfSourceKey: typeof import("@/backend/PdfOcrService").conceptNotePdfSourceKey;
+let retryConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").retryConceptNotePdfOcr;
 let claimPdfOcrJobs: typeof import("@/backend/PdfOcrService").claimPdfOcrJobs;
 let claimInventoryExtractionJobs: typeof import("@/backend/PdfOcrService").claimInventoryExtractionJobs;
 let getInventoryPdfOcrStatus: typeof import("@/backend/PdfOcrService").getInventoryPdfOcrStatus;
@@ -66,6 +69,9 @@ let extractInventoryRowsFromStoredMarkdown: typeof import("@/backend/PdfOcrServi
 beforeAll(async () => {
   ({
     enqueueInventoryPdfOcr,
+    enqueueConceptNotePdfOcr,
+    conceptNotePdfSourceKey,
+    retryConceptNotePdfOcr,
     claimPdfOcrJobs,
     claimInventoryExtractionJobs,
     getInventoryPdfOcrStatus,
@@ -101,6 +107,53 @@ describe("PdfOcrJob queue", () => {
     expect(importedFile.update).toHaveBeenCalledWith(
       expect.objectContaining({ importStatus: "extracting" }),
     );
+  });
+
+  it("uses the upload identity for one CA-delivered CNB OCR job", async () => {
+    const uploadId = "22222222-2222-4222-8222-222222222222";
+    const job = { status: "queued" };
+    findOrCreate.mockResolvedValue([job, false]);
+
+    await expect(enqueueConceptNotePdfOcr(uploadId)).resolves.toBe(job);
+
+    expect(findOrCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          sourceType: "concept_note_upload",
+          sourceId: uploadId,
+        },
+        defaults: expect.objectContaining({
+          deliveryTarget: "climate_advisor",
+          deliveryStatus: "pending",
+        }),
+      }),
+    );
+    expect(conceptNotePdfSourceKey(uploadId)).toBe(
+      `pdf-ocr/sources/concept_note_upload/${uploadId}/source.pdf`,
+    );
+  });
+
+  it("retries pointer delivery without resetting successful OCR", async () => {
+    const update = jest
+      .fn<(values: Record<string, unknown>) => Promise<void>>()
+      .mockResolvedValue(undefined);
+    const job = {
+      status: "succeeded",
+      attemptCount: 2,
+      deliveryStatus: "failed",
+      update,
+    } as unknown as Parameters<typeof retryConceptNotePdfOcr>[0];
+
+    await expect(retryConceptNotePdfOcr(job)).resolves.toBe("delivery");
+
+    expect(update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        deliveryStatus: "pending",
+        deliveryErrorCode: null,
+      }),
+    );
+    expect(update.mock.calls[0][0]).not.toHaveProperty("status");
+    expect(update.mock.calls[0][0]).not.toHaveProperty("attemptCount");
   });
 
   it("claims at most two due jobs atomically with SKIP LOCKED and leases", async () => {

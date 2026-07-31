@@ -19,7 +19,12 @@ import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionS
 import { ImportStatusEnum } from "@/util/enums";
 import { logger } from "@/services/logger";
 
-const SOURCE_TYPE = "inventory_import" as const;
+const INVENTORY_SOURCE_TYPE = "inventory_import" as const;
+const CONCEPT_NOTE_SOURCE_TYPE = "concept_note_upload" as const;
+
+export function conceptNotePdfSourceKey(uploadId: string): string {
+  return `pdf-ocr/sources/${CONCEPT_NOTE_SOURCE_TYPE}/${uploadId}/source.pdf`;
+}
 
 class PdfSourceError extends Error {
   constructor(
@@ -40,9 +45,12 @@ export async function enqueueInventoryPdfOcr(
   importedFile: ImportedInventoryFile,
 ): Promise<PdfOcrJob> {
   const [job] = await db.models.PdfOcrJob.findOrCreate({
-    where: { sourceType: SOURCE_TYPE, sourceId: importedFile.id },
+    where: {
+      sourceType: INVENTORY_SOURCE_TYPE,
+      sourceId: importedFile.id,
+    },
     defaults: {
-      sourceType: SOURCE_TYPE,
+      sourceType: INVENTORY_SOURCE_TYPE,
       sourceId: importedFile.id,
       status: "queued",
       attemptCount: 0,
@@ -54,6 +62,28 @@ export async function enqueueInventoryPdfOcr(
     importStatus: ImportStatusEnum.EXTRACTING,
     errorLog: null,
     lastUpdated: new Date(),
+  });
+  return job;
+}
+
+export async function enqueueConceptNotePdfOcr(
+  uploadId: string,
+): Promise<PdfOcrJob> {
+  const [job] = await db.models.PdfOcrJob.findOrCreate({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+    },
+    defaults: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+      status: "queued",
+      attemptCount: 0,
+      runAfter: new Date(),
+      deliveryTarget: "climate_advisor",
+      deliveryStatus: "pending",
+      deliveryAttemptCount: 0,
+    },
   });
   return job;
 }
@@ -121,7 +151,7 @@ export async function claimInventoryExtractionJobs(
     // status is user-visible workflow state, not an atomic worker claim.
     const jobs = await db.models.PdfOcrJob.findAll({
       where: {
-        sourceType: SOURCE_TYPE,
+        sourceType: INVENTORY_SOURCE_TYPE,
         sourceId: {
           // Filter import eligibility before LIMIT so unrelated unfinished
           // imports cannot hide later OCR results that are ready to extract.
@@ -185,21 +215,14 @@ async function heartbeat(
 }
 
 async function validateSource(
-  importedFile: ImportedInventoryFile,
+  s3Key: string,
+  knownSize?: number,
 ): Promise<void> {
   const config = getPdfOcrConfig();
-  if (!importedFile.s3Key) {
-    throw new PdfSourceError(
-      "pdf_s3_required",
-      "PDF source is not stored in S3",
-    );
-  }
-  if (Number(importedFile.fileSize) > config.maxSourcePdfBytes) {
+  if (knownSize !== undefined && knownSize > config.maxSourcePdfBytes) {
     throw new PdfSourceError("pdf_too_large", "PDF exceeds the OCR size limit");
   }
-  const metadata = await InventoryFileStorageService.getFileMetadata(
-    importedFile.s3Key,
-  );
+  const metadata = await InventoryFileStorageService.getFileMetadata(s3Key);
   if (Number(metadata.ContentLength || 0) > config.maxSourcePdfBytes) {
     throw new PdfSourceError("pdf_too_large", "PDF exceeds the OCR size limit");
   }
@@ -209,10 +232,7 @@ async function validateSource(
       "PDF source has an invalid content type",
     );
   }
-  const prefix = await InventoryFileStorageService.getFilePrefix(
-    importedFile.s3Key,
-    5,
-  );
+  const prefix = await InventoryFileStorageService.getFilePrefix(s3Key, 5);
   if (prefix.toString("ascii") !== "%PDF-") {
     throw new PdfSourceError(
       "invalid_pdf_source",
@@ -221,20 +241,34 @@ async function validateSource(
   }
 }
 
-async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
+async function resolvePdfSource(job: PdfOcrJob): Promise<{
+  s3Key: string;
+  knownSize?: number;
+}> {
+  if (job.sourceType === CONCEPT_NOTE_SOURCE_TYPE) {
+    return { s3Key: conceptNotePdfSourceKey(job.sourceId) };
+  }
   const importedFile = await db.models.ImportedInventoryFile.findByPk(
     job.sourceId,
   );
-  if (!importedFile || importedFile.fileType !== "pdf") {
+  if (!importedFile || importedFile.fileType !== "pdf" || !importedFile.s3Key) {
     throw new PdfSourceError(
       "invalid_pdf_source",
       "PDF source no longer exists",
     );
   }
-  await validateSource(importedFile);
+  return {
+    s3Key: importedFile.s3Key,
+    knownSize: Number(importedFile.fileSize),
+  };
+}
+
+async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
+  const source = await resolvePdfSource(job);
+  await validateSource(source.s3Key, source.knownSize);
   const config = getPdfOcrConfig();
   const documentUrl = await InventoryFileStorageService.createSignedDownloadUrl(
-    importedFile.s3Key!,
+    source.s3Key,
     config.presignedUrlSeconds,
   );
   const result = await convertPdfUrlToMarkdown(documentUrl);
@@ -310,7 +344,7 @@ async function failOrRetry(
       },
     },
   );
-  if (!shouldRetry && job.sourceType === SOURCE_TYPE) {
+  if (!shouldRetry && job.sourceType === INVENTORY_SOURCE_TYPE) {
     await db.models.ImportedInventoryFile.update(
       {
         importStatus: ImportStatusEnum.FAILED,
@@ -505,7 +539,6 @@ export async function processPdfOcrJobs() {
   const expiredAt = new Date();
   const exhausted = await db.models.PdfOcrJob.findAll({
     where: {
-      sourceType: SOURCE_TYPE,
       status: "running",
       attemptCount: { [Op.gte]: config.maxAttempts },
       leaseExpiresAt: { [Op.lt]: expiredAt },
@@ -522,14 +555,16 @@ export async function processPdfOcrJobs() {
       leaseExpiresAt: null,
       heartbeatAt: null,
     });
-    await db.models.ImportedInventoryFile.update(
-      {
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: "attempts_exhausted",
-        lastUpdated: expiredAt,
-      },
-      { where: { id: job.sourceId } },
-    );
+    if (job.sourceType === INVENTORY_SOURCE_TYPE) {
+      await db.models.ImportedInventoryFile.update(
+        {
+          importStatus: ImportStatusEnum.FAILED,
+          errorLog: "attempts_exhausted",
+          lastUpdated: expiredAt,
+        },
+        { where: { id: job.sourceId } },
+      );
+    }
   }
 
   const owner = `pdf-ocr-${randomUUID()}`;
@@ -555,7 +590,7 @@ export async function getInventoryPdfOcrStatus(
   importStatus?: ImportStatusEnum,
 ) {
   const job = await db.models.PdfOcrJob.findOne({
-    where: { sourceType: SOURCE_TYPE, sourceId },
+    where: { sourceType: INVENTORY_SOURCE_TYPE, sourceId },
   });
   if (!job) return null;
   const canRetry =
@@ -565,4 +600,72 @@ export async function getInventoryPdfOcrStatus(
     ...(job.errorCode ? { errorCode: job.errorCode } : {}),
     canRetry,
   };
+}
+
+export async function getConceptNotePdfOcrJob(
+  uploadId: string,
+): Promise<PdfOcrJob | null> {
+  return db.models.PdfOcrJob.findOne({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+    },
+  });
+}
+
+export function normalizeConceptNotePdfOcrStatus(job: PdfOcrJob): {
+  status: "queued" | "processing" | "ready" | "failed";
+  errorCode?: string;
+} {
+  if (job.status === "queued") return { status: "queued" };
+  if (job.status === "running") return { status: "processing" };
+  if (job.status === "failed") {
+    return {
+      status: "failed",
+      ...(job.errorCode ? { errorCode: job.errorCode } : {}),
+    };
+  }
+  if (job.deliveryStatus === "delivered") return { status: "ready" };
+  if (job.deliveryStatus === "failed") {
+    return {
+      status: "failed",
+      ...(job.deliveryErrorCode ? { errorCode: job.deliveryErrorCode } : {}),
+    };
+  }
+  return { status: "processing" };
+}
+
+export async function retryConceptNotePdfOcr(
+  job: PdfOcrJob,
+): Promise<"ocr" | "delivery" | "noop"> {
+  if (job.status === "failed") {
+    await job.update({
+      status: "queued",
+      attemptCount: 0,
+      runAfter: new Date(),
+      completedAt: null,
+      errorCode: null,
+      errorMessage: null,
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      heartbeatAt: null,
+      deliveryStatus: "pending",
+      deliveryAttemptCount: 0,
+      deliveryRunAfter: null,
+      deliveredAt: null,
+      deliveryErrorCode: null,
+      deliveryErrorMessage: null,
+    });
+    return "ocr";
+  }
+  if (job.status === "succeeded" && job.deliveryStatus !== "delivered") {
+    await job.update({
+      deliveryStatus: "pending",
+      deliveryRunAfter: new Date(),
+      deliveryErrorCode: null,
+      deliveryErrorMessage: null,
+    });
+    return "delivery";
+  }
+  return "noop";
 }

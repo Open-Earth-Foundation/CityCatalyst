@@ -20,7 +20,10 @@ from app.persistence.concept_notes.markdown import (
     ConceptNoteUploadSnapshot,
     get_concept_note_markdown_repository,
 )
-from app.routes.concept_note_markdown import get_citycatalyst_client
+from app.routes.concept_note_markdown import (
+    JSON_REQUEST_MAX_BYTES,
+    get_citycatalyst_client,
+)
 from app.services.citycatalyst_client import (
     CityCatalystClientError,
     ConceptNoteMarkdownArtifact,
@@ -42,6 +45,7 @@ class FakeCityCatalystClient:
             sha256=SHA256,
             page_count=1,
         )
+        self.markdown_error: CityCatalystClientError | None = None
 
     async def validate_user_identity(self, token: str) -> str:
         if token == "invalid":
@@ -54,6 +58,8 @@ class FakeCityCatalystClient:
         upload_id: str,
         token: str,
     ) -> ConceptNoteMarkdownArtifact:
+        if self.markdown_error:
+            raise self.markdown_error
         return self.artifact
 
 
@@ -294,6 +300,45 @@ def test_create_is_idempotent_and_metadata_is_immutable(ingest_client) -> None:
     assert response.json()["code"] == "upload_identity_conflict"
 
 
+def test_json_body_limit_applies_without_content_length(ingest_client) -> None:
+    client, _, _, run_id = ingest_client
+    body = iter(
+        [
+            b'{"padding":"',
+            b"a" * JSON_REQUEST_MAX_BYTES,
+            b'"}',
+        ]
+    )
+
+    response = client.post(
+        f"/v1/concept-notes/{run_id}/uploads",
+        content=body,
+        headers={**auth(), "Content-Type": "application/json"},
+    )
+
+    assert response.status_code == 413
+    assert response.json()["code"] == "upload_request_too_large"
+
+
+def test_json_body_limit_rejects_declared_oversize_before_reading(
+    ingest_client,
+) -> None:
+    client, _, _, run_id = ingest_client
+
+    response = client.post(
+        f"/v1/concept-notes/{run_id}/uploads",
+        content=b"{}",
+        headers={
+            **auth(),
+            "Content-Type": "application/json",
+            "Content-Length": str(JSON_REQUEST_MAX_BYTES + 1),
+        },
+    )
+
+    assert response.status_code == 413
+    assert response.json()["code"] == "upload_request_too_large"
+
+
 def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None:
     client, repository, _, run_id = ingest_client
     upload_id = uuid4()
@@ -327,6 +372,25 @@ def test_pointer_or_fetched_bytes_conflict_is_rejected(ingest_client) -> None:
     response = client.post(path, json=pointer_payload(), headers=auth())
     assert response.status_code == 422
     assert response.json()["code"] == "markdown_digest_mismatch"
+
+
+def test_terminal_cc_verification_error_is_not_made_retryable(ingest_client) -> None:
+    client, _, cc_client, run_id = ingest_client
+    upload_id = uuid4()
+    create_upload(client, run_id, upload_id)
+    cc_client.markdown_error = CityCatalystClientError(
+        "Stored Markdown failed its integrity check",
+        status_code=409,
+    )
+
+    response = client.post(
+        f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown",
+        json=pointer_payload(),
+        headers=auth(),
+    )
+
+    assert response.status_code == 409
+    assert response.json()["code"] == "cc_markdown_verification_failed"
 
 
 def test_failure_status_and_retry_lifecycle(ingest_client) -> None:

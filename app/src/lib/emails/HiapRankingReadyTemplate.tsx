@@ -1,4 +1,6 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { User } from "@/models/User";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Button,
@@ -8,9 +10,6 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
-import i18next from "@/i18n/server";
-import { ACTION_TYPES, LANGUAGES } from "@/util/types";
-import { User } from "@/models/User";
 
 export default function HiapRankingReadyTemplate({
   user,
@@ -18,7 +17,6 @@ export default function HiapRankingReadyTemplate({
   url,
 }: {
   user: User;
-  actionType: ACTION_TYPES;
   language?: string;
   url: string;
 }) {

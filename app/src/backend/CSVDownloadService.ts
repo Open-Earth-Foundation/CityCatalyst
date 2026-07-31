@@ -27,11 +27,11 @@ export type CSVActivityEntry = {
   emission_ch4?: bigint | null;
   emission_n2o?: bigint | null;
   activity_type?: string | null;
-  activity_amount?: string | null;
+  activity_amount?: string | number | null;
   activity_unit?: string | null;
   data_source_id?: string;
-  data_source_name?: string;
-  data_quality?: string;
+  data_source_name?: string | number;
+  data_quality?: string | number;
   total_co2e?: number | null;
 };
 
@@ -174,21 +174,28 @@ export default class CSVDownloadService {
       const finalActivityValues: CSVActivityEntry[] = activityValues.map(
         (activityValue) => {
           const activityTitleKey = activityValue.metadata?.activityTitle;
-          const data_quality = activityValue.metadata?.dataQuality;
-          const dataSource = activityValue.activityData?.["data-source"];
+          const data_quality = activityValue.metadata?.dataQuality.toString();
+          const dataSource =
+            activityValue.activityData?.["data-source"].toString();
 
-          const activity_type = t(activityValue?.activityData?.[activityTypeKey]); // activityValue.metadata?.activityId;
+          const activity_type = t(
+            (activityValue?.activityData?.[activityTypeKey] ?? "").toString(),
+          ); // activityValue.metadata?.activityId;
           console.log(
             { activityTypeKey, activity_type },
             activityValue?.activityData?.[activityTypeKey],
             "tried translatin",
           );
-          const activity_amount =
-            activityValue.activityData?.[activityTitleKey] ??
-            activityValue.activityData?.["activity-value"];
+          const activity_amount = Number(
+            activityValue.activityData?.[activityTitleKey?.toString() ?? ""] ??
+              activityValue.activityData?.["activity-value"],
+          );
           const activity_unit = t(
-            activityValue.activityData?.[`${activityTitleKey}-unit`] ??
-              activityValue.activityData?.["activity-unit"],
+            (
+              activityValue.activityData?.[`${activityTitleKey}-unit`] ??
+              activityValue.activityData?.["activity-unit"] ??
+              ""
+            ).toString(),
           );
           console.log(
             { activity_unit },
@@ -205,9 +212,15 @@ export default class CSVDownloadService {
           let emission_n2o = null;
 
           if (activityValue.gasValues) {
-            const co2_gas = activityValue.gasValues.find((g) => g.gas === "CO2");
-            const ch4_gas = activityValue.gasValues.find((g) => g.gas === "CH4");
-            const n2o_gas = activityValue.gasValues.find((g) => g.gas === "N2O");
+            const co2_gas = activityValue.gasValues.find(
+              (g) => g.gas === "CO2",
+            );
+            const ch4_gas = activityValue.gasValues.find(
+              (g) => g.gas === "CH4",
+            );
+            const n2o_gas = activityValue.gasValues.find(
+              (g) => g.gas === "N2O",
+            );
 
             emission_factor_co2 =
               co2_gas?.emissionsFactor?.emissionsPerActivity;

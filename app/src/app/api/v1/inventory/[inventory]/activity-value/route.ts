@@ -134,9 +134,10 @@ export const POST = apiHandler(async (req, { params, session }) => {
       session?.user.id,
     );
     return NextResponse.json({ success: !!result, data: result });
-  } catch (error: any) {
+  } catch (error) {
     // Check for database bigint conversion errors
     if (
+      error instanceof Error &&
       error.message &&
       error.message.includes("is out of range for type bigint")
     ) {
@@ -153,6 +154,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
     }
     // Handle JavaScript BigInt conversion errors
     if (
+      error instanceof Error &&
       error.message &&
       error.message.includes("Cannot convert") &&
       error.message.includes("to a BigInt")

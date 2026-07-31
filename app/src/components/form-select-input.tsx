@@ -1,5 +1,5 @@
 import { Box, Text } from "@chakra-ui/react";
-import React, { FC } from "react";
+import { FC } from "react";
 import { FieldError } from "react-hook-form";
 import { NativeSelectField, NativeSelectRoot } from "./ui/native-select";
 import { TFunction } from "i18next";

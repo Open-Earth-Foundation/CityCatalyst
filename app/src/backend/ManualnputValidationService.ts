@@ -202,7 +202,7 @@ export default class ManualInputValidationService {
       } else {
         // using the LOWER function to make the comparison case-insensitive
         return where(fn("lower", literal(`activity_data_jsonb->>'${field}'`)), {
-          [Op.eq]: value?.toLowerCase(),
+          [Op.eq]: value?.toString().toLowerCase(),
         });
       }
     });
@@ -232,7 +232,10 @@ export default class ManualInputValidationService {
           return existingValue.some((item) => newValue.includes(item));
         } else {
           // For single values (strings), do a case-insensitive comparison
-          return existingValue?.toLowerCase() === newValue?.toLowerCase();
+          return (
+            existingValue?.toString().toLowerCase() ===
+            newValue?.toString().toLowerCase()
+          );
         }
       });
 

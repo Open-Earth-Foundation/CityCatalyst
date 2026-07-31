@@ -255,6 +255,7 @@ export default function HomePage({
                 organization={orgData}
                 city={city}
                 ghgiCityData={ghgiCityData}
+                isCollaboratorRole={isCollaboratorRole}
               />
             </VStack>
           </Box>

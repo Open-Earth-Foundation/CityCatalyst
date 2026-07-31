@@ -10,6 +10,10 @@ import { OpenChangeDetails } from "@zag-js/popover";
 import { Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
 import {
   MdAdd,
+  MdArrowDropDown,
+  MdArrowDropUp,
+  MdCardTravel,
+  MdCheck,
   MdClose,
   MdKeyboardArrowRight,
   MdOutlineLocationOn,
@@ -19,13 +23,19 @@ import type {
   ProjectWithCities,
   ProjectWithCitiesResponse,
 } from "@/util/types";
-import { useGetUserProjectsQuery } from "@/services/api";
+import { api, useGetUserProjectsQuery } from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
 import { useRouter } from "next/navigation";
 import { FaLocationDot } from "react-icons/fa6";
 import { useTranslation } from "@/i18n/client";
@@ -34,6 +44,7 @@ import SearchInput from "@/components/SearchInput";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const ProjectList = ({
   t,
@@ -239,6 +250,7 @@ const SingleProjectView = ({
 const ProjectDrawer = ({
   isOpen,
   lng,
+  organizationId,
   onClose,
   onOpenChange,
   currentInventoryId,
@@ -251,9 +263,41 @@ const ProjectDrawer = ({
   currentInventoryId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
+  const router = useRouter();
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
+  const { organization, setOrganization } = useOrganizationContext();
+  const { data: organizations } = api.useGetUserOrganizationsQuery(undefined, {
+    skip: !isOpen,
+  });
+  const [getProjectsForOrganization] = api.useLazyGetProjectsQuery();
+  const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
+
+  const hasMultipleOrganizations = !!organizations && organizations.length > 1;
+
+  const currentOrganizationName = organizations?.find(
+    (org) =>
+      org.organizationId ===
+      (organization?.organizationId ?? organizationId),
+  )?.name;
+
+  async function onChangeOrganization(newOrganizationId: string) {
+    if (newOrganizationId === organization?.organizationId) return;
+    setOrganization({ organizationId: newOrganizationId });
+    const projects = await getProjectsForOrganization({
+      organizationId: newOrganizationId,
+    })
+      .unwrap()
+      .catch(() => []);
+    const cityId = projects
+      .flatMap((project) => project.cities)
+      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
+    router.push(
+      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
+    );
+    onClose();
+  }
 
   const selectProject = (projectId: string) => {
     setSelectedProject(projectId);
@@ -280,6 +324,121 @@ const ProjectDrawer = ({
     >
       <DrawerBackdrop />
       <DrawerContent>
+        <Box
+          display="flex"
+          alignItems="center"
+          bg="background.neutral"
+          px={6}
+          py={4}
+          flexShrink={0}
+        >
+          {hasMultipleOrganizations ? (
+            <MenuRoot
+              open={isOrgMenuOpen}
+              onOpenChange={(details) => setOrgMenuOpen(details.open)}
+              variant="solid"
+            >
+              <MenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  p={0}
+                  minW="0"
+                  h="auto"
+                  _hover={{ bg: "transparent", opacity: 0.8 }}
+                >
+                  <Box display="flex" alignItems="center" gap={3}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="center"
+                      boxSize="40px"
+                      borderRadius="full"
+                      bg="content.alternative"
+                      color="base.light"
+                      flexShrink={0}
+                    >
+                      <Icon as={MdCardTravel} boxSize={5} />
+                    </Box>
+                    <Text
+                      fontSize="title.md"
+                      fontWeight="bold"
+                      color="content.alternative"
+                      maxW="160px"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {currentOrganizationName}
+                    </Text>
+                    <Icon
+                      as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                      boxSize={6}
+                      color="content.alternative"
+                    />
+                  </Box>
+                </Button>
+              </MenuTrigger>
+              <MenuContent minW="220px" zIndex={2000}>
+                {organizations!.map((org) => (
+                  <MenuItem
+                    value={org.organizationId}
+                    onClick={() => onChangeOrganization(org.organizationId)}
+                    key={org.organizationId}
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      w="full"
+                    >
+                      <Text
+                        fontSize="title.md"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                      >
+                        {org.name}
+                      </Text>
+                      {org.organizationId === organization?.organizationId && (
+                        <Icon
+                          as={MdCheck}
+                          boxSize={5}
+                          color="interactive.secondary"
+                        />
+                      )}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </MenuContent>
+            </MenuRoot>
+          ) : (
+            <Box display="flex" alignItems="center" gap={3}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                boxSize="40px"
+                borderRadius="full"
+                bg="content.alternative"
+                color="base.light"
+                flexShrink={0}
+              >
+                <Icon as={MdCardTravel} boxSize={5} />
+              </Box>
+              <Text
+                fontSize="title.md"
+                fontWeight="bold"
+                color="content.alternative"
+                maxW="160px"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {currentOrganizationName}
+              </Text>
+            </Box>
+          )}
+        </Box>
         <DrawerHeader borderBottomWidth={2} borderColor="background.neutral">
           <DrawerTitle>
             <Box display="flex" justifyContent="space-between">

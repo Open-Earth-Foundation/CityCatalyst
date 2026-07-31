@@ -23,7 +23,12 @@ import {
 import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
 import { hiapServiceWrapper } from "@/backend/hiap/HiapService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
-import { ACTION_TYPES, HighImpactActionRankingStatus, LANGUAGES } from "@/util/types";
+import {
+  ACTION_TYPES,
+  AdaptationAction,
+  HighImpactActionRankingStatus,
+  LANGUAGES,
+} from "@/util/types";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -55,6 +60,54 @@ const MOCK_PLAN_RESPONSE = {
   },
 };
 
+const makeMockAction = (rankedActionId: string): AdaptationAction => ({
+  actionId: "test-action-123",
+  name: "Solar Rooftop",
+  hiaRankingId: rankedActionId,
+  type: ACTION_TYPES.Adaptation,
+  lang: "en",
+  GHGReductionPotential: null,
+  adaptationEffectiveness: "",
+
+  id: randomUUID(),
+  hazards: [],
+  sectors: [],
+  subsectors: [],
+  primaryPurposes: [],
+  description: "",
+  dependencies: [],
+  cobenefits: {
+    air_quality: 0,
+    water_quality: 0,
+    habitat: 0,
+    cost_of_living: 0,
+    housing: 0,
+    mobility: 0,
+    stakeholder_engagement: 0,
+  },
+  adaptationEffectivenessPerHazard: {
+    floods: null,
+    storms: null,
+    diseases: null,
+    droughts: null,
+    heatwaves: null,
+    wildfires: null,
+    landslides: null,
+    "sea-level-rise": null,
+  },
+  equityAndInclusionConsiderations: null,
+  costInvestmentNeeded: "",
+  timelineForImplementation: "",
+  keyPerformanceIndicators: [],
+  powersAndMandates: [],
+  biome: null,
+  isSelected: true,
+  rank: 1,
+  explanation: { explanations: { en: "" } },
+  created: new Date(),
+  last_updated: new Date(),
+});
+
 /** Mock city/emissions data for HIAP */
 const MOCK_CITY_DATA = {
   cityContextData: {
@@ -70,23 +123,27 @@ const MOCK_CITY_DATA = {
   },
 };
 
-function createMockFetch(
-  overrides?: {
-    startPlanCreation?: { taskId?: string; status?: number; body?: string };
-    checkProgress?: { status?: string; error?: string };
-    getPlan?: { plan?: object; status?: number };
-  },
-) {
+function createMockFetch(overrides?: {
+  startPlanCreation?: { taskId?: string; status?: number; body?: string };
+  checkProgress?: { status?: string; error?: string };
+  getPlan?: { plan?: object; status?: number };
+}) {
   const taskId = overrides?.startPlanCreation?.taskId ?? "mock-task-uuid-123";
 
   return jest.fn((input: string | URL | Request) => {
-    const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+    const url =
+      typeof input === "string"
+        ? input
+        : input instanceof URL
+          ? input.href
+          : input.url;
     const urlStr = typeof url === "string" ? url : "";
 
     // start_plan_creation
     if (urlStr.includes("/plan-creator/v1/start_plan_creation")) {
       const status = overrides?.startPlanCreation?.status ?? 202;
-      const body = overrides?.startPlanCreation?.body ?? JSON.stringify({ taskId });
+      const body =
+        overrides?.startPlanCreation?.body ?? JSON.stringify({ taskId });
       return Promise.resolve(
         new Response(body, {
           status,
@@ -172,7 +229,7 @@ describe("Action Plan Generation", () => {
       hiaRankingId: ranking.id,
       actionId: "test-action-123",
       rank: 1,
-      explanation: { en: "Test explanation" } as any,
+      explanation: { explanations: { en: "Test explanation" } },
       lang: "en",
       type: "mitigation",
       name: "Solar Rooftop",
@@ -187,16 +244,26 @@ describe("Action Plan Generation", () => {
     mockFetch = createMockFetch() as unknown as jest.Mock;
     globalThis.fetch = mockFetch as typeof fetch;
 
-    jest.spyOn(hiapServiceWrapper, "getCityContextAndEmissionsData").mockResolvedValue(MOCK_CITY_DATA as any);
-    jest.spyOn(ActionPlanEmailService, "sendActionPlanReadyEmailWithUrl").mockResolvedValue(undefined);
+    jest
+      .spyOn(hiapServiceWrapper, "getCityContextAndEmissionsData")
+      .mockResolvedValue(MOCK_CITY_DATA);
+    jest
+      .spyOn(ActionPlanEmailService, "sendActionPlanReadyEmailWithUrl")
+      .mockResolvedValue(undefined);
   });
 
   afterAll(async () => {
     globalThis.fetch = originalFetch;
 
-    await db.models.ActionPlan.destroy({ where: { actionId: "test-action-123" } });
-    await db.models.HighImpactActionRanked.destroy({ where: { id: rankedActionId } });
-    await db.models.HighImpactActionRanking.destroy({ where: { id: rankingId } });
+    await db.models.ActionPlan.destroy({
+      where: { actionId: "test-action-123" },
+    });
+    await db.models.HighImpactActionRanked.destroy({
+      where: { id: rankedActionId },
+    });
+    await db.models.HighImpactActionRanking.destroy({
+      where: { id: rankingId },
+    });
     await db.models.Inventory.destroy({ where: { inventoryId } });
     await cleanupTestData(testData);
 
@@ -206,11 +273,7 @@ describe("Action Plan Generation", () => {
   describe("startActionPlanJob - success flow", () => {
     it("calls HIAP API in correct order: start, check_progress, get_plan", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "test-action-123",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -254,25 +317,21 @@ describe("Action Plan Generation", () => {
 
     it("sends correct payload to start_plan_creation", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "solar-action-456",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "BR SAO",
         lng: LANGUAGES.es,
         inventoryId,
       });
 
-      const startCall = mockFetch.mock.calls.find((call: any[]) =>
+      const startCall = mockFetch.mock.calls.find((call) =>
         String(call[0]).includes("start_plan_creation"),
       );
       expect(startCall).toBeDefined();
-      const body = JSON.parse((startCall as any)[1].body);
+      const body = JSON.parse((startCall as { body: string }[])[1].body);
       expect(body).toMatchObject({
         countryCode: "BR",
-        actionId: "solar-action-456",
+        actionId: "test-action-123",
         language: "es",
         cityData: {
           cityContextData: MOCK_CITY_DATA.cityContextData,
@@ -283,11 +342,7 @@ describe("Action Plan Generation", () => {
 
     it("saves action plan to database", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "test-action-123",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -310,11 +365,7 @@ describe("Action Plan Generation", () => {
       });
 
       await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "test-action-123",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -322,16 +373,14 @@ describe("Action Plan Generation", () => {
         createdBy: testData.userId,
       });
 
-      expect(ActionPlanEmailService.sendActionPlanReadyEmailWithUrl).toHaveBeenCalled();
+      expect(
+        ActionPlanEmailService.sendActionPlanReadyEmailWithUrl,
+      ).toHaveBeenCalled();
     });
 
     it("returns plan, timestamp, and actionName", async () => {
       const result = await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "test-action-123",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -356,11 +405,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: {
-            actionId: "test-action-123",
-            name: "Solar Rooftop",
-            hiaRankingId: rankedActionId,
-          } as any,
+          action: makeMockAction(rankedActionId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -381,11 +426,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: {
-            actionId: "test-action-123",
-            name: "Solar Rooftop",
-            hiaRankingId: rankedActionId,
-          } as any,
+          action: makeMockAction(rankedActionId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -406,11 +447,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: {
-            actionId: "test-action-123",
-            name: "Solar Rooftop",
-            hiaRankingId: rankedActionId,
-          } as any,
+          action: makeMockAction(rankedActionId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -428,11 +465,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: {
-            actionId: "test-action-123",
-            name: "Solar Rooftop",
-            hiaRankingId: rankedActionId,
-          } as any,
+          action: makeMockAction(rankedActionId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -450,11 +483,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: {
-            actionId: "test-action-123",
-            name: "Solar Rooftop",
-            hiaRankingId: rankedActionId,
-          } as any,
+          action: makeMockAction(rankedActionId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -469,37 +498,31 @@ describe("Action Plan Generation", () => {
   describe("startActionPlanJob - data flow", () => {
     it("uses getCityContextAndEmissionsData for payload", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "test-action-123",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
         inventoryId,
       });
 
-      expect(hiapServiceWrapper.getCityContextAndEmissionsData).toHaveBeenCalledWith(inventoryId);
+      expect(
+        hiapServiceWrapper.getCityContextAndEmissionsData,
+      ).toHaveBeenCalledWith(inventoryId);
     });
 
     it("extracts country code from locode (first 2 chars)", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: {
-          actionId: "test-action-123",
-          name: "Solar Rooftop",
-          hiaRankingId: rankedActionId,
-        } as any,
+        action: makeMockAction(rankedActionId),
         cityId: testData.cityId,
         cityLocode: "CR SJ",
         lng: LANGUAGES.en,
         inventoryId,
       });
 
-      const startCall = mockFetch.mock.calls.find((call: any[]) =>
+      const startCall = mockFetch.mock.calls.find((call) =>
         String(call[0]).includes("start_plan_creation"),
       );
-      const body = JSON.parse((startCall as any)[1].body);
+      const body = JSON.parse((startCall as { body: string }[])[1].body);
       expect(body.countryCode).toBe("CR");
     });
   });

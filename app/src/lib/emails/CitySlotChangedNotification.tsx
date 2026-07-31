@@ -1,4 +1,7 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { Project } from "@/models/Project";
+import { User } from "@/models/User";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Container,
@@ -10,10 +13,6 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
-import { User } from "@/models/User";
-import { Project } from "@/models/Project";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
 
 export default function CitySlotChangedNotificationTemplate({
   url,

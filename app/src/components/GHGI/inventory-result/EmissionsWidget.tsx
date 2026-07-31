@@ -124,7 +124,7 @@ const EmissionsWidget = ({
           Total GHG Emissions in {{ year: inventory?.year }}
         </Trans>
       ),
-      value: inventory?.totalEmissions,
+      value: inventory?.totalEmissions ?? undefined,
       icon: FiHeart,
       showProgress: false,
       isLoading: false,

@@ -45,9 +45,12 @@ import { db } from "@/models";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
+import UserService from "@/backend/UserService";
 
 export const PATCH = apiHandler(async (req, { params }) => {
   const { organization: organizationId } = params;
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
+
   const org = await db.models.Organization.findOne({
     where: {
       organizationId,

@@ -1,6 +1,6 @@
 import {
-  GET as listClients,
   POST as addClient,
+  GET as listClients,
 } from "@/app/api/v1/client/route";
 
 import {
@@ -17,12 +17,8 @@ import {
   OAuthClientI18N,
   OAuthClientI18NAttributes,
 } from "@/models/OAuthClientI18N";
-import {
-  expectStatusCode,
-  mockRequest,
-  setupTests,
-} from "../helpers";
-import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import { FeatureFlags, setFeatureFlag } from "@/util/feature-flags";
+import { expectStatusCode, mockRequest, setupTests } from "../helpers";
 
 const testClients: OAuthClientAttributes[] = [
   {
@@ -77,7 +73,7 @@ const testClientI18Ns: OAuthClientI18NAttributes[] = [
   },
 ];
 
-const clientCreationArgs: any = {
+const clientCreationArgs = {
   redirectUri: "https://created.example/api/callback/whatever",
   name: {
     en: "A client getting created",
@@ -131,7 +127,9 @@ describe("OAuth Client API", () => {
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toBeGreaterThanOrEqual(3);
       for (const testClient of testClients) {
-        const client = data.find((c: any) => c.clientId == testClient.clientId);
+        const client = data.find(
+          (c: { clientId: string }) => c.clientId == testClient.clientId,
+        );
         expect(client).toBeDefined();
         expect(client.redirectUri).toEqual(testClient.redirectURI);
         expect(typeof client.name).toBe("object");
@@ -189,7 +187,9 @@ describe("OAuth Client API", () => {
       await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
-      const found = data.find((cl: any) => cl.clientId === createdClientId);
+      const found = data.find(
+        (cl: { clientId: string }) => cl.clientId === createdClientId,
+      );
       expect(found).toBeDefined();
     });
 
@@ -300,7 +300,9 @@ describe("OAuth Client API", () => {
       await expectStatusCode(res, 200);
       const { data } = await res.json();
       expect(Array.isArray(data)).toBe(true);
-      const found = data.find((cl: any) => cl.clientId === toDelete.clientId);
+      const found = data.find(
+        (cl: { clientId: string }) => cl.clientId === toDelete.clientId,
+      );
       expect(found).toBeUndefined();
     });
 

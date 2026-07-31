@@ -1,4 +1,3 @@
-import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -26,7 +25,6 @@ export function InviteUserToMultipleCitiesTemplate({
   url?: string;
   email: string;
   cities: City[];
-  invitingUser: { name: string; email: string };
   brandInformation?: {
     color: string;
     logoUrl: string;

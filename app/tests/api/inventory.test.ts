@@ -186,7 +186,8 @@ describe("Inventory API", () => {
     await expectStatusCode(res, 200);
     assert.equal(res.headers.get("content-type"), "application/vnd.ms-excel");
     assert.ok(res.headers.get("content-disposition")?.startsWith("attachment"));
-    await res.blob();
+    const body = await res.blob();
+    assert.ok(body.size > 0);
   });
 
   it(

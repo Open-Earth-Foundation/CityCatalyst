@@ -263,38 +263,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               )}
             </Tabs.List>
             <Tabs.Content value="account">
-              <Box
-                w="full"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Box w="full">
-                  <Box mb="48px">
-                    <Heading
-                      fontSize="headline.sm"
-                      mb={4}
-                      fontWeight="semibold"
-                      lineHeight="32px"
-                      fontStyle="normal"
-                      textTransform="capitalize"
-                      color="content.secondary"
-                    >
-                      {t("account")}
-                    </Heading>
-                    <Text
-                      fontSize="body.lg"
-                      fontFamily="body"
-                      fontWeight="normal"
-                      lineHeight="16px"
-                      color="content.tertiary"
-                    >
-                      {t("account-description")}
-                    </Text>
-                  </Box>
-                  <AccountSettingsTab t={t} />
-                </Box>
-              </Box>
+              <AccountSettingsTab t={t} />
             </Tabs.Content>
             <Tabs.Content value="team">
               <TeamSettings

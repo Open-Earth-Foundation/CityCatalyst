@@ -382,6 +382,7 @@ describe.skip("Activity Value API", () => {
       params: Promise.resolve({ inventory: inventory.inventoryId }),
     });
 
+    await res3.json();
     expect(res3.status).toBe(200);
   });
 });

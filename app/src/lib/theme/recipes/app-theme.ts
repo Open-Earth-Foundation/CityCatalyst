@@ -580,6 +580,10 @@ export const appTheme = createSystem(defaultConfig, {
         },
 
         body: { value: "#232640" },
+
+        icon: {
+          default: { value: "#1C1B1F" },
+        },
       },
 
       fonts: {
@@ -707,6 +711,7 @@ export const appTheme = createSystem(defaultConfig, {
         rounded: { value: "8px" },
         "rounded-xl": { value: "16px" },
         "rounded-xxl": { value: "20px" },
+        pill: { value: "40px" },
       },
       borders: {
         inputBox: { value: "1px solid #D7D8FB" },

@@ -632,7 +632,7 @@ const translateActionPlanImpl = async (
     throw new Error(`Failed to start translation: ${startText}`);
   }
 
-  let startJson: any;
+  let startJson: { taskId: string };
   try {
     startJson = JSON.parse(startText);
   } catch {

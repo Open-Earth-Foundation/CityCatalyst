@@ -12,6 +12,7 @@ import { findMethodology } from "@/util/form-schema";
 import UnitConversionService from "@/backend/UnitConversionService";
 import { literal, Op } from "sequelize";
 import { logger } from "@/services/logger";
+import { FormulaInput } from "@/models/FormulaInput";
 
 type GasValueWithEmissionsFactor = Omit<GasValueCreationAttributes, "id"> & {
   emissionsFactor?:
@@ -109,7 +110,7 @@ function convertDataToDefaultUnit(
   activityValue: ActivityValue,
   methodologyId: string,
   referenceNumber: string,
-): Record<string, any> {
+): Record<string, number | string | string[] | Decimal> {
   const methododology = findMethodology(methodologyId, referenceNumber);
   if (!methododology) {
     throw new createHttpError.NotFound(
@@ -137,7 +138,9 @@ function convertDataToDefaultUnit(
   }
   // deal with activity title value
 
-  const data: Record<string, any> = { ...activityValue.activityData };
+  const data: Record<string, number | string | string[] | Decimal> = {
+    ...activityValue.activityData,
+  };
   // check if it has a default unit property
   if (activity?.["default-units"]) {
     const val = data[activity?.["activity-title"] as string];
@@ -148,10 +151,10 @@ function convertDataToDefaultUnit(
     const fromUnit = data[`${activity?.["activity-title"]}-unit`];
     data[activity?.["activity-title"] as string] = new Decimal(
       UnitConversionService.convertUnits(
-        val,
-        fromUnit,
+        Number(val),
+        fromUnit?.toString(),
         activity["default-units"],
-        fuelType,
+        fuelType?.toString(),
       ),
     );
   }
@@ -162,8 +165,8 @@ function convertDataToDefaultUnit(
       if (field.units && field["default-units"]) {
         data[field.id] = new Decimal(
           UnitConversionService.convertUnits(
-            val,
-            data[`${field.id}-unit`],
+            Number(val),
+            data[`${field.id}-unit`].toString(),
             field?.["default-units"],
           ),
         );
@@ -192,19 +195,23 @@ export function handleDirectMeasureFormula(
     let amount;
     try {
       const unit = data[unitKey];
-      const rawValue = data[key] ?? 0;
-      
+      const rawValue = Number(data[key]) ?? 0;
+
       // Validate that we have a supported unit
-      if (unit && !["units-kilograms", "units-tonnes"].includes(unit)) {
+      if (
+        unit &&
+        !["units-kilograms", "units-tonnes"].includes(unit.toString())
+      ) {
         throw new createHttpError.BadRequest(
           `Unsupported unit '${unit}' for ${key}. Supported units: kg, tonnes`,
         );
       }
-      
+
       // Convert to kg (our storage standard)
-      amount = unit === "units-tonnes"
-        ? new Decimal(rawValue).mul(1000)
-        : new Decimal(rawValue);
+      amount =
+        unit === "units-tonnes"
+          ? new Decimal(rawValue).mul(1000)
+          : new Decimal(rawValue);
     } catch (error) {
       if (error instanceof createHttpError.BadRequest) {
         throw error;
@@ -255,10 +262,15 @@ export async function handleIncinerationWasteFormula(
     );
   }
 
-  const activityTitle = activityValue.metadata?.["activityTitle"];
+  const activityTitle = (
+    activityValue.metadata?.["activityTitle"] ?? ""
+  ).toString();
   const massOfIncineratedWaste = data[activityTitle] as number;
   const wastCompositionKey = formulaMapping["waste-composition"];
-  const wasteComposition = data[wastCompositionKey];
+  const wasteComposition = data[wastCompositionKey] as unknown as Record<
+    string,
+    number
+  >;
   const technologyKey = formulaMapping["technology"];
   const technology = data[technologyKey] as string;
   const boilerTypeKey = formulaMapping["boiler-type"];
@@ -430,7 +442,9 @@ export function handleVkt1Formula(
       );
     }
     const emissions = Decimal.mul(
-      data["activity-value"] * data["intensity"],
+      new Decimal(Number(data["activity-value"])).mul(
+        Number(data["intensity"]),
+      ),
       emissionsFactor.emissionsPerActivity,
     );
     return { gas: gasValue.gas, amount: emissions };
@@ -470,12 +484,16 @@ export async function handleMethaneCommitmentFormula(
   }
 
   const percentageBreakdown =
-    data[`${methodologyIdentifier}-waste-composition`] ?? {};
+    (data[`${methodologyIdentifier}-waste-composition`] as unknown as Record<
+      string,
+      number
+    >) ?? {};
 
   // TODO this dropdown input is not part of manual input spec for III.1.1
   const landfillType = data["landfill-type"];
 
-  const recoveredMethaneFraction = data["methane-collected-and-removed"] || 0;
+  const recoveredMethaneFraction =
+    Number(data["methane-collected-and-removed"]) || 0;
   const oxidationFactor =
     data[`${methodologyIdentifier}-oxidation-factor`] ===
     "oxidation-factor-well-managed-landfill"
@@ -533,7 +551,7 @@ export async function handleMethaneCommitmentFormula(
   const methaneCorrectionFactor =
     oxidationFactor === 0.1
       ? 1.0
-      : METHANE_CORRECTION_FACTORS[landfillType] ?? 0.6;
+      : (METHANE_CORRECTION_FACTORS[landfillType?.toString()] ?? 0.6);
 
   // GPC assumption, Fraction of degradable organic carbon that is ultimately degraded
   const DOC_FRACTION = 0.6;
@@ -547,7 +565,7 @@ export async function handleMethaneCommitmentFormula(
     (16 / 12.0);
 
   const ch4Emissions = Decimal.mul(
-    totalSolidWaste,
+    Number(totalSolidWaste),
     methaneGenerationPotential,
   ).mul(
     Decimal.sub(1, recoveredMethaneFraction).mul(
@@ -561,9 +579,11 @@ export async function handleMethaneCommitmentFormula(
 function getMassBasedActivityAmount(activityValue: ActivityValue): number {
   // For kg/kg fuels, we want MASS (kg) without density conversion
   const rawData = { ...activityValue.activityData };
-  const activityAmountKey = activityValue.metadata?.["activityTitle"];
-  const fuelAmount = rawData[activityAmountKey] || 0;
-  const fuelUnit = rawData[`${activityAmountKey}-unit`] || "units-kilograms";
+  const activityAmountKey =
+    activityValue.metadata?.["activityTitle"]?.toString() ?? "";
+  const fuelAmount = Number(rawData[activityAmountKey] || 0);
+  const fuelUnit =
+    rawData[`${activityAmountKey}-unit`]?.toString() || "units-kilograms";
 
   // Convert to kg if needed, but NO density conversion
   if (fuelUnit === "units-kilograms") {
@@ -591,8 +611,8 @@ function getVolumeBasedActivityAmount(
     inventoryValue.gpcReferenceNumber!,
   );
 
-  const activityAmountKey = activityValue.metadata?.["activityTitle"];
-  return data?.[activityAmountKey] || 0;
+  const activityAmountKey = activityValue.metadata?.["activityTitle"] ?? "";
+  return Number(data?.[activityAmountKey.toString()]) || 0;
 }
 
 export function handleActivityAmountTimesEmissionsFactorFormula(
@@ -681,7 +701,9 @@ export async function handleIndustrialWasteWaterFormula(
   const industryType = data[`${prefixKey}-industry-type`];
   const treatmentType = data[`${prefixKey}-treatment-type`];
   const treatmentStatus = data[`${prefixKey}-treatment-status`];
-  let wastewaterGenerated = data[`${prefixKey}-wastewater-generated`]; // should this be gotten from UI or
+  let wastewaterGenerated = data[
+    `${prefixKey}-wastewater-generated`
+  ] as unknown as FormulaInput | null; // should this be gotten from UI or
   const countryCode = inventoryValue.inventory.city.countryLocode;
   const formulaInputsDOC = await db.models.FormulaInput.findOne({
     where: {
@@ -763,14 +785,14 @@ export async function handleIndustrialWasteWaterFormula(
 
   // TODO is new Decimal/ BigNumber required for these calculations?
   const totalOrganicWaste = Decimal.mul(
-    totalIndustrialProduction,
-    wastewaterGenerated,
+    Number(totalIndustrialProduction),
+    Number(wastewaterGenerated),
   ).mul(degradableOrganicComponents);
   const emissionsFactor = methaneProductionCapacity * methaneCorrectionFactor;
   const totalMethaneProduction = totalOrganicWaste
-    .sub(removedSludge)
+    .sub(Number(removedSludge))
     .mul(emissionsFactor)
-    .sub(methaneRecovered);
+    .sub(Number(methaneRecovered));
 
   const amount = totalMethaneProduction.ceil();
   return [{ gas: "CH4", amount }];
@@ -802,7 +824,7 @@ export async function handleDomesticWasteWaterFormula(
 
   const removedSludge = data["total-organic-sludge-removed"];
   const methaneRecovered = data[`${prefixKey}-methane-recovered`];
-  const totalPopulation = data["total-population"];
+  const totalPopulation = Number(data["total-population"]);
   const collectionStatus = data[`${prefixKey}-collection-status`];
   const isCollectedWasteWater =
     collectionStatus === "collection-status-type-wastewater-collected";
@@ -928,9 +950,9 @@ export async function handleDomesticWasteWaterFormula(
   );
 
   const totalMethaneProduction = totalOrganicWaste
-    .sub(removedSludge)
+    .sub(Number(removedSludge))
     .mul(EFj)
-    .sub(methaneRecovered);
+    .sub(Number(methaneRecovered));
 
   const ch4amount = totalMethaneProduction.round();
 
@@ -971,7 +993,7 @@ export async function handleDomesticWasteWaterFormula(
   const ef_fluent = 0.005;
 
   const n20Emission = new Decimal(n2oValueFirstTerm)
-    .sub(removedSludge)
+    .sub(Number(removedSludge))
     .mul(ef_fluent)
     .mul(44 / 28);
 
@@ -1043,10 +1065,11 @@ export async function handleBiologicalTreatmentFormula(
   }
 
   const organicWasteMass = data["total-organic-waste-treated"] ?? 0;
-  const totalCH4Emitted = Decimal.mul(organicWasteMass, emissionsFactor).div(
-    1000,
-  );
+  const totalCH4Emitted = Decimal.mul(
+    Number(organicWasteMass),
+    emissionsFactor,
+  ).div(1000);
   const totalCH4Recovered = data["total-of-ch4-recovered"] ?? 0; // TODO check this.
-  const resultCH4 = totalCH4Emitted.round().sub(totalCH4Recovered);
+  const resultCH4 = totalCH4Emitted.round().sub(Number(totalCH4Recovered));
   return [{ gas: "CH4", amount: resultCH4 }];
 }

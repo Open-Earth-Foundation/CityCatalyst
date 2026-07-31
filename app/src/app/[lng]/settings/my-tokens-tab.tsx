@@ -332,11 +332,11 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           setIsTokenDisplayModalOpen(e.open);
         }}
       >
-        <DialogContent minW="779px" minH="764px">
+        <DialogContent minW="779px" minH="764px" px="24px">
           <DialogHeader>
             <HeadlineSmall text={t("token-created-title")} />
           </DialogHeader>
-          <DialogCloseTrigger />
+          <DialogCloseTrigger mt="10px" />
           <DialogBody>
             <VStack gap="36px" align="stretch">
               <Box
@@ -374,14 +374,20 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 fontSize="label.md"
               >
                 <Box
-                  p="10px 16px"
+                  h="48px"
+                  px="16px"
                   borderRadius="4px"
                   borderWidth="1px"
                   borderColor="border.neutral"
                   wordBreak="break-all"
                   w="full"
                 >
-                  <HStack justify="space-between" align="center" w="full">
+                  <HStack
+                    justify="space-between"
+                    align="center"
+                    w="full"
+                    h="full"
+                  >
                     <Text flex="1" fontSize="body.md" fontFamily="body">
                       {showToken ? createdToken : "•".repeat(40)}
                     </Text>
@@ -499,6 +505,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       <DialogRoot
         open={isDeleteModalOpen}
         onOpenChange={(e) => setIsDeleteModalOpen(e.open)}
+        placement="center"
       >
         <DialogContent>
           <DialogHeader>

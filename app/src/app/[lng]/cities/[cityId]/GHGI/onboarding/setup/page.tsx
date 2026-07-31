@@ -29,6 +29,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { useGetCityQuery } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import ThirdPartyInventoryDataStep, {
   THIRD_PARTY_DATA_FILL_YES,
 } from "@/components/steps/GHGI/set-third-party-step";
@@ -232,11 +233,14 @@ export default function OnboardingSetup(props: {
       logger.info({ populationData }, "Onboarding - Sending population data");
 
       await addCityPopulation(populationData).unwrap();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to add city or population");
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
       makeErrorToast(
         t("failed-to-add-city"),
-        t(err.data?.error?.message ?? ""),
+        t(errorData?.error?.message ?? ""),
       );
       setConfirming(false);
       return;
@@ -281,9 +285,12 @@ export default function OnboardingSetup(props: {
         // Default behavior: route to home page
         router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err }, "Failed to create new inventory!");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
+      makeErrorToast("failed-to-create-inventory", errorData?.error?.message);
       setConfirming(false);
     }
   };

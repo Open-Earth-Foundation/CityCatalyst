@@ -185,7 +185,7 @@ export default class ActionPlanService {
       });
 
       return actionPlan;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to create action plan");
       throw createHttpError.InternalServerError("Failed to create action plan");
     }
@@ -208,7 +208,7 @@ export default class ActionPlanService {
       });
 
       return actionPlan;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plan by ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
@@ -259,7 +259,7 @@ export default class ActionPlanService {
         order: [["created", "DESC"]],
       });
       return actionPlans;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plans by city ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plans",
@@ -305,7 +305,7 @@ export default class ActionPlanService {
       }
 
       return await this.getActionPlanById(input.id);
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to update action plan");
       throw createHttpError.InternalServerError("Failed to update action plan");
     }
@@ -321,7 +321,7 @@ export default class ActionPlanService {
       });
 
       return deletedRowsCount > 0;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to delete action plan");
       throw createHttpError.InternalServerError("Failed to delete action plan");
     }
@@ -375,7 +375,7 @@ export default class ActionPlanService {
 
         return { actionPlan: newPlan, created: true };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to upsert action plan");
       throw createHttpError.InternalServerError("Failed to upsert action plan");
     }
@@ -404,7 +404,7 @@ export default class ActionPlanService {
       // Transform back to legacy format
       const planData = this.transformToLegacyFormat(actionPlan);
       return { planData };
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plan by key");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
@@ -520,7 +520,7 @@ export default class ActionPlanService {
       }
 
       return actionPlans;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, cityId, language, actionId },
         "Failed to get action plans",

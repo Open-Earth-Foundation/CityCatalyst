@@ -21,6 +21,7 @@ import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { isPasswordPatternValid } from "@/util/validation";
 import { getHomePath } from "@/util/routes";
+import { getApiErrorMessage } from "@/util/helpers";
 
 type Inputs = {
   inventory?: string;
@@ -133,8 +134,8 @@ export default function Signup() {
         logger.error(loginResponse, "Failed to login");
         setError(t("invalid-email-password"));
       }
-    } catch (error: any) {
-      setError(error);
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, "Something went wrong"));
     }
   };
 

@@ -39,6 +39,7 @@ import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import ProjectLimitModal from "@/components/project-limit";
 
 type Inputs = { city: string } & GHGIFormInputs;
@@ -224,11 +225,14 @@ export default function OnboardingSetup(props: {
         countryPopulation: countryPopulation!,
         countryPopulationYear: countryPopulationYear!,
       }).unwrap();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to add population");
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
       makeErrorToast(
         t("failed-to-add-city"),
-        t(err.data?.error?.message ?? ""),
+        t(errorData?.error?.message ?? ""),
       );
       setConfirming(false);
       return;
@@ -271,9 +275,12 @@ export default function OnboardingSetup(props: {
           `/${lng}/cities/${createdCityId}/GHGI/${inventory.inventoryId}`,
         );
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to create inventory");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
+      makeErrorToast("failed-to-create-inventory", errorData?.error?.message);
       setConfirming(false);
     }
   };
@@ -333,11 +340,14 @@ export default function OnboardingSetup(props: {
             projectId: EnterpriseMode ? selectedProjectId : undefined,
           }).unwrap();
           setCreatedCityId(city?.cityId ?? null);
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err }, "Onboarding - Failed to add city");
+          const errorData = isFetchBaseQueryError(err)
+            ? (err.data as { error?: { message?: string } })
+            : undefined;
           makeErrorToast(
             t("failed-to-add-city"),
-            t(err.data?.error?.message ?? ""),
+            t(errorData?.error?.message ?? ""),
           );
           setIsCreatingCity(false);
           return;

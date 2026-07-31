@@ -33,7 +33,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
   const [createChatThread] = useCreateChatThreadMutation();
   const [createThreadId] = useCreateThreadIdMutation();
 
-  const handleError = (_error: any, errorMessage: string) => {
+  const handleError = (_error: unknown, errorMessage: string) => {
     const { showErrorToast } = UseErrorToast({
       title: t("an-error-occurred"),
       description: errorMessage,
@@ -153,8 +153,8 @@ export function useChat({ inventoryId, t }: UseChatProps) {
           content: text,
         }),
       });
-    } catch (error: any) {
-      if (error.name !== "AbortError") {
+    } catch (error: unknown) {
+      if (!(error instanceof Error) || error.name !== "AbortError") {
         // Remove empty assistant message if no response was received
         if (!assistantStartedResponding) {
           setMessages((prev) => removeLastEmptyAssistantMessage(prev));

@@ -52,7 +52,7 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { Tooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
-import { convertKgToTonnes } from "@/util/helpers";
+import { convertKgToTonnes, getApiErrorMessage } from "@/util/helpers";
 import { bigIntToDecimal } from "@/util/big_int";
 import { getTranslationFromDict } from "@/i18n";
 import { DataCheckIcon } from "@/components/icons";
@@ -185,12 +185,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
         );
         onSourceDrawerClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to connect data source",
       );
-      showError("data-source-connect-failed", error.data?.error?.message);
+      showError("data-source-connect-failed", getApiErrorMessage(error));
     } finally {
       setConnectingDataSourceId(null);
       refetchDataSources();
@@ -212,7 +212,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
       setNewlyConnectedDataSourceIds(
         newlyConnectedDataSourceIds.filter((id) => id !== source.datasourceId),
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to disconnect data source",

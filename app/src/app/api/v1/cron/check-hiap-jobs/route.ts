@@ -178,9 +178,11 @@ export async function GET(req: NextRequest) {
             }
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.error(
-          { jobId: job.jobId, error: error.message },
+          { jobId: job.jobId, error: errorMessage },
           "Error checking/processing HIAP job - marking as FAILURE",
         );
 
@@ -189,7 +191,7 @@ export async function GET(req: NextRequest) {
           await db.models.HighImpactActionRanking.update(
             {
               status: HighImpactActionRankingStatus.FAILURE,
-              errorMessage: `Job check failed: ${error.message}`,
+              errorMessage: `Job check failed: ${errorMessage}`,
             },
             {
               where: {
@@ -204,9 +206,15 @@ export async function GET(req: NextRequest) {
             "Marked PENDING rankings as FAILURE due to job check error",
           );
           completedJobs++;
-        } catch (updateError: any) {
+        } catch (updateError: unknown) {
           logger.error(
-            { jobId: job.jobId, error: updateError.message },
+            {
+              jobId: job.jobId,
+              error:
+                updateError instanceof Error
+                  ? updateError.message
+                  : String(updateError),
+            },
             "Failed to mark rankings as FAILURE",
           );
         }
@@ -268,12 +276,12 @@ export async function GET(req: NextRequest) {
               "Started next batch",
             );
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error(
             {
               projectId: project.projectId,
               actionType: project.type,
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
             },
             "Error starting batch",
           );
@@ -308,14 +316,19 @@ export async function GET(req: NextRequest) {
       startedBatches,
       durationMs: duration,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(
-      { error: error.message, stack: error.stack, durationMs: duration },
+      {
+        error: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
+        durationMs: duration,
+      },
       "❌ Cron job FINISHED with error",
     );
     return NextResponse.json(
-      { error: "Internal server error - " + error.message },
+      { error: "Internal server error - " + errorMessage },
       { status: 500 },
     );
   }

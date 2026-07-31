@@ -9,6 +9,30 @@ export function isFetchBaseQueryError(
   return typeof error === "object" && error != null && "status" in error;
 }
 
+// Extracts a human-readable message from an RTK Query mutation/query rejection
+// (FetchBaseQueryError | SerializedError, the type `.unwrap()` throws) or a
+// plain Error, falling back to `fallback` if nothing usable is found.
+export function getApiErrorMessage(error: unknown, fallback = ""): string {
+  if (isFetchBaseQueryError(error)) {
+    if ("error" in error && typeof error.error === "string") {
+      return error.error;
+    }
+    const data = error.data as
+      | { message?: string; error?: { message?: string } }
+      | undefined;
+    return data?.error?.message || data?.message || fallback;
+  }
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message?: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message || fallback;
+  }
+  return fallback;
+}
+
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
   lng?: string,

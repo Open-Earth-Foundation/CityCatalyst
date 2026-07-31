@@ -65,7 +65,7 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { OAuthClient } from "@/models/OAuthClient";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -170,8 +170,8 @@ async function handleAuthorizationCodeRequest(
       tr.code,
       key
     )
-  } catch (error: any) {
-    if (error.name === "TokenExpiredError") {
+  } catch (error: unknown) {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
     } else {
       throw createHttpError.BadRequest("Invalid reset token.");
@@ -282,8 +282,8 @@ async function handleRefreshTokenRequest(
       rtr.refresh_token,
       key
     )
-  } catch (error: any) {
-    if (error.name === "TokenExpiredError") {
+  } catch (error: unknown) {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
     } else {
       throw createHttpError.BadRequest("Invalid reset token.");

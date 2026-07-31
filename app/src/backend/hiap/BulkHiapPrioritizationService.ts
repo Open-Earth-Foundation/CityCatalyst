@@ -657,13 +657,13 @@ export class BulkHiapPrioritizationService {
             city.inventoryId,
           );
         citiesContextData.push(contextData);
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error(
           {
             cityId: city.cityId,
             inventoryId: city.inventoryId,
             locode: city.locode,
-            error: error.message,
+            error: error instanceof Error ? error.message : String(error),
           },
           "Failed to get context data for city",
         );

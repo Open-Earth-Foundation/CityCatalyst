@@ -76,7 +76,7 @@ export const authOptions: NextAuthOptions = {
           user = await db.models.User.findOne({
             where: { email: credentials.email.toLowerCase() },
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err: err }, "Failed to login:");
           return null;
         }

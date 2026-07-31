@@ -220,12 +220,15 @@ export const startBulkActionRankingJob = async (
       const contextData =
         await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
       citiesData.push(contextData);
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { inventoryId, error },
         `Failed to get context data for city ${locode}`,
       );
-      failed.push({ inventoryId, error: error.message });
+      failed.push({
+        inventoryId,
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -331,8 +334,8 @@ export const checkSingleActionRankingJob = async (
     let singleResponse;
     try {
       singleResponse = await hiapApiWrapper.getPrioritizationResult(jobId);
-    } catch (error: any) {
-      if (error.message?.includes("409")) {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes("409")) {
         logger.warn(
           { jobId, error: error.message },
           "Result not ready yet (409 Conflict), will retry on next cron run",
@@ -486,14 +489,17 @@ async function processBulkJobResults(
         },
         "Saved ranked actions for city in all languages",
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { rankingId: ranking.id, locode: ranking.locode, error },
         "Failed to save ranked actions for city",
       );
       await ranking.update({
         status: HighImpactActionRankingStatus.FAILURE,
-        errorMessage: error.message || "Failed to save ranked actions",
+        errorMessage:
+          error instanceof Error
+            ? error.message
+            : "Failed to save ranked actions",
       });
     }
   }
@@ -552,8 +558,8 @@ export const checkBulkActionRankingJob = async (
     let bulkResponse;
     try {
       bulkResponse = await hiapApiWrapper.getBulkPrioritizationResult(jobId);
-    } catch (error: any) {
-      if (error.message?.includes("409")) {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes("409")) {
         logger.warn(
           { jobId, error: error.message },
           "Result not ready yet (409 Conflict), will retry on next cron run",

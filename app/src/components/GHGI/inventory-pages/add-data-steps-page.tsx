@@ -99,7 +99,7 @@ import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { getParamValueRequired } from "@/util/helpers";
+import { getApiErrorMessage, getParamValueRequired } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
@@ -409,12 +409,12 @@ export default function AddDataSteps() {
         );
         onSourceDrawerClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to connect data source",
       );
-      showError("data-source-connect-failed", error.data?.error?.message);
+      showError("data-source-connect-failed", getApiErrorMessage(error));
     } finally {
       setConnectingDataSourceId(null);
       onSearchDataSourcesClicked();

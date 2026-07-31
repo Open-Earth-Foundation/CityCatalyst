@@ -37,6 +37,7 @@ import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import { logger } from "@/services/logger";
+import { getApiErrorMessage, isFetchBaseQueryError } from "@/util/helpers";
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -318,12 +319,19 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
           duration: 5000,
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Check if error is about emissions data
-      const errorData = error?.data?.error || {};
+      type NotationKeyErrorData = {
+        message?: string;
+        data?: { translationKey?: string; itemName?: string };
+      };
+      const errorData: NotationKeyErrorData =
+        (isFetchBaseQueryError(error) &&
+          (error.data as { error?: NotationKeyErrorData })?.error) ||
+        {};
       const translationKey = errorData.data?.translationKey;
       const itemName = errorData.data?.itemName;
-      const errorMessage = errorData.message || error?.message || "";
+      const errorMessage = errorData.message || getApiErrorMessage(error);
       const hasEmissionsData =
         translationKey === "error-cannot-set-notation-key-emissions-data" ||
         errorMessage.includes("already has emissions data");

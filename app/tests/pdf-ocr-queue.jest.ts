@@ -61,6 +61,7 @@ let enqueueInventoryPdfOcr: typeof import("@/backend/PdfOcrService").enqueueInve
 let enqueueConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").enqueueConceptNotePdfOcr;
 let conceptNotePdfSourceKey: typeof import("@/backend/PdfOcrService").conceptNotePdfSourceKey;
 let retryConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").retryConceptNotePdfOcr;
+let normalizeConceptNotePdfOcrStatus: typeof import("@/backend/PdfOcrService").normalizeConceptNotePdfOcrStatus;
 let claimPdfOcrJobs: typeof import("@/backend/PdfOcrService").claimPdfOcrJobs;
 let claimInventoryExtractionJobs: typeof import("@/backend/PdfOcrService").claimInventoryExtractionJobs;
 let getInventoryPdfOcrStatus: typeof import("@/backend/PdfOcrService").getInventoryPdfOcrStatus;
@@ -72,6 +73,7 @@ beforeAll(async () => {
     enqueueConceptNotePdfOcr,
     conceptNotePdfSourceKey,
     retryConceptNotePdfOcr,
+    normalizeConceptNotePdfOcrStatus,
     claimPdfOcrJobs,
     claimInventoryExtractionJobs,
     getInventoryPdfOcrStatus,
@@ -154,6 +156,36 @@ describe("PdfOcrJob queue", () => {
     );
     expect(update.mock.calls[0][0]).not.toHaveProperty("status");
     expect(update.mock.calls[0][0]).not.toHaveProperty("attemptCount");
+  });
+
+  it("distinguishes retryable OCR failure from retryable delivery failure", () => {
+    expect(
+      normalizeConceptNotePdfOcrStatus({
+        status: "failed",
+        deliveryStatus: "delivered",
+        errorCode: "mistral_unavailable",
+      } as never),
+    ).toEqual({
+      status: "failed",
+      stage: "ocr",
+      canRetry: true,
+      retryKind: "ocr",
+      errorCode: "mistral_unavailable",
+    });
+
+    expect(
+      normalizeConceptNotePdfOcrStatus({
+        status: "succeeded",
+        deliveryStatus: "failed",
+        deliveryErrorCode: "ca_delivery_rejected",
+      } as never),
+    ).toEqual({
+      status: "failed",
+      stage: "delivery",
+      canRetry: true,
+      retryKind: "delivery",
+      errorCode: "ca_delivery_rejected",
+    });
   });
 
   it("claims at most two due jobs atomically with SKIP LOCKED and leases", async () => {

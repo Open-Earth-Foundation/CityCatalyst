@@ -20,7 +20,7 @@ interface CreateTokenFormProps {
   isSubmitting?: boolean;
 }
 
-/** Inline create-token form shown in place of the create-token modal. */
+/** Inline create-token form. */
 export default function CreateTokenForm({
   t,
   tokenName,
@@ -53,18 +53,13 @@ export default function CreateTokenForm({
             onChange={(e) => onTokenNameChange(e.target.value)}
             h="48px"
             borderRadius="4px"
-            borderColor="border.neutral"
-            shadow="sm"
+            borderColor="border.default"
             bg="base.light"
             _placeholder={{ color: "content.tertiary" }}
           />
         </Field>
 
-        <Field
-          label={t("expiration")}
-          flex="1"
-          labelColor="content.secondary"
-        >
+        <Field label={t("expiration")} flex="1" labelColor="content.secondary">
           <NativeSelectRoot w="full">
             <NativeSelectField
               value={expiresIn}
@@ -75,15 +70,9 @@ export default function CreateTokenForm({
               shadow="sm"
               bg="base.light"
             >
-              <option value="30">
-                30 {t("days")}
-              </option>
-              <option value="90">
-                90 {t("days")}
-              </option>
-              <option value="365">
-                1 {t("year")}
-              </option>
+              <option value="30">30 {t("days")}</option>
+              <option value="90">90 {t("days")}</option>
+              <option value="365">1 {t("year")}</option>
               <option value="never">{t("never")}</option>
             </NativeSelectField>
           </NativeSelectRoot>
@@ -93,7 +82,7 @@ export default function CreateTokenForm({
       <HStack justifyContent="flex-end" gap="16px">
         <Button
           variant="outline"
-          h="48px"
+          h="63px"
           minW="120px"
           onClick={onCancel}
           textTransform="uppercase"
@@ -105,7 +94,7 @@ export default function CreateTokenForm({
         </Button>
         <Button
           variant="solid"
-          h="48px"
+          h="63px"
           minW="160px"
           onClick={onSubmit}
           loading={isSubmitting}

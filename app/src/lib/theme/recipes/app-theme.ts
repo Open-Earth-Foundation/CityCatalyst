@@ -215,6 +215,10 @@ export const appTheme = createSystem(defaultConfig, {
           disabledDefault: {
             value: "#EBEBEB",
           },
+          /** Hover / pressed background for icon control buttons (e.g. more-vert). */
+          controlHover: {
+            value: "#D1D1DC",
+          },
         },
         border: {
           neutral: {

@@ -422,8 +422,8 @@ const TeamSettings = ({
                                 aria-label="more-icon"
                                 variant="ghost"
                                 color="content.tertiary"
-                                _hover={{ bg: "#E7E7ED" }}
-                                _expanded={{ bg: "#D1D1DC" }}
+                                _hover={{ bg: "background.controlHover" }}
+                                _expanded={{ bg: "background.controlHover" }}
                               >
                                 <Icon as={MdMoreVert} size="lg" />
                               </IconButton>

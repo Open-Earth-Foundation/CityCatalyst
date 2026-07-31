@@ -332,7 +332,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           setIsTokenDisplayModalOpen(e.open);
         }}
       >
-        <DialogContent minW="779px" maxH="764px">
+        <DialogContent minW="779px" minH="764px">
           <DialogHeader>
             <HeadlineSmall text={t("token-created-title")} />
           </DialogHeader>
@@ -370,7 +370,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               <Field
                 label={t("your-token")}
                 fontWeight="medium"
-                fontFamily="heading"
+                fontFamily="body"
                 fontSize="label.md"
               >
                 <Box
@@ -422,7 +422,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 label={t("mcp-usage-example")}
                 fontWeight="medium"
                 fontSize="label.md"
-                color="content.secondary"
+                color="content.tertiary"
               >
                 <Box
                   p="16px"
@@ -484,7 +484,11 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             </VStack>
           </DialogBody>
           <DialogFooter>
-            <Button h="48px" onClick={() => setIsTokenDisplayModalOpen(false)}>
+            <Button
+              h="63px"
+              w="172px"
+              onClick={() => setIsTokenDisplayModalOpen(false)}
+            >
               {t("done")}
             </Button>
           </DialogFooter>

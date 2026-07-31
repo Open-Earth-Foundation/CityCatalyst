@@ -509,7 +509,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("delete-token")}</DialogTitle>
+            <HeadlineSmall text={t("delete-token")} />
           </DialogHeader>
           <DialogCloseTrigger />
           <DialogBody>

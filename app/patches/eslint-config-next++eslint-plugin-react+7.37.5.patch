@@ -1,0 +1,13 @@
+diff --git a/node_modules/eslint-config-next/node_modules/eslint-plugin-react/lib/util/version.js b/node_modules/eslint-config-next/node_modules/eslint-plugin-react/lib/util/version.js
+index c9dc683..00b5ce2 100644
+--- a/node_modules/eslint-config-next/node_modules/eslint-plugin-react/lib/util/version.js
++++ b/node_modules/eslint-config-next/node_modules/eslint-plugin-react/lib/util/version.js
+@@ -28,7 +28,7 @@ function resetDetectedVersion() {
+ 
+ function resolveBasedir(contextOrFilename) {
+   if (contextOrFilename) {
+-    const filename = typeof contextOrFilename === 'string' ? contextOrFilename : contextOrFilename.getFilename();
++    const filename = typeof contextOrFilename === 'string' ? contextOrFilename : (typeof contextOrFilename.getFilename === 'function' ? contextOrFilename.getFilename() : contextOrFilename.filename);
+     const dirname = path.dirname(filename);
+     try {
+       if (fs.statSync(filename).isFile()) {

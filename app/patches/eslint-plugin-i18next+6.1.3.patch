@@ -1,0 +1,35 @@
+diff --git a/node_modules/eslint-plugin-i18next/lib/rules/no-literal-string.js b/node_modules/eslint-plugin-i18next/lib/rules/no-literal-string.js
+index 88b5f06..5819388 100644
+--- a/node_modules/eslint-plugin-i18next/lib/rules/no-literal-string.js
++++ b/node_modules/eslint-plugin-i18next/lib/rules/no-literal-string.js
+@@ -15,7 +15,7 @@ const {
+ function isValidFunctionCall(context, options, { callee }) {
+   if (callee.type === 'Import') return true;
+ 
+-  const sourceText = context.getSourceCode().getText(callee);
++  const sourceText = context.sourceCode.getText(callee);
+ 
+   return shouldSkip(options.callees, sourceText);
+ }
+@@ -109,7 +109,7 @@ module.exports = {
+     function report(node) {
+       context.report({
+         node,
+-        message: `${message}: ${context.getSourceCode().getText(node.parent)}`,
++        message: `${message}: ${context.sourceCode.getText(node.parent)}`,
+       });
+     }
+ 
+@@ -203,9 +203,9 @@ module.exports = {
+       //
+ 
+       JSXElement(node) {
+-        const fullComponentName = context
+-          .getSourceCode()
+-          .getText(node.openingElement.name);
++        const fullComponentName = context.sourceCode.getText(
++          node.openingElement.name
++        );
+         indicatorStack.push(
+           shouldSkip(options['jsx-components'], fullComponentName)
+         );

@@ -1,3 +1,44 @@
+/**
+ * @swagger
+ * /api/v1/internal/ca/concept-note-uploads/{uploadId}/markdown:
+ *   get:
+ *     operationId: getConceptNoteUploadMarkdown
+ *     summary: Read verified CC-owned Markdown for Climate Advisor
+ *     description: Requires Climate Advisor service authentication plus the CC-issued user bearer token. CA never receives S3 credentials or a signed URL.
+ *     tags:
+ *       - concept-notes-internal
+ *     parameters:
+ *       - in: path
+ *         name: uploadId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Verified Markdown bytes streamed by CityCatalyst
+ *         headers:
+ *           X-Markdown-S3-Key:
+ *             description: Stable CC S3 object key used as pointer identity, not an access credential
+ *             schema:
+ *               type: string
+ *           X-Markdown-SHA256:
+ *             schema:
+ *               type: string
+ *           X-Page-Count:
+ *             schema:
+ *               type: integer
+ *         content:
+ *           text/markdown:
+ *             schema:
+ *               type: string
+ *       401:
+ *         description: Climate Advisor service or user authentication is missing
+ *       404:
+ *         description: Completed Markdown was not found
+ *       409:
+ *         description: Stored Markdown failed its SHA-256 integrity check
+ */
 import { createHash } from "node:crypto";
 
 import createHttpError from "http-errors";

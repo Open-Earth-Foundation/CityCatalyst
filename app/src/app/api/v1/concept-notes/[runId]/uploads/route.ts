@@ -1,7 +1,81 @@
-import { randomUUID } from "node:crypto";
+/**
+ * @swagger
+ * /api/v1/concept-notes/{runId}/uploads:
+ *   post:
+ *     operationId: createConceptNoteUpload
+ *     summary: Register and queue an authorized Concept Note PDF upload
+ *     description: Identical run, user, filename, label, and PDF bytes replay the same upload identity.
+ *     tags:
+ *       - concept-notes
+ *     parameters:
+ *       - in: path
+ *         name: runId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required: [file]
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *               source_label:
+ *                 type: string
+ *                 maxLength: 255
+ *                 nullable: true
+ *     responses:
+ *       200:
+ *         description: Identical upload already completed
+ *       202:
+ *         description: Upload registered and conversion queued, processing, or replayed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               required: [upload_id, status, stage, can_retry]
+ *               properties:
+ *                 upload_id:
+ *                   type: string
+ *                   format: uuid
+ *                 status:
+ *                   type: string
+ *                   enum: [queued, processing, ready, failed]
+ *                 stage:
+ *                   type: string
+ *                   enum: [ocr, delivery, complete]
+ *                 can_retry:
+ *                   type: boolean
+ *                 retry_kind:
+ *                   type: string
+ *                   enum: [ocr, delivery]
+ *       400:
+ *         description: Invalid multipart request
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: City or run access denied
+ *       413:
+ *         description: PDF exceeds the 20 MiB limit
+ *       415:
+ *         description: Only PDF uploads are accepted
+ *       422:
+ *         description: Invalid filename, label, empty file, or PDF signature
+ *       502:
+ *         description: Climate Advisor returned an invalid upload identity
+ *       503:
+ *         description: Source storage or OCR queueing is unavailable
+ */
+import { createHash } from "node:crypto";
 
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
+import { v5 as uuidv5 } from "uuid";
 import { z } from "zod";
 
 import {
@@ -12,6 +86,8 @@ import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   conceptNotePdfSourceKey,
   enqueueConceptNotePdfOcr,
+  getConceptNotePdfOcrJob,
+  normalizeConceptNotePdfOcrStatus,
 } from "@/backend/PdfOcrService";
 import {
   callConceptNoteApi,
@@ -29,6 +105,27 @@ const createResponseSchema = z.object({
 
 function requestId(req: Request): string | undefined {
   return req.headers.get("x-request-id")?.trim() || undefined;
+}
+
+function conceptNoteUploadId(args: {
+  runId: string;
+  userId: string;
+  filename: string;
+  sourceLabel: string | null;
+  fileBuffer: Buffer;
+}): string {
+  const contentSha256 = createHash("sha256")
+    .update(args.fileBuffer)
+    .digest("hex");
+  const identity = JSON.stringify([
+    "citycatalyst-concept-note-upload-v1",
+    args.runId,
+    args.userId,
+    args.filename,
+    args.sourceLabel,
+    contentSha256,
+  ]);
+  return uuidv5(identity, uuidv5.URL);
 }
 
 export const POST = apiHandler(async (req, { session, params }) => {
@@ -94,7 +191,13 @@ export const POST = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.UnprocessableEntity("Source label is too long");
   }
 
-  const uploadId = randomUUID();
+  const uploadId = conceptNoteUploadId({
+    runId,
+    userId,
+    filename,
+    sourceLabel,
+    fileBuffer,
+  });
   const createResponse = await callConceptNoteApi({
     path: `/v1/concept-notes/${runId}/uploads`,
     userId,
@@ -126,8 +229,33 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
+  const existingJob = await getConceptNotePdfOcrJob(uploadId);
+  if (existingJob) {
+    const state = normalizeConceptNotePdfOcrStatus(existingJob);
+    if (created.data.status === "failed" && state.status !== "failed") {
+      await updateConceptNoteUpload({
+        runId,
+        uploadId,
+        userId,
+        action: "retry",
+        requestId: currentRequestId,
+      });
+    }
+    return NextResponse.json(
+      {
+        upload_id: uploadId,
+        status: state.status,
+        stage: state.stage,
+        can_retry: state.canRetry,
+        ...(state.retryKind ? { retry_kind: state.retryKind } : {}),
+      },
+      { status: state.status === "ready" ? 200 : 202 },
+    );
+  }
+
   const sourceKey = conceptNotePdfSourceKey(uploadId);
   let failureCode = "source_storage_failed";
+  let job: Awaited<ReturnType<typeof enqueueConceptNotePdfOcr>>;
   try {
     await InventoryFileStorageService.putFile(
       sourceKey,
@@ -135,9 +263,8 @@ export const POST = apiHandler(async (req, { session, params }) => {
       "application/pdf",
     );
     failureCode = "ocr_enqueue_failed";
-    await enqueueConceptNotePdfOcr(uploadId);
+    job = await enqueueConceptNotePdfOcr(uploadId);
   } catch {
-    await InventoryFileStorageService.deleteFile(sourceKey).catch(() => {});
     await updateConceptNoteUpload({
       runId,
       uploadId,
@@ -151,8 +278,26 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
+  if (created.data.status === "failed") {
+    await updateConceptNoteUpload({
+      runId,
+      uploadId,
+      userId,
+      action: "retry",
+      requestId: currentRequestId,
+    });
+  }
+
+  const state = normalizeConceptNotePdfOcrStatus(job);
+
   return NextResponse.json(
-    { upload_id: uploadId, status: "queued" },
+    {
+      upload_id: uploadId,
+      status: state.status,
+      stage: state.stage,
+      can_retry: state.canRetry,
+      ...(state.retryKind ? { retry_kind: state.retryKind } : {}),
+    },
     { status: 202 },
   );
 });

@@ -67,8 +67,9 @@ workflow, following the same direction as the Stationary Energy workflow:
    but not durable chat.
 3. The datateam managed CNB reference database stores reusable funder and
    funded-project tables behind typed integration contracts.
-4. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
-   optionally passes the completed Markdown to CA for CNB ingestion.
+4. PDF ingestion uses the shared CC converter. CC owns Mistral OCR and storage,
+   hands CA the stable result pointer, and serves verified Markdown through the
+   authenticated internal read route.
 5. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
@@ -365,7 +366,7 @@ flowchart TB
     Edit --> Draft
     Draft --> Complete([completed])
 
-    IngestNote["CC owns PDF conversion and Markdown storage.<br/>CA receives .md only when needed; selected excerpts enter the context bundle."]
+    IngestNote["CC owns PDF conversion and Markdown storage.<br/>CA stores the object pointer and reads bytes through authenticated CC."]
     ContextNote["Context bundle combines CC data,<br/>selected source excerpts, funder rubric/template,<br/>and matched funded projects."]
     Ingest -.-> IngestNote
     Context -.-> ContextNote
@@ -878,10 +879,13 @@ the identifier into the Climate Advisor workflow.
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
 
-For uploads, `upload_id` is created by the authenticated CityCatalyst upload
-route. CA first creates or replays the run-bound upload row; only then does CC
-store the PDF under a deterministic key and create or reuse the OCR job. An
-upload ID already bound to another run or immutable filename/label is rejected.
+For uploads, `upload_id` is derived by the authenticated CityCatalyst upload
+route from the run, user, immutable filename/label, and PDF content digest. An
+identical request therefore replays the same identity, while changed bytes or
+metadata create a new upload. CA first creates or replays the run-bound upload
+row; only then does CC store the PDF under a deterministic key and create or
+reuse the OCR job. An upload ID already bound to another run or immutable
+filename/label is rejected.
 
 After conversion, CA verifies the artifact through CC's authenticated internal
 Markdown read endpoint, then stores `markdown_s3_key`, the verified
@@ -1197,41 +1201,53 @@ The converted artifact follows these Markdown-shape requirements:
   present; and
 - narrative sections remain available for CNB evidence and context selection.
 
-These requirements govern converter output. CA remains an optional Markdown
-consumer and does not participate in OCR.
+These requirements govern converter output. CA verifies and consumes Markdown
+only through the authenticated CC read boundary and does not participate in OCR.
 
-Each PDF has a durable CC-created `upload_id`. CC converts it internally with
-`source_type = concept_note_upload` and `source_id = upload_id`. A run may
-contain many uploads, so `run_id`, filename, and S3 keys are not conversion
-identities. The upload route enforces the shared 20 MB source-PDF upload limit,
-and the CC processor enforces the ten-minute job timeout. The 20 MB limit does
-not apply to the resulting Markdown artifact or the optional CA request body.
-There is no page-count acceptance limit. `page_count` remains result metadata
-validated against the ordered Markdown page markers.
+Each PDF has a durable CC-derived `upload_id`. Identical run, user, immutable
+filename/label, and PDF bytes derive the same ID, making request replay
+idempotent without allowing different content to overwrite the source. CC
+converts it internally with `source_type = concept_note_upload` and
+`source_id = upload_id`. A run may contain many distinct uploads. The upload
+route enforces the shared 20 MB source-PDF upload limit, and the CC processor
+enforces the ten-minute job timeout. The 20 MB limit does not apply to the
+resulting Markdown artifact. There is no page-count acceptance limit.
+`page_count` remains result metadata validated against the ordered Markdown page
+markers.
 
-The browser sends PDF bytes only to the authenticated CC upload route. CA never
-receives the source PDF, S3 credentials, S3 keys, signed result URLs, Mistral
-configuration, or OCR retry instructions.
+The browser sends PDF bytes only to the authenticated CC upload route. CA
+receives the stable Markdown **object key** as pointer metadata, but never the
+source PDF, bucket credentials, AWS access keys, signed URLs, Mistral
+configuration, or OCR retry instructions. The object key is not an access
+credential: CA cannot read CC S3 directly. It retrieves Markdown by `upload_id`
+through CC's authenticated internal read route; CC resolves the stored
+`PdfOcrJob.result_s3_key`, reads S3, verifies SHA-256, and streams the bytes.
 
 Each upload is handled independently:
 
-1. `POST .../{run_id}/uploads` verifies run access, stores the PDF in CC,
-   creates the immutable CC source record, creates or reuses the CC OCR job, and
-   returns `202`.
+1. `POST .../{run_id}/uploads` verifies run access, derives or replays the
+   immutable upload identity, creates or replays the authoritative CA row,
+   stores the PDF in CC, creates or reuses the CC OCR job, and returns `202`.
 2. The CC processor converts the PDF, validates the Markdown shape, stores the
    authoritative `.md` in CC S3, and records its pointer and SHA-256 digest in
    CC PostgreSQL.
 3. CC marks OCR `succeeded`. Conversion is complete even if CA is unavailable.
-4. When CNB needs the document, CC optionally calls
-   `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the
-   Markdown, filename, source label, page count, and digest. It uses the existing
+4. CC calls
+   `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the stable
+   Markdown object key, filename, source label, page count, and digest. It sends
+   no Markdown bytes in this pointer-delivery request and uses the existing
    CC-issued user-scoped bearer token.
-5. CA rechecks run permission, rejects an upload ID already bound to another
-   run, validates the digest, durably registers the Markdown, and returns `202`.
-6. CA then performs excerpt selection, indexing, summarization, and context
+5. CA rechecks run permission and calls CC's authenticated internal Markdown
+   read route by `upload_id`. CC reads the object and returns verified bytes plus
+   the stable key, digest, and page-count headers.
+6. CA validates those bytes against the delivered metadata, rejects an upload ID
+   already bound to another run, durably registers the pointer, and returns
+   `202`.
+7. CA can then perform excerpt selection, indexing, summarization, and context
    bundle rebuilding. These steps are not part of conversion.
-7. A failed OCR retry may call Mistral again. A failed CA handoff retries the
-   stored Markdown only and never repeats successful OCR.
+8. A failed OCR retry may call Mistral again. A failed pointer delivery or
+   authenticated read retries the stored result only and never repeats
+   successful OCR.
 
 Repeated handoff with the same upload and digest is idempotent. A different
 digest for the same immutable upload returns
@@ -1239,7 +1255,7 @@ digest for the same immutable upload returns
 another upload in the same run.
 
 Other document types require a separate CC normalizer before they can enter the
-optional CA Markdown-ingest boundary.
+CA pointer-registration and authenticated Markdown-read boundary.
 
 ## Document Workspace
 
@@ -1593,8 +1609,10 @@ Rules:
 - Repeated delivery of the same immutable upload and digest is idempotent. A
   different digest for the same upload returns
   `409 markdown_identity_conflict`.
-- Receives no source PDF, S3 key, signed URL, Mistral configuration, or CC OCR
-  status and never writes CC conversion state.
+- Receives no source PDF, S3 credentials, signed URL, Mistral configuration, or
+  CC OCR status and never writes CC conversion state. It does receive the stable
+  Markdown object key as opaque pointer identity, but can retrieve bytes only
+  through authenticated CC.
 
 #### `concept_note_process_markdown`
 

@@ -615,24 +615,39 @@ export async function getConceptNotePdfOcrJob(
 
 export function normalizeConceptNotePdfOcrStatus(job: PdfOcrJob): {
   status: "queued" | "processing" | "ready" | "failed";
+  stage: "ocr" | "delivery" | "complete";
+  canRetry: boolean;
+  retryKind?: "ocr" | "delivery";
   errorCode?: string;
 } {
-  if (job.status === "queued") return { status: "queued" };
-  if (job.status === "running") return { status: "processing" };
+  if (job.status === "queued") {
+    return { status: "queued", stage: "ocr", canRetry: false };
+  }
+  if (job.status === "running") {
+    return { status: "processing", stage: "ocr", canRetry: false };
+  }
   if (job.status === "failed") {
     return {
       status: "failed",
+      stage: "ocr",
+      canRetry: true,
+      retryKind: "ocr",
       ...(job.errorCode ? { errorCode: job.errorCode } : {}),
     };
   }
-  if (job.deliveryStatus === "delivered") return { status: "ready" };
+  if (job.deliveryStatus === "delivered") {
+    return { status: "ready", stage: "complete", canRetry: false };
+  }
   if (job.deliveryStatus === "failed") {
     return {
       status: "failed",
+      stage: "delivery",
+      canRetry: true,
+      retryKind: "delivery",
       ...(job.deliveryErrorCode ? { errorCode: job.deliveryErrorCode } : {}),
     };
   }
-  return { status: "processing" };
+  return { status: "processing", stage: "delivery", canRetry: false };
 }
 
 export async function retryConceptNotePdfOcr(

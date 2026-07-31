@@ -43,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import DataTableCore from "@/components/ui/data-table-core";
 import type { PersonalAccessToken } from "@/util/types";
 import CreateTokenForm from "./CreateTokenForm";
+import { BiInfoCircle } from "react-icons/bi";
 
 interface MyTokensTabProps {
   lng: string;
@@ -322,6 +323,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       {/* Token Display Modal (shown after creation) */}
       <DialogRoot
         open={isTokenDisplayModalOpen}
+        placement="center"
         onOpenChange={(e) => {
           if (!e.open) {
             setCreatedToken(null);
@@ -330,21 +332,39 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           setIsTokenDisplayModalOpen(e.open);
         }}
       >
-        <DialogContent minW="550px">
+        <DialogContent minW="779px" maxH="764px">
           <DialogHeader>
-            <DialogTitle>{t("token-created")}</DialogTitle>
+            <HeadlineSmall text={t("token-created-title")} />
           </DialogHeader>
           <DialogCloseTrigger />
           <DialogBody>
             <VStack gap="16px" align="stretch">
               <Box
                 p="16px"
-                bg="sentiment.warningLight"
-                borderRadius="8px"
+                borderRadius="6px"
+                bg="sentiment.warningSubtle"
                 borderWidth="1px"
-                borderColor="sentiment.warningDefault"
+                borderColor="sentiment.warningMuted"
+                display="flex"
+                gap="12px"
               >
-                <BodyMedium text={t("token-copy-warning")} />
+                <Icon
+                  as={BiInfoCircle}
+                  boxSize={5}
+                  color="sentiment.warningFg"
+                />
+                <Box>
+                  <BodyMedium
+                    text={t("token-copy-warning-title")}
+                    fontWeight="medium"
+                    fontFamily="heading"
+                    color="sentiment.warningFg"
+                  />
+                  <BodyMedium
+                    text={t("token-copy-warning-description")}
+                    color="sentiment.warningFg"
+                  />
+                </Box>
               </Box>
 
               <Field label={t("your-token")}>

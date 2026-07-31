@@ -246,41 +246,32 @@ function SubSectorPage(props: {
                 <Box>
                   <BreadcrumbRoot
                     gap="8px"
-                    fontFamily="heading"
-                    fontWeight="bold"
-                    letterSpacing="widest"
-                    fontSize="14px"
-                    textTransform="uppercase"
+                    fontFamily="body"
+                    fontWeight="medium"
+                    fontSize="body.sm"
+                    lineHeight="16"
                     separator={
                       <Icon as={MdChevronRight} color="gray.500" h="24px" />
                     }
                   >
                     <BreadcrumbLink
                       href={pathname.replace(`/${step}/${subsector}`, "")}
-                      color="content.tertiary"
-                      textDecoration="none"
-                      _hover={{
-                        textDecoration: "underline",
-                        textUnderlineOffset: "4px",
-                      }}
+                      color="content.link"
+                      textDecoration="underline"
                       truncate
                     >
                       {t("all-sectors")}
                     </BreadcrumbLink>
                     <BreadcrumbLink
                       href={pathname.replace(`/${subsector}`, "")}
-                      color="content.tertiary"
-                      textDecoration="none"
-                      _hover={{
-                        textDecoration: "underline",
-                        textUnderlineOffset: "4px",
-                      }}
+                      color="content.link"
+                      textDecoration="underline"
                       truncate
                     >
                       {t(getSectorName(step))}
                     </BreadcrumbLink>
                     <BreadcrumbCurrentLink
-                      color="content.link"
+                      color="content.secondary"
                       textDecoration="none"
                     >
                       <Text truncate lineClamp={1}>

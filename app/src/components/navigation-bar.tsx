@@ -276,7 +276,12 @@ export function NavigationBar({
                         width="24"
                       />
 
-                      <Text fontSize="title.md" fontWeight="bold">
+                      <Text
+                        fontSize="title.sm"
+                        fontWeight="medium"
+                        letterSpacing="wide"
+                        lineHeight="20"
+                      >
                         {i18next.language.toUpperCase()}
                       </Text>
 
@@ -350,8 +355,10 @@ export function NavigationBar({
                           overflow="hidden"
                           textOverflow="ellipsis"
                           whiteSpace="nowrap"
-                          fontSize="title.md"
-                          fontWeight="bold"
+                          fontSize="title.sm"
+                          fontWeight="medium"
+                          letterSpacing="wide"
+                          lineHeight="20"
                         >
                           {currentOrganizationName}
                         </Text>

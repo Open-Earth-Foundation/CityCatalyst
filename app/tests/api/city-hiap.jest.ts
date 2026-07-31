@@ -80,19 +80,22 @@ describe("Inventory HIAP API", () => {
     jest
       .spyOn(HiapApiService.hiapApiWrapper, "getPrioritizationResult")
       .mockResolvedValue({
+        metadata: { locode: "XX-TST", rankedDate: "" },
         rankedActionsMitigation: [
           {
             actionId: "test-action-1",
             rank: 1,
             explanation: {
-              en: "Test explanation for mitigation",
-              es: "Explicación de prueba para mitigación",
-              pt: "Explicação de teste para mitigação",
+              explanations: {
+                en: "Test explanation for mitigation",
+                es: "Explicación de prueba para mitigación",
+                pt: "Explicação de teste para mitigação",
+              },
             },
           },
         ],
         rankedActionsAdaptation: [],
-      } as any);
+      });
   });
 
   afterAll(async () => {
@@ -193,7 +196,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: randomUUID(),
         rank: 1,
-        explanation: { en: "Test explanation" } as any,
+        explanation: { explanations: { en: "Test explanation" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action",
@@ -244,7 +247,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: randomUUID(),
         rank: 1,
-        explanation: { en: "Test explanation" } as any,
+        explanation: { explanations: { en: "Test explanation" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action 1",
@@ -256,7 +259,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: randomUUID(),
         rank: 2,
-        explanation: { en: "Test explanation" } as any,
+        explanation: { explanations: { en: "Test explanation" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action 2",

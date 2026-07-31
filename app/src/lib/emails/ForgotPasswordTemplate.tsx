@@ -1,4 +1,5 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Button,
@@ -9,8 +10,6 @@ import {
   Preview,
   Text,
 } from "@react-email/components";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
 
 export default function ForgotPasswordTemplate({
   url,

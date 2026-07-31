@@ -582,15 +582,6 @@ export enum HighImpactActionRankingStatus {
   EXCLUDED = "EXCLUDED",
 }
 
-export interface BulkHiapPrioritizationResult {
-  cityId: string;
-  cityName: string;
-  inventoryId: string;
-  status: HighImpactActionRankingStatus;
-  taskId: string;
-  error?: string;
-}
-
 export interface HiapJob {
   cityId: string;
   cityName: string;
@@ -766,19 +757,6 @@ export interface GHGInventorySummary {
   };
   topEmissions: { bySubSector: TopEmission[] };
   year: number;
-}
-
-export interface ModuleDataSummaryResponse {
-  [key: string]: GHGInventorySummary | HIAPSummary | CCRASummary | any;
-}
-
-export interface DashboardResponseType {
-  data: ModuleDataSummaryResponse;
-  metadata: {
-    cityId: string;
-    cityName: string;
-    projectId: string;
-  };
 }
 
 export interface CityDashboardResponse {

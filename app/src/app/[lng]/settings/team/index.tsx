@@ -43,7 +43,7 @@ import UpgradeToAdminModal from "./UpgradeToAdminModal";
 import { useSession } from "next-auth/react";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
-import ProjectSearchInput from "./ProjectSearchInput";
+import ProjectSearchInput from "../ProjectSearchInput";
 import { TagMapping } from "../project";
 import { TFunction } from "i18next";
 

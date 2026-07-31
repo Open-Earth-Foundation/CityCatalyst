@@ -48,7 +48,7 @@ import { OrganizationInvite } from "@/models/OrganizationInvite";
 export const PATCH = apiHandler(async (req, { params, session }) => {
   const { organization: organizationId } = params;
   const { contactEmail: email } = updateUserRoleSchema.parse(await req.json());
-  UserService.validateIsAdmin(session);
+  await UserService.validateIsAdminOrOrgAdmin(session, organizationId as string);
 
   const org = await Organization.findByPk(organizationId as string, {
     include: [{ model: Theme, as: "theme" }],

@@ -727,6 +727,7 @@ export default class UserService {
 
     const users: {
       email: string;
+      name?: string | null;
       status: InviteStatus;
       role: OrganizationRole;
       cityId?: string;
@@ -751,12 +752,14 @@ export default class UserService {
 
     const dedupedOrgAdmin: {
       email: string;
+      name?: string | null;
       status: InviteStatus;
       role: OrganizationRole;
     }[] = orgAdmins
       .filter((orgAdmin) => !invitedEmails.has(orgAdmin.user.email))
       .map((orgAdmin) => ({
         email: orgAdmin.user.email as string,
+        name: orgAdmin.user.name ?? null,
         status: InviteStatus.ACCEPTED,
         role: OrganizationRole.ORG_ADMIN,
       }));
@@ -764,6 +767,7 @@ export default class UserService {
     users.push(
       ...orgInvites.map((invite) => ({
         email: invite?.email as string,
+        name: null,
         status: invite?.status as InviteStatus,
         role: OrganizationRole.ORG_ADMIN,
       })),
@@ -800,6 +804,7 @@ export default class UserService {
 
     const cityUsers = cityUsersData.map((cityUser) => ({
       email: cityUser.user.email as string,
+      name: cityUser.user.name ?? null,
       status: InviteStatus.ACCEPTED,
       role: OrganizationRole.COLLABORATOR,
       cityId: cityUser.cityId as string,
@@ -808,6 +813,7 @@ export default class UserService {
     const cityInvites = cities.flatMap((city) =>
       city.cityInvites.map((invite) => ({
         email: invite?.email as string,
+        name: null,
         status: invite?.status as InviteStatus,
         role: OrganizationRole.COLLABORATOR,
         cityId: city.cityId as string,

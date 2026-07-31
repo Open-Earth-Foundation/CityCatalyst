@@ -11,7 +11,6 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
-    Text,
     UniqueConstraint,
     func,
 )
@@ -154,7 +153,7 @@ class ConceptNoteContextBundle(Base):
 
 
 class ConceptNoteUpload(Base):
-    """Durable Markdown handoff associated with a concept-note run."""
+    """Durable CNB upload metadata and CC-owned Markdown pointer."""
 
     __tablename__ = "concept_note_uploads"
 
@@ -176,14 +175,20 @@ class ConceptNoteUpload(Base):
         String(255),
         nullable=True,
     )
-    markdown_text: Mapped[str] = mapped_column(Text, nullable=False)
-    markdown_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
-    page_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    markdown_s3_key: Mapped[str | None] = mapped_column(
+        String(1024),
+        nullable=True,
+    )
+    markdown_sha256: Mapped[str | None] = mapped_column(
+        String(64),
+        nullable=True,
+    )
+    page_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
     ingest_status: Mapped[str] = mapped_column(
         String(64),
         nullable=False,
-        default="processing",
-        server_default="processing",
+        default="queued",
+        server_default="queued",
     )
     ingest_error_code: Mapped[str | None] = mapped_column(
         String(64),

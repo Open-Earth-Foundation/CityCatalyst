@@ -338,7 +338,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           </DialogHeader>
           <DialogCloseTrigger />
           <DialogBody>
-            <VStack gap="16px" align="stretch">
+            <VStack gap="36px" align="stretch">
               <Box
                 p="16px"
                 borderRadius="6px"
@@ -406,7 +406,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                         aria-label="Copy token"
                         variant="ghost"
                         color="interactive.secondary"
-                        size="sm"
+                        boxSize={6}
                         onClick={() =>
                           createdToken && copyToClipboard(createdToken)
                         }
@@ -418,21 +418,29 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 </Box>
               </Field>
 
-              <Field label={t("mcp-usage-example")}>
+              <Field
+                label={t("mcp-usage-example")}
+                fontWeight="medium"
+                fontSize="label.md"
+                color="content.secondary"
+              >
                 <Box
                   p="16px"
-                  bg="background.neutral"
                   borderRadius="8px"
-                  fontFamily="mono"
+                  fontFamily="heading"
+                  color="content.tertiary"
                   fontSize="body.xs"
                   whiteSpace="pre-wrap"
                   w="full"
                   position="relative"
+                  borderWidth="2px"
+                  borderColor="gray.focusRing"
                 >
                   <IconButton
                     aria-label="Copy config"
                     variant="ghost"
-                    size="sm"
+                    color="interactive.secondary"
+                    boxSize={8}
                     position="absolute"
                     top="8px"
                     right="8px"

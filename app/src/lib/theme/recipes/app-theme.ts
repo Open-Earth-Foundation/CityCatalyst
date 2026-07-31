@@ -535,6 +535,9 @@ export const appTheme = createSystem(defaultConfig, {
           neutral: { value: "#D7D8FA" },
           overlay: { value: "#E6E7FF" },
         },
+        gray: {
+          focusRing: { value: "#A1A1AA" }, // gray-focusRing
+        },
         divider: {
           neutral: { value: "#F0F0F0" },
         },

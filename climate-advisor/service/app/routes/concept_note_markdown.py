@@ -35,6 +35,7 @@ from app.services.citycatalyst_client import (
 
 router = APIRouter()
 PAGE_MARKER = re.compile(r"<!-- page: (\d+) -->")
+JSON_REQUEST_MAX_BYTES = 16 * 1024
 
 
 async def get_citycatalyst_client() -> AsyncIterator[CityCatalystClient]:
@@ -83,15 +84,45 @@ async def read_json_model(
     request: Request,
     model_type: type[Any],
 ) -> Any | JSONResponse:
-    """Parse one strict Pydantic JSON request after authentication."""
-    if "application/json" not in request.headers.get("Content-Type", ""):
+    """Read a bounded JSON body and parse one strict Pydantic model."""
+    content_type = request.headers.get("Content-Type", "")
+    if content_type.split(";", 1)[0].strip().lower() != "application/json":
         return problem(
             415,
             "unsupported_media_type",
             "Content-Type must be application/json",
         )
+
+    # Reject a trustworthy declared size before allocating the request body.
+    content_length = request.headers.get("Content-Length")
+    if content_length:
+        try:
+            declared_size = int(content_length)
+        except ValueError:
+            return problem(400, "invalid_content_length", "Content-Length is invalid")
+        if declared_size < 0:
+            return problem(400, "invalid_content_length", "Content-Length is invalid")
+        if declared_size > JSON_REQUEST_MAX_BYTES:
+            return problem(
+                413,
+                "upload_request_too_large",
+                "JSON request exceeds the allowed maximum",
+            )
+
+    # Apply the same bound while consuming chunked or misdeclared requests.
+    body = bytearray()
+    async for chunk in request.stream():
+        if len(body) + len(chunk) > JSON_REQUEST_MAX_BYTES:
+            return problem(
+                413,
+                "upload_request_too_large",
+                "JSON request exceeds the allowed maximum",
+            )
+        body.extend(chunk)
+
+    # Parse only the authenticated, bounded payload.
     try:
-        return model_type.model_validate(await request.json())
+        return model_type.model_validate_json(body)
     except (ValidationError, ValueError):
         return problem(422, "invalid_upload_payload", "Upload payload is invalid")
 
@@ -236,7 +267,7 @@ async def ingest_concept_note_markdown(
             token=authorization,
         )
     except CityCatalystClientError as exc:
-        status_code = 413 if exc.status_code == 413 else 503
+        status_code = exc.status_code if exc.status_code in (409, 413, 422) else 503
         return problem(
             status_code,
             "cc_markdown_verification_failed",

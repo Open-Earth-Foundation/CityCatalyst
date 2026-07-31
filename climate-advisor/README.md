@@ -566,14 +566,15 @@ language, or client-side fallback behavior. The boundary is:
 `POST /v1/concept-notes/{run_id}/uploads` creates or replays the authoritative
 pre-conversion upload row. After CC OCR completes,
 `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` receives only a
-stable S3 key, SHA-256, page count, filename, and label. CA fetches the artifact
-through CC's authenticated internal Markdown route, checks the returned
-identity, recomputes SHA-256, verifies page markers, and then stores the pointer
-as ready in `concept_note_uploads` through `CA_DATABASE_URL`. Identical create
-and delivery requests are idempotent; changing upload or Markdown identity
-returns `409`. CA owns no OCR queue, Mistral dependency, bucket credential, or
-presigned URL. An unavailable or unmigrated workflow database returns `503
-cnb_storage_unavailable`.
+stable S3 key, SHA-256, page count, filename, and label. CA rejects control JSON
+larger than 16 KiB before parsing, then streams the artifact through CC's
+authenticated internal Markdown route up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`,
+checks the returned identity, recomputes SHA-256, verifies page markers, and
+stores the pointer as ready in `concept_note_uploads` through `CA_DATABASE_URL`.
+Identical create and delivery requests are idempotent; changing upload or
+Markdown identity returns `409`. CA owns no OCR queue, Mistral dependency,
+bucket credential, or presigned URL. An unavailable or unmigrated workflow
+database returns `503 cnb_storage_unavailable`.
 
 ### Concept Note run foundation
 

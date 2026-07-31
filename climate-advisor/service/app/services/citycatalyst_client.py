@@ -466,7 +466,8 @@ class CityCatalystClient:
 
         client = await self._get_client()
         try:
-            response = await client.get(
+            async with client.stream(
+                "GET",
                 (
                     f"{self.base_url}/api/v1/internal/ca/"
                     f"concept-note-uploads/{upload_id}/markdown"
@@ -474,32 +475,58 @@ class CityCatalystClient:
                 headers=self._internal_headers(token),
                 follow_redirects=True,
                 timeout=self.datasource_timeout,
-            )
+            ) as response:
+                if not response.is_success:
+                    raise CityCatalystClientError(
+                        "CC Markdown artifact could not be verified",
+                        status_code=response.status_code,
+                    )
+
+                # Reject a trustworthy declared size before consuming the body.
+                settings = get_settings()
+                max_bytes = settings.cnb_markdown_request_max_bytes
+                content_length = response.headers.get("Content-Length")
+                if content_length:
+                    try:
+                        declared_size = int(content_length)
+                    except ValueError as exc:
+                        raise CityCatalystClientError(
+                            "CC Markdown artifact metadata is invalid",
+                            status_code=502,
+                        ) from exc
+                    if declared_size < 0:
+                        raise CityCatalystClientError(
+                            "CC Markdown artifact metadata is invalid",
+                            status_code=502,
+                        )
+                    if declared_size > max_bytes:
+                        raise CityCatalystClientError(
+                            "CC Markdown artifact exceeds the configured maximum",
+                            status_code=413,
+                        )
+
+                # Bound streamed and decompressed bytes even without a size header.
+                markdown_bytes = bytearray()
+                async for chunk in response.aiter_bytes():
+                    if len(markdown_bytes) + len(chunk) > max_bytes:
+                        raise CityCatalystClientError(
+                            "CC Markdown artifact exceeds the configured maximum",
+                            status_code=413,
+                        )
+                    markdown_bytes.extend(chunk)
+
+                # Capture immutable identity metadata before closing the response.
+                markdown_s3_key = response.headers.get("X-Markdown-S3-Key")
+                sha256 = response.headers.get("X-Markdown-SHA256")
+                page_count_header = response.headers.get("X-Page-Count")
         except httpx.HTTPError as exc:
             raise CityCatalystClientError(
                 "CC Markdown verification is unavailable",
                 status_code=503,
             ) from exc
-
-        if not response.is_success:
-            raise CityCatalystClientError(
-                "CC Markdown artifact could not be verified",
-                status_code=response.status_code,
-            )
-
-        settings = get_settings()
-        if len(response.content) > settings.cnb_markdown_request_max_bytes:
-            raise CityCatalystClientError(
-                "CC Markdown artifact exceeds the configured maximum",
-                status_code=413,
-            )
-
-        markdown_s3_key = response.headers.get("X-Markdown-S3-Key")
-        sha256 = response.headers.get("X-Markdown-SHA256")
-        page_count_header = response.headers.get("X-Page-Count")
         try:
             page_count = int(page_count_header or "")
-            markdown = response.content.decode("utf-8")
+            markdown = markdown_bytes.decode("utf-8")
         except (UnicodeDecodeError, ValueError) as exc:
             raise CityCatalystClientError(
                 "CC Markdown artifact metadata is invalid",

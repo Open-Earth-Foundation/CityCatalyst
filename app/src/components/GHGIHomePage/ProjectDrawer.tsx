@@ -7,25 +7,19 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { OpenChangeDetails } from "@zag-js/popover";
-import { Box, HStack, Icon, IconButton, Input, Text } from "@chakra-ui/react";
+import { Box, HStack, Icon, IconButton, Text } from "@chakra-ui/react";
 import {
   MdAdd,
   MdClose,
   MdKeyboardArrowRight,
   MdOutlineLocationOn,
 } from "react-icons/md";
-import { InputGroup } from "@/components/ui/input-group";
-import { LuSearch } from "react-icons/lu";
 import type {
   CityResponse,
   ProjectWithCities,
   ProjectWithCitiesResponse,
 } from "@/util/types";
-import {
-  useGetProjectsQuery,
-  useGetProjectUsersQuery,
-  useGetUserProjectsQuery,
-} from "@/services/api";
+import { useGetUserProjectsQuery } from "@/services/api";
 import {
   ProgressCircleRing,
   ProgressCircleRoot,
@@ -46,7 +40,7 @@ const ProjectList = ({
   data,
   selectProject,
 }: {
-  t: Function;
+  t: (key: string) => string;
   data: ProjectWithCitiesResponse;
   selectProject: (projectId: string) => void;
 }) => {
@@ -108,7 +102,7 @@ const SingleProjectView = ({
 }: {
   project: ProjectWithCities;
   backToProjects: () => void;
-  t: Function;
+  t: (key: string) => string;
   lng: string;
   currentInventoryId: string;
 }) => {
@@ -245,7 +239,6 @@ const SingleProjectView = ({
 const ProjectDrawer = ({
   isOpen,
   lng,
-  organizationId,
   onClose,
   onOpenChange,
   currentInventoryId,

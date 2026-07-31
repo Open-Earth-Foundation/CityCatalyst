@@ -280,7 +280,7 @@ test.describe.skip("CSV Download", () => {
     } else {
       for (const record of records as any[]) {
         // Verify no undefined or null values in unexpected places
-        for (const [key, value] of Object.entries(record)) {
+        for (const [, value] of Object.entries(record)) {
           expect(typeof value).toBe("string"); // CSV values are strings
         }
       }

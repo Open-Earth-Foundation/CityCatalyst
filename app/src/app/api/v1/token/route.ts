@@ -104,7 +104,7 @@ const refreshTokenRequest = z.object({
 })
 
 /** accept an authorization code and return an access token  */
-export const POST = apiHandler(async (_req, { params, session }) => {
+export const POST = apiHandler(async (_req) => {
 
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");

@@ -27,7 +27,7 @@ import type { Model } from "sequelize";
 
 /** Return client authorization information for this user */
 
-export const GET = apiHandler(async (_req, { params, session }) => {
+export const GET = apiHandler(async (_req, { session }) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
@@ -69,12 +69,14 @@ export const GET = apiHandler(async (_req, { params, session }) => {
       (client as any).i18n?.map((r: any) => [r.language, r.description]) ?? [],
     );
 
+    /* eslint-disable @typescript-eslint/no-unused-vars -- destructured only to omit clientId/userId/i18n from the returned objects */
     const {
       clientId: ignoreCI,
       userId: ignoreUI,
       ...authzData
     } = authz.get({ plain: true });
     const { i18n: ignoreI18n, ...clientData } = client.get({ plain: true });
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     return {
       ...authzData,

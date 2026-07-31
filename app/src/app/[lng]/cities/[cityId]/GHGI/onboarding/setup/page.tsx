@@ -51,7 +51,7 @@ export default function OnboardingSetup(props: {
     setValue,
     watch,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
   const params = useSearchParams();
@@ -217,9 +217,6 @@ export default function OnboardingSetup(props: {
   const onConfirm = async () => {
     setConfirming(true);
 
-    const projectId =
-      selectedProject?.length > 0 ? selectedProject[0] : undefined;
-
     try {
       // Log population data before sending
       const populationData = {
@@ -325,7 +322,11 @@ export default function OnboardingSetup(props: {
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              router.back();
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"

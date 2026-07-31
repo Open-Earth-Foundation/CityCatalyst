@@ -51,11 +51,6 @@ const invalidProject: CreateProjectRequest = {
   description: "",
 };
 
-const mockUserSession: AppSession = {
-  user: { id: testUserID, role: Roles.User },
-  expires: "1h",
-};
-
 const mockAdminSession: AppSession = {
   user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
@@ -63,7 +58,7 @@ const mockAdminSession: AppSession = {
 
 describe("Project API", () => {
   let organization: Organization;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();
@@ -183,7 +178,7 @@ describe("Project API", () => {
       const response = await getProject(req, {
         params: Promise.resolve({ project: randomUUID() }),
       });
-      const data = await response.json();
+      await response.json();
       await expectStatusCode(response, 404);
     });
   });

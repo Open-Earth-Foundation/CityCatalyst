@@ -75,7 +75,6 @@ export default function HIAPInventoryPage(props: {
   const {
     data: hiapData,
     isLoading,
-    error,
     refetch,
   } = useGetHiapQuery(
     {

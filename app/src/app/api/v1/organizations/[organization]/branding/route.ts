@@ -42,12 +42,11 @@ import { whiteLabelSchema } from "@/util/validation";
 import { FileUploadService } from "@/backend/FileUploadService";
 import { S3FileStorageProvider } from "@/backend/S3FileUploadService";
 import { db } from "@/models";
-import { Organization } from "@/models/Organization";
 import createHttpError from "http-errors";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 
-export const PATCH = apiHandler(async (req, { params, session }) => {
+export const PATCH = apiHandler(async (req, { params }) => {
   const { organization: organizationId } = params;
   const org = await db.models.Organization.findOne({
     where: {

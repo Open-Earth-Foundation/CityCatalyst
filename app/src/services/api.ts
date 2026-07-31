@@ -61,7 +61,6 @@ import {
   FormulaInputValuesResponse,
   DataSourceResponse,
   Client,
-  LangMap,
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
@@ -70,15 +69,11 @@ import {
 } from "@/util/types";
 import type {
   CityLocationResponse,
-  DashboardResponseType,
   HIAPResponse,
-  ModuleDataSummaryResponse,
   GHGInventorySummary,
   HIAPSummary,
   CCRASummary,
   HIAction,
-  HighImpactActionRankingStatus,
-  BulkHiapPrioritizationResult,
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,

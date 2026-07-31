@@ -9,11 +9,9 @@ import {
   GlobalWarmingPotentialTypeEnum,
 } from "@/util/enums";
 import { randomUUID } from "crypto";
-import { Decimal } from "decimal.js";
 import * as dotenv from "dotenv";
 
 // Test configuration constants
-const SAMPLE_SIZE = 56; // Test ALL rows
 const TOLERANCE = 0.01; // ±0.01 tonnes CO2e tolerance
 
 interface ManualTestData {
@@ -102,7 +100,7 @@ describe("Emission Factor Validation Tests", () => {
   });
 
   it("should validate emission factor calculations against manual test data", async () => {
-    const sampledData = sampleTestData(testData, SAMPLE_SIZE);
+    const sampledData = sampleTestData(testData);
     const results: TestResult[] = [];
 
     // Testing cases
@@ -200,7 +198,6 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
 
   return new Promise((resolve, reject) => {
     const results: ManualTestData[] = [];
-    let totalRows = 0;
 
     fs.createReadStream(csvPath)
       .pipe(
@@ -244,10 +241,7 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
   });
 }
 
-function sampleTestData(
-  data: ManualTestData[],
-  sampleSize: number,
-): ManualTestData[] {
+function sampleTestData(data: ManualTestData[]): ManualTestData[] {
   // Test all available data - no sampling needed
   return data;
 }

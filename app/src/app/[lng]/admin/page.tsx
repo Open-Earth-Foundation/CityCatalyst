@@ -10,7 +10,6 @@ import {
   Table,
   Tabs,
   Text,
-  Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
@@ -105,10 +104,10 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       </Tabs.Trigger>
     );
   };
-  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
+  const [createOrganizationInvite] =
     api.useCreateOrganizationInviteMutation();
 
-  const [updateOrganizationActiveStatus, { isLoading: isUpdatingStatus }] =
+  const [updateOrganizationActiveStatus] =
     api.useUpdateOrganizationActiveStatusMutation();
 
   const handleReInvite = async (email: string, organizationId: string) => {

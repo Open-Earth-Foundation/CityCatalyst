@@ -17,7 +17,6 @@ import { LANGUAGES } from "@/util/types";
 
 export default function InviteToOrganizationTemplate({
   url,
-  organization,
   user,
   language,
 }: {

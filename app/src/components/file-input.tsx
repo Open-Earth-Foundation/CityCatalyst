@@ -1,8 +1,7 @@
-import { Box, Heading, Input, Text, VStack } from "@chakra-ui/react";
+import { Box, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { useState, DragEvent, Dispatch, SetStateAction } from "react";
 import { FiUpload } from "react-icons/fi";
-import { Field } from "./ui/field";
 import {
   FileUploadDropzone,
   FileUploadRoot,

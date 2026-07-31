@@ -21,7 +21,6 @@ import HeadingText from "@/components/heading-text";
 import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { useParams } from "next/navigation";
 import {
   MenuContent,
   MenuItem,
@@ -106,13 +105,6 @@ const EmissionDataSection = ({
     0n,
   );
 
-  const closeModals = () => {
-    setSelectedActivityValue(undefined);
-    setAddActivityDataDialogOpen(false);
-    setActivityDeleteAllDataDialogOpen(false);
-    setActivityDeleteDataDialogOpen(false);
-  };
-
   const handleActivityAdded = (suggestedActivity?: SuggestedActivity) => {
     setSelectedActivity(suggestedActivity);
     setAddActivityDataDialogOpen(true);
@@ -123,7 +115,6 @@ const EmissionDataSection = ({
     setAddActivityDataDialogOpen(true);
   };
 
-  const { lng } = useParams();
   const { isFrozenCheck } = useOrganizationContext();
 
   const renderSuggestedActivities = () => (

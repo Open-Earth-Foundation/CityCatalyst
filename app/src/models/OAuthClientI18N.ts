@@ -1,6 +1,5 @@
 import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
-import { OAuthClient } from "./OAuthClient";
 
 export interface OAuthClientI18NAttributes {
   clientId: string;

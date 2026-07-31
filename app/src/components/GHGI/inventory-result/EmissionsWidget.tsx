@@ -23,7 +23,6 @@ import { FiHeart } from "react-icons/fi";
 import { api } from "@/services/api";
 
 const EmissionsWidgetCard = ({
-  icon,
   value,
   field,
   showProgress,
@@ -84,7 +83,7 @@ const EmissionsWidget = ({
   population,
   numberFormat,
 }: {
-  t: Function & TFunction<"translation", undefined>;
+  t: TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
   numberFormat?: string;
@@ -93,7 +92,6 @@ const EmissionsWidget = ({
   const {
     data: countryEmissions,
     isLoading: isLoadingCountryEmissions,
-    error: countryEmissionsError,
   } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId!, {
     skip: !inventory?.inventoryId,
   });

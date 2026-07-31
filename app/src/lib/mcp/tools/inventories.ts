@@ -221,7 +221,7 @@ export async function execute(
               session
             );
             result.totalEmissions = fullInventory.totalEmissions;
-          } catch (error) {
+          } catch {
             logger.debug({ inventoryId: inv.inventoryId }, "Could not fetch emissions");
             result.totalEmissions = null;
           }
@@ -244,7 +244,7 @@ export async function execute(
             id: inv.city?.project?.organization?.organizationId,
             name: inv.city?.project?.organization?.name,
             active: inv.city?.project?.organization?.active,
-          },
+          };
           result.created = inv.created;
           result.lastUpdated = inv.lastUpdated;
         }

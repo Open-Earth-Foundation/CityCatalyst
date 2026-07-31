@@ -134,7 +134,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
         type: "success",
         duration: 3000,
       });
-    } catch (err) {
+    } catch {
       toaster.create({
         description: t("token-create-error"),
         type: "error",
@@ -155,7 +155,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       });
       setIsDeleteModalOpen(false);
       setTokenToDelete(null);
-    } catch (err) {
+    } catch {
       toaster.create({
         description: t("token-delete-error"),
         type: "error",

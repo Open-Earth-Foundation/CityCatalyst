@@ -10,15 +10,7 @@ import {
 
 import { db } from "@/models";
 
-import {
-  afterAll,
-  beforeAll,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  jest,
-} from "@jest/globals";
+import { afterAll, beforeAll, describe, expect, it } from "@jest/globals";
 
 import { OAuthClient, OAuthClientAttributes } from "@/models/OAuthClient";
 import {
@@ -26,13 +18,9 @@ import {
   OAuthClientI18NAttributes,
 } from "@/models/OAuthClientI18N";
 import {
-  cascadeDeleteDataSource,
-  createRequest,
   expectStatusCode,
-  expectToBeLooselyEqual,
   mockRequest,
   setupTests,
-  testUserID,
 } from "../helpers";
 import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
@@ -143,7 +131,7 @@ describe("OAuth Client API", () => {
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toBeGreaterThanOrEqual(3);
       for (const testClient of testClients) {
-        let client = data.find((c: any) => c.clientId == testClient.clientId);
+        const client = data.find((c: any) => c.clientId == testClient.clientId);
         expect(client).toBeDefined();
         expect(client.redirectUri).toEqual(testClient.redirectURI);
         expect(typeof client.name).toBe("object");

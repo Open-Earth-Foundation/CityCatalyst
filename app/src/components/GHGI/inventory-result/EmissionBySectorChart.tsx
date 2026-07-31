@@ -174,7 +174,7 @@ function CustomCombinedBarLayer<D extends BarDatum>({
           >
             {bars
               .filter((bar) => bar.index !== topSegment.index)
-              .map((bar: any, index) => {
+              .map((bar: any) => {
                 return (
                   <rect
                     key={bar.data.id}

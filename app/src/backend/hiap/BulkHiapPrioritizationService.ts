@@ -5,7 +5,7 @@ import {
   LANGUAGES,
   HighImpactActionRankingStatus,
 } from "@/util/types";
-import { hiapServiceWrapper, checkBulkActionRankingJob } from "./HiapService";
+import { hiapServiceWrapper } from "./HiapService";
 import { hiapApiWrapper } from "./HiapApiService";
 import { Op, QueryTypes } from "sequelize";
 
@@ -21,20 +21,6 @@ interface BulkPrioritizationParams {
   year: number;
   actionType: ACTION_TYPES;
   languages: LANGUAGES[];
-}
-
-interface BulkPrioritizationResult {
-  totalCities: number;
-  totalBatches: number;
-  successfulCities: number;
-  failedCities: number;
-  batchResults: Array<{
-    batchNumber: number;
-    taskId: string;
-    cityCount: number;
-    status: "completed" | "failed";
-    error?: string;
-  }>;
 }
 
 export class BulkHiapPrioritizationService {

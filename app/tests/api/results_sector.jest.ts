@@ -36,8 +36,6 @@ describe("Results API", () => {
   let sector: any;
   let subSector1: any;
   let subSector2: any;
-  let subCategory1: any;
-  let subCategory2: any;
 
   beforeAll(async () => {
     setupTests();
@@ -73,12 +71,12 @@ describe("Results API", () => {
       subsectorName: "Residential buildings",
     });
 
-    subCategory1 = await db.models.SubCategory.upsert({
+    await db.models.SubCategory.upsert({
       subcategoryId: "942f2e36-ab1f-3fbf-af9e-31d997f518c7",
       subsectorId: subSector1.subsectorId,
     });
 
-    subCategory2 = await db.models.SubCategory.upsert({
+    await db.models.SubCategory.upsert({
       subcategoryId: "58a9822a-fae0-3831-9f8b-4ec1fb48a54f",
       subsectorId: subSector2.subsectorId,
     });

@@ -35,7 +35,7 @@ import InviteCollaboratorsStep, {
 } from "@/components/steps/GHGI/invite-collaborators-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
-import { UseErrorToast, UseWarningToast } from "@/hooks/Toasts";
+import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
@@ -170,11 +170,6 @@ export default function OnboardingSetup(props: {
       );
     }
   }, [yearAlreadyExists, selectedYear]);
-
-  const makeWarningToast = (title: string, description?: string) => {
-    const { showWarningToast } = UseWarningToast({ description, title });
-    showWarningToast();
-  };
 
   const { data: cityArea } = api.useGetCityBoundaryQuery(
     ocCityData?.actor_id!,
@@ -379,7 +374,11 @@ export default function OnboardingSetup(props: {
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              router.back();
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"

@@ -15,8 +15,6 @@ import { logger } from "@/services/logger";
 import fs from "fs";
 import path from "path";
 
-const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
-
 export default class ECRFDownloadService {
   public static async downloadECRF(
     output: InventoryWithInventoryValuesAndActivityValues,
@@ -83,7 +81,7 @@ export default class ECRFDownloadService {
       cityBoundaryData = await CityBoundaryService.getCityBoundary(
         city.locode as string,
       );
-    } catch (e) {
+    } catch {
       logger.warn("Failed to fetch city boundary or population");
     }
 
@@ -100,7 +98,7 @@ export default class ECRFDownloadService {
 
     const worksheet = workbook.getWorksheet(1); // Get the worksheet by index (1st sheet)
 
-    worksheet?.eachRow((row, rowNumber) => {
+    worksheet?.eachRow((row) => {
       const placeholderCell = row.getCell(3);
       if (placeholderCell.value && typeof placeholderCell.value === "string") {
         const cellValue = placeholderCell.value as string;
@@ -145,7 +143,7 @@ export default class ECRFDownloadService {
     };
 
     // prepare the data for sheet 2
-    const dataDictionary = this.transformDataForTemplate2(output, t);
+    const dataDictionary = this.transformDataForTemplate2(output);
     const fugitive_emissions_data =
       this.groupFugitiveEmissionData(dataDictionary);
     totals.stationary1 = fugitive_emissions_data?.total;
@@ -158,7 +156,7 @@ export default class ECRFDownloadService {
     // now loop over the rows and columns.
     const worksheet = workbook.getWorksheet(2);
 
-    worksheet?.eachRow((row, rowNumber) => {
+    worksheet?.eachRow((row) => {
       let justificationString = "";
       // loop over each cell and then check if it's a placeholder.
       row.eachCell((cell) => {
@@ -306,7 +304,6 @@ export default class ECRFDownloadService {
 
   private static transformDataForTemplate2(
     output: InventoryWithInventoryValuesAndActivityValues,
-    t: any,
   ): Record<string, any> {
     const dataDictionary: Record<string, any> = {};
 
@@ -360,7 +357,7 @@ export default class ECRFDownloadService {
           ],
         };
       } else {
-        let methodologyDescription = inventoryValue.inputMethodology;
+        const methodologyDescription = inventoryValue.inputMethodology;
         const methodology = findMethodology(
           inventoryValue.inputMethodology as string,
           gpcRefNo,
@@ -374,11 +371,11 @@ export default class ECRFDownloadService {
           notation_key: inventoryValue.unavailableReason,
           input_methodology: t(inventoryValue.inputMethodology),
           activityValues: activityValues.map((activityValue) => {
-            let activityTitleKey = activityValue.metadata?.activityTitle;
-            let dataQuality = activityValue.metadata?.dataQuality;
-            let dataSource = activityValue.activityData?.["data-source"];
-            let activityAmount = activityValue.activityData?.[activityTitleKey];
-            let activityUnit = t(
+            const activityTitleKey = activityValue.metadata?.activityTitle;
+            const dataQuality = activityValue.metadata?.dataQuality;
+            const dataSource = activityValue.activityData?.["data-source"];
+            const activityAmount = activityValue.activityData?.[activityTitleKey];
+            const activityUnit = t(
               activityValue.activityData?.[`${activityTitleKey}-unit`],
             );
             let emission_co2 = null;
@@ -389,13 +386,13 @@ export default class ECRFDownloadService {
             let ghg_n2o = null;
 
             if (activityValue.gasValues) {
-              let co2_gas = activityValue.gasValues.find(
+              const co2_gas = activityValue.gasValues.find(
                 (g) => g.gas === "CO2",
               );
-              let ch4_gas = activityValue.gasValues.find(
+              const ch4_gas = activityValue.gasValues.find(
                 (g) => g.gas === "CH4",
               );
-              let n2o_gas = activityValue.gasValues.find(
+              const n2o_gas = activityValue.gasValues.find(
                 (g) => g.gas === "N2O",
               );
 

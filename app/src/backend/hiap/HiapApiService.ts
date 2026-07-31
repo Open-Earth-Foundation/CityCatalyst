@@ -1,9 +1,4 @@
-import {
-  ACTION_TYPES,
-  HIAction,
-  HighImpactActionRankingStatus,
-  LANGUAGES,
-} from "@/util/types";
+import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
 import { logger } from "@/services/logger";
 import {
   PrioritizerResponse,
@@ -640,7 +635,7 @@ const translateActionPlanImpl = async (
   let startJson: any;
   try {
     startJson = JSON.parse(startText);
-  } catch (e) {
+  } catch {
     throw new Error(`Invalid JSON from translate_plan: ${startText}`);
   }
 
@@ -687,7 +682,7 @@ const translateActionPlanImpl = async (
   let planJson: ActionPlan;
   try {
     planJson = JSON.parse(planText);
-  } catch (e) {
+  } catch {
     throw new Error(`Invalid translated plan JSON: ${planText}`);
   }
   return planJson;

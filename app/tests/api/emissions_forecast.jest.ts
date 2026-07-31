@@ -7,7 +7,6 @@ import {
 } from "./results.data";
 import { GET as getResults } from "@/app/api/v1/inventory/[inventory]/results/emissions-forecast/route";
 import { db } from "@/models";
-import { randomUUID } from "node:crypto";
 import { mockRequest, setupTests, testUserID } from "../helpers";
 import { createTestData, cleanupTestData, TestData } from "../helpers/testDataCreationHelper";
 import {
@@ -29,7 +28,7 @@ describe("Emissions Forecast API", () => {
 
   jest
     .spyOn(GlobalAPIService, "fetchGrowthRates")
-    .mockImplementation((locode, forecastYear) => {
+    .mockImplementation(() => {
       return Promise.resolve(mockGrowthRates);
     });
 

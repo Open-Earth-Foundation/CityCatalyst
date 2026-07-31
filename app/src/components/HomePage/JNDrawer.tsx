@@ -9,10 +9,7 @@ import { Box, Icon, Input, Text, VStack } from "@chakra-ui/react";
 import { MdAdd, MdSearch } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuLayoutGrid } from "react-icons/lu";
-import type {
-  ProjectWithCities,
-  ProjectWithCitiesResponse,
-} from "@/util/types";
+import type { ProjectWithCitiesResponse } from "@/util/types";
 import {
   useGetUserProjectsQuery,
   useGetModulesQuery,
@@ -27,7 +24,7 @@ import { BiCaretDown, BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { NavigationLinks } from "../ui/navigation-links";
-import { Modules, StageNames } from "@/util/constants";
+import { Modules } from "@/util/constants";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
@@ -45,7 +42,7 @@ interface CustomSelectProps {
   placeholder?: string;
   width?: string;
   height?: string;
-  t: Function;
+  t: (key: string) => string;
   label: string;
 }
 
@@ -54,7 +51,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
   placeholder = "Select an option",
-  width = "347px",
   height = "300px",
   t,
   label,
@@ -206,7 +202,7 @@ const ProjectFilterSection = ({
   lng,
   currentCityId,
 }: {
-  t: Function;
+  t: (key: string) => string;
   projectsData: ProjectWithCitiesResponse;
   lng: string;
   currentCityId?: string;
@@ -345,7 +341,7 @@ const ProjectFilterSection = ({
   const searchResults = getSearchResults();
 
   // Handle city selection and navigation
-  const handleCitySelection = (cityId: string, projectId: string) => {
+  const handleCitySelection = (cityId: string) => {
     router.push(`/${lng}/cities/${cityId}`);
   };
 
@@ -416,7 +412,7 @@ const ProjectFilterSection = ({
                       setSelectedProject(result.projectId);
                       setSelectedCity(result.value);
                       // Navigate to the city's inventory
-                      handleCitySelection(result.value, result.projectId);
+                      handleCitySelection(result.value);
                     }
                   }
                   setSearchTerm("");
@@ -471,7 +467,7 @@ const ProjectFilterSection = ({
               setSearchTerm(""); // Clear search when city is selected
               // Navigate to the city's inventory
               if (selectedProject && value) {
-                handleCitySelection(value, selectedProject);
+                handleCitySelection(value);
               }
             }}
             placeholder={t("select-city")}
@@ -519,7 +515,6 @@ const JNDrawer = ({
   isOpen,
   lng,
   organizationId,
-  onClose,
   onOpenChange,
   currentCityId,
 }: {
@@ -542,10 +537,11 @@ const JNDrawer = ({
     projectsData?.find((project) => project.organizationId)?.organizationId;
 
   // Module data fetching
-  const { data: allModules, isLoading: isAllModulesLoading } =
-    useGetModulesQuery();
-  const { data: projectModules, isLoading: isProjectModulesLoading } =
-    useGetProjectModulesQuery(selectedProject!, { skip: !selectedProject });
+  const { data: allModules } = useGetModulesQuery();
+  const { data: projectModules } = useGetProjectModulesQuery(
+    selectedProject!,
+    { skip: !selectedProject },
+  );
 
   // Initialize with current project and city based on currentCityId
   useEffect(() => {
@@ -575,15 +571,6 @@ const JNDrawer = ({
       {} as Record<string, typeof allModules>,
     );
   }, [allModules]);
-
-  const selectedProjectData = useMemo<ProjectWithCities | null>(() => {
-    if (!selectedProject) return null;
-
-    return (
-      projectsData?.find((project) => project.projectId === selectedProject) ||
-      null
-    );
-  }, [projectsData, selectedProject]);
 
   return (
     <DrawerRoot

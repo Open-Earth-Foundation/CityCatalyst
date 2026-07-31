@@ -1,7 +1,6 @@
 import { Box, Tabs } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 
-import { TitleMedium } from "@/components/package/Texts/Title";
 import PlanDetailsBox from "@/components/PlanDetailsBox";
 import ProgressLoader from "@/components/ProgressLoader";
 import TabContent from "@/components/ui/tab-content";

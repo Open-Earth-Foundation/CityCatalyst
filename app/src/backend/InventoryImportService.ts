@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import ECRFImportService, { type ECRFImportResult } from "./ECRFImportService";
+import { type ECRFImportResult } from "./ECRFImportService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";

@@ -12,7 +12,7 @@ import Footer from "@/components/Sections/Footer";
 
 export default function MethodologiesPage() {
   const lng = i18next.language as LANGUAGES;
-  const { t } = useTranslation("methodologies");
+  useTranslation("methodologies");
 
   const ids = useMemo(() => {
     const result: string[] = [];

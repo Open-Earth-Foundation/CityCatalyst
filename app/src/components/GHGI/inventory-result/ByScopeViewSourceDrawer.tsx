@@ -20,7 +20,6 @@ const ByScopeViewSourceDrawer: React.FC<ByScopeViewProps> = ({
   isOpen,
   onClose,
   t,
-  totalEmissionsData,
   inventoryId,
   numberFormat,
 }) => {

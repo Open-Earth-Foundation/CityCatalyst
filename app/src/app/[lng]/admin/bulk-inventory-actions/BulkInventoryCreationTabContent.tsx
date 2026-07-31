@@ -60,11 +60,6 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
   const [emailsArray, setEmailsArray] = useState<string[]>([]);
 
   // When a user updates one of the fields, also update the react-hook-form value:
-  const handleCitiesChange = (values: string[]) => {
-    setCitiesArray(values);
-    setValue("cities", values);
-  };
-
   const handleYearsChange = (values: string[]) => {
     const numericYears = values.map((year) => +year);
     setYearsArray(numericYears);
@@ -97,8 +92,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
 
   // fetch projects api
 
-  const { data: projectsList, isLoading: isProjectListLoading } =
-    api.useGetUserProjectsQuery({});
+  const { data: projectsList } = api.useGetUserProjectsQuery({});
 
   const [
     connectBulkSources,
@@ -250,7 +244,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
               rules={{
                 required: t("cities-input-required"),
               }}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <CommaSeperatedInput
                   onChange={handleYearsChange}
                   field="years"
@@ -284,7 +278,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
               rules={{
                 required: t("cities-input-required"),
               }}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <CommaSeperatedInput
                   onChange={handleEmailsChange}
                   field="emails"

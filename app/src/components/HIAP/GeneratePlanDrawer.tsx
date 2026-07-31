@@ -5,7 +5,6 @@ import {
   Drawer,
   Icon,
   Portal,
-  Text,
   HStack,
   VStack,
   Spinner,
@@ -29,7 +28,6 @@ export const GeneratePlanDrawer = ({
   action,
   cityData,
   cityLocode,
-  cityId,
   inventoryId,
 }: {
   t: TFunction;
@@ -39,16 +37,11 @@ export const GeneratePlanDrawer = ({
   cityId?: string;
   inventoryId?: string;
 }) => {
-  const [generateActionPlan, { isLoading, error }] =
-    useGenerateActionPlanMutation();
+  const [generateActionPlan, { isLoading }] = useGenerateActionPlanMutation();
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   // Check if an action plan already exists
-  const {
-    data: existingPlan,
-    isLoading: isPlanLoading,
-    refetch: refetchPlan,
-  } = useActionPlan({
+  const { data: existingPlan, isLoading: isPlanLoading } = useActionPlan({
     actionId: action.actionId,
     cityId: cityData?.cityId || "",
     language: action.lang || "en",

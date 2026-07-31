@@ -39,8 +39,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
-    setValue,
+    formState: { errors },
   } = useForm<{ password: string }>();
 
   const [requestPasswordConfirm] = api.useRequestVerificationMutation();
@@ -60,7 +59,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
       if (res.data?.comparePassword) {
         await removeCity({
           cityId: cityData.cityId!,
-        }).then((res: any) => {
+        }).then(() => {
           onClose();
           setIsPasswordCorrect(true);
           showSuccessToast();

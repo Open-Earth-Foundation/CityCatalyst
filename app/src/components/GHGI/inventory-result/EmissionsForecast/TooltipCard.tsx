@@ -1,11 +1,6 @@
 import React from "react";
 import { Box, Text } from "@chakra-ui/react";
-import { convertKgToTonnes, formatNumber, toKebabCase } from "@/util/helpers";
-import {
-  getReferenceNumberByName,
-  getSubSectorByName,
-  ISector,
-} from "@/util/constants";
+import { convertKgToTonnes, formatNumber } from "@/util/helpers";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
 import { EmissionsForecastData } from "@/util/types";
@@ -28,7 +23,6 @@ interface TooltipCardProps {
 const TooltipCard = ({
   point,
   data,
-  forecast,
   t,
   numberFormat,
 }: TooltipCardProps) => {
@@ -78,16 +72,6 @@ const TooltipCard = ({
               const percentage = yearData
                 ? formatNumber((yearData.y / sumOfYs) * 100, numberFormat, 2)
                 : 0;
-              const sectorRefNo =
-                getReferenceNumberByName(
-                  toKebabCase(series.id as string) as keyof ISector,
-                ) || getSubSectorByName(series.id)?.referenceNumber;
-
-              const yearGrowthRates =
-                yearData && forecast.growthRates[yearData.x as string];
-              const growthRate =
-                yearGrowthRates?.[sectorRefNo!] ||
-                yearGrowthRates?.[point.seriesId as string];
 
               return (
                 <Box

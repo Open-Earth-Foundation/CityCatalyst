@@ -28,7 +28,6 @@ import { getTranslationFromDict } from "@/i18n";
 import { DataCheckIcon } from "@/components/icons";
 import { FiTarget } from "react-icons/fi";
 import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
-import type { DataSourceWithRelations } from "@/components/GHGI/data-step/types";
 import { api } from "@/services/api";
 import { convertKgToTonnes } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -63,7 +62,7 @@ const ExternalDataSection = ({
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (_source: DataSourceWithRelations, _data: any) => {
+  const onSourceClick = () => {
     onSourceDrawerOpen();
   };
   const [hovered, setHovered] = useState(false);
@@ -71,9 +70,7 @@ const ExternalDataSection = ({
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
 
-  const onDisconnectThirdPartyData = async (
-    _source: DataSourceWithRelations,
-  ) => {
+  const onDisconnectThirdPartyData = async () => {
     try {
       await disconnectThirdPartyData({
         inventoryId: inventoryValue.inventoryId,
@@ -267,7 +264,7 @@ const ExternalDataSection = ({
                 textDecoration="underline"
                 mt={4}
                 mb={2}
-                onClick={() => onSourceClick(source, null)}
+                onClick={() => onSourceClick()}
                 alignSelf="flex-start"
                 fontSize="label.lg"
                 fontWeight="medium"
@@ -297,7 +294,7 @@ const ExternalDataSection = ({
                 }
                 fontWeight="semibold"
                 fontSize="14px"
-                onClick={() => onDisconnectThirdPartyData(source)}
+                onClick={() => onDisconnectThirdPartyData()}
                 loading={isDisconnectLoading}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}

@@ -6,7 +6,7 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { GHGIFormInputs } from "@/util/GHGI/types";
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   createListCollection,
@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { MdCheck, MdWarning } from "react-icons/md";
 import { Trans } from "react-i18next";
-import { CustomRadio, RadioGroup } from "@/components/ui/custom-radio";
+import { RadioGroup } from "@/components/ui/custom-radio";
 import { InputGroup } from "@/components/ui/input-group";
 import {
   SelectContent,
@@ -29,8 +29,6 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
-import { InventoryButtonCheckIcon } from "@/components/icons";
 import CustomSelectableButton from "@/components/custom-selectable-buttons";
 import {
   GlobalWarmingPotentialTypeEnum,

@@ -1,15 +1,7 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import {
-  Box,
-  CheckboxGroup,
-  Fieldset,
-  For,
-  Icon,
-  Separator,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Fieldset, Icon, Separator, Text } from "@chakra-ui/react";
 import DropdownSelectInput from "../dropdown-select-input";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
@@ -93,7 +85,6 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
     handleSubmit,
     watch,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<FileData>();
 

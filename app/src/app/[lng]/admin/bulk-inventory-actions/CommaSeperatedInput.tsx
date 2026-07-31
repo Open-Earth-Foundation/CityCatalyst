@@ -1,13 +1,9 @@
-import { Box, Field, Icon, Input, Link, Tag, Text } from "@chakra-ui/react";
+import { Box, Field, Input, Tag, Text } from "@chakra-ui/react";
 import React, { FC, useState } from "react";
-import {
-  ControllerFieldState,
-  FieldErrors,
-  UseFormRegister,
-} from "react-hook-form";
+import { ControllerFieldState } from "react-hook-form";
 
 import { TFunction } from "i18next";
-import { MdInfoOutline, MdWarning } from "react-icons/md";
+import { MdWarning } from "react-icons/md";
 
 interface CommaSeperatedInputProps {
   errors: ControllerFieldState["error"];

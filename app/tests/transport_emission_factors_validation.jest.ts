@@ -9,7 +9,6 @@ import {
   GlobalWarmingPotentialTypeEnum,
 } from "@/util/enums";
 import { randomUUID } from "crypto";
-import { Decimal } from "decimal.js";
 import * as dotenv from "dotenv";
 import { TransportTestData, TestResult } from "@/data/transport-test-types";
 import transportSampleData from "@/data/transport-test-sample-data.json";

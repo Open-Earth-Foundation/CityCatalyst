@@ -42,11 +42,10 @@ export async function execute(
   session: AppSession
 ): Promise<any> {
   try {
-    const { 
-      inventoryId, 
-      bySector = true, 
-      byScope = false, 
-      bySubsector = false 
+    const {
+      inventoryId,
+      bySector = true,
+      bySubsector = false
     } = params;
     
     logger.debug({ inventoryId, userId: session.user.id }, "MCP: Fetching inventory emissions");

@@ -65,7 +65,9 @@ export default function HomePage({
   const router = useRouter();
 
   // Check if user is authenticated otherwise route to login page
-  isPublic || CheckUserSession();
+  if (!isPublic) {
+    CheckUserSession();
+  }
   const language = cookieLanguage ?? lng;
   const { cityId } = useParams();
 
@@ -75,7 +77,7 @@ export default function HomePage({
   const isCollaboratorRole = userInfo?.role === Roles.User;
 
   // make sure that the inventory ID is using valid values
-  let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
+  const cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
 
   // If no city ID and no default city: redirect admins to onboarding, show empty state for collaborators
   useEffect(() => {

@@ -11,7 +11,10 @@ interface FormInputProps {
   value?: string | null | undefined;
   isDisabled?: boolean;
   error: FieldError | undefined;
-  register: Function;
+  register: (
+    name: string,
+    options?: Record<string, unknown>,
+  ) => Record<string, unknown>;
   id: string;
   required?: boolean;
 }
@@ -26,9 +29,7 @@ const FormInput: FC<FormInputProps> = ({
   required = true,
 }) => {
   const { t } = useTranslation("inputs");
-  const [inputValue, setInputValue] = useState<string | undefined | null>(
-    value,
-  );
+  const [, setInputValue] = useState<string | undefined | null>(value);
 
   useEffect(() => {
     if (value) setInputValue(value);

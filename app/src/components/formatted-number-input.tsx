@@ -5,6 +5,8 @@ import {
   FieldValues,
   Path,
   PathValue,
+  UseFormClearErrors,
+  UseFormSetError,
 } from "react-hook-form";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import { NumberInputProps } from "./ui/number-input";
@@ -15,8 +17,8 @@ interface FormattedNumberInputProps<T extends FieldValues>
   extends NumberInputProps {
   control: Control<T>;
   name: Path<T>;
-  setError?: Function;
-  clearErrors?: Function;
+  setError?: UseFormSetError<T>;
+  clearErrors?: UseFormClearErrors<T>;
   defaultValue?: PathValue<T, Path<T>>;
   isDisabled?: boolean;
   placeholder?: string;
@@ -25,7 +27,7 @@ interface FormattedNumberInputProps<T extends FieldValues>
   miniAddon?: boolean;
   testId?: string;
   localization?: string;
-  t: Function;
+  t: (key: string, options?: Record<string, unknown>) => string;
   max?: number;
   min?: number;
   numberFormat?: string;
@@ -53,8 +55,6 @@ function countSeparatorsBefore(
 
 function FormattedNumberInput<T extends FieldValues>({
   control,
-  setError,
-  id,
   testId,
   name,
   defaultValue,
@@ -62,12 +62,10 @@ function FormattedNumberInput<T extends FieldValues>({
   children,
   placeholder,
   miniAddon,
-  clearErrors,
   t,
   min,
   max,
   numberFormat,
-  ...rest
 }: FormattedNumberInputProps<T>) {
   const normalizedFormat = numberFormat ?? NumberFormatEnum.COMMA_AND_DOT;
   const decimalSeparator = decimalSeparators[normalizedFormat];

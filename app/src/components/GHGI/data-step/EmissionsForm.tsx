@@ -30,12 +30,12 @@ export function EmissionsForm({
   emissionsFactors,
 }: {
   t: TFunction;
-  register: Function;
+  register: (name: string, options?: unknown) => any;
   errors: Record<string, any>;
   control: Control<FieldValues, any>;
   prefix?: string;
-  watch: Function;
-  setValue: Function;
+  watch: (name: string) => any;
+  setValue: (name: string, value: unknown) => void;
   gpcReferenceNumber: string;
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
@@ -44,11 +44,7 @@ export function EmissionsForm({
     control,
     defaultValue: "",
   });
-  const {
-    getRootProps,
-    getItemProps,
-    value: methodology,
-  } = useRadioGroup(field);
+  const { value: methodology } = useRadioGroup(field);
 
   const isUnavailable = watch(prefix + "isUnavailable");
 

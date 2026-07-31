@@ -1,5 +1,4 @@
 import InventoryProgressService from "@/backend/InventoryProgressService";
-import FileParserService from "@/backend/FileParserService";
 import ECRFImportService from "@/backend/ECRFImportService";
 import type { Inventory } from "@/models/Inventory";
 import { getScopesForInventoryAndSector } from "@/util/constants";

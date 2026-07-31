@@ -63,10 +63,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     watch,
     setError,
     clearErrors,
-    setFocus,
-    setValue,
     control,
-    getValues,
     trigger,
     formState: { errors },
   } = useForm<Schema>({

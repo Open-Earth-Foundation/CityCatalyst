@@ -105,7 +105,7 @@ describe("City HIAP Prioritization API", () => {
         await db.models.ActionPlan.destroy({
           where: { cityLocode: "XX-APT" },
         });
-      } catch (e) {
+      } catch {
         // Table might not exist, that's okay
       }
       await db.models.Inventory.destroy({ where: { inventoryId } });

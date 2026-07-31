@@ -2,7 +2,7 @@
 
 import { api, useUpdateActivityValueMutation } from "@/services/api";
 import { Button } from "@chakra-ui/react";
-import { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
 import { getInputMethodology } from "@/util/helpers";
@@ -32,7 +32,7 @@ interface AddActivityModalProps {
   onClose: () => void;
   t: TFunction;
   defaultCityId?: string;
-  setHasActivityData: Function;
+  setHasActivityData: Dispatch<SetStateAction<boolean>>;
   hasActivityData: boolean;
   inventoryId: string;
   methodology: any;
@@ -42,7 +42,7 @@ interface AddActivityModalProps {
   targetActivityValue?: ActivityValue;
   inventoryValue?: InventoryValue | null;
   resetSelectedActivityValue: () => void;
-  setAddActivityDialogOpen: Function;
+  setAddActivityDialogOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 const AddActivityModal: FC<AddActivityModalProps> = ({

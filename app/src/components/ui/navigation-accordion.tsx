@@ -13,7 +13,7 @@ interface NavigationAccordionProps {
   title: string;
   icon: React.ComponentType<any>;
   items: NavigationItem[];
-  t: Function;
+  t: (key: string) => string;
   defaultOpen?: boolean;
 }
 

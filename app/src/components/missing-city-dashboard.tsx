@@ -1,4 +1,4 @@
-import { Box, Link, Text, Heading } from "@chakra-ui/react";
+import { Box, Link } from "@chakra-ui/react";
 import Image from "next/image";
 import { useTranslation } from "@/i18n/client";
 import { useRouter } from "next/navigation";
@@ -9,7 +9,6 @@ import { DisplayLarge } from "./package/Texts/Display";
 
 const MissingCityDashboard = ({
   lng,
-  cityId,
   error,
   isPublic = false,
 }: {

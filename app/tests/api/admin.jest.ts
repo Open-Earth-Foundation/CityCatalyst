@@ -59,7 +59,7 @@ const mockConnectSourcesRequest: BulkInventoryUpdateProps = {
 const emptyParams = { params: Promise.resolve({}) };
 
 describe("Admin API", () => {
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();

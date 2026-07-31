@@ -4,8 +4,10 @@ import {
   Control,
   Controller,
   FieldValues,
+  UseFormClearErrors,
   UseFormGetValues,
   UseFormRegister,
+  UseFormSetError,
   UseFormSetValue,
 } from "react-hook-form";
 import BuildingTypeSelectInput from "../../../building-select-input";
@@ -26,8 +28,8 @@ interface DynamicFieldsSectionProps {
   control: Control<FieldValues, any>;
   fields: ExtraField[];
   errors: Record<string, any>;
-  setError: Function;
-  clearErrors: Function;
+  setError: UseFormSetError<FieldValues>;
+  clearErrors: UseFormClearErrors<FieldValues>;
   selectedActivity?: SuggestedActivity;
   setValue: UseFormSetValue<any>;
   getValues: UseFormGetValues<any>;

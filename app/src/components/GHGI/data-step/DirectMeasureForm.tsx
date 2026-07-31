@@ -9,6 +9,7 @@ import {
   Icon,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import { FieldValues, UseFormRegister } from "react-hook-form";
 import { resolve } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
 import {
@@ -26,7 +27,7 @@ export function DirectMeasureForm({
   prefix = "",
 }: {
   t: TFunction;
-  register: Function;
+  register: UseFormRegister<FieldValues>;
   errors: Record<string, any>;
   className?: string;
   prefix?: string;

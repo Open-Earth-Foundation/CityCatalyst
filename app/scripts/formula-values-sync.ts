@@ -5,7 +5,6 @@ import { MethodologyCreationAttributes } from "@/models/Methodology";
 import { FormulaInputCreationAttributes } from "@/models/FormulaInput";
 import { DataSourceFormulaInputCreationAttributes } from "@/models/DataSourceFormulaInput";
 import env from "@next/env";
-import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 import createHttpError from "http-errors";
 import _ from "lodash";
@@ -53,10 +52,6 @@ interface FormulaInputValue {
 interface FormulaInputDataSourceMapping {
   datasource_id: string;
   formula_input_id: string;
-}
-
-interface APIResponse<T> {
-  [key: string]: T[];
 }
 
 // Utility function for snake_case to camelCase conversion (unused but kept for potential future use)

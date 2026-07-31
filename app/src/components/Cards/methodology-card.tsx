@@ -1,4 +1,4 @@
-import { Badge, Box, Card, Icon, Text } from "@chakra-ui/react";
+import { Badge, Box, Card, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useState } from "react";
 import type { Methodology } from "@/util/form-schema";
@@ -19,7 +19,7 @@ const MethodologyCard: FC<MethodologyCardProps> = ({
   inputRequired,
   disabled,
   t,
-  handleCardSelect = (_methodology: Methodology) => {},
+  handleCardSelect = () => {},
 }) => {
   const [isSelected, setIsSelected] = useState(false);
   const handleRadioChange = () => {

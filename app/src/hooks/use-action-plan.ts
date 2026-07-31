@@ -2,7 +2,6 @@ import {
   useGetActionPlansQuery,
   useGetActionPlanByIdQuery,
 } from "@/services/api";
-import { HIAction } from "@/util/types";
 
 interface ActionPlan {
   id: string;

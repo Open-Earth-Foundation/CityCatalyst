@@ -9,9 +9,12 @@ interface FormInputProps {
   value?: string | null | undefined;
   isDisabled?: boolean;
   error: FieldError | undefined;
-  register: Function;
+  register: (
+    name: string,
+    options?: Record<string, unknown>,
+  ) => Record<string, unknown>;
   id: string;
-  onInputChange: Function;
+  onInputChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   t: TFunction;
 }
 
@@ -19,7 +22,6 @@ const FormSelectInput: FC<FormInputProps> = ({
   label,
   isDisabled,
   value,
-  error,
   register,
   id,
   onInputChange,

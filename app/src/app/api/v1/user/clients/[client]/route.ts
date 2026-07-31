@@ -81,11 +81,10 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     (client as any).i18n?.map((r: any) => [r.language, r.description]) ?? [],
   );
 
-  const {
-    clientId: ignoreCI,
-    userId: ignoreUI,
-    ...authzData
-  } = authz.get({ plain: true });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured only to exclude these fields from authzData
+  const { clientId: ignoreCI, userId: ignoreUI, ...authzData } =
+    authz.get({ plain: true });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured only to exclude i18n from clientData
   const { i18n: ignoreI18n, ...clientData } = client.get({ plain: true });
   const data = {
     ...authzData,

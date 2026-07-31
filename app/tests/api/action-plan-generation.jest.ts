@@ -79,7 +79,7 @@ function createMockFetch(
 ) {
   const taskId = overrides?.startPlanCreation?.taskId ?? "mock-task-uuid-123";
 
-  return jest.fn((input: string | URL | Request, init?: RequestInit) => {
+  return jest.fn((input: string | URL | Request) => {
     const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
     const urlStr = typeof url === "string" ? url : "";
 

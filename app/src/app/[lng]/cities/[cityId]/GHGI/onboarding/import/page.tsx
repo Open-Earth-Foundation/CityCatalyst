@@ -348,7 +348,6 @@ export default function ImportPage(props: {
   const {
     startPolling: startExtractionPolling,
     stopPolling: stopExtractionPolling,
-    isPolling: isExtractionPolling,
   } = usePollUntil<ImportStatusResponse>({
     fetch: useCallback(() => {
       if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
@@ -387,7 +386,6 @@ export default function ImportPage(props: {
   const {
     startPolling: startInterpretPolling,
     stopPolling: stopInterpretPolling,
-    isPolling: isInterpretPolling,
   } = usePollUntil<ImportStatusResponse>({
     fetch: useCallback(() => {
       if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));

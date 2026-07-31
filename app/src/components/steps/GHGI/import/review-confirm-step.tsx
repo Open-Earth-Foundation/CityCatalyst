@@ -15,8 +15,7 @@ import {
 import { api } from "@/services/api";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { MdEdit, MdEditSquare, MdOutlineMap, MdOutlineModeEdit } from "react-icons/md";
-import { BiEdit } from "react-icons/bi";
+import { MdOutlineMap } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 
@@ -35,7 +34,6 @@ export default function ReviewConfirmStep({
   cityId,
   cityName,
   importedFileId,
-  onImport,
   onEditMapping,
   inventoryId,
 }: ReviewConfirmStepProps) {

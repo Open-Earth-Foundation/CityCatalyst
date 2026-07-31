@@ -55,13 +55,12 @@ import { TFunction } from "i18next";
 import { useRouter, useParams, usePathname } from "next/navigation";
 import { forwardRef, useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { FiRefreshCcw, FiTarget, FiTrash2 } from "react-icons/fi";
+import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
   MdAdd,
   MdArrowBack,
   MdArrowDropDown,
   MdArrowDropUp,
-  MdCheckCircle,
   MdCheckCircleOutline,
   MdChevronRight,
   MdInfoOutline,
@@ -71,7 +70,6 @@ import {
   MdOutlineDelete,
   MdOutlineFactory,
   MdOutlineLocalShipping,
-  MdRefresh,
   MdSearch,
   MdWarning,
 } from "react-icons/md";
@@ -298,7 +296,7 @@ export default function AddDataSteps() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventoryProgress]);
 
-  const { value: activeStep, goToNextStep: goToNext } = useSteps({
+  const { value: activeStep } = useSteps({
     defaultStep: Number(step) - 1,
     count: steps.length,
   });
@@ -333,7 +331,7 @@ export default function AddDataSteps() {
   // only display data sources relevant to current sector
   let dataSources: DataSourceResponse[] | undefined;
   if (data) {
-    const { data: successfulSources, failedSources, removedSources } = data;
+    const { data: successfulSources } = data;
     dataSources = successfulSources?.filter(({ source, data }) => {
       const referenceNumber =
         source.subCategory?.referenceNumber ||
@@ -458,7 +456,7 @@ export default function AddDataSteps() {
   }
 
   async function onSearchDataSourcesClicked() {
-    const { data, removedSources, failedSources } = await loadDataSources({
+    const { removedSources, failedSources } = await loadDataSources({
       inventoryId: inventory,
     }).unwrap();
 
@@ -491,7 +489,7 @@ export default function AddDataSteps() {
 
   const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
 
-  const handleFileSelect = async (file: File) => {
+  const handleFileSelect = async () => {
     setOpenFileUploadDialog((v) => !v);
   };
 
@@ -499,7 +497,7 @@ export default function AddDataSteps() {
     (sector) => sector.sectorName === currentStep.name,
   );
 
-  const [deleteUserFile, { isLoading }] = api.useDeleteUserFileMutation();
+  const [deleteUserFile] = api.useDeleteUserFileMutation();
 
   function removeSectorFile(
     fileId: string,
@@ -1480,9 +1478,7 @@ export default function AddDataSteps() {
                       <Box mb="24px">
                         <FileInput
                           onFileSelect={() =>
-                            isFrozenCheck()
-                              ? null
-                              : handleFileSelect(uploadedFile!)
+                            isFrozenCheck() ? null : handleFileSelect()
                           }
                           setUploadedFile={setUploadedFile}
                           t={t}

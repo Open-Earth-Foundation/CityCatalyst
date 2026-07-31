@@ -236,7 +236,6 @@ import {
   OAuthClientI18NAttributes,
   OAuthClientI18NCreationAttributes,
   OAuthClientI18NOptionalAttributes,
-  OAuthClientI18N,
 } from "./OAuthClientI18N";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";

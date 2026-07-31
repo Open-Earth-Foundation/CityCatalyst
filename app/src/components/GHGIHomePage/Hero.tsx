@@ -33,7 +33,6 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
-import { NumberFormatEnum } from "@/util/enums";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -51,7 +50,6 @@ interface HeroProps {
 }
 
 export function Hero({
-  currentInventoryId,
   formattedEmissions: { unit, value },
   inventory,
   isInventoryLoading,

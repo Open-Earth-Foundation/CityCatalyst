@@ -59,7 +59,6 @@ import ECRFImportService, {
   type ECRFRowData,
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
-import FormatAdapterService from "@/backend/FormatAdapterService";
 import {
   resolveGpcRefNo,
   splitSectorSubsectorLabels,

@@ -24,7 +24,6 @@ export function useResourceValidation({
   resourceQuery,
   lng,
   resourceType,
-  fallbackRoute
 }: UseResourceValidationOptions): UseResourceValidationReturn {
   const router = useRouter();
   const { data: userInfo, isLoading: userInfoLoading } = api.useGetUserInfoQuery();

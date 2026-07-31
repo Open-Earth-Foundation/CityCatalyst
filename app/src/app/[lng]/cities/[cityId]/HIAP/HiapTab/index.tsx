@@ -5,7 +5,6 @@ import {
   HIAction,
   MitigationAction,
   AdaptationAction,
-  CityResponse,
 } from "@/util/types";
 import { useEffect, useState, useMemo } from "react";
 import { useTranslation } from "@/i18n/client";
@@ -14,7 +13,6 @@ import {
   Box,
   Text,
   Badge,
-  VStack,
   HStack,
   Button,
   IconButton,
@@ -23,7 +21,6 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip } from "@/components/ui/tooltip";
 import { RiExpandDiagonalFill } from "react-icons/ri";
 import { MdExpandMore, MdExpandLess, MdHistory } from "react-icons/md";
 import {
@@ -60,7 +57,6 @@ import {
 } from "@/components/ui/menu";
 import { MdArrowDropDown } from "react-icons/md";
 import { ButtonMedium } from "@/components/package/Texts/Button";
-import { ButtonSmall } from "@/components/package/Texts/Button";
 import { toaster } from "@/components/ui/toaster";
 import { trackEvent } from "@/lib/analytics";
 import HiapVersionHistory from "./HiapVersionHistory";
@@ -915,22 +911,6 @@ export function HiapTab({
       />
     );
   }
-
-  const handleClearSelection = async () => {
-    try {
-      await updateHiapSelection({
-        inventoryId: inventory.inventoryId,
-        selectedActionIds: [],
-        actionType: type,
-      }).unwrap();
-
-      setRowSelection({});
-      setSelectedActions([]);
-      logger.info("Cleared all action selections");
-    } catch (error) {
-      logger.error(error, "Failed to clear selection");
-    }
-  };
 
   const toggleSelectionMode = () => {
     setIsSelectionMode(!isSelectionMode);

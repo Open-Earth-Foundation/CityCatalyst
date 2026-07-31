@@ -10,31 +10,18 @@ import { db } from "@/models";
 import {
   afterAll,
   beforeAll,
-  beforeEach,
   describe,
   expect,
   it,
-  jest,
 } from "@jest/globals";
 
-import { OAuthClient, OAuthClientAttributes } from "@/models/OAuthClient";
+import { OAuthClient } from "@/models/OAuthClient";
+import { OAuthClientI18N } from "@/models/OAuthClientI18N";
+import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
 import {
-  OAuthClientI18N,
-  OAuthClientI18NAttributes,
-} from "@/models/OAuthClientI18N";
-import {
-  OAuthClientAuthz,
-  OAuthClientAuthzAttributes,
-} from "@/models/OAuthClientAuthz";
-import { User, UserAttributes } from "@/models/User";
-import {
-  cascadeDeleteDataSource,
-  createRequest,
   expectStatusCode,
-  expectToBeLooselyEqual,
   mockRequest,
   setupTests,
-  testUserID,
 } from "../helpers";
 import { setFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import {
@@ -94,7 +81,7 @@ describe("OAuth Client Authz API", () => {
       expect(Array.isArray(data)).toBe(true);
       expect(data.length).toEqual(testOAuthClientAuthzs.length);
       for (const clientAuthz of testOAuthClientAuthzs) {
-        let authz = data.find(
+        const authz = data.find(
           (authz: any) => authz.client.clientId == clientAuthz.clientId,
         );
         expect(authz).toBeDefined();

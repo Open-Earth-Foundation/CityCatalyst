@@ -28,7 +28,7 @@ interface DeleteAllActivitiesModalProps {
   selectedActivityValue: ActivityValue | undefined;
   resetSelectedActivityValue: () => void;
   inventoryId: string;
-  setDeleteActivityDialogOpen: Function;
+  setDeleteActivityDialogOpen: (open: boolean) => void;
 }
 
 const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({

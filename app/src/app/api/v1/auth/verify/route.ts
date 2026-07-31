@@ -33,7 +33,6 @@
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { passwordRegex } from "@/util/validation";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";

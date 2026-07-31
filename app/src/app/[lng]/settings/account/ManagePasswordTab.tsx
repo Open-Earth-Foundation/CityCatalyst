@@ -33,8 +33,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
     reset,
   } = useForm<Inputs>();
 
-  const [updatePassword, { isLoading, isError, isSuccess }] =
-    api.useUpdatePasswordMutation();
+  const [updatePassword] = api.useUpdatePasswordMutation();
 
   const { showSuccessToast } = UseSuccessToast({
     title: t("password-updated"),

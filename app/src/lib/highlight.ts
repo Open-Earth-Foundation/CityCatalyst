@@ -1,5 +1,3 @@
-import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-
 // Only import and initialize Highlight if not in test environment
 let H: any = null;
 

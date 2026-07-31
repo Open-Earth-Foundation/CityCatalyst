@@ -53,7 +53,7 @@ export default class ManualInputValidationService {
   }) {
     // we wanna compare the activity data with other exisiting activity datas stored in the database belonging to the same inventoryValue
     if (inventoryValueId) {
-      let inventoryValue: InventoryValueAttributes | null =
+      const inventoryValue: InventoryValueAttributes | null =
         await db.models.InventoryValue.findByPk(inventoryValueId);
 
       if (!inventoryValue) {
@@ -131,12 +131,12 @@ export default class ManualInputValidationService {
         });
       }
 
-      let activityRules = (methodology as Methodology).activities;
+      const activityRules = (methodology as Methodology).activities;
 
       // handle non direct measure methodologies
       if (activityRules && activityRules.length > 0) {
-        let activityRule = activityRules[selectedActivityIndex];
-        let uniqueBy = activityRule["unique-by"];
+        const activityRule = activityRules[selectedActivityIndex];
+        const uniqueBy = activityRule["unique-by"];
         if (uniqueBy) {
           await this.uniqueByValidation({
             uniqueBy,
@@ -156,7 +156,7 @@ export default class ManualInputValidationService {
     activityData: Record<string, any>;
     requiredFields: string[];
   }) {
-    let missingFields: string[] = [];
+    const missingFields: string[] = [];
 
     for (const field of requiredFields) {
       if (!activityData[field] && typeof activityData[field] !== "number") {

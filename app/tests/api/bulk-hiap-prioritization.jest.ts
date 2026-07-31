@@ -54,8 +54,8 @@ function callHiapCronJobRoute() {
 describe("Bulk HIAP Prioritization API", () => {
   let testData: TestData;
   let projectId: string;
-  let inventoryIds: string[] = [];
-  let cityIds: string[] = [];
+  const inventoryIds: string[] = [];
+  const cityIds: string[] = [];
   let mockAdminSession: AppSession;
   let mockUserSession: AppSession;
 
@@ -881,7 +881,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
         // Create additional inventories and rankings (more than BATCH_SIZE)
         const extraInventories = await Promise.all(
-          Array.from({ length: 5 }, async (_, idx) => {
+          Array.from({ length: 5 }, async () => {
             const inventory = await db.models.Inventory.create({
               inventoryId: randomUUID(),
               cityId: cityIds[0], // Reuse existing city
@@ -893,7 +893,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
         // Create rankings for these new inventories
         const extraRankings = await Promise.all(
-          extraInventories.map((inventory, idx) =>
+          extraInventories.map((inventory) =>
             db.models.HighImpactActionRanking.create({
               id: randomUUID(),
               inventoryId: inventory.inventoryId,

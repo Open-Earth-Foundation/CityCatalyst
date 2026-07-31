@@ -1,10 +1,5 @@
 import { TFunction } from "i18next";
-import {
-  Control,
-  Controller,
-  FieldErrors,
-  UseFormRegister,
-} from "react-hook-form";
+import { Control, Controller, FieldErrors } from "react-hook-form";
 import type {
   GHGICountryEmissionsEntry,
   GHGIFormInputs,
@@ -13,14 +8,7 @@ import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useEffect, useState } from "react";
 import { findClosestYear } from "@/util/helpers";
-import {
-  Box,
-  createListCollection,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Icon, Text } from "@chakra-ui/react";
 import FormattedThousandsNumber from "@/components/FormattedThousandsNumberInput";
 import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
@@ -42,7 +30,6 @@ type GeneralOnboardingData = {
 
 export default function SetPopulationDataStep({
   t,
-  register,
   errors,
   control,
   years,
@@ -54,11 +41,10 @@ export default function SetPopulationDataStep({
   numberFormat,
 }: {
   t: TFunction;
-  register: UseFormRegister<GHGIFormInputs>;
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
   years: number[];
-  watch: Function;
+  watch: (name: string) => any;
   ocCityData?: OCCityAttributes;
   setData: (data: GeneralOnboardingData) => void;
   setValue: any;
@@ -75,10 +61,6 @@ export default function SetPopulationDataStep({
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulation = watch("countryPopulation");
   const countryPopulationYear = watch("countryPopulationYear");
-
-  const yearsCollection = createListCollection({
-    items: years.map((year) => ({ label: year.toString(), value: year })),
-  });
 
   const locode = ocCityData?.actor_id;
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
@@ -139,7 +121,7 @@ export default function SetPopulationDataStep({
         logger.error("Failed to find population data for region");
         return;
       }
-      let [{ datasource }] = countryData.population;
+      const [{ datasource }] = countryData.population;
       setCountryPopulationSourceName(datasource.name);
       setValue("countryPopulation", population.population);
       setValue("countryPopulationYear", population.year);

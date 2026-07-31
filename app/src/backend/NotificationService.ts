@@ -24,7 +24,11 @@ class NotificationService {
   private static instance: NotificationService;
   private static transporter: Transporter;
 
-  private constructor(transporter?: Transporter) {}
+  private constructor(transporter?: Transporter) {
+    if (transporter) {
+      NotificationService.transporter = transporter;
+    }
+  }
 
   static getInstance(transporter?: Transporter): NotificationService {
     if (!NotificationService.instance) {

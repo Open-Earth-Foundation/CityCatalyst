@@ -98,23 +98,7 @@ const IncinerationWasteN2OEmissionFactor: Record<
   },
 };
 
-// factors of each fraction of waste type for methane generation formula
-const FOOD_FACTOR = 0.15;
-const GARDEN_WASTE_FACTOR = 0.2;
-const PAPER_FACTOR = 0.4;
-const WOOD_FACTOR = 0.43;
-const TEXTILES_FACTOR = 0.24;
-const INDUSTRIAL_WASTE_FACTOR = 0.15;
-
 const DEFAULT_METHANE_PRODUCTION_CAPACITY = 0.25; // kg CH4/kg COD
-
-// TODO get actual values for each contry from IPCC
-const DEFAULT_INCOME_GROUP_FRACTIONS: Record<string, number> = {
-  "income-group-type-all": 1.0,
-  "income-group-type-rural": 0.23,
-  "income-group-type-urban-high-income": 0.5,
-  "income-group-type-urban-low-income": 0.27,
-};
 
 // check if an extra field has a unit.
 // if yes. take the selected unit, convert it to the default unit and return the value
@@ -137,7 +121,7 @@ function convertDataToDefaultUnit(
 
   // if methodologyId is !direct measure, and number of activities === 1 use the Oth activity
   if ((methododology.activities?.length as number) > 1) {
-    let selectedActivityOption =
+    const selectedActivityOption =
       activityValue.metadata?.[
         methododology.activitySelectionField?.id as string
       ];
@@ -153,7 +137,7 @@ function convertDataToDefaultUnit(
   }
   // deal with activity title value
 
-  let data: Record<string, any> = { ...activityValue.activityData };
+  const data: Record<string, any> = { ...activityValue.activityData };
   // check if it has a default unit property
   if (activity?.["default-units"]) {
     const val = data[activity?.["activity-title"] as string];
@@ -174,7 +158,7 @@ function convertDataToDefaultUnit(
 
   if (activity?.["extra-fields"]) {
     activity["extra-fields"].forEach((field) => {
-      let val = data[field.id];
+      const val = data[field.id];
       if (field.units && field["default-units"]) {
         data[field.id] = new Decimal(
           UnitConversionService.convertUnits(
@@ -574,10 +558,7 @@ export async function handleMethaneCommitmentFormula(
   return [{ gas: "CH4", amount: ch4Emissions }];
 }
 
-function getMassBasedActivityAmount(
-  activityValue: ActivityValue,
-  inventoryValue: InventoryValue,
-): number {
+function getMassBasedActivityAmount(activityValue: ActivityValue): number {
   // For kg/kg fuels, we want MASS (kg) without density conversion
   const rawData = { ...activityValue.activityData };
   const activityAmountKey = activityValue.metadata?.["activityTitle"];
@@ -646,10 +627,7 @@ export function handleActivityAmountTimesEmissionsFactorFormula(
 
     if (isMassBased) {
       // Path A: Handle solid fuels (kg/kg) - no density conversion
-      activityAmount = getMassBasedActivityAmount(
-        activityValue,
-        inventoryValue,
-      );
+      activityAmount = getMassBasedActivityAmount(activityValue);
     } else if (isVolumeBased) {
       // Path B: Handle gas/liquid fuels (kg/m³) - existing logic with conversion
       activityAmount = getVolumeBasedActivityAmount(

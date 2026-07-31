@@ -72,7 +72,7 @@ export const GlobeLocationPinIcon = (props: any) => (
   </Icon>
 );
 
-export const ExcelFileIcon = (props: any) => (
+export const ExcelFileIcon = () => (
   <svg
     width="48"
     height="48"
@@ -2034,7 +2034,7 @@ export const CitiesBuildingIcon = () => {
   );
 };
 
-export const CityLimitIcon = ({ color }: { color: string }) => {
+export const CityLimitIcon = ({}: { color: string }) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

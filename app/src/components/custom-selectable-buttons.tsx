@@ -1,5 +1,4 @@
 import { TFunction } from "i18next";
-import { FC } from "react";
 import { Button } from "./ui/button";
 import { Icon } from "@chakra-ui/react";
 import { InventoryButtonCheckIcon } from "./icons";
@@ -14,7 +13,7 @@ export default function CustomSelectableButton({
   value: string;
   field: any;
   inputValue: string;
-  inputValueFunction: Function;
+  inputValueFunction: (value: string) => void;
   t: TFunction;
 }) {
   return (

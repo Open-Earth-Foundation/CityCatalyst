@@ -51,7 +51,9 @@ export default function HomePage({
   const cookieLanguage = Cookies.get("i18next");
   const router = useRouter();
   // Check if user is authenticated otherwise route to login page
-  isPublic || CheckUserSession();
+  if (!isPublic) {
+    CheckUserSession();
+  }
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
   const inventoryParamValue: string | undefined = Array.isArray(inventoryParam)

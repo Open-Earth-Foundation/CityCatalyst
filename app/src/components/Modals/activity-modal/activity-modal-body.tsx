@@ -3,9 +3,12 @@ import { TFunction } from "i18next";
 import {
   Control,
   FieldValues,
+  UseFormClearErrors,
   UseFormGetValues,
   UseFormRegister,
+  UseFormSetError,
   UseFormSetValue,
+  UseFormWatch,
   useWatch,
 } from "react-hook-form";
 import type {
@@ -26,15 +29,15 @@ import { DataQualitySection } from "./sections/DataQualitySection";
 interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
-  watch: Function;
+  watch: UseFormWatch<Inputs>;
   control: Control<FieldValues, any>;
   submit: () => void;
   fields: ExtraField[];
   hideEmissionFactors?: boolean;
   units?: string[];
   errors: Record<string, any>;
-  setError: Function;
-  clearErrors: Function;
+  setError: UseFormSetError<Inputs>;
+  clearErrors: UseFormClearErrors<Inputs>;
   emissionsFactorTypes: EmissionFactorTypes[];
   methodology: Methodology;
   selectedActivity?: SuggestedActivity;
@@ -83,7 +86,6 @@ const ActivityModalBody = ({
   clearErrors,
   fields,
   units,
-  targetActivityValue,
   selectedActivity,
   title,
   hideEmissionFactors,
@@ -92,11 +94,6 @@ const ActivityModalBody = ({
   areEmissionFactorsLoading,
   inventoryId,
 }: AddActivityModalBodyProps) => {
-  const unitValue = useWatch({
-    control,
-    name: `activity.${title}-unit` as any,
-  });
-
   const emissionsFactorTypeValue = useWatch({
     control,
     name: "activity.emissionFactorType",
@@ -163,19 +160,19 @@ const ActivityModalBody = ({
         setEmissionFactorUnits(defaultUnits);
         setIsEmissionFactorInputDisabled(false);
       } else {
-        let co2Val =
+        const co2Val =
           (emissionFactor?.gasValuesByGas["CO2"]?.gasValues.length as number) >
           0
             ? emissionFactor?.gasValuesByGas["CO2"].gasValues[0]
                 .emissionsPerActivity
             : "";
-        let n2oVal =
+        const n2oVal =
           (emissionFactor?.gasValuesByGas["N2O"]?.gasValues.length as number) >
           0
             ? emissionFactor?.gasValuesByGas["N2O"].gasValues[0]
                 .emissionsPerActivity
             : "";
-        let ch4Val =
+        const ch4Val =
           (emissionFactor?.gasValuesByGas["CH4"]?.gasValues.length as number) >
           0
             ? emissionFactor?.gasValuesByGas["CH4"].gasValues[0]

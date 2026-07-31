@@ -15,8 +15,6 @@ interface SuggestedActivityCardProps {
 
 const SuggestedActivityCard: FC<SuggestedActivityCardProps> = ({
   t,
-  isSelected,
-  id,
   onActivityAdded,
   prefillValue,
   prefillKey,

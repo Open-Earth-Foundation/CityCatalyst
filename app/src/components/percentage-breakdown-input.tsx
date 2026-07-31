@@ -3,7 +3,17 @@
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@/components/ui/radio";
 import { FC, useEffect, useMemo } from "react";
-import { Control, FieldError, FieldValues, useWatch } from "react-hook-form";
+import {
+  Control,
+  FieldError,
+  FieldValues,
+  useWatch,
+  UseFormSetError,
+  UseFormClearErrors,
+  UseFormRegister,
+  UseFormGetValues,
+  UseFormSetValue,
+} from "react-hook-form";
 import {
   ClinicalWasteIcon,
   FoodIcon,
@@ -61,11 +71,11 @@ interface FormInputProps {
   control: Control<FieldValues, any>;
   isDisabled?: boolean;
   error: FieldError | undefined;
-  setError: Function;
-  clearErrors: Function;
-  register: Function;
-  getValues: Function;
-  setValue: Function;
+  setError: UseFormSetError<FieldValues>;
+  clearErrors: UseFormClearErrors<FieldValues>;
+  register: UseFormRegister<FieldValues>;
+  getValues: UseFormGetValues<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
   id: string;
   t: TFunction;
   breakdownCategories: string[];
@@ -103,7 +113,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     defaultValue: null,
   });
 
-  let { data: wasteCompositionValues, isLoading: wasteCompositionLoading } =
+  const { data: wasteCompositionValues, isLoading: wasteCompositionLoading } =
     api.useGetWasteCompositionValuesQuery(
       {
         inventoryId: inventoryId as string,

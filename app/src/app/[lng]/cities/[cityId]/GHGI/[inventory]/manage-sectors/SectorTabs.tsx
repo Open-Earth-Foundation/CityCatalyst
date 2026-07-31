@@ -135,7 +135,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [showDialog, setShowDialog] = useState(false);
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const [nextRoute, setNextRoute] = useState<string | null>(null);
+  const [, setNextRoute] = useState<string | null>(null);
   const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
 
   const {
@@ -151,7 +151,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     if (!isSectorDataLoading && !error && sectorData?.result) {
       const result = Object.entries(
         sectorData.result as Record<string, ScopeData[]>,
-      ).flatMap(([_sectorRefno, scopes]: [string, ScopeData[]]) => {
+      ).flatMap(([, scopes]: [string, ScopeData[]]) => {
         return scopes.map((scope: ScopeData) => [
           scope.subCategory?.subcategoryId,
           {
@@ -210,7 +210,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   }, [isDirty]);
 
   // update notation keys for subsectors from api service
-  const [createNotationKeys, { isLoading, isError, data, status }] =
+  const [createNotationKeys, { isLoading, isError }] =
     api.useUpdateOrCreateNotationKeysMutation();
   const handleUpdateNotationKeys = async (subCategoryId?: string) => {
     // Valid enum values for unavailableReason
@@ -311,13 +311,13 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       // clear dirty state on success
       setIsDirty(false);
       // show success toast
-      !isLoading &&
-        !isError &&
+      if (!isLoading && !isError) {
         toaster.success({
           title: t("success"),
           description: t("notation-keys-updated"),
           duration: 5000,
         });
+      }
     } catch (error: any) {
       // Check if error is about emissions data
       const errorData = error?.data?.error || {};
@@ -350,17 +350,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       }
       logger.error({ err: error }, "Failed to update notation keys");
     }
-  };
-
-  // Modal handlers for unsaved changes
-  const confirmNavigation = () => {
-    setIsDirty(false);
-    if (nextRoute) {
-      setPrevPathname(nextRoute);
-      router.push(nextRoute);
-      setNextRoute(null);
-    }
-    setShowDialog(false);
   };
 
   const resetFormData = (): void => {

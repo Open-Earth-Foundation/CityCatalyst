@@ -4,7 +4,6 @@ import {
   HStack,
   Heading,
   Link,
-  NumberInput,
   Select,
   Text,
   Textarea,
@@ -18,7 +17,6 @@ import type { EmissionsFactorWithDataSources } from "@/util/types";
 import type { EmissionsFactorData } from "./types";
 import { useEffect } from "react";
 import { getTranslationFromDict } from "@/i18n";
-import { InputGroup } from "@/components/ui/input-group";
 import {
   NumberInputField,
   NumberInputRoot,
@@ -75,11 +73,11 @@ export function ActivityDataTab({
   emissionsFactors,
 }: {
   t: TFunction;
-  register: Function;
+  register: (name: string, options?: unknown) => unknown;
   errors: Record<string, any>;
   prefix: string;
-  watch: Function;
-  setValue: Function;
+  watch: (name: string) => any;
+  setValue: (name: string, value: unknown) => void;
   gpcReferenceNumber: string;
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {

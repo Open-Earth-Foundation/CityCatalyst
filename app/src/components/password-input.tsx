@@ -1,5 +1,5 @@
 import { Box, Icon, Text } from "@chakra-ui/react";
-import { FieldError } from "react-hook-form";
+import { FieldError, UseFormRegister } from "react-hook-form";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
@@ -22,10 +22,10 @@ export default function PasswordInput({
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
-  register: Function;
+  register: UseFormRegister<any>;
   t: TFunction;
-  name?: String;
-  id?: String;
+  name?: string;
+  id?: string;
   w?: string;
   shouldValidate?: boolean;
   watchPassword?: string;

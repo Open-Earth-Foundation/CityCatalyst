@@ -53,10 +53,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         href="https://fonts.gstatic.com"
         crossOrigin="anonymous"
       />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600&display=swap"
-        rel="stylesheet"
-      />
       <style jsx global>
         {`
           :root {

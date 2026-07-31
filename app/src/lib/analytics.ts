@@ -1,11 +1,7 @@
 import posthog from "posthog-js";
 import { env } from "next-runtime-env";
 import Cookies from "js-cookie";
-import {
-  FeatureFlags,
-  hasFeatureFlag,
-  hasServerFeatureFlag,
-} from "@/util/feature-flags";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 
 let isInitialized = false;
 

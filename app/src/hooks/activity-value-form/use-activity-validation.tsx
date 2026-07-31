@@ -1,4 +1,3 @@
-import { Box, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next";
 import {
   ManualInputValidationErrorCodes,

@@ -1,6 +1,6 @@
 import { AppSession, Auth } from "@/lib/auth";
 import env from "@next/env";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { jest } from "@jest/globals";
 import stream from "stream";
 import { Blob } from "fetch-blob";

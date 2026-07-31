@@ -68,8 +68,7 @@ export default function ReviewPage() {
 
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   const { data: inventory } = api.useGetInventoryQuery(
     userInfo?.defaultInventoryId!,

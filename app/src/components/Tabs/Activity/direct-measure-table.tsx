@@ -17,7 +17,6 @@ import {
   AccordionItemTrigger,
   AccordionRoot,
 } from "@/components/ui/accordion";
-import { useParams } from "next/navigation";
 import {
   MenuContent,
   MenuItem,
@@ -45,13 +44,12 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
   showActivityModal,
   numberFormat,
 }) => {
-  const { lng } = useParams();
   const directMeasure = MANUAL_INPUT_HIERARCHY[referenceNumber as string]
     .directMeasure as DirectMeasure;
   const extraFields = directMeasure["extra-fields"] as ExtraField[];
   const tag = referenceNumber?.includes("II") ? "-transport-types" : "";
 
-  let groupBy = directMeasure?.["group-by"] as string;
+  const groupBy = directMeasure?.["group-by"] as string;
 
   const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
     if (!groupBy) return {};

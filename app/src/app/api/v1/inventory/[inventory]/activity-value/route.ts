@@ -102,7 +102,6 @@
  * */
 import ActivityService from "@/backend/ActivityService";
 import { PermissionService } from "@/backend/permissions";
-import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";

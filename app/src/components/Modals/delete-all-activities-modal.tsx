@@ -25,7 +25,7 @@ interface DeleteAllActivitiesModalProps {
   t: TFunction;
   inventoryId: string;
   subsectorId: string;
-  setDeleteActivityAllDialogOpen: Function;
+  setDeleteActivityAllDialogOpen: (open: boolean) => void;
 }
 
 const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({

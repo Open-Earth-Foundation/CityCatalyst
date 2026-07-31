@@ -1,10 +1,6 @@
 import { Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { TFunction } from "i18next";
-import {
-  OCCityAttributes,
-  ProjectResponse,
-  ProjectWithCities,
-} from "@/util/types";
+import { OCCityAttributes, ProjectWithCities } from "@/util/types";
 import { useAppDispatch } from "@/lib/hooks";
 import React, { useEffect, useMemo, useState } from "react";
 import { set } from "@/features/city/openclimateCitySlice";
@@ -22,7 +18,6 @@ import {
   Heading,
   Icon,
   Input,
-  InputAddon,
   Link,
   Spinner,
   Stack,
@@ -89,7 +84,6 @@ export type OnboardingData = {
 export default function SelectCityStep({
   errors,
   register,
-  control,
   t,
   setValue,
   watch,
@@ -105,7 +99,7 @@ export default function SelectCityStep({
   control: Control<Inputs>;
   t: TFunction;
   setValue: any;
-  watch: Function;
+  watch: (name: string) => any;
   ocCityData?: OCCityAttributes;
   setOcCityData: (cityData: OCCityAttributes) => void;
   setData: (data: OnboardingData) => void;
@@ -116,8 +110,6 @@ export default function SelectCityStep({
   const searchParams = useSearchParams();
   const cityFromUrl = searchParams.get("city");
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
-
-  const currentYear = new Date().getFullYear();
 
   const numberOfYearsDisplayed = 10;
 

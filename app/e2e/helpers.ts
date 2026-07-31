@@ -386,7 +386,7 @@ export async function createInventoryThroughOnboarding(
     await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {
       timeout: 5000,
     });
-  } catch (error) {
+  } catch {
     // Fill population data manually
     await cityPopulationInput.fill("1000000"); // 1 million population
 
@@ -417,7 +417,7 @@ export async function createInventoryThroughOnboarding(
         'select[name="countryPopulationYear"]',
       );
       await countryYearSelect.selectOption("2023");
-    } catch (e) {
+    } catch {
       // Some population fields not found, continuing...
     }
   }

@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect } from "react";
 import { TFunction } from "i18next";
 import { Box, Flex, HStack, Icon, Input, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
@@ -49,21 +49,14 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
   projectData,
   organizationId,
 }) => {
-  const [step, setStep] = useState(1);
-
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     setError,
     clearErrors,
-    setFocus,
-    setValue,
     control,
-    getValues,
-    trigger,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isDirty },
   } = useForm<Schema>({
     mode: "all",
     resolver: zodResolver(schema),

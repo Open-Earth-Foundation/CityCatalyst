@@ -785,7 +785,7 @@ describe("Import Routes API", () => {
       // Note: In a real test environment, you would mock these services
       // For now, we'll let the test run and handle failures gracefully
 
-      const res = await approveImport(req, {
+      await approveImport(req, {
         params: Promise.resolve({
           city: city.cityId,
           inventory: inventory.inventoryId,

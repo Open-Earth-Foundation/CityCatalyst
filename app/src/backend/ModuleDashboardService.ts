@@ -12,7 +12,6 @@ import createHttpError from "http-errors";
 import { Inventory } from "@/models/Inventory";
 import { CcraService, TopRisksResult } from "./ccra/CcraService";
 import { fetchCCRATopRisksData } from "./ccra/CcraApiService";
-import { AppSession } from "@/lib/auth";
 import ActionService from "./hiap/ActionService";
 
 export class ModuleDashboardService {
@@ -82,8 +81,6 @@ export class ModuleDashboardService {
     cityId: string,
     inventory: Inventory,
     lng: string = "en",
-    session?: AppSession,
-    ignoreExisting: boolean = false,
   ): Promise<any> {
     try {
       const city = await db.models.City.findOne({

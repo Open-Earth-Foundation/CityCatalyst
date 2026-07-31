@@ -7,20 +7,18 @@ import { NativeSelectRoot } from "./ui/native-select";
 
 const DependentSelectInput = ({
   field,
-  register,
   setValue,
-  getValues,
   control,
   t,
   errors,
 }: {
   field: ExtraField;
-  register: Function;
-  setValue: Function;
-  getValues: Function;
+  register: (name: any, options?: any) => unknown;
+  setValue: (name: string, value: unknown) => void;
+  getValues: (name?: any) => unknown;
   control: any;
   errors: Record<string, any>;
-  setError: Function;
+  setError: (name: any, error: any) => void;
   t: any;
 }) => {
   const dependentFieldKey = field.dependsOn;

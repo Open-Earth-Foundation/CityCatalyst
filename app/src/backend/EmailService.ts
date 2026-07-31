@@ -1,7 +1,7 @@
 import createHttpError from "http-errors";
 import type { User } from "@/models/User";
 import { Organization } from "@/models/Organization";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
 import { render } from "@react-email/components";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
@@ -26,7 +26,6 @@ import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
 import { UserFileResponse } from "@/util/types";
 import HiapRankingReadyTemplate from "@/lib/emails/HiapRankingReadyTemplate";
-import { AppSession } from "@/lib/auth";
 
 interface EmailTranslation {
   subject: string;
@@ -168,7 +167,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -211,7 +210,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -254,7 +253,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -291,7 +290,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -328,7 +327,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -478,7 +477,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -526,7 +525,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${email}`);
     }
   }
@@ -568,7 +567,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${email}`);
     }
   }
@@ -602,7 +601,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${user?.email}`);
     }
   }
@@ -730,7 +729,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${userEmail}`);
     }
   }
@@ -766,7 +765,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error({ email }, "Failed to send confirm registration email");
     }
   }

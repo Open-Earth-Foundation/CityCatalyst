@@ -37,7 +37,6 @@ export function SourceDrawer({
   isOpen,
   onClose,
   onConnectClick,
-  finalFocusRef,
   isConnectLoading,
   t,
   hideActions,

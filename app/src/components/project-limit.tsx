@@ -9,7 +9,6 @@ import {
 import { HStack, Link, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { TFunction } from "i18next";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { useTranslation } from "@/i18n/client";
 

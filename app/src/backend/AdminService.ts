@@ -1,7 +1,6 @@
 import { AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
-import { Roles } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceConnectService from "./DataSourceConnectService";

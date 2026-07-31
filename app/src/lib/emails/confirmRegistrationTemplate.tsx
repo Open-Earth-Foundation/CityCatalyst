@@ -100,13 +100,6 @@ const container = {
   height: "auto",
 };
 
-const brandHeading = {
-  fontSize: "20px",
-  lineHeight: "1.5",
-  fontWeight: "700",
-  color: "#2351DC",
-};
-
 const heading = {
   fontSize: "24px",
   lineHeight: "1.3",

@@ -24,8 +24,6 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   subsectors,
   setValue,
   t,
-  watch,
-  register,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -130,7 +128,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
                         key={subsector.subsectorId}
                         p="16px"
                         w="full"
-                        onClick={(e) => {
+                        onClick={() => {
                           // Directly toggle the item in state
                           setSelectedItems((prev) => {
                             if (prev.includes(subsectorName)) {

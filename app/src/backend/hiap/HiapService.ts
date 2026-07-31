@@ -3,10 +3,7 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import PopulationService from "../PopulationService";
-import {
-  getTotalEmissionsBySector,
-  EmissionsBySector,
-} from "../ResultsService";
+import { getTotalEmissionsBySector } from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
@@ -20,7 +17,6 @@ import {
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
-import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
 import { Op } from "sequelize";
 import VersionHistoryService from "../VersionHistoryService";
@@ -251,7 +247,7 @@ export const startBulkActionRankingJob = async (
 
   // Create ranking records for all cities with the SAME jobId
   const rankings = await Promise.all(
-    citiesInventoriesData.map(async ({ inventoryId, locode, cityId }) => {
+    citiesInventoriesData.map(async ({ inventoryId, locode }) => {
       // Skip if context data failed for this city
       if (failed.some((f) => f.inventoryId === inventoryId)) {
         return null;
@@ -828,7 +824,7 @@ export const checkActionRankingJob = async (
   type: ACTION_TYPES,
   user?: User,
 ) => {
-  const { locode, inventoryId, jobId } = ranking;
+  const { jobId } = ranking;
   if (!jobId) throw new Error("Ranking is missing jobId");
   try {
     let jobStatus: HighImpactActionRankingStatus =
@@ -1519,7 +1515,7 @@ export async function updateHiapActionSelections({
           }
         : { hiaRankingId: rankingIds };
 
-    const [_deselectedCount, changedDeselectedEntries] =
+    const [, changedDeselectedEntries] =
       await db.models.HighImpactActionRanked.update(
         { isSelected: false },
         {

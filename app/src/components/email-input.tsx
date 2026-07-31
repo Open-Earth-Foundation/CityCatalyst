@@ -1,7 +1,6 @@
 import { emailPattern } from "@/util/validation";
-import { Icon, Input, Text } from "@chakra-ui/react";
+import { Input } from "@chakra-ui/react";
 import { FieldError } from "react-hook-form";
-import { Fieldset } from "@chakra-ui/react";
 import { Field } from "@/components/ui/field";
 import LabelLarge from "@/components/package/Texts/Label";
 
@@ -17,10 +16,13 @@ export default function EmailInput({
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
-  register: Function;
-  t: Function;
-  name?: String;
-  id?: String;
+  register: (
+    name: string,
+    options?: Record<string, unknown>,
+  ) => Record<string, unknown>;
+  t: (key: string) => string;
+  name?: string;
+  id?: string;
   disabled?: boolean;
   defaultValue?: string;
 }) {

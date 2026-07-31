@@ -93,7 +93,7 @@ export default class FormatAdapterService {
     }
 
     // ── Adapter A (long-tidy): explicit Year + Sector + Emissions columns ──
-    const longTidy = this.detectLongTidy(primary, headers, headersLower);
+    const longTidy = this.detectLongTidy(primary, headers);
     if (longTidy) {
       return {
         adapterType: "long-tidy",
@@ -329,7 +329,6 @@ export default class FormatAdapterService {
   private static detectLongTidy(
     sheet: ParsedSheet,
     headers: string[],
-    headersLower: string[],
   ):
     | { yearCol: string; sectorCol: string; emissionsCol: string }
     | null {

@@ -89,7 +89,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     setSelectedInventory(null);
   }, [selectedCityData]);
 
-  const [userData, setUserData] = useState<UserAttributes>({
+  const [userData] = useState<UserAttributes>({
     email: "",
     userId: "",
     name: "",

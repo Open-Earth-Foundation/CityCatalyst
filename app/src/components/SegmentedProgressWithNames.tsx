@@ -15,7 +15,7 @@ export function SegmentedProgressWithNames({
   colors?: string[];
   max?: number;
   height?: number;
-  t: Function;
+  t: (key: string) => string;
 }) {
   const colorValues = useToken("colors", colors);
   return (

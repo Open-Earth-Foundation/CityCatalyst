@@ -56,7 +56,7 @@
 import { apiHandler } from "@/util/api";
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/services/logger";
-import { McpError, ErrorCode, Tool } from "@modelcontextprotocol/sdk/types.js";
+import { ErrorCode, Tool } from "@modelcontextprotocol/sdk/types.js";
 import { AppSession } from "@/lib/auth";
 
 // Import tool implementations
@@ -234,7 +234,7 @@ export const POST = async (req: NextRequest) => {
 };
 
 function handleInitialize(request: any) {
-  const { protocolVersion, capabilities, clientInfo } = request.params || {};
+  const { protocolVersion, clientInfo } = request.params || {};
 
   logger.info({ clientInfo, protocolVersion }, "MCP client initializing");
 
@@ -325,23 +325,10 @@ async function handleCallTool(request: any, session: AppSession) {
     logger.error({ error, tool: name }, "Tool execution failed");
 
     // Map error to appropriate MCP error code
-    let errorCode = ErrorCode.InternalError;
     let errorMessage = "Tool execution failed";
 
     if (error instanceof Error) {
       errorMessage = error.message;
-
-      if (
-        error.message.includes("Unauthorized") ||
-        error.message.includes("Authentication")
-      ) {
-        errorCode = ErrorCode.InvalidRequest;
-      } else if (
-        error.message.includes("not found") ||
-        error.message.includes("Not found")
-      ) {
-        errorCode = ErrorCode.InvalidParams;
-      }
     }
 
     return NextResponse.json({

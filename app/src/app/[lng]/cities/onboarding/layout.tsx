@@ -8,7 +8,7 @@ export default function OnboardingLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
-  const { lng } = use(props.params);
+  use(props.params);
 
   return (
     <Box

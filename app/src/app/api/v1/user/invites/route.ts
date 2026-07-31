@@ -31,7 +31,7 @@ import { InviteStatus, Roles } from "@/util/types";
 import { subDays } from "date-fns";
 import EmailService from "@/backend/EmailService";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
@@ -107,7 +107,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
  *       500:
  *         description: Something went wrong.
  */
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }

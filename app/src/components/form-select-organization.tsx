@@ -1,6 +1,5 @@
-import { Box, NativeSelectField, Select, Text } from "@chakra-ui/react";
+import { Box, NativeSelectField, Text } from "@chakra-ui/react";
 import React, { FC } from "react";
-import { FieldError } from "react-hook-form";
 import { NativeSelectRoot } from "./ui/native-select";
 import { TFunction } from "i18next";
 
@@ -8,10 +7,9 @@ interface FormInputProps {
   label: string;
   value?: string | null | undefined;
   isDisabled?: boolean;
-  error: FieldError | undefined;
-  register: Function;
+  register: (name: string, options?: unknown) => any;
   id: string;
-  onInputChange: Function;
+  onInputChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   t: TFunction;
 }
 
@@ -19,7 +17,6 @@ const FormSelectOrganization: FC<FormInputProps> = ({
   label,
   isDisabled,
   value,
-  error,
   register,
   id,
   onInputChange,

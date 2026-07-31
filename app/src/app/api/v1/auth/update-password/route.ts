@@ -58,7 +58,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   const body = updatePasswordRequest.parse(await req.json());
   const user = await UserService.findUser(session?.user.id!, session);
 

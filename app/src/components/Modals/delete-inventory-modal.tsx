@@ -69,7 +69,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
       if (res.data?.comparePassword) {
         await deleteInventory({
           inventoryId,
-        }).then((_res: any) => {
+        }).then(() => {
           reset();
           onClose();
           setIsPasswordCorrect(true);

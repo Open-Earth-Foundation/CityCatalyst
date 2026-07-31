@@ -17,7 +17,7 @@ const SelectMethodology = ({
   handleMethodologySelected: (methodology: Methodology | DirectMeasure) => void;
   directMeasure?: DirectMeasure;
 }) => {
-  const [selectedMethodology, setSelectedMethodology] = useState("");
+  const [selectedMethodology] = useState("");
 
   function handleCardSelect(selectedOption: Methodology | DirectMeasure) {
     return () => handleMethodologySelected(selectedOption);

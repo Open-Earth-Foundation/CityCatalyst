@@ -5,7 +5,6 @@ import { MethodologyCreationAttributes } from "@/models/Methodology";
 import { EmissionsFactorCreationAttributes } from "@/models/EmissionsFactor";
 import { DataSourceEmissionsFactorCreationAttributes } from "@/models/DataSourceEmissionsFactor";
 import env from "@next/env";
-import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 
 interface EmissionsFactorPublisher {
@@ -47,10 +46,6 @@ interface EmissionsFactorValue {
 interface EmissionsFactorDataSourceMapping {
   datasource_id: string;
   emissions_factor_id: string;
-}
-
-interface APIResponse<T> {
-  [key: string]: T[];
 }
 
 async function fetchEmissionsFactorData(baseUrl: string) {

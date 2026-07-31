@@ -308,7 +308,7 @@ export function EmissionPerSectors({
           acc[curr.inventoryId] = curr;
           return acc;
         },
-        {} as Record<string, any>,
+        {} as Record<string, CityYearData>,
       ) ?? {}
     );
   }, [cityYears]);

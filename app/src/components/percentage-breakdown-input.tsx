@@ -2,7 +2,7 @@
 
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@/components/ui/radio";
-import { FC, useEffect, useMemo } from "react";
+import { ElementType, FC, useEffect, useMemo } from "react";
 import {
   Control,
   FieldError,
@@ -44,7 +44,7 @@ import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import Callout from "@/components/ui/callout";
 
-const categoryIconMapping: Record<string, any> = {
+const categoryIconMapping: Record<string, ElementType> = {
   "waste-composition-municipal-solid-waste": MunicipalSolidWasteIcon,
   "waste-composition-industrial-solid-waste": IndustrialSolidWasteIcon,
   "waste-composition-hazardous-waste": HazardousWasteIcon,

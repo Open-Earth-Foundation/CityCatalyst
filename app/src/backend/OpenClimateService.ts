@@ -116,7 +116,7 @@ export default class OpenClimateService {
     actorLocode: string,
     inventoryYear: number,
     baseUrl: string,
-  ): Promise<(Record<string, any> & FetchPopulationResult) | null> {
+  ): Promise<FetchPopulationResult | null> {
     const request = await fetch(baseUrl + actorLocode);
     const data = await request.json();
 

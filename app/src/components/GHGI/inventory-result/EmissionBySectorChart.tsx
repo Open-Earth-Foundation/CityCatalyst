@@ -35,7 +35,7 @@ interface CustomBar {
     index: number;
     indexValue: number;
     value: number;
-    data: Record<string, any>;
+    data: Record<string, number>;
   };
 }
 
@@ -338,7 +338,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
     );
   };
 
-  const chartData: Record<string, any>[] = data
+  const chartData: Record<string, number>[] = data
     .map((item) => {
       const sectorBreakDown = item.bySector.reduce((acc, sector) => {
         return {

@@ -456,7 +456,7 @@ export const sortGpcReferenceNumbers = (refNumbers: string[]): string[] => {
   return [...refNumbers].sort(compareGpcRefNumbers);
 };
 
-export const isEmptyObject = (obj: Record<string, any>) => {
+export const isEmptyObject = (obj: Record<string, unknown>) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
 

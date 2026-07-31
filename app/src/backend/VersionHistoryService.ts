@@ -3,11 +3,11 @@ import { logger } from "@/services/logger";
 import { VersionChange } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
-import { Op, Transaction } from "sequelize";
+import { Model, ModelStatic, Op, Transaction } from "sequelize";
 import { isDeepStrictEqual } from "node:util";
 
 export default class VersionHistoryService {
-  static MODELS: Record<string, any> = {
+  static MODELS: Record<string, ModelStatic<Model>> = {
     // GHGI module
     InventoryValue: db.models.InventoryValue,
     ActivityValue: db.models.ActivityValue,
@@ -128,7 +128,7 @@ export default class VersionHistoryService {
         return this.createVersion(
           inventoryId,
           table,
-          entry[this.MODEL_ID_COLUMNS[table]],
+          entry[this.MODEL_ID_COLUMNS[table]] as string,
           authorId,
           entry,
           isDeleted,

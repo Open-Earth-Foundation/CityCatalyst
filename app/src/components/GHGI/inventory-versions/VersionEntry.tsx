@@ -32,7 +32,7 @@ function toEmissionsString(totalEmissions: number, format?: string): string {
 
 function getChangeSign(entry: VersionHistoryEntry): number {
   const previousVersion = entry.version.previousVersion;
-  const co2eq = entry.version.data?.co2eq;
+  const co2eq = entry.version.data?.co2eq as number | undefined;
   if (!previousVersion && co2eq != null && co2eq > 0) {
     return 1;
   }
@@ -40,7 +40,7 @@ function getChangeSign(entry: VersionHistoryEntry): number {
     return 0;
   }
 
-  const previousCo2eq = previousVersion.data?.co2eq;
+  const previousCo2eq = previousVersion.data?.co2eq as number | undefined;
   if (previousCo2eq == null) {
     return 1;
   }
@@ -167,11 +167,14 @@ export default function VersionEntry({
           tData(entry.subCategory.subcategoryName ?? "")
         : "-",
       totalEmissions: entry.version.data?.co2eq
-        ? toEmissionsString(entry.version.data.co2eq, numberFormat)
+        ? toEmissionsString(
+            entry.version.data.co2eq as number,
+            numberFormat,
+          )
         : "-",
       previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
         ? toEmissionsString(
-            entry.version.previousVersion?.data?.co2eq,
+            entry.version.previousVersion?.data?.co2eq as number,
             numberFormat,
           )
         : "-",

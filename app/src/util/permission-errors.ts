@@ -98,7 +98,7 @@ export const PERMISSION_ERROR_MESSAGES: Record<PermissionErrorCode, string> = {
 export function createPermissionError(
   code: PermissionErrorCode,
   statusCode: number = 403,
-  additionalContext?: Record<string, any>
+  additionalContext?: Record<string, unknown>
 ): createHttpError.HttpError {
   const message = PERMISSION_ERROR_MESSAGES[code];
 

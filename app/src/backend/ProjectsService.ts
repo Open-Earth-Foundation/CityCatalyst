@@ -146,7 +146,7 @@ export class ProjectService {
           }
           return !!assoc.city?.project;
         })
-        .reduce((acc: Record<string, any>, cityUserAsocc) => {
+        .reduce((acc: Record<string, ProjectWithCities>, cityUserAsocc) => {
           const projectId = cityUserAsocc.city?.project?.projectId;
           const project = cityUserAsocc.city?.project;
           const existingProject = acc[projectId];

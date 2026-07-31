@@ -10,10 +10,19 @@ import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
-import CityBoundaryService from "@/backend/CityBoundaryService";
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
 import fs from "fs";
 import path from "path";
+
+interface Template2Entry {
+  "notation-key"?: string;
+  explanation?: string;
+  total: bigint;
+  [key: string]: bigint | string | undefined;
+}
 
 export default class ECRFDownloadService {
   public static async downloadECRF(
@@ -72,7 +81,7 @@ export default class ECRFDownloadService {
     const year = output.year;
 
     let cityPopulationData = null;
-    let cityBoundaryData: Record<string, any> = {};
+    let cityBoundaryData: CityBoundary | null = null;
     try {
       cityPopulationData = await PopulationService.getPopulationDataForCityYear(
         city.cityId,
@@ -86,7 +95,7 @@ export default class ECRFDownloadService {
     }
 
     // prepare the data for sheet 1
-    const sheetData: Record<string, any> = {
+    const sheetData: Record<string, unknown> = {
       inventory_type: t?.(output.inventoryType),
       city_country: city.country,
       city_name: city.name,
@@ -106,7 +115,7 @@ export default class ECRFDownloadService {
         if (placeholderMatch) {
           const fieldName = placeholderMatch[1] as string;
           const replacementValue = sheetData[fieldName];
-          placeholderCell.value = replacementValue ?? "N/A";
+          placeholderCell.value = (replacementValue ?? "N/A") as Excel.CellValue;
         }
       }
     });
@@ -125,7 +134,7 @@ export default class ECRFDownloadService {
       V: `afolu`,
     };
 
-    const totals: Record<string, any> = {
+    const totals: Record<string, bigint> = {
       stationary1: 0n,
       stationary2: 0n,
       stationary3: 0n,
@@ -148,7 +157,7 @@ export default class ECRFDownloadService {
       this.groupFugitiveEmissionData(dataDictionary);
     totals.stationary1 = fugitive_emissions_data?.total;
 
-    const updatedDataDictionary: Record<string, any> = {
+    const updatedDataDictionary: Record<string, Template2Entry> = {
       ...dataDictionary,
       fugitive: fugitive_emissions_data,
     };
@@ -304,13 +313,13 @@ export default class ECRFDownloadService {
 
   private static transformDataForTemplate2(
     output: InventoryWithInventoryValuesAndActivityValues,
-  ): Record<string, any> {
-    const dataDictionary: Record<string, any> = {};
+  ): Record<string, Template2Entry> {
+    const dataDictionary: Record<string, Template2Entry> = {};
 
     output.inventoryValues.map((inventoryValue) => {
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
         "notation-key": inventoryValue.unavailableReason?.split("-")[1],
-        explanation: inventoryValue.unavailableExplanation,
+        explanation: inventoryValue.unavailableExplanation ?? undefined,
         total: inventoryValue.unavailableReason
           ? 0n
           : BigInt(inventoryValue.co2eq ?? 0),

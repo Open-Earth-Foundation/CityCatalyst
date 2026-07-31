@@ -639,7 +639,7 @@ export default class ECRFImportService {
    * Extract gas value from row
    */
   private static extractGasValue(
-    row: Record<string, any>,
+    row: Record<string, unknown>,
     headers: string[],
     columnIndex: number | undefined,
   ): number | undefined {

@@ -543,7 +543,8 @@ export default class InventoryImportService {
               }
 
               // Build activityData JSONB object using schema mapping
-              const activityData: Record<string, any> = {};
+              const activityData: Record<string, string | number | string[]> =
+                {};
 
               // Map activity amount using activityTitle from schema
               if (row.activityAmount !== undefined) {
@@ -624,7 +625,7 @@ export default class InventoryImportService {
               }
 
               // Build metadata JSONB object
-              const metadata: Record<string, any> = {};
+              const metadata: Record<string, string | number | string[]> = {};
 
               // Set activityId from schema
               if (activityId) {

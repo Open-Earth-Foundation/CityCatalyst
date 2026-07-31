@@ -203,7 +203,7 @@
   "expires": "Expira",
   "last-used": "Último uso",
   "created": "Creado",
-  "create-new-token": "Crear Nuevo Token",
+  "create-new-token": "Crear nuevo token",
   "token-name": "Nombre del Token",
   "token-name-placeholder": "ej., Token de Cliente MCP",
   "scope-read": "lectura",

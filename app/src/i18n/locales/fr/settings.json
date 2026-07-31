@@ -202,7 +202,7 @@
   "expires": "Expire",
   "last-used": "Dernière utilisation",
   "created": "Créé",
-  "create-new-token": "Créer un Nouveau Jeton",
+  "create-new-token": "Créer un nouveau jeton",
   "token-name": "Nom du Jeton",
   "token-name-placeholder": "ex., Jeton Client MCP",
   "scope-read": "lecture",

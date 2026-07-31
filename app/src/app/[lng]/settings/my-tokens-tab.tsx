@@ -174,7 +174,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             alignItems="center"
           >
             <Box>
-              <HeadlineSmall text={t("api-tokens")} />
+              {hasTokens ? (
+                <HeadlineSmall text={t("api-tokens")} />
+              ) : (
+                <HeadlineSmall text={t("create-new-token")} />
+              )}
+
               <BodyLarge text={t("api-tokens-description")} />
             </Box>
             {showCreateButton && !hasTokens && (

@@ -194,7 +194,7 @@
   "expires": "Expires",
   "last-used": "Last Used",
   "created": "Created",
-  "create-new-token": "Create New Token",
+  "create-new-token": "Create new token",
   "token-name": "Token Name",
   "token-name-placeholder": "e.g. MCP Client Token",
   "scope-read": "read",

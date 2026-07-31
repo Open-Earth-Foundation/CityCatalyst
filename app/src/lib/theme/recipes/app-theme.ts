@@ -535,6 +535,9 @@ export const appTheme = createSystem(defaultConfig, {
           neutral: { value: "#D7D8FA" },
           overlay: { value: "#E6E7FF" },
         },
+        gray: {
+          focusRing: { value: "#A1A1AA" }, // gray-focusRing
+        },
         divider: {
           neutral: { value: "#F0F0F0" },
         },
@@ -573,6 +576,9 @@ export const appTheme = createSystem(defaultConfig, {
           positiveDefault: { value: "#24BE00" }, // stays the same
           warningDefault: { value: "#F9A200" }, // validated changed but stays the same across themes.
           warningOverlay: { value: "#FEF8E1" }, // stays the same
+          warningSubtle: { value: "#FFEDD5" }, // orange-subtle
+          warningMuted: { value: "#FED7AA" }, // orange-muted
+          warningFg: { value: "#92310A" }, // orange-fg
           negativeDefault: { value: "#F23D33" }, // stays the same
           negativeOverlay: { value: "#FFEAEE" }, // stays the same
           backgroundOverlay: { value: "#E8FBEC" },

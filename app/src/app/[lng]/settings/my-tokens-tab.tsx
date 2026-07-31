@@ -2,13 +2,11 @@
 
 import {
   Box,
-  Button as ChakraButton,
   Icon,
   IconButton,
   Table,
   Tabs,
   Text,
-  Input,
   HStack,
   VStack,
 } from "@chakra-ui/react";
@@ -17,8 +15,9 @@ import {
   MdContentCopy,
   MdDelete,
   MdAdd,
-  MdVisibility,
-  MdVisibilityOff,
+  MdApartment,
+  MdOutlineVisibilityOff,
+  MdOutlineVisibility,
 } from "react-icons/md";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
@@ -39,11 +38,12 @@ import {
   DialogCloseTrigger,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
 import DataTableCore from "@/components/ui/data-table-core";
 import type { PersonalAccessToken } from "@/util/types";
+import CreateTokenForm from "./CreateTokenForm";
+import { BiInfoCircle } from "react-icons/bi";
 
 interface MyTokensTabProps {
   lng: string;
@@ -63,37 +63,25 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
   const [deleteToken, { isLoading: isDeleting }] =
     useDeletePersonalAccessTokenMutation();
 
-  // Modal state
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [isTokenDisplayModalOpen, setIsTokenDisplayModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [tokenToDelete, setTokenToDelete] =
     useState<PersonalAccessToken | null>(null);
 
-  // Form state
   const [tokenName, setTokenName] = useState("");
-  const [readScope, setReadScope] = useState(true);
-  const [writeScope, setWriteScope] = useState(false);
-  const [expiresIn, setExpiresIn] = useState<string>("90"); // days
+  const [expiresIn, setExpiresIn] = useState<string>("90");
 
-  // Created token display
   const [createdToken, setCreatedToken] = useState<string | null>(null);
   const [showToken, setShowToken] = useState(false);
 
+  const resetCreateForm = () => {
+    setTokenName("");
+    setExpiresIn("90");
+    setIsCreateFormOpen(false);
+  };
+
   const handleCreateToken = async () => {
-    const scopes: string[] = [];
-    if (readScope) scopes.push("read");
-    if (writeScope) scopes.push("write");
-
-    if (scopes.length === 0) {
-      toaster.create({
-        description: t("token-scope-required"),
-        type: "error",
-        duration: 3000,
-      });
-      return;
-    }
-
     if (!tokenName.trim()) {
       toaster.create({
         description: t("token-name-required"),
@@ -104,7 +92,6 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
     }
 
     try {
-      // Calculate expiration date
       let expiresAt: string | null = null;
       if (expiresIn && expiresIn !== "never") {
         const days = parseInt(expiresIn, 10);
@@ -115,26 +102,20 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
 
       const result = await createToken({
         name: tokenName.trim(),
-        scopes,
+        scopes: ["read"],
         expiresAt,
       }).unwrap();
 
       setCreatedToken(result.token);
-      setIsCreateModalOpen(false);
+      resetCreateForm();
       setIsTokenDisplayModalOpen(true);
-
-      // Reset form
-      setTokenName("");
-      setReadScope(true);
-      setWriteScope(false);
-      setExpiresIn("90");
 
       toaster.create({
         description: t("token-created-success"),
         type: "success",
         duration: 3000,
       });
-    } catch (err) {
+    } catch {
       toaster.create({
         description: t("token-create-error"),
         type: "error",
@@ -155,7 +136,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       });
       setIsDeleteModalOpen(false);
       setTokenToDelete(null);
-    } catch (err) {
+    } catch {
       toaster.create({
         description: t("token-delete-error"),
         type: "error",
@@ -174,13 +155,14 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return t("never") || "Never";
+    if (!dateString) return t("never");
     return new Date(dateString).toLocaleDateString();
   };
 
-  const formatScopes = (scopes: string[]) => {
-    return scopes.join(", ");
-  };
+  const formatScopes = (scopes: string[]) => scopes.join(", ");
+
+  const hasTokens = !!tokens && tokens.length > 0;
+  const showCreateButton = !isTokensLoading && !isCreateFormOpen;
 
   return (
     <>
@@ -192,19 +174,18 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             alignItems="center"
           >
             <Box>
-              <HeadlineSmall text={t("api-tokens") || "API Tokens"} />
-              <BodyLarge
-                text={
-                  t("api-tokens-description") ||
-                  "Manage personal access tokens for API and MCP client access"
-                }
-              />
+              {hasTokens ? (
+                <HeadlineSmall text={t("api-tokens")} />
+              ) : (
+                <HeadlineSmall text={t("create-new-token")} />
+              )}
+
+              <BodyLarge text={t("api-tokens-description")} />
             </Box>
-            {/* Show button here only when no tokens exist */}
-            {(!tokens || tokens.length === 0) && !isTokensLoading && (
-              <Button onClick={() => setIsCreateModalOpen(true)} h="48px">
+            {showCreateButton && !hasTokens && (
+              <Button onClick={() => setIsCreateFormOpen(true)} h="48px">
                 <Icon as={MdAdd} boxSize={5} mr="8px" />
-                {t("create-token") || "Create Token"}
+                {t("create-token")}
               </Button>
             )}
           </Box>
@@ -212,8 +193,19 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           {isTokensLoading ? (
             <ProgressLoader />
           ) : error ? (
-            <Box>{t("tokens-error-loading") || "Error loading tokens"}</Box>
-          ) : !tokens || tokens.length === 0 ? (
+            <Box>{t("tokens-error-loading")}</Box>
+          ) : isCreateFormOpen ? (
+            <CreateTokenForm
+              t={t}
+              tokenName={tokenName}
+              onTokenNameChange={setTokenName}
+              expiresIn={expiresIn}
+              onExpiresInChange={setExpiresIn}
+              onCancel={resetCreateForm}
+              onSubmit={handleCreateToken}
+              isSubmitting={isCreating}
+            />
+          ) : !hasTokens ? (
             <Box
               p="48px"
               textAlign="center"
@@ -222,16 +214,30 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               borderColor="border.neutral"
               borderRadius="12px"
             >
-              <BodyMedium
-                text={
-                  t("no-tokens") ||
-                  "No tokens yet. Create one to get started with API access."
-                }
+              <Icon
+                as={MdApartment}
+                boxSize={20}
+                color="background.neutral"
+                mb="8px"
               />
+              <Text
+                fontWeight="bold"
+                fontSize="title.md"
+                color="content.secondary"
+              >
+                {t("no-tokens")}
+              </Text>
+              <Text
+                fontSize="body.md"
+                letterSpacing="wide"
+                fontFamily="body"
+                color="interactive.control"
+              >
+                {t("no-tokens-description")}
+              </Text>
             </Box>
           ) : (
             <Box bg="white" p={6} borderRadius="8px">
-              {/* Card header with title and button */}
               <Box
                 display="flex"
                 justifyContent="space-between"
@@ -243,34 +249,29 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                   fontSize="title.md"
                   color="content.secondary"
                 >
-                  {t("all-tokens") || "All Tokens"} ({tokens.length})
+                  {t("all-tokens")} ({tokens.length})
                 </Text>
-                <Button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  variant="outline"
-                  h="48px"
-                >
-                  <Icon as={MdAdd} boxSize={5} mr="8px" />
-                  {t("add") || "Add"}
-                </Button>
+                {showCreateButton && (
+                  <Button
+                    onClick={() => setIsCreateFormOpen(true)}
+                    variant="outline"
+                    h="48px"
+                  >
+                    <Icon as={MdAdd} boxSize={5} mr="8px" />
+                    {t("add")}
+                  </Button>
+                )}
               </Box>
 
-              {/* Token table using DataTableCore */}
               <DataTableCore<PersonalAccessToken>
                 data={tokens}
                 columns={[
                   { header: t("token-name"), accessor: "name" },
-                  {
-                    header: t("token-prefix") || "Token",
-                    accessor: "tokenPrefix",
-                  },
-                  { header: t("scopes") || "Scopes", accessor: "scopes" },
-                  { header: t("expires") || "Expires", accessor: "expiresAt" },
-                  {
-                    header: t("last-used") || "Last Used",
-                    accessor: "lastUsedAt",
-                  },
-                  { header: t("created") || "Created", accessor: "created" },
+                  { header: t("token-prefix"), accessor: "tokenPrefix" },
+                  { header: t("scopes"), accessor: "scopes" },
+                  { header: t("expires"), accessor: "expiresAt" },
+                  { header: t("last-used"), accessor: "lastUsedAt" },
+                  { header: t("created"), accessor: "created" },
                   { header: "", accessor: null },
                 ]}
                 renderRow={(token: PersonalAccessToken, idx: number) => (
@@ -324,101 +325,10 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
         </Box>
       </Tabs.Content>
 
-      {/* Create Token Modal */}
-      <DialogRoot
-        open={isCreateModalOpen}
-        onOpenChange={(e) => setIsCreateModalOpen(e.open)}
-      >
-        <DialogContent minW="500px">
-          <DialogHeader>
-            <DialogTitle>
-              {t("create-new-token") || "Create New Token"}
-            </DialogTitle>
-          </DialogHeader>
-          <DialogCloseTrigger />
-          <DialogBody>
-            <VStack gap="24px" align="stretch">
-              <Field label={t("token-name") || "Token Name"}>
-                <Input
-                  placeholder={
-                    t("token-name-placeholder") || "e.g., MCP Client Token"
-                  }
-                  value={tokenName}
-                  onChange={(e) => setTokenName(e.target.value)}
-                />
-              </Field>
-
-              <Field label={t("scopes") || "Scopes"}>
-                <VStack align="start" gap="12px">
-                  <Checkbox
-                    checked={readScope}
-                    onCheckedChange={(e) => setReadScope(!!e.checked)}
-                  >
-                    <Text>
-                      <Text as="span" fontWeight="medium">
-                        {t("scope-read")}
-                      </Text>
-                      {" - "}
-                      {t("read-scope-description") ||
-                        "Access to read data (GET requests)"}
-                    </Text>
-                  </Checkbox>
-                </VStack>
-              </Field>
-
-              <Field label={t("expiration") || "Expiration"}>
-                <HStack gap="12px">
-                  <ChakraButton
-                    variant={expiresIn === "30" ? "solid" : "outline"}
-                    size="sm"
-                    onClick={() => setExpiresIn("30")}
-                  >
-                    30 {t("days") || "days"}
-                  </ChakraButton>
-                  <ChakraButton
-                    variant={expiresIn === "90" ? "solid" : "outline"}
-                    size="sm"
-                    onClick={() => setExpiresIn("90")}
-                  >
-                    90 {t("days") || "days"}
-                  </ChakraButton>
-                  <ChakraButton
-                    variant={expiresIn === "365" ? "solid" : "outline"}
-                    size="sm"
-                    onClick={() => setExpiresIn("365")}
-                  >
-                    1 {t("year") || "year"}
-                  </ChakraButton>
-                  <ChakraButton
-                    variant={expiresIn === "never" ? "solid" : "outline"}
-                    size="sm"
-                    onClick={() => setExpiresIn("never")}
-                  >
-                    {t("never") || "Never"}
-                  </ChakraButton>
-                </HStack>
-              </Field>
-            </VStack>
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              mr="12px"
-              h="48px"
-              onClick={() => setIsCreateModalOpen(false)}
-            >
-              {t("cancel") || "Cancel"}
-            </Button>
-            <Button h="48px" onClick={handleCreateToken} loading={isCreating}>
-              {t("create") || "Create"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </DialogRoot>
-
       {/* Token Display Modal (shown after creation) */}
       <DialogRoot
         open={isTokenDisplayModalOpen}
+        placement="center"
         onOpenChange={(e) => {
           if (!e.open) {
             setCreatedToken(null);
@@ -427,60 +337,92 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
           setIsTokenDisplayModalOpen(e.open);
         }}
       >
-        <DialogContent minW="550px">
+        <DialogContent minW="779px" minH="764px" px="24px">
           <DialogHeader>
-            <DialogTitle>{t("token-created") || "Token Created"}</DialogTitle>
+            <HeadlineSmall text={t("token-created-title")} />
           </DialogHeader>
-          <DialogCloseTrigger />
+          <DialogCloseTrigger mt="10px" />
           <DialogBody>
-            <VStack gap="16px" align="stretch">
+            <VStack gap="36px" align="stretch">
               <Box
                 p="16px"
-                bg="sentiment.warningLight"
-                borderRadius="8px"
+                borderRadius="6px"
+                bg="sentiment.warningSubtle"
                 borderWidth="1px"
-                borderColor="sentiment.warningDefault"
+                borderColor="sentiment.warningMuted"
+                display="flex"
+                gap="12px"
               >
-                <BodyMedium
-                  text={
-                    t("token-copy-warning") ||
-                    "Make sure to copy your token now. You won't be able to see it again!"
-                  }
+                <Icon
+                  as={BiInfoCircle}
+                  boxSize={5}
+                  color="sentiment.warningFg"
                 />
+                <Box>
+                  <BodyMedium
+                    text={t("token-copy-warning-title")}
+                    fontWeight="medium"
+                    fontFamily="heading"
+                    color="sentiment.warningFg"
+                  />
+                  <BodyMedium
+                    text={t("token-copy-warning-description")}
+                    color="sentiment.warningFg"
+                  />
+                </Box>
               </Box>
 
-              <Field label={t("your-token") || "Your Token"}>
+              <Field
+                label={t("your-token")}
+                fontWeight="medium"
+                fontFamily="body"
+                fontSize="label.md"
+              >
                 <Box
-                  p="16px"
-                  bg="background.neutral"
-                  borderRadius="8px"
-                  fontFamily="mono"
-                  fontSize="body.sm"
+                  h="48px"
+                  px="16px"
+                  borderRadius="4px"
+                  borderWidth="1px"
+                  borderColor="border.neutral"
                   wordBreak="break-all"
                   w="full"
                 >
-                  <HStack justify="space-between" align="center" w="full">
-                    <Text flex="1">
+                  <HStack
+                    justify="space-between"
+                    align="center"
+                    w="full"
+                    h="full"
+                  >
+                    <Text flex="1" fontSize="body.md" fontFamily="body">
                       {showToken ? createdToken : "•".repeat(40)}
                     </Text>
                     <HStack flexShrink={0}>
                       <IconButton
                         aria-label="Toggle visibility"
                         variant="ghost"
+                        color="interactive.secondary"
                         size="sm"
                         onClick={() => setShowToken(!showToken)}
                       >
-                        <Icon as={showToken ? MdVisibilityOff : MdVisibility} />
+                        <Icon
+                          as={
+                            showToken
+                              ? MdOutlineVisibilityOff
+                              : MdOutlineVisibility
+                          }
+                          boxSize={6}
+                        />
                       </IconButton>
                       <IconButton
                         aria-label="Copy token"
                         variant="ghost"
-                        size="sm"
+                        color="interactive.secondary"
+                        boxSize={6}
                         onClick={() =>
                           createdToken && copyToClipboard(createdToken)
                         }
                       >
-                        <Icon as={MdContentCopy} />
+                        <Icon as={MdContentCopy} boxSize={6} />
                       </IconButton>
                     </HStack>
                   </HStack>
@@ -488,24 +430,28 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               </Field>
 
               <Field
-                label={
-                  t("mcp-usage-example") || "MCP Client Configuration Example:"
-                }
+                label={t("mcp-usage-example")}
+                fontWeight="medium"
+                fontSize="label.md"
+                color="content.tertiary"
               >
                 <Box
                   p="16px"
-                  bg="background.neutral"
                   borderRadius="8px"
-                  fontFamily="mono"
+                  fontFamily="heading"
+                  color="content.tertiary"
                   fontSize="body.xs"
                   whiteSpace="pre-wrap"
                   w="full"
                   position="relative"
+                  borderWidth="2px"
+                  borderColor="gray.focusRing"
                 >
                   <IconButton
                     aria-label="Copy config"
                     variant="ghost"
-                    size="sm"
+                    color="interactive.secondary"
+                    boxSize={8}
                     position="absolute"
                     top="8px"
                     right="8px"
@@ -549,8 +495,12 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
             </VStack>
           </DialogBody>
           <DialogFooter>
-            <Button h="48px" onClick={() => setIsTokenDisplayModalOpen(false)}>
-              {t("done") || "Done"}
+            <Button
+              h="63px"
+              w="172px"
+              onClick={() => setIsTokenDisplayModalOpen(false)}
+            >
+              {t("done")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -560,10 +510,11 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
       <DialogRoot
         open={isDeleteModalOpen}
         onOpenChange={(e) => setIsDeleteModalOpen(e.open)}
+        placement="center"
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("delete-token") || "Delete Token"}</DialogTitle>
+            <HeadlineSmall text={t("delete-token")} />
           </DialogHeader>
           <DialogCloseTrigger />
           <DialogBody>
@@ -579,7 +530,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               h="48px"
               onClick={() => setIsDeleteModalOpen(false)}
             >
-              {t("cancel") || "Cancel"}
+              {t("cancel")}
             </Button>
             <Button
               h="48px"
@@ -587,7 +538,7 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
               onClick={handleDeleteToken}
               loading={isDeleting}
             >
-              {t("delete") || "Delete"}
+              {t("delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

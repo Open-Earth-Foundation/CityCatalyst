@@ -15,9 +15,9 @@ import {
   MdContentCopy,
   MdDelete,
   MdAdd,
-  MdVisibility,
-  MdVisibilityOff,
   MdApartment,
+  MdOutlineVisibilityOff,
+  MdOutlineVisibility,
 } from "react-icons/md";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
@@ -367,38 +367,51 @@ const MyTokensTab: FC<MyTokensTabProps> = ({ lng }) => {
                 </Box>
               </Box>
 
-              <Field label={t("your-token")}>
+              <Field
+                label={t("your-token")}
+                fontWeight="medium"
+                fontFamily="heading"
+                fontSize="label.md"
+              >
                 <Box
-                  p="16px"
-                  bg="background.neutral"
-                  borderRadius="8px"
-                  fontFamily="mono"
-                  fontSize="body.sm"
+                  p="10px 16px"
+                  borderRadius="4px"
+                  borderWidth="1px"
+                  borderColor="border.neutral"
                   wordBreak="break-all"
                   w="full"
                 >
                   <HStack justify="space-between" align="center" w="full">
-                    <Text flex="1">
+                    <Text flex="1" fontSize="body.md" fontFamily="body">
                       {showToken ? createdToken : "•".repeat(40)}
                     </Text>
                     <HStack flexShrink={0}>
                       <IconButton
                         aria-label="Toggle visibility"
                         variant="ghost"
+                        color="interactive.secondary"
                         size="sm"
                         onClick={() => setShowToken(!showToken)}
                       >
-                        <Icon as={showToken ? MdVisibilityOff : MdVisibility} />
+                        <Icon
+                          as={
+                            showToken
+                              ? MdOutlineVisibilityOff
+                              : MdOutlineVisibility
+                          }
+                          boxSize={6}
+                        />
                       </IconButton>
                       <IconButton
                         aria-label="Copy token"
                         variant="ghost"
+                        color="interactive.secondary"
                         size="sm"
                         onClick={() =>
                           createdToken && copyToClipboard(createdToken)
                         }
                       >
-                        <Icon as={MdContentCopy} />
+                        <Icon as={MdContentCopy} boxSize={6} />
                       </IconButton>
                     </HStack>
                   </HStack>

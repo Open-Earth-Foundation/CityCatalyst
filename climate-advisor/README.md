@@ -539,9 +539,9 @@ language, or client-side fallback behavior. The boundary is:
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
 - `CC_API_KEY` - Service credential used when CA asks CC to validate the
   CC-issued user bearer token
-- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Complete JSON request-body limit for the
-  optional CC-to-CA Markdown ingest endpoint (default `20971520`; this is an
-  operational body guard, not a source-PDF or page-count acceptance limit)
+- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Maximum Markdown artifact size CA will
+  accept while verifying a CC-owned result (default `20971520`; independent
+  from the source-PDF and page-count limits)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -563,17 +563,16 @@ language, or client-side fallback behavior. The boundary is:
 
 ### CC-produced Concept Note Markdown baseline
 
-`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` validates the
-CC-issued user token through CC before consuming the request, streams the body
-up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`, recomputes SHA-256, verifies contiguous
-page markers and their positive metadata count without imposing a page-count
-limit, and delegates atomic run/upload registration to a repository
-interface. The production repository validates run ownership, preserves the
-immutable upload-to-run binding and Markdown digest, and stores the received
-artifact in `concept_note_uploads` through `CA_DATABASE_URL`. Repeating the same
-upload and digest is idempotent; changing its run or digest returns `409`. CA
-owns no OCR queue, Mistral dependency, S3 object, or S3 permission. An
-unavailable or unmigrated workflow database returns `503
+`POST /v1/concept-notes/{run_id}/uploads` creates or replays the authoritative
+pre-conversion upload row. After CC OCR completes,
+`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` receives only a
+stable S3 key, SHA-256, page count, filename, and label. CA fetches the artifact
+through CC's authenticated internal Markdown route, checks the returned
+identity, recomputes SHA-256, verifies page markers, and then stores the pointer
+as ready in `concept_note_uploads` through `CA_DATABASE_URL`. Identical create
+and delivery requests are idempotent; changing upload or Markdown identity
+returns `409`. CA owns no OCR queue, Mistral dependency, bucket credential, or
+presigned URL. An unavailable or unmigrated workflow database returns `503
 cnb_storage_unavailable`.
 
 ### Concept Note run foundation

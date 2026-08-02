@@ -30,7 +30,7 @@ dependencies = [
     "scikit-learn>=1.9.0",
     "slowapi>=0.1.10",
     "tiktoken>=0.13.0",
-    "uvicorn[standard]>=0.50.2",
+    "uvicorn[standard]>=0.51.0",
     "xgboost>=3.3.0",
 ]
 

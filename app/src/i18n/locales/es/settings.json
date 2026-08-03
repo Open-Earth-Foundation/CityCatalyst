@@ -254,5 +254,6 @@
   "upgrade-member-to-admin-title": "¿Ascender miembro a administrador?",
   "confirm-upgrade-to-admin": "¿Está seguro de que desea hacer a <bold>{{userName}}</bold> administrador de <bold>{{projectName}}</bold>?",
   "user-upgraded-to-admin": "Usuario ascendido a administrador correctamente",
-  "please-enter-password": "Por favor, ingresa una contraseña"
+  "please-enter-password": "Por favor, ingresa una contraseña",
+  "apps": "Aplicaciones"
 }

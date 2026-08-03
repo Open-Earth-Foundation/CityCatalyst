@@ -19,6 +19,8 @@ import {
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyLarge } from "@/components/package/Texts/Body";
+import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { getMeedPath } from "../steps";
 
 export default function MEEDInventoryPage(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -121,10 +123,19 @@ export default function MEEDInventoryPage(props: {
       </BodyLarge>
       <Card.Root>
         <Card.Body>
-          <TitleMedium>{t("wizard-coming-soon-title")}</TitleMedium>
+          <TitleMedium>{t("wizard-intro-title")}</TitleMedium>
           <BodyLarge color="content.secondary" mt="8px">
-            {t("wizard-coming-soon-description")}
+            {t("wizard-intro-description")}
           </BodyLarge>
+          <Box mt="24px">
+            <CCTerraButton
+              onClick={() =>
+                router.push(getMeedPath(lng, cityId, inventoryId, "emissions"))
+              }
+            >
+              {t("start-wizard")}
+            </CCTerraButton>
+          </Box>
         </Card.Body>
       </Card.Root>
     </MeedPageLayout>

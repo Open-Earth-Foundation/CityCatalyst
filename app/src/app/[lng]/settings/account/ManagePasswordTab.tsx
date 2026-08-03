@@ -41,7 +41,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid },
     setError: setFormError,
     watch,
     reset,
@@ -116,9 +116,16 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             t={t}
           />
           {error && <Text color="semantic.danger">{error}</Text>}
-          <Button type="submit" loading={isSubmitting} h={16} width="full">
-            {t("reset-button")}
-          </Button>
+          <Box display="flex" w="100%" justifyContent="right" marginTop="12px">
+            <Button
+              type="submit"
+              loading={isSubmitting}
+              h={16}
+              disabled={!isValid}
+            >
+              {t("reset-button")}
+            </Button>
+          </Box>
         </form>
       </Box>
       <Toaster />

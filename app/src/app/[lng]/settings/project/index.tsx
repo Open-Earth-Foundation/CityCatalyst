@@ -121,7 +121,7 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({
       textTransform="capitalize"
       color="content.secondary"
     >
-      {t("Projects")}
+      {t("projects")}
     </Heading>
     <Text color="content.tertiary" fontSize="body.lg">
       <Trans

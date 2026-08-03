@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import logging
 import re
 from collections.abc import AsyncIterator
 from typing import Any
@@ -33,6 +34,7 @@ from app.services.citycatalyst_client import (
 )
 
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 PAGE_MARKER = re.compile(r"<!-- page: (\d+) -->")
 JSON_REQUEST_MAX_BYTES = 16 * 1024
@@ -372,10 +374,17 @@ async def get_concept_note_delivery_context(
     ),
 ) -> JSONResponse | ConceptNoteUploadDeliveryContext:
     """Return delivery metadata to CC after reverse service authentication."""
+    # Authenticate the reverse service without recording its credential.
     expected_key = get_settings().cc_api_key or ""
     supplied_key = request.headers.get("X-CC-Service-Key", "")
     if not expected_key or not hmac.compare_digest(expected_key, supplied_key):
+        logger.warning(
+            "Rejected CC delivery-context request for upload_id=%s",
+            upload_id,
+        )
         return problem(401, "invalid_service_key", "CC service authentication failed")
+
+    # Return only the delivery metadata associated with the opaque upload ID.
     try:
         snapshot = await repository.get_delivery_context(upload_id=upload_id)
     except ConceptNoteMarkdownRepositoryError as exc:

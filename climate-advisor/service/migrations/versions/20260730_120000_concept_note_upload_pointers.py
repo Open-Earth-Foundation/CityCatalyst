@@ -44,7 +44,11 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Restore the legacy inline-Markdown schema shape."""
+    """Restore the legacy schema with placeholders, not recovered Markdown.
+
+    Empty Markdown and a zero hash only satisfy the legacy NOT NULL constraints;
+    they cannot recover inline content discarded by the upgrade.
+    """
     op.add_column(
         "concept_note_uploads",
         sa.Column("markdown_text", sa.Text(), nullable=True),

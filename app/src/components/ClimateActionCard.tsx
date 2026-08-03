@@ -63,7 +63,9 @@ export const ClimateActionCard = ({
   };
 
   const reductionLevel = getReductionPotentialLevel();
+  const isAdaptation = action.type === "adaptation";
   const actionSector = action.sectors?.[0];
+  const actionHazard = action.hazards?.[0];
 
   return (
     <Card.Root
@@ -144,12 +146,16 @@ export const ClimateActionCard = ({
             w="full"
           >
             <LabelMedium color="content.tertiary">
-              {t("sector-name")}
+              {isAdaptation ? t("hazard-name") : t("sector-name")}
             </LabelMedium>
             <TitleSmall color="content.tertiary" textTransform="capitalize">
-              {actionSector
-                ? t("sector." + toTranslationString(actionSector))
-                : t("n-a")}
+              {isAdaptation
+                ? actionHazard
+                  ? t("hazard." + actionHazard)
+                  : t("n-a")
+                : actionSector
+                  ? t("sector." + toTranslationString(actionSector))
+                  : t("n-a")}
             </TitleSmall>
           </Box>
 

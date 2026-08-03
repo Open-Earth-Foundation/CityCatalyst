@@ -77,7 +77,7 @@
   "current-password": "Mot de passe actuel",
   "new-password": "Nouveau mot de passe",
   "confirm-password": "Confirmer le mot de passe",
-  "password-hint": "Indice de mot de passe",
+  "password-hint": "Votre mot de passe doit comporter au moins 8 caractères et contenir une majuscule ainsi qu'un chiffre",
   "reset-button": "Réinitialiser le mot de passe",
   "password-min-length": "Le mot de passe doit contenir au moins 8 caractères.",
   "password-upper-case": "Le mot de passe doit inclure au moins une lettre majuscule.",

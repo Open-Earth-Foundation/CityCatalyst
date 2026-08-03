@@ -71,7 +71,7 @@
   "current-password": "Current Password",
   "new-password": "New Password",
   "confirm-password": "Confirm Password",
-  "password-hint": "Password hint",
+  "password-hint": "Your password must be at least 8 characters long and contain one uppercase letter and one number",
   "reset-button": "Reset Password",
   "password-min-length": "Password must be at least 8 characters long.",
   "password-upper-case": "Password must include at least one uppercase letter.",
@@ -242,5 +242,6 @@
   "upgrade-to-admin": "Upgrade to Admin",
   "upgrade-member-to-admin-title": "Upgrade member to Admin?",
   "confirm-upgrade-to-admin": "Are you sure you want to make <bold>{{userName}}</bold> an Admin of the <bold>{{projectName}}</bold>?",
-  "user-upgraded-to-admin": "User upgraded to admin successfully"
+  "user-upgraded-to-admin": "User upgraded to admin successfully",
+  "please-enter-password": "Please enter a password"
 }

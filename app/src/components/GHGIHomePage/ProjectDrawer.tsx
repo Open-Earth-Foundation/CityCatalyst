@@ -91,6 +91,7 @@ const ProjectList = ({
             display="flex"
             justifyContent="space-between"
             w="full"
+            h="12"
             key={project.projectId}
             onClick={() => selectProject(project.projectId)}
           >

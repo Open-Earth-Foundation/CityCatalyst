@@ -208,13 +208,15 @@ const ProjectFilterSection = ({
       display="flex"
       flexDirection="column"
       gap={"24px"}
-      py="24px"
+      pb="6"
     >
       {/* Filter Section */}
-      <Box display="flex" flexDirection="column" gap={"24px"} w="full">
+      <Box display="flex" flexDirection="column" gap="6" w="full">
         {/* Search Input */}
         <InputGroup startElement={<Icon as={MdSearch} size="md" />}>
           <Input
+            h="12"
+            fontSize="md"
             placeholder={t("search-by-city-or-project")}
             borderRadius="4px"
             borderWidth="1px"
@@ -297,7 +299,7 @@ const ProjectFilterSection = ({
           </Box>
         )}
         {/* Project dropdown */}
-        <Box display="flex" flexDirection="column" gap="24px">
+        <Box display="flex" flexDirection="column" gap="6">
           {/* Project Dropdown */}
           <CustomSelect
             options={filteredProjectOptions}
@@ -326,7 +328,7 @@ const ProjectFilterSection = ({
               rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
-              h="48px"
+              h="12"
               px={6}
               gap={2}
               _hover={{ bg: "background.neutral" }}
@@ -335,7 +337,6 @@ const ProjectFilterSection = ({
               <Text
                 fontSize="button.md"
                 fontWeight="bold"
-                textTransform="uppercase"
                 color="interactive.secondary"
               >
                 {t("all-projects")}
@@ -373,18 +374,29 @@ const ProjectFilterSection = ({
                 rounded="pill"
                 borderColor="interactive.secondary"
                 border="sm"
-                h="48px"
-                px={6}
+                minH="12"
+                h="auto"
+                py={2}
+                px={5}
                 gap={2}
                 flex={1}
+                minW={0}
                 _hover={{ bg: "background.neutral" }}
               >
-                <Icon as={MdAdd} color="interactive.secondary" boxSize={5} />
-                <Text
-                  fontSize="button.md"
-                  fontWeight="bold"
-                  textTransform="uppercase"
+                <Icon
+                  as={MdAdd}
                   color="interactive.secondary"
+                  boxSize={5}
+                  flexShrink={0}
+                />
+                <Text
+                  fontSize="body.sm"
+                  lineHeight="1.2"
+                  fontWeight="bold"
+                  color="interactive.secondary"
+                  whiteSpace="normal"
+                  textAlign="center"
+                  lineClamp={2}
                 >
                   {t("add-new-city")}
                 </Text>
@@ -398,22 +410,29 @@ const ProjectFilterSection = ({
               rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
-              h="48px"
-              px={6}
+              minH="12"
+              h="auto"
+              py={2}
+              px={5}
               gap={2}
               flex={1}
+              minW={0}
               _hover={{ bg: "background.neutral" }}
             >
               <Icon
                 as={MdInsertChart}
                 color="interactive.secondary"
                 boxSize={5}
+                flexShrink={0}
               />
               <Text
-                fontSize="button.md"
+                fontSize="body.sm"
+                lineHeight="1.2"
                 fontWeight="bold"
-                textTransform="uppercase"
                 color="interactive.secondary"
+                whiteSpace="normal"
+                textAlign="center"
+                lineClamp={2}
               >
                 {t("dashboard")}
               </Text>
@@ -548,7 +567,7 @@ const JNDrawer = ({
           justifyContent="space-between"
           bg="background.neutral"
           px={6}
-          py={4}
+          py={5}
           borderTopRightRadius="8px"
         >
           {hasMultipleOrganizations ? (
@@ -563,6 +582,7 @@ const JNDrawer = ({
                   p={0}
                   minW="0"
                   h="auto"
+                  textTransform="none"
                   _hover={{ bg: "transparent", opacity: 0.8 }}
                 >
                   <Box display="flex" alignItems="center" gap={3}>
@@ -580,8 +600,10 @@ const JNDrawer = ({
                     </Box>
                     <Text
                       fontSize="title.md"
-                      fontWeight="bold"
-                      color="content.alternative"
+                      fontFamily="body"
+                      fontWeight="regular"
+                      lineHeight="24"
+                      color="content.primary"
                       maxW="160px"
                       overflow="hidden"
                       textOverflow="ellipsis"
@@ -646,8 +668,10 @@ const JNDrawer = ({
               </Box>
               <Text
                 fontSize="title.md"
-                fontWeight="bold"
-                color="content.alternative"
+                fontFamily="body"
+                fontWeight="regular"
+                lineHeight="24"
+                color="content.primary"
                 maxW="160px"
                 overflow="hidden"
                 textOverflow="ellipsis"
@@ -707,7 +731,7 @@ const JNDrawer = ({
               {modulesByStage && projectModules && selectedProject && (
                 <Box display="flex" flexDirection="column" flexShrink={0}>
                   <Text
-                    fontSize="label.md"
+                    fontSize="label.lg"
                     color="content.tertiary"
                     fontFamily="heading"
                     fontWeight="semibold"
@@ -770,7 +794,7 @@ const JNDrawer = ({
             flexShrink={0}
           >
             <Text
-              fontSize="label.md"
+              fontSize="label.lg"
               color="content.tertiary"
               fontFamily="heading"
               fontWeight="semibold"

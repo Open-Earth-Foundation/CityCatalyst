@@ -256,7 +256,7 @@ flowchart LR
 
     Inventory -.->|"inventory_import + id"| OCR
     Upload -.->|"concept_note_upload + upload_id"| OCR
-    Upload -.->|"deterministic upload_id key"| Source
+    Upload -.->|"UUID v4 upload_id key"| Source
     OCR --> Markdown
     Chat -.->|"thread_id integration identifier"| Run
     Run --> Upload
@@ -328,7 +328,7 @@ Markdown to `InventoryExtractionService` before the import advances to
 | Object                  | Authoritative pointer         | Lifecycle                                 |
 | ----------------------- | ----------------------------- | ----------------------------------------- |
 | Inventory source PDF    | `ImportedInventoryFile.s3Key` | Existing inventory import lifecycle.      |
-| Concept Note source PDF | Deterministic `upload_id` key | CNB upload lifecycle coordinated with CA. |
+| Concept Note source PDF | UUID v4 `upload_id` key       | CNB upload lifecycle coordinated with CA. |
 | Combined Markdown       | `PdfOcrJob.result_s3_key`     | Same lifecycle as its immutable source.   |
 
 The combined Markdown key follows
@@ -879,12 +879,12 @@ the identifier into the Climate Advisor workflow.
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
 
-For uploads, `upload_id` is derived by the authenticated CityCatalyst upload
-route from the run, user, immutable filename/label, and PDF content digest. An
-identical request therefore replays the same identity, while changed bytes or
-metadata create a new upload. CA first creates or replays the run-bound upload
-row; only then does CC store the PDF under a deterministic key and create or
-reuse the OCR job. An upload ID already bound to another run or immutable
+For uploads, the authenticated CityCatalyst upload route generates a new UUID v4
+`upload_id` for each accepted initial request. CA first creates the run-bound
+upload row; only then does CC store the PDF under a key derived from that ID and
+create the OCR job. Retries after registration use the existing run-scoped
+upload ID through the explicit retry route rather than submitting the initial
+upload again. An upload ID already bound to another run or immutable
 filename/label is rejected.
 
 After conversion, CA verifies the artifact through CC's authenticated internal
@@ -1225,9 +1225,9 @@ through CC's authenticated internal read route; CC resolves the stored
 
 Each upload is handled independently:
 
-1. `POST .../{run_id}/uploads` verifies run access, derives or replays the
-   immutable upload identity, creates or replays the authoritative CA row,
-   stores the PDF in CC, creates or reuses the CC OCR job, and returns `202`.
+1. `POST .../{run_id}/uploads` verifies run access, generates a UUID v4 upload
+   identity, creates the authoritative CA row, stores the PDF in CC, creates the
+   CC OCR job, and returns `202`.
 2. The CC processor converts the PDF, validates the Markdown shape, stores the
    authoritative `.md` in CC S3, and records its pointer and SHA-256 digest in
    CC PostgreSQL.

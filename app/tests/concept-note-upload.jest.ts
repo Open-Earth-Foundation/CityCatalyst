@@ -13,8 +13,6 @@ const updateUpload = jest.fn<() => Promise<void>>();
 const putFile = jest.fn<() => Promise<void>>();
 const enqueue =
   jest.fn<(uploadId: string) => Promise<Record<string, unknown>>>();
-const getJob =
-  jest.fn<(uploadId: string) => Promise<Record<string, unknown> | null>>();
 const normalizeStatus = jest.fn<
   (job: Record<string, unknown>) => {
     status: "queued" | "processing" | "ready" | "failed";
@@ -26,7 +24,6 @@ const normalizeStatus = jest.fn<
 const callConceptNoteApi =
   jest.fn<(request: { body?: { upload_id?: string } }) => Promise<Response>>();
 const canAccessCity = jest.fn<() => Promise<void>>();
-const jobs = new Map<string, Record<string, unknown>>();
 
 jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
   loadConceptNoteRunCity: loadRunCity,
@@ -39,7 +36,6 @@ jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   conceptNotePdfSourceKey: (id: string) =>
     `pdf-ocr/sources/concept_note_upload/${id}/source.pdf`,
   enqueueConceptNotePdfOcr: enqueue,
-  getConceptNotePdfOcrJob: getJob,
   normalizeConceptNotePdfOcrStatus: normalizeStatus,
 }));
 jest.unstable_mockModule("@/backend/concept-notes", () => ({
@@ -56,9 +52,8 @@ jest.unstable_mockModule("@/util/api", () => ({
 let uploadHandler: typeof import("@/app/api/v1/concept-notes/[runId]/uploads/route").POST;
 
 beforeAll(async () => {
-  ({ POST: uploadHandler } = await import(
-    "@/app/api/v1/concept-notes/[runId]/uploads/route"
-  ));
+  ({ POST: uploadHandler } =
+    await import("@/app/api/v1/concept-notes/[runId]/uploads/route"));
 });
 
 function requestWithFile(
@@ -72,7 +67,7 @@ function requestWithFile(
       type: options.type || "application/pdf",
     }),
   );
-  form.set("source_label", "Climate plan");
+  form.set("sourceLabel", "Climate plan");
   return new Request(`http://localhost/api/v1/concept-notes/${runId}/uploads`, {
     method: "POST",
     body: form,
@@ -96,13 +91,7 @@ describe("Concept Note PDF upload route", () => {
       }),
     );
     putFile.mockResolvedValue(undefined);
-    jobs.clear();
-    getJob.mockImplementation(async (uploadId) => jobs.get(uploadId) || null);
-    enqueue.mockImplementation(async (uploadId) => {
-      const job = { status: "queued", deliveryStatus: "pending" };
-      jobs.set(uploadId, job);
-      return job;
-    });
+    enqueue.mockResolvedValue({ status: "queued", deliveryStatus: "pending" });
     normalizeStatus.mockImplementation((job) => {
       if (job.status === "succeeded" && job.deliveryStatus === "delivered") {
         return { status: "ready", stage: "complete", canRetry: false };
@@ -130,7 +119,7 @@ describe("Concept Note PDF upload route", () => {
     expect(formData).not.toHaveBeenCalled();
   });
 
-  it("registers CA first, stores a deterministic source, and queues one job", async () => {
+  it("registers CA first, stores the source, and queues one UUID v4 job", async () => {
     const response = await uploadHandler(
       requestWithFile("%PDF-1.7\ncontent"),
       context,
@@ -138,24 +127,31 @@ describe("Concept Note PDF upload route", () => {
 
     expect(response.status).toBe(202);
     const payload = await response.json();
-    expect(payload.status).toBe("queued");
-    expect(payload.stage).toBe("ocr");
+    expect(payload).toEqual({
+      uploadId: expect.any(String),
+      status: "queued",
+      stage: "ocr",
+      canRetry: false,
+    });
+    expect(payload.uploadId).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    );
     expect(callConceptNoteApi).toHaveBeenCalledWith(
       expect.objectContaining({
         path: `/v1/concept-notes/${runId}/uploads`,
         method: "POST",
-        body: expect.objectContaining({ upload_id: payload.upload_id }),
+        body: expect.objectContaining({ upload_id: payload.uploadId }),
       }),
     );
     expect(putFile).toHaveBeenCalledWith(
-      `pdf-ocr/sources/concept_note_upload/${payload.upload_id}/source.pdf`,
+      `pdf-ocr/sources/concept_note_upload/${payload.uploadId}/source.pdf`,
       expect.any(Buffer),
       "application/pdf",
     );
-    expect(enqueue).toHaveBeenCalledWith(payload.upload_id);
+    expect(enqueue).toHaveBeenCalledWith(payload.uploadId);
   });
 
-  it("replays identical bytes and metadata with one stable upload identity", async () => {
+  it("assigns a fresh identity to repeated initial uploads", async () => {
     const first = await uploadHandler(
       requestWithFile("%PDF-1.7\nidentical"),
       context,
@@ -167,27 +163,11 @@ describe("Concept Note PDF upload route", () => {
 
     const firstPayload = await first.json();
     const secondPayload = await second.json();
-    expect(secondPayload.upload_id).toBe(firstPayload.upload_id);
-    expect(callConceptNoteApi.mock.calls[0][0].body?.upload_id).toBe(
+    expect(secondPayload.uploadId).not.toBe(firstPayload.uploadId);
+    expect(callConceptNoteApi.mock.calls[0][0].body?.upload_id).not.toBe(
       callConceptNoteApi.mock.calls[1][0].body?.upload_id,
     );
-    expect(putFile).toHaveBeenCalledTimes(1);
-    expect(enqueue).toHaveBeenCalledTimes(1);
-  });
-
-  it("uses a different upload identity when the PDF bytes change", async () => {
-    const first = await uploadHandler(
-      requestWithFile("%PDF-1.7\nfirst"),
-      context,
-    );
-    const second = await uploadHandler(
-      requestWithFile("%PDF-1.7\nsecond"),
-      context,
-    );
-
-    expect((await second.json()).upload_id).not.toBe(
-      (await first.json()).upload_id,
-    );
+    expect(putFile).toHaveBeenCalledTimes(2);
     expect(enqueue).toHaveBeenCalledTimes(2);
   });
 
@@ -221,7 +201,7 @@ describe("Concept Note PDF upload route", () => {
     expect(enqueue).not.toHaveBeenCalled();
   });
 
-  it("retains the deterministic source and marks CA failed when enqueueing fails", async () => {
+  it("retains the stored source and marks CA failed when enqueueing fails", async () => {
     enqueue.mockRejectedValueOnce(new Error("database unavailable"));
 
     await expect(
@@ -231,7 +211,7 @@ describe("Concept Note PDF upload route", () => {
     expect(updateUpload).toHaveBeenCalledWith(
       expect.objectContaining({
         action: "failed",
-        body: { error_code: "ocr_enqueue_failed" },
+        errorCode: "ocr_enqueue_failed",
       }),
     );
   });

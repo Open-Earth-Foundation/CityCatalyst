@@ -27,9 +27,9 @@
  *           application/json:
  *             schema:
  *               type: object
- *               required: [upload_id, status, stage]
+ *               required: [uploadId, status, stage]
  *               properties:
- *                 upload_id:
+ *                 uploadId:
  *                   type: string
  *                   format: uuid
  *                 status:
@@ -38,7 +38,7 @@
  *                 stage:
  *                   type: string
  *                   enum: [ocr, delivery]
- *                 retry_kind:
+ *                 retryKind:
  *                   type: string
  *                   enum: [ocr, delivery]
  *       401:
@@ -123,10 +123,10 @@ export const POST = apiHandler(async (req, { session, params }) => {
     (currentState.stage === "complete" ? "delivery" : currentState.stage);
   return NextResponse.json(
     {
-      upload_id: uploadId,
+      uploadId,
       status,
       stage,
-      ...(acceptedKind ? { retry_kind: acceptedKind } : {}),
+      ...(acceptedKind ? { retryKind: acceptedKind } : {}),
     },
     { status: 202 },
   );

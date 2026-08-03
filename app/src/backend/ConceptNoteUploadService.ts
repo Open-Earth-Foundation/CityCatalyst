@@ -6,21 +6,49 @@ import {
   readConceptNoteApiPayload,
 } from "@/backend/concept-notes";
 
-const runSchema = z.object({
-  city_id: z.string().uuid(),
-});
+const runWireSchema = z
+  .object({
+    city_id: z.string().uuid(),
+  })
+  .transform((run) => ({ cityId: run.city_id }));
 
 export const conceptNoteUploadSchema = z.object({
-  upload_id: z.string().uuid(),
-  run_id: z.string().uuid(),
+  uploadId: z.string().uuid(),
+  runId: z.string().uuid(),
   status: z.enum(["queued", "processing", "ready", "failed"]),
   filename: z.string(),
-  source_label: z.string().nullable().optional(),
-  page_count: z.number().int().positive().nullable().optional(),
-  error_code: z.string().nullable().optional(),
-  received_at: z.string(),
-  completed_at: z.string().nullable().optional(),
+  sourceLabel: z.string().nullable().optional(),
+  pageCount: z.number().int().positive().nullable().optional(),
+  errorCode: z.string().nullable().optional(),
+  receivedAt: z.string(),
+  completedAt: z.string().nullable().optional(),
 });
+
+const conceptNoteUploadWireSchema = z
+  .object({
+    upload_id: z.string().uuid(),
+    run_id: z.string().uuid(),
+    status: z.enum(["queued", "processing", "ready", "failed"]),
+    filename: z.string(),
+    source_label: z.string().nullable().optional(),
+    page_count: z.number().int().positive().nullable().optional(),
+    error_code: z.string().nullable().optional(),
+    received_at: z.string(),
+    completed_at: z.string().nullable().optional(),
+  })
+  .transform((upload) =>
+    conceptNoteUploadSchema.parse({
+      uploadId: upload.upload_id,
+      runId: upload.run_id,
+      status: upload.status,
+      filename: upload.filename,
+      sourceLabel: upload.source_label,
+      pageCount: upload.page_count,
+      errorCode: upload.error_code,
+      receivedAt: upload.received_at,
+      completedAt: upload.completed_at,
+    }),
+  );
 
 function upstreamError(status: number, payload: unknown): Error {
   const detail =
@@ -45,13 +73,13 @@ export async function loadConceptNoteRunCity(args: {
   });
   const payload = await readConceptNoteApiPayload(response);
   if (!response.ok) throw upstreamError(response.status, payload);
-  const parsed = runSchema.safeParse(payload);
+  const parsed = runWireSchema.safeParse(payload);
   if (!parsed.success) {
     throw new createHttpError.BadGateway(
       "Climate Advisor returned an invalid concept-note run",
     );
   }
-  return parsed.data.city_id;
+  return parsed.data.cityId;
 }
 
 export async function loadConceptNoteUpload(args: {
@@ -67,7 +95,7 @@ export async function loadConceptNoteUpload(args: {
   });
   const payload = await readConceptNoteApiPayload(response);
   if (!response.ok) throw upstreamError(response.status, payload);
-  const parsed = conceptNoteUploadSchema.safeParse(payload);
+  const parsed = conceptNoteUploadWireSchema.safeParse(payload);
   if (!parsed.success) {
     throw new createHttpError.BadGateway(
       "Climate Advisor returned invalid Concept Note upload state",
@@ -82,14 +110,14 @@ export async function updateConceptNoteUpload(args: {
   userId: string;
   action: "failed" | "retry";
   requestId?: string;
-  body?: Record<string, unknown>;
+  errorCode?: string;
 }): Promise<void> {
   const response = await callConceptNoteApi({
     path: `/v1/concept-notes/${args.runId}/uploads/${args.uploadId}/${args.action}`,
     userId: args.userId,
     method: "POST",
     requestId: args.requestId,
-    body: args.body,
+    body: args.errorCode ? { error_code: args.errorCode } : undefined,
   });
   const payload = await readConceptNoteApiPayload(response);
   if (!response.ok) throw upstreamError(response.status, payload);

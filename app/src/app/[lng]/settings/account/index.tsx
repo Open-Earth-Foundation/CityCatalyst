@@ -12,13 +12,11 @@ import PreferencesTab from "./PreferencesTab";
 import BrandSettingsTab from "./BrandSettingsTab";
 import { UserRole } from "@/util/types";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
-import { OrganizationSelector } from "../OrganizationSelector";
-import { useState } from "react";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const AccountSettingsTab = ({ t }: { t: TFunction }) => {
-  const [selectedOrganization, setSelectedOrganization] = useState<
-    string | undefined
-  >();
+  const { organization: orgContext } = useOrganizationContext();
+  const selectedOrganization = orgContext?.organizationId;
   const { data: organization, isLoading: isOrganizationLoading } =
     api.useGetOrganizationQuery(selectedOrganization!, {
       skip: !selectedOrganization,
@@ -32,11 +30,6 @@ const AccountSettingsTab = ({ t }: { t: TFunction }) => {
 
   return (
     <Box>
-      <OrganizationSelector
-        value={selectedOrganization}
-        onValueChange={setSelectedOrganization}
-        t={t}
-      />
       <Box
         w="full"
         display="flex"

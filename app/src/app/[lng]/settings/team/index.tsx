@@ -35,7 +35,6 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
@@ -44,7 +43,6 @@ import { useSession } from "next-auth/react";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import ProjectSearchInput from "../ProjectSearchInput";
-import { TagMapping } from "../project";
 import { TFunction } from "i18next";
 
 const TeamSettings = ({

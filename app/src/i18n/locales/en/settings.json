@@ -243,5 +243,6 @@
   "upgrade-to-admin": "Upgrade to Admin",
   "upgrade-member-to-admin-title": "Upgrade member to Admin?",
   "confirm-upgrade-to-admin": "Are you sure you want to make <bold>{{userName}}</bold> an Admin of the <bold>{{projectName}}</bold>?",
-  "user-upgraded-to-admin": "User upgraded to admin successfully"
+  "user-upgraded-to-admin": "User upgraded to admin successfully",
+  "apps": "Apps"
 }

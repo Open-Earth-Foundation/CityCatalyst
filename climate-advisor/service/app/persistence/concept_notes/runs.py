@@ -38,7 +38,7 @@ class ConceptNoteRunRepository:
         thread_id: UUID,
         user_id: str,
     ) -> bool:
-        """Return whether a durable chat thread belongs to the user."""
+        """Return whether the supplied chat thread currently belongs to the user."""
         result = await self.session.execute(
             select(Thread.thread_id).where(
                 Thread.thread_id == thread_id,

@@ -79,6 +79,10 @@ export default function ReviewPage() {
 
   const onConfirm = async () => {
     setIsConfirming(true);
+    if (!cityId) {
+      return;
+    }
+
     try {
       for (const sector of getAllSectorData) {
         const formData = new FormData();

@@ -714,29 +714,24 @@ export default function AddDataSteps() {
             <Box>
               <BreadcrumbRoot
                 gap="8px"
-                fontFamily="heading"
-                fontWeight="bold"
-                letterSpacing="widest"
-                fontSize="14px"
-                textTransform="uppercase"
+                fontFamily="body"
+                fontWeight="medium"
+                fontSize="body.sm"
+                lineHeight="16"
                 separator={
                   <Icon as={MdChevronRight} color="gray.500" h="24px" />
                 }
               >
                 <BreadcrumbLink
                   href={inventoryDataBasePath}
-                  color="content.tertiary"
-                  textDecoration="none"
-                  _hover={{
-                    textDecoration: "underline",
-                    textUnderlineOffset: "4px",
-                  }}
+                  color="content.link"
+                  textDecoration="underline"
                 >
                   {t("all-sectors")}
                 </BreadcrumbLink>
 
                 <BreadcrumbCurrentLink
-                  color="content.link"
+                  color="content.secondary"
                   textDecoration="none"
                 >
                   {t(kebab(currentStep.name || ""))}

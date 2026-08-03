@@ -1,18 +1,17 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Container,
+  Font,
   Head,
+  Hr,
   Html,
+  Img,
   Link,
   Preview,
   Text,
-  Img,
-  Font,
-  Hr,
 } from "@react-email/components";
-import { LANGUAGES } from "@/util/types";
-import i18next from "@/i18n/server";
 
 export default function ConfirmRegistrationTemplate({
   url = "/",
@@ -98,13 +97,6 @@ const container = {
   padding: "0px 0 0px",
   width: "600px",
   height: "auto",
-};
-
-const brandHeading = {
-  fontSize: "20px",
-  lineHeight: "1.5",
-  fontWeight: "700",
-  color: "#2351DC",
 };
 
 const heading = {

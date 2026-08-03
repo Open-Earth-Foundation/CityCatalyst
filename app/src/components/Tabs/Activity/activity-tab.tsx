@@ -283,7 +283,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
       const activityValue = activity as unknown as ActivityValue; // TODO use InventoryValueResponse/ ActivityValueResponse everywhere
-      let isCurrentRefno =
+      const isCurrentRefno =
         activityValue.inventoryValue.gpcReferenceNumber === referenceNumber;
       if (isCurrentRefno && !methodologyId) {
         methodologyId = activityValue.inventoryValue.inputMethodology;
@@ -293,7 +293,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
     // TODO remove this. Only extract the methodology from the inventory value if it exists
     if (methodologyId) {
-      let methodology =
+      const methodology =
         methodologies.find((methodology) => methodology.id === methodologyId) ??
         directMeasure;
       setSelectedMethodology(methodologyId);

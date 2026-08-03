@@ -1,9 +1,4 @@
-import {
-  ACTION_TYPES,
-  HIAction,
-  HighImpactActionRankingStatus,
-  LANGUAGES,
-} from "@/util/types";
+import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
 import { logger } from "@/services/logger";
 import {
   PrioritizerResponse,
@@ -637,10 +632,10 @@ const translateActionPlanImpl = async (
     throw new Error(`Failed to start translation: ${startText}`);
   }
 
-  let startJson: any;
+  let startJson: { taskId: string };
   try {
     startJson = JSON.parse(startText);
-  } catch (e) {
+  } catch (_e) {
     throw new Error(`Invalid JSON from translate_plan: ${startText}`);
   }
 

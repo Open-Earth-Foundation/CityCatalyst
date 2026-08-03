@@ -1,8 +1,18 @@
 "use client";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, Tabs, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Heading,
+  HStack,
+  Icon,
+  IconButton,
+  Tabs,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import AccountSettingsTab from "./account";
@@ -13,6 +23,10 @@ import { api } from "@/services/api";
 import { Roles } from "@/util/types";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import MyAppsTab from "@/app/[lng]/settings/my-apps-tab";
+import { FiArrowLeft, FiX } from "react-icons/fi";
+import { BiInfoCircle } from "react-icons/bi";
+
+const PREFERENCES_INFO_DISMISSED_KEY = "settings-preferences-info-dismissed";
 
 // TODO create tabs component with recipe
 const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
@@ -23,6 +37,27 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
 
   const { data: userInfo } = api.useGetUserInfoQuery();
   const isAdmin = userInfo?.role === Roles.Admin;
+  const [showPreferencesInfo, setShowPreferencesInfo] = useState(false);
+
+  useEffect(() => {
+    if (!userInfo?.userId) {
+      return;
+    }
+
+    const storageKey = `${PREFERENCES_INFO_DISMISSED_KEY}-${userInfo.userId}`;
+    const dismissed = localStorage.getItem(storageKey) === "true";
+    setShowPreferencesInfo(!dismissed);
+  }, [userInfo?.userId]);
+
+  const dismissPreferencesInfo = () => {
+    if (userInfo?.userId) {
+      localStorage.setItem(
+        `${PREFERENCES_INFO_DISMISSED_KEY}-${userInfo.userId}`,
+        "true",
+      );
+    }
+    setShowPreferencesInfo(false);
+  };
 
   // TODO enable this when global organization dropdown exists
   /*
@@ -51,39 +86,88 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
   return (
     <Box pt={16} pb={16} w="1090px" maxW="full" mx="auto" px={4}>
       <Link href={`/${lng}`}>
-        <Box
+        <Button
           display="flex"
           alignItems="center"
           gap="8px"
-          color="content.tertiary"
+          color="content.link"
+          fontFamily="heading"
+          fontSize="button.md"
+          variant="ghost"
         >
-          <Text
-            fontFamily="heading"
-            color="content.tertiary"
-            fontSize="body.lg"
-            fontWeight="normal"
-          >
-            {t("go-back")}
-          </Text>
-        </Box>
+          <Icon as={FiArrowLeft} />
+          {t("go-back")}
+        </Button>
       </Link>
-      <Box w="full">
+      <Box w="full" mt="16px">
         <Text
           color="content.primary"
           fontWeight="bold"
           lineHeight="40"
           mt={2}
           fontSize="headline.lg"
-          fontFamily="body"
+          fontFamily="heading"
         >
-          {t("account-settings")}
+          {t("settings")}
         </Text>
+        {showPreferencesInfo && (
+          <HStack
+            w="full"
+            bg="background.info"
+            p="12px"
+            my="40px"
+            borderRadius="6px"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <HStack gap="8px" alignItems="center">
+              <Icon
+                as={BiInfoCircle}
+                color="content.alternative"
+                boxSize="18px"
+                mt="1px"
+              />
+
+              <VStack alignItems="flex-start" gap="4px">
+                <Text
+                  fontSize="body.md"
+                  fontFamily="body"
+                  fontWeight="semibold"
+                  lineHeight="16px"
+                >
+                  {t("preferences-info-update-title")}
+                </Text>
+                <Text
+                  fontSize="body.sm"
+                  fontWeight="normal"
+                  fontFamily="body"
+                  lineHeight="14px"
+                >
+                  {t("preferences-info-update-description")}
+                </Text>
+              </VStack>
+            </HStack>
+            <IconButton
+              aria-label="Close"
+              variant="ghost"
+              size="sm"
+              minW="auto"
+              h="auto"
+              p="0"
+              color="content.alternative"
+              onClick={dismissPreferencesInfo}
+            >
+              <Icon as={FiX} boxSize="18px" />
+            </IconButton>
+          </HStack>
+        )}
         <Box marginTop="48px" borderBottomColor={"border.overlay"}>
           <Tabs.Root defaultValue={initialTab} variant="enclosed">
             <Tabs.List
               p={0}
               w="full"
               backgroundColor="background.backgroundLight"
+              mb="48px"
             >
               <Tabs.Trigger
                 value="account"
@@ -179,27 +263,7 @@ const AccountSettingsPage = (props: { params: Promise<{ lng: string }> }) => {
               )}
             </Tabs.List>
             <Tabs.Content value="account">
-              <Box
-                w="full"
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Box w="full">
-                  <Heading
-                    fontSize="headline.sm"
-                    mb={4}
-                    fontWeight="semibold"
-                    lineHeight="32px"
-                    fontStyle="normal"
-                    textTransform="capitalize"
-                    color="content.secondary"
-                  >
-                    {t("account")}
-                  </Heading>
-                  <AccountSettingsTab t={t} />
-                </Box>
-              </Box>
+              <AccountSettingsTab t={t} />
             </Tabs.Content>
             <Tabs.Content value="team">
               <TeamSettings

@@ -225,18 +225,17 @@ import {
   UnrankedActionSelectionCreationAttributes,
 } from "./UnrankedActionSelection";
 
-import { OAuthClient as _OAuthClient } from "./OAuthClient";
 import {
+  OAuthClient as _OAuthClient,
   OAuthClientAttributes,
   OAuthClientCreationAttributes,
   OAuthClientOptionalAttributes,
 } from "./OAuthClient";
-import { OAuthClientI18N as _OAuthClientI18N } from "./OAuthClientI18N";
 import {
+  OAuthClientI18N as _OAuthClientI18N,
   OAuthClientI18NAttributes,
   OAuthClientI18NCreationAttributes,
   OAuthClientI18NOptionalAttributes,
-  OAuthClientI18N,
 } from "./OAuthClientI18N";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";

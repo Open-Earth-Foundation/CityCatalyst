@@ -6,10 +6,12 @@ import {
   type PopulationAttributes,
   type UserAttributes,
   type ModuleAttributes,
-  ProjectModulesAttributes,
-  ActionPlan,
+  type ProjectModulesAttributes,
+  type ActivityValueAttributes,
+  type ActionPlanAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
+import { OrganizationPlanType } from "@/util/enums";
 import {
   AcceptInviteRequest,
   AcceptInviteResponse,
@@ -60,7 +62,6 @@ import {
   FormulaInputValuesResponse,
   DataSourceResponse,
   Client,
-  LangMap,
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
@@ -69,15 +70,11 @@ import {
 } from "@/util/types";
 import type {
   CityLocationResponse,
-  DashboardResponseType,
   HIAPResponse,
-  ModuleDataSummaryResponse,
   GHGInventorySummary,
   HIAPSummary,
   CCRASummary,
   HIAction,
-  HighImpactActionRankingStatus,
-  BulkHiapPrioritizationResult,
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,
@@ -580,7 +577,8 @@ export const api = createApi({
         }
       >({
         query: (data) => `/city/${data.cityId}/user/${data.userId}`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         providesTags: ["UserData"],
       }),
 
@@ -604,7 +602,8 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         invalidatesTags: ["UserData"],
       }),
       getCityUsers: builder.query<
@@ -614,12 +613,14 @@ export const api = createApi({
         }
       >({
         query: (data) => `/city/${data.cityId}/user/`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         providesTags: ["UserData"],
       }),
       getCityInvites: builder.query<GetUserCityInvitesResponse[], void>({
         query: () => `/user/invites`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: GetUserCityInvitesResponse[] }) =>
+          response.data,
         providesTags: ["Invites"],
       }),
       setUserData: builder.mutation<
@@ -633,20 +634,28 @@ export const api = createApi({
         }),
         invalidatesTags: ["UserData"],
       }),
-      cancelInvite: builder.mutation<void, { cityInviteId: string }>({
+      cancelInvite: builder.mutation<
+        { success: boolean },
+        { cityInviteId: string }
+      >({
         query: ({ cityInviteId }) => ({
           url: `/user/invites/${cityInviteId}`,
           method: "DELETE",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
         invalidatesTags: ["Invites"],
       }),
-      resetInvite: builder.mutation<void, { cityInviteId: string }>({
+      resetInvite: builder.mutation<
+        { success: boolean },
+        { cityInviteId: string }
+      >({
         query: ({ cityInviteId }) => ({
           url: `/user/invites/${cityInviteId}`,
           method: "PATCH",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
         invalidatesTags: ["Invites"],
       }),
       getVerificationToken: builder.query({
@@ -671,15 +680,17 @@ export const api = createApi({
           url: "/city",
           method: "GET",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: CityAttributes[] }) =>
+          response.data,
         providesTags: ["CityData"],
       }),
-      removeCity: builder.mutation<string, { cityId: string }>({
+      removeCity: builder.mutation<CityAttributes, { cityId: string }>({
         query: ({ cityId }) => ({
           url: `/city/${cityId}`,
           method: "DELETE",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: CityAttributes }) =>
+          response.data,
         invalidatesTags: ["CityData", "Projects"],
       }),
       getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
@@ -688,9 +699,13 @@ export const api = createApi({
           method: "GET",
         }),
         providesTags: ["Inventories"],
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: InventoryAttributes[] }) =>
+          response.data,
       }),
-      addUserFile: builder.mutation<UserFileResponse, any>({
+      addUserFile: builder.mutation<
+        UserFileResponse,
+        { formData: object; cityId: string }
+      >({
         query: ({ formData, cityId }) => {
           return {
             method: "POST",
@@ -707,7 +722,7 @@ export const api = createApi({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse }) => {
+        transformResponse: (response: { data: UserFileResponse[] }) => {
           return response.data;
         },
 
@@ -728,7 +743,7 @@ export const api = createApi({
           methodologyId: string;
           inventoryId: string;
           referenceNumber: string;
-          metadata?: Record<string, any>;
+          metadata?: Record<string, unknown>;
         }
       >({
         query: (params) => {
@@ -836,7 +851,6 @@ export const api = createApi({
             body: data,
           };
         },
-        transformResponse: (response: any) => response,
         invalidatesTags: [
           "UserAccessStatus",
           "Projects",
@@ -890,7 +904,8 @@ export const api = createApi({
           },
           method: "GET",
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes[] }) =>
+          response.data,
         providesTags: ["ActivityValue"],
       }),
       createActivityValue: builder.mutation({
@@ -899,7 +914,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/activity-value`,
           body: data.requestData,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -915,7 +931,8 @@ export const api = createApi({
           method: "GET",
           url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         providesTags: ["ActivityValue"],
       }),
       updateActivityValue: builder.mutation({
@@ -924,7 +941,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
           body: data.data,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -964,7 +982,8 @@ export const api = createApi({
             gpcReferenceNumber: data.gpcReferenceNumber,
           },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: { deletedCount: number } }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -1034,7 +1053,11 @@ export const api = createApi({
         transformResponse: (response: any) => response.data,
       }),
       createOrganization: builder.mutation({
-        query: (data: { name: string; contactEmail: string }) => ({
+        query: (data: {
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+        }) => ({
           url: `/organizations`,
           method: "POST",
           body: { ...data },
@@ -1045,12 +1068,22 @@ export const api = createApi({
         invalidatesTags: ["Organizations"],
       }),
       updateOrganization: builder.mutation({
-        query: (data: { id: string; name: string; contactEmail: string }) => ({
+        query: (data: {
+          id: string;
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+          trialEndsAt?: string | null;
+        }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
           body: {
             name: data.name,
             contactEmail: data.contactEmail,
+            ...(data.planType !== undefined ? { planType: data.planType } : {}),
+            ...(data.trialEndsAt !== undefined
+              ? { trialEndsAt: data.trialEndsAt }
+              : {}),
           },
         }),
         transformResponse: (response: OrganizationResponse) => {
@@ -1486,7 +1519,7 @@ export const api = createApi({
         invalidatesTags: ["ActionPlan"],
       }),
       getActionPlans: builder.query<
-        { actionPlans: ActionPlan[] },
+        { actionPlans: ActionPlanAttributes[] },
         { cityId: string; language?: string; actionId?: string }
       >({
         query: ({ cityId, language, actionId }) => {
@@ -1495,17 +1528,18 @@ export const api = createApi({
           if (actionId) params.append("actionId", actionId);
           return `city/${cityId}/hiap/action-plan?${params.toString()}`;
         },
-        transformResponse: (response: { data: ActionPlan[] }) => ({
+        transformResponse: (response: { data: ActionPlanAttributes[] }) => ({
           actionPlans: response.data,
         }),
         providesTags: ["ActionPlan"],
       }),
       getActionPlanById: builder.query<
-        ActionPlan,
+        ActionPlanAttributes,
         { cityId: string; id: string }
       >({
         query: ({ cityId, id }) => `city/${cityId}/hiap/action-plan/${id}`,
-        transformResponse: (response: { data: ActionPlan }) => response.data,
+        transformResponse: (response: { data: ActionPlanAttributes }) =>
+          response.data,
         providesTags: ["ActionPlan"],
       }),
       setOrgWhiteLabel: builder.mutation({

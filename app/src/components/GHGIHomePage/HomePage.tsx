@@ -30,7 +30,6 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import { UserRole } from "@/util/types";
 import { logger } from "@/services/logger";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useInventoryOrganization } from "@/hooks/use-inventory-organization";
 import InventoryVersions from "@/components/GHGI/inventory-versions/InventoryVersions";
 
@@ -66,21 +65,17 @@ export default function HomePage({
 
   function redirectToOnboarding() {
     setTimeout(() => {
-      if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
-        if (!cityIdParamValue || cityIdParamValue === "null") {
-          // Check if user has a default city
-          if (userInfo?.defaultCityId) {
-            router.push(`/${language}/cities/${userInfo.defaultCityId}`);
-            return;
-          }
-          router.push(`/${language}/onboarding`);
+      if (!cityIdParamValue || cityIdParamValue === "null") {
+        // Check if user has a default city
+        if (userInfo?.defaultCityId) {
+          router.push(`/${language}/cities/${userInfo.defaultCityId}`);
           return;
         }
-
-        router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
-      } else {
         router.push(`/${language}/onboarding`);
+        return;
       }
+
+      router.push(`/${language}/cities/${cityIdParamValue}/GHGI/onboarding`);
     }, 0);
   }
 
@@ -197,10 +192,9 @@ export default function HomePage({
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  const formattedEmissions =
-    inventory?.totalEmissions
-      ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
-      : { value: t("no-data-for-inventory-yet"), unit: "" };
+  const formattedEmissions = inventory?.totalEmissions
+    ? formatEmissions(inventory.totalEmissions, userInfo?.numberFormat)
+    : { value: t("no-data-for-inventory-yet"), unit: "" };
 
   const inventoriesForCurrentCity = useMemo(() => {
     if (!cityYears) return [];

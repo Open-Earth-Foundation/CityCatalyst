@@ -6,7 +6,7 @@ let H: any = null;
 
 if (process.env.NODE_ENV !== "test" && typeof window === "undefined") {
   try {
-    const HighlightNext = require("@highlight-run/next/server");
+    const HighlightNext = await import("@highlight-run/next/server");
     H = HighlightNext.H;
 
     // Always initialize Highlight - feature flag control happens at usage sites

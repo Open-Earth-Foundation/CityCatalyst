@@ -1,5 +1,5 @@
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box, Card, Heading, Text } from "@chakra-ui/react";
 import ProgressLoader from "@/components/ProgressLoader";
 import { OrganizationRole } from "@/util/types";
 import { Trans } from "react-i18next";
@@ -9,7 +9,6 @@ import {
   useGetProjectsQuery,
   useGetProjectUsersQuery,
 } from "@/services/api";
-import { useRouter } from "next/navigation";
 import { uniqBy } from "lodash";
 import { TFunction } from "i18next";
 import ProjectList from "@/app/[lng]/settings/project/projectList";
@@ -141,25 +140,21 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 
 const ProjectSettings = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "settings");
-  const router = useRouter();
 
   const [selectedOrganization, setSelectedOrganization] =
     React.useState<string>();
   const [selectedProjectId, setSelectedProjectId] = useState<string[]>([]);
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
-  const [tabValue, setTabValue] = useState("city");
 
   const {
     organization,
     isOrganizationLoading,
     projectsData,
     isProjectsLoading,
-    projectUsers,
     isProjectUsersLoading,
     totalCities,
     selectedProjectData,
     selectedCityData,
-    userList,
   } = useProjectData({
     organizationId: selectedOrganization,
     selectedProjectId:
@@ -174,14 +169,6 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
     }
   }, [projectsData, selectedProjectId.length]);
 
-  useEffect(() => {
-    if (selectedCityId) {
-      setTabValue("inventories");
-    } else {
-      setTabValue("city");
-    }
-  }, [selectedCityId]);
-
   if (isOrganizationLoading || isProjectsLoading) {
     return <ProgressLoader />;
   }
@@ -193,7 +180,12 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
         onValueChange={setSelectedOrganization}
         t={t}
       />
-      <Box display="flex" alignItems="center" justifyContent="space-between">
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb="xxl-2"
+      >
         <ProjectOverview
           t={t}
           organizationName={organization?.name}
@@ -203,7 +195,7 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
       </Box>
       {projectsData?.length === 0 && (
         <Text
-          mt={12}
+          mb="xxl-2"
           fontSize="Heading.sm"
           fontWeight={600}
           color="content.primary"
@@ -211,41 +203,37 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
           {t("no-data")}
         </Text>
       )}
-      <Box
-        display="flex"
-        gap={9}
-        mt={12}
-        alignItems="flex-start"
-        justifyContent="space-between"
-      >
-        {projectsData && projectsData.length > 0 && (
-          <>
-            <ProjectList
-              t={t}
-              projects={projectsData}
-              selectedProjectId={selectedProjectId}
-              setSelectedProject={setSelectedProjectId}
-              setSelectedCity={setSelectedCityId}
-              selectedCity={selectedCityId}
-            />
-            <ProjectDetails
-              t={t}
-              lng={lng}
-              router={router}
-              selectedCity={selectedCityId}
-              selectedProjectData={selectedProjectData}
-              selectedCityData={selectedCityData}
-              organizationName={organization?.name}
-              projectUsers={projectUsers || []}
-              userList={userList}
-              isLoadingProjectUsers={isProjectUsersLoading}
-              tabValue={tabValue}
-              setTabValue={setTabValue}
-              setSelectedCity={setSelectedCityId}
-            />
-          </>
-        )}
-      </Box>
+      <Card.Root boxShadow="shadow-lg">
+        <Card.Body>
+          <Box
+            display="flex"
+            gap="xxl-2"
+            alignItems="flex-start"
+            justifyContent="space-between"
+          >
+            {projectsData && projectsData.length > 0 && (
+              <>
+                <ProjectList
+                  t={t}
+                  projects={projectsData}
+                  selectedProjectId={selectedProjectId}
+                  setSelectedProject={setSelectedProjectId}
+                  setSelectedCity={setSelectedCityId}
+                  selectedCity={selectedCityId}
+                />
+                <ProjectDetails
+                  t={t}
+                  lng={lng}
+                  selectedProjectData={selectedProjectData}
+                  selectedCityData={selectedCityData}
+                  isLoadingProjectUsers={isProjectUsersLoading}
+                  setSelectedCity={setSelectedCityId}
+                />
+              </>
+            )}
+          </Box>
+        </Card.Body>
+      </Card.Root>
     </Box>
   );
 };

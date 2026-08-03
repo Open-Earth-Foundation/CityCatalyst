@@ -252,5 +252,6 @@
   "upgrade-to-admin": "Promouvoir en administrateur",
   "upgrade-member-to-admin-title": "Promouvoir le membre en administrateur ?",
   "confirm-upgrade-to-admin": "Êtes-vous sûr de vouloir faire de <bold>{{userName}}</bold> un administrateur de <bold>{{projectName}}</bold> ?",
-  "user-upgraded-to-admin": "Utilisateur promu administrateur avec succès"
+  "user-upgraded-to-admin": "Utilisateur promu administrateur avec succès",
+  "please-enter-password": "Veuillez entrer un mot de passe"
 }

@@ -20,6 +20,7 @@ from app.modules.prioritizer.models import (
     RemovedActionSummary,
 )
 from app.modules.prioritizer.services.explanations import generate_explanations
+from app.modules.prioritizer.services.translation import translate_explanations
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -462,13 +463,13 @@ def _detail_filename(event_index: int | None, step_name: str) -> str:
 
 
 def _resolve_requested_output_languages(requested_languages: list[str]) -> list[str]:
-    """Normalize requested output languages while preserving caller order."""
+    """Normalize output languages and make English the canonical first language."""
     resolved_languages: list[str] = []
     for language in requested_languages:
         normalized = language.strip().lower()
         if normalized and normalized not in resolved_languages:
             resolved_languages.append(normalized)
-    return resolved_languages or ["en"]
+    return ["en", *[language for language in resolved_languages if language != "en"]]
 
 
 def run_prioritization(
@@ -1185,7 +1186,7 @@ def run_prioritization(
             ),
         }
 
-    # Phase 13: optionally generate explanations independently in each language.
+    # Phase 13: generate canonical English explanations, then translate once.
     explanation_languages = _resolve_requested_output_languages(requested_languages)
     explanations_by_language: dict[str, dict[str, str]] = {}
     generated_explanation_action_ids: list[str] = []
@@ -1201,13 +1202,66 @@ def run_prioritization(
         explanation_error: Exception | None = None
         with time_block("explanations") as block:
             try:
-                explanations_by_language, llm_io_payload = generate_explanations(
+                canonical_explanations, canonical_llm_io = generate_explanations(
                     locode=locode,
-                    languages=explanation_languages,
+                    languages=["en"],
                     scored_actions=scored_actions,
                     city_preference_sectors=city_preference_sectors,
                     city_preference_co_benefit_keys=city_preference_co_benefit_keys,
                 )
+                explanations_by_language = {
+                    "en": canonical_explanations.get("en", {})
+                }
+                target_languages = [
+                    language
+                    for language in explanation_languages
+                    if language != "en"
+                ]
+                translation_llm_io: dict[str, object] = {
+                    "status": "skipped",
+                    "reason": "no_target_languages",
+                }
+                if target_languages:
+                    try:
+                        (
+                            translations_by_action_id,
+                            explanation_warnings,
+                            translation_llm_io,
+                        ) = translate_explanations(
+                            canonical_explanations_by_action_id=explanations_by_language[
+                                "en"
+                            ],
+                            target_languages=target_languages,
+                        )
+                    except Exception as translation_error:
+                        # Preserve canonical English when only localization fails.
+                        logger.warning(
+                            "Explanation translation failed; returning canonical English internal_request_id=%s locode=%s target_languages=%s error=%s",
+                            internal_request_id,
+                            locode,
+                            target_languages,
+                            translation_error,
+                        )
+                        explanation_warnings = [
+                            "Requested explanation translations could not be generated; canonical English explanations were returned."
+                        ]
+                        translation_llm_io = {
+                            "status": "failed",
+                            "target_languages": target_languages,
+                            "error": str(translation_error),
+                        }
+                    else:
+                        for action_id, translations in translations_by_action_id.items():
+                            for language, explanation in translations.items():
+                                explanations_by_language.setdefault(language, {})[
+                                    action_id
+                                ] = explanation
+                llm_io_payload = {
+                    "languages": {
+                        "en": canonical_llm_io.get("languages", {}).get("en", {})
+                    },
+                    "translation": translation_llm_io,
+                }
                 for scored_action in scored_actions:
                     action_id = scored_action.action.action_id
                     if all(
@@ -1218,6 +1272,8 @@ def run_prioritization(
                 generated_explanation_action_ids.sort()
             except Exception as error:
                 explanation_error = error
+                explanations_by_language = {}
+                explanation_warnings = []
         if explanation_error is None and llm_io_payload is not None:
             language_payloads = llm_io_payload.get("languages", {})
             if isinstance(language_payloads, dict):
@@ -1241,6 +1297,22 @@ def run_prioritization(
                     )
                     llm_input_payload["prompt_text_characters"] = len(prompt_text)
                     llm_input_payload.pop("prompt_text", None)
+            translation_payload = llm_io_payload.get("translation")
+            if isinstance(translation_payload, dict):
+                prompt_text = translation_payload.get("prompt_text")
+                if isinstance(prompt_text, str):
+                    prompt_path = "llm/explanation_translations_prompt.txt"
+                    prompt_file = artifact_writer.write_run_text_file(
+                        prompt_path,
+                        prompt_text,
+                    )
+                    translation_payload["prompt_text_file"] = (
+                        prompt_file.relative_to(artifact_writer._run_dir).as_posix()
+                        if prompt_file is not None
+                        else prompt_path
+                    )
+                    translation_payload["prompt_text_characters"] = len(prompt_text)
+                    translation_payload.pop("prompt_text", None)
             llm_io_file = artifact_writer.write_run_file(
                 "llm/explanations_io.json", llm_io_payload
             )

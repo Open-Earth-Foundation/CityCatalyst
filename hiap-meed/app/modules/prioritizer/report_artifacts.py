@@ -33,6 +33,14 @@ def write_output_plan_llm_artifacts(
                         f"llm/{language}/{chapter_key}_prompt.txt",
                         prompt_text,
                     )
+    translation = llm_io.get("translation")
+    if isinstance(translation, dict):
+        prompt_text = translation.get("prompt_text")
+        if isinstance(prompt_text, str):
+            artifact_writer.write_run_text_file(
+                "llm/report_translation_prompt.txt",
+                prompt_text,
+            )
     artifact_writer.write_run_file("llm/output_plan_io.json", llm_io)
 
 

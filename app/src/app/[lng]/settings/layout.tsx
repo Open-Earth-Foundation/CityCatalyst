@@ -1,18 +1,9 @@
 "use client";
-import { use } from "react";
+import { use, Suspense } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
-import { useGetOrganizationQuery } from "@/services/api";
-import ProgressLoader from "@/components/ProgressLoader";
-import { useEffect } from "react";
-import {
-  useOrganizationContext,
-  hasOrganizationChanged,
-  normalizeOrganizationState,
-} from "@/hooks/organization-context-provider/use-organizational-context";
-import { useTheme } from "next-themes";
 
 export default function OrganizationSettingsLayout(props: {
   children: React.ReactNode;
@@ -30,7 +21,7 @@ export default function OrganizationSettingsLayout(props: {
       <NavigationBar showMenu lng={lng} />
       <Toaster />
       <Box w="full" h="full">
-        {props.children}
+        <Suspense fallback={null}>{props.children}</Suspense>
       </Box>
     </Box>
   );

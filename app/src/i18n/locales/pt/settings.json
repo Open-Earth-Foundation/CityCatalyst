@@ -73,7 +73,6 @@
   "invite-send-fail": "Não foi possível enviar o convite",
   "number-of-cities": "# de cidades",
   "manage-password": "Gerenciar senha",
-  "update-password-details": "",
   "current-password": "Senha atual",
   "confirm-password": "Confirmar Senha",
   "password-number-check": "A senha deve conter pelo menos um número",
@@ -82,7 +81,7 @@
   "passwords-dont-match": "As senhas não coincidem",
   "email-placeholder": "Endereço de e-mail",
   "new-password": "Nova Senha",
-  "password-hint": "Dica de senha",
+  "password-hint": "Sua senha deve ter pelo menos 8 caracteres e conter uma letra maiúscula e um número",
   "reset-button": "Redefinir Senha",
   "password-min-length": "A senha deve ter pelo menos 8 caracteres.",
   "password-upper-case": "A senha deve incluir pelo menos uma letra maiúscula.",
@@ -254,5 +253,7 @@
   "upgrade-to-admin": "Promover a administrador",
   "upgrade-member-to-admin-title": "Promover membro a administrador?",
   "confirm-upgrade-to-admin": "Tem certeza de que deseja tornar <bold>{{userName}}</bold> um administrador de <bold>{{projectName}}</bold>?",
-  "user-upgraded-to-admin": "Usuário promovido a administrador com sucesso"
+  "user-upgraded-to-admin": "Usuário promovido a administrador com sucesso",
+  "please-enter-password": "Por favor, insira uma senha",
+  "apps": "Aplicativos"
 }

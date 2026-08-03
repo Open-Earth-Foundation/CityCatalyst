@@ -5,10 +5,10 @@ import HomePage from "@/components/GHGIHomePage/HomePage";
 import { NavigationBar } from "@/components/navigation-bar";
 import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 
+/** @deprecated has been replaced with GHGI module home page */
 export default function PrivateHome(props: {
   params: Promise<{ lng: string }>;
 }) {
@@ -16,8 +16,11 @@ export default function PrivateHome(props: {
   const router = useRouter();
 
   // Get user info to check if they have default city/inventory
-  const { data: userInfo, isLoading: userInfoLoading, isError } =
-    api.useGetUserInfoQuery();
+  const {
+    data: userInfo,
+    isLoading: userInfoLoading,
+    isError,
+  } = api.useGetUserInfoQuery();
 
   // Handle routing based on user's default city/inventory status
   useEffect(() => {
@@ -27,18 +30,7 @@ export default function PrivateHome(props: {
     // The user should stay on the current page and retry
     if (isError) return;
 
-    if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
-      router.replace(`/${lng}/cities/`);
-    } else {
-      if (userInfo?.defaultInventoryId) {
-        // User has default inventory, render GHGIHomePage for default inventory
-        // (no redirect needed, just render the component)
-        return;
-      } else {
-        // User doesn't have default inventory/city, redirect to onboarding
-        router.replace(`/${lng}/onboarding`);
-      }
-    }
+    router.replace(`/${lng}/cities/`);
   }, [lng, router, userInfo, userInfoLoading, isError]);
 
   // Show loading state while determining where to redirect

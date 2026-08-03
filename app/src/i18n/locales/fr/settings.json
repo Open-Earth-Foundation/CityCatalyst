@@ -74,11 +74,10 @@
   "invite-send-fail": "L'invitation n'a pas pu être envoyée",
   "number-of-cities": "# de villes",
   "manage-password": "Gérer le mot de passe",
-  "update-password-details": "Mettez à jour votre mot de passe. C'est celui que vous utiliserez désormais.",
   "current-password": "Mot de passe actuel",
   "new-password": "Nouveau mot de passe",
   "confirm-password": "Confirmer le mot de passe",
-  "password-hint": "Indice de mot de passe",
+  "password-hint": "Votre mot de passe doit comporter au moins 8 caractères et contenir une majuscule ainsi qu'un chiffre",
   "reset-button": "Réinitialiser le mot de passe",
   "password-min-length": "Le mot de passe doit contenir au moins 8 caractères.",
   "password-upper-case": "Le mot de passe doit inclure au moins une lettre majuscule.",
@@ -253,5 +252,7 @@
   "upgrade-to-admin": "Promouvoir en administrateur",
   "upgrade-member-to-admin-title": "Promouvoir le membre en administrateur ?",
   "confirm-upgrade-to-admin": "Êtes-vous sûr de vouloir faire de <bold>{{userName}}</bold> un administrateur de <bold>{{projectName}}</bold> ?",
-  "user-upgraded-to-admin": "Utilisateur promu administrateur avec succès"
+  "user-upgraded-to-admin": "Utilisateur promu administrateur avec succès",
+  "please-enter-password": "Veuillez entrer un mot de passe",
+  "apps": "Applications"
 }

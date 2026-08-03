@@ -4,10 +4,11 @@ import { MdArrowForward } from "react-icons/md";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { ButtonMedium } from "@/components/package/Texts/Button";
+import { env } from "@/lib/runtime-env";
 
 export const NoModulesCard = ({ t }: { t: TFunction }) => {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    env("NEXT_PUBLIC_SUPPORT_EMAILS") ||
     "info@openearth.org,greta@openearth.org";
   return (
     <Card.Root

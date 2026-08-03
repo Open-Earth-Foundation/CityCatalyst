@@ -31,12 +31,8 @@ async def start_concept_note_run(
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
     service = ConceptNoteRunService(session)
-    try:
-        response = await service.start_run(payload, authorization=authorization)
-        await session.commit()
-    except Exception:
-        await session.rollback()
-        raise
+    response = await service.start_run(payload, authorization=authorization)
+    await session.commit()
 
     return JSONResponse(
         status_code=201 if response.created else 200,

@@ -15,7 +15,12 @@ import {
 import { api } from "@/services/api";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { MdEdit, MdEditSquare, MdOutlineMap, MdOutlineModeEdit } from "react-icons/md";
+import {
+  MdEdit,
+  MdEditSquare,
+  MdOutlineMap,
+  MdOutlineModeEdit,
+} from "react-icons/md";
 import { BiEdit } from "react-icons/bi";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
@@ -55,7 +60,11 @@ export default function ReviewConfirmStep({
       <Box w="full">
         <Box display="flex" flexDir="column" gap="24px" mb={6}>
           {cityName && (
-            <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            <Text
+              fontSize="body.md"
+              color="content.tertiary"
+              fontWeight="medium"
+            >
               {cityName}
             </Text>
           )}
@@ -126,10 +135,17 @@ export default function ReviewConfirmStep({
             {cityName}
           </Text>
         )}
-        <Heading size="lg" fontSize="display.sm">{t("review-confirm-heading")}</Heading>
+        <Heading size="lg" fontSize="display.sm">
+          {t("review-confirm-heading")}
+        </Heading>
         <Text fontSize="body.lg" color="content.tertiary" fontFamily="body">
           <Trans i18nKey="review-confirm-description" t={t}>
-            Please <Text as="span" fontWeight="bold">carefully review all fields</Text> and confirm the upload since you won&apos;t be able to modify it later on.
+            Please{" "}
+            <Text as="span" fontWeight="bold">
+              carefully review all fields
+            </Text>{" "}
+            and confirm the upload since you won&apos;t be able to modify it
+            later on.
           </Trans>
         </Text>
       </Box>
@@ -137,32 +153,54 @@ export default function ReviewConfirmStep({
         <HStack justifyContent="space-between" alignItems="flex-start" w="full">
           <Box display="flex" alignItems="flex-start" gap="4px">
             <Icon as={ConfirmDocumentIcon} w={8} h={8} />
-            <VStack alignItems='flex-start' gap="4px">
-              <Text fontSize="headline.sm" fontWeight="bold">{importSummary.sourceFile}</Text>
-              <Text fontSize="body.sm" color="content.tertiary">{t("file-name")}</Text>
+            <VStack alignItems="flex-start" gap="4px">
+              <Text fontSize="headline.sm" fontWeight="bold">
+                {importSummary.sourceFile}
+              </Text>
+              <Text fontSize="body.sm" color="content.tertiary">
+                {t("file-name")}
+              </Text>
             </VStack>
           </Box>
           <Button p="24px" onClick={onEditMapping}>
             <Icon as={EditIconOutlineSquare} />
-            {t('edit-mapping')}
+            {t("edit-mapping")}
           </Button>
         </HStack>
         <HStack w="full" alignItems="flex-start" gap="16px">
           <HStack w="174px" alignItems="flex-start">
             <Box display="flex" alignItems="flex-start" gap="4px">
-              <Icon as={LuRows4} boxSize={6} color="content.tertiary" mt="2px"/>
-              <VStack alignItems='flex-start' gap="4px">
-                <Text fontSize="headline.sm" fontWeight="bold">{importSummary.rowsFound}</Text>
-                <Text fontSize="body.sm" color="content.tertiary">{t("rows-in-file")}</Text>
+              <Icon
+                as={LuRows4}
+                boxSize={6}
+                color="content.tertiary"
+                mt="2px"
+              />
+              <VStack alignItems="flex-start" gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">
+                  {importSummary.rowsFound}
+                </Text>
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("rows-in-file")}
+                </Text>
               </VStack>
             </Box>
           </HStack>
           <HStack w="174px" alignItems="flex-start">
             <Box display="flex" alignItems="flex-start" gap="4px">
-              <Icon as={MdOutlineMap} boxSize={6} color="content.tertiary" mt="2px"/>
-              <VStack alignItems='flex-start' gap="4px">
-                <Text fontSize="headline.sm" fontWeight="bold">{importSummary.fieldsMapped}</Text>
-                <Text fontSize="body.sm" color="content.tertiary">{t("fields-mapped-in-file")}</Text>
+              <Icon
+                as={MdOutlineMap}
+                boxSize={6}
+                color="content.tertiary"
+                mt="2px"
+              />
+              <VStack alignItems="flex-start" gap="4px">
+                <Text fontSize="headline.sm" fontWeight="bold">
+                  {importSummary.fieldsMapped}
+                </Text>
+                <Text fontSize="body.sm" color="content.tertiary">
+                  {t("fields-mapped-in-file")}
+                </Text>
               </VStack>
             </Box>
           </HStack>
@@ -192,7 +230,13 @@ export default function ReviewConfirmStep({
                     <Text fontWeight="medium">{mapping.sourceColumn}</Text>
                   </Table.Cell>
                   <Table.Cell>
-                    <Text color={mapping.sampleValue ? "content.secondary" : "content.tertiary"}>
+                    <Text
+                      color={
+                        mapping.sampleValue
+                          ? "content.secondary"
+                          : "content.tertiary"
+                      }
+                    >
                       {mapping.sampleValue || t("not-specified")}
                     </Text>
                   </Table.Cell>

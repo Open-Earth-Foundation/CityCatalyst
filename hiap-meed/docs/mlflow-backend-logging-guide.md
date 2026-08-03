@@ -194,12 +194,6 @@ In `hiap-meed`, that pattern is:
 - `app/services/openai_client.py`
 - `app/utils/mlflow_logging.py`
 
-If you want to inspect tool-call traces specifically, `hiap-meed` also contains a removable test-only example:
-
-- `app/modules/mlflow_trace_test/`
-
-That module is intentionally isolated so future services can copy the pattern without mixing test flows into production business logic.
-
 ## Naming Conventions
 
 To keep the shared backend readable, use consistent naming.
@@ -243,7 +237,6 @@ Current implementation references:
 - `hiap-meed/app/utils/mlflow_logging.py`
 - `hiap-meed/app/utils/artifacts.py`
 - `hiap-meed/app/modules/prioritizer/api.py`
-- `hiap-meed/app/modules/mlflow_trace_test/`
 
 Server-side MLflow deployment references:
 

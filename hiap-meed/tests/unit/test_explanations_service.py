@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+from types import SimpleNamespace
+
 import pytest
 
 from app.modules.prioritizer.services import explanations as explanations_service
@@ -14,6 +17,8 @@ from app.modules.prioritizer.services.explanations import (
     _display_label_for_co_benefit,
     _display_label_for_sector,
     _display_label_for_subsector,
+    _explanation_response_format,
+    _generate_explanations_for_language,
     _rows_to_explanations,
     _validate_explanation_languages,
     _validate_explanation_coverage,
@@ -60,6 +65,67 @@ def test_generate_explanations_populates_each_requested_language(
         "es": {"A_1": "text-es"},
     }
     assert set(llm_io["languages"]) == {"en", "es"}
+
+
+def test_explanation_generation_uses_strict_chat_completion_schema(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Explanation calls must avoid SDK parsed objects in MLflow traces."""
+    captured: dict[str, object] = {}
+
+    class FakeCompletions:
+        """Return an empty valid explanation batch through the standard API."""
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Capture the request and return JSON content without `message.parsed`."""
+            captured.update(kwargs)
+            return SimpleNamespace(
+                choices=[
+                    SimpleNamespace(
+                        message=SimpleNamespace(
+                            content=json.dumps(
+                                {
+                                    "explanations": [
+                                        {
+                                            "action_id": "A_1",
+                                            "explanation": "English explanation.",
+                                        }
+                                    ]
+                                }
+                            )
+                        )
+                    )
+                ]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(explanations_service, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(explanations_service, "get_explanations_model", lambda: "test")
+    monkeypatch.setattr(explanations_service, "get_explanations_temperature", lambda: 0.0)
+
+    explanations, llm_io = _generate_explanations_for_language(
+        locode="CL ARI",
+        language="en",
+        scored_actions=[
+            ScoredAction(
+                action=Action(action_id="A_1", action_name="Test action"),
+                impact_score=0.5,
+                alignment_score=0.5,
+                feasibility_score=0.5,
+                final_score=0.5,
+                rank=1,
+                evidence={},
+            )
+        ],
+        city_preference_sectors=[],
+        city_preference_co_benefit_keys=[],
+    )
+
+    assert explanations == {"A_1": "English explanation."}
+    assert llm_io["status"] == "completed"
+    assert captured["response_format"] == _explanation_response_format()
 
 
 def test_build_curated_action_payload_uses_notion_explanation_slots() -> None:

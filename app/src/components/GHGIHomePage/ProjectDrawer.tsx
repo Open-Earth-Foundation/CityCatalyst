@@ -10,8 +10,6 @@ import { OpenChangeDetails } from "@zag-js/popover";
 import { Box, HStack, Icon, IconButton, Input, Text } from "@chakra-ui/react";
 import {
   MdAdd,
-  MdArrowDropDown,
-  MdArrowDropUp,
   MdCardTravel,
   MdCheck,
   MdClose,
@@ -20,6 +18,7 @@ import {
 } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuSearch } from "react-icons/lu";
+import { BiCaretDown } from "react-icons/bi";
 import type {
   CityResponse,
   ProjectWithCities,
@@ -346,31 +345,51 @@ const ProjectDrawer = ({
               onOpenChange={(details) => setOrgMenuOpen(details.open)}
               variant="solid"
             >
-              <MenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  p={0}
-                  minW="0"
-                  h="auto"
-                  _hover={{ bg: "transparent", opacity: 0.8 }}
+              <Box display="flex" alignItems="center" gap={3}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  boxSize="40px"
+                  borderRadius="full"
+                  bg="content.alternative"
+                  color="base.light"
+                  flexShrink={0}
                 >
-                  <Box display="flex" alignItems="center" gap={3}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      boxSize="40px"
-                      borderRadius="full"
-                      bg="content.alternative"
-                      color="base.light"
-                      flexShrink={0}
-                    >
-                      <Icon as={MdCardTravel} boxSize={5} />
-                    </Box>
+                  <Icon as={MdCardTravel} boxSize={5} />
+                </Box>
+                <MenuTrigger asChild>
+                  <Box
+                    as="button"
+                    appearance="none"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    gap="8px"
+                    minW="160px"
+                    h="12"
+                    px="16px"
+                    bg="base.light"
+                    fontFamily="heading"
+                    border="1px solid"
+                    borderColor="border.neutral"
+                    borderRadius="4px"
+                    shadow="sm"
+                    outline="none"
+                    cursor="pointer"
+                    _hover={{ borderColor: "content.link" }}
+                    _focus={{
+                      outline: "none",
+                      borderColor: "content.link",
+                      boxShadow: "0 0 0 1px content.link",
+                    }}
+                  >
                     <Text
-                      fontSize="title.md"
-                      fontWeight="bold"
-                      color="content.alternative"
+                      fontFamily="body"
+                      fontSize="md"
+                      fontWeight="normal"
+                      lineHeight="24"
+                      color="content.primary"
                       maxW="160px"
                       overflow="hidden"
                       textOverflow="ellipsis"
@@ -379,13 +398,17 @@ const ProjectDrawer = ({
                       {currentOrganizationName}
                     </Text>
                     <Icon
-                      as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
-                      boxSize={6}
-                      color="content.alternative"
+                      as={BiCaretDown}
+                      color="interactive.control"
+                      boxSize={5}
+                      transition="transform 0.2s"
+                      transform={
+                        isOrgMenuOpen ? "rotate(180deg)" : "rotate(0deg)"
+                      }
                     />
                   </Box>
-                </Button>
-              </MenuTrigger>
+                </MenuTrigger>
+              </Box>
               <MenuContent minW="220px" zIndex={2000}>
                 {organizations!.map((org) => (
                   <MenuItem

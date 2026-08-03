@@ -82,7 +82,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         gap="8px"
         cursor="pointer"
         _hover={{
-          borderColor: "content.secondary",
+          borderColor: "content.link",
         }}
         _focus={{
           outline: "none",

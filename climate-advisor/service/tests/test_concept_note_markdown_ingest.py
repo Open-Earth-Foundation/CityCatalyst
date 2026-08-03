@@ -422,3 +422,22 @@ def test_delivery_context_requires_reverse_service_key(ingest_client) -> None:
     assert response.status_code == 200
     assert response.json()["run_id"] == str(run_id)
     assert response.json()["user_id"] == "owner-user"
+
+
+def test_delivery_context_audits_rejected_key_without_logging_credential(
+    ingest_client,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    client, _, _, run_id = ingest_client
+    upload_id = uuid4()
+    create_upload(client, run_id, upload_id)
+    supplied_key = "unexpected-service-key"
+    path = f"/v1/concept-note-uploads/{upload_id}/delivery-context"
+
+    with caplog.at_level("WARNING", logger="app.routes.concept_note_markdown"):
+        response = client.get(path, headers={"X-CC-Service-Key": supplied_key})
+
+    assert response.status_code == 401
+    assert response.json()["code"] == "invalid_service_key"
+    assert str(upload_id) in caplog.text
+    assert supplied_key not in caplog.text

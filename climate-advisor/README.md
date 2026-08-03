@@ -576,6 +576,13 @@ Markdown identity returns `409`. CA owns no OCR queue, Mistral dependency,
 bucket credential, or presigned URL. An unavailable or unmigrated workflow
 database returns `503 cnb_storage_unavailable`.
 
+CC uses the intentionally separate service-to-service route
+`GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
+`X-CC-Service-Key` to recover the run and user scope for an opaque upload ID.
+Rejected service-key requests emit a `WARNING` audit log with the upload ID but
+never the supplied credential. Deployments should alert on repeated warnings or
+`401 invalid_service_key` responses for this route.
+
 ### Concept Note run foundation
 
 `POST /v1/concept-notes/start` validates a CC-issued bearer token, verifies that

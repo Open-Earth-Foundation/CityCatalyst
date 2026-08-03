@@ -138,6 +138,7 @@ def test_service_does_not_store_provider_responses_by_default(
         decisions=None,
     )
     fake_settings = SimpleNamespace(
+        cnb_database_url=None,
         llm=SimpleNamespace(
             models=SimpleNamespace(
                 funding_research=SimpleNamespace(
@@ -169,6 +170,35 @@ def test_service_does_not_store_provider_responses_by_default(
     assert direct_service.store_responses is False
     assert configured_service.store_responses is False
     assert opted_in_service.store_responses is True
+
+
+def test_service_uses_postgres_reference_data_when_configured(monkeypatch) -> None:
+    """Select the managed CNB reader when the URL is present in settings."""
+    fake_settings = SimpleNamespace(
+        cnb_database_url="postgresql://configured",
+        llm=SimpleNamespace(
+            models=SimpleNamespace(
+                funding_research=SimpleNamespace(
+                    name="test-model",
+                    reasoning_effort="low",
+                )
+            ),
+            prompts=SimpleNamespace(
+                get_prompt=lambda prompt_name: f"Prompt: {prompt_name}"
+            ),
+        ),
+    )
+    monkeypatch.setattr(similar_project_search, "get_settings", lambda: fake_settings)
+
+    service = ProjectMatchingService.from_settings(
+        openai_client=SimpleNamespace(responses=FakeResponses(None)),
+        workflow_store=FakeStore(),
+    )
+
+    assert isinstance(
+        service.reference_data_client,
+        similar_project_search.PostgresCnbReferenceDataClient,
+    )
 
 
 def test_service_skips_until_the_project_upload_is_ingested() -> None:

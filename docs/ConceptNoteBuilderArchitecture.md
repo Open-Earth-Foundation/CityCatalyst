@@ -26,14 +26,14 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-07-23): only GHGI inventory PDFs are currently
-enqueued in CC. The generic CC OCR/delivery model, authenticated CA
-Markdown-ingest contract, and compact CNB GHGI city-context route are
-implemented. The city-context adapter uses the documented datateam CNB tables
-when that database exposes them; Climate Advisor does not create or migrate
-those tables. `ConceptNoteUpload`, CC Concept Note upload routes/UI, the
-Markdown datateam repository adapter, downstream indexing, and the broader CNB
-database migration remain deferred.
+Implementation baseline (2026-08-03): the repository owns an independent CNB
+schema migration chain and can connect the reviewed-reference importer and
+similar-project reader to it. The initial migration provisions the full planned
+workspace/reference schema but does not add workspace HTTP services or seed
+curated data. The active CC-608/609 stack separately implements CA-owned run,
+context-bundle, and pointer-only upload persistence; after CC-557 merges, that
+stack must reuse this connection boundary while keeping its migrations on the
+existing Climate Advisor chain.
 
 In scope:
 
@@ -41,7 +41,7 @@ In scope:
 - A document workspace that supports structured chapters, evidence review,
   revisions, gaps, and export.
 - Funding reference tables for funders, funder criteria, templates, and similar
-  funded projects in the datateam managed CNB database.
+  funded projects in the externally operated CNB database.
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
@@ -64,12 +64,17 @@ workflow, following the same direction as the Stationary Energy workflow:
 1. CityCatalyst owns product data, user permissions, durable chat threads and
    messages, and committed module state.
 2. Climate Advisor orchestrates the conversation and pre-commit agentic
-   workflow, but does not own durable chat or CNB workflow storage.
-3. The datateam managed CNB database stores reusable funder and funded-project
-   tables alongside CNB workflow tables.
-4. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
-   optionally passes the completed Markdown to CA for CNB ingestion.
-5. The agent gets a scoped tool pack for the active workflow step, not a flat
+   workflow and owns the schema integration code, but not durable chat or the
+   externally operated database infrastructure.
+3. `CA_DATABASE_URL` stores run, context-bundle, and upload persistence on the
+   existing Climate Advisor Alembic chain.
+4. `CNB_DATABASE_URL` stores the document workspace and reusable funding
+   reference corpus on an independent `cnb_alembic_version` chain owned by this
+   repository. Infrastructure and curated data remain externally managed.
+5. PDF ingestion should use the shared CC converter. CC owns Mistral OCR and
+   storage, hands CA the stable result pointer, and serves verified Markdown
+   through an authenticated internal read boundary.
+6. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
 ```mermaid
@@ -100,7 +105,10 @@ flowchart TB
         MatchService["ProjectMatchingService"]
     end
 
-    subgraph CNBDB["datateam managed CNB database"]
+    CADB[("CA database<br/>runs + context bundles + uploads")]
+
+    subgraph CNBDB["externally operated CNB database"]
+        WorkspaceDB[("Chapters + revisions<br/>gaps + matches + exports")]
         FunderDB[("Funders<br/>criteria + templates")]
         ProjectKB[("Funding records<br/>opportunities + funded projects<br/>source evidence")]
     end
@@ -126,6 +134,8 @@ flowchart TB
     CNBService --> ContextService
     CNBService --> DocService
     CNBService --> MatchService
+    CNBService --> CADB
+    DocService --> WorkspaceDB
     CCData --> CCCaps
     CCCaps --> ContextService
     FunderDB --> ContextService
@@ -192,52 +202,62 @@ flowchart LR
 | -------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------------------------------------------ |
 | City profile, project, GHGI, CCRA, and persisted HIAP context              | CityCatalyst                   | Existing product source of truth and permission model.                                           |
 | Chat threads and messages                                                  | CityCatalyst                   | Keeps durable user conversation state with the product permission boundary.                      |
-| Concept-note run state                                                     | datateam managed CNB database  | Pre-commit agentic workflow state; CA orchestrates but does not own the infrastructure.          |
-| Context bundle snapshot                                                    | datateam managed CNB database  | Reusable run input/output for this workflow.                                                     |
-| CN upload/run associations, received Markdown, and selected source context | datateam managed CNB database  | Registers the optional Markdown handoff and keeps selected context for review and export.        |
+| Concept-note run state                                                     | `CA_DATABASE_URL`              | Pre-commit agentic workflow state on the existing Climate Advisor migration chain.               |
+| Context bundle snapshot                                                    | `CA_DATABASE_URL`              | Reusable run input/output for this workflow.                                                     |
+| CN upload/run associations and selected source pointers                    | `CA_DATABASE_URL`              | Registers the pointer-only upload handoff without exposing S3 credentials or signed URLs to CA. |
 | Uploaded source objects, OCR result objects, and their S3 pointers         | CityCatalyst                   | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
-| Document chapters and revisions                                            | datateam managed CNB database  | Draft document state before export.                                                              |
-| Funder profiles and criteria                                               | datateam managed CNB database  | Shared curated corpus, reusable across cities and agents.                                        |
-| Funding opportunities and funded projects                                  | datateam managed CNB database  | Shared funding records distinguished by `is_opportunity`.                                        |
-| Exported DOCX/PDF file references                                          | datateam managed CNB database  | Workflow output artifacts.                                                                       |
+| Document chapters and revisions                                            | `CNB_DATABASE_URL`             | Draft document state before export; `run_id` is an external CA identifier.                      |
+| Funder profiles and criteria                                               | `CNB_DATABASE_URL`             | Shared curated corpus, reusable across cities and agents.                                        |
+| Funding opportunities and funded projects                                  | `CNB_DATABASE_URL`             | Shared funding records distinguished by `is_opportunity`.                                        |
+| Exported DOCX/PDF file references                                          | `CNB_DATABASE_URL`             | Workflow output artifacts.                                                                       |
 | PDF-to-Markdown conversion                                                 | CityCatalyst                   | Owns Mistral OCR, queueing, retries, validation, authoritative storage, and result pointers.     |
-| Optional Markdown handoff                                                  | CityCatalyst → Climate Advisor | CC sends the completed `.md` only when a CA workflow needs it; CA never participates in OCR.     |
+| Pointer-only Markdown handoff                                              | CityCatalyst → Climate Advisor | CC sends a stable result key and immutable metadata; CA reads content only through authenticated CC. |
 
 ## Data Infrastructure Boundary
 
-The CNB backend should not plan to own or provision the durable data
-infrastructure for concept-note runs, context bundles, document chapters,
-revisions, gaps, evidence links, funder profiles, or funded-project corpora. Those
-schemas and stores live in the datateam managed CNB database.
+The repository owns the schema contracts and migration code but not the RDS
+clusters, database users, credentials, backups, or curated production records.
+The boundary is deliberately two-database: `CA_DATABASE_URL` holds runs,
+context bundles, and uploads; `CNB_DATABASE_URL` holds workspace and reference
+tables. Each URL has an independent Alembic chain and version table.
 
 The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
 
-- typed read/write clients or repositories for CNB run and document state
+- typed read/write clients or repositories for CA run state and CNB document state
 - typed reference-data clients for funders, funding records, templates,
   criteria, and evidence
 - stable CC-created upload IDs and CNB export file references
 - source labels/locations and evidence link records for workspace review and
   audit trails
 
-The diagrams below describe the logical storage shape the workflow needs. They
-are contract requirements for integration, not a decision that the Climate
-Advisor service owns the database infrastructure or migrations.
+The CNB migration chain requires only `CNB_DATABASE_URL` and never creates
+`concept_note_runs`, `concept_note_context_bundles`, or `concept_note_uploads`.
+The existing Climate Advisor chain must likewise never create CNB workspace or
+reference tables.
+
+Deployment credentials follow the repository's GitHub Actions boundary:
+`CNB_DATABASE_URL_DEV` supplies dev and the current test deployment, while
+`CNB_DATABASE_URL_PROD` supplies production. Workflows reconcile Kubernetes
+Secrets containing only `CNB_DATABASE_URL`; Deployments and CNB migration Jobs
+use `secretRef`. No real or base64-encoded CNB credential belongs in Git,
+ConfigMaps, logs, or migration commands. Credentials exposed through chat or
+tickets must be rotated before use, with reserved password characters
+URL-encoded in the final DSN.
 
 ## Tables and Data Placement
 
-PDF ingestion spans two PostgreSQL databases and the existing CC S3 bucket. The
-same `upload_id` identifies a Concept Note source across the boundary, but there
-is no database foreign key between CC PostgreSQL and the datateam managed CNB
-database.
+PDF ingestion and document authoring span CityCatalyst PostgreSQL, the Climate
+Advisor database, the CNB database, and the existing CC S3 bucket. Identifiers
+cross these boundaries through authenticated application contracts; databases
+do not create cross-database foreign keys.
 
 ```mermaid
 flowchart LR
     subgraph CCDB["CityCatalyst PostgreSQL"]
         Inventory["ImportedInventoryFile<br/>(existing inventory source)"]
         Chat["Chat threads + messages<br/>(CC-owned conversation state)"]
-        CNUpload["ConceptNoteUpload<br/>(new CNB source record)"]
-        OCR["PdfOcrJob<br/>(new shared OCR job)"]
+        OCR["PdfOcrJob<br/>(shared OCR job)"]
     end
 
     subgraph CCS3["Existing CityCatalyst S3"]
@@ -245,56 +265,33 @@ flowchart LR
         Markdown["Authoritative combined Markdown"]
     end
 
-    subgraph CNBDB["datateam managed CNB database"]
+    subgraph CADB["CA_DATABASE_URL"]
         Run["concept_note_runs"]
-        Received["concept_note_uploads<br/>(optional CA ingest record)"]
+        Upload["concept_note_uploads<br/>(authoritative upload record)"]
+        Bundle["concept_note_context_bundles"]
+    end
+
+    subgraph CNBDB["CNB_DATABASE_URL"]
+        Workspace["chapters + revisions<br/>gaps + matches + exports"]
+        References["funders + funding records<br/>templates + criteria + evidence"]
     end
 
     Inventory -.->|"inventory_import + id"| OCR
-    CNUpload -.->|"concept_note_upload + upload_id"| OCR
-    CNUpload --> Source
+    Upload -.->|"concept_note_upload + upload_id"| OCR
+    Upload -.->|"UUIDv4 upload_id key"| Source
     OCR --> Markdown
     Chat -.->|"thread_id integration identifier"| Run
-    Run --> Received
-    Markdown -.->|"optional API delivery using upload_id"| Received
+    Run --> Upload
+    Run --> Bundle
+    Run -.->|"external run_id; no FK"| Workspace
+    References --> Workspace
+    Markdown -.->|"pointer + immutable metadata"| Upload
 ```
 
 ### CityCatalyst PostgreSQL
 
-CC adds two tables for the shared conversion path. They are owned and migrated
-with the CityCatalyst application.
-
-#### `ConceptNoteUpload`
-
-This table is the authoritative CC source record for a Concept Note PDF. It is
-separate from the datateam database's `concept_note_uploads` table and from the
-existing CC `UserFile` model.
-
-```text
-upload_id              uuid primary key
-run_id                 uuid not null
-user_id                uuid not null
-city_id                uuid not null
-project_id             uuid null
-filename               string not null
-source_label           string null
-mime_type              string not null
-size_bytes             bigint not null
-source_s3_key          string not null
-source_sha256          string not null
-created_at             timestamp not null
-deleted_at             timestamp null
-```
-
-Rules:
-
-- `run_id` is an integration identifier, not a foreign key into another
-  database.
-- `upload_id` is immutable and is reused as `PdfOcrJob.source_id`.
-- The source PDF is immutable. Replacing it creates a new `upload_id`.
-- The row stores the authoritative source pointer and permission scope, but no
-  OCR status or Markdown bytes.
-- Source deletion and OCR-result retention follow the same CC file lifecycle.
+CC adds no Concept Note upload table, model, or migration. The existing
+`PdfOcrJob` table is the only CC database record used by this flow.
 
 #### `PdfOcrJob`
 
@@ -336,8 +333,8 @@ Rules:
 
 - `source_type = inventory_import` resolves `source_id` through the existing
   `ImportedInventoryFile` table.
-- `source_type = concept_note_upload` resolves `source_id` through
-  `ConceptNoteUpload.upload_id`.
+- `source_type = concept_note_upload` resolves its deterministic source key
+  directly from the CA-owned `upload_id`.
 - Because the source relationship is polymorphic, `source_id` is resolved and
   authorized by application code rather than a database foreign key.
 - OCR state, retries, leases, and result metadata are independent from optional
@@ -353,27 +350,27 @@ Markdown to `InventoryExtractionService` before the import advances to
 
 ### Existing CityCatalyst S3
 
-| Object                  | Authoritative pointer             | Lifecycle                               |
-| ----------------------- | --------------------------------- | --------------------------------------- |
-| Inventory source PDF    | `ImportedInventoryFile.s3Key`     | Existing inventory import lifecycle.    |
-| Concept Note source PDF | `ConceptNoteUpload.source_s3_key` | Concept Note upload lifecycle in CC.    |
-| Combined Markdown       | `PdfOcrJob.result_s3_key`         | Same lifecycle as its immutable source. |
+| Object                  | Authoritative pointer         | Lifecycle                                 |
+| ----------------------- | ----------------------------- | ----------------------------------------- |
+| Inventory source PDF    | `ImportedInventoryFile.s3Key` | Existing inventory import lifecycle.      |
+| Concept Note source PDF | UUIDv4 `upload_id` key        | CNB upload lifecycle coordinated with CA. |
+| Combined Markdown       | `PdfOcrJob.result_s3_key`     | Same lifecycle as its immutable source.   |
 
 The combined Markdown key follows
 `pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md`.
 
-### Datateam Managed CNB Database
+### Climate Advisor Workflow Database
 
-The `concept_note_uploads` table in the CNB workflow diagram is created only when
-CC optionally delivers completed Markdown to CA. It stores the received
-Markdown, its digest and page count, and downstream ingest state. It stores no
-source/result S3 key, Mistral configuration, OCR attempt, lease, or authoritative
-artifact pointer.
+The `concept_note_uploads` table belongs to the existing Climate Advisor Alembic
+chain under `CA_DATABASE_URL`. CA creates the row before CC stores or queues the
+source. It stores filename, label, lifecycle state, immutable digest/page
+metadata, and a nullable stable CC S3 key after conversion. It stores no
+Markdown bytes, presigned URL, Mistral configuration, OCR attempt, or lease.
 
-`concept_note_uploads.upload_id` equals `ConceptNoteUpload.upload_id`, while
-`concept_note_uploads.run_id` associates the received Markdown with the CNB run.
-Those values are checked through API and repository contracts; they do not form
-cross-database foreign keys.
+`concept_note_uploads.upload_id` is reused as `PdfOcrJob.source_id`. The upload
+identity is checked through API and repository contracts without a
+cross-database foreign key to CC. Within the CA database,
+`concept_note_uploads.run_id` references `concept_note_runs.run_id`.
 
 ## Workflow Steps
 
@@ -760,12 +757,17 @@ important planning rules are:
 ### CNB Workflow Tables
 
 These are the logical workflow/document tables the CNB backend needs to use.
-They should live in the datateam managed CNB database. Climate Advisor consumes
-them through typed service/repository contracts.
+`concept_note_chapters`, `concept_note_chapter_revisions`,
+`concept_note_evidence_links`, `concept_note_gaps`,
+`concept_note_matched_projects`, and `concept_note_exports` live under
+`CNB_DATABASE_URL`. Climate Advisor consumes them through typed
+service/repository contracts.
 
-The workflow tables below and the funding reference tables in the next diagram
-are part of the same database infrastructure. They are split into two diagrams
-only so the workflow state and curated funding/reference data are easier to read.
+The run, context-bundle, and upload tables shown for logical context live under
+`CA_DATABASE_URL` and are not created by the CNB migration. Relationships from
+the CNB workspace to a run are application-level joins by `run_id`, not physical
+foreign keys. Funding references in the next diagram share the CNB database with
+the workspace and can use internal foreign keys.
 
 ```mermaid
 erDiagram
@@ -801,7 +803,7 @@ erDiagram
         string uploaded_by_user_id
         string filename
         string source_label
-        text markdown_text
+        string markdown_s3_key
         string markdown_sha256
         int page_count
         string ingest_status
@@ -883,17 +885,19 @@ erDiagram
     }
 ```
 
-Within the CNB database, funding references use the same UUID type as their
-source records:
+Across the two databases, integration identifiers use the same UUID type as
+their source records:
 
-- `concept_note_runs.funder_id` references `funders.funder_id`.
-- `concept_note_runs.selected_funding_record_id` references
-  `funding_records.funding_record_id`.
-- `concept_note_matched_projects.funding_record_id` references
-  `funding_records.funding_record_id`.
+- `concept_note_runs.funder_id` and `selected_funding_record_id` are external
+  identifiers into `CNB_DATABASE_URL` and receive no database foreign keys.
+- Every CNB workspace `run_id` is an external identifier into
+  `CA_DATABASE_URL` and receives no database foreign key.
+- `concept_note_matched_projects.funding_record_id` is internal to
+  `CNB_DATABASE_URL` and references `funding_records.funding_record_id` with
+  restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-CityCatalyst-owned chat thread. The CNB database must not create a foreign key to
+CityCatalyst-owned chat thread. The CA database must not create a foreign key to
 a local `threads` table. CityCatalyst validates thread ownership before passing
 the identifier into the Climate Advisor workflow.
 
@@ -901,18 +905,16 @@ the identifier into the Climate Advisor workflow.
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
 
-For uploads, `upload_id` is created by the authenticated CityCatalyst upload
-route and identifies the immutable CC source record. When CNB needs the source,
-CA first receives that ID with the completed Markdown, verifies current run
-permission, and creates or reuses the CNB run association. An upload ID already
-bound to another run is rejected.
+For uploads, the authenticated CityCatalyst upload route generates a UUIDv4
+`upload_id`. CA first creates the run-bound upload row; only then does CC store
+the PDF under a key derived from that ID and create the OCR job. Retries after
+registration reuse the run-scoped upload ID.
 
-CA stores the received `markdown_text`, its verified `markdown_sha256`, page
-count, source label, and downstream `ingest_status`. These values are immutable
-for an `upload_id`; replacement creates a new upload. This copy makes CA ingest
-restart-safe, but the CC S3 object and CC result pointer remain authoritative.
-CNB storage never receives a source/result S3 key, signed URL, or opaque CC file
-pointer.
+After conversion, CA verifies the artifact through CC's authenticated internal
+Markdown read boundary, then stores `markdown_s3_key`, the verified
+`markdown_sha256`, page count, source label, and ingest status. The key is stable
+and never a presigned URL. Later context assembly asks CC for Markdown by
+`upload_id`; CA receives no bucket credentials or Markdown storage authority.
 
 ### Evidence Links
 
@@ -940,9 +942,9 @@ evidence-backed content.
 
 ### CNB Funding Reference Tables
 
-These tables live in the same datateam managed CNB database as the workflow
-tables. They store reusable funders and funding records. A funding record is
-either an opportunity or a funded project.
+These tables live under `CNB_DATABASE_URL` beside the document workspace. They
+store reusable funders and funding records. A funding record is either an
+opportunity or a funded project.
 
 ```mermaid
 erDiagram
@@ -970,10 +972,12 @@ erDiagram
         bool is_opportunity
         string name
         string applicant_name
+        string applicant_type
         string city
         string state_region
         string country
         string category
+        string sector
         jsonb hazards
         jsonb interventions
         string finance_route
@@ -987,6 +991,7 @@ erDiagram
         string status
         text summary
         jsonb project_tags
+        jsonb known_gaps
     }
 
     funder_templates {
@@ -1001,6 +1006,7 @@ erDiagram
     funder_criteria {
         uuid criterion_id
         uuid funding_record_id
+        uuid source_document_id
         string criterion_type
         string label
         text requirement_text
@@ -1044,10 +1050,20 @@ The importer rejects missing or unknown funder IDs. Funded projects do not need
 an opportunity-record relationship for this matching flow.
 
 Imported funded projects retain the local research identity as
-`source_run_id` plus `source_record_ref`. The managed database must enforce a
+`source_run_id` plus `source_record_ref`. The CNB database enforces a
 unique constraint on that pair. Replaying an approved import returns the
 existing `funding_record_id` and does not insert duplicate evidence; revised
 reference data requires a new research run.
+
+The physical schema also enforces unique `(content_hash, url)` source documents,
+unique `(chapter_id, revision_number)` revisions, unique
+`(run_id, funding_record_id)` matches, and unique active chapter positions per
+run through a partial index that excludes deleted chapters. Reference children
+cascade from funding records; chapter revisions and evidence links cascade from
+chapters; deleting a referenced funder or matched funding record is restricted.
+All UUIDv4 primary keys are generated by application code, so the migration does
+not require a PostgreSQL UUID extension. `funder_criteria.source_document_id` is
+nullable and links a criterion to retained provenance when one exists.
 
 Funded-project discovery itself is project-first: its CLI requires a substantive
 current-project profile and uses that profile to guide queries and candidate
@@ -1179,7 +1195,7 @@ example only when the active interview or document context makes it relevant.
 
 The tag vocabulary should be curated data, not invented at runtime by the model.
 The LLM can reason over tags already assigned to projects, but new tags or tag
-weights should be added through the datateam managed CNB database process.
+weights should be added through the externally managed curated-data process.
 
 The later curated scoring system should be treated as a concept, not current v1
 behavior. It can add hard filters and weighted scoring once NLC approves the
@@ -1445,7 +1461,7 @@ Rules:
 
 - Uses current CC-CA capability architecture.
 - Returns summarized payloads, not raw route dumps.
-- Stores the context bundle snapshot in the datateam managed CNB database for
+- Stores the context bundle snapshot under `CA_DATABASE_URL` for
   reproducibility.
 - Edits the bundle through workflow orchestration by rebuilding affected sections
   from changed underlying inputs such as uploads, funder profile changes,
@@ -1562,15 +1578,15 @@ Rules:
 
 #### `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown`
 
-Optionally receives completed Markdown from CityCatalyst after CC has finished
-and persisted PDF conversion. This is a service-to-service handoff, not an LLM
-tool and not an OCR trigger.
+Receives the stable CC object key and immutable metadata after CC has finished
+and persisted PDF conversion. This is a service-to-service pointer handoff, not
+an LLM tool and not an OCR trigger.
 
 Input:
 
 ```json
 {
-  "markdown": "<!-- page: 1 -->\n# Completed CC-produced Markdown",
+  "markdown_s3_key": "pdf-ocr/results/concept_note_upload/{upload_id}/1/combined_markdown.md",
   "filename": "string",
   "source_label": "Climate Action Plan",
   "page_count": 12,
@@ -1578,18 +1594,16 @@ Input:
 }
 ```
 
-The MVP handoff sends the full Markdown inline. CA enforces a separately
-configured JSON request-body safety limit, and CC rejects deliveries above the
-matching configured guard before sending. This operational safeguard does not
-define source-PDF size or page-count acceptance; the shared 20 MB source-PDF
-limit remains the only document acceptance limit.
+CA does not trust the pointer alone. It requests the Markdown by `upload_id`
+from CC's authenticated internal read route, verifies the returned key, digest,
+page count, page markers, and content, then persists the pointer.
 
 Output:
 
 ```json
 {
   "upload_id": "uuid",
-  "status": "processing"
+  "status": "ready"
 }
 ```
 
@@ -1598,7 +1612,8 @@ Rules:
 - Uses the existing CC-issued user-scoped bearer authentication and rechecks
   current run permission.
 - Rejects an `upload_id` already associated with another run.
-- Validates the supplied SHA-256 digest before durably registering the Markdown.
+- Fetches the stored object through authenticated CC and validates the supplied
+  SHA-256 digest before durably registering its pointer.
 - Requires the completed Markdown to satisfy the
   [Markdown-shape requirements](#pdf-conversion-and-optional-markdown-handoff)
   before CNB source processing begins.
@@ -1607,8 +1622,10 @@ Rules:
 - Repeated delivery of the same immutable upload and digest is idempotent. A
   different digest for the same upload returns
   `409 markdown_identity_conflict`.
-- Receives no source PDF, S3 key, signed URL, Mistral configuration, or CC OCR
-  status and never writes CC conversion state.
+- Receives no source PDF, S3 credentials, signed URL, Mistral configuration, or
+  CC OCR status and never writes CC conversion state. It does receive the stable
+  Markdown object key as opaque pointer identity, but can retrieve bytes only
+  through authenticated CC.
 
 #### `concept_note_process_markdown`
 
@@ -2097,12 +2114,13 @@ file layout.
 | ----------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                             |
 | Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                               |
-| CNB storage access            | datateam managed CNB database    | Climate Advisor uses typed contracts for runs, context bundles, chapters, revisions, gaps, evidence, and exports. It does not own CNB database infrastructure or migrations.                              |
-| Funding reference access      | datateam managed CNB database    | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables.                                                                                              |
+| CA run storage access         | Climate Advisor database         | The existing Alembic chain owns runs, context bundles, and pointer-only uploads through `CA_DATABASE_URL`.                                                                                                 |
+| CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                            |
+| Funding reference access      | Climate Advisor repository       | The CNB chain owns funder/reference schema; the importer writes only reviewed funded projects/evidence and runtime matching reads bounded deterministic candidates. Curated data remains externally managed. |
 | Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                       |
 | Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result pointers. No storage pointer or signed result URL is handed to CA.                             |
-| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and optional Markdown delivery.                                    |
-| CNB Markdown ingestion        | Climate Advisor                  | Optionally accepts completed Markdown, durably registers its digest and metadata, then performs CN-specific excerpt selection, indexing, summarization, and context-bundle updates. It owns no OCR state. |
+| PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral calls, retries, validation, result persistence, and pointer delivery.                                                               |
+| CNB Markdown ingestion        | Climate Advisor                  | Registers the stable key and immutable metadata, retrieves verified Markdown only through authenticated CC, then performs CN-specific context selection. It owns no OCR or Markdown storage state.      |
 | CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                  |
 | CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                               |
 | Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                |
@@ -2139,6 +2157,10 @@ file layout.
 
 Minimum test surface:
 
+- Independent CNB migration upgrade, downgrade, re-upgrade, constraint/index,
+  and cross-chain isolation tests against ephemeral PostgreSQL.
+- Kubernetes contract tests proving CNB credentials come only from Secrets and
+  both migration jobs complete before application rollout.
 - Pydantic contracts for all CNB route payloads.
 - CNB storage client and contract tests for run, chapter, revision, gap, and
   evidence behavior.
@@ -2154,7 +2176,7 @@ Minimum test surface:
 - CC OCR tests covering upload authorization, durable job claims, lease recovery,
   three-attempt transient retries, ordered page merge, result persistence, and
   the 20 MB source-PDF upload limit.
-- CC-to-CA Markdown handoff contract tests covering authentication, digest
+- CC-to-CA pointer handoff contract tests covering authentication, digest
   verification, `202` durable registration, same-digest idempotency, and
   different-digest `409` conflicts.
 - CNB city-context contract tests covering deterministic inventory selection,

@@ -25,6 +25,7 @@ from app.models.cnb.similar_projects import (
 from app.services.cnb.project_tag_normalizer import normalize_project_tags
 from app.services.cnb.reference_data_client import (
     CnbReferenceDataClient,
+    PostgresCnbReferenceDataClient,
     UnavailableCnbReferenceDataClient,
 )
 
@@ -107,6 +108,10 @@ class ProjectMatchingService:
         settings = get_settings()
         model_config = settings.llm.models.funding_research
         prompt = settings.llm.prompts.get_prompt("cnb_similar_project_matching")
+        if reference_data_client is None and settings.cnb_database_url:
+            reference_data_client = PostgresCnbReferenceDataClient(
+                settings.cnb_database_url
+            )
         return cls(
             openai_client=openai_client,
             workflow_store=workflow_store,

@@ -7,7 +7,7 @@ from decimal import Decimal, InvalidOperation
 import logging
 import re
 from typing import Literal, Protocol
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, JsonValue, model_validator
 
@@ -460,18 +460,21 @@ class PostgresReviewedReferenceDataWriter:
             # Insert each stable run/record identity once and reuse it on retries.
             for project in payload.projects:
                 record = project.record
+                new_funding_record_id = uuid4()
                 cursor.execute(
                     "INSERT INTO funding_records "
-                    "(source_run_id, source_record_ref, funder_id, is_opportunity, "
-                    "name, applicant_name, city, state_region, country, category, "
-                    "hazards, interventions, finance_route, instrument_type, "
-                    "region_scope, min_award, max_award, award_amount, currency, "
-                    "award_year, status, summary, project_tags) "
-                    "VALUES (%s, %s, %s, FALSE, %s, %s, %s, %s, %s, %s, %s, "
-                    "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+                    "(funding_record_id, source_run_id, source_record_ref, funder_id, "
+                    "is_opportunity, name, applicant_name, city, state_region, "
+                    "country, category, hazards, interventions, finance_route, "
+                    "instrument_type, region_scope, min_award, max_award, "
+                    "award_amount, currency, award_year, status, summary, "
+                    "project_tags) "
+                    "VALUES (%s, %s, %s, %s, FALSE, %s, %s, %s, %s, %s, %s, "
+                    "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
                     "ON CONFLICT (source_run_id, source_record_ref) DO NOTHING "
                     "RETURNING funding_record_id",
                     (
+                        str(new_funding_record_id),
                         payload.run_id,
                         record.funding_record_ref,
                         str(record.selected_funder_id),
@@ -521,38 +524,38 @@ class PostgresReviewedReferenceDataWriter:
                     evidence = retained.evidence
                     source = retained.source
                     if source.source_ref not in source_ids:
+                        new_source_document_id = uuid4()
                         cursor.execute(
-                            "SELECT source_document_id FROM source_documents "
-                            "WHERE content_hash = %s AND url = %s LIMIT 1",
-                            (source.content_hash, str(source.url)),
+                            "INSERT INTO source_documents "
+                            "(source_document_id, source_type, url, title, "
+                            "license_status, content_hash, fetched_at) "
+                            "VALUES (%s, %s, %s, %s, %s, %s, %s) "
+                            "ON CONFLICT (content_hash, url) DO UPDATE "
+                            "SET content_hash = EXCLUDED.content_hash "
+                            "RETURNING source_document_id",
+                            (
+                                str(new_source_document_id),
+                                source.source_type,
+                                str(source.url),
+                                source.title,
+                                source.license_status,
+                                source.content_hash,
+                                source.fetched_at,
+                            ),
                         )
                         source_row = cursor.fetchone()
                         if source_row is None:
-                            cursor.execute(
-                                "INSERT INTO source_documents "
-                                "(source_type, url, title, license_status, "
-                                "content_hash, fetched_at) "
-                                "VALUES (%s, %s, %s, %s, %s, %s) "
-                                "RETURNING source_document_id",
-                                (
-                                    source.source_type,
-                                    str(source.url),
-                                    source.title,
-                                    source.license_status,
-                                    source.content_hash,
-                                    source.fetched_at,
-                                ),
-                            )
-                            source_row = cursor.fetchone()
-                        if source_row is None:
-                            raise RuntimeError("source insert did not return an ID")
+                            raise RuntimeError("source upsert did not return an ID")
                         source_ids[source.source_ref] = UUID(str(source_row[0]))
 
+                    evidence_id = uuid4()
                     cursor.execute(
                         "INSERT INTO funding_record_evidence "
-                        "(funding_record_id, source_document_id, claim, "
-                        "quote_or_summary, source_map) VALUES (%s, %s, %s, %s, %s)",
+                        "(evidence_id, funding_record_id, source_document_id, claim, "
+                        "quote_or_summary, source_map) "
+                        "VALUES (%s, %s, %s, %s, %s, %s)",
                         (
+                            str(evidence_id),
                             str(funding_record_id),
                             str(source_ids[evidence.source_ref]),
                             evidence.quote_or_summary,

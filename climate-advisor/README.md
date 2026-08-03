@@ -122,7 +122,7 @@ valid proposed funder for every funded project.
 The local importer pairs the files only when their `run_id` values match. It
 requires an approved review, an existing reviewer-selected `funder_id`, and
 retained evidence for every imported project. Set `CNB_DATABASE_URL` to the
-externally managed CNB PostgreSQL database and validate before writing:
+dedicated CNB PostgreSQL database and validate before writing:
 
 ```powershell
 uv run python -m scripts.cnb.import_reviewed_reference_data `
@@ -132,13 +132,15 @@ uv run python -m scripts.cnb.import_reviewed_reference_data `
 ```
 
 Remove `--dry-run` only after validation. This importer is the sole database
-writer in the research/review workflow; Climate Advisor does not create or
-migrate the managed CNB tables. The managed `funding_records` contract must
-persist `source_run_id` and `source_record_ref` and enforce uniqueness on that
-pair. Retrying the same run returns the existing project IDs without inserting
-duplicate evidence. Pairing deliberately does not use a file hash. Use a new
-research run for a revised import. If no proposed canonical funder is valid,
-research and import that funder before retrying the funded-project import.
+writer in the research/review workflow and remains limited to reviewed funded
+projects, retained evidence, and their source documents. The repository owns
+the CNB schema through `cnb-alembic.ini`; it does not seed production funders or
+projects. `funding_records` persists `source_run_id` and `source_record_ref` and
+enforces uniqueness on that pair. Retrying the same run returns the existing
+project IDs without inserting duplicate evidence. Pairing deliberately does not
+use a file hash. Use a new research run for a revised import. If no proposed
+canonical funder is valid, research and import that funder before retrying the
+funded-project import.
 
 The tracked reference output is
 `output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.
@@ -407,6 +409,9 @@ OPENROUTER_API_KEY=your-openrouter-api-key
 # CityCatalyst Postgres on localhost:5432)
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 
+# Optional unless CNB schema, importer, or matching access is needed.
+CNB_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cnb
+
 # Optional
 CA_PORT=8080
 CA_LOG_LEVEL=info
@@ -459,6 +464,9 @@ docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTE
 cd climate-advisor
 uv sync --locked --group dev
 uv run python scripts/setup_database.py
+
+# Independently migrate the CNB workspace/reference database.
+uv run --directory service alembic -c cnb-alembic.ini upgrade head
 ```
 
 ### 5. Run The Service
@@ -527,6 +535,8 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
+- `CNB_DATABASE_URL` - separate PostgreSQL connection string for CNB workspace
+  and funding-reference tables; never point the CA Alembic chain at this URL
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
@@ -917,6 +927,26 @@ Notes:
 - The compose service runs Alembic migrations automatically on startup before
   launching Uvicorn
 
+## Kubernetes CNB Database Deployment
+
+GitHub Actions is the credential source of truth. Configure
+`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
+test deployment intentionally reuses the development value until a distinct
+test database is available. Rotate any credential shared in chat or ticket text
+before saving it, and URL-encode reserved password characters in the DSN.
+
+Each deployment workflow reconciles an environment-specific Kubernetes Secret
+containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
+migration Job consume that Secret with `secretRef`; CNB credentials do not
+belong in the existing database ConfigMaps or in checked-in Secret manifests.
+
+Deployments run sequential gates: the existing CA migration Job, the CNB Job
+(`alembic -c cnb-alembic.ini upgrade head`), then the application rollout. Job
+logs are printed and a failed or timed-out migration stops the rollout. For
+production, take an RDS snapshot or schema backup first; roll back the
+application image independently and do not automatically downgrade a schema
+after application data has been written.
+
 ## Observability
 
 ### MLflow Integration
@@ -1047,7 +1077,14 @@ uv run --directory service python -c "from app.db.session import get_session_fac
 
 # Check migrations
 uv run --directory service python -m alembic current
+
+# Check the independent CNB migration chain
+uv run --directory service alembic -c cnb-alembic.ini current
 ```
+
+`CA_DATABASE_URL` and `CNB_DATABASE_URL` have separate Alembic version tables and
+must be migrated independently. Do not run the default Climate Advisor Alembic
+chain against the CNB database.
 
 ### Vector Search Not Working
 

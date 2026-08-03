@@ -219,7 +219,6 @@ def test_postgres_writer_reuses_project_and_evidence_on_retry(
     cursor = connection.cursor.return_value.__enter__.return_value
     cursor.fetchone.side_effect = [
         (record_id,),
-        None,
         (source_id,),
         None,
         (record_id,),
@@ -252,6 +251,10 @@ def test_postgres_writer_reuses_project_and_evidence_on_retry(
         statement.startswith("INSERT INTO source_documents")
         for statement in statements
     ) == 1
+    assert any(
+        "ON CONFLICT (content_hash, url) DO UPDATE" in statement
+        for statement in statements
+    )
     assert sum(
         statement.startswith("INSERT INTO funding_record_evidence")
         for statement in statements

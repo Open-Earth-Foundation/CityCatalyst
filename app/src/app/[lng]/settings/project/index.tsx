@@ -13,7 +13,7 @@ import { uniqBy } from "lodash";
 import { TFunction } from "i18next";
 import ProjectList from "@/app/[lng]/settings/project/projectList";
 import ProjectDetails from "@/app/[lng]/settings/project/projectDetails";
-import { OrganizationSelector } from "../OrganizationSelector";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 export const TagMapping = {
   [OrganizationRole.ORG_ADMIN]: { color: "green", text: "owner" },
@@ -141,8 +141,8 @@ const ProjectOverview: React.FC<ProjectOverviewProps> = ({
 const ProjectSettings = ({ lng }: { lng: string }) => {
   const { t } = useTranslation(lng, "settings");
 
-  const [selectedOrganization, setSelectedOrganization] =
-    React.useState<string>();
+  const { organization: orgContext } = useOrganizationContext();
+  const selectedOrganization = orgContext?.organizationId;
   const [selectedProjectId, setSelectedProjectId] = useState<string[]>([]);
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
 
@@ -175,11 +175,6 @@ const ProjectSettings = ({ lng }: { lng: string }) => {
 
   return (
     <Box>
-      <OrganizationSelector
-        value={selectedOrganization}
-        onValueChange={setSelectedOrganization}
-        t={t}
-      />
       <Box
         display="flex"
         alignItems="center"

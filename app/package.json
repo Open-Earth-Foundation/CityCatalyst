@@ -101,7 +101,7 @@
     "react": "^19.2.7",
     "react-circle-flags": "^0.0.30",
     "react-dom": "^19.2.7",
-    "react-email": "^4.2.8",
+    "react-email": "^6.9.1",
     "react-hook-form": "^7.81.0",
     "react-i18next": "^17.0.9",
     "react-icons": "^5.5.0",

@@ -80,11 +80,7 @@ export function NavigationBar({
   const logoUrl = organization?.logoUrl;
   const isFrozen = organization != null && !organization.active;
   // Use custom hook to extract route params - more reliable for route changes
-  const {
-    cityId: cityIdFromRoute,
-    inventoryId: inventoryIdFromRoute,
-    pathname,
-  } = useRouteParams();
+  const { cityId: cityIdFromRoute, pathname } = useRouteParams();
 
   const { data: userAccessStatus } = useGetUserAccessStatusQuery(
     {},
@@ -120,11 +116,7 @@ export function NavigationBar({
     return null;
   }, [pathname, t]);
 
-  // Memoize city and inventory IDs to ensure they update when route changes
-  const currentInventoryId = useMemo(
-    () => inventoryIdFromRoute ?? userInfo?.defaultInventoryId,
-    [inventoryIdFromRoute, userInfo?.defaultInventoryId],
-  );
+  // Memoize city to ensure it updates when route changes
   const currentCityId = useMemo(
     () => cityIdFromRoute ?? userInfo?.defaultCityId ?? undefined,
     [cityIdFromRoute, userInfo?.defaultCityId],
@@ -388,7 +380,8 @@ export function NavigationBar({
                           >
                             {org.name}
                           </Text>
-                          {org.organizationId === organization?.organizationId && (
+                          {org.organizationId ===
+                            organization?.organizationId && (
                             <Icon
                               as={MdCheck}
                               boxSize={5}

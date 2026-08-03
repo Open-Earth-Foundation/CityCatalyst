@@ -1,5 +1,4 @@
 import { fallbackLng, languages } from "@/i18n/settings";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { maybeRedirectLegacyInventoryUrl } from "@/util/legacy-inventory-middleware";
 import acceptLanguage from "accept-language";
 import { withAuth, type NextRequestWithAuth } from "next-auth/middleware";
@@ -124,12 +123,7 @@ export async function proxy(req: NextRequestWithAuth) {
   }
 
   if ([`/${lng}`, `/${lng}/`].includes(req.nextUrl.pathname)) {
-    if (hasFeatureFlag(FeatureFlags.JN_ENABLED)) {
-      return NextResponse.redirect(new URL(`/${lng}/cities/`, req.url));
-    }
-    // When JN is disabled, let the PrivateHome component handle the routing
-    // Don't redirect here to avoid infinite loops
-    return NextResponse.next();
+    return NextResponse.redirect(new URL(`/${lng}/cities/`, req.url));
   }
 
   const legacyInventoryRedirect = await maybeRedirectLegacyInventoryUrl(req);

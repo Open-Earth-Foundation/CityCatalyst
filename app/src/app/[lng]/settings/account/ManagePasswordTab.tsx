@@ -1,10 +1,11 @@
 import { FC, useState } from "react";
 
-import { Box, Text, VStack } from "@chakra-ui/react";
+import { Box, Text } from "@chakra-ui/react";
 import { TitleMedium } from "@/components/package/Texts/Title";
 
 import { TFunction } from "i18next";
 import PasswordInput from "@/components/password-input";
+import { PasswordStrengthMeter } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/services/api";
@@ -20,6 +21,19 @@ type Inputs = {
   newPassword: string;
   confirmPassword: string;
 };
+
+const specialCharacters = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+function computePasswordStrength(password: string): number {
+  if (password.length < 8) {
+    return 0;
+  }
+  const additionalLength = password.length - 8;
+  let strength = Math.min(Math.max(1, additionalLength / 3), 3);
+  if (specialCharacters.test(password)) {
+    strength += 1;
+  }
+  return strength;
+}
 
 const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const [error, setError] = useState("");
@@ -67,6 +81,8 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
     }
   };
 
+  const newPasswordStrength = computePasswordStrength(watchPassword);
+
   return (
     <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
       <TitleMedium pb={4}>{t("manage-password")}</TitleMedium>
@@ -91,6 +107,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
             shouldValidate
             watchPassword={watchPassword}
           />
+          <PasswordStrengthMeter value={newPasswordStrength} />
           <PasswordInput
             register={register}
             error={errors.confirmPassword}

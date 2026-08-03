@@ -6,6 +6,7 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import i18next from "i18next";
 import { OrganizationResponse } from "@/util/types";
+import { env } from "@/lib/runtime-env";
 
 interface PlanDetailsBoxProps {
   organization?: OrganizationResponse;
@@ -57,9 +58,9 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
       </BodyLarge>
       <BodyLarge color="content.tertiary">
         {t("contact-us-to-upgrade")}{" "}
-        <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}>
+        <Link href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}>
           <Text as="span" color="content.link">
-            {process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
+            {env("NEXT_PUBLIC_SUPPORT_EMAILS")}
           </Text>
         </Link>
       </BodyLarge>

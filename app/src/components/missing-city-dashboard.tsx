@@ -6,6 +6,7 @@ import { MdArrowForward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { BodyXLarge } from "./package/Texts/Body";
 import { DisplayLarge } from "./package/Texts/Display";
+import { env } from "@/lib/runtime-env";
 
 const MissingCityDashboard = ({
   lng,
@@ -74,7 +75,7 @@ const MissingCityDashboard = ({
                 whiteSpace="nowrap"
                 fontWeight="semibold"
                 color="content.link"
-                href={"mailto:" + process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
+                href={"mailto:" + env("NEXT_PUBLIC_SUPPORT_EMAILS")}
               >
                 {t("please-contact-us")}
               </Link>

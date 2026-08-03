@@ -141,7 +141,7 @@ export function getServerFeatureFlags(): string[] {
     return cachedServerFeatureFlags;
   }
 
-  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
+  const flags = env("NEXT_PUBLIC_FEATURE_FLAGS");
   if (!flags) {
     cachedServerFeatureFlags = [];
     return cachedServerFeatureFlags;

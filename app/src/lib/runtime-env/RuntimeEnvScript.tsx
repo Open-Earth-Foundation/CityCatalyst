@@ -1,6 +1,9 @@
 import { getPublicRuntimeEnv } from "./keys";
 
-/** Injects window.__ENV so NEXT_PUBLIC_* vars can differ at runtime from build time. */
+/**
+ * Server Component (no "use client") that injects window.__ENV on each request.
+ * Do not add "use server" — that marks Server Actions, not Server Components.
+ */
 export function RuntimeEnvScript() {
   const publicEnv = getPublicRuntimeEnv();
 

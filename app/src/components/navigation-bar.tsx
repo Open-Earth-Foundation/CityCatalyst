@@ -50,6 +50,7 @@ import JNDrawer from "./HomePage/JNDrawer";
 import { getCityHomePath, getDashboardPath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { getParamValue } from "@/util/helpers";
+import { env } from "@/lib/runtime-env";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -517,7 +518,7 @@ export function NavigationBar({
               i18nKey="account-frozen-warning-text"
               values={{
                 email:
-                  process.env.NEXT_PUBLIC_SUPPORT_EMAILS?.split(",").join(
+                  env("NEXT_PUBLIC_SUPPORT_EMAILS")?.split(",").join(
                     " or ",
                   ) || "info@openearth.org",
               }}

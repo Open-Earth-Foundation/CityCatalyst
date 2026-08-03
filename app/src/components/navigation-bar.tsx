@@ -42,9 +42,7 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
-import ProjectDrawer from "@/components/GHGIHomePage/ProjectDrawer";
 import { useTheme } from "next-themes";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
@@ -568,31 +566,17 @@ export function NavigationBar({
           </Box>
         </Box>
         {/* JN Drawer */}
-        {/* Should be shown if JN is enabled */}
-        {hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
-          <JNDrawer
-            lng={activeLng}
-            currentCityId={currentCityId}
-            organizationId={
-              (organization?.organizationId ??
-                userAccessStatus?.organizationId) as string
-            }
-            isOpen={isDrawerOpen}
-            onClose={() => setIsDrawerOpen(false)}
-            onOpenChange={({ open }) => setIsDrawerOpen(open)}
-          />
-        )}
-        {/* TODO: [ON-4452] Remove project drawer and replace with JN drawer after JN is live */}
-        {/* Project Drawer */}
-        {!hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
-          <ProjectDrawer
-            lng={activeLng}
-            currentInventoryId={currentInventoryId as string}
-            isOpen={isDrawerOpen}
-            onClose={() => setIsDrawerOpen(false)}
-            onOpenChange={({ open }) => setIsDrawerOpen(open)}
-          />
-        )}
+        <JNDrawer
+          lng={activeLng}
+          currentCityId={currentCityId}
+          organizationId={
+            (organization?.organizationId ??
+              userAccessStatus?.organizationId) as string
+          }
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          onOpenChange={({ open }) => setIsDrawerOpen(open)}
+        />
       </Box>
       {isFrozen && !isPublic && !isAuth && (
         <Box py={2} px={16} bg="sentiment.warningDefault" w="full" zIndex={50}>

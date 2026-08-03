@@ -17,6 +17,10 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.services.cnb.funding_references import (
+    FundingReferenceValidator,
+    PostgresFundingReferenceValidator,
+)
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 
 
@@ -28,10 +32,14 @@ class ConceptNoteRunService:
         session: AsyncSession,
         *,
         cc_client: CityCatalystClient | None = None,
+        funding_reference_validator: FundingReferenceValidator | None = None,
     ) -> None:
         """Initialize the service with persistence and CityCatalyst clients."""
         self.repository = ConceptNoteRunRepository(session)
         self.cc_client = cc_client or CityCatalystClient()
+        self.funding_reference_validator = (
+            funding_reference_validator or PostgresFundingReferenceValidator()
+        )
 
     async def start_run(
         self,
@@ -53,6 +61,10 @@ class ConceptNoteRunService:
             )
         ):
             raise HTTPException(status_code=404, detail="Chat thread not found")
+        await self.funding_reference_validator.validate(
+            funder_id=payload.funder_id,
+            selected_funding_record_id=payload.selected_funding_record_id,
+        )
 
         fingerprint = _request_fingerprint(payload)
         run, created = await self.repository.create_or_get(

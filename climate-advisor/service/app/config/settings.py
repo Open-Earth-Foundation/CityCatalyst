@@ -431,6 +431,7 @@ class Settings(BaseModel):
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
+    cnb_database_url: str | None = os.getenv("CNB_DATABASE_URL")
     database_pool_size: Optional[int] = _parse_int(
         os.getenv("CA_DATABASE_POOL_SIZE"), 5
     )

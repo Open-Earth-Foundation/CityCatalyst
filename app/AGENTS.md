@@ -333,9 +333,20 @@ UPLOAD_OWN_DATA_ENABLED, OAUTH_ENABLED, ANALYTICS_ENABLED,
 CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
 ```
 
-- Parsed from `NEXT_PUBLIC_FEATURE_FLAGS` env (comma-separated)
+- Parsed from `NEXT_PUBLIC_FEATURE_FLAGS` env (comma-separated) via `env()` from `@/lib/runtime-env`
 - QA override via `localStorage` key `qa_feature_flags`
 - Use `hasFeatureFlag(flag)` on client, `hasServerFeatureFlag(flag)` on server
+
+---
+
+## Runtime public env (`src/lib/runtime-env/`)
+
+Replaces `next-runtime-env`. Injects allowlisted `NEXT_PUBLIC_*` vars into
+`window.__ENV` at request time so k8s/runtime values are not frozen at build time.
+
+- Client/shared: `import { env } from "@/lib/runtime-env"` then `env("NEXT_PUBLIC_…")`
+- Add new browser-facing keys to `PUBLIC_RUNTIME_ENV_KEYS` in `keys.ts`
+- Full guide: [docs/RUNTIME_ENV.md](./docs/RUNTIME_ENV.md)
 
 ---
 

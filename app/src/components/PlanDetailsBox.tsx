@@ -5,6 +5,7 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import i18next from "i18next";
 import { OrganizationResponse } from "@/util/types";
+import { env } from "@/lib/runtime-env";
 import { BiFolder } from "react-icons/bi";
 import { CitiesBuildingIcon, CityLimitIcon } from "./icons";
 import { PlanBadge } from "@/components/PlanBadge";
@@ -70,9 +71,9 @@ const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
         </HStack>
         <BodyLarge color="content.tertiary" mt="24px">
           {t("contact-us-to-upgrade")}{" "}
-          <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}>
+          <Link href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}>
             <Text as="span" color="content.link">
-              {process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
+              {env("NEXT_PUBLIC_SUPPORT_EMAILS")}
             </Text>
           </Link>
         </BodyLarge>

@@ -54,7 +54,7 @@
     "@highlight-run/next": "^7.9.38",
     "@hookform/resolvers": "^5.1.1",
     "@isaacs/ttlcache": "^1.4.1",
-    "@modelcontextprotocol/sdk": "^1.25.2",
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "@next/env": "16.2.4",
     "@nivo/bar": "^0.99.0",
     "@nivo/line": "^0.99.0",

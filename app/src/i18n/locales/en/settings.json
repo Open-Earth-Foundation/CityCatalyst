@@ -68,11 +68,10 @@
   "invite-send-fail": "Invite couldn't be sent",
   "number-of-cities": "# of cities",
   "manage-password": "Manage Password",
-  "update-password-details": "Update your password. This is the one that you will use from now on.",
   "current-password": "Current Password",
   "new-password": "New Password",
   "confirm-password": "Confirm Password",
-  "password-hint": "Password hint",
+  "password-hint": "Your password must be at least 8 characters long and contain one uppercase letter and one number",
   "reset-button": "Reset Password",
   "password-min-length": "Password must be at least 8 characters long.",
   "password-upper-case": "Password must include at least one uppercase letter.",
@@ -244,5 +243,6 @@
   "upgrade-member-to-admin-title": "Upgrade member to Admin?",
   "confirm-upgrade-to-admin": "Are you sure you want to make <bold>{{userName}}</bold> an Admin of the <bold>{{projectName}}</bold>?",
   "user-upgraded-to-admin": "User upgraded to admin successfully",
-  "apps": "Apps"
+  "apps": "Apps",
+  "please-enter-password": "Please enter a password"
 }

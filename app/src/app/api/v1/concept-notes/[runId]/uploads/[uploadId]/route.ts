@@ -28,18 +28,18 @@
  *             schema:
  *               type: object
  *               required:
- *                 - upload_id
- *                 - run_id
+ *                 - uploadId
+ *                 - runId
  *                 - status
  *                 - stage
- *                 - can_retry
+ *                 - canRetry
  *                 - filename
- *                 - received_at
+ *                 - receivedAt
  *               properties:
- *                 upload_id:
+ *                 uploadId:
  *                   type: string
  *                   format: uuid
- *                 run_id:
+ *                 runId:
  *                   type: string
  *                   format: uuid
  *                 status:
@@ -48,25 +48,25 @@
  *                 stage:
  *                   type: string
  *                   enum: [upload, ocr, delivery, complete]
- *                 can_retry:
+ *                 canRetry:
  *                   type: boolean
- *                 retry_kind:
+ *                 retryKind:
  *                   type: string
  *                   enum: [ocr, delivery]
  *                 filename:
  *                   type: string
- *                 source_label:
+ *                 sourceLabel:
  *                   type: string
  *                   nullable: true
- *                 page_count:
+ *                 pageCount:
  *                   type: integer
  *                   nullable: true
- *                 error_code:
+ *                 errorCode:
  *                   type: string
- *                 received_at:
+ *                 receivedAt:
  *                   type: string
  *                   format: date-time
- *                 completed_at:
+ *                 completedAt:
  *                   type: string
  *                   format: date-time
  *                   nullable: true
@@ -127,21 +127,21 @@ export const GET = apiHandler(async (req, { session, params }) => {
   const retryKind = canRetry ? workerState?.retryKind : undefined;
   const errorCode =
     status === "failed"
-      ? workerState?.errorCode || upload.error_code || undefined
+      ? workerState?.errorCode || upload.errorCode || undefined
       : undefined;
 
   return NextResponse.json({
-    upload_id: upload.upload_id,
-    run_id: upload.run_id,
+    uploadId: upload.uploadId,
+    runId: upload.runId,
     status,
     stage,
-    can_retry: canRetry,
-    ...(retryKind ? { retry_kind: retryKind } : {}),
+    canRetry,
+    ...(retryKind ? { retryKind } : {}),
     filename: upload.filename,
-    source_label: upload.source_label || null,
-    page_count: upload.page_count || null,
-    ...(errorCode ? { error_code: errorCode } : {}),
-    received_at: upload.received_at,
-    completed_at: upload.completed_at || null,
+    sourceLabel: upload.sourceLabel || null,
+    pageCount: upload.pageCount || null,
+    ...(errorCode ? { errorCode } : {}),
+    receivedAt: upload.receivedAt,
+    completedAt: upload.completedAt || null,
   });
 });

@@ -79,12 +79,10 @@ const context = {
 };
 
 beforeAll(async () => {
-  ({ GET: statusHandler } = await import(
-    "@/app/api/v1/concept-notes/[runId]/uploads/[uploadId]/route"
-  ));
-  ({ POST: retryHandler } = await import(
-    "@/app/api/v1/concept-notes/[runId]/uploads/[uploadId]/retry/route"
-  ));
+  ({ GET: statusHandler } =
+    await import("@/app/api/v1/concept-notes/[runId]/uploads/[uploadId]/route"));
+  ({ POST: retryHandler } =
+    await import("@/app/api/v1/concept-notes/[runId]/uploads/[uploadId]/retry/route"));
 });
 
 describe("Concept Note upload status and retry routes", () => {
@@ -93,15 +91,15 @@ describe("Concept Note upload status and retry routes", () => {
     loadRunCity.mockResolvedValue(cityId);
     canAccessCity.mockResolvedValue(undefined);
     loadUpload.mockResolvedValue({
-      upload_id: uploadId,
-      run_id: runId,
+      uploadId,
+      runId,
       status: "failed",
       filename: "plan.pdf",
-      source_label: "Climate plan",
-      page_count: null,
-      error_code: "mistral_unavailable",
-      received_at: "2026-07-31T10:00:00Z",
-      completed_at: "2026-07-31T10:01:00Z",
+      sourceLabel: "Climate plan",
+      pageCount: null,
+      errorCode: "mistral_unavailable",
+      receivedAt: "2026-07-31T10:00:00Z",
+      completedAt: "2026-07-31T10:01:00Z",
     });
     getJob.mockResolvedValue({
       status: "failed",
@@ -122,20 +120,20 @@ describe("Concept Note upload status and retry routes", () => {
       expect.objectContaining({
         status: "failed",
         stage: "ocr",
-        can_retry: true,
-        retry_kind: "ocr",
-        error_code: "mistral_unavailable",
+        canRetry: true,
+        retryKind: "ocr",
+        errorCode: "mistral_unavailable",
       }),
     );
   });
 
   it("pinpoints a pointer-delivery failure without rerunning OCR", async () => {
     loadUpload.mockResolvedValueOnce({
-      upload_id: uploadId,
-      run_id: runId,
+      uploadId,
+      runId,
       status: "processing",
       filename: "plan.pdf",
-      received_at: "2026-07-31T10:00:00Z",
+      receivedAt: "2026-07-31T10:00:00Z",
     });
     getJob.mockResolvedValueOnce({
       status: "succeeded",
@@ -152,9 +150,9 @@ describe("Concept Note upload status and retry routes", () => {
       expect.objectContaining({
         status: "failed",
         stage: "delivery",
-        can_retry: true,
-        retry_kind: "delivery",
-        error_code: "ca_delivery_rejected",
+        canRetry: true,
+        retryKind: "delivery",
+        errorCode: "ca_delivery_rejected",
       }),
     );
   });
@@ -162,12 +160,12 @@ describe("Concept Note upload status and retry routes", () => {
   it("marks pre-queue upload failures as non-retryable through the OCR endpoint", async () => {
     getJob.mockResolvedValueOnce(null);
     loadUpload.mockResolvedValueOnce({
-      upload_id: uploadId,
-      run_id: runId,
+      uploadId,
+      runId,
       status: "failed",
       filename: "plan.pdf",
-      error_code: "source_storage_failed",
-      received_at: "2026-07-31T10:00:00Z",
+      errorCode: "source_storage_failed",
+      receivedAt: "2026-07-31T10:00:00Z",
     });
 
     const response = await statusHandler(
@@ -180,11 +178,11 @@ describe("Concept Note upload status and retry routes", () => {
       expect.objectContaining({
         status: "failed",
         stage: "upload",
-        can_retry: false,
-        error_code: "source_storage_failed",
+        canRetry: false,
+        errorCode: "source_storage_failed",
       }),
     );
-    expect(payload).not.toHaveProperty("retry_kind");
+    expect(payload).not.toHaveProperty("retryKind");
   });
 
   it("allows OCR retry after the terminal failure was delivered to CA", async () => {
@@ -195,10 +193,10 @@ describe("Concept Note upload status and retry routes", () => {
 
     expect(response.status).toBe(202);
     expect(await response.json()).toEqual({
-      upload_id: uploadId,
+      uploadId,
       status: "queued",
       stage: "ocr",
-      retry_kind: "ocr",
+      retryKind: "ocr",
     });
     expect(updateUpload).toHaveBeenCalledWith(
       expect.objectContaining({ action: "retry", uploadId }),
@@ -213,11 +211,11 @@ describe("Concept Note upload status and retry routes", () => {
 
   it("keeps delivery retry separate from successful OCR", async () => {
     loadUpload.mockResolvedValueOnce({
-      upload_id: uploadId,
-      run_id: runId,
+      uploadId,
+      runId,
       status: "failed",
       filename: "plan.pdf",
-      received_at: "2026-07-31T10:00:00Z",
+      receivedAt: "2026-07-31T10:00:00Z",
     });
     getJob.mockResolvedValueOnce({
       status: "succeeded",
@@ -232,20 +230,20 @@ describe("Concept Note upload status and retry routes", () => {
     );
 
     expect(await response.json()).toEqual({
-      upload_id: uploadId,
+      uploadId,
       status: "processing",
       stage: "delivery",
-      retry_kind: "delivery",
+      retryKind: "delivery",
     });
   });
 
   it("still rejects an upload whose successful OCR was delivered", async () => {
     loadUpload.mockResolvedValueOnce({
-      upload_id: uploadId,
-      run_id: runId,
+      uploadId,
+      runId,
       status: "ready",
       filename: "plan.pdf",
-      received_at: "2026-07-31T10:00:00Z",
+      receivedAt: "2026-07-31T10:00:00Z",
     });
     getJob.mockResolvedValueOnce({
       status: "succeeded",

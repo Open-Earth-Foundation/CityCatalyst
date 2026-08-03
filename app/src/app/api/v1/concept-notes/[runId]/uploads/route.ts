@@ -4,7 +4,7 @@
  *   post:
  *     operationId: createConceptNoteUpload
  *     summary: Register and queue an authorized Concept Note PDF upload
- *     description: Identical run, user, filename, label, and PDF bytes replay the same upload identity.
+ *     description: Each accepted request receives a new UUID v4 upload identity before conversion is queued.
  *     tags:
  *       - concept-notes
  *     parameters:
@@ -25,22 +25,20 @@
  *               file:
  *                 type: string
  *                 format: binary
- *               source_label:
+ *               sourceLabel:
  *                 type: string
  *                 maxLength: 255
  *                 nullable: true
  *     responses:
- *       200:
- *         description: Identical upload already completed
  *       202:
- *         description: Upload registered and conversion queued, processing, or replayed
+ *         description: Upload registered and conversion queued
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               required: [upload_id, status, stage, can_retry]
+ *               required: [uploadId, status, stage, canRetry]
  *               properties:
- *                 upload_id:
+ *                 uploadId:
  *                   type: string
  *                   format: uuid
  *                 status:
@@ -49,9 +47,9 @@
  *                 stage:
  *                   type: string
  *                   enum: [ocr, delivery, complete]
- *                 can_retry:
+ *                 canRetry:
  *                   type: boolean
- *                 retry_kind:
+ *                 retryKind:
  *                   type: string
  *                   enum: [ocr, delivery]
  *       400:
@@ -71,11 +69,10 @@
  *       503:
  *         description: Source storage or OCR queueing is unavailable
  */
-import { createHash } from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { v5 as uuidv5 } from "uuid";
 import { z } from "zod";
 
 import {
@@ -86,7 +83,6 @@ import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   conceptNotePdfSourceKey,
   enqueueConceptNotePdfOcr,
-  getConceptNotePdfOcrJob,
   normalizeConceptNotePdfOcrStatus,
 } from "@/backend/PdfOcrService";
 import {
@@ -98,34 +94,18 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 
 const paramsSchema = z.object({ runId: z.string().uuid() });
-const createResponseSchema = z.object({
-  upload_id: z.string().uuid(),
-  status: z.enum(["queued", "processing", "ready", "failed"]),
-});
+const createResponseWireSchema = z
+  .object({
+    upload_id: z.string().uuid(),
+    status: z.enum(["queued", "processing", "ready", "failed"]),
+  })
+  .transform((payload) => ({
+    uploadId: payload.upload_id,
+    status: payload.status,
+  }));
 
 function requestId(req: Request): string | undefined {
   return req.headers.get("x-request-id")?.trim() || undefined;
-}
-
-function conceptNoteUploadId(args: {
-  runId: string;
-  userId: string;
-  filename: string;
-  sourceLabel: string | null;
-  fileBuffer: Buffer;
-}): string {
-  const contentSha256 = createHash("sha256")
-    .update(args.fileBuffer)
-    .digest("hex");
-  const identity = JSON.stringify([
-    "citycatalyst-concept-note-upload-v1",
-    args.runId,
-    args.userId,
-    args.filename,
-    args.sourceLabel,
-    contentSha256,
-  ]);
-  return uuidv5(identity, uuidv5.URL);
 }
 
 export const POST = apiHandler(async (req, { session, params }) => {
@@ -182,7 +162,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       "Uploaded file does not have a valid PDF signature",
     );
   }
-  const sourceLabelEntry = formData.get("source_label");
+  const sourceLabelEntry = formData.get("sourceLabel");
   const sourceLabel =
     typeof sourceLabelEntry === "string" && sourceLabelEntry.trim()
       ? sourceLabelEntry.trim()
@@ -191,13 +171,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.UnprocessableEntity("Source label is too long");
   }
 
-  const uploadId = conceptNoteUploadId({
-    runId,
-    userId,
-    filename,
-    sourceLabel,
-    fileBuffer,
-  });
+  const uploadId = randomUUID();
   const createResponse = await callConceptNoteApi({
     path: `/v1/concept-notes/${runId}/uploads`,
     userId,
@@ -214,42 +188,18 @@ export const POST = apiHandler(async (req, { session, params }) => {
   if (!createResponse.ok) {
     return NextResponse.json(createPayload, { status: createResponse.status });
   }
-  const created = createResponseSchema.safeParse(createPayload);
-  if (!created.success || created.data.upload_id !== uploadId) {
+  const created = createResponseWireSchema.safeParse(createPayload);
+  if (!created.success || created.data.uploadId !== uploadId) {
     await updateConceptNoteUpload({
       runId,
       uploadId,
       userId,
       action: "failed",
       requestId: currentRequestId,
-      body: { error_code: "ca_upload_response_invalid" },
+      errorCode: "ca_upload_response_invalid",
     }).catch(() => {});
     throw new createHttpError.BadGateway(
       "Climate Advisor returned an invalid upload identity",
-    );
-  }
-
-  const existingJob = await getConceptNotePdfOcrJob(uploadId);
-  if (existingJob) {
-    const state = normalizeConceptNotePdfOcrStatus(existingJob);
-    if (created.data.status === "failed" && state.status !== "failed") {
-      await updateConceptNoteUpload({
-        runId,
-        uploadId,
-        userId,
-        action: "retry",
-        requestId: currentRequestId,
-      });
-    }
-    return NextResponse.json(
-      {
-        upload_id: uploadId,
-        status: state.status,
-        stage: state.stage,
-        can_retry: state.canRetry,
-        ...(state.retryKind ? { retry_kind: state.retryKind } : {}),
-      },
-      { status: state.status === "ready" ? 200 : 202 },
     );
   }
 
@@ -271,32 +221,22 @@ export const POST = apiHandler(async (req, { session, params }) => {
       userId,
       action: "failed",
       requestId: currentRequestId,
-      body: { error_code: failureCode },
+      errorCode: failureCode,
     }).catch(() => {});
     throw new createHttpError.ServiceUnavailable(
       "PDF conversion could not be queued",
     );
   }
 
-  if (created.data.status === "failed") {
-    await updateConceptNoteUpload({
-      runId,
-      uploadId,
-      userId,
-      action: "retry",
-      requestId: currentRequestId,
-    });
-  }
-
   const state = normalizeConceptNotePdfOcrStatus(job);
 
   return NextResponse.json(
     {
-      upload_id: uploadId,
+      uploadId,
       status: state.status,
       stage: state.stage,
-      can_retry: state.canRetry,
-      ...(state.retryKind ? { retry_kind: state.retryKind } : {}),
+      canRetry: state.canRetry,
+      ...(state.retryKind ? { retryKind: state.retryKind } : {}),
     },
     { status: 202 },
   );

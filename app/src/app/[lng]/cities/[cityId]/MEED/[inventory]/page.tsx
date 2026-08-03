@@ -7,7 +7,8 @@ import {
   useGetCityPopulationQuery,
   useGetInventoriesQuery,
 } from "@/services/api";
-import { Box, Card, HStack } from "@chakra-ui/react";
+import { Box, Card, HStack, Icon, SimpleGrid } from "@chakra-ui/react";
+import { LuArrowRight } from "react-icons/lu";
 import { formatEmissions } from "@/util/helpers";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useRouter } from "next/navigation";
@@ -20,7 +21,7 @@ import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
-import { getMeedPath } from "../steps";
+import { getMeedPath, MEED_WIZARD_STEPS } from "../steps";
 
 export default function MEEDInventoryPage(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -138,6 +139,30 @@ export default function MEEDInventoryPage(props: {
           </Box>
         </Card.Body>
       </Card.Root>
+      <SimpleGrid columns={{ base: 1, md: 2 }} gap="16px">
+        {MEED_WIZARD_STEPS.map((step, i) => (
+          <Card.Root
+            key={step.key}
+            cursor="pointer"
+            _hover={{ borderColor: "content.link" }}
+            onClick={() =>
+              router.push(getMeedPath(lng, cityId, inventoryId, step.segment))
+            }
+          >
+            <Card.Body>
+              <HStack justifyContent="space-between" alignItems="flex-start">
+                <TitleMedium color="content.secondary">
+                  {i + 1}. {t(step.labelKey)}
+                </TitleMedium>
+                <Icon as={LuArrowRight} color="content.link" />
+              </HStack>
+              <BodyLarge color="content.tertiary" mt="8px">
+                {t(`${step.labelKey}-description`)}
+              </BodyLarge>
+            </Card.Body>
+          </Card.Root>
+        ))}
+      </SimpleGrid>
     </MeedPageLayout>
   );
 }

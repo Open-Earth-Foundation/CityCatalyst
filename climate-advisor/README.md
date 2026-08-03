@@ -528,6 +528,9 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
+- `CNB_DATABASE_URL` - Externally managed CNB PostgreSQL database used to
+  validate supplied `funder_id` and `selected_funding_record_id` values before
+  starting a run; requests without funding references do not require it
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)

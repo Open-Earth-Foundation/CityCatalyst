@@ -33,8 +33,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
     reset,
   } = useForm<Inputs>();
 
-  const [updatePassword, { isLoading, isError, isSuccess }] =
-    api.useUpdatePasswordMutation();
+  const [updatePassword] = api.useUpdatePasswordMutation();
 
   const { showSuccessToast } = UseSuccessToast({
     title: t("password-updated"),
@@ -70,12 +69,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
 
   return (
     <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
-      <VStack alignItems={"space-between"} justifyContent={"space-between"}>
-        <TitleMedium>{t("manage-password")}</TitleMedium>
-        <Text my={4} color="content.tertiary">
-          {t("update-password-details")}
-        </Text>
-      </VStack>
+      <TitleMedium pb={4}>{t("manage-password")}</TitleMedium>
       <Box>
         <form
           onSubmit={handleSubmit(onSubmit)}

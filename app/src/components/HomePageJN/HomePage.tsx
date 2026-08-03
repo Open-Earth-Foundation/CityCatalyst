@@ -287,6 +287,13 @@ export default function HomePage({
                     ) {
                       return false;
                     }
+                    // Filter out MEED module unless feature flag is enabled
+                    if (
+                      mod.id === Modules.MEED.id &&
+                      !hasFeatureFlag(FeatureFlags.MEED_MODULE)
+                    ) {
+                      return false;
+                    }
                     return mod.stage === stage;
                   });
                   return (

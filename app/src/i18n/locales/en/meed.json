@@ -1,0 +1,11 @@
+{
+  "overview-title": "Prioritize climate actions",
+  "overview-description": "MEED+ ranks climate mitigation actions for your city based on the emissions in this inventory, your socioeconomic context, regulations and strategic priorities. Switch inventories to rank actions against a different year's emissions data.",
+  "wizard-coming-soon-title": "The prioritization wizard is on its way",
+  "wizard-coming-soon-description": "Step-by-step screens for reviewing emissions, setting preferences and generating your ranked action list are being migrated into CityCatalyst.",
+  "inventory-not-found": "This inventory could not be loaded. Please pick another inventory or go back to your city page.",
+  "not-available": "N/A",
+  "last-update": "Last update",
+  "view-more": "View more",
+  "view-less": "View less"
+}

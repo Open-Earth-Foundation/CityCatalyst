@@ -45,10 +45,12 @@ export function useRouteParams() {
       // Try to find inventory in various path patterns (only accept UUIDs; ignore literal segments like "onboarding"):
       // - /cities/[cityId]/GHGI/[inventoryId]
       // - /cities/[cityId]/HIAP/[inventoryId]
+      // - /cities/[cityId]/MEED/[inventoryId]
       // - /[lng]/[inventoryId] (direct inventory route)
       const inventoryMatch =
         pathname.match(/\/GHGI\/([^\/]+)/) ||
         pathname.match(/\/HIAP\/([^\/]+)/) ||
+        pathname.match(/\/MEED\/([^\/]+)/) ||
         pathname.match(/^\/[a-z]{2}\/([a-f0-9-]{36})(?:\/|$)/);
       const candidate = inventoryMatch?.[1];
       if (candidate && candidate !== "null" && isValidUuid(candidate)) {

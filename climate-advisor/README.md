@@ -473,7 +473,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 - **API Docs**: http://localhost:8080/docs
 - **ReDoc**: http://localhost:8080/redoc
 - **Playground**: http://localhost:8080/playground
-- **Health Check**: http://localhost:8080/health
+- **Liveness Check**: http://localhost:8080/health
+- **Database Readiness Check**: http://localhost:8080/ready
 
 ## Configuration
 
@@ -735,6 +736,21 @@ GET /health
 ```json
 {
   "status": "ok"
+}
+```
+
+`GET /health` reports process liveness without contacting PostgreSQL. Deployment
+readiness probes use `GET /ready`, which returns `200` only after the database
+configured by `CA_DATABASE_URL` accepts a query. Missing configuration or a
+failed database query returns `503` without exposing connection details.
+
+```http
+GET /ready
+```
+
+```json
+{
+  "status": "ready"
 }
 ```
 

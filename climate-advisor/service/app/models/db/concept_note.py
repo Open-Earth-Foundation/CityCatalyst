@@ -35,6 +35,7 @@ class ConceptNoteRun(Base):
     thread_id: Mapped[UUID | None] = mapped_column(
         PGUUID(as_uuid=True),
         nullable=True,
+        comment="CityCatalyst-owned external thread identifier; no local foreign key",
     )
     user_id: Mapped[str] = mapped_column(String(255), nullable=False)
     name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -43,10 +44,12 @@ class ConceptNoteRun(Base):
     funder_id: Mapped[UUID | None] = mapped_column(
         PGUUID(as_uuid=True),
         nullable=True,
+        comment="External funder identifier validated against managed CNB reference data",
     )
     selected_funding_record_id: Mapped[UUID | None] = mapped_column(
         PGUUID(as_uuid=True),
         nullable=True,
+        comment="External funding-record identifier validated against managed CNB reference data",
     )
     status: Mapped[str] = mapped_column(
         String(64),

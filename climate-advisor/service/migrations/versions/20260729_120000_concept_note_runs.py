@@ -21,16 +21,27 @@ def upgrade() -> None:
     op.create_table(
         "concept_note_runs",
         sa.Column("run_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("thread_id", postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column(
+            "thread_id",
+            postgresql.UUID(as_uuid=True),
+            nullable=True,
+            comment="CityCatalyst-owned external thread identifier; no local foreign key",
+        ),
         sa.Column("user_id", sa.String(length=255), nullable=False),
         sa.Column("name", sa.String(length=120), nullable=False),
         sa.Column("city_id", sa.String(length=255), nullable=False),
         sa.Column("project_id", sa.String(length=255), nullable=True),
-        sa.Column("funder_id", postgresql.UUID(as_uuid=True), nullable=True),
+        sa.Column(
+            "funder_id",
+            postgresql.UUID(as_uuid=True),
+            nullable=True,
+            comment="External funder identifier validated against managed CNB reference data",
+        ),
         sa.Column(
             "selected_funding_record_id",
             postgresql.UUID(as_uuid=True),
             nullable=True,
+            comment="External funding-record identifier validated against managed CNB reference data",
         ),
         sa.Column(
             "status",

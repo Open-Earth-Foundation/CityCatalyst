@@ -2,7 +2,7 @@ import { smtpOptions } from "@/lib/email";
 import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { City } from "@/models/City";
 import { LANGUAGES, UserFileResponse } from "@/util/types";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import { createTransport, type Transporter } from "nodemailer";
 import { logger } from "@/services/logger";
 import EmailService from "./EmailService";

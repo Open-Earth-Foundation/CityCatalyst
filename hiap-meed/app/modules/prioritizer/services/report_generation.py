@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+from openai import OpenAI
 from pydantic import BaseModel, ConfigDict
 
 from app.modules.prioritizer.llm_config import (
@@ -24,6 +26,7 @@ from app.services.openai_client import create_openai_client
 logger = logging.getLogger(__name__)
 
 MAX_LANGUAGE_ATTEMPTS = 2
+MAX_CHAPTER_WORKERS = 8
 
 PROMPT_DIR = Path(__file__).resolve().parents[1] / "prompts"
 SYSTEM_PROMPT_FILE_PATH = PROMPT_DIR / "city_action_report_system.md"
@@ -85,68 +88,25 @@ def generate_output_plan_chapters(
 
     system_prompt = _read_system_prompt()
     client = create_openai_client()
-    chapters: list[ReportChapterDraft] = []
-    llm_calls: list[dict[str, object]] = []
-
-    for chapter_input in chapter_inputs:
-        # Build one isolated prompt per chapter to avoid context bleed.
-        prompt = _build_chapter_prompt(chapter_input)
-        logger.info(
-            "Calling output-plan LLM API chapter=%s model=%s",
-            chapter_input.key,
-            model_name,
-        )
-        parsed: OutputPlanChapterResponse | None = None
-        attempts: list[dict[str, object]] = []
-        for attempt in range(1, MAX_LANGUAGE_ATTEMPTS + 1):
-            completion = client.chat.completions.create(
-                model=model_name,
-                temperature=get_output_plan_temperature(),
-                response_format=_output_plan_response_format(),
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": prompt},
-                ],
+    worker_count = min(MAX_CHAPTER_WORKERS, len(chapter_inputs))
+    with ThreadPoolExecutor(
+        max_workers=worker_count,
+        thread_name_prefix="output-plan-chapter",
+    ) as executor:
+        results = list(
+            executor.map(
+                lambda chapter_input: _generate_chapter(
+                    chapter_input=chapter_input,
+                    client=client,
+                    model_name=model_name,
+                    system_prompt=system_prompt,
+                ),
+                chapter_inputs,
             )
-            content = completion.choices[0].message.content
-            if not content:
-                raise ValueError(
-                    "LLM did not return structured output for chapter "
-                    f"`{chapter_input.key}`"
-                )
-            candidate = OutputPlanChapterResponse.model_validate_json(content)
-            attempts.append({"attempt": attempt, "parsed": candidate.model_dump()})
-            try:
-                _validate_chapter_output(candidate, chapter_input)
-            except ValueError:
-                if attempt == MAX_LANGUAGE_ATTEMPTS:
-                    raise
-                prompt = _build_language_retry_prompt(prompt, chapter_input.language)
-                continue
-            parsed = candidate
-            break
+        )
 
-        if parsed is None:
-            raise ValueError(
-                f"LLM output validation failed for chapter `{chapter_input.key}`"
-            )
-        draft = ReportChapterDraft(
-            key=chapter_input.key,
-            title=chapter_input.title,
-            markdown=parsed.markdown,
-            source_refs=parsed.source_refs,
-            limitations=parsed.limitations,
-        )
-        chapters.append(draft)
-        llm_calls.append(
-            {
-                "chapter": chapter_input.key,
-                "model": model_name,
-                "prompt_text": prompt,
-                "parsed": draft.model_dump(mode="json"),
-                "attempts": attempts,
-            }
-        )
+    chapters = [draft for draft, _ in results]
+    llm_calls = [llm_call for _, llm_call in results]
 
     return ReportGenerationResult(
         chapters=chapters,
@@ -157,6 +117,69 @@ def generate_output_plan_chapters(
             "chapters": llm_calls,
         },
     )
+
+
+def _generate_chapter(
+    *,
+    chapter_input: ReportChapterInput,
+    client: OpenAI,
+    model_name: str,
+    system_prompt: str,
+) -> tuple[ReportChapterDraft, dict[str, object]]:
+    """Generate and validate one isolated report chapter."""
+    prompt = _build_chapter_prompt(chapter_input)
+    logger.info(
+        "Calling output-plan LLM API chapter=%s model=%s",
+        chapter_input.key,
+        model_name,
+    )
+    parsed: OutputPlanChapterResponse | None = None
+    attempts: list[dict[str, object]] = []
+    for attempt in range(1, MAX_LANGUAGE_ATTEMPTS + 1):
+        completion = client.chat.completions.create(
+            model=model_name,
+            temperature=get_output_plan_temperature(),
+            response_format=_output_plan_response_format(),
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+        )
+        content = completion.choices[0].message.content
+        if not content:
+            raise ValueError(
+                f"LLM did not return structured output for chapter `{chapter_input.key}`"
+            )
+        candidate = OutputPlanChapterResponse.model_validate_json(content)
+        attempts.append({"attempt": attempt, "parsed": candidate.model_dump()})
+        try:
+            _validate_chapter_output(candidate, chapter_input)
+        except ValueError:
+            if attempt == MAX_LANGUAGE_ATTEMPTS:
+                raise
+            prompt = _build_language_retry_prompt(prompt, chapter_input.language)
+            continue
+        parsed = candidate
+        break
+
+    if parsed is None:
+        raise ValueError(
+            f"LLM output validation failed for chapter `{chapter_input.key}`"
+        )
+    draft = ReportChapterDraft(
+        key=chapter_input.key,
+        title=chapter_input.title,
+        markdown=parsed.markdown,
+        source_refs=parsed.source_refs,
+        limitations=parsed.limitations,
+    )
+    return draft, {
+        "chapter": chapter_input.key,
+        "model": model_name,
+        "prompt_text": prompt,
+        "parsed": draft.model_dump(mode="json"),
+        "attempts": attempts,
+    }
 
 
 def _build_deterministic_chapter(

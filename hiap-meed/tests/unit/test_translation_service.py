@@ -2,14 +2,19 @@
 
 from __future__ import annotations
 
+import json
+from types import SimpleNamespace
+
 import pytest
 
+from app.modules.prioritizer.services import translation as translation_service
 from app.modules.prioritizer.services.translation import (
     ActionTranslationRow,
     TranslationItem,
     _build_prompt,
     _rows_to_translations,
     _validate_translation_languages,
+    translate_explanations,
 )
 
 
@@ -115,3 +120,79 @@ def test_translation_language_validation_rejects_wrong_language() -> None:
                 }
             }
         )
+
+
+def test_translate_explanations_retries_invalid_output_with_strict_schema(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Canonical translations should retry without parsed SDK completion objects."""
+    captured: dict[str, object] = {}
+
+    class FakeCompletions:
+        """Return one invalid batch before a complete Spanish translation."""
+
+        calls = 0
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Capture the request and return invalid output once before success."""
+            self.calls += 1
+            captured.update(kwargs)
+            if self.calls == 1:
+                content = json.dumps({"translations": []})
+            else:
+                content = json.dumps(
+                    {
+                        "translations": [
+                            {
+                                "action_id": "A_1",
+                                "translations": [
+                                    {
+                                        "language": "es",
+                                        "text": (
+                                            "Esta acción mejora la calidad del aire "
+                                            "y mantiene una viabilidad clara."
+                                        ),
+                                    }
+                                ],
+                                "source_language_warning": False,
+                            }
+                        ]
+                    }
+                )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(translation_service, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(
+        translation_service,
+        "get_explanation_translations_model",
+        lambda: "test-model",
+    )
+    monkeypatch.setattr(
+        translation_service,
+        "get_explanation_translations_temperature",
+        lambda: 0.0,
+    )
+
+    translations, warnings, llm_io = translate_explanations(
+        canonical_explanations_by_action_id={
+            "A_1": "This action improves air quality and remains feasible."
+        },
+        target_languages=["es"],
+    )
+
+    assert translations == {
+        "A_1": {"es": "Esta acción mejora la calidad del aire y mantiene una viabilidad clara."}
+    }
+    assert warnings == []
+    assert fake_client.chat.completions.calls == 2
+    attempts = llm_io["llm_output"]["attempts"]  # type: ignore[index]
+    assert len(attempts) == 2
+    assert "validation_error" in attempts[0]
+    schema = captured["response_format"]["json_schema"]["schema"]  # type: ignore[index]
+    assert schema["additionalProperties"] is False
+    assert schema["$defs"]["TranslationItem"]["additionalProperties"] is False

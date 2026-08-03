@@ -83,7 +83,7 @@ def _report_request(
             "requestData": {
                 "locode": locode,
                 "actionId": action_id,
-                "language": language or ["en"],
+                "language": ["en"] if language is None else language,
                 "debugContextOnly": True,
                 "prioritizationSnapshot": {
                     "request": {
@@ -198,7 +198,8 @@ def test_report_context_warns_when_language_was_not_in_source_request() -> None:
         source_metadata={"city": {"source": "test"}},
     )
 
-    assert context.language == "es"
+    assert context.language == "en"
+    assert context.requested_languages == ["en", "es"]
     assert any(
         "report languages differ from the languages used in the original prioritization"
         in item
@@ -248,6 +249,12 @@ def test_report_request_rejects_blank_boundary_values() -> None:
     """Request DTO validation should reject blank report boundary values."""
     with pytest.raises(ValueError, match="actionId must not be blank"):
         _report_request(action_id="   ")
+
+
+def test_report_request_rejects_empty_language_list() -> None:
+    """Canonical English injection must not make an empty caller request valid."""
+    with pytest.raises(ValueError, match="language"):
+        _report_request(language=[])
 
 
 def test_report_request_rejects_empty_snapshot_response() -> None:

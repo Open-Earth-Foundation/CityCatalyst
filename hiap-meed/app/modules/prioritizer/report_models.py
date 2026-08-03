@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.modules.prioritizer.internal_models import (
     Action,
@@ -96,3 +96,30 @@ class ReportGenerationResult(BaseModel):
 
     chapters: list[ReportChapterDraft]
     llm_io: dict[str, Any] = Field(default_factory=dict)
+
+
+class ReportTranslatedChapter(BaseModel):
+    """One translated chapter returned by the report translation LLM."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: ChapterKey
+    markdown: str
+    limitations: list[str]
+
+
+class ReportLanguageTranslation(BaseModel):
+    """All translated chapters for one requested target language."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    language: str
+    chapters: list[ReportTranslatedChapter]
+
+
+class ReportTranslationBatch(BaseModel):
+    """Batched translations for every non-English report language."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    translations: list[ReportLanguageTranslation]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from threading import Barrier
 from types import SimpleNamespace
 
 import pytest
@@ -89,6 +90,54 @@ def test_generate_output_plan_chapters_uses_schema_and_validates_json(
     assert result.chapters[0].markdown == "Reader-facing chapter."
     assert captured["response_format"] == _output_plan_response_format()
     assert "create" in dir(FakeCompletions)
+
+
+def test_generate_output_plan_chapters_runs_all_chapters_in_parallel(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """All eight isolated English chapters should enter provider calls concurrently."""
+    barrier = Barrier(8)
+
+    class FakeCompletions:
+        """Synchronize all chapter calls before returning valid responses."""
+
+        def create(self, **kwargs: object) -> SimpleNamespace:
+            """Wait for every chapter worker to reach the provider boundary."""
+            del kwargs
+            barrier.wait(timeout=2)
+            content = json.dumps(
+                {
+                    "markdown": "English report content for the selected action.",
+                    "source_refs": [],
+                    "limitations": [],
+                }
+            )
+            return SimpleNamespace(
+                choices=[SimpleNamespace(message=SimpleNamespace(content=content))]
+            )
+
+    fake_client = SimpleNamespace(
+        chat=SimpleNamespace(completions=FakeCompletions())
+    )
+    monkeypatch.setattr(report_generation, "create_openai_client", lambda: fake_client)
+    monkeypatch.setattr(report_generation, "get_output_plan_model", lambda: "test-model")
+    monkeypatch.setattr(
+        report_generation, "get_output_plan_temperature", lambda: 0.0
+    )
+    chapter_inputs = [
+        ReportChapterInput(
+            key=key,  # type: ignore[arg-type]
+            title=key.replace("_", " ").title(),
+            language="en",
+        )
+        for key in report_generation.CHAPTER_PROMPT_FILES
+    ]
+
+    result = generate_output_plan_chapters(chapter_inputs=chapter_inputs)
+
+    assert [chapter.key for chapter in result.chapters] == [
+        chapter.key for chapter in chapter_inputs
+    ]
 
 
 def test_chapter_prompt_excludes_internal_diagnostic_fields() -> None:

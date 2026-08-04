@@ -121,7 +121,7 @@ export const GET = apiHandler(
           subCategory = findSubCategory(subCategoryId);
         }
 
-        let activities = version.entryId
+        const activities = version.entryId
           ? activitiesByInventoryValue[version.entryId]
           : undefined;
 

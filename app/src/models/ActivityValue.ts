@@ -9,12 +9,12 @@ import type {
 
 export interface ActivityValueAttributes {
   id: string;
-  activityData?: Record<string, any>;
+  activityData?: Record<string, number | string | string[]>;
   co2eq?: bigint;
   co2eqYears?: number;
   inventoryValueId?: string;
   datasourceId?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, number | string | string[]>;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -39,21 +39,30 @@ export class ActivityValue
   implements Partial<ActivityValueAttributes>
 {
   declare id: string;
-  declare activityData?: Record<string, any>;
+  declare activityData?: Record<string, number | string | string[]>;
   declare co2eq?: bigint;
   declare co2eqYears?: number;
   declare inventoryValueId?: string;
   declare datasourceId?: string;
-  declare metadata?: Record<string, any>;
+  declare metadata?: Record<string, number | string | string[]>;
   declare created?: Date;
   declare lastUpdated?: Date;
 
   // ActivityValue hasMany GasValue via activityValueId
   declare gasValues: GasValue[];
   declare getGasValues: Sequelize.HasManyGetAssociationsMixin<GasValue>;
-  declare setGasValues: Sequelize.HasManySetAssociationsMixin<GasValue, GasValueId>;
-  declare addGasValue: Sequelize.HasManyAddAssociationMixin<GasValue, GasValueId>;
-  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<GasValue, GasValueId>;
+  declare setGasValues: Sequelize.HasManySetAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
+  declare addGasValue: Sequelize.HasManyAddAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  declare addGasValues: Sequelize.HasManyAddAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
   declare createGasValue: Sequelize.HasManyCreateAssociationMixin<GasValue>;
   declare removeGasValue: Sequelize.HasManyRemoveAssociationMixin<
     GasValue,
@@ -63,8 +72,14 @@ export class ActivityValue
     GasValue,
     GasValueId
   >;
-  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<GasValue, GasValueId>;
-  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<GasValue, GasValueId>;
+  declare hasGasValue: Sequelize.HasManyHasAssociationMixin<
+    GasValue,
+    GasValueId
+  >;
+  declare hasGasValues: Sequelize.HasManyHasAssociationsMixin<
+    GasValue,
+    GasValueId
+  >;
   declare countGasValues: Sequelize.HasManyCountAssociationsMixin;
   // ActivityValue belongsTo InventoryValue via inventoryValueId
   declare inventoryValue: InventoryValue;

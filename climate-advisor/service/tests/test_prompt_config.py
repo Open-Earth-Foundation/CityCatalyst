@@ -25,6 +25,9 @@ def test_prompt_include_directive_resolves_relative_tools_fragment(tmp_path) -> 
         core=str(prompt_path),
         chat=str(prompt_path),
         stationary_energy_review=str(prompt_path),
+        cnb_funding_opportunity_research=str(prompt_path),
+        cnb_funder_identity_matching=str(prompt_path),
+        cnb_similar_project_matching=str(prompt_path),
     )
 
     rendered_prompt = prompts.get_prompt("chat")
@@ -40,6 +43,9 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "core": prompts.core,
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
+        "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
+        "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
+        "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -53,6 +59,48 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
             assert f"</{tag_name}>" in prompt_text, (
                 f"{prompt_name} prompt must define </{tag_name}>"
             )
+
+
+def test_cnb_research_configuration_matches_runtime_contract() -> None:
+    """Keep the requested model and architecture-shaped prompt contract."""
+    config = _load_llm_config()
+    prompt_path = config.prompts.cnb_funding_opportunity_research
+    prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
+
+    assert config.models.funding_research.name == "openai/gpt-5.4"
+    assert config.models.funding_research.reasoning_effort == "medium"
+    assert "`current_filled_object`" in prompt_text
+    assert "`missing_data`" in prompt_text
+    assert "`funding_records`" in prompt_text
+    assert "`is_opportunity`" in prompt_text
+    assert "<example_output>" in prompt_text
+
+
+def test_cnb_similar_project_prompt_matches_runtime_contract() -> None:
+    config = _load_llm_config()
+    prompt_path = config.prompts.cnb_similar_project_matching
+    prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
+
+    assert "`current_project`" in prompt_text
+    assert "`selection_limit`" in prompt_text
+    assert "`candidates`" in prompt_text
+    assert "`matched_tags`" in prompt_text
+    assert "`evidence_refs`" in prompt_text
+    assert "numeric score" in prompt_text
+
+
+def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
+    config = _load_llm_config()
+    prompt_path = config.prompts.cnb_funder_identity_matching
+    prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
+
+    assert config.models.funder_identity.name == "openai/gpt-5.4-mini"
+    assert config.models.funder_identity.reasoning_effort == "low"
+    assert "`funding_records`" in prompt_text
+    assert "`canonical_funders`" in prompt_text
+    assert "`funding_record_ref`" in prompt_text
+    assert "`funder_id`" in prompt_text
+    assert "human reviewer" in prompt_text
 
 
 def test_compose_prompt_wraps_core_and_chat() -> None:
@@ -69,8 +117,14 @@ def test_compose_prompt_wraps_core_and_chat() -> None:
     assert "`inventory_emissions_context`" in composed_prompt
     assert "`get_all_datasources`" in composed_prompt
     assert "`climate_vector_search`" in composed_prompt
-    assert "Exact tool argument contracts come from the registered runtime tool definitions" in composed_prompt
-    assert "Confirm by city/year only when that pair identifies one inventory" in composed_prompt
+    assert (
+        "Exact tool argument contracts come from the registered runtime tool definitions"
+        in composed_prompt
+    )
+    assert (
+        "Confirm by city/year only when that pair identifies one inventory"
+        in composed_prompt
+    )
     assert "`inventory_name`, `type`, and `gwp`" in composed_prompt
     assert "inventory_context" not in composed_prompt
     assert "Tool invocation argument contracts:" not in composed_prompt
@@ -89,7 +143,9 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "You are Clima, the CityCatalyst climate assistant." in composed_prompt
     assert "<additional_instructions>" in composed_prompt
     assert "Handle one Stationary Energy review intent per user turn" in composed_prompt
-    assert "Route the user request by choosing the first matching route" in composed_prompt
+    assert (
+        "Route the user request by choosing the first matching route" in composed_prompt
+    )
     assert "Confirmation payload routes 4 and 6 take precedence" in composed_prompt
     assert "Do not start a new draft from casual affirmation" in composed_prompt
     assert "New draft / start-over UI confirmation" in composed_prompt

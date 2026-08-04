@@ -302,7 +302,7 @@ This step combines the three pillar scores into a single ranking score and produ
 
 - Final prioritized action list
   - Output: `ranked_action_ids` plus `ranked_actions[]` payload items containing `rank`, pillar scores, final score, compact `evidence_summary`, and optional explanations keyed by language
-  - Explanation shape: generated explanations follow the fixed impact-driver, alignment-driver, and feasibility-driver structure while avoiding repetition of the numeric score bars
+  - Explanation shape: each requested language is generated independently from the fixed impact-driver, alignment-driver, and feasibility-driver structure; recurring labels come from `app/modules/prioritizer/translations.yaml`, while official names retain their source form
 - Feasibility diagnostics artifact
   - Output: `012_feasibility.json` with the full grouped feasibility breakdown under `legal`, `mitigation_feasibility`, and `financial_feasibility`
   - API contrast: `ranked_actions[].evidence_summary.feasibility` uses the same grouped top-level component keys, but only includes the compact response subset plus `feasibility_score`

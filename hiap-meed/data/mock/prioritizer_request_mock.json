@@ -6,16 +6,12 @@
     "upstreamProvider": "city_catalyst_frontend",
     "apiContext": {
       "endpoint": "POST /v1/prioritize",
-      "locodes": [
-        "CL IQQ"
-      ]
+      "locodes": ["CL IQQ"]
     },
     "totalRecords": 1
   },
   "requestData": {
-    "requestedLanguages": [
-      "en"
-    ],
+    "requestedLanguages": ["en", "es"],
     "topN": 20,
     "createExplanations": true,
     "cityDataList": [
@@ -23,25 +19,15 @@
         "locode": "CL IQQ",
         "countryCode": "CL",
         "populationSize": 125000,
-        "excludedActionIds": [
-          "c40_0029"
-        ],
+        "excludedActionIds": ["c40_0029"],
         "weightsOverride": {
           "impact": 0.5,
           "alignment": 0.3,
           "feasibility": 0.2
         },
-        "cityStrategicPreferenceSectors": [
-          "transportation"
-        ],
-        "cityStrategicPreferenceTimeframes": [
-          "short",
-          "medium"
-        ],
-        "cityStrategicPreferenceCoBenefitKeys": [
-          "air_quality",
-          "mobility"
-        ],
+        "cityStrategicPreferenceSectors": ["transportation"],
+        "cityStrategicPreferenceTimeframes": ["short", "medium"],
+        "cityStrategicPreferenceCoBenefitKeys": ["air_quality", "mobility"],
         "cityEmissionsData": {
           "inventoryYear": 2022,
           "gpcData": {

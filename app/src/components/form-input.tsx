@@ -1,43 +1,33 @@
 "use client";
 
 import { Input, Text } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
-import { FieldError } from "react-hook-form";
+import {
+  FieldError,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
 import { Field } from "@/components/ui/field";
 import { useTranslation } from "react-i18next";
 
-interface FormInputProps {
+interface FormInputProps<TFieldValues extends FieldValues> {
   label: string;
-  value?: string | null | undefined;
   isDisabled?: boolean;
   error: FieldError | undefined;
-  register: Function;
-  id: string;
+  register: UseFormRegister<TFieldValues>;
+  id: Path<TFieldValues>;
   required?: boolean;
 }
 
-const FormInput: FC<FormInputProps> = ({
+function FormInput<TFieldValues extends FieldValues>({
   label,
-  value,
   isDisabled,
   error,
   register,
   id,
   required = true,
-}) => {
+}: FormInputProps<TFieldValues>) {
   const { t } = useTranslation("inputs");
-  const [inputValue, setInputValue] = useState<string | undefined | null>(
-    value,
-  );
-
-  useEffect(() => {
-    if (value) setInputValue(value);
-  }, [value]);
-
-  const onInputChange2 = (e: any) => {
-    setInputValue(e.target.value);
-  };
-
   return (
     <Field
       display="flex"
@@ -56,16 +46,19 @@ const FormInput: FC<FormInputProps> = ({
     >
       <Input
         shadow="1dp"
-        name={id}
         borderRadius="4px"
         border="inputBox"
         background={isDisabled ? "background.neutral" : "background.default"}
         color={isDisabled ? "content.tertiary" : "content.secondary"}
         readOnly={isDisabled}
-        {...register(id, required ? {
-          required: t("required-field"),
-        } : {})}
-        onChange={onInputChange2}
+        {...register(
+          id,
+          required
+            ? {
+                required: t("required-field"),
+              }
+            : {},
+        )}
         placeholder={label}
       />
       {error && (
@@ -81,6 +74,6 @@ const FormInput: FC<FormInputProps> = ({
       )}
     </Field>
   );
-};
+}
 
 export default FormInput;

@@ -202,6 +202,7 @@ jobs:
         run: kubectl get pods -n default
 
       - name: Deploying service
+        id: deploy
         run: |
           export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
@@ -265,6 +266,20 @@ jobs:
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+      - name: Notify Slack - Deployment Success
+        if: steps.deploy.outputs.status == 'success'
+        uses: ./.github/actions/slack-notify
+        with:
+          type: deployment_success
+          webhook-url: ${{ secrets.SLACK_SUCCESS_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          environment: prod
 
   ccCaPostDeploySmoke:
     name: CA/CC post-deploy smoke

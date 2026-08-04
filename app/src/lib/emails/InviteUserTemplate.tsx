@@ -12,7 +12,7 @@ import {
   Img,
   Font,
   Hr,
-} from "@react-email/components";
+} from "react-email";
 import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
 
@@ -32,7 +32,7 @@ export default function InviteUserTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  const countryCode = city?.locode?.split(" ")!;
+  const countryCode = city?.locode?.split(" ");
 
   const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
@@ -68,7 +68,7 @@ export default function InviteUserTemplate({
           <div style={cityBox}>
             <div
               style={{
-                background: `url('https://flagsapi.com/${countryCode[0]!}/flat/64.png'), no-repeat`,
+                background: `url('https://flagsapi.com/${countryCode?.[0]}/flat/64.png'), no-repeat`,
                 backgroundSize: "cover",
                 height: "32px",
                 width: "32px",

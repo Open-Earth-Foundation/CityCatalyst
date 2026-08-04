@@ -32,7 +32,7 @@ export const InventorySelect = ({
   const [setUserInfo] = api.useSetUserInfoMutation();
   const onSelect = async ({ city, years }: CityAndYearsResponse) => {
     // get the latest inventory for the city
-    let targetInventory = years[0];
+    const targetInventory = years[0];
     await setUserInfo({
       defaultCityId: city.cityId!,
       defaultInventoryId: targetInventory.inventoryId,

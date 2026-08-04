@@ -26,7 +26,7 @@ Usage:
 import logging
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Literal, Optional
 
 import yaml
 from dotenv import find_dotenv, load_dotenv, dotenv_values
@@ -119,9 +119,18 @@ class RoleModelConfig(BaseModel):
     temperature: float
 
 
+class ResearchModelConfig(BaseModel):
+    """OpenRouter model settings for bounded CNB workflows."""
+
+    name: str
+    reasoning_effort: Literal["low", "medium", "high"] = "medium"
+
+
 class ModelsConfig(BaseModel):
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    funding_research: ResearchModelConfig
+    funder_identity: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -155,6 +164,9 @@ class PromptsConfig(BaseModel):
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_funding_opportunity_research: str
+    cnb_funder_identity_matching: str
+    cnb_similar_project_matching: str
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -286,11 +298,19 @@ class APIConfig(BaseModel):
     requests: Optional[Dict[str, Any]] = None
 
 
+class FirecrawlToolConfig(BaseModel):
+    """Connection settings for the offline Firecrawl research tool."""
+
+    base_url: str = "https://api.firecrawl.dev/v2"
+    timeout_seconds: int = 120
+
+
 class ToolConfig(BaseModel):
     climate_vector_search: Dict[str, Any] = Field(
         default={"top_k": 3, "min_score": 0.6},
         description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)",
     )
+    firecrawl: FirecrawlToolConfig = Field(default_factory=FirecrawlToolConfig)
     # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
@@ -398,6 +418,9 @@ class Settings(BaseModel):
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
+    # Firecrawl is used only by the offline CNB research CLI.
+    firecrawl_api_key: str | None = os.getenv("FIRECRAWL_API_KEY")
+
     # LangSmith tracing configuration
     # Only API key comes from .env for security
     # All other settings (endpoint, project, tracing_enabled) must be in llm_config.yaml
@@ -408,6 +431,7 @@ class Settings(BaseModel):
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
+    cnb_database_url: str | None = os.getenv("CNB_DATABASE_URL")
     database_pool_size: Optional[int] = _parse_int(
         os.getenv("CA_DATABASE_POOL_SIZE"), 5
     )

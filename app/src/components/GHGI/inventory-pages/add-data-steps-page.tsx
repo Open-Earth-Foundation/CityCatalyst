@@ -103,10 +103,11 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { getParamValueRequired } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
+import { env } from "@/lib/runtime-env";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    env("NEXT_PUBLIC_SUPPORT_EMAILS") ||
     "info@openearth.org,greta@openearth.org";
   return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
@@ -713,29 +714,24 @@ export default function AddDataSteps() {
             <Box>
               <BreadcrumbRoot
                 gap="8px"
-                fontFamily="heading"
-                fontWeight="bold"
-                letterSpacing="widest"
-                fontSize="14px"
-                textTransform="uppercase"
+                fontFamily="body"
+                fontWeight="medium"
+                fontSize="body.sm"
+                lineHeight="16"
                 separator={
                   <Icon as={MdChevronRight} color="gray.500" h="24px" />
                 }
               >
                 <BreadcrumbLink
                   href={inventoryDataBasePath}
-                  color="content.tertiary"
-                  textDecoration="none"
-                  _hover={{
-                    textDecoration: "underline",
-                    textUnderlineOffset: "4px",
-                  }}
+                  color="content.link"
+                  textDecoration="underline"
                 >
                   {t("all-sectors")}
                 </BreadcrumbLink>
 
                 <BreadcrumbCurrentLink
-                  color="content.link"
+                  color="content.secondary"
                   textDecoration="none"
                 >
                   {t(kebab(currentStep.name || ""))}

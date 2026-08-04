@@ -23,6 +23,8 @@ conversational experience for CityCatalyst (CC). The service lives under
   delivery
 - **Observable**: Optional LangSmith tracing plus MLflow request, artifact, and
   OpenAI trace logging
+- **Offline CNB Research Review**: Firecrawl-backed funding research plus a
+  local static editor for selecting, correcting, and saving review updates
 
 ## Current Architecture
 
@@ -55,6 +57,132 @@ At runtime:
   request.
 - PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
   workflow state.
+
+## Offline CNB Funding Research
+
+The offline CNB workflow researches one known funder/program, or a strict batch
+of known programs, and discovers their funded projects under
+`output/cnb_research/`. Generated runs are ignored except for the single tracked
+EUCF reference bundle. The funded-project command always requires a current
+project JSON profile and embeds it in every research request so its sectors,
+location, interventions, finance route, and curated tags guide queries and
+project prioritization. Metadata-only project profiles are rejected. A
+canonical-funder snapshot is optional during discovery; when supplied, it adds
+possible canonical IDs for later review through one structured, low-reasoning
+LLM identity call. Returned IDs are validated against the supplied snapshot,
+and the call never narrows the search or selects an ID. Batch manifests contain
+only funder/program source seeds; they never contain hand-authored candidate
+projects. `target_funded_projects` optionally keeps each program run in breadth
+discovery after the first deeply evidenced project; it defaults to one and is
+bounded at 50. The similar-project wrapper uses a 20-turn research budget when
+`max_turns` is omitted while preserving an explicit caller value. A failed batch
+entry can be rerun reproducibly with its 1-based `--request-index N`; that
+selected run writes the normal per-run artifact without replacing the full batch
+index. Run the commands from `climate-advisor/`:
+
+```powershell
+uv run python -m scripts.cnb.research_funding_opportunity `
+  --input path/to/research-request.json `
+  --output output/cnb_research
+
+uv run python -m scripts.cnb.research_funded_projects `
+  --project path/to/current-project.json `
+  --input path/to/research-request.json `
+  --output output/cnb_research
+
+# Optional identity enrichment for later review/import preparation.
+uv run python -m scripts.cnb.research_funded_projects `
+  --project path/to/current-project.json `
+  --input path/to/award-portfolio-batch.json `
+  --funders path/to/canonical-funders.json `
+  --output output/cnb_research
+
+uv run python -m scripts.cnb.run_similar_project_matching `
+  --search-request path/to/search-request.json `
+  --funders path/to/canonical-funders.json `
+  --research path/to/run-a.research.json --review path/to/run-a.review.json `
+  --research path/to/run-b.research.json --review path/to/run-b.review.json `
+  --output output/cnb_research
+
+uv run python -m http.server 8080
+```
+
+Visit `http://localhost:8080/scripts/cnb/review.html`, load a generated
+`<run_id>.research.json` or `<run_id>.similar-projects.json`, and browse its
+collapsible sections. Corpus review edits findings and reviewer-curated tags,
+selects one proposed canonical funder for every funded project, and saves
+`<run_id>.review.json`. Similar-project review inspects the current project,
+candidate context, model rationale, evidence, and caveats; reviewers can keep or
+exclude matches and save `<run_id>.similar-project-review.json`. Technical
+references remain preserved but read-only. The browser never modifies the input
+file or writes to a database. Pending, needs-changes, and rejected corpus reviews
+may be saved without a canonical funder selection; approval still requires one
+valid proposed funder for every funded project.
+
+The local importer pairs the files only when their `run_id` values match. It
+requires an approved review, an existing reviewer-selected `funder_id`, and
+retained evidence for every imported project. Set `CNB_DATABASE_URL` to the
+externally managed CNB PostgreSQL database and validate before writing:
+
+```powershell
+uv run python -m scripts.cnb.import_reviewed_reference_data `
+  --research output/cnb_research/<run_id>/<run_id>.research.json `
+  --review output/cnb_research/<run_id>/<run_id>.review.json `
+  --dry-run
+```
+
+Remove `--dry-run` only after validation. This importer is the sole database
+writer in the research/review workflow; Climate Advisor does not create or
+migrate the managed CNB tables. The managed `funding_records` contract must
+persist `source_run_id` and `source_record_ref` and enforce uniqueness on that
+pair. Retrying the same run returns the existing project IDs without inserting
+duplicate evidence. Pairing deliberately does not use a file hash. Use a new
+research run for a revised import. If no proposed canonical funder is valid,
+research and import that funder before retrying the funded-project import.
+
+The tracked reference output is
+`output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.
+
+Research bundles use schema version `2.0`. They mirror the CNB architecture with
+one funder, one shared `funding_records` collection distinguished by
+`is_opportunity`, and linked template and criteria collections. Each funded
+project keeps its interventions, award amount, currency, `award_year`, status,
+summary, and reviewed `project_tags` in one record.
+
+Runtime similar-project matching is internal workflow logic, not an agent tool.
+It waits for an ingested project upload and reads reviewed awards through the
+typed CNB reference-data contract. `same_funder` is the default retrieval scope;
+an explicit `cross_funder` request may compare reviewed awards from multiple
+canonical funders while retaining each candidate's real funder identity. It
+uses a first-version deterministic shortlist based on exact normalized fields
+and reviewed tag overlap. Its explicit V1 policy is:
+
+- **hard eligibility:** requested same-funder scope, a funded non-opportunity
+  record, and retained evidence
+- **preferred ordering only:** category, sector, geography, finance route,
+  instrument type, applicant type, hazards, interventions, and reviewed tags
+- **unknown preferred fields:** retain the candidate and surface a caveat
+
+Product validation of field priority, a controlled taxonomy, and shortlist recall
+is required before production reliance. The service validates structured LLM
+selected/rejected decisions, persists selected matches through the external
+workflow-store contract, rebuilds only `context_bundle.similar_projects`, and
+returns the generic `concept_note_context_bundle_ready` signal. Missing or weak
+examples continue with a caveat rather than blocking the CNB workflow. The
+datateam reference endpoint, filtering contract, and production storage adapters
+remain external integration points; the safe default returns no candidates.
+`run_similar_project_matching.py` is a provider-backed local QA harness over the
+same service. Its reviewed-pair mode validates approved
+`<run_id>.research.json`/`<run_id>.review.json` pairs with the importer contract
+and deterministically derives candidates from their evidence-backed funded
+projects. The original explicit-candidate input remains available for focused
+tests. Reviewed-pair artifacts record the resolved funder snapshot and every
+research/review input path; fixture mode may record one optional source bundle.
+Both modes accept an explicitly post-ingestion request and write only review
+artifacts through in-memory adapters with provider-side response storage
+disabled. A successful local run therefore validates prompt/model behavior and
+the review contract, not production upload ingestion, reference-data access,
+persistence, or production UUIDs.
 
 ## Workflow
 
@@ -345,7 +473,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 - **API Docs**: http://localhost:8080/docs
 - **ReDoc**: http://localhost:8080/redoc
 - **Playground**: http://localhost:8080/playground
-- **Health Check**: http://localhost:8080/health
+- **Liveness Check**: http://localhost:8080/health
+- **Database Readiness Check**: http://localhost:8080/ready
 
 ## Configuration
 
@@ -399,6 +528,9 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
+- `CNB_DATABASE_URL` - Externally managed CNB PostgreSQL database used to
+  validate supplied `funder_id` and `selected_funding_record_id` values before
+  starting a run; requests without funding references do not require it
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
@@ -407,15 +539,18 @@ language, or client-side fallback behavior. The boundary is:
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
 - `CC_API_KEY` - Service credential used when CA asks CC to validate the
   CC-issued user bearer token
-- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Complete JSON request-body limit for the
-  optional CC-to-CA Markdown ingest endpoint (default `20971520`; this is an
-  operational body guard, not a source-PDF or page-count acceptance limit)
+- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Maximum Markdown artifact size CA will
+  accept while verifying a CC-owned result (default `20971520`; independent
+  from the source-PDF and page-count limits)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
+- `MLFLOW_TRACKING_USERNAME` - Non-admin MLflow service-account username
+- `MLFLOW_TRACKING_PASSWORD` - Service-account password; store real values only
+  in local `.env` or GitHub Secrets
 - `MLFLOW_ENVIRONMENT` - Environment tag for runs: `dev`, `test`, or `prod`
 - `MLFLOW_EXPERIMENT_NAME` - Experiment for all Climate Advisor MLflow runs,
-  default `clima`
+  default `Clima`
 - `MLFLOW_HTTP_REQUEST_TIMEOUT` - MLflow HTTP timeout in seconds; use `3` to
   match the shared HIAP-MEED fail-open tuning
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES` - MLflow HTTP retry count; use `1`
@@ -428,14 +563,80 @@ language, or client-side fallback behavior. The boundary is:
 
 ### CC-produced Concept Note Markdown baseline
 
-`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` validates the
-CC-issued user token through CC before consuming the request, streams the body
-up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`, recomputes SHA-256, verifies contiguous
-page markers and their positive metadata count without imposing a page-count
-limit, and delegates atomic run/upload registration to a repository
-interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
-the datateam repository adapter is configured, the production provider returns
-`503 cnb_storage_unavailable`; contract tests inject an in-memory repository.
+`POST /v1/concept-notes/{run_id}/uploads` creates or replays the authoritative
+pre-conversion upload row. After CC OCR completes,
+`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` receives only a
+stable S3 key, SHA-256, page count, filename, and label. CA rejects control JSON
+larger than 16 KiB before parsing, then streams the artifact through CC's
+authenticated internal Markdown route up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`,
+checks the returned identity, recomputes SHA-256, verifies page markers, and
+stores the pointer as ready in `concept_note_uploads` through `CA_DATABASE_URL`.
+Identical create and delivery requests are idempotent; changing upload or
+Markdown identity returns `409`. CA owns no OCR queue, Mistral dependency,
+bucket credential, or presigned URL. An unavailable or unmigrated workflow
+database returns `503 cnb_storage_unavailable`.
+
+CC uses the intentionally separate service-to-service route
+`GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
+`X-CC-Service-Key` to recover the run and user scope for an opaque upload ID.
+Rejected service-key requests emit a `WARNING` audit log with the upload ID but
+never the supplied credential. Deployments should alert on repeated warnings or
+`401 invalid_service_key` responses for this route.
+
+### Concept Note run foundation
+
+`POST /v1/concept-notes/start` validates a CC-issued bearer token, verifies that
+the supplied `user_id` is the token's canonical user, and rechecks access to
+the selected city. It then creates a durable `concept_note_runs` row and its
+empty `concept_note_context_bundles` row in one transaction. The run starts as
+`active` at `assembling_context` and returns `next_action: load_context`.
+
+Creation is idempotent per `(user_id, idempotency_key)`. Replaying the same
+normalized request returns the original run with HTTP `200` and
+`created: false`; using that key with different input returns HTTP `409`.
+`GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
+revalidates current city access before responding. The Alembic revision
+`20260729_120000` provisions `concept_note_runs`,
+`concept_note_context_bundles`, and `concept_note_uploads` in
+`CA_DATABASE_URL`. When `thread_id` is supplied, the start operation also
+requires that durable chat thread to belong to the authenticated user; it
+remains an integration identifier rather than a run-table foreign key.
+
+CityCatalyst exposes authenticated proxy routes at
+`POST /api/v1/concept-notes/start` and
+`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the
+session, checks city access, issues the scoped CA token server-side, and
+preserves Climate Advisor response statuses. No frontend screens are part of
+this baseline.
+
+### Concept Note city-context baseline
+
+`POST /v1/concept-notes/{run_id}/cc-context` accepts a CityCatalyst `city_id`,
+validates the CC-issued user token and immutable CNB run/city binding, then uses
+the internal CityCatalyst GHGI inventory capabilities to select the newest
+accessible inventory and build a compact context snapshot. The snapshot always
+contains ordered GPC sectors I-V, sector-local completion and source-state
+counts, and no more than five top sources. Both CityCatalyst capabilities and
+the persisted CNB snapshot keep emissions in the CityCatalyst base unit using
+explicit `kgco2e` fields; no kilogram-to-tonne conversion occurs. Request
+`include_hiap: true` to include persisted high-impact actions for that same
+inventory; otherwise the response omits the `hiap` key. `language` defaults to
+`en`. Mitigation and adaptation stay separate. Each category returns every
+explicitly city-selected action, or all persisted ranked actions when there is
+no selection. The route never starts or repairs HIAP prioritization and applies
+no hidden action cap.
+
+The repository adapter reads and updates the migrated
+`concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
+the GHGI and/or HIAP sections built by the current request, preserving the rest
+of the bundle under the same database lock. Before reusing either cached
+section, the route revalidates live city access and the selected inventory.
+GHGI status and emissions payloads must each contain GPC sectors I-V exactly
+once. Incomplete or noncanonical CityCatalyst capability payloads return
+`503 invalid_cc_context` without being persisted. A valid stored snapshot is
+reused on later interactions after that access check. If the configured
+database has not been migrated or is unavailable, the route returns
+`503 cnb_storage_unavailable`.
 
 ## Database Schema
 
@@ -575,6 +776,21 @@ GET /health
 ```json
 {
   "status": "ok"
+}
+```
+
+`GET /health` reports process liveness without contacting PostgreSQL. Deployment
+readiness probes use `GET /ready`, which returns `200` only after the database
+configured by `CA_DATABASE_URL` accepts a query. Missing configuration or a
+failed database query returns `503` without exposing connection details.
+
+```http
+GET /ready
+```
+
+```json
+{
+  "status": "ready"
 }
 ```
 
@@ -766,9 +982,9 @@ HIAP-MEED. The split is experiment-based between services, and tag-based inside
 Climate Advisor:
 
 - `hiap-meed` remains the existing HIAP-MEED experiment
-- `clima` stores all Climate Advisor runs, including general `/v1/messages`
+- `Clima` stores all Climate Advisor runs, including general `/v1/messages`
   chat, Stationary Energy draft, review, save, background generation, and
-  draft-context chat runs
+  draft-context chat runs, plus offline CNB funding-opportunity research
 
 Each run includes tags such as `service`, `environment`, `workflow`,
 `prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
@@ -782,6 +998,7 @@ still preserving per-turn trace detail.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,
+`MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD`,
 `MLFLOW_EXPERIMENT_NAME`, `MLFLOW_ENVIRONMENT`, the
 `MLFLOW_HTTP_REQUEST_*` timeout/retry settings, `GIT_PYTHON_REFRESH`, and
 `MLFLOW_ASYNC_LOGGING_ENABLED`). Agentic and general Climate Advisor flows are
@@ -793,16 +1010,37 @@ Energy workflow prompt first, followed by the draft JSON context in
 `<context>...</context>`. Other operational defaults such as the MLflow
 `Created by` service identity are handled in code.
 
+The offline CNB research CLI tags runs with
+`module=concept_note_builder` and
+`workflow=cnb_funding_opportunity_research`. It records the exact model,
+reasoning effort, prompt SHA-256, turn usage, coverage counts, redacted review
+artifacts, exact Markdown source snapshots, and the MLflow run ID embedded in
+local `research_bundle.json`. Each run uses one parent workflow trace containing
+the model and Firecrawl spans so tool latency and handled provider failures stay
+visible with the model calls. The generic funding-opportunity CLI uses the
+shared 15-turn model default when `max_turns` is omitted. The funded-project
+similar-search wrapper applies its scoped 20-turn default before validation.
+
+Pytest disables MLflow before test collection. Tests may exercise the logging
+helpers with in-memory fakes, but they do not send runs or traces to the remote
+`Clima` experiment.
+
 GitHub Actions deployments can override the experiment name through the
 repository variable `MLFLOW_EXPERIMENT_NAME`. It is a variable, not a secret,
 because the value is a non-sensitive experiment name. The Kubernetes manifests
-still keep the same default so direct `kubectl apply` deployments work without
-GitHub.
+still keep the same default.
+
+The authentication values are different: deployment workflows read
+`MLFLOW_TRACKING_USERNAME` and `MLFLOW_TRACKING_PASSWORD` from GitHub Secrets,
+then add them to the existing per-environment `kubectl set env` command
+alongside the other service credentials. A manual deployment must set the same
+environment variables after applying the manifests. Use the shared non-admin
+service account; do not use the MLflow admin account or Flask signing secret.
 
 Before enabling MLflow in an environment:
 
 1. Confirm the MLflow UI is reachable at `https://mlflow-dev.openearth.dev`.
-2. Confirm or create the experiment named `clima`.
+2. Confirm or create the experiment named `Clima`.
 3. Set the MLflow environment variables documented above in `.env` or the
    Kubernetes deployment.
 4. If the MLflow server later requires authentication, provide MLflow auth

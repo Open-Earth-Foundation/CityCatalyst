@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum, OrganizationPlanType } from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
@@ -193,7 +193,7 @@ export const AcceptOrganizationInvite = z.object({
 
 export const CreateUsersInvite = z.object({
   projectId: z.string().uuid(),
-  cityIds: z.array(z.string()),
+  cityIds: z.array(z.string()).min(1),
   invites: z.array(z.object({
     email: z.string().email(),
     role: z.enum(["admin", "collaborator"]),
@@ -274,6 +274,7 @@ export const createOrganizationRequest = z.object({
       message: "Organization name cannot be 'cc_organization_default'",
     }),
   contactEmail: z.string().email().max(255),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
 });
 
 export type CreateOrganizationRequest = z.infer<
@@ -283,6 +284,8 @@ export type CreateOrganizationRequest = z.infer<
 export const updateOrganizationRequest = z.object({
   name: z.string().max(255).optional(),
   contactEmail: z.string().email().max(255).optional(),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
+  trialEndsAt: z.coerce.date().nullable().optional(),
 });
 
 export type UpdateOrganizationRequest = z.infer<
@@ -355,3 +358,26 @@ export const createChatThreadRequest = z.object({
 });
 
 export type CreateChatThreadRequest = z.infer<typeof createChatThreadRequest>;
+
+export const conceptNoteStartRequest = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    city_id: z.string().uuid(),
+    project_id: z.string().trim().min(1).max(255).nullable().optional(),
+    funder_id: z.string().uuid().nullable().optional(),
+    selected_funding_record_id: z.string().uuid().nullable().optional(),
+    thread_id: z.string().uuid().nullable().optional(),
+    idempotency_key: z.string().uuid(),
+  })
+  .superRefine((request, context) => {
+    if (request.selected_funding_record_id && !request.funder_id) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "funder_id is required when selected_funding_record_id is provided",
+        path: ["funder_id"],
+      });
+    }
+  });
+
+export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;

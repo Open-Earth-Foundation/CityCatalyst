@@ -105,7 +105,7 @@
   "subsector": "Teilsektor",
   "scope": "Geltungsbereich",
   "start-adding-data": "Fangen Sie an, Daten zu Ihrem Inventar hinzuzufügen, um die Emissionsergebnisse Ihres Stadtinventars zu sehen.",
-  "no-data-for-inventory-yet": "Bisher keine Daten für das Inventar",
+  "no-data-for-inventory-yet": "Keine Daten",
   "residential-buildings": "Wohngebäude",
   "commercial-and-institutional-buildings-and-facilities": "Gewerbliche und institutionelle Gebäude und Einrichtungen",
   "manufacturing-industries-and-construction": "Fertigungsindustrien und Bauwesen",
@@ -154,6 +154,7 @@
   "methodology-and-assumptions-description": "Das No-Action-Emissionsprognosemodell für Brasilien geht von einer starken, direkten Korrelation zwischen Emissionen und Wirtschaftswachstum aus, was den aktuellen Zustand Brasiliens widerspiegelt, in dem wirtschaftliche Expansion und Emissionen noch nicht entkoppelt sind.",
   "download-and-report": "Herunterladen und berichten",
   "invite-collaborators": "Mitarbeiter einladen",
+  "invite-collaborators-title": "Laden Sie Mitarbeitende in Ihr Team ein",
   "invite-your-colleagues": "Laden Sie Ihre Kollegen ein",
   "select-cities-to-share": "Wählen Sie die Städte aus, die Sie teilen möchten",
   "select-cities-to-share-description": "Jeder Benutzer, den Sie einladen, erhält einen einzelnen Link pro Stadt, um jede hinzuzufügen. Sie haben Zugriff auf alle in jeder Stadt erstellten Inventare.",
@@ -172,6 +173,7 @@
   "invite-error-toast-text": "Beim Senden Ihrer Einladungen ist ein Fehler aufgetreten",
   "cancel": "Abbrechen",
   "send-invites-action": "Einladungen senden",
+  "select-a-project": "Wählen Sie ein Projekt",
   "afolu-other-agriculture": "Andere Landwirtschaft",
   "afolu-livestock": "Vieh",
   "afolu-land": "Land",
@@ -308,7 +310,7 @@
   "status-beta": "Betaversion",
   "status-active": "Aktiv",
   "legend": "Legende",
-  "citycatalyst": "CityCatalyst",
+  "breadcrumb-tools": "Werkzeuge",
   "breadcrumb-hiap": "Actions & Plans",
   "start-here": "Hier starten",
   "inventory-versions-action-change": "{{name}} hat die Aktion {{actionName}} auf Rang {{rank}} geändert und {{selectionStatus}}",
@@ -320,5 +322,8 @@
   "no-inventory-title": "Es wurde noch kein Treibhausgasinventar erstellt",
   "no-inventory-description": "Wenden Sie sich an Ihren Administrator, um ein Inventar zu erstellen, damit Sie beginnen können, beizutragen. Oder wenden Sie sich an <emailLink>{{supportEmail}}</emailLink>, wenn Sie glauben, dass dies ein Fehler ist.",
   "no-city-title": "Es scheint, als ob für Ihr Projekt noch keine Stadt erstellt wurde",
-  "no-city-description": "Wenden Sie sich an Ihren Administrator oder kontaktieren Sie <emailLink>{{supportEmail}}</emailLink>, wenn Sie denken, dass dies ein Fehler ist."
+  "no-city-description": "Wenden Sie sich an Ihren Administrator oder kontaktieren Sie <emailLink>{{supportEmail}}</emailLink>, wenn Sie denken, dass dies ein Fehler ist.",
+  "all-tools": "Alle Werkzeuge",
+  "useful-links": "Nützliche Links",
+  "learning-hub": "Lernzentrum"
 }

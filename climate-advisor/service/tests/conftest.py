@@ -1,6 +1,13 @@
 from __future__ import annotations
 
+import os
+
 import pytest
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    """Keep every pytest process from writing runs or traces to remote MLflow."""
+    os.environ["MLFLOW_ENABLED"] = "false"
 
 
 def pytest_addoption(parser: pytest.Parser) -> None:

@@ -32,7 +32,7 @@ function VerifiedNotification({ t }: { t: TFunction }) {
     if (isVerified) {
       showSuccessToast();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isVerified, showSuccessToast]);
 
   return null;

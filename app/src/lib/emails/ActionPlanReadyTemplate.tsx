@@ -1,17 +1,15 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { User } from "@/models/User";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Button,
   Container,
   Head,
   Html,
-  Link,
   Preview,
   Text,
-} from "@react-email/components";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
-import { User } from "@/models/User";
+} from "react-email";
 
 export default function ActionPlanReadyTemplate({
   user,

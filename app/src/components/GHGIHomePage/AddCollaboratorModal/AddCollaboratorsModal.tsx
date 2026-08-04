@@ -18,6 +18,7 @@ import InviteCollaboratorsStep, {
   type InviteCollaboratorsStepRef,
 } from "@/components/steps/GHGI/invite-collaborators-step";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { TitleLarge } from "@/components/package";
 
 const AddCollaboratorsDialog = ({
   lng,
@@ -31,6 +32,7 @@ const AddCollaboratorsDialog = ({
   organizationId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
+  const { t: tSettings } = useTranslation(lng, "settings");
   const stepRef = useRef<InviteCollaboratorsStepRef>(null);
   const [canSubmit, setCanSubmit] = useState(false);
 
@@ -55,8 +57,19 @@ const AddCollaboratorsDialog = ({
   };
 
   return (
-    <DialogRoot open={isOpen} onOpenChange={onClose} onExitComplete={onClose}>
-      <DialogContent w="720px" maxH="90vh" overflowY="auto" marginTop="2%" p={0}>
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={onClose}
+      onExitComplete={onClose}
+      placement="center"
+    >
+      <DialogContent
+        minW="779px"
+        minH="779px"
+        overflowY="auto"
+        px="48px"
+        py="24px"
+      >
         <DialogHeader
           display="flex"
           justifyContent="start"
@@ -69,15 +82,20 @@ const AddCollaboratorsDialog = ({
           borderBottomWidth="2px"
           borderStyle="solid"
           borderColor="background.neutral"
+          p="0px"
+          pb="24px"
         >
           <HStack>
-            <MdPersonAdd fontSize="32px" />
-            <HeadlineSmall text={t("invite-collaborators")} />
+            <TitleLarge>{tSettings("invite-collaborators-title")}</TitleLarge>
           </HStack>
         </DialogHeader>
-        <DialogCloseTrigger mt="2" color="interactive.control" mr="2" />
-        <DialogBody p={6}>
-          <InviteCollaboratorsStep ref={stepRef} lng={lng} onValidityChange={setCanSubmit} />
+        <DialogCloseTrigger mt="2" color="interactive.control" mr="4" />
+        <DialogBody p="0px" py="24px">
+          <InviteCollaboratorsStep
+            ref={stepRef}
+            lng={lng}
+            onValidityChange={setCanSubmit}
+          />
         </DialogBody>
         <DialogFooter
           paddingX={6}

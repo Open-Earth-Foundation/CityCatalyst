@@ -1,4 +1,6 @@
-import React from "react";
+import i18next from "@/i18n/server";
+import { User } from "@/models/User";
+import { LANGUAGES } from "@/util/types";
 import {
   Body,
   Container,
@@ -9,20 +11,14 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
-import { Organization } from "@/models/Organization";
-import { User } from "@/models/User";
-import i18next from "@/i18n/server";
-import { LANGUAGES } from "@/util/types";
+} from "react-email";
 
 export default function InviteToOrganizationTemplate({
   url,
-  organization,
   user,
   language,
 }: {
   url: string;
-  organization: Organization;
   user: User | null;
   language?: string;
 }) {

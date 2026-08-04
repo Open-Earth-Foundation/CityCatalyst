@@ -13,21 +13,22 @@ export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
   lng?: string,
 ): string | undefined => {
-  if (!!translations) {
-    if (translations instanceof String) {
-      return translations as string;
-    }
-    if (
-      typeof translations === "object" &&
-      !!Object.keys(translations).length
-    ) {
-      return (
-        (lng && translations[lng]) ||
-        translations["user"] ||
-        translations["en"] ||
-        Object.values(translations).find((t) => !!t)
-      );
-    }
+  if (!translations) {
+    return undefined;
+  }
+  if (typeof translations === "string") {
+    return translations;
+  }
+  if (
+    typeof translations === "object" &&
+    !!Object.keys(translations).length
+  ) {
+    return (
+      (lng && translations[lng]) ||
+      translations["user"] ||
+      translations["en"] ||
+      Object.values(translations).find((t) => !!t)
+    );
   }
 };
 
@@ -42,7 +43,7 @@ export function resolve(
   obj: Record<string, any>,
   separator: string = ".",
 ) {
-  var properties = Array.isArray(path) ? path : path.split(separator);
+  const properties = Array.isArray(path) ? path : path.split(separator);
   return properties.reduce((prev, curr) => prev?.[curr], obj);
 }
 
@@ -272,8 +273,8 @@ export function findClosestYear(
       if (!prev) {
         return curr;
       }
-      let prevDelta = Math.abs(year - prev.year);
-      let currDelta = Math.abs(year - curr.year);
+      const prevDelta = Math.abs(year - prev.year);
+      const currDelta = Math.abs(year - curr.year);
       return prevDelta < currDelta ? prev : curr;
     },
     null as PopulationEntry | null,

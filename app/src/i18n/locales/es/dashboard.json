@@ -91,7 +91,7 @@
   "subsector": "Subsector",
   "scope": "Alcance",
   "start-adding-data": "Comience a agregar datos a su inventario para ver los resultados de las emisiones de su ciudad.",
-  "no-data-for-inventory-yet": "Aún no hay datos para el inventario",
+  "no-data-for-inventory-yet": "Sin datos",
   "residential-buildings": "Edificios residenciales",
   "commercial-and-institutional-buildings-and-facilities": "Edificios y instalaciones comerciales e institucionales",
   "manufacturing-industries-and-construction": "Industrias manufactureras y construcción",
@@ -157,6 +157,7 @@
   "methodology-and-assumptions-description": "El modelo de pronóstico de emisiones sin acción para Brasil asume una fuerte correlación directa entre las emisiones y el crecimiento económico, reflejando el estado actual de Brasil donde la expansión económica y las emisiones aún no se han desacoplado.",
   "download-and-report": "Descargar y reportar",
   "invite-collaborators": "Invitar colaboradores",
+  "invite-collaborators-title": "Invita colaboradores a tu equipo",
   "invite-your-colleagues": "Invita a tus colegas",
   "select-cities-to-share": "Selecciona las ciudades para compartir",
   "select-cities-to-share-description": "Cada usuario que invites recibirá un enlace por ciudad para agregar cada una. Tendrán acceso a todos los inventarios realizados en cada ciudad.",
@@ -175,6 +176,7 @@
   "invite-error-toast-text": "Hubo un error al enviar tus invitaciones",
   "cancel": "Cancelar",
   "send-invites-action": "Enviar invitaciones",
+  "select-a-project": "Selecciona un proyecto",
   "afolu-other-agriculture": "Otra agricultura",
   "afolu-livestock": "Ganado",
   "afolu-land": "Tierra",
@@ -311,7 +313,7 @@
   "status-beta": "Beta",
   "status-active": "Activo",
   "legend": "Leyenda",
-  "citycatalyst": "CityCatalyst",
+  "breadcrumb-tools": "Herramientas",
   "breadcrumb-hiap": "Actions & Plans",
   "start-here": "Empieza aquí",
   "inventory-versions-action-change": "{{name}} cambió la acción {{actionName}} a rango {{rank}} y {{selectionStatus}}",
@@ -323,5 +325,8 @@
   "no-inventory-title": "Aún no se ha creado un inventario de gases de efecto invernadero",
   "no-inventory-description": "Póngase en contacto con su administrador para crear un inventario y así pueda comenzar a contribuir. O contáctese con <emailLink>{{supportEmail}}</emailLink> si piensa que esto es un error.",
   "no-city-title": "Parece que tu proyecto aún no tiene una ciudad creada",
-  "no-city-description": "Póngase en contacto con su administrador o comuníquese con <emailLink>{{supportEmail}}</emailLink> si cree que esto es un error."
+  "no-city-description": "Póngase en contacto con su administrador o comuníquese con <emailLink>{{supportEmail}}</emailLink> si cree que esto es un error.",
+  "all-tools": "Todas las herramientas",
+  "useful-links": "Enlaces útiles",
+  "learning-hub": "Centro de aprendizaje"
 }

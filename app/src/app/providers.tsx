@@ -81,14 +81,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         ]}
       >
         <ChakraProvider value={appTheme}>
-          <OrganizationContextProvider>
-            <SessionProvider>
-              <Provider store={store}>
-                <I18nLanguageSync />
-                {children}
-              </Provider>
-            </SessionProvider>
-          </OrganizationContextProvider>
+          <Provider store={store}>
+            <OrganizationContextProvider>
+              <SessionProvider>{children}</SessionProvider>
+            </OrganizationContextProvider>
+          </Provider>
         </ChakraProvider>
       </ThemeProvider>
     </div>

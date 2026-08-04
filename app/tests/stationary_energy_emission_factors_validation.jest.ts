@@ -9,11 +9,12 @@ import {
   GlobalWarmingPotentialTypeEnum,
 } from "@/util/enums";
 import { randomUUID } from "crypto";
-import { Decimal } from "decimal.js";
 import * as dotenv from "dotenv";
+import { City } from "@/models/City";
+import { Inventory } from "@/models/Inventory";
+import { EmissionsFactorAttributes } from "@/models/EmissionsFactor";
 
 // Test configuration constants
-const SAMPLE_SIZE = 56; // Test ALL rows
 const TOLERANCE = 0.01; // ±0.01 tonnes CO2e tolerance
 
 interface ManualTestData {
@@ -54,8 +55,8 @@ interface TestResult {
 
 describe("Emission Factor Validation Tests", () => {
   let testData: ManualTestData[] = [];
-  let testInventory: any;
-  let testCity: any;
+  let testInventory: Inventory;
+  let testCity: City;
 
   beforeAll(async () => {
     // Load environment configuration
@@ -102,17 +103,11 @@ describe("Emission Factor Validation Tests", () => {
   });
 
   it("should validate emission factor calculations against manual test data", async () => {
-    const sampledData = sampleTestData(testData, SAMPLE_SIZE);
     const results: TestResult[] = [];
 
-    // Testing cases
-
     // Run the tests and collect results
-    for (let i = 0; i < sampledData.length; i++) {
-      const testData = sampledData[i];
-      // Test case info
-
-      const result = await performCalculationTest(testData, testInventory);
+    for (let i = 0; i < testData.length; i++) {
+      const result = await performCalculationTest(testData[i], testInventory);
       results.push(result);
     }
 
@@ -200,7 +195,6 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
 
   return new Promise((resolve, reject) => {
     const results: ManualTestData[] = [];
-    let totalRows = 0;
 
     fs.createReadStream(csvPath)
       .pipe(
@@ -210,7 +204,7 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
           trim: true,
         }),
       )
-      .on("data", (row: any) => {
+      .on("data", (row: Record<string, string>) => {
         // Skip rows with invalid data
         if (!row.subsector || !row["Final_emissions_CO2e_manually_tonnes"]) {
           return;
@@ -244,17 +238,9 @@ async function loadManualTestData(): Promise<ManualTestData[]> {
   });
 }
 
-function sampleTestData(
-  data: ManualTestData[],
-  sampleSize: number,
-): ManualTestData[] {
-  // Test all available data - no sampling needed
-  return data;
-}
-
 async function performCalculationTest(
   testData: ManualTestData,
-  inventory: any,
+  inventory: Inventory,
 ): Promise<TestResult> {
   try {
     // Query emission factors
@@ -291,15 +277,15 @@ async function performCalculationTest(
     }));
 
     // Create mock inventory value and activity value
-    const inventoryValue = {
+    const inventoryValue = new db.models.InventoryValue({
       id: randomUUID(),
       gpcReferenceNumber: testData.subsector,
       inputMethodology: testData.methodology_id,
       inventoryId: inventory.inventoryId,
       activityValue: testData.total_fuel_value,
-    };
+    });
 
-    const activityValue = {
+    const activityValue = new db.models.ActivityValue({
       id: randomUUID(),
       activityData: {
         "activity-total-fuel-consumption": testData.total_fuel_value,
@@ -312,21 +298,24 @@ async function performCalculationTest(
         activityTitle: "activity-total-fuel-consumption",
       },
       inventoryValueId: inventoryValue.id,
-    };
+    });
 
     // Use the system's calculation method
 
     let calculationResult;
     try {
       calculationResult = await CalculationService.calculateGasAmount(
-        inventoryValue as any,
-        activityValue as any,
+        inventoryValue,
+        activityValue,
         testData.methodology_id,
-        gasValues as any,
+        gasValues,
       );
-    } catch (error: any) {
+    } catch (error) {
       // Handle missing fuel density or other calculation errors
-      if (error.message && error.message.includes("Density for fuel type")) {
+      if (
+        error instanceof Error &&
+        error.message?.includes("Density for fuel type")
+      ) {
         // Skipped due to error
         return {
           success: false,
@@ -371,10 +360,10 @@ async function performCalculationTest(
       availableFactors,
       calculations: {}, // Removed detailed breakdown
     };
-  } catch (error: any) {
+  } catch (error) {
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : "",
       testData: formatTestData(testData),
       expected: testData.expected_co2e_tonnes,
       tolerance: TOLERANCE,
@@ -384,11 +373,12 @@ async function performCalculationTest(
 }
 
 async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
-  const emissionFactors: any = {};
+  const emissionFactors: Record<string, EmissionsFactorAttributes> = {};
 
   // Create emission factor objects using Global API values from CSV
   if (testData.co2_global_api > 0) {
     emissionFactors["CO2"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.co2_global_api,
       gas: "CO2",
       units: testData.units_in_global_api,
@@ -398,6 +388,7 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
 
   if (testData.ch4_global_api > 0) {
     emissionFactors["CH4"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.ch4_global_api,
       gas: "CH4",
       units: testData.units_in_global_api,
@@ -407,6 +398,7 @@ async function createEmissionFactorsFromGlobalAPI(testData: ManualTestData) {
 
   if (testData.n2o_global_api > 0) {
     emissionFactors["N2O"] = {
+      id: randomUUID(),
       emissionsPerActivity: testData.n2o_global_api,
       gas: "N2O",
       units: testData.units_in_global_api,

@@ -1,11 +1,10 @@
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 
 export enum FeatureFlags {
   ENTERPRISE_MODE = "ENTERPRISE_MODE",
   PROJECT_OVERVIEW_ENABLED = "PROJECT_OVERVIEW_ENABLED",
   ACCOUNT_SETTINGS_ENABLED = "ACCOUNT_SETTINGS_ENABLED",
   UPLOAD_OWN_DATA_ENABLED = "UPLOAD_OWN_DATA_ENABLED",
-  JN_ENABLED = "JN_ENABLED",
   OAUTH_ENABLED = "OAUTH_ENABLED",
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
   CCRA_MODULE = "CCRA_MODULE",
@@ -141,7 +140,7 @@ export function getServerFeatureFlags(): string[] {
     return cachedServerFeatureFlags;
   }
 
-  const flags = process.env.NEXT_PUBLIC_FEATURE_FLAGS;
+  const flags = env("NEXT_PUBLIC_FEATURE_FLAGS");
   if (!flags) {
     cachedServerFeatureFlags = [];
     return cachedServerFeatureFlags;

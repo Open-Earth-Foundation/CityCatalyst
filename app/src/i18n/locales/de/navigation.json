@@ -7,5 +7,6 @@
   "account-frozen-warning-text": "Ihr Konto ist eingefroren. Bitte wenden Sie sich an einen Administrator oder an <bold>{{ email }}</bold>, um es zu reaktivieren",
   "page-title-ghg-inventories": "Treibhausgas-Inventare",
   "page-title-hiap": "Aktionen & Pläne",
+  "page-title-meed": "Maßnahmen & Pläne v2",
   "page-title-dashboard": "Dashboard"
 }

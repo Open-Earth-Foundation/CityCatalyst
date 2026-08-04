@@ -1,7 +1,9 @@
+"use client";
 import { Box, VStack } from "@chakra-ui/react";
 import { Hero } from "@/components/GHGIHomePage/Hero";
 import { InventoryResponse, CityWithProjectDataResponse } from "@/util/types";
 import { PopulationAttributes } from "@/models/Population";
+import { useTranslation } from "@/i18n/client";
 
 interface MeedPageLayoutProps {
   inventory: InventoryResponse | null;
@@ -20,6 +22,10 @@ export function MeedPageLayout({
   children,
   city,
 }: MeedPageLayoutProps) {
+  // Hero's own breadcrumb fallback only recognises GHGI/HIAP/dashboard paths,
+  // so this module supplies its own label.
+  const { t } = useTranslation(lng, "dashboard");
+
   return (
     <VStack h="full" bg="background.backgroundLight">
       <Hero
@@ -31,6 +37,7 @@ export function MeedPageLayout({
         lng={lng}
         population={population}
         city={city}
+        moduleLabel={t("breadcrumb-meed")}
       />
 
       <Box

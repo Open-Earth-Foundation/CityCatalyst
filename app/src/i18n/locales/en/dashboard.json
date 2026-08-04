@@ -321,6 +321,7 @@
   "legend": "Legend",
   "breadcrumb-tools": "Tools",
   "breadcrumb-hiap": "Actions & Plans",
+  "breadcrumb-meed": "Actions & Plans v2",
   "start-here": "Start here",
   "no-inventory-title": "No greenhouse gas inventory has been created yet",
   "no-inventory-description": "Contact your administrator to create an inventory so you can start contributing. Or reach out to <emailLink>{{supportEmail}}</emailLink> if you think this is a mistake.",

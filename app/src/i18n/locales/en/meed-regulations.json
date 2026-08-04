@@ -1,8 +1,8 @@
 {
-  "intro": "MEED+ checks every candidate action against the laws that apply to your municipality. Actions your city lacks the legal authority to implement independently are excluded from the ranking before scoring begins.",
+  "intro": "Every candidate action is checked against the laws that apply to your municipality. Actions your city lacks the legal authority to implement independently are excluded from the ranking before scoring begins.",
   "feasibility-note": "Legal verdict shapes 34% of the feasibility score · feasibility shapes 23% of the ranking",
   "precondition-title": "Legal screening runs when your ranking is generated",
-  "precondition-body": "Finish the remaining wizard steps and generate your ranking — MEED+ will then screen each candidate action against local laws, and any blocked or flagged actions will appear here. You can continue to the next step now.",
+  "precondition-body": "Finish the remaining wizard steps and generate your ranking — each candidate action will then be screened against local laws, and any blocked or flagged actions will appear here. You can continue to the next step now.",
   "summary-included": "Passed legal review",
   "summary-included-sub": "Included in the ranking",
   "summary-blocked": "Excluded from ranking",

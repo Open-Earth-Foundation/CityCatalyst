@@ -1,5 +1,5 @@
 {
-  "description": "Tell MEED+ which sectors and goals matter most to your city, how quickly actions must be implementable, and whether any types of actions should be excluded from the ranking.",
+  "description": "Tell us which sectors and goals matter most to your city, how quickly actions must be implementable, and whether any types of actions should be excluded from the ranking.",
   "alignment-note": "Alignment shapes 22% of the ranking — priority sectors 15% · timeframe preference 5% · strategic priorities 5%",
   "required": "Required",
   "badge-alignment-15": "Alignment · 15%",

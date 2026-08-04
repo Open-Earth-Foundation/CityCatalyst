@@ -4,7 +4,7 @@ import MEEDClientLayout from "./MEEDClientLayout";
 
 // TODO: translate page titles using i18n once a RSC-safe locale helper is available
 export const metadata: Metadata = {
-  title: "MEED+ Prioritizer",
+  title: "Actions & Plans v2",
 };
 
 export default function MEEDLayout(props: {

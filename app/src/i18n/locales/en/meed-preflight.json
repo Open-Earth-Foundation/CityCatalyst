@@ -16,7 +16,7 @@
   "badge-optional": "Optional",
   "custom-weights-active": "Custom weights active",
   "scoring-weights-description": "Adjust how much each pillar contributes to the final ranking. Moving one slider redistributes the remainder proportionally across the other two.",
-  "scoring-weights-defaults": "Default weights follow the MEED+ methodology: Impact {{impact}}% · Alignment {{alignment}}% · Feasibility {{feasibility}}%",
+  "scoring-weights-defaults": "Default weights follow the standard methodology: Impact {{impact}}% · Alignment {{alignment}}% · Feasibility {{feasibility}}%",
   "weight-impact": "Impact",
   "weight-impact-description": "Emissions reduction potential & timeline",
   "weight-alignment": "Alignment",

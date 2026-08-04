@@ -1547,6 +1547,7 @@ export const api = createApi({
           organizationId: string;
           whiteLabelData: {
             themeId: string;
+            themeKey?: string;
             logo?: File;
             clearLogoUrl?: boolean;
           };
@@ -1568,8 +1569,41 @@ export const api = createApi({
             body: formData,
           };
         },
-        transformResponse: (response: { data: OrganizationResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data: { logoUrl?: string | null; themeId?: string };
+        }) => response.data,
+        // Patch org cache immediately so the Brand tab's theme effect applies
+        // the saved theme without waiting for a full Organization refetch.
+        async onQueryStarted(
+          { organizationId, whiteLabelData },
+          { dispatch, queryFulfilled },
+        ) {
+          try {
+            const { data } = await queryFulfilled;
+            const themeKey = whiteLabelData.themeKey;
+
+            dispatch(
+              api.util.updateQueryData(
+                "getOrganization",
+                organizationId,
+                (draft) => {
+                  draft.themeId = whiteLabelData.themeId;
+                  if (data?.logoUrl !== undefined) {
+                    draft.logoUrl = data.logoUrl ?? undefined;
+                  }
+                  if (themeKey) {
+                    draft.theme = {
+                      themeId: whiteLabelData.themeId,
+                      themeKey,
+                    };
+                  }
+                },
+              ),
+            );
+          } catch {
+            // Leave cache alone; invalidation refetch will reconcile.
+          }
+        },
         invalidatesTags: ["Organizations", "Organization"],
       }),
       getThemes: builder.query({

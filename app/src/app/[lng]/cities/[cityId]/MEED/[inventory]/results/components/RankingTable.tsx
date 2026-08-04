@@ -7,6 +7,7 @@ import type { MeedRankedActionResult } from "@/util/types/meed";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { ReductionBar } from "./ReductionBar";
+import { SelectActionCheckbox } from "./SelectActionCheckbox";
 import {
   actionName,
   sectorLabel,
@@ -20,17 +21,25 @@ import {
  * The full ranked-actions table. Names, sectors and reduction potential come
  * from the action catalog index; rank and scores come from the prioritization
  * ranking result.
+ *
+ * The leading checkbox column shares its state with the top-pick cards, so an
+ * action ticked here is ticked there too and both feed the one report button in
+ * the page header.
  */
 export function RankingTable({
   actions,
   index,
   t,
   onSelect,
+  selectedIds,
+  onToggleSelect,
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
   t: TFunction;
   onSelect: (action: MeedRankedActionResult) => void;
+  selectedIds: string[];
+  onToggleSelect: (actionId: string) => void;
 }) {
   return (
     <Card.Root overflow="hidden">
@@ -43,6 +52,9 @@ export function RankingTable({
       <Table.Root size="md">
         <Table.Header>
           <Table.Row>
+            <Table.ColumnHeader w="40px">
+              {t("column-select")}
+            </Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-rank")}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-action")}</Table.ColumnHeader>
             <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
@@ -56,17 +68,23 @@ export function RankingTable({
         <Table.Body>
           {actions.map((action) => {
             const level = reductionLevel(index, action.action_id);
+            const name = actionName(index, action.action_id, t);
             return (
               <Table.Row key={action.action_id}>
+                <Table.Cell>
+                  <SelectActionCheckbox
+                    checked={selectedIds.includes(action.action_id)}
+                    onToggle={() => onToggleSelect(action.action_id)}
+                    ariaLabel={t("select-action", { name })}
+                  />
+                </Table.Cell>
                 <Table.Cell whiteSpace="nowrap">
                   <BodyMedium color="content.link" fontWeight="bold">
                     #{action.rank}
                   </BodyMedium>
                 </Table.Cell>
                 <Table.Cell maxW="280px">
-                  <BodyMedium color="content.primary">
-                    {actionName(index, action.action_id, t)}
-                  </BodyMedium>
+                  <BodyMedium color="content.primary">{name}</BodyMedium>
                 </Table.Cell>
                 <Table.Cell whiteSpace="nowrap">
                   <BodyMedium color="content.secondary">
@@ -93,10 +111,15 @@ export function RankingTable({
                 </Table.Cell>
                 <Table.Cell textAlign="end">
                   <IconButton
-                    aria-label={t("view-details")}
+                    aria-label={t("select-action-details", { name })}
                     size="2xs"
                     variant="ghost"
                     onClick={() => onSelect(action)}
+                    _focusVisible={{
+                      outline: "2px solid",
+                      outlineColor: "content.link",
+                      outlineOffset: "2px",
+                    }}
                   >
                     <Icon as={LuSquareArrowOutUpRight} color="content.link" />
                   </IconButton>

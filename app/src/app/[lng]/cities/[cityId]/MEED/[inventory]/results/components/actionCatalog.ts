@@ -6,11 +6,19 @@
  */
 import type { TFunction } from "i18next";
 
+export interface MeedCatalogCoBenefit {
+  impact_relationship?: string | null;
+}
+
 export interface MeedCatalogAction {
   actionId?: string;
   actionName?: string;
   description?: string;
   sector?: string[] | string | null;
+  /** Raw catalog value, e.g. "<5 years". */
+  timelineForImplementation?: string | null;
+  /** Keyed by co-benefit key, e.g. `air_quality`. */
+  coBenefits?: Record<string, MeedCatalogCoBenefit> | null;
   emissions?: {
     impact_text?: string | null;
     impact_numeric?: number | null;
@@ -56,6 +64,15 @@ export function buildActionIndex(data: unknown): MeedActionIndex {
         | string[]
         | string
         | null,
+      timelineForImplementation:
+        (typeof record.timelineForImplementation === "string" &&
+          record.timelineForImplementation) ||
+        (typeof record.TimelineForImplementation === "string" &&
+          record.TimelineForImplementation) ||
+        null,
+      coBenefits: (record.coBenefits ??
+        record.CoBenefits ??
+        null) as MeedCatalogAction["coBenefits"],
       emissions: (record.emissions ?? null) as MeedCatalogAction["emissions"],
     });
   }
@@ -71,6 +88,40 @@ export function actionName(
     index.get(actionId)?.actionName ??
     (index.size > 0 ? actionId : t("unknown-action"))
   );
+}
+
+export function actionDescription(
+  index: MeedActionIndex,
+  actionId: string,
+): string | undefined {
+  return index.get(actionId)?.description;
+}
+
+// ─── Timeline display ────────────────────────────────────────────────────────
+// The catalog stores implementation timelines as raw bucket strings ("<5
+// years"). They are data, not copy, so they are mapped to i18n keys here rather
+// than rendered verbatim.
+
+const TIMELINE_KEYS: Record<string, string> = {
+  "<5 years": "timeline-short",
+  "<5years": "timeline-short",
+  short: "timeline-short",
+  "5-10 years": "timeline-medium",
+  "5–10 years": "timeline-medium",
+  medium: "timeline-medium",
+  ">10 years": "timeline-long",
+  ">10years": "timeline-long",
+  long: "timeline-long",
+};
+
+export function timelineLabel(
+  index: MeedActionIndex,
+  actionId: string,
+  t: TFunction,
+): string {
+  const raw = index.get(actionId)?.timelineForImplementation;
+  if (!raw) return t("timeline-unknown");
+  return t(TIMELINE_KEYS[raw.toLowerCase().trim()] ?? "timeline-unknown");
 }
 
 // ─── Sector display ──────────────────────────────────────────────────────────

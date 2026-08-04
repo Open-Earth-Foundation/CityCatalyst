@@ -50,7 +50,7 @@
   "no-confirmed-exclusions": "No actions have been confirmed for exclusion yet.",
   "legal-screening-note": "Automatic legal screening runs when the ranking is generated: actions blocked by your municipality's regulations are excluded automatically.",
   "edit-exclusion-criteria": "Edit exclusion criteria",
-  "generate-ranking-cta": "Generate ranking — confirm you're ready",
+  "generate-ranking-cta": "Generate ranking",
   "status-needs-review": "Needs review",
   "no-detail-yet": "No data entered yet",
   "edit-step-aria": "Edit {{step}}",

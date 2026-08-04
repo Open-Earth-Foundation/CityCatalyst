@@ -578,11 +578,16 @@ function PreflightContent(props: {
             <Card.Body>
               <VStack alignItems="stretch" gap="m">
                 <MeedGateNotice gate={gate} t={t} id="meed-preflight-gate" />
+                {/*
+                 * Full width rather than auto: this is the primary action of
+                 * the whole flow, and in a 380px column an auto-width button
+                 * with a long label overflowed the card instead of wrapping.
+                 */}
                 <CCTerraButton
                   variant="filled"
                   minW="auto"
+                  w="full"
                   px="l"
-                  alignSelf="flex-start"
                   leftIcon={<LuZap size={16} />}
                   disabled={!gate.canGenerate}
                   aria-describedby="meed-preflight-gate"

@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { Box, HStack } from "@chakra-ui/react";
+import { Box, HStack, Icon } from "@chakra-ui/react";
+import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
@@ -197,11 +198,16 @@ export function MeedShell({
              * Exactly two actions, never the same one twice. Left always steps
              * back; right always moves the flow forward. Everything autosaves,
              * so there is no "save" verb anywhere.
+             *
+             * The arrows are load-bearing: the labels are step names, so
+             * "Financial feasibility" alone gives no clue which direction it
+             * goes or that it is navigation at all.
              */}
             <CCTerraButton
               variant="outlined"
               minW="auto"
               px="l"
+              leftIcon={<Icon as={LuArrowLeft} boxSize="16px" />}
               onClick={() => router.push(previousHref)}
             >
               {previousLabel}
@@ -211,6 +217,7 @@ export function MeedShell({
               <CCTerraButton
                 minW="auto"
                 px="l"
+                rightIcon={<Icon as={LuArrowRight} boxSize="16px" />}
                 onClick={() => router.push(forwardAction.href)}
               >
                 {forwardAction.label}

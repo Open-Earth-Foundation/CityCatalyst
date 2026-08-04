@@ -1,18 +1,29 @@
 "use client";
-import React, { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Tabs, VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
-import { useGetMeedActionsQuery } from "@/services/api";
+import { api, useGetMeedActionsQuery } from "@/services/api";
+import { formatEmissions } from "@/util/helpers";
 import type {
   MeedPrioritizeCityResult,
   MeedRankedActionResult,
 } from "@/util/types/meed";
-import { LabelLarge } from "@/components/package/Texts/Label";
 import { MeedShell } from "../../components/MeedShell";
+import { useMeedSectionStates } from "../../meedStatus";
+import { stepHref } from "../../navigation";
 import { EmptyState } from "./components/EmptyState";
-import { RankingTable } from "./components/RankingTable";
+import { FullRanking } from "./components/FullRanking";
 import { DetailPanel, type ScoreWeights } from "./components/DetailPanel";
+import { ResultsHeader } from "./components/ResultsHeader";
+import { TopPicks } from "./components/TopPicks";
+import { CoBenefitStrip } from "./components/CoBenefitStrip";
+import { ContextCardGrid } from "./components/ContextCardGrid";
+import { ContextBreakdown } from "./components/ContextBreakdown";
+import { NextStepsBanner } from "./components/NextStepsBanner";
 import { buildActionIndex } from "./components/actionCatalog";
+import { tallyCoBenefits } from "./components/coBenefits";
+import { excludedActionCount, policyBacking } from "./components/rankingFacts";
 
 /**
  * Default final-score weights from the prototype scoring pipeline.
@@ -25,12 +36,33 @@ const SCORE_WEIGHTS: ScoreWeights = {
   feasibility: 0.23,
 };
 
+const TAB_RESULTS = "results";
+const TAB_CONTEXT = "context";
+
+const TAB_TRIGGER_STYLES = {
+  _selected: {
+    color: "content.link",
+    borderColor: "content.link",
+    borderBottomWidth: "2px",
+    fontWeight: "bold",
+    borderRadius: "0",
+    boxShadow: "none",
+  },
+  _focusVisible: {
+    outline: "2px solid",
+    outlineColor: "content.link",
+    outlineOffset: "2px",
+  },
+};
+
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
 }) {
   const { lng, cityId, inventory: inventoryId } = React.use(props.params);
   const { t } = useTranslation(lng, "meed-results");
+  const { t: tMeed } = useTranslation(lng, "meed");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // TODO(meed backend): replace with the stored prioritization result for
   // this inventory once the hiap-meed service layer lands (contract types in
@@ -39,10 +71,68 @@ export default function Page(props: {
   const [ranking] = useState<MeedPrioritizeCityResult | null>(null);
   const [selected, setSelected] = useState<MeedRankedActionResult | null>(null);
 
-  const { data: catalog } = useGetMeedActionsQuery({ cityId });
+  // One selection, shared by the top-pick cards and the ranking rows, feeding
+  // the single "Generate report" button in the header.
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const toggleSelect = useCallback((actionId: string) => {
+    setSelectedIds((previous) =>
+      previous.includes(actionId)
+        ? previous.filter((id) => id !== actionId)
+        : [...previous, actionId],
+    );
+  }, []);
+
+  // Returning from an input screen lands on the tab the user left from.
+  const [tab, setTab] = useState<string>(
+    searchParams.get("tab") === TAB_CONTEXT ? TAB_CONTEXT : TAB_RESULTS,
+  );
+
+  const rankingRef = useRef<HTMLDivElement | null>(null);
+  const showFullRanking = useCallback(() => {
+    setTab(TAB_RESULTS);
+    rankingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const { data: catalog, isLoading: isCatalogLoading } = useGetMeedActionsQuery(
+    {
+      cityId,
+    },
+  );
   const index = useMemo(() => buildActionIndex(catalog), [catalog]);
 
-  const ranked = ranking?.ranked_actions ?? [];
+  const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
+    skip: !inventoryId,
+  });
+  const { states } = useMeedSectionStates(inventoryId);
+
+  const ranked = useMemo(() => ranking?.ranked_actions ?? [], [ranking]);
+  const topPicks = useMemo(() => ranked.slice(0, 3), [ranked]);
+  const excludedCount = excludedActionCount(ranking);
+  const backing = useMemo(() => policyBacking(ranked), [ranked]);
+  const coBenefits = useMemo(
+    () => tallyCoBenefits(topPicks, index),
+    [topPicks, index],
+  );
+
+  const emissions = inventory?.totalEmissions
+    ? formatEmissions(inventory.totalEmissions)
+    : undefined;
+  const emissionsText = emissions
+    ? `${emissions.value} ${emissions.unit}CO2e`.trim()
+    : undefined;
+
+  const facts = {
+    emissionsText,
+    inventoryYear: inventory?.year ?? undefined,
+    rankedCount: ranked.length,
+    excludedCount,
+    strongPolicyBacking: backing.strong,
+    states,
+  };
+
+  // Every context deep link comes back to this screen's context tab.
+  const hrefFor = (segment: string) =>
+    stepHref(lng, cityId, inventoryId, segment, "results", TAB_CONTEXT);
 
   return (
     <MeedShell
@@ -66,17 +156,81 @@ export default function Page(props: {
             }
           />
         ) : (
-          <>
-            <LabelLarge color="content.tertiary">
-              {t("summary-line", { count: ranked.length })}
-            </LabelLarge>
-            <RankingTable
+          <VStack alignItems="stretch" gap="xl">
+            <ResultsHeader
+              rankedCount={ranked.length}
+              excludedCount={excludedCount}
+              emissionsText={emissionsText}
+              selectedCount={selectedIds.length}
+              t={t}
+            />
+
+            <Tabs.Root
+              value={tab}
+              onValueChange={(details) => setTab(details.value)}
+              variant="line"
+            >
+              <Tabs.List mb="l" borderColor="border.overlay">
+                <Tabs.Trigger value={TAB_RESULTS} {...TAB_TRIGGER_STYLES}>
+                  {t("tab-results")}
+                </Tabs.Trigger>
+                <Tabs.Trigger value={TAB_CONTEXT} {...TAB_TRIGGER_STYLES}>
+                  {t("tab-context")}
+                </Tabs.Trigger>
+              </Tabs.List>
+
+              <Tabs.Content value={TAB_RESULTS}>
+                <VStack alignItems="stretch" gap="xl">
+                  <TopPicks
+                    actions={topPicks}
+                    index={index}
+                    t={t}
+                    isCatalogLoading={isCatalogLoading}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelect}
+                    onOpenDetail={setSelected}
+                    onBrowseFullRanking={showFullRanking}
+                  />
+                  <CoBenefitStrip
+                    benefits={coBenefits}
+                    total={topPicks.length}
+                    t={t}
+                  />
+                  <ContextCardGrid
+                    facts={facts}
+                    t={t}
+                    hrefFor={hrefFor}
+                    onShowFullRanking={showFullRanking}
+                  />
+                  <NextStepsBanner
+                    selectedCount={selectedIds.length}
+                    onBrowseFullRanking={showFullRanking}
+                    t={t}
+                  />
+                </VStack>
+              </Tabs.Content>
+
+              <Tabs.Content value={TAB_CONTEXT}>
+                <ContextBreakdown
+                  facts={facts}
+                  backing={backing}
+                  t={t}
+                  tMeed={tMeed}
+                  hrefFor={hrefFor}
+                />
+              </Tabs.Content>
+            </Tabs.Root>
+
+            <FullRanking
+              ref={rankingRef}
               actions={ranked}
               index={index}
               t={t}
               onSelect={setSelected}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
             />
-          </>
+          </VStack>
         )}
 
         {selected && (

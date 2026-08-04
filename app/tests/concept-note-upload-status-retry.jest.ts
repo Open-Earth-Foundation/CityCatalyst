@@ -17,6 +17,7 @@ const updateUpload = jest.fn<() => Promise<void>>();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const retryOcr = jest.fn<() => Promise<"ocr" | "delivery" | "noop">>();
 const canAccessCity = jest.fn<() => Promise<void>>();
+const loggerInfo = jest.fn();
 
 function normalizeStatus(job: Record<string, unknown>) {
   if (job.status === "queued") {
@@ -65,6 +66,9 @@ jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
 }));
 jest.unstable_mockModule("@/backend/permissions/PermissionService", () => ({
   PermissionService: { canAccessCity },
+}));
+jest.unstable_mockModule("@/services/logger", () => ({
+  logger: { info: loggerInfo },
 }));
 jest.unstable_mockModule("@/util/api", () => ({
   apiHandler: (handler: unknown) => handler,
@@ -186,8 +190,11 @@ describe("Concept Note upload status and retry routes", () => {
   });
 
   it("allows OCR retry after the terminal failure was delivered to CA", async () => {
+    const requestId = "cc-parent-request-123";
     const response = await retryHandler(
-      new Request("http://localhost"),
+      new Request("http://localhost", {
+        headers: { "x-request-id": requestId },
+      }),
       context,
     );
 
@@ -206,6 +213,17 @@ describe("Concept Note upload status and retry routes", () => {
         status: "failed",
         deliveryStatus: "delivered",
       }),
+    );
+    expect(loggerInfo).toHaveBeenCalledWith(
+      {
+        requestId,
+        userId: "owner-user",
+        runId,
+        uploadId,
+        retryKind: "ocr",
+        acceptedRetryKind: "ocr",
+      },
+      "Concept Note upload retry processed",
     );
   });
 

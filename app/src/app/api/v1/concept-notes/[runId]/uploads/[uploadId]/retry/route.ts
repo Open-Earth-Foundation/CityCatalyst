@@ -50,6 +50,8 @@
  *       409:
  *         description: The upload has completed or its CC OCR job is unavailable
  */
+import { randomUUID } from "node:crypto";
+
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -65,6 +67,7 @@ import {
   retryConceptNotePdfOcr,
 } from "@/backend/PdfOcrService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
 
 const paramsSchema = z.object({
@@ -78,11 +81,12 @@ export const POST = apiHandler(async (req, { session, params }) => {
   }
   const { runId, uploadId } = paramsSchema.parse(params);
   const userId = session.user.id;
-  const currentRequestId = req.headers.get("x-request-id")?.trim() || undefined;
+  const requestId =
+    req.headers.get("x-request-id")?.trim() || `cc-${randomUUID()}`;
   const cityId = await loadConceptNoteRunCity({
     runId,
     userId,
-    requestId: currentRequestId,
+    requestId,
   });
   await PermissionService.canAccessCity(session, cityId, {
     includeResource: false,
@@ -91,7 +95,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     runId,
     uploadId,
     userId,
-    requestId: currentRequestId,
+    requestId,
   });
   const job = await getConceptNotePdfOcrJob(uploadId);
   if (!job) {
@@ -107,11 +111,22 @@ export const POST = apiHandler(async (req, { session, params }) => {
     uploadId,
     userId,
     action: "retry",
-    requestId: currentRequestId,
+    requestId,
   });
   const retryKind = await retryConceptNotePdfOcr(job);
   const acceptedKind =
     retryKind === "noop" ? currentState.retryKind : retryKind;
+  logger.info(
+    {
+      requestId,
+      userId,
+      runId,
+      uploadId,
+      retryKind,
+      acceptedRetryKind: acceptedKind,
+    },
+    "Concept Note upload retry processed",
+  );
   const status =
     retryKind === "ocr"
       ? "queued"

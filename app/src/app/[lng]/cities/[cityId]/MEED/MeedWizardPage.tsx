@@ -8,6 +8,7 @@ import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { MeedStepBar } from "./MeedStepBar";
 import { MEED_WIZARD_STEPS, getMeedPath } from "./steps";
+import { setMeedStepState } from "./meedLocalState";
 
 /**
  * Shared shell for MEED wizard step pages: step bar on top, content column
@@ -23,6 +24,13 @@ export function MeedWizardPage(props: {
   const { lng, cityId, inventory: inventoryId } = React.use(props.params);
   const { t } = useTranslation(lng, "meed");
   const router = useRouter();
+
+  // Visiting a step marks it in the wizard progress (preflight reads this).
+  React.useEffect(() => {
+    if (inventoryId && props.stepKey) {
+      setMeedStepState(inventoryId, props.stepKey, { visited: true });
+    }
+  }, [inventoryId, props.stepKey]);
 
   const stepIndex = MEED_WIZARD_STEPS.findIndex(
     (s) => s.key === props.stepKey,

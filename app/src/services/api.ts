@@ -128,6 +128,7 @@ export const api = createApi({
     "VersionHistory",
     "PersonalAccessToken",
     "AdminModules",
+    "Meed",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -204,6 +205,36 @@ export const api = createApi({
         transformResponse: (response: { data: ResultsResponse }) =>
           response.data,
         providesTags: ["ReportResults"],
+      }),
+      // ─── MEED+ module (Global API proxies — see backend/meed/MeedGlobalApiService) ───
+      getMeedActions: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/actions`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedCityAttributes: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/city-attributes`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedPolicyScores: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/policy-scores`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedFinanceFeasibility: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/finance/feasibility`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedFinanceLink: builder.query<
+        unknown,
+        { cityId: string; link: string }
+      >({
+        query: ({ cityId, link }) =>
+          `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
       }),
       getEmissionsForecast: builder.query<EmissionsForecastData, string>({
         query: (inventoryId: string) =>
@@ -2182,6 +2213,11 @@ export const {
   useGetInventoryValuesBySubsectorQuery,
   useDeleteInventoryValueMutation,
   useGetResultsQuery,
+  useGetMeedActionsQuery,
+  useGetMeedCityAttributesQuery,
+  useGetMeedPolicyScoresQuery,
+  useGetMeedFinanceFeasibilityQuery,
+  useGetMeedFinanceLinkQuery,
   useGetEmissionsForecastQuery,
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,

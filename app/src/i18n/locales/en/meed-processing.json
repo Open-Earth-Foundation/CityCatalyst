@@ -1,0 +1,17 @@
+{
+  "header-running": "Generating action recommendations",
+  "header-done": "Recommendations ready",
+  "header-sub": "Started just now · expected wait time about 30 seconds",
+  "percent-complete": "{{pct}}% complete",
+  "stage-in-progress": "{{stage}} in progress",
+  "all-complete": "All analyses complete",
+  "stage-validation": "Data validation",
+  "stage-validation-desc": "Emissions and context data verified",
+  "stage-impact": "Impact analysis",
+  "stage-impact-desc": "Scoring candidate actions on emissions reduction potential and implementation timeline",
+  "stage-alignment": "Alignment analysis",
+  "stage-alignment-desc": "Matching actions to national, regional and local frameworks and strategic preferences",
+  "stage-feasibility": "Feasibility analysis",
+  "stage-feasibility-desc": "Assessing socioeconomic context and regulations and laws",
+  "footer-note": "Results will be ready shortly!"
+}

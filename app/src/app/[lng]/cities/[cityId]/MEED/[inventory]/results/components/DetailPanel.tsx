@@ -7,7 +7,11 @@ import type { MeedRankedActionResult } from "@/util/types/meed";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
-import { BodyLarge, BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import {
+  BodyLarge,
+  BodyMedium,
+  BodySmall,
+} from "@/components/package/Texts/Body";
 import { ScoreBar } from "./ScoreBar";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
 
@@ -62,8 +66,8 @@ export function DetailPanel({
         flexDirection="column"
       >
         <Box
-          px="28px"
-          py="24px"
+          px="l"
+          py="l"
           borderBottomWidth="1px"
           borderColor="border.overlay"
           flexShrink={0}
@@ -80,18 +84,18 @@ export function DetailPanel({
             color="content.link"
             textTransform="uppercase"
             letterSpacing="0.08em"
-            mt="12px"
+            mt="m"
           >
             {sectorLabel(index, action.action_id, t)}
           </LabelMedium>
-          <TitleMedium color="content.primary" mt="4px">
+          <TitleMedium color="content.primary" mt="xs">
             {actionName(index, action.action_id, t)}
           </TitleMedium>
         </Box>
 
-        <Box px="28px" py="24px" flex="1" overflowY="auto">
-          <VStack alignItems="stretch" gap="24px">
-            <VStack alignItems="stretch" gap="8px">
+        <Box px="l" py="l" flex="1" overflowY="auto">
+          <VStack alignItems="stretch" gap="l">
+            <VStack alignItems="stretch" gap="s">
               <LabelLarge color="content.primary">
                 {t("detail-description")}
               </LabelLarge>
@@ -101,7 +105,7 @@ export function DetailPanel({
             </VStack>
 
             {explanation && (
-              <VStack alignItems="stretch" gap="8px">
+              <VStack alignItems="stretch" gap="s">
                 <LabelLarge color="content.primary">
                   {t("detail-why")}
                 </LabelLarge>
@@ -111,7 +115,7 @@ export function DetailPanel({
               </VStack>
             )}
 
-            <VStack alignItems="stretch" gap="14px">
+            <VStack alignItems="stretch" gap="m">
               <LabelLarge color="content.primary">
                 {t("detail-score-breakdown")}
               </LabelLarge>
@@ -138,11 +142,11 @@ export function DetailPanel({
               />
               <HStack
                 justifyContent="space-between"
-                gap="12px"
+                gap="m"
                 bg="background.neutral"
                 borderRadius="8px"
-                px="14px"
-                py="11px"
+                px="m"
+                py="m"
               >
                 <BodySmall
                   color="content.secondary"

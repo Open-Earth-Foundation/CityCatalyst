@@ -10,7 +10,7 @@ import { REDUCTION_SEGMENTS, reductionLevelColor } from "./actionCatalog";
 export function ReductionBar({ level }: { level: number }) {
   const color = reductionLevelColor(level);
   return (
-    <HStack gap="4px" w="full">
+    <HStack gap="xs" w="full">
       {Array.from({ length: REDUCTION_SEGMENTS }, (_, i) => (
         <Box
           key={i}

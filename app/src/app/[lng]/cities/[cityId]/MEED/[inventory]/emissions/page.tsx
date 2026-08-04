@@ -67,7 +67,7 @@ function EmissionsErrorCard({
   return (
     <Card.Root borderColor="border.neutral">
       <Card.Body>
-        <VStack gap="12px" py="40px" px="24px" textAlign="center">
+        <VStack gap="m" py="xxl" px="l" textAlign="center">
           <Icon
             as={LuTriangleAlert}
             boxSize="32px"
@@ -80,8 +80,8 @@ function EmissionsErrorCard({
           <CCTerraButton
             variant="outlined"
             minW="auto"
-            px="24px"
-            mt="8px"
+            px="l"
+            mt="s"
             onClick={onRetry}
             leftIcon={<Icon as={LuRotateCw} boxSize="16px" />}
             _focusVisible={FOCUS_RING}
@@ -133,7 +133,7 @@ function SectorRow({
     <>
       <Table.Row>
         <Table.Cell>
-          <HStack gap="8px">
+          <HStack gap="s">
             {hasData ? (
               <IconButton
                 aria-label={t(expanded ? "collapse-sector" : "expand-sector")}
@@ -182,7 +182,7 @@ function SectorRow({
         Array.from({ length: 3 }).map((_, i) => (
           <Table.Row key={`skeleton-${i}`} bg="background.neutral">
             <Table.Cell>
-              <Box pl="32px">
+              <Box pl="xl">
                 <Skeleton height="14px" width="70%" />
               </Box>
             </Table.Cell>
@@ -199,7 +199,7 @@ function SectorRow({
       {expanded && isBreakdownError && (
         <Table.Row bg="background.neutral">
           <Table.Cell colSpan={4}>
-            <HStack gap="8px" pl="32px">
+            <HStack gap="s" pl="xl">
               <Icon
                 as={LuTriangleAlert}
                 boxSize="14px"
@@ -212,7 +212,7 @@ function SectorRow({
                 variant="text"
                 minW="auto"
                 h="24px"
-                px="4px"
+                px="xs"
                 onClick={() => refetchBreakdown()}
                 _focusVisible={FOCUS_RING}
               >
@@ -226,9 +226,12 @@ function SectorRow({
       {expanded &&
         !isBreakdownError &&
         breakdown?.byScope?.map((row, idx) => (
-          <Table.Row key={`${row.activityTitle}-${idx}`} bg="background.neutral">
+          <Table.Row
+            key={`${row.activityTitle}-${idx}`}
+            bg="background.neutral"
+          >
             <Table.Cell>
-              <VStack alignItems="flex-start" gap="0" pl="32px">
+              <VStack alignItems="flex-start" gap="0" pl="xl">
                 <BodyMedium color="content.secondary">
                   {row.activityTitle}
                 </BodyMedium>
@@ -293,17 +296,17 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
   }, [inventoryId, isLoading, isError, sectorsWithData, stepSub]);
 
   return (
-    <VStack alignItems="stretch" gap="24px">
-      <VStack alignItems="stretch" gap="12px">
+    <VStack alignItems="stretch" gap="l">
+      <VStack alignItems="stretch" gap="m">
         <BodyLarge color="content.secondary">
           {t("emissions-description")}
         </BodyLarge>
         <HStack
-          gap="8px"
+          gap="s"
           bg="background.neutral"
           borderRadius="rounded"
-          px="12px"
-          py="6px"
+          px="m"
+          py="s"
           alignSelf="flex-start"
         >
           <Icon as={LuChartPie} boxSize="14px" color="content.secondary" />
@@ -331,8 +334,8 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
           ) : (
             <Card.Root borderColor="border.overlay">
               <Card.Body>
-                <SimpleGrid columns={{ base: 2, md: 3 }} gap="16px">
-                  <VStack alignItems="flex-start" gap="4px">
+                <SimpleGrid columns={{ base: 2, md: 3 }} gap="m">
+                  <VStack alignItems="flex-start" gap="xs">
                     <Overline color="content.tertiary">
                       {t("total-ghg-emissions")}
                     </Overline>
@@ -343,7 +346,7 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
                       {`${formattedTotal.value} ${formattedTotal.unit}`}
                     </TitleMedium>
                   </VStack>
-                  <VStack alignItems="flex-start" gap="4px">
+                  <VStack alignItems="flex-start" gap="xs">
                     <Overline color="content.tertiary">
                       {t("inventory-year")}
                     </Overline>
@@ -354,7 +357,7 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
                       {inventory?.year ?? "—"}
                     </TitleMedium>
                   </VStack>
-                  <VStack alignItems="flex-start" gap="4px">
+                  <VStack alignItems="flex-start" gap="xs">
                     <Overline color="content.tertiary">
                       {t("sectors-with-data")}
                     </Overline>
@@ -378,7 +381,7 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
           ) : (
             <Card.Root overflow="hidden" borderColor="border.neutral">
               <Table.Root
-                size="sm"
+                size="md"
                 css={{ "& th, & td": { borderColor: "border.overlay" } }}
               >
                 <Table.Header>

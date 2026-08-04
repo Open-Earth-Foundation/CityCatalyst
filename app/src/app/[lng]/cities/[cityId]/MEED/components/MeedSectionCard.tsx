@@ -4,7 +4,7 @@ import NextLink from "next/link";
 import { LuArrowRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { BodySmall } from "@/components/package/Texts/Body";
+import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import type { MeedStep } from "../steps";
 import type { MeedSectionState } from "../meedStatus";
@@ -64,8 +64,8 @@ export function MeedSectionCard({
       }}
     >
       <NextLink href={href}>
-        <Card.Body display="flex" flexDirection="column" gap="10px" h="full">
-          <HStack justifyContent="space-between" alignItems="center" gap="8px">
+        <Card.Body display="flex" flexDirection="column" gap="s" h="full">
+          <HStack justifyContent="space-between" alignItems="center" gap="s">
             {step.rankingWeight ? (
               <MeedStatusTag tone="info">
                 {t("shapes-percent", { weight: step.rankingWeight })}
@@ -86,11 +86,11 @@ export function MeedSectionCard({
             <BodySmall color="sentiment.warningDefault">{state.sub}</BodySmall>
           )}
 
-          <BodySmall color="content.secondary" flex="1">
+          <BodyMedium color="content.secondary" flex="1">
             {t(`${step.labelKey}-description`)}
-          </BodySmall>
+          </BodyMedium>
 
-          <HStack gap="4px" color="content.link" mt="2px">
+          <HStack gap="xs" color="content.link" mt="xs">
             <LabelMedium color="content.link">{t(ctaKey(status))}</LabelMedium>
             <Icon as={LuArrowRight} boxSize="14px" />
           </HStack>

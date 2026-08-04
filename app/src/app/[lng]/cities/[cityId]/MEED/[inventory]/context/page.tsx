@@ -70,7 +70,11 @@ function ConcernIcon({ concern }: { concern: IndicatorConcern }) {
   }
   if (concern === "opportunity") {
     return (
-      <Icon as={LuTrendingUp} boxSize="14px" color="sentiment.positiveDefault" />
+      <Icon
+        as={LuTrendingUp}
+        boxSize="14px"
+        color="sentiment.positiveDefault"
+      />
     );
   }
   return <Icon as={LuMoveRight} boxSize="14px" color="content.tertiary" />;
@@ -105,11 +109,11 @@ function KeyIndicatorCards({
   if (keyIndicators.length === 0) return null;
 
   return (
-    <SimpleGrid columns={{ base: 2, md: 4 }} gap="16px">
+    <SimpleGrid columns={{ base: 2, md: 4 }} gap="m">
       {keyIndicators.map((ind) => (
         <Card.Root key={ind.key} borderColor="border.overlay" h="full">
-          <Card.Body p="16px">
-            <VStack alignItems="flex-start" gap="6px">
+          <Card.Body p="m">
+            <VStack alignItems="flex-start" gap="s">
               <Overline color="content.tertiary">{ind.label}</Overline>
               <TitleMedium
                 color="content.primary"
@@ -138,7 +142,7 @@ function IndicatorsTable({
   return (
     <Card.Root overflow="hidden" borderColor="border.neutral">
       <Table.Root
-        size="sm"
+        size="md"
         css={{ "& th, & td": { borderColor: "border.overlay" } }}
       >
         <Table.Header>
@@ -187,7 +191,7 @@ function IndicatorsTable({
                     colSpan={4}
                     borderTopWidth="1px"
                     borderColor="border.neutral"
-                    py="8px"
+                    py="s"
                   >
                     <Overline color="content.secondary">
                       {t(`theme-${themeKey}`)}
@@ -217,8 +221,8 @@ function IndicatorsTable({
                       <CategoryTag indicator={ind} t={t} />
                     </Table.Cell>
                     <Table.Cell>
-                      <HStack gap="6px" alignItems="flex-start">
-                        <Box pt="2px">
+                      <HStack gap="s" alignItems="flex-start">
+                        <Box pt="xs">
                           <ConcernIcon concern={ind.concern} />
                         </Box>
                         <BodyMedium color="content.secondary">
@@ -241,8 +245,8 @@ function IndicatorsTable({
 function NoIndicatorsCard({ t }: { t: TFunction }) {
   return (
     <Card.Root borderColor="border.neutral">
-      <Card.Body py="64px">
-        <VStack gap="12px" textAlign="center" maxW="480px" mx="auto">
+      <Card.Body py="xxl-4">
+        <VStack gap="m" textAlign="center" maxW="480px" mx="auto">
           <Icon as={LuUsers} boxSize="40px" color="content.tertiary" />
           <TitleMedium color="content.primary">
             {t("no-indicators-title")}
@@ -270,7 +274,7 @@ function IndicatorsErrorCard({
   return (
     <Card.Root borderColor="border.neutral">
       <Card.Body>
-        <VStack gap="12px" py="40px" px="24px" textAlign="center">
+        <VStack gap="m" py="xxl" px="l" textAlign="center">
           <Icon
             as={LuTriangleAlert}
             boxSize="32px"
@@ -285,8 +289,8 @@ function IndicatorsErrorCard({
           <CCTerraButton
             variant="outlined"
             minW="auto"
-            px="24px"
-            mt="8px"
+            px="l"
+            mt="s"
             onClick={onRetry}
             leftIcon={<Icon as={LuRotateCw} boxSize="16px" />}
             _focusVisible={FOCUS_RING}
@@ -330,17 +334,17 @@ function SocioeconomicContextContent(props: {
   }, [inventoryId, isLoading, isError, count, stepSub]);
 
   return (
-    <VStack alignItems="stretch" gap="24px">
-      <VStack alignItems="stretch" gap="12px">
+    <VStack alignItems="stretch" gap="l">
+      <VStack alignItems="stretch" gap="m">
         <BodyLarge color="content.secondary">
           {t("context-description")}
         </BodyLarge>
         <HStack
-          gap="8px"
+          gap="s"
           bg="background.neutral"
           borderRadius="rounded"
-          px="12px"
-          py="6px"
+          px="m"
+          py="s"
           alignSelf="flex-start"
         >
           <Icon as={LuUsers} boxSize="14px" color="content.secondary" />

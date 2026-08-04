@@ -50,11 +50,13 @@ export function MeedMeter({
   const pct = Math.max(0, Math.min(100, Math.round(value * 100)));
 
   return (
-    <VStack alignItems="stretch" gap="4px" w="full">
+    <VStack alignItems="stretch" gap="xs" w="full">
       {(label || valueText || weightText) && (
-        <HStack justifyContent="space-between" alignItems="baseline" gap="8px">
-          {label && <LabelMedium color="content.secondary">{label}</LabelMedium>}
-          <HStack gap="6px" alignItems="baseline" flexShrink={0}>
+        <HStack justifyContent="space-between" alignItems="baseline" gap="s">
+          {label && (
+            <LabelMedium color="content.secondary">{label}</LabelMedium>
+          )}
+          <HStack gap="s" alignItems="baseline" flexShrink={0}>
             {valueText && (
               <LabelMedium
                 color="content.primary"

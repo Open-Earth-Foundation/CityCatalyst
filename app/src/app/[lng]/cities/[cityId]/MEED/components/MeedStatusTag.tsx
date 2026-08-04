@@ -11,12 +11,7 @@ import type { MeedSectionStatus } from "../meedStatus";
  * status variants (which are registered as a plain recipe while Chakra expects
  * a slot recipe, so they never render — see the root backlog).
  */
-export type MeedTone =
-  | "neutral"
-  | "info"
-  | "positive"
-  | "warning"
-  | "negative";
+export type MeedTone = "neutral" | "info" | "positive" | "warning" | "negative";
 
 const TONE_STYLES: Record<
   MeedTone,
@@ -81,12 +76,24 @@ export function MeedStatusTag({
       borderColor={styles.borderColor}
       borderWidth="1px"
       borderRadius="pill"
-      px="10px"
-      py="2px"
+      px="s"
+      py="xs"
       fontSize="label.sm"
       fontWeight="semibold"
       whiteSpace="nowrap"
       flexShrink={0}
+      // Chakra's tag recipe line-clamps the label, which turned short status
+      // words into "Self-…" whenever the column got tight. These labels are a
+      // handful of characters; they should never be abbreviated.
+      css={{
+        "& [data-part='label']": {
+          lineClamp: "unset",
+          WebkitLineClamp: "unset",
+          display: "inline",
+          overflow: "visible",
+          whiteSpace: "nowrap",
+        },
+      }}
       {...rest}
     >
       {children}

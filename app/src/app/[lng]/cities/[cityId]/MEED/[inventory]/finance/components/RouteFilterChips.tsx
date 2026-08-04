@@ -62,7 +62,7 @@ export function RouteFilterChips({
   t,
 }: RouteFilterChipsProps) {
   return (
-    <HStack gap="8px" flexWrap="wrap" role="group" aria-label={ariaLabel}>
+    <HStack gap="s" flexWrap="wrap" role="group" aria-label={ariaLabel}>
       <Pill
         type="button"
         aria-pressed={active === null}

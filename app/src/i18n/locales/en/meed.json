@@ -80,5 +80,14 @@
   "optional": "Optional",
   "readiness-title": "Readiness",
   "inventory-not-found-title": "Inventory unavailable",
-  "back-to-city": "Back to city"
+  "back-to-city": "Back to city",
+  "ranking-eyebrow": "Your ranking",
+  "ranking-title": "{{count}} actions ranked for this inventory",
+  "ranking-top-actions": "Highest ranked",
+  "ranking-view": "View recommendations",
+  "ranking-rerun": "Re-run ranking",
+  "ranking-current-tag": "Up to date",
+  "ranking-stale-tag": "Inputs changed",
+  "ranking-stale-body": "Your answers have changed since this ranking was generated, so it no longer reflects them. Re-run it to bring the recommendations back in line.",
+  "ranking-generated-at": "Generated {{when}}"
 }

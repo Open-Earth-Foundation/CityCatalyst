@@ -102,9 +102,9 @@ function CheckCard({
       onCheckedChange={(details) => onChange(!!details.checked)}
       w="full"
       alignItems="flex-start"
-      gap="12px"
-      px="16px"
-      py="12px"
+      gap="m"
+      px="m"
+      py="m"
       borderRadius="rounded"
       borderWidth="1px"
       borderColor={checked ? "content.link" : "border.neutral"}
@@ -118,7 +118,7 @@ function CheckCard({
       <Checkbox.HiddenInput />
       <Checkbox.Control
         boxSize="18px"
-        mt="2px"
+        mt="xs"
         flexShrink={0}
         borderWidth="2px"
         borderRadius="4px"
@@ -132,7 +132,7 @@ function CheckCard({
       >
         <Checkbox.Indicator />
       </Checkbox.Control>
-      <VStack alignItems="flex-start" gap="2px" minW="0">
+      <VStack alignItems="flex-start" gap="xs" minW="0">
         <Checkbox.Label
           fontFamily="heading"
           fontSize="label.lg"
@@ -167,8 +167,8 @@ function Section({
   return (
     <Card.Root borderColor="border.overlay">
       <Card.Body>
-        <VStack alignItems="stretch" gap="12px">
-          <HStack gap="10px" alignItems="center" flexWrap="wrap">
+        <VStack alignItems="stretch" gap="m">
+          <HStack gap="s" alignItems="center" flexWrap="wrap">
             <TitleMedium color="content.primary">{title}</TitleMedium>
             {required && (
               <LabelMedium color="content.tertiary">
@@ -199,7 +199,7 @@ function FieldLabel({
   mt?: string;
 }) {
   return (
-    <VStack alignItems="stretch" gap="2px" mt={mt}>
+    <VStack alignItems="stretch" gap="xs" mt={mt}>
       <LabelMedium color="content.secondary">{title}</LabelMedium>
       <Caption color="content.tertiary">{description}</Caption>
     </VStack>
@@ -359,14 +359,14 @@ function StrategicPreferencesContent(props: {
   }
 
   return (
-    <VStack alignItems="stretch" gap="24px">
-      <VStack alignItems="stretch" gap="10px">
+    <VStack alignItems="stretch" gap="l">
+      <VStack alignItems="stretch" gap="s">
         <BodyLarge color="content.secondary">{t("description")}</BodyLarge>
         {/* What this whole screen is worth, before the user spends time on it. */}
         <HStack
-          gap="8px"
-          px="12px"
-          py="8px"
+          gap="s"
+          px="m"
+          py="s"
           borderRadius="rounded"
           bg="background.neutral"
           alignItems="flex-start"
@@ -412,7 +412,7 @@ function StrategicPreferencesContent(props: {
         </BodyMedium>
         <SimpleGrid
           columns={{ base: 1, md: 2 }}
-          gap="8px"
+          gap="s"
           role="group"
           aria-label={t("aria-strategic-priorities")}
         >
@@ -448,7 +448,7 @@ function StrategicPreferencesContent(props: {
         </BodyMedium>
         <VStack
           alignItems="stretch"
-          gap="8px"
+          gap="s"
           role="group"
           aria-label={t("aria-timeline")}
         >
@@ -478,7 +478,7 @@ function StrategicPreferencesContent(props: {
         <FieldLabel
           title={t("exclude-by-sector-title")}
           description={t("exclude-by-sector-description")}
-          mt="8px"
+          mt="s"
         />
         <MeedChipGroup
           options={sectorOptions}
@@ -498,11 +498,11 @@ function StrategicPreferencesContent(props: {
         <FieldLabel
           title={t("exclude-by-co-benefit-title")}
           description={t("exclude-by-co-benefit-description")}
-          mt="12px"
+          mt="m"
         />
         <VStack
           alignItems="stretch"
-          gap="8px"
+          gap="s"
           role="group"
           aria-label={t("aria-exclude-co-benefits")}
         >
@@ -527,14 +527,14 @@ function StrategicPreferencesContent(props: {
           </BodySmall>
         )}
 
-        <HStack justifyContent="space-between" alignItems="flex-end" mt="12px">
+        <HStack justifyContent="space-between" alignItems="flex-end" mt="m">
           <FieldLabel
             title={t("exclude-free-text-title")}
             description={t("exclude-free-text-description")}
           />
           <Box aria-live="polite" flexShrink={0} minH="16px">
             {showSaved && (
-              <HStack gap="4px" color="interactive.tertiary">
+              <HStack gap="xs" color="interactive.tertiary">
                 <Icon as={LuCheck} boxSize="14px" />
                 <Caption color="interactive.tertiary">{t("saved")}</Caption>
               </HStack>
@@ -570,7 +570,7 @@ function StrategicPreferencesContent(props: {
         <CCTerraButton
           variant="filled"
           minW="auto"
-          px="24px"
+          px="l"
           disabled={!canSave}
           onClick={saveAndContinue}
           _focusVisible={FOCUS_RING}

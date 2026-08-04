@@ -115,3 +115,42 @@ export function setMeedStepState(
     window.dispatchEvent(new Event(MEED_STATE_CHANGED_EVENT));
   }
 }
+
+// ─── Generated ranking ───────────────────────────────────────────────────────
+
+export interface MeedRankingSummary {
+  generatedAtUtc: string;
+  totalRanked: number;
+  /** First few action names, already localized when written. */
+  topActions: string[];
+  excludedCount?: number;
+  /**
+   * Fingerprint of the inputs this ranking was produced from, so the overview
+   * can tell the user when their answers have moved on since.
+   */
+  inputsFingerprint?: string;
+}
+
+export function getMeedRanking(inventoryId: string): MeedRankingSummary | null {
+  return read<MeedRankingSummary>(key(inventoryId, "ranking"));
+}
+
+export function setMeedRanking(
+  inventoryId: string,
+  summary: MeedRankingSummary,
+): void {
+  write(key(inventoryId, "ranking"), summary);
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(MEED_STATE_CHANGED_EVENT));
+  }
+}
+
+export function clearMeedRanking(inventoryId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.removeItem(key(inventoryId, "ranking"));
+    window.dispatchEvent(new Event(MEED_STATE_CHANGED_EVENT));
+  } catch {
+    // non-fatal
+  }
+}

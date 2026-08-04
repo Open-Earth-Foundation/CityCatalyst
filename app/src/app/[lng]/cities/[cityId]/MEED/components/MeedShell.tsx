@@ -98,6 +98,29 @@ export function MeedShell({
   const heading = title ?? (step ? t(step.labelKey) : "");
   const crumb = currentLabel ?? (step ? t(step.labelKey) : "");
 
+  const previousStep =
+    stepIndex > 0 ? MEED_WIZARD_STEPS[stepIndex - 1] : undefined;
+
+  // Left action: the step before this one, or the way out of the flow.
+  const previousHref =
+    !ret.isExplicit && previousStep
+      ? stepHref(lng, cityId, inventoryId, previousStep.segment)
+      : backHref;
+  const previousLabel =
+    !ret.isExplicit && previousStep ? t(previousStep.labelKey) : backLabel;
+
+  // Right action: one forward move. When the user came from pre-flight or the
+  // results screen, forward means going back there — not deeper into the wizard.
+  // On the last step the page body owns the primary action, so there is none.
+  const forwardAction = ret.isExplicit
+    ? { href: backHref, label: backLabel }
+    : nextStep
+      ? {
+          href: stepHref(lng, cityId, inventoryId, nextStep.segment),
+          label: t(nextStep.labelKey),
+        }
+      : undefined;
+
   return (
     <Box
       h="full"
@@ -133,18 +156,18 @@ export function MeedShell({
       <Box
         display="flex"
         mx="auto"
-        py="40px"
-        px="24px"
+        py="xxl"
+        px="l"
         w="full"
         maxW="1090px"
         flexDirection="column"
-        gap="24px"
+        gap="l"
       >
         {heading && (
           <Box>
             <HeadlineSmall>{heading}</HeadlineSmall>
             {description && (
-              <BodyLarge color="content.secondary" mt="8px">
+              <BodyLarge color="content.secondary" mt="s">
                 {description}
               </BodyLarge>
             )}
@@ -157,50 +180,32 @@ export function MeedShell({
           <HStack
             justifyContent="space-between"
             w="full"
-            pt="24px"
-            mt="8px"
+            pt="l"
+            mt="s"
             borderTopWidth="1px"
             borderColor="border.overlay"
           >
+            {/*
+             * Exactly two actions, never the same one twice. Left always steps
+             * back; right always moves the flow forward. Everything autosaves,
+             * so there is no "save" verb anywhere.
+             */}
             <CCTerraButton
               variant="outlined"
               minW="auto"
-              px="24px"
-              onClick={() => router.push(backHref)}
+              px="l"
+              onClick={() => router.push(previousHref)}
             >
-              {backLabel}
+              {previousLabel}
             </CCTerraButton>
 
-            {/* Returning to where you came from beats marching to the next step. */}
-            {ret.isExplicit ? (
+            {forwardAction && (
               <CCTerraButton
                 minW="auto"
-                px="24px"
-                onClick={() => router.push(backHref)}
+                px="l"
+                onClick={() => router.push(forwardAction.href)}
               >
-                {t("save-and-return")}
-              </CCTerraButton>
-            ) : nextStep ? (
-              <CCTerraButton
-                minW="auto"
-                px="24px"
-                onClick={() =>
-                  router.push(
-                    stepHref(lng, cityId, inventoryId, nextStep.segment),
-                  )
-                }
-              >
-                {t("next-step")}
-              </CCTerraButton>
-            ) : (
-              <CCTerraButton
-                minW="auto"
-                px="24px"
-                onClick={() =>
-                  router.push(getMeedPath(lng, cityId, inventoryId))
-                }
-              >
-                {t("back-to-overview")}
+                {forwardAction.label}
               </CCTerraButton>
             )}
           </HStack>

@@ -21,17 +21,17 @@ export function OpportunityCard({ opp, t }: OpportunityCardProps) {
 
   return (
     <Card.Root borderColor="border.neutral">
-      <Card.Body p="12px">
-        <VStack alignItems="stretch" gap="6px">
+      <Card.Body p="m">
+        <VStack alignItems="stretch" gap="s">
           <HStack
             justifyContent="space-between"
             alignItems="flex-start"
-            gap="8px"
+            gap="s"
           >
             <LabelLarge color="content.primary" wordBreak="break-word">
               {opp.opportunity_name ?? t("opportunity-fallback-name")}
             </LabelLarge>
-            <HStack gap="4px" flexShrink={0}>
+            <HStack gap="xs" flexShrink={0}>
               {statusKey && (
                 <MeedStatusTag tone={STATUS_TONE[status] ?? "neutral"}>
                   {t(statusKey)}

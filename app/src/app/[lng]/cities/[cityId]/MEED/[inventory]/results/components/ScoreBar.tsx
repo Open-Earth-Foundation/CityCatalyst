@@ -27,12 +27,18 @@ export function ScoreBar({
 }) {
   const pct = Math.max(0, Math.min(value, 1)) * 100;
   return (
-    <VStack alignItems="stretch" gap="4px">
-      <HStack gap="10px">
+    <VStack alignItems="stretch" gap="xs">
+      <HStack gap="s">
         <LabelMedium color="content.primary" w="140px" flexShrink={0}>
           {label}
         </LabelMedium>
-        <Box flex="1" h="7px" bg="background.neutral" borderRadius="4px" overflow="hidden">
+        <Box
+          flex="1"
+          h="7px"
+          bg="background.neutral"
+          borderRadius="4px"
+          overflow="hidden"
+        >
           <Box h="full" w={`${pct}%`} bg={color} borderRadius="4px" />
         </Box>
         <BodyMedium

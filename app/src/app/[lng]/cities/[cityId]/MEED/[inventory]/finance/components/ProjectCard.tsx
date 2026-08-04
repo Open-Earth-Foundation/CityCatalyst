@@ -46,17 +46,17 @@ export function ProjectCard({ proj, t }: ProjectCardProps) {
 
   return (
     <Card.Root borderColor="border.neutral">
-      <Card.Body p="12px">
-        <VStack alignItems="stretch" gap="8px">
+      <Card.Body p="m">
+        <VStack alignItems="stretch" gap="s">
           <HStack
             justifyContent="space-between"
             alignItems="flex-start"
-            gap="8px"
+            gap="s"
           >
             <LabelLarge color="content.primary" wordBreak="break-word">
               {name}
             </LabelLarge>
-            <HStack gap="4px" flexShrink={0}>
+            <HStack gap="xs" flexShrink={0}>
               {conf && (
                 <MeedStatusTag tone={conf.tone}>
                   {t(conf.labelKey)}
@@ -70,7 +70,7 @@ export function ProjectCard({ proj, t }: ProjectCardProps) {
             </HStack>
           </HStack>
           {proj.jurisdiction && (
-            <HStack gap="4px">
+            <HStack gap="xs">
               <Icon as={LuMapPin} boxSize="12px" color="content.tertiary" />
               <Caption>{proj.jurisdiction}</Caption>
             </HStack>

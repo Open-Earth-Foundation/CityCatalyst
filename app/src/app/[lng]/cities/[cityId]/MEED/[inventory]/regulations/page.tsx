@@ -10,7 +10,11 @@ import {
 import type { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
 import type { MeedPrioritizeCityResult } from "@/util/types/meed";
-import { BodyLarge, BodyMedium, BodySmall } from "@/components/package/Texts/Body";
+import {
+  BodyLarge,
+  BodyMedium,
+  BodySmall,
+} from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
@@ -60,9 +64,9 @@ function SummaryCard({
   return (
     <Card.Root borderColor="border.overlay" h="full">
       <Card.Body>
-        <VStack alignItems="flex-start" gap="4px">
+        <VStack alignItems="flex-start" gap="xs">
           <Overline color="content.tertiary">{label}</Overline>
-          <HStack gap="8px" alignItems="center">
+          <HStack gap="s" alignItems="center">
             <TitleLarge color={countColor} fontVariantNumeric="tabular-nums">
               {count}
             </TitleLarge>
@@ -93,8 +97,8 @@ function ScreenedActionCard({
   return (
     <Card.Root borderColor="border.overlay">
       <Card.Body>
-        <VStack alignItems="stretch" gap="8px">
-          <HStack gap="8px" flexWrap="wrap" alignItems="center">
+        <VStack alignItems="stretch" gap="s">
+          <HStack gap="s" flexWrap="wrap" alignItems="center">
             <BodyMedium color="content.primary" fontWeight="bold" flex="1">
               {action.actionName}
             </BodyMedium>
@@ -108,7 +112,7 @@ function ScreenedActionCard({
             </MeedStatusTag>
           </HStack>
           {hasReasons ? (
-            <VStack alignItems="stretch" gap="4px">
+            <VStack alignItems="stretch" gap="xs">
               <Overline color="content.tertiary">{t("reasons-label")}</Overline>
               {action.reasons!.map((reason, i) => (
                 <BodySmall key={i} color="content.secondary">
@@ -159,15 +163,15 @@ function RegulationsContent({
   }, [inventoryId, stepSub]);
 
   return (
-    <VStack alignItems="stretch" gap="24px">
-      <VStack alignItems="stretch" gap="12px">
+    <VStack alignItems="stretch" gap="l">
+      <VStack alignItems="stretch" gap="m">
         <BodyLarge color="content.secondary">{t("intro")}</BodyLarge>
         <HStack
-          gap="8px"
+          gap="s"
           bg="background.neutral"
           borderRadius="rounded"
-          px="12px"
-          py="6px"
+          px="m"
+          py="s"
           alignSelf="flex-start"
         >
           <Icon as={LuScale} boxSize="14px" color="content.secondary" />
@@ -178,7 +182,7 @@ function RegulationsContent({
       {!ranking ? (
         <Card.Root borderColor="border.neutral">
           <Card.Body>
-            <VStack gap="12px" py="40px" px="24px" textAlign="center">
+            <VStack gap="m" py="xxl" px="l" textAlign="center">
               <Icon as={LuScale} boxSize="32px" color="content.tertiary" />
               <TitleMedium color="content.primary">
                 {t("precondition-title")}
@@ -194,7 +198,7 @@ function RegulationsContent({
         </Card.Root>
       ) : (
         <>
-          <SimpleGrid columns={{ base: 1, md: 3 }} gap="16px">
+          <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
             <SummaryCard
               count={includedCount}
               label={t("summary-included")}
@@ -221,7 +225,7 @@ function RegulationsContent({
           {blocked.length === 0 && flagged.length === 0 && (
             <Card.Root borderColor="border.neutral">
               <Card.Body>
-                <VStack gap="10px" py="28px" px="24px" textAlign="center">
+                <VStack gap="s" py="l" px="l" textAlign="center">
                   <Icon
                     as={LuCircleCheck}
                     boxSize="28px"
@@ -239,12 +243,12 @@ function RegulationsContent({
           )}
 
           {blocked.length > 0 && (
-            <VStack alignItems="stretch" gap="12px">
+            <VStack alignItems="stretch" gap="m">
               <Box>
                 <TitleMedium color="content.primary">
                   {t("blocked-section-title", { count: blocked.length })}
                 </TitleMedium>
-                <BodySmall color="content.secondary" mt="4px">
+                <BodySmall color="content.secondary" mt="xs">
                   {t("blocked-section-description")}
                 </BodySmall>
               </Box>
@@ -260,12 +264,12 @@ function RegulationsContent({
           )}
 
           {flagged.length > 0 && (
-            <VStack alignItems="stretch" gap="12px">
+            <VStack alignItems="stretch" gap="m">
               <Box>
                 <TitleMedium color="content.primary">
                   {t("flagged-section-title", { count: flagged.length })}
                 </TitleMedium>
-                <BodySmall color="content.secondary" mt="4px">
+                <BodySmall color="content.secondary" mt="xs">
                   {t("flagged-section-description")}
                 </BodySmall>
               </Box>

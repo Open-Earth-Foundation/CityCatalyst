@@ -46,7 +46,7 @@ export function FeasibilityRow({
     <>
       <Table.Row>
         <Table.Cell verticalAlign="top">
-          <HStack gap="8px" alignItems="flex-start">
+          <HStack gap="s" alignItems="flex-start">
             <IconButton
               aria-label={t(expanded ? "collapse-row" : "expand-row", {
                 action: name,
@@ -77,7 +77,7 @@ export function FeasibilityRow({
           </Box>
         </Table.Cell>
         <Table.Cell textAlign="end" verticalAlign="top">
-          <HStack gap="8px" justifyContent="flex-end">
+          <HStack gap="s" justifyContent="flex-end">
             <Box
               w="40px"
               flexShrink={0}

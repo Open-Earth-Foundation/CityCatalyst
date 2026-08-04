@@ -67,8 +67,8 @@ function PolicyErrorCard({
   return (
     <Card.Root borderColor="sentiment.negativeDefault">
       <Card.Body>
-        <VStack alignItems="flex-start" gap="12px">
-          <HStack gap="8px">
+        <VStack alignItems="flex-start" gap="m">
+          <HStack gap="s">
             <Icon
               as={LuTriangleAlert}
               boxSize="18px"
@@ -80,7 +80,7 @@ function PolicyErrorCard({
           <CCTerraButton
             variant="outlined"
             minW="auto"
-            px="20px"
+            px="l"
             onClick={onRetry}
             _focusVisible={FOCUS_RING}
           >
@@ -158,11 +158,11 @@ function PolicyAlignmentContent(props: {
 
   const weightStrip = (
     <HStack
-      gap="8px"
+      gap="s"
       bg="background.neutral"
       borderRadius="rounded"
-      px="12px"
-      py="6px"
+      px="m"
+      py="s"
       alignItems="center"
     >
       <Icon as={LuClipboardList} boxSize="14px" color="content.secondary" />
@@ -173,7 +173,7 @@ function PolicyAlignmentContent(props: {
   );
 
   const intro = (
-    <VStack alignItems="stretch" gap="8px">
+    <VStack alignItems="stretch" gap="s">
       <BodyLarge color="content.secondary">{t("policy-description")}</BodyLarge>
       {weightStrip}
     </VStack>
@@ -181,7 +181,7 @@ function PolicyAlignmentContent(props: {
 
   if (isError) {
     return (
-      <VStack alignItems="stretch" gap="24px">
+      <VStack alignItems="stretch" gap="l">
         {intro}
         <PolicyErrorCard
           title={t("policy-error-title")}
@@ -195,9 +195,9 @@ function PolicyAlignmentContent(props: {
 
   if (isLoading) {
     return (
-      <VStack alignItems="stretch" gap="24px">
+      <VStack alignItems="stretch" gap="l">
         {intro}
-        <SimpleGrid columns={{ base: 1, md: 3 }} gap="12px">
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
           <MeedCardSkeleton lines={2} />
           <MeedCardSkeleton lines={2} />
           <MeedCardSkeleton lines={2} />
@@ -209,7 +209,7 @@ function PolicyAlignmentContent(props: {
 
   if (rows.length === 0) {
     return (
-      <VStack alignItems="stretch" gap="24px">
+      <VStack alignItems="stretch" gap="l">
         {intro}
         <EmptyState
           title={t("no-policy-title")}
@@ -224,19 +224,19 @@ function PolicyAlignmentContent(props: {
     POLICY_COLUMN_WIDTHS;
 
   return (
-    <VStack alignItems="stretch" gap="24px">
+    <VStack alignItems="stretch" gap="l">
       {intro}
 
-      <HStack gap="12px" flexWrap="wrap">
+      <HStack gap="m" flexWrap="wrap">
         <MeedStatusTag tone="positive">
           {t("actions-assessed", { n: totalActions })}
         </MeedStatusTag>
         <HStack
-          gap="8px"
+          gap="s"
           bg="background.neutral"
           borderRadius="rounded"
-          px="12px"
-          py="6px"
+          px="m"
+          py="s"
         >
           <Icon as={LuClipboardList} boxSize="14px" color="content.secondary" />
           <Caption color="content.secondary">
@@ -249,7 +249,7 @@ function PolicyAlignmentContent(props: {
         </HStack>
       </HStack>
 
-      <SimpleGrid columns={{ base: 1, md: 3 }} gap="12px">
+      <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
         <ScopeScoreCard
           scopeLabel={t("national-plan-alignment")}
           score={aggregates.national}
@@ -285,7 +285,7 @@ function PolicyAlignmentContent(props: {
         />
       </SimpleGrid>
 
-      <VStack alignItems="stretch" gap="4px">
+      <VStack alignItems="stretch" gap="xs">
         <TitleMedium color="content.primary">
           {t("actions-table-title")}
         </TitleMedium>
@@ -295,7 +295,7 @@ function PolicyAlignmentContent(props: {
       </VStack>
 
       <Card.Root overflow="hidden" borderColor="border.neutral">
-        <Table.Root size="sm" tableLayout="fixed">
+        <Table.Root size="md" tableLayout="fixed">
           <Table.Header>
             <Table.Row bg="background.neutral">
               <PolicyColumnHeader label={t("column-action")} width={wAction} />
@@ -340,7 +340,7 @@ function PolicyAlignmentContent(props: {
         </Table.Root>
       </Card.Root>
 
-      <HStack justifyContent="space-between" flexWrap="wrap" gap="8px">
+      <HStack justifyContent="space-between" flexWrap="wrap" gap="s">
         <Caption>
           {t("sorted-by-note", {
             column: t(

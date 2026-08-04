@@ -102,7 +102,7 @@ export function PolicyActionRow({ row, index, t }: PolicyActionRowProps) {
     <>
       <Table.Row>
         <Table.Cell verticalAlign="top">
-          <HStack gap="8px" alignItems="flex-start">
+          <HStack gap="s" alignItems="flex-start">
             {hasEvidence ? (
               <IconButton
                 aria-label={t(expanded ? "collapse-action" : "expand-action", {
@@ -130,7 +130,7 @@ export function PolicyActionRow({ row, index, t }: PolicyActionRowProps) {
         <ScopeCell value={row.scopeMax.Regional} t={t} />
         <ScopeCell value={row.scopeMax.Municipal} t={t} />
         <Table.Cell textAlign="end">
-          <HStack gap="8px" justifyContent="flex-end">
+          <HStack gap="s" justifyContent="flex-end">
             <Box w="48px" flexShrink={0}>
               <MeedMeter
                 value={row.score}
@@ -152,7 +152,7 @@ export function PolicyActionRow({ row, index, t }: PolicyActionRowProps) {
 
       {expanded && (
         <Table.Row bg="background.neutral">
-          <Table.Cell colSpan={5} id={detailId} px="16px" py="12px">
+          <Table.Cell colSpan={5} id={detailId} px="m" py="m">
             <Box overflowX="auto">
               <Box
                 display="grid"

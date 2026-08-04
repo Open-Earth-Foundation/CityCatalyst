@@ -30,9 +30,9 @@ export function ScopeScoreCard({
 
   return (
     <Card.Root h="full" borderColor="border.overlay">
-      <Card.Body p="16px">
-        <VStack alignItems="stretch" gap="8px" h="full">
-          <HStack justifyContent="space-between" alignItems="center" gap="8px">
+      <Card.Body p="m">
+        <VStack alignItems="stretch" gap="s" h="full">
+          <HStack justifyContent="space-between" alignItems="center" gap="s">
             <Overline>{scopeLabel}</Overline>
             <TitleLarge color={textColor} fontVariantNumeric="tabular-nums">
               {pct !== null ? t("percent-value", { value: pct }) : "—"}

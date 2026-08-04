@@ -25,28 +25,28 @@ export function CityProfileCard({
 }: CityProfileCardProps) {
   return (
     <Card.Root borderColor="border.neutral">
-      <Card.Body p="24px">
-        <VStack alignItems="stretch" gap="16px">
+      <Card.Body p="l">
+        <VStack alignItems="stretch" gap="m">
           <TitleMedium color="content.primary">
             {t("financial-profile-title", { city: cityName })}
           </TitleMedium>
 
           <HStack
-            gap="12px"
+            gap="m"
             bg="background.neutral"
             borderRadius="rounded"
-            px="16px"
-            py="12px"
+            px="m"
+            py="m"
             alignItems="flex-start"
           >
             <Icon
               as={LuLandmark}
               boxSize="20px"
               color="content.secondary"
-              mt="2px"
+              mt="xs"
               flexShrink={0}
             />
-            <VStack alignItems="flex-start" gap="4px">
+            <VStack alignItems="flex-start" gap="xs">
               <LabelLarge color="content.primary">
                 {t(profile.labelKey)}
               </LabelLarge>
@@ -57,7 +57,7 @@ export function CityProfileCard({
           </HStack>
 
           {(profile.fa || profile.dc) && (
-            <SimpleGrid columns={{ base: 1, sm: 2 }} gap="16px">
+            <SimpleGrid columns={{ base: 1, sm: 2 }} gap="m">
               {profile.fa && (
                 <LevelMeter
                   label={t("factor-financial-autonomy")}
@@ -77,13 +77,13 @@ export function CityProfileCard({
             </SimpleGrid>
           )}
 
-          <VStack alignItems="stretch" gap="8px">
+          <VStack alignItems="stretch" gap="s">
             <Overline>{t("route-legend-title")}</Overline>
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap="12px">
+            <SimpleGrid columns={{ base: 1, md: 3 }} gap="m">
               {(["self", "cofinance", "support"] as const).map((key) => (
                 <Card.Root key={key} h="full" borderColor="border.neutral">
-                  <Card.Body p="12px">
-                    <VStack alignItems="flex-start" gap="6px">
+                  <Card.Body p="m">
+                    <VStack alignItems="flex-start" gap="s">
                       <RouteTag routeKey={key} t={t} />
                       <Caption color="content.secondary">
                         {t(ROUTE_META[key].taglineKey)}

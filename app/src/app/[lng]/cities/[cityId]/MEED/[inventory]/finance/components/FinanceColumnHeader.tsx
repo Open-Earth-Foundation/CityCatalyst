@@ -58,7 +58,7 @@ export function FinanceColumnHeader({
       aria-sort={ariaSort}
       {...HEADER_CELL}
     >
-      <HStack gap="2px" justifyContent={justify}>
+      <HStack gap="xs" justifyContent={justify}>
         {onSort ? (
           <chakra.button
             type="button"
@@ -66,10 +66,10 @@ export function FinanceColumnHeader({
             aria-label={sortAriaLabel}
             display="inline-flex"
             alignItems="center"
-            gap="4px"
+            gap="xs"
             cursor="pointer"
             borderRadius="4px"
-            px="2px"
+            px="xs"
             _hover={{ "& *": { color: "content.link" } }}
             _focusVisible={FOCUS_RING}
           >

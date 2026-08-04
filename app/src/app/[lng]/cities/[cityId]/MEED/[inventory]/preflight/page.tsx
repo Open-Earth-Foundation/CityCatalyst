@@ -137,8 +137,8 @@ function WeightSlider({
 }) {
   const isDefault = value === defaultValue;
   return (
-    <VStack alignItems="stretch" gap="8px">
-      <HStack justifyContent="space-between" alignItems="center" gap="8px">
+    <VStack alignItems="stretch" gap="s">
+      <HStack justifyContent="space-between" alignItems="center" gap="s">
         <VStack alignItems="flex-start" gap="0" minW="0" flex="1">
           <LabelLarge color="content.primary">{label}</LabelLarge>
           <Caption color="content.tertiary">{description}</Caption>
@@ -166,7 +166,7 @@ function WeightSlider({
         }
         _focusWithin={FOCUS_RING}
       />
-      <HStack justifyContent="space-between" gap="8px">
+      <HStack justifyContent="space-between" gap="s">
         <Caption color="content.tertiary">5%</Caption>
         <Caption color="content.tertiary" textAlign="center">
           {isDefault
@@ -200,13 +200,13 @@ function CompletenessRow({
     <HStack
       justifyContent="space-between"
       alignItems="center"
-      gap="16px"
-      py="12px"
+      gap="m"
+      py="m"
       borderBottomWidth={isLast ? "0" : "1px"}
       borderColor="border.overlay"
     >
-      <VStack alignItems="flex-start" gap="4px" flex="1" minW="0">
-        <HStack gap="8px" flexWrap="wrap" alignItems="center">
+      <VStack alignItems="flex-start" gap="xs" flex="1" minW="0">
+        <HStack gap="s" flexWrap="wrap" alignItems="center">
           <LabelLarge color="content.primary">{label}</LabelLarge>
           <MeedStatusTag tone={STATUS_TONE[status]}>
             {t(STATUS_LABEL_KEY[status])}
@@ -323,21 +323,21 @@ function PreflightContent(props: {
   }
 
   return (
-    <VStack alignItems="stretch" gap="24px">
+    <VStack alignItems="stretch" gap="l">
       <BodyLarge color="content.secondary">{t("description")}</BodyLarge>
 
       <SimpleGrid
         columns={{ base: 1, lg: 2 }}
         gridTemplateColumns={{ lg: "1fr 380px" }}
         alignItems="start"
-        gap="24px"
+        gap="l"
       >
         {/* Left — what the model has to work with. */}
-        <VStack alignItems="stretch" gap="24px">
+        <VStack alignItems="stretch" gap="l">
           {isReady ? (
             <Card.Root borderColor="border.overlay">
               <Card.Body>
-                <VStack alignItems="stretch" gap="8px">
+                <VStack alignItems="stretch" gap="s">
                   <TitleMedium color="content.primary">
                     {t("data-completeness-title")}
                   </TitleMedium>
@@ -370,14 +370,14 @@ function PreflightContent(props: {
           {/* Confirmed exclusions */}
           <Card.Root borderColor="border.overlay">
             <Card.Body>
-              <VStack alignItems="stretch" gap="12px">
+              <VStack alignItems="stretch" gap="m">
                 <TitleMedium color="content.primary">
                   {t("exclusions-title")}
                 </TitleMedium>
 
                 {hasExclusionCriteria ? (
-                  <VStack alignItems="stretch" gap="10px">
-                    <VStack alignItems="stretch" gap="2px">
+                  <VStack alignItems="stretch" gap="s">
+                    <VStack alignItems="stretch" gap="xs">
                       <LabelMedium color="content.secondary">
                         {t("excluded-sectors-label")}
                       </LabelMedium>
@@ -389,7 +389,7 @@ function PreflightContent(props: {
                           : t("none")}
                       </BodySmall>
                     </VStack>
-                    <VStack alignItems="stretch" gap="2px">
+                    <VStack alignItems="stretch" gap="xs">
                       <LabelMedium color="content.secondary">
                         {t("excluded-co-benefits-label")}
                       </LabelMedium>
@@ -401,7 +401,7 @@ function PreflightContent(props: {
                           : t("none")}
                       </BodySmall>
                     </VStack>
-                    <VStack alignItems="stretch" gap="2px">
+                    <VStack alignItems="stretch" gap="xs">
                       <LabelMedium color="content.secondary">
                         {t("excluded-free-text-label")}
                       </LabelMedium>
@@ -459,15 +459,15 @@ function PreflightContent(props: {
         </VStack>
 
         {/* Right — how confident the model is, and how it is weighted. */}
-        <VStack alignItems="stretch" gap="24px">
+        <VStack alignItems="stretch" gap="l">
           {isReady ? (
             <Card.Root borderColor="border.overlay">
               <Card.Body>
-                <VStack alignItems="stretch" gap="10px">
+                <VStack alignItems="stretch" gap="s">
                   <TitleMedium color="content.primary">
                     {t("confidence-title")}
                   </TitleMedium>
-                  <HStack alignItems="baseline" gap="8px">
+                  <HStack alignItems="baseline" gap="s">
                     <TitleLarge
                       color="content.primary"
                       fontSize="40px"
@@ -511,8 +511,8 @@ function PreflightContent(props: {
           {/* Scoring weights */}
           <Card.Root borderColor="border.overlay">
             <Card.Body>
-              <VStack alignItems="stretch" gap="16px">
-                <HStack gap="10px" alignItems="center" flexWrap="wrap">
+              <VStack alignItems="stretch" gap="m">
+                <HStack gap="s" alignItems="center" flexWrap="wrap">
                   <TitleMedium color="content.primary">
                     {t("scoring-weights-title")}
                   </TitleMedium>
@@ -525,7 +525,7 @@ function PreflightContent(props: {
                     {t("badge-optional")}
                   </MeedStatusTag>
                 </HStack>
-                <VStack alignItems="stretch" gap="4px">
+                <VStack alignItems="stretch" gap="xs">
                   <BodySmall color="content.secondary">
                     {t("scoring-weights-description")}
                   </BodySmall>
@@ -537,7 +537,7 @@ function PreflightContent(props: {
                     })}
                   </Caption>
                 </VStack>
-                <VStack alignItems="stretch" gap="20px">
+                <VStack alignItems="stretch" gap="l">
                   {WEIGHT_KEYS.map((key) => (
                     <WeightSlider
                       key={key}
@@ -550,7 +550,7 @@ function PreflightContent(props: {
                     />
                   ))}
                 </VStack>
-                <HStack gap="10px" flexWrap="wrap" alignItems="center">
+                <HStack gap="s" flexWrap="wrap" alignItems="center">
                   <MeedStatusTag
                     tone={totalIsValid ? "positive" : "negative"}
                     aria-live="polite"
@@ -561,7 +561,7 @@ function PreflightContent(props: {
                     <CCTerraButton
                       variant="text"
                       minW="auto"
-                      px="12px"
+                      px="m"
                       onClick={resetWeights}
                       _focusVisible={FOCUS_RING}
                     >
@@ -576,12 +576,12 @@ function PreflightContent(props: {
           {/* Generate ranking CTA */}
           <Card.Root borderColor="border.overlay">
             <Card.Body>
-              <VStack alignItems="stretch" gap="12px">
+              <VStack alignItems="stretch" gap="m">
                 <MeedGateNotice gate={gate} t={t} id="meed-preflight-gate" />
                 <CCTerraButton
                   variant="filled"
                   minW="auto"
-                  px="24px"
+                  px="l"
                   alignSelf="flex-start"
                   leftIcon={<LuZap size={16} />}
                   disabled={!gate.canGenerate}

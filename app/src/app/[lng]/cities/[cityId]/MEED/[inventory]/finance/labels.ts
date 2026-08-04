@@ -240,13 +240,17 @@ export function withLimit(link: string, limit: number): string {
 
 // ─── Table layout & sorting ───────────────────────────────────────────────────
 
-/** Column widths, summing to 100%. Without these the table collapses. */
+/**
+ * Column widths, summing to 100%. Without these the table collapses.
+ * Route carries the longest chip ("Needs finance & support"), so it gets more
+ * room than the numeric columns, which only ever hold a short value.
+ */
 export const FINANCE_COLUMN_WIDTHS = [
-  "38%",
-  "16%",
-  "18%",
-  "14%",
-  "14%",
+  "34%",
+  "15%",
+  "23%",
+  "13%",
+  "15%",
 ] as const;
 
 export type SortDirection = "asc" | "desc";

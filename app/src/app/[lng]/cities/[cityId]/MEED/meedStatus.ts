@@ -91,3 +91,21 @@ export function countByStatus(states: MeedSectionStates) {
     total: MEED_WIZARD_STEPS.length,
   };
 }
+
+/**
+ * Fingerprint of every input that feeds a ranking. Stored alongside a generated
+ * ranking so the overview can tell whether the user's answers have moved on
+ * since — a ranking that no longer matches its inputs should say so rather than
+ * quietly look current.
+ */
+export function inputsFingerprint(states: MeedSectionStates): string {
+  return MEED_WIZARD_STEPS.map((step) => {
+    const state = states[step.key];
+    return [
+      step.key,
+      state?.status ?? "not-started",
+      state?.progress ?? 0,
+      state?.sub ?? "",
+    ].join(":");
+  }).join("|");
+}

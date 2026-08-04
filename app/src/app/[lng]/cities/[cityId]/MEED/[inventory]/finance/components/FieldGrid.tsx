@@ -25,7 +25,7 @@ export function FieldGrid({
   return (
     <SimpleGrid columns={columns} gap="8px 16px">
       {fields.map((field) => (
-        <VStack key={field.label} alignItems="flex-start" gap="2px" minW="0">
+        <VStack key={field.label} alignItems="flex-start" gap="xs" minW="0">
           <Overline>{field.label}</Overline>
           <BodySmall color="content.primary" wordBreak="break-word">
             {field.value}

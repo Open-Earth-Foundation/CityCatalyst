@@ -13,10 +13,10 @@ import { Skeleton, SkeletonText } from "@/components/ui/skeleton";
 export function MeedTableSkeleton({ rows = 6 }: { rows?: number }) {
   return (
     <Card.Root overflow="hidden">
-      <Stack gap="0" p="16px">
-        <Skeleton height="20px" width="40%" mb="16px" />
+      <Stack gap="0" p="m">
+        <Skeleton height="20px" width="40%" mb="m" />
         {Array.from({ length: rows }).map((_, i) => (
-          <HStack key={i} py="12px" gap="16px">
+          <HStack key={i} py="m" gap="m">
             <Skeleton height="14px" flex="2" />
             <Skeleton height="14px" flex="1" />
             <Skeleton height="14px" flex="1" />
@@ -32,9 +32,9 @@ export function MeedCardSkeleton({ lines = 2 }: { lines?: number }) {
   return (
     <Card.Root>
       <Card.Body>
-        <VStack alignItems="stretch" gap="12px">
+        <VStack alignItems="stretch" gap="m">
           <Skeleton height="18px" width="55%" />
-          <SkeletonText noOfLines={lines} gap="8px" />
+          <SkeletonText noOfLines={lines} gap="s" />
         </VStack>
       </Card.Body>
     </Card.Root>
@@ -43,9 +43,9 @@ export function MeedCardSkeleton({ lines = 2 }: { lines?: number }) {
 
 export function MeedStatStripSkeleton({ items = 4 }: { items?: number }) {
   return (
-    <SimpleGrid columns={{ base: 2, md: items }} gap="16px">
+    <SimpleGrid columns={{ base: 2, md: items }} gap="m">
       {Array.from({ length: items }).map((_, i) => (
-        <VStack key={i} alignItems="flex-start" gap="8px">
+        <VStack key={i} alignItems="flex-start" gap="s">
           <Skeleton height="12px" width="70%" />
           <Skeleton height="24px" width="50%" />
         </VStack>
@@ -56,7 +56,7 @@ export function MeedStatStripSkeleton({ items = 4 }: { items?: number }) {
 
 export function MeedCardGridSkeleton({ items = 6 }: { items?: number }) {
   return (
-    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="16px">
+    <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="m">
       {Array.from({ length: items }).map((_, i) => (
         <MeedCardSkeleton key={i} />
       ))}

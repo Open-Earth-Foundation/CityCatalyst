@@ -44,14 +44,14 @@ export function MeedGateNotice({ gate, t, id }: MeedGateNoticeProps) {
   return (
     <HStack
       id={id}
-      gap="8px"
-      px="12px"
-      py="8px"
+      gap="s"
+      px="m"
+      py="s"
       borderRadius="rounded"
       bg={tone.bg}
       alignItems="flex-start"
     >
-      <Icon as={tone.icon} boxSize="16px" color={tone.color} mt="2px" />
+      <Icon as={tone.icon} boxSize="16px" color={tone.color} mt="xs" />
       <BodyMedium color={tone.color}>
         {t(gate.reasonKey, gate.reasonValues)}
       </BodyMedium>

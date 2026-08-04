@@ -1,13 +1,6 @@
 "use client";
 import React from "react";
-import {
-  Box,
-  Card,
-  HStack,
-  Icon,
-  IconButton,
-  Table,
-} from "@chakra-ui/react";
+import { Box, Card, HStack, Icon, IconButton, Table } from "@chakra-ui/react";
 import { LuSquareArrowOutUpRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
@@ -41,13 +34,13 @@ export function RankingTable({
 }) {
   return (
     <Card.Root overflow="hidden">
-      <Box px="20px" py="16px" borderBottomWidth="1px" borderColor="border.overlay">
+      <Box px="l" py="m" borderBottomWidth="1px" borderColor="border.overlay">
         <TitleMedium color="content.primary">{t("table-title")}</TitleMedium>
-        <BodySmall color="content.secondary" mt="2px">
+        <BodySmall color="content.secondary" mt="xs">
           {t("table-description", { count: actions.length })}
         </BodySmall>
       </Box>
-      <Table.Root size="sm">
+      <Table.Root size="md">
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeader>{t("column-rank")}</Table.ColumnHeader>
@@ -81,7 +74,7 @@ export function RankingTable({
                   </BodyMedium>
                 </Table.Cell>
                 <Table.Cell>
-                  <HStack gap="8px">
+                  <HStack gap="s">
                     <Box w="80px" flexShrink={0}>
                       <ReductionBar level={level} />
                     </Box>

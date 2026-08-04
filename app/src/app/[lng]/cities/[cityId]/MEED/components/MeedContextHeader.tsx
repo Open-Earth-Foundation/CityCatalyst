@@ -1,5 +1,11 @@
 "use client";
-import { Box, HStack, Icon, Link as ChakraLink, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  HStack,
+  Icon,
+  Link as ChakraLink,
+  VStack,
+} from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
@@ -54,9 +60,9 @@ export function MeedContextHeader({
       borderBottomWidth="1px"
       borderColor="border.overlay"
     >
-      <Box mx="auto" w="full" maxW="1090px" px="24px" py="12px">
-        <HStack justifyContent="space-between" alignItems="center" gap="16px">
-          <HStack gap="12px" minW="0">
+      <Box mx="auto" w="full" maxW="1090px" px="l" py="m">
+        <HStack justifyContent="space-between" alignItems="center" gap="m">
+          <HStack gap="m" minW="0">
             <ChakraLink
               asChild
               aria-label={backLabel}
@@ -75,7 +81,7 @@ export function MeedContextHeader({
 
             <VStack alignItems="flex-start" gap="0" minW="0">
               {/* Breadcrumb: where this screen sits, and the way out. */}
-              <HStack gap="4px" color="content.tertiary">
+              <HStack gap="xs" color="content.tertiary">
                 <ChakraLink
                   asChild
                   color="content.tertiary"
@@ -89,7 +95,7 @@ export function MeedContextHeader({
                 <Icon as={LuChevronRight} boxSize="12px" />
                 <Overline color="content.secondary">{currentLabel}</Overline>
               </HStack>
-              <HStack gap="8px" alignItems="baseline" minW="0">
+              <HStack gap="s" alignItems="baseline" minW="0">
                 <TitleMedium color="content.primary" truncate>
                   {cityName ?? ""}
                 </TitleMedium>

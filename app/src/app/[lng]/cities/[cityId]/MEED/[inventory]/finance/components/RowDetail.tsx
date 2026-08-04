@@ -42,8 +42,8 @@ const INITIAL_PROJECTS = 3;
 function DetailEmpty({ title, body }: { title: string; body: string }) {
   return (
     <Card.Root borderColor="border.neutral">
-      <Card.Body py="24px" px="16px">
-        <VStack gap="8px" textAlign="center" maxW="360px" mx="auto">
+      <Card.Body py="l" px="m">
+        <VStack gap="s" textAlign="center" maxW="360px" mx="auto">
           <Icon as={LuInbox} boxSize="24px" color="content.tertiary" />
           <LabelLarge color="content.primary">{title}</LabelLarge>
           <Caption>{body}</Caption>
@@ -105,15 +105,15 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
     : projects.rows.slice(0, INITIAL_PROJECTS);
 
   return (
-    <VStack alignItems="stretch" gap="16px" px="24px" py="16px">
+    <VStack alignItems="stretch" gap="m" px="l" py="m">
       {row.reason && (
         <BodyMedium color="content.secondary">{row.reason}</BodyMedium>
       )}
 
       {(ciLevel || pcLevel || profile.fa || profile.dc) && (
-        <SimpleGrid columns={{ base: 1, md: 2 }} gap="24px">
+        <SimpleGrid columns={{ base: 1, md: 2 }} gap="l">
           {(ciLevel || pcLevel) && (
-            <VStack alignItems="stretch" gap="12px">
+            <VStack alignItems="stretch" gap="m">
               <Overline>{t("what-action-needs")}</Overline>
               {ciLevel && (
                 <LevelMeter
@@ -134,7 +134,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
             </VStack>
           )}
           {(profile.fa || profile.dc) && (
-            <VStack alignItems="stretch" gap="12px">
+            <VStack alignItems="stretch" gap="m">
               <Overline>{t("what-city-has", { city: cityName })}</Overline>
               {profile.fa && (
                 <LevelMeter
@@ -160,8 +160,8 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
       <Separator borderColor="border.overlay" />
 
       {/* Funding opportunities */}
-      <VStack alignItems="stretch" gap="8px">
-        <HStack justifyContent="space-between" gap="8px">
+      <VStack alignItems="stretch" gap="s">
+        <HStack justifyContent="space-between" gap="s">
           <Overline>{t("fund-access-title")}</Overline>
           {selfFundable ? (
             <MeedStatusTag tone="positive">
@@ -184,8 +184,8 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
           <Box
             bg="sentiment.positiveOverlay"
             borderRadius="rounded"
-            px="12px"
-            py="10px"
+            px="m"
+            py="s"
           >
             <BodySmall color="content.secondary">
               {t("self-fundable-note")}
@@ -211,7 +211,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
                 alignSelf="flex-start"
                 minW="auto"
                 h="32px"
-                px="8px"
+                px="s"
                 onClick={() => setShowAllOpps((v) => !v)}
                 _focusVisible={FOCUS_RING}
               >
@@ -227,8 +227,8 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
       <Separator borderColor="border.overlay" />
 
       {/* Matched projects */}
-      <VStack alignItems="stretch" gap="8px">
-        <HStack justifyContent="space-between" gap="8px">
+      <VStack alignItems="stretch" gap="s">
+        <HStack justifyContent="space-between" gap="s">
           <Overline>{t("matched-projects-title")}</Overline>
           {!projectsLoading && projects.rows.length > 0 && (
             <MeedStatusTag tone="neutral">
@@ -255,7 +255,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
                 alignSelf="flex-start"
                 minW="auto"
                 h="32px"
-                px="8px"
+                px="s"
                 onClick={() => setShowAllProjects((v) => !v)}
                 _focusVisible={FOCUS_RING}
               >

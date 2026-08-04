@@ -59,13 +59,13 @@ function StageRow({
   return (
     <HStack
       alignItems="flex-start"
-      gap="12px"
-      px="24px"
-      py="14px"
+      gap="m"
+      px="l"
+      py="m"
       borderTopWidth="1px"
       borderColor="border.overlay"
     >
-      <Box flexShrink={0} mt="2px">
+      <Box flexShrink={0} mt="xs">
         {status === "complete" && (
           <Icon
             as={LuCircleCheck}
@@ -84,10 +84,12 @@ function StageRow({
           />
         )}
       </Box>
-      <VStack alignItems="stretch" gap="3px" flex="1" minW="0">
+      <VStack alignItems="stretch" gap="xs" flex="1" minW="0">
         <HStack justifyContent="space-between">
           <LabelMedium
-            color={status === "pending" ? "content.tertiary" : "content.primary"}
+            color={
+              status === "pending" ? "content.tertiary" : "content.primary"
+            }
           >
             {t(`stage-${stageId}`)}
           </LabelMedium>
@@ -105,13 +107,15 @@ function StageRow({
           )}
         </HStack>
         <BodySmall
-          color={status === "pending" ? "content.tertiary" : "content.secondary"}
+          color={
+            status === "pending" ? "content.tertiary" : "content.secondary"
+          }
         >
           {t(`stage-${stageId}-desc`)}
         </BodySmall>
         {status === "running" && (
           <Box
-            mt="6px"
+            mt="s"
             h="4px"
             bg="background.neutral"
             borderRadius="3px"
@@ -168,8 +172,7 @@ export default function Page(props: {
   useEffect(() => {
     if (!done) return;
     const timeout = setTimeout(
-      () =>
-        router.push(`/${lng}/cities/${cityId}/MEED/${inventoryId}/results`),
+      () => router.push(`/${lng}/cities/${cityId}/MEED/${inventoryId}/results`),
       NAVIGATE_DELAY_MS,
     );
     return () => clearTimeout(timeout);
@@ -184,15 +187,15 @@ export default function Page(props: {
       display="flex"
       flexDirection="column"
       alignItems="center"
-      py="48px"
-      px="24px"
+      py="xxl-2"
+      px="l"
     >
       <Card.Root maxW="620px" w="full" overflow="hidden">
         {/* Header */}
         <HStack
-          gap="14px"
-          px="24px"
-          py="18px"
+          gap="m"
+          px="l"
+          py="m"
           bg="background.neutral"
           borderBottomWidth="1px"
           borderColor="border.overlay"
@@ -206,7 +209,7 @@ export default function Page(props: {
           ) : (
             <Spinner size="lg" color="content.link" />
           )}
-          <VStack alignItems="flex-start" gap="2px">
+          <VStack alignItems="flex-start" gap="xs">
             <TitleMedium
               color={done ? "sentiment.positiveDefault" : "content.primary"}
             >
@@ -217,8 +220,13 @@ export default function Page(props: {
         </HStack>
 
         {/* Overall progress */}
-        <Box px="24px" pt="16px">
-          <Box h="6px" bg="background.neutral" borderRadius="4px" overflow="hidden">
+        <Box px="l" pt="m">
+          <Box
+            h="6px"
+            bg="background.neutral"
+            borderRadius="4px"
+            overflow="hidden"
+          >
             <Box
               h="full"
               w={`${displayPct}%`}
@@ -229,20 +237,22 @@ export default function Page(props: {
           </Box>
           <BodySmall
             color="content.secondary"
-            mt="6px"
-            mb="4px"
+            mt="s"
+            mb="xs"
             aria-live="polite"
           >
             {t("percent-complete", { pct: displayPct })}
             {" — "}
             {done
               ? t("all-complete")
-              : t("stage-in-progress", { stage: t(currentStageKey(displayPct)) })}
+              : t("stage-in-progress", {
+                  stage: t(currentStageKey(displayPct)),
+                })}
           </BodySmall>
         </Box>
 
         {/* Stage rows */}
-        <Box pt="4px">
+        <Box pt="xs">
           {STAGES.map((stageId, i) => (
             <StageRow
               key={stageId}
@@ -256,14 +266,14 @@ export default function Page(props: {
 
         {/* Footer */}
         <HStack
-          gap="10px"
-          mx="16px"
-          mb="16px"
-          mt="12px"
+          gap="s"
+          mx="m"
+          mb="m"
+          mt="m"
           bg="background.neutral"
           borderRadius="8px"
-          px="16px"
-          py="12px"
+          px="m"
+          py="m"
         >
           <Icon
             as={LuCircleCheck}
@@ -277,15 +287,13 @@ export default function Page(props: {
 
       {/* An unattended progress screen with no exit is a trap. */}
       {!done && (
-        <Box mt="20px">
+        <Box mt="l">
           <CCTerraButton
             variant="text"
             minW="auto"
-            px="16px"
+            px="m"
             onClick={() =>
-              router.push(
-                getMeedPath(lng, cityId, inventoryId, "preflight"),
-              )
+              router.push(getMeedPath(lng, cityId, inventoryId, "preflight"))
             }
           >
             {t("cancel")}

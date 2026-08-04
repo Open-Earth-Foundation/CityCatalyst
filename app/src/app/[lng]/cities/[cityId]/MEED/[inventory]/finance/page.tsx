@@ -56,8 +56,8 @@ function FinanceErrorCard({
   return (
     <Card.Root borderColor="sentiment.negativeDefault">
       <Card.Body>
-        <VStack alignItems="flex-start" gap="12px">
-          <HStack gap="8px">
+        <VStack alignItems="flex-start" gap="m">
+          <HStack gap="s">
             <Icon
               as={LuTriangleAlert}
               boxSize="18px"
@@ -69,7 +69,7 @@ function FinanceErrorCard({
           <CCTerraButton
             variant="outlined"
             minW="auto"
-            px="20px"
+            px="l"
             onClick={onRetry}
             _focusVisible={FOCUS_RING}
           >
@@ -131,11 +131,11 @@ function FinancialFeasibilityContent(props: {
 
   const weightStrip = (
     <HStack
-      gap="8px"
+      gap="s"
       bg="background.neutral"
       borderRadius="rounded"
-      px="12px"
-      py="6px"
+      px="m"
+      py="s"
       alignItems="center"
     >
       <Icon as={LuCoins} boxSize="14px" color="content.secondary" />
@@ -146,7 +146,7 @@ function FinancialFeasibilityContent(props: {
   );
 
   const intro = (
-    <VStack alignItems="stretch" gap="8px">
+    <VStack alignItems="stretch" gap="s">
       <BodyLarge color="content.secondary">
         {t("finance-description", { city: cityName })}
       </BodyLarge>
@@ -156,7 +156,7 @@ function FinancialFeasibilityContent(props: {
 
   if (isError) {
     return (
-      <VStack alignItems="stretch" gap="24px">
+      <VStack alignItems="stretch" gap="l">
         {intro}
         <FinanceErrorCard
           title={t("finance-error-title")}
@@ -170,7 +170,7 @@ function FinancialFeasibilityContent(props: {
 
   if (isLoading) {
     return (
-      <VStack alignItems="stretch" gap="24px">
+      <VStack alignItems="stretch" gap="l">
         {intro}
         <MeedCardSkeleton lines={4} />
         <MeedTableSkeleton rows={8} />
@@ -180,7 +180,7 @@ function FinancialFeasibilityContent(props: {
 
   if (rows.length === 0) {
     return (
-      <VStack alignItems="stretch" gap="24px">
+      <VStack alignItems="stretch" gap="l">
         {intro}
         <EmptyState
           title={t("no-finance-title")}
@@ -194,7 +194,7 @@ function FinancialFeasibilityContent(props: {
   const [wAction, wSector, wRoute, wScore, wFunds] = FINANCE_COLUMN_WIDTHS;
 
   return (
-    <VStack alignItems="stretch" gap="24px">
+    <VStack alignItems="stretch" gap="l">
       {intro}
 
       <CityProfileCard
@@ -203,7 +203,7 @@ function FinancialFeasibilityContent(props: {
         t={t}
       />
 
-      <VStack alignItems="stretch" gap="4px">
+      <VStack alignItems="stretch" gap="xs">
         <TitleMedium color="content.primary">{t("table-title")}</TitleMedium>
         <BodyMedium color="content.tertiary">
           {t("table-description")}
@@ -221,7 +221,7 @@ function FinancialFeasibilityContent(props: {
       />
 
       <Card.Root overflow="hidden" borderColor="border.neutral">
-        <Table.Root id={TABLE_ID} size="sm" tableLayout="fixed">
+        <Table.Root id={TABLE_ID} size="md" tableLayout="fixed">
           <Table.Header>
             <Table.Row bg="background.neutral">
               <FinanceColumnHeader label={t("column-action")} width={wAction} />
@@ -281,7 +281,7 @@ function FinancialFeasibilityContent(props: {
         </Table.Root>
       </Card.Root>
 
-      <HStack justifyContent="space-between" flexWrap="wrap" gap="8px">
+      <HStack justifyContent="space-between" flexWrap="wrap" gap="s">
         <Caption>
           {t("sorted-by-note", {
             direction: t(

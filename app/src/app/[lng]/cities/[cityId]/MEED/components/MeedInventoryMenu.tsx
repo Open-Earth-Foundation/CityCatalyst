@@ -43,9 +43,9 @@ export function MeedInventoryMenu({
           aria-label={t("switch-inventory")}
           display="flex"
           alignItems="center"
-          gap="6px"
-          px="12px"
-          py="6px"
+          gap="s"
+          px="m"
+          py="s"
           borderWidth="1px"
           borderColor="border.neutral"
           borderRadius="pill"

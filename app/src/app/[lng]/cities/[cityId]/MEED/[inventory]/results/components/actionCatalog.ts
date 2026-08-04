@@ -28,7 +28,9 @@ export function buildActionIndex(data: unknown): MeedActionIndex {
   const index: MeedActionIndex = new Map();
   const rows: unknown[] = Array.isArray(data)
     ? data
-    : data && typeof data === "object" && Array.isArray((data as { actions?: unknown[] }).actions)
+    : data &&
+        typeof data === "object" &&
+        Array.isArray((data as { actions?: unknown[] }).actions)
       ? (data as { actions: unknown[] }).actions
       : [];
 
@@ -50,7 +52,10 @@ export function buildActionIndex(data: unknown): MeedActionIndex {
         (typeof record.description === "string" && record.description) ||
         (typeof record.Description === "string" && record.Description) ||
         undefined,
-      sector: (record.sector ?? record.Sector ?? null) as string[] | string | null,
+      sector: (record.sector ?? record.Sector ?? null) as
+        | string[]
+        | string
+        | null,
       emissions: (record.emissions ?? null) as MeedCatalogAction["emissions"],
     });
   }
@@ -62,7 +67,10 @@ export function actionName(
   actionId: string,
   t: TFunction,
 ): string {
-  return index.get(actionId)?.actionName ?? (index.size > 0 ? actionId : t("unknown-action"));
+  return (
+    index.get(actionId)?.actionName ??
+    (index.size > 0 ? actionId : t("unknown-action"))
+  );
 }
 
 // ─── Sector display ──────────────────────────────────────────────────────────
@@ -103,7 +111,10 @@ const IMPACT_TEXT_TO_LEVEL: Record<string, number> = {
   "very high": 5,
 };
 
-export function reductionLevel(index: MeedActionIndex, actionId: string): number {
+export function reductionLevel(
+  index: MeedActionIndex,
+  actionId: string,
+): number {
   const emissions = index.get(actionId)?.emissions;
   const numeric = emissions?.impact_numeric;
   if (typeof numeric === "number" && numeric >= 1) {

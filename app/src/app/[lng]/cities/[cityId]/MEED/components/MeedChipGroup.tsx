@@ -49,7 +49,7 @@ export function MeedChipGroup({
   };
 
   return (
-    <HStack gap="8px" flexWrap="wrap" role="group" aria-label={ariaLabel}>
+    <HStack gap="s" flexWrap="wrap" role="group" aria-label={ariaLabel}>
       {options.map((option) => {
         const isSelected = selected.includes(option.value);
         return (
@@ -59,8 +59,8 @@ export function MeedChipGroup({
             onCheckedChange={(details) =>
               toggle(option.value, !!details.checked)
             }
-            px="14px"
-            py="7px"
+            px="m"
+            py="s"
             borderRadius="pill"
             borderWidth="1px"
             cursor="pointer"

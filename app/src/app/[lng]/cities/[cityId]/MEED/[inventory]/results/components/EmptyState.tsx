@@ -24,14 +24,14 @@ export function EmptyState({
   return (
     <Card.Root>
       <Card.Body>
-        <VStack gap="12px" py="48px" px="24px" textAlign="center">
+        <VStack gap="m" py="xxl-2" px="l" textAlign="center">
           <Icon as={LuInbox} boxSize="32px" color="content.tertiary" />
           <TitleMedium color="content.primary">{title}</TitleMedium>
           <BodyMedium color="content.secondary" maxW="480px">
             {body}
           </BodyMedium>
           {actionLabel && onAction && (
-            <CCTerraButton mt="12px" variant="filled" onClick={onAction}>
+            <CCTerraButton mt="m" variant="filled" onClick={onAction}>
               {actionLabel}
             </CCTerraButton>
           )}

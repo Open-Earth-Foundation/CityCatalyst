@@ -1,9 +1,9 @@
 import createHttpError from "http-errors";
 import type { User } from "@/models/User";
 import { Organization } from "@/models/Organization";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
 import { logger } from "@/services/logger";
 import ProjectCreatedNotificationTemplate from "@/lib/emails/ProjectCreatedNotificationTemplate";
@@ -26,7 +26,6 @@ import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
 import { UserFileResponse } from "@/util/types";
 import HiapRankingReadyTemplate from "@/lib/emails/HiapRankingReadyTemplate";
-import { AppSession } from "@/lib/auth";
 
 interface EmailTranslation {
   subject: string;

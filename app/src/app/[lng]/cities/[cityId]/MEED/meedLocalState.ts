@@ -27,8 +27,19 @@ export const DEFAULT_MEED_WEIGHTS = {
 
 export interface MeedStepState {
   visited?: boolean;
+  /**
+   * The user explicitly saved/acknowledged this step. Once true it never goes
+   * back to false — a later automatic data refresh must not undo a human
+   * acknowledgement.
+   */
   confirmed?: boolean;
   progress?: number;
+  /**
+   * Short live detail line shown under the step on the overview and the
+   * pre-flight summary, e.g. "4 of 6 sectors with data". Already localized by
+   * the writing screen.
+   */
+  sub?: string;
 }
 
 function key(inventoryId: string, suffix: string): string {
@@ -85,13 +96,22 @@ export function getMeedStepState(
   return read<MeedStepState>(key(inventoryId, `step:${stepKey}`)) ?? {};
 }
 
+/** Event other components listen to so wizard progress stays in sync in-tab. */
+export const MEED_STATE_CHANGED_EVENT = "meed:state-changed";
+
 export function setMeedStepState(
   inventoryId: string,
   stepKey: string,
   state: MeedStepState,
 ): void {
+  const previous = getMeedStepState(inventoryId, stepKey);
   write(key(inventoryId, `step:${stepKey}`), {
-    ...getMeedStepState(inventoryId, stepKey),
+    ...previous,
     ...state,
+    // Confirmation is a human acknowledgement; never let a refresh clear it.
+    confirmed: previous.confirmed || state.confirmed,
   });
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(MEED_STATE_CHANGED_EVENT));
+  }
 }

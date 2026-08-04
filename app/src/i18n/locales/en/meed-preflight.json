@@ -50,5 +50,22 @@
   "no-confirmed-exclusions": "No actions have been confirmed for exclusion yet.",
   "legal-screening-note": "Automatic legal screening runs when the ranking is generated: actions blocked by your municipality's regulations are excluded automatically.",
   "edit-exclusion-criteria": "Edit exclusion criteria",
-  "generate-ranking-cta": "Generate ranking — confirm you're ready"
+  "generate-ranking-cta": "Generate ranking — confirm you're ready",
+  "status-needs-review": "Needs review",
+  "no-detail-yet": "No data entered yet",
+  "edit-step-aria": "Edit {{step}}",
+  "enter-data-aria": "Enter data for {{step}}",
+  "confidence-title": "Model confidence",
+  "confidence-out-of": "/ 100",
+  "confidence-description": "How much of what the ranking model looks at this inventory currently provides.",
+  "confidence-aria": "Model confidence: {{score}} out of 100",
+  "confidence-hint": "Completing {{step}} adds up to {{points}} points — the biggest single gain available.",
+  "confidence-verdict-low": "Low",
+  "confidence-verdict-moderate": "Moderate",
+  "confidence-verdict-high": "High",
+  "weight-value-text": "{{value}} percent",
+  "gate-emissions-required": "Emissions data is required — review this inventory's emissions to unlock recommendations.",
+  "gate-sections-needed": "{{count}} more section needed before you can generate recommendations.",
+  "gate-sections-needed_other": "{{count}} more sections needed before you can generate recommendations.",
+  "gate-ready": "Ready to generate recommendations."
 }

@@ -1,6 +1,5 @@
 "use client";
 import React, { useMemo, useState } from "react";
-import { Box } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { useGetMeedActionsQuery } from "@/services/api";
@@ -8,9 +7,8 @@ import type {
   MeedPrioritizeCityResult,
   MeedRankedActionResult,
 } from "@/util/types/meed";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
-import { BodyLarge } from "@/components/package/Texts/Body";
 import { LabelLarge } from "@/components/package/Texts/Label";
+import { MeedShell } from "../../components/MeedShell";
 import { EmptyState } from "./components/EmptyState";
 import { RankingTable } from "./components/RankingTable";
 import { DetailPanel, type ScoreWeights } from "./components/DetailPanel";
@@ -47,24 +45,15 @@ export default function Page(props: {
   const ranked = ranking?.ranked_actions ?? [];
 
   return (
-    <Box h="full" bg="background.backgroundLight" overflowY="auto">
-      <Box
-        display="flex"
-        mx="auto"
-        py="48px"
-        px="24px"
-        w="full"
-        maxW="1090px"
-        flexDirection="column"
-        gap="24px"
-      >
-        <Box>
-          <HeadlineSmall>{t("page-title")}</HeadlineSmall>
-          <BodyLarge color="content.secondary" mt="8px">
-            {t("page-description")}
-          </BodyLarge>
-        </Box>
-
+    <MeedShell
+      lng={lng}
+      cityId={cityId}
+      inventoryId={inventoryId}
+      title={t("page-title")}
+      description={t("page-description")}
+      currentLabel={t("page-title")}
+    >
+      <>
         {ranked.length === 0 ? (
           <EmptyState
             title={t("empty-title")}
@@ -99,7 +88,7 @@ export default function Page(props: {
             onClose={() => setSelected(null)}
           />
         )}
-      </Box>
-    </Box>
+      </>
+    </MeedShell>
   );
 }

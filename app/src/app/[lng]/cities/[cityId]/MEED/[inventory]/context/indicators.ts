@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import type { MeedTone } from "../../components/MeedStatusTag";
 
 /**
  * Socioeconomic indicator model for the MEED+ context step.
@@ -200,12 +201,17 @@ export const KEY_INDICATOR_KEYS = [
   "public_transport_share",
 ];
 
-export const CATEGORY_PALETTE: Record<IndicatorCategory, string> = {
-  "very high": "red",
-  high: "orange",
-  medium: "blue",
-  low: "green",
-  "very low": "gray",
+/**
+ * Relative level → status-tag tone. Chakra's `colorPalette` rendered these as
+ * stock greys, so the five levels were indistinguishable; these map onto the
+ * module's semantic tones instead.
+ */
+export const CATEGORY_TONE: Record<IndicatorCategory, MeedTone> = {
+  "very high": "negative",
+  high: "warning",
+  medium: "info",
+  low: "positive",
+  "very low": "neutral",
 };
 
 export const categoryLabelKey = (category: IndicatorCategory) =>

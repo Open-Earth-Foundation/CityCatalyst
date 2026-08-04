@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   Box,
   Card,
@@ -7,11 +7,11 @@ import {
   Icon,
   SimpleGrid,
   Table,
-  Tag,
   VStack,
 } from "@chakra-ui/react";
 import {
   LuMoveRight,
+  LuRotateCw,
   LuTrendingUp,
   LuTriangleAlert,
   LuUsers,
@@ -20,13 +20,21 @@ import type { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
 import { useGetMeedCityAttributesQuery } from "@/services/api";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
+import { Caption } from "@/components/package/Texts/Caption";
+import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
+import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { MeedWizardPage } from "../../MeedWizardPage";
+import { MeedStatusTag } from "../../components/MeedStatusTag";
+import {
+  MeedStatStripSkeleton,
+  MeedTableSkeleton,
+} from "../../components/MeedSkeletons";
+import { setMeedStepState } from "../../meedLocalState";
 import {
   buildIndicators,
   categoryLabelKey,
-  CATEGORY_PALETTE,
+  CATEGORY_TONE,
   extractIndicatorFields,
   formatIndicatorValue,
   KEY_INDICATOR_KEYS,
@@ -35,9 +43,30 @@ import {
   type MeedIndicator,
 } from "./indicators";
 
+/** Applied to every focusable control on this screen. */
+const FOCUS_RING = {
+  outline: "2px solid",
+  outlineColor: "content.link",
+  outlineOffset: "2px",
+} as const;
+
+/** Column widths, summing to 100%, so the header and rows line up. */
+const COLUMN_WIDTHS = {
+  indicator: "32%",
+  value: "14%",
+  level: "16%",
+  relevance: "38%",
+} as const;
+
 function ConcernIcon({ concern }: { concern: IndicatorConcern }) {
   if (concern === "risk") {
-    return <Icon as={LuTriangleAlert} boxSize="14px" color="content.secondary" />;
+    return (
+      <Icon
+        as={LuTriangleAlert}
+        boxSize="14px"
+        color="sentiment.warningDefault"
+      />
+    );
   }
   if (concern === "opportunity") {
     return (
@@ -55,13 +84,13 @@ function CategoryTag({
   t: TFunction;
 }) {
   return (
-    <Tag.Root colorPalette={CATEGORY_PALETTE[indicator.category]} size="sm">
-      <Tag.Label>{t(categoryLabelKey(indicator.category))}</Tag.Label>
-    </Tag.Root>
+    <MeedStatusTag tone={CATEGORY_TONE[indicator.category]}>
+      {t(categoryLabelKey(indicator.category))}
+    </MeedStatusTag>
   );
 }
 
-/** Summary cards for the handful of headline indicators. */
+/** Stat blocks for the handful of headline indicators. */
 function KeyIndicatorCards({
   indicators,
   t,
@@ -76,15 +105,18 @@ function KeyIndicatorCards({
   if (keyIndicators.length === 0) return null;
 
   return (
-    <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} gap="12px">
+    <SimpleGrid columns={{ base: 2, md: 4 }} gap="16px">
       {keyIndicators.map((ind) => (
-        <Card.Root key={ind.key}>
+        <Card.Root key={ind.key} borderColor="border.overlay" h="full">
           <Card.Body p="16px">
             <VStack alignItems="flex-start" gap="6px">
-              <LabelLarge color="content.tertiary">{ind.label}</LabelLarge>
-              <BodyLarge color="content.primary" fontWeight="bold">
+              <Overline color="content.tertiary">{ind.label}</Overline>
+              <TitleMedium
+                color="content.primary"
+                fontVariantNumeric="tabular-nums"
+              >
                 {formatIndicatorValue(ind, t)}
-              </BodyLarge>
+              </TitleMedium>
               <CategoryTag indicator={ind} t={t} />
             </VStack>
           </Card.Body>
@@ -104,17 +136,43 @@ function IndicatorsTable({
   const themes = sortThemes([...new Set(indicators.map((i) => i.themeKey))]);
 
   return (
-    <Card.Root overflow="hidden">
-      <Table.Root size="sm">
+    <Card.Root overflow="hidden" borderColor="border.neutral">
+      <Table.Root
+        size="sm"
+        css={{ "& th, & td": { borderColor: "border.overlay" } }}
+      >
         <Table.Header>
-          <Table.Row>
-            <Table.ColumnHeader>{t("column-indicator")}</Table.ColumnHeader>
-            <Table.ColumnHeader textAlign="end">
-              {t("column-value")}
+          <Table.Row bg="background.neutral">
+            <Table.ColumnHeader
+              width={COLUMN_WIDTHS.indicator}
+              borderColor="border.neutral"
+            >
+              <Overline color="content.secondary">
+                {t("column-indicator")}
+              </Overline>
             </Table.ColumnHeader>
-            <Table.ColumnHeader>{t("column-relative-level")}</Table.ColumnHeader>
-            <Table.ColumnHeader>
-              {t("column-climate-relevance")}
+            <Table.ColumnHeader
+              width={COLUMN_WIDTHS.value}
+              textAlign="end"
+              borderColor="border.neutral"
+            >
+              <Overline color="content.secondary">{t("column-value")}</Overline>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              width={COLUMN_WIDTHS.level}
+              borderColor="border.neutral"
+            >
+              <Overline color="content.secondary">
+                {t("column-relative-level")}
+              </Overline>
+            </Table.ColumnHeader>
+            <Table.ColumnHeader
+              width={COLUMN_WIDTHS.relevance}
+              borderColor="border.neutral"
+            >
+              <Overline color="content.secondary">
+                {t("column-climate-relevance")}
+              </Overline>
             </Table.ColumnHeader>
           </Table.Row>
         </Table.Header>
@@ -123,23 +181,27 @@ function IndicatorsTable({
             const rows = indicators.filter((i) => i.themeKey === themeKey);
             return (
               <React.Fragment key={themeKey}>
+                {/* Theme band — the grouping level above the indicator rows. */}
                 <Table.Row bg="background.neutral">
-                  <Table.Cell colSpan={4}>
-                    <LabelLarge color="content.secondary">
+                  <Table.Cell
+                    colSpan={4}
+                    borderTopWidth="1px"
+                    borderColor="border.neutral"
+                    py="8px"
+                  >
+                    <Overline color="content.secondary">
                       {t(`theme-${themeKey}`)}
-                    </LabelLarge>
+                    </Overline>
                   </Table.Cell>
                 </Table.Row>
                 {rows.map((ind) => (
                   <Table.Row key={ind.key}>
-                    <Table.Cell minW="200px">
+                    <Table.Cell>
                       <VStack alignItems="flex-start" gap="0">
                         <BodyMedium color="content.primary">
                           {ind.label}
                         </BodyMedium>
-                        <BodyMedium fontSize="xs" color="content.tertiary">
-                          {ind.source}
-                        </BodyMedium>
+                        <Caption color="content.tertiary">{ind.source}</Caption>
                       </VStack>
                     </Table.Cell>
                     <Table.Cell
@@ -178,7 +240,7 @@ function IndicatorsTable({
 /** Shown when the Global API has no socioeconomic data for this city. */
 function NoIndicatorsCard({ t }: { t: TFunction }) {
   return (
-    <Card.Root>
+    <Card.Root borderColor="border.neutral">
       <Card.Body py="64px">
         <VStack gap="12px" textAlign="center" maxW="480px" mx="auto">
           <Icon as={LuUsers} boxSize="40px" color="content.tertiary" />
@@ -188,20 +250,64 @@ function NoIndicatorsCard({ t }: { t: TFunction }) {
           <BodyMedium color="content.secondary">
             {t("no-indicators-description")}
           </BodyMedium>
-          <BodyMedium color="content.tertiary">
+          <Caption color="content.tertiary">
             {t("no-indicators-continue")}
-          </BodyMedium>
+          </Caption>
         </VStack>
       </Card.Body>
     </Card.Root>
   );
 }
 
-function SocioeconomicContextContent(props: { lng: string; cityId: string }) {
-  const { lng, cityId } = props;
+/** Shown when the city-attributes request itself failed. */
+function IndicatorsErrorCard({
+  t,
+  onRetry,
+}: {
+  t: TFunction;
+  onRetry: () => void;
+}) {
+  return (
+    <Card.Root borderColor="border.neutral">
+      <Card.Body>
+        <VStack gap="12px" py="40px" px="24px" textAlign="center">
+          <Icon
+            as={LuTriangleAlert}
+            boxSize="32px"
+            color="sentiment.negativeDefault"
+          />
+          <TitleMedium color="content.primary">
+            {t("indicators-error-title")}
+          </TitleMedium>
+          <BodyMedium color="content.secondary" maxW="480px">
+            {t("indicators-error-body")}
+          </BodyMedium>
+          <CCTerraButton
+            variant="outlined"
+            minW="auto"
+            px="24px"
+            mt="8px"
+            onClick={onRetry}
+            leftIcon={<Icon as={LuRotateCw} boxSize="16px" />}
+            _focusVisible={FOCUS_RING}
+          >
+            {t("retry")}
+          </CCTerraButton>
+        </VStack>
+      </Card.Body>
+    </Card.Root>
+  );
+}
+
+function SocioeconomicContextContent(props: {
+  lng: string;
+  cityId: string;
+  inventoryId: string;
+}) {
+  const { lng, cityId, inventoryId } = props;
   const { t } = useTranslation(lng, "meed-context");
 
-  const { data, isLoading } = useGetMeedCityAttributesQuery(
+  const { data, isLoading, isError, refetch } = useGetMeedCityAttributesQuery(
     { cityId },
     { skip: !cityId },
   );
@@ -211,57 +317,57 @@ function SocioeconomicContextContent(props: { lng: string; cityId: string }) {
     return fields ? buildIndicators(fields, t) : [];
   }, [data, t]);
 
-  if (isLoading) {
-    return (
-      <Card.Root>
-        <Card.Body>
-          <BodyLarge color="content.tertiary">
-            {t("loading-indicators")}
-          </BodyLarge>
-        </Card.Body>
-      </Card.Root>
-    );
-  }
-
-  if (indicators.length === 0) {
-    return (
-      <VStack alignItems="stretch" gap="24px">
-        <BodyLarge color="content.secondary">
-          {t("context-description")}
-        </BodyLarge>
-        <NoIndicatorsCard t={t} />
-      </VStack>
-    );
-  }
+  // Feed the overview and the pre-flight summary with live completion.
+  const count = indicators.length;
+  const stepSub =
+    count > 0 ? t("indicators-loaded", { n: count }) : t("no-indicators-sub");
+  useEffect(() => {
+    if (!inventoryId || isLoading || isError) return;
+    setMeedStepState(inventoryId, "context", {
+      progress: count > 0 ? 100 : 0,
+      sub: stepSub,
+    });
+  }, [inventoryId, isLoading, isError, count, stepSub]);
 
   return (
     <VStack alignItems="stretch" gap="24px">
-      <BodyLarge color="content.secondary">
-        {t("context-description")}
-      </BodyLarge>
-
-      <HStack gap="12px" flexWrap="wrap">
-        <Tag.Root colorPalette="green" size="md">
-          <Tag.Label>
-            {t("indicators-loaded", { n: indicators.length })}
-          </Tag.Label>
-        </Tag.Root>
+      <VStack alignItems="stretch" gap="12px">
+        <BodyLarge color="content.secondary">
+          {t("context-description")}
+        </BodyLarge>
         <HStack
           gap="8px"
           bg="background.neutral"
-          borderRadius="6px"
+          borderRadius="rounded"
           px="12px"
           py="6px"
+          alignSelf="flex-start"
         >
           <Icon as={LuUsers} boxSize="14px" color="content.secondary" />
-          <BodyMedium color="content.secondary">
-            {t("feasibility-note")}
-          </BodyMedium>
+          <Caption color="content.secondary">{t("ranking-weight")}</Caption>
         </HStack>
-      </HStack>
+      </VStack>
 
-      <KeyIndicatorCards indicators={indicators} t={t} />
-      <IndicatorsTable indicators={indicators} t={t} />
+      {isError ? (
+        <IndicatorsErrorCard t={t} onRetry={() => refetch()} />
+      ) : isLoading ? (
+        <>
+          <MeedStatStripSkeleton items={4} />
+          <MeedTableSkeleton rows={6} />
+        </>
+      ) : indicators.length === 0 ? (
+        <NoIndicatorsCard t={t} />
+      ) : (
+        <>
+          <Box>
+            <MeedStatusTag tone="positive">
+              {t("indicators-loaded", { n: indicators.length })}
+            </MeedStatusTag>
+          </Box>
+          <KeyIndicatorCards indicators={indicators} t={t} />
+          <IndicatorsTable indicators={indicators} t={t} />
+        </>
+      )}
     </VStack>
   );
 }
@@ -269,10 +375,14 @@ function SocioeconomicContextContent(props: { lng: string; cityId: string }) {
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
 }) {
-  const { lng, cityId } = React.use(props.params);
+  const { lng, cityId, inventory: inventoryId } = React.use(props.params);
   return (
     <MeedWizardPage params={props.params} stepKey="context">
-      <SocioeconomicContextContent lng={lng} cityId={cityId} />
+      <SocioeconomicContextContent
+        lng={lng}
+        cityId={cityId}
+        inventoryId={inventoryId}
+      />
     </MeedWizardPage>
   );
 }

@@ -65,7 +65,7 @@ export function DetailPanel({
           px="28px"
           py="24px"
           borderBottomWidth="1px"
-          borderColor="divider.neutral"
+          borderColor="border.overlay"
           flexShrink={0}
         >
           <CCTerraButton

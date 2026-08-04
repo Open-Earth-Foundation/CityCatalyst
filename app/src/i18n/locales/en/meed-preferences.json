@@ -50,5 +50,18 @@
   "exclude-free-text-placeholder": "Do not include actions related to electric vehicles or electric mobility",
   "exclude-free-text-recorded": "Additional exclusion criteria recorded",
   "no-exclusions-set": "No exclusion criteria set — all actions will be included in the ranking.",
-  "save-and-continue": "Save & continue"
+  "save-and-continue": "Save & continue",
+  "saved": "Saved",
+  "aria-priority-sectors": "Priority sectors",
+  "aria-strategic-priorities": "Strategic priorities",
+  "aria-timeline": "Implementation timeline",
+  "aria-exclude-sectors": "Sectors to exclude",
+  "aria-exclude-co-benefits": "Co-benefits to exclude",
+  "sub-sectors_one": "{{count}} priority sector",
+  "sub-sectors_other": "{{count}} priority sectors",
+  "sub-co-benefits_one": "{{count}} co-benefit",
+  "sub-co-benefits_other": "{{count}} co-benefits",
+  "sub-exclusions_one": "{{count}} exclusion rule",
+  "sub-exclusions_other": "{{count}} exclusion rules",
+  "sub-none": "No preferences selected yet"
 }

@@ -1,25 +1,98 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
   HStack,
   Icon,
   IconButton,
+  SimpleGrid,
   Table,
-  Tag,
   VStack,
 } from "@chakra-ui/react";
-import { LuChevronDown, LuChevronRight } from "react-icons/lu";
+import {
+  LuChartPie,
+  LuChevronDown,
+  LuChevronRight,
+  LuRotateCw,
+  LuTriangleAlert,
+} from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import type { TFunction } from "i18next";
 import { api } from "@/services/api";
 import { SECTORS } from "@/util/constants";
 import { formatEmissions } from "@/util/helpers";
 import type { SectorEmission } from "@/util/types";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
+import { Caption } from "@/components/package/Texts/Caption";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleMedium } from "@/components/package/Texts/Title";
+import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { MeedWizardPage } from "../../MeedWizardPage";
+import { MeedStatusTag } from "../../components/MeedStatusTag";
+import {
+  MeedStatStripSkeleton,
+  MeedTableSkeleton,
+} from "../../components/MeedSkeletons";
+import { setMeedStepState } from "../../meedLocalState";
+
+/** Applied to every focusable control on this screen. */
+const FOCUS_RING = {
+  outline: "2px solid",
+  outlineColor: "content.link",
+  outlineOffset: "2px",
+} as const;
+
+/** Column widths, summing to 100%, so the header and rows line up. */
+const COLUMN_WIDTHS = {
+  sector: "46%",
+  emissions: "20%",
+  share: "14%",
+  status: "20%",
+} as const;
+
+/** Failure state for a query that came back with an error. */
+function EmissionsErrorCard({
+  title,
+  body,
+  retryLabel,
+  onRetry,
+}: {
+  title: string;
+  body: string;
+  retryLabel: string;
+  onRetry: () => void;
+}) {
+  return (
+    <Card.Root borderColor="border.neutral">
+      <Card.Body>
+        <VStack gap="12px" py="40px" px="24px" textAlign="center">
+          <Icon
+            as={LuTriangleAlert}
+            boxSize="32px"
+            color="sentiment.negativeDefault"
+          />
+          <TitleMedium color="content.primary">{title}</TitleMedium>
+          <BodyMedium color="content.secondary" maxW="480px">
+            {body}
+          </BodyMedium>
+          <CCTerraButton
+            variant="outlined"
+            minW="auto"
+            px="24px"
+            mt="8px"
+            onClick={onRetry}
+            leftIcon={<Icon as={LuRotateCw} boxSize="16px" />}
+            _focusVisible={FOCUS_RING}
+          >
+            {retryLabel}
+          </CCTerraButton>
+        </VStack>
+      </Card.Body>
+    </Card.Root>
+  );
+}
 
 /** One GPC sector row with a lazily-loaded sub-sector breakdown. */
 function SectorRow({
@@ -40,11 +113,15 @@ function SectorRow({
   const [expanded, setExpanded] = useState(false);
   const hasData = !!emissions && Number(emissions.co2eq) > 0;
 
-  const { data: breakdown, isLoading: isBreakdownLoading } =
-    api.useGetSectorBreakdownQuery(
-      { inventoryId, sector: sectorKey },
-      { skip: !expanded || !hasData },
-    );
+  const {
+    data: breakdown,
+    isLoading: isBreakdownLoading,
+    isError: isBreakdownError,
+    refetch: refetchBreakdown,
+  } = api.useGetSectorBreakdownQuery(
+    { inventoryId, sector: sectorKey },
+    { skip: !expanded || !hasData },
+  );
 
   const co2eq = hasData ? Number(emissions!.co2eq) : null;
   const share =
@@ -60,8 +137,12 @@ function SectorRow({
             {hasData ? (
               <IconButton
                 aria-label={t(expanded ? "collapse-sector" : "expand-sector")}
+                aria-expanded={expanded}
                 size="2xs"
                 variant="ghost"
+                color="content.secondary"
+                _hover={{ bg: "background.neutral", color: "content.link" }}
+                _focusVisible={FOCUS_RING}
                 onClick={() => setExpanded((v) => !v)}
               >
                 <Icon as={expanded ? LuChevronDown : LuChevronRight} />
@@ -73,9 +154,7 @@ function SectorRow({
               <BodyMedium color="content.primary">
                 {t(`sector-${sectorKey}`)}
               </BodyMedium>
-              <BodyMedium fontSize="xs" color="content.tertiary">
-                {referenceNumber}
-              </BodyMedium>
+              <Caption color="content.tertiary">{referenceNumber}</Caption>
             </VStack>
           </HStack>
         </Table.Cell>
@@ -86,33 +165,66 @@ function SectorRow({
               : "—"}
           </BodyMedium>
         </Table.Cell>
-        <Table.Cell textAlign="end">
+        <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
           <BodyMedium color={hasData ? "content.primary" : "content.tertiary"}>
             {share !== null ? `${share}%` : "—"}
           </BodyMedium>
         </Table.Cell>
         <Table.Cell textAlign="end">
-          {hasData ? (
-            <Tag.Root colorPalette="green" size="sm">
-              <Tag.Label>{t("sector-status-data")}</Tag.Label>
-            </Tag.Root>
-          ) : (
-            <Tag.Root colorPalette="gray" size="sm">
-              <Tag.Label>{t("sector-status-no-data")}</Tag.Label>
-            </Tag.Root>
-          )}
+          <MeedStatusTag tone={hasData ? "positive" : "neutral"}>
+            {t(hasData ? "sector-status-data" : "sector-status-no-data")}
+          </MeedStatusTag>
         </Table.Cell>
       </Table.Row>
-      {expanded && isBreakdownLoading && (
+
+      {expanded &&
+        isBreakdownLoading &&
+        Array.from({ length: 3 }).map((_, i) => (
+          <Table.Row key={`skeleton-${i}`} bg="background.neutral">
+            <Table.Cell>
+              <Box pl="32px">
+                <Skeleton height="14px" width="70%" />
+              </Box>
+            </Table.Cell>
+            <Table.Cell>
+              <Skeleton height="14px" width="80%" ml="auto" />
+            </Table.Cell>
+            <Table.Cell>
+              <Skeleton height="14px" width="60%" ml="auto" />
+            </Table.Cell>
+            <Table.Cell />
+          </Table.Row>
+        ))}
+
+      {expanded && isBreakdownError && (
         <Table.Row bg="background.neutral">
           <Table.Cell colSpan={4}>
-            <BodyMedium color="content.tertiary" pl="32px">
-              {t("loading-breakdown")}
-            </BodyMedium>
+            <HStack gap="8px" pl="32px">
+              <Icon
+                as={LuTriangleAlert}
+                boxSize="14px"
+                color="sentiment.negativeDefault"
+              />
+              <BodyMedium color="content.secondary">
+                {t("breakdown-error")}
+              </BodyMedium>
+              <CCTerraButton
+                variant="text"
+                minW="auto"
+                h="24px"
+                px="4px"
+                onClick={() => refetchBreakdown()}
+                _focusVisible={FOCUS_RING}
+              >
+                {t("retry")}
+              </CCTerraButton>
+            </HStack>
           </Table.Cell>
         </Table.Row>
       )}
+
       {expanded &&
+        !isBreakdownError &&
         breakdown?.byScope?.map((row, idx) => (
           <Table.Row key={`${row.activityTitle}-${idx}`} bg="background.neutral">
             <Table.Cell>
@@ -121,9 +233,9 @@ function SectorRow({
                   {row.activityTitle}
                 </BodyMedium>
                 {row.datasource_name && (
-                  <BodyMedium fontSize="xs" color="content.tertiary">
+                  <Caption color="content.tertiary">
                     {row.datasource_name}
-                  </BodyMedium>
+                  </Caption>
                 )}
               </VStack>
             </Table.Cell>
@@ -132,7 +244,7 @@ function SectorRow({
                 {`${formatEmissions(Number(row.totalEmissions)).value} ${formatEmissions(Number(row.totalEmissions)).unit}`}
               </BodyMedium>
             </Table.Cell>
-            <Table.Cell textAlign="end">
+            <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
               <BodyMedium color="content.secondary">
                 {row.percentage != null ? `${row.percentage}%` : "—"}
               </BodyMedium>
@@ -151,7 +263,12 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !inventoryId,
   });
-  const { data: results, isLoading } = api.useGetResultsQuery(inventoryId, {
+  const {
+    data: results,
+    isLoading,
+    isError,
+    refetch,
+  } = api.useGetResultsQuery(inventoryId, {
     skip: !inventoryId,
   });
 
@@ -162,79 +279,167 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
   ).length;
   const formattedTotal = formatEmissions(totalEmissions);
 
+  // Feed the overview and the pre-flight summary with live completion.
+  const stepSub = t("emissions-step-sub", {
+    n: sectorsWithData,
+    total: SECTORS.length,
+  });
+  useEffect(() => {
+    if (!inventoryId || isLoading || isError) return;
+    setMeedStepState(inventoryId, "emissions", {
+      progress: Math.round((sectorsWithData / SECTORS.length) * 100),
+      sub: stepSub,
+    });
+  }, [inventoryId, isLoading, isError, sectorsWithData, stepSub]);
+
   return (
     <VStack alignItems="stretch" gap="24px">
-      <BodyLarge color="content.secondary">
-        {t("emissions-description")}
-      </BodyLarge>
+      <VStack alignItems="stretch" gap="12px">
+        <BodyLarge color="content.secondary">
+          {t("emissions-description")}
+        </BodyLarge>
+        <HStack
+          gap="8px"
+          bg="background.neutral"
+          borderRadius="rounded"
+          px="12px"
+          py="6px"
+          alignSelf="flex-start"
+        >
+          <Icon as={LuChartPie} boxSize="14px" color="content.secondary" />
+          <Caption color="content.secondary">
+            {t("emissions-ranking-weight")}
+          </Caption>
+        </HStack>
+      </VStack>
 
-      <Card.Root>
-        <Card.Body>
-          <HStack gap="48px" flexWrap="wrap">
-            <VStack alignItems="flex-start" gap="4px">
-              <LabelLarge color="content.tertiary">
-                {t("total-ghg-emissions")}
-              </LabelLarge>
-              <BodyLarge color="content.primary" fontWeight="bold">
-                {isLoading
-                  ? "…"
-                  : `${formattedTotal.value} ${formattedTotal.unit}`}
-              </BodyLarge>
-            </VStack>
-            <VStack alignItems="flex-start" gap="4px">
-              <LabelLarge color="content.tertiary">
-                {t("inventory-year")}
-              </LabelLarge>
-              <BodyLarge color="content.primary" fontWeight="bold">
-                {inventory?.year ?? "—"}
-              </BodyLarge>
-            </VStack>
-            <VStack alignItems="flex-start" gap="4px">
-              <LabelLarge color="content.tertiary">
-                {t("sectors-with-data")}
-              </LabelLarge>
-              <BodyLarge color="content.primary" fontWeight="bold">
-                {t("sectors-count", {
-                  done: sectorsWithData,
-                  total: SECTORS.length,
-                })}
-              </BodyLarge>
-            </VStack>
-          </HStack>
-        </Card.Body>
-      </Card.Root>
+      {isError ? (
+        <EmissionsErrorCard
+          title={t("emissions-error-title")}
+          body={t("emissions-error-body")}
+          retryLabel={t("retry")}
+          onRetry={() => refetch()}
+        />
+      ) : (
+        <>
+          {isLoading ? (
+            <Card.Root borderColor="border.overlay">
+              <Card.Body>
+                <MeedStatStripSkeleton items={3} />
+              </Card.Body>
+            </Card.Root>
+          ) : (
+            <Card.Root borderColor="border.overlay">
+              <Card.Body>
+                <SimpleGrid columns={{ base: 2, md: 3 }} gap="16px">
+                  <VStack alignItems="flex-start" gap="4px">
+                    <Overline color="content.tertiary">
+                      {t("total-ghg-emissions")}
+                    </Overline>
+                    <TitleMedium
+                      color="content.primary"
+                      fontVariantNumeric="tabular-nums"
+                    >
+                      {`${formattedTotal.value} ${formattedTotal.unit}`}
+                    </TitleMedium>
+                  </VStack>
+                  <VStack alignItems="flex-start" gap="4px">
+                    <Overline color="content.tertiary">
+                      {t("inventory-year")}
+                    </Overline>
+                    <TitleMedium
+                      color="content.primary"
+                      fontVariantNumeric="tabular-nums"
+                    >
+                      {inventory?.year ?? "—"}
+                    </TitleMedium>
+                  </VStack>
+                  <VStack alignItems="flex-start" gap="4px">
+                    <Overline color="content.tertiary">
+                      {t("sectors-with-data")}
+                    </Overline>
+                    <TitleMedium
+                      color="content.primary"
+                      fontVariantNumeric="tabular-nums"
+                    >
+                      {t("sectors-count", {
+                        done: sectorsWithData,
+                        total: SECTORS.length,
+                      })}
+                    </TitleMedium>
+                  </VStack>
+                </SimpleGrid>
+              </Card.Body>
+            </Card.Root>
+          )}
 
-      <Card.Root overflow="hidden">
-        <Table.Root size="sm">
-          <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>{t("column-sector")}</Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-emissions")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-share")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-status")}
-              </Table.ColumnHeader>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {SECTORS.map((sector) => (
-              <SectorRow
-                key={sector.name}
-                inventoryId={inventoryId}
-                sectorKey={sector.name}
-                referenceNumber={sector.referenceNumber}
-                emissions={bySector.find((e) => e.sectorName === sector.name)}
-                totalEmissions={totalEmissions}
-                t={t}
-              />
-            ))}
-          </Table.Body>
-        </Table.Root>
-      </Card.Root>
+          {isLoading ? (
+            <MeedTableSkeleton rows={5} />
+          ) : (
+            <Card.Root overflow="hidden" borderColor="border.neutral">
+              <Table.Root
+                size="sm"
+                css={{ "& th, & td": { borderColor: "border.overlay" } }}
+              >
+                <Table.Header>
+                  <Table.Row bg="background.neutral">
+                    <Table.ColumnHeader
+                      width={COLUMN_WIDTHS.sector}
+                      borderColor="border.neutral"
+                    >
+                      <Overline color="content.secondary">
+                        {t("column-sector")}
+                      </Overline>
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader
+                      width={COLUMN_WIDTHS.emissions}
+                      textAlign="end"
+                      borderColor="border.neutral"
+                    >
+                      <Overline color="content.secondary">
+                        {t("column-emissions")}
+                      </Overline>
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader
+                      width={COLUMN_WIDTHS.share}
+                      textAlign="end"
+                      borderColor="border.neutral"
+                    >
+                      <Overline color="content.secondary">
+                        {t("column-share")}
+                      </Overline>
+                    </Table.ColumnHeader>
+                    <Table.ColumnHeader
+                      width={COLUMN_WIDTHS.status}
+                      textAlign="end"
+                      borderColor="border.neutral"
+                    >
+                      <Overline color="content.secondary">
+                        {t("column-status")}
+                      </Overline>
+                    </Table.ColumnHeader>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {SECTORS.map((sector) => (
+                    <SectorRow
+                      key={sector.name}
+                      inventoryId={inventoryId}
+                      sectorKey={sector.name}
+                      referenceNumber={sector.referenceNumber}
+                      emissions={bySector.find(
+                        (e) => e.sectorName === sector.name,
+                      )}
+                      totalEmissions={totalEmissions}
+                      t={t}
+                    />
+                  ))}
+                </Table.Body>
+              </Table.Root>
+            </Card.Root>
+          )}
+        </>
+      )}
     </VStack>
   );
 }

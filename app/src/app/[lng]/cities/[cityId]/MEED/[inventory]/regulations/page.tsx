@@ -1,14 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Box,
-  Card,
-  HStack,
-  Icon,
-  SimpleGrid,
-  Tag,
-  VStack,
-} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { Box, Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import {
   LuCircleCheck,
   LuCircleX,
@@ -19,9 +11,13 @@ import type { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
 import type { MeedPrioritizeCityResult } from "@/util/types/meed";
 import { BodyLarge, BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
+import { Caption } from "@/components/package/Texts/Caption";
+import { Overline } from "@/components/package/Texts/Overline";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedWizardPage } from "../../MeedWizardPage";
+import { MeedStatusTag, type MeedTone } from "../../components/MeedStatusTag";
+import { setMeedStepState } from "../../meedLocalState";
 
 /**
  * One action from the legal screening output of the prioritization run.
@@ -34,6 +30,19 @@ interface LegalScreenedAction {
   sector?: string | null;
   reasons?: string[];
 }
+
+/** Screening verdict for an action that did not pass cleanly. */
+type ScreenedStatus = "blocked" | "flagged";
+
+const STATUS_TONE: Record<ScreenedStatus, MeedTone> = {
+  blocked: "negative",
+  flagged: "warning",
+};
+
+const STATUS_TAG_KEY: Record<ScreenedStatus, string> = {
+  blocked: "excluded-tag",
+  flagged: "flagged-tag",
+};
 
 function SummaryCard({
   count,
@@ -49,63 +58,70 @@ function SummaryCard({
   countColor: string;
 }) {
   return (
-    <Card.Root>
+    <Card.Root borderColor="border.overlay" h="full">
       <Card.Body>
         <VStack alignItems="flex-start" gap="4px">
-          <HStack gap="8px" alignItems="baseline">
-            <BodyLarge
-              color={countColor}
-              fontWeight="bold"
-              fontSize="28px"
-              fontVariantNumeric="tabular-nums"
-            >
+          <Overline color="content.tertiary">{label}</Overline>
+          <HStack gap="8px" alignItems="center">
+            <TitleLarge color={countColor} fontVariantNumeric="tabular-nums">
               {count}
-            </BodyLarge>
-            <Icon as={icon} boxSize="16px" color={countColor} />
+            </TitleLarge>
+            <Icon as={icon} boxSize="18px" color={countColor} />
           </HStack>
-          <LabelLarge color="content.primary">{label}</LabelLarge>
-          <BodySmall color="content.secondary">{sublabel}</BodySmall>
+          <Caption color="content.secondary">{sublabel}</Caption>
         </VStack>
       </Card.Body>
     </Card.Root>
   );
 }
 
-function BlockedActionCard({
+/**
+ * One screened action. Blocked and flagged actions differ only in tone, tag and
+ * body copy, so they share a single card rather than two near-identical ones.
+ */
+function ScreenedActionCard({
   action,
+  status,
   t,
 }: {
   action: LegalScreenedAction;
+  status: ScreenedStatus;
   t: TFunction;
 }) {
+  const hasReasons = status === "blocked" && !!action.reasons?.length;
+
   return (
-    <Card.Root>
+    <Card.Root borderColor="border.overlay">
       <Card.Body>
         <VStack alignItems="stretch" gap="8px">
-          <HStack gap="8px" flexWrap="wrap">
+          <HStack gap="8px" flexWrap="wrap" alignItems="center">
             <BodyMedium color="content.primary" fontWeight="bold" flex="1">
               {action.actionName}
             </BodyMedium>
             {action.sector && (
-              <Tag.Root colorPalette="gray" size="sm">
-                <Tag.Label>{action.sector.replace(/_/g, " ")}</Tag.Label>
-              </Tag.Root>
+              <MeedStatusTag tone="neutral">
+                {action.sector.replace(/_/g, " ")}
+              </MeedStatusTag>
             )}
-            <Tag.Root colorPalette="red" size="sm">
-              <Tag.Label>{t("excluded-tag")}</Tag.Label>
-            </Tag.Root>
+            <MeedStatusTag tone={STATUS_TONE[status]}>
+              {t(STATUS_TAG_KEY[status])}
+            </MeedStatusTag>
           </HStack>
-          {action.reasons && action.reasons.length > 0 && (
+          {hasReasons ? (
             <VStack alignItems="stretch" gap="4px">
-              <LabelMedium color="content.tertiary">
-                {t("reasons-label")}
-              </LabelMedium>
-              {action.reasons.map((reason, i) => (
+              <Overline color="content.tertiary">{t("reasons-label")}</Overline>
+              {action.reasons!.map((reason, i) => (
                 <BodySmall key={i} color="content.secondary">
                   {reason}
                 </BodySmall>
               ))}
             </VStack>
+          ) : (
+            status === "flagged" && (
+              <BodySmall color="content.secondary">
+                {t("flagged-card-body")}
+              </BodySmall>
+            )
           )}
         </VStack>
       </Card.Body>
@@ -113,40 +129,13 @@ function BlockedActionCard({
   );
 }
 
-function FlaggedActionCard({
-  action,
-  t,
+function RegulationsContent({
+  lng,
+  inventoryId,
 }: {
-  action: LegalScreenedAction;
-  t: TFunction;
+  lng: string;
+  inventoryId: string;
 }) {
-  return (
-    <Card.Root>
-      <Card.Body>
-        <VStack alignItems="stretch" gap="8px">
-          <HStack gap="8px" flexWrap="wrap">
-            <BodyMedium color="content.primary" fontWeight="bold" flex="1">
-              {action.actionName}
-            </BodyMedium>
-            {action.sector && (
-              <Tag.Root colorPalette="gray" size="sm">
-                <Tag.Label>{action.sector.replace(/_/g, " ")}</Tag.Label>
-              </Tag.Root>
-            )}
-            <Tag.Root colorPalette="orange" size="sm">
-              <Tag.Label>{t("flagged-tag")}</Tag.Label>
-            </Tag.Root>
-          </HStack>
-          <BodySmall color="content.secondary">
-            {t("flagged-card-body")}
-          </BodySmall>
-        </VStack>
-      </Card.Body>
-    </Card.Root>
-  );
-}
-
-function RegulationsContent({ lng }: { lng: string }) {
   const { t } = useTranslation(lng, "meed-regulations");
 
   // TODO(meed backend): replace with the stored prioritization result and its
@@ -159,26 +148,35 @@ function RegulationsContent({ lng }: { lng: string }) {
   const includedCount =
     ranking?.ranked_actions?.length ?? ranking?.ranked_action_ids?.length ?? 0;
 
+  // Nothing to fill in here — reviewing the screen is the whole step.
+  const stepSub = t("step-sub");
+  useEffect(() => {
+    if (!inventoryId) return;
+    setMeedStepState(inventoryId, "regulations", {
+      progress: 100,
+      sub: stepSub,
+    });
+  }, [inventoryId, stepSub]);
+
   return (
     <VStack alignItems="stretch" gap="24px">
-      <BodyLarge color="content.secondary">{t("intro")}</BodyLarge>
-
-      <HStack
-        gap="8px"
-        bg="background.neutral"
-        borderRadius="6px"
-        px="12px"
-        py="6px"
-        alignSelf="flex-start"
-      >
-        <Icon as={LuScale} boxSize="14px" color="content.secondary" />
-        <LabelMedium color="content.secondary">
-          {t("feasibility-note")}
-        </LabelMedium>
-      </HStack>
+      <VStack alignItems="stretch" gap="12px">
+        <BodyLarge color="content.secondary">{t("intro")}</BodyLarge>
+        <HStack
+          gap="8px"
+          bg="background.neutral"
+          borderRadius="rounded"
+          px="12px"
+          py="6px"
+          alignSelf="flex-start"
+        >
+          <Icon as={LuScale} boxSize="14px" color="content.secondary" />
+          <Caption color="content.secondary">{t("feasibility-note")}</Caption>
+        </HStack>
+      </VStack>
 
       {!ranking ? (
-        <Card.Root>
+        <Card.Root borderColor="border.neutral">
           <Card.Body>
             <VStack gap="12px" py="40px" px="24px" textAlign="center">
               <Icon as={LuScale} boxSize="32px" color="content.tertiary" />
@@ -188,12 +186,15 @@ function RegulationsContent({ lng }: { lng: string }) {
               <BodyMedium color="content.secondary" maxW="520px">
                 {t("precondition-body")}
               </BodyMedium>
+              <LabelMedium color="content.tertiary">
+                {t("precondition-continue")}
+              </LabelMedium>
             </VStack>
           </Card.Body>
         </Card.Root>
       ) : (
         <>
-          <SimpleGrid columns={{ base: 1, md: 3 }} gap="12px">
+          <SimpleGrid columns={{ base: 1, md: 3 }} gap="16px">
             <SummaryCard
               count={includedCount}
               label={t("summary-included")}
@@ -218,7 +219,7 @@ function RegulationsContent({ lng }: { lng: string }) {
           </SimpleGrid>
 
           {blocked.length === 0 && flagged.length === 0 && (
-            <Card.Root>
+            <Card.Root borderColor="border.neutral">
               <Card.Body>
                 <VStack gap="10px" py="28px" px="24px" textAlign="center">
                   <Icon
@@ -248,7 +249,12 @@ function RegulationsContent({ lng }: { lng: string }) {
                 </BodySmall>
               </Box>
               {blocked.map((action) => (
-                <BlockedActionCard key={action.actionId} action={action} t={t} />
+                <ScreenedActionCard
+                  key={action.actionId}
+                  action={action}
+                  status="blocked"
+                  t={t}
+                />
               ))}
             </VStack>
           )}
@@ -264,7 +270,12 @@ function RegulationsContent({ lng }: { lng: string }) {
                 </BodySmall>
               </Box>
               {flagged.map((action) => (
-                <FlaggedActionCard key={action.actionId} action={action} t={t} />
+                <ScreenedActionCard
+                  key={action.actionId}
+                  action={action}
+                  status="flagged"
+                  t={t}
+                />
               ))}
             </VStack>
           )}
@@ -277,10 +288,10 @@ function RegulationsContent({ lng }: { lng: string }) {
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
 }) {
-  const { lng } = React.use(props.params);
+  const { lng, inventory: inventoryId } = React.use(props.params);
   return (
     <MeedWizardPage params={props.params} stepKey="regulations">
-      <RegulationsContent lng={lng} />
+      <RegulationsContent lng={lng} inventoryId={inventoryId} />
     </MeedWizardPage>
   );
 }

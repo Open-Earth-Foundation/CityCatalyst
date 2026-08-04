@@ -8,6 +8,8 @@ import { useTranslation } from "@/i18n/client";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
+import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { getMeedPath } from "../../steps";
 
 /** Total scripted animation time before navigating to the results screen. */
 const ANIMATION_MS = 8000;
@@ -61,7 +63,7 @@ function StageRow({
       px="24px"
       py="14px"
       borderTopWidth="1px"
-      borderColor="divider.neutral"
+      borderColor="border.overlay"
     >
       <Box flexShrink={0} mt="2px">
         {status === "complete" && (
@@ -78,7 +80,7 @@ function StageRow({
             h="20px"
             borderRadius="full"
             borderWidth="2px"
-            borderColor="divider.neutral"
+            borderColor="border.overlay"
           />
         )}
       </Box>
@@ -193,7 +195,7 @@ export default function Page(props: {
           py="18px"
           bg="background.neutral"
           borderBottomWidth="1px"
-          borderColor="divider.neutral"
+          borderColor="border.overlay"
         >
           {done ? (
             <Icon
@@ -225,7 +227,12 @@ export default function Page(props: {
               transition="width 0.2s ease, background 0.4s ease"
             />
           </Box>
-          <BodySmall color="content.secondary" mt="6px" mb="4px">
+          <BodySmall
+            color="content.secondary"
+            mt="6px"
+            mb="4px"
+            aria-live="polite"
+          >
             {t("percent-complete", { pct: displayPct })}
             {" — "}
             {done
@@ -267,6 +274,24 @@ export default function Page(props: {
           <BodyMedium color="content.secondary">{t("footer-note")}</BodyMedium>
         </HStack>
       </Card.Root>
+
+      {/* An unattended progress screen with no exit is a trap. */}
+      {!done && (
+        <Box mt="20px">
+          <CCTerraButton
+            variant="text"
+            minW="auto"
+            px="16px"
+            onClick={() =>
+              router.push(
+                getMeedPath(lng, cityId, inventoryId, "preflight"),
+              )
+            }
+          >
+            {t("cancel")}
+          </CCTerraButton>
+        </Box>
+      )}
     </Box>
   );
 }

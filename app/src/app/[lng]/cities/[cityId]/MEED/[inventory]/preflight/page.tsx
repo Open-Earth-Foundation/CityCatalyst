@@ -1,61 +1,112 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Card,
-  HStack,
-  SimpleGrid,
-  Tag,
-  VStack,
-} from "@chakra-ui/react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Card, HStack, Link, SimpleGrid, VStack } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { LuZap } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import type { TFunction } from "i18next";
-import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
-import { TitleMedium } from "@/components/package/Texts/Title";
-import { LabelLarge } from "@/components/package/Texts/Label";
+import {
+  BodyLarge,
+  BodyMedium,
+  BodySmall,
+} from "@/components/package/Texts/Body";
+import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
+import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
+import { Caption } from "@/components/package/Texts/Caption";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { Slider } from "@/components/ui/slider";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS, getMeedPath } from "../../steps";
+import { stepHref } from "../../navigation";
+import { useMeedSectionStates, type MeedSectionStates } from "../../meedStatus";
+import { computeMeedGate } from "../../meedGate";
+import {
+  MeedStatusTag,
+  STATUS_LABEL_KEY,
+  STATUS_TONE,
+  type MeedTone,
+} from "../../components/MeedStatusTag";
+import { MeedMeter } from "../../components/MeedMeter";
+import { MeedGateNotice } from "../../components/MeedGateNotice";
+import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 import {
   DEFAULT_MEED_WEIGHTS,
   getMeedConfirmedExclusions,
   getMeedPreferences,
   setMeedPreferences,
   setMeedStepState,
-  getMeedStepState,
-  type MeedStepState,
   type MeedStrategicPreferences,
 } from "../../meedLocalState";
 
 type WeightKey = "impact" | "alignment" | "feasibility";
 type Weights = Record<WeightKey, number>;
 
-type StepStatus = "complete" | "in-progress" | "not-started";
-
 const WEIGHT_KEYS: WeightKey[] = ["impact", "alignment", "feasibility"];
 
 /** The wizard steps summarized on this screen (everything before pre-flight). */
 const SUMMARY_STEPS = MEED_WIZARD_STEPS.filter((s) => s.key !== "preflight");
+
+/**
+ * How much each input adds to the model-confidence score, best-value first.
+ * The base covers the action library and the emission factors that ship with
+ * the model regardless of what the city has entered.
+ */
+const CONFIDENCE_BASE = 40;
+const CONFIDENCE_CAP = 98;
+const CONFIDENCE_POINTS: { key: string; points: number }[] = [
+  { key: "emissions", points: 25 },
+  { key: "context", points: 18 },
+  { key: "regulations", points: 10 },
+  { key: "preferences", points: 5 },
+  { key: "policy", points: 5 },
+];
+
+const FOCUS_RING = {
+  outline: "2px solid",
+  outlineColor: "content.link",
+  outlineOffset: "2px",
+} as const;
 
 /** API option keys use snake_case; locale keys are kebab-case. */
 function kebab(key: string): string {
   return key.replace(/_/g, "-");
 }
 
-function stepStatus(state: MeedStepState): StepStatus {
-  if (state.confirmed || (state.progress ?? 0) >= 100) return "complete";
-  if (state.visited) return "in-progress";
-  return "not-started";
+/** A section counts towards confidence once its data has stopped moving. */
+function isSettled(states: MeedSectionStates, key: string): boolean {
+  const status = states[key]?.status;
+  return status === "complete" || status === "needs-review";
 }
 
-const STATUS_PALETTE: Record<StepStatus, string> = {
-  complete: "green",
-  "in-progress": "orange",
-  "not-started": "gray",
-};
+interface Confidence {
+  score: number;
+  verdict: "low" | "moderate" | "high";
+  tone: MeedTone;
+  /** Highest-value input the city has not supplied yet, if any. */
+  nextBest: { key: string; points: number } | null;
+}
+
+function computeConfidence(states: MeedSectionStates): Confidence {
+  const earned = CONFIDENCE_POINTS.reduce(
+    (sum, entry) => sum + (isSettled(states, entry.key) ? entry.points : 0),
+    0,
+  );
+  const score = Math.min(CONFIDENCE_CAP, CONFIDENCE_BASE + earned);
+  const verdict = score < 50 ? "low" : score < 75 ? "moderate" : "high";
+  return {
+    score,
+    verdict,
+    tone:
+      verdict === "low"
+        ? "negative"
+        : verdict === "moderate"
+          ? "warning"
+          : "positive",
+    nextBest:
+      CONFIDENCE_POINTS.find((entry) => !isSettled(states, entry.key)) ?? null,
+  };
+}
 
 function emptyPreferences(): MeedStrategicPreferences {
   return {
@@ -87,15 +138,15 @@ function WeightSlider({
   const isDefault = value === defaultValue;
   return (
     <VStack alignItems="stretch" gap="8px">
-      <HStack justifyContent="space-between" alignItems="baseline">
-        <VStack alignItems="flex-start" gap="0">
+      <HStack justifyContent="space-between" alignItems="center" gap="8px">
+        <VStack alignItems="flex-start" gap="0" minW="0" flex="1">
           <LabelLarge color="content.primary">{label}</LabelLarge>
-          <BodyMedium fontSize="xs" color="content.tertiary">
-            {description}
-          </BodyMedium>
+          <Caption color="content.tertiary">{description}</Caption>
         </VStack>
         <TitleMedium
           color={isDefault ? "content.secondary" : "content.link"}
+          flexShrink={0}
+          fontVariantNumeric="tabular-nums"
         >
           {value}%
         </TitleMedium>
@@ -106,24 +157,82 @@ function WeightSlider({
         max={90}
         step={1}
         marks={[defaultValue]}
+        aria-label={[label]}
+        getAriaValueText={(details: { value: number }) =>
+          t("weight-value-text", { value: details.value })
+        }
         onValueChange={(details: { value: number[] }) =>
           onChange(details.value[0])
         }
+        _focusWithin={FOCUS_RING}
       />
-      <HStack justifyContent="space-between">
-        <BodyMedium fontSize="xs" color="content.tertiary">
-          5%
-        </BodyMedium>
-        <BodyMedium fontSize="xs" color="content.tertiary">
+      <HStack justifyContent="space-between" gap="8px">
+        <Caption color="content.tertiary">5%</Caption>
+        <Caption color="content.tertiary" textAlign="center">
           {isDefault
             ? t("weight-default", { value: defaultValue })
             : t("weight-adjusted", { value: defaultValue })}
-        </BodyMedium>
-        <BodyMedium fontSize="xs" color="content.tertiary">
-          90%
-        </BodyMedium>
+        </Caption>
+        <Caption color="content.tertiary">90%</Caption>
       </HStack>
     </VStack>
+  );
+}
+
+/** One wizard step in the completeness list. */
+function CompletenessRow({
+  label,
+  status,
+  sub,
+  href,
+  isLast,
+  t,
+}: {
+  label: string;
+  status: keyof typeof STATUS_TONE;
+  sub?: string;
+  href: string;
+  isLast: boolean;
+  t: TFunction;
+}) {
+  const isComplete = status === "complete";
+  return (
+    <HStack
+      justifyContent="space-between"
+      alignItems="center"
+      gap="16px"
+      py="12px"
+      borderBottomWidth={isLast ? "0" : "1px"}
+      borderColor="border.overlay"
+    >
+      <VStack alignItems="flex-start" gap="4px" flex="1" minW="0">
+        <HStack gap="8px" flexWrap="wrap" alignItems="center">
+          <LabelLarge color="content.primary">{label}</LabelLarge>
+          <MeedStatusTag tone={STATUS_TONE[status]}>
+            {t(STATUS_LABEL_KEY[status])}
+          </MeedStatusTag>
+        </HStack>
+        <Caption color="content.tertiary">{sub ?? t("no-detail-yet")}</Caption>
+      </VStack>
+      <Link
+        asChild
+        flexShrink={0}
+        color="content.link"
+        fontFamily="heading"
+        fontSize="label.md"
+        fontWeight="semibold"
+        _focusVisible={FOCUS_RING}
+      >
+        <NextLink
+          href={href}
+          aria-label={t(isComplete ? "edit-step-aria" : "enter-data-aria", {
+            step: label,
+          })}
+        >
+          {isComplete ? t("edit-step") : t("enter-data")}
+        </NextLink>
+      </Link>
+    </HStack>
   );
 }
 
@@ -136,27 +245,24 @@ function PreflightContent(props: {
   const { t } = useTranslation(lng, "meed-preflight");
   const router = useRouter();
 
+  const { states, isReady } = useMeedSectionStates(inventoryId);
+
   // Loaded from localStorage after mount to avoid SSR/client hydration drift.
-  const [stepStates, setStepStates] = useState<Record<string, MeedStepState>>(
-    {},
-  );
   const [preferences, setPreferences] =
     useState<MeedStrategicPreferences | null>(null);
   const [confirmedExclusions, setConfirmedExclusions] = useState<string[]>([]);
   const [weights, setWeights] = useState<Weights>({ ...DEFAULT_MEED_WEIGHTS });
 
   useEffect(() => {
-    const states: Record<string, MeedStepState> = {};
-    MEED_WIZARD_STEPS.forEach((step) => {
-      states[step.key] = getMeedStepState(inventoryId, step.key);
-    });
-    setStepStates(states);
     const prefs = getMeedPreferences(inventoryId);
     setPreferences(prefs);
     setWeights(prefs?.weights ?? { ...DEFAULT_MEED_WEIGHTS });
     setConfirmedExclusions(getMeedConfirmedExclusions(inventoryId));
     setMeedStepState(inventoryId, "preflight", { visited: true });
   }, [inventoryId]);
+
+  const gate = useMemo(() => computeMeedGate(states), [states]);
+  const confidence = useMemo(() => computeConfidence(states), [states]);
 
   function persistWeights(next: Weights) {
     const existing = getMeedPreferences(inventoryId) ?? emptyPreferences();
@@ -165,7 +271,7 @@ function PreflightContent(props: {
 
   /**
    * Move one slider and redistribute the remainder proportionally across the
-   * other two pillars so the total always stays at 100 (prototype behavior).
+   * other two pillars so the total always stays at 100.
    */
   function handleWeightChange(key: WeightKey, rawValue: number) {
     const newValue = Math.min(90, Math.max(5, Math.round(rawValue)));
@@ -200,6 +306,7 @@ function PreflightContent(props: {
     (k) => weights[k] !== DEFAULT_MEED_WEIGHTS[k],
   );
   const totalWeight = WEIGHT_KEYS.reduce((sum, k) => sum + weights[k], 0);
+  const totalIsValid = totalWeight === 100;
 
   const hasExclusionCriteria =
     preferences != null &&
@@ -219,202 +326,276 @@ function PreflightContent(props: {
     <VStack alignItems="stretch" gap="24px">
       <BodyLarge color="content.secondary">{t("description")}</BodyLarge>
 
-      {/* Data completeness per wizard step */}
-      <Card.Root>
-        <Card.Body>
-          <VStack alignItems="stretch" gap="12px">
-            <TitleMedium color="content.primary">
-              {t("data-completeness-title")}
-            </TitleMedium>
-            <VStack alignItems="stretch" gap="0">
-              {SUMMARY_STEPS.map((step, index) => {
-                const status = stepStatus(stepStates[step.key] ?? {});
-                return (
-                  <HStack
-                    key={step.key}
-                    justifyContent="space-between"
-                    py="12px"
-                    borderBottomWidth={
-                      index < SUMMARY_STEPS.length - 1 ? "1px" : "0"
-                    }
-                    borderColor="divider.neutral"
-                  >
-                    <VStack alignItems="flex-start" gap="4px">
-                      <LabelLarge color="content.primary">
-                        {t(`step-${step.key}`)}
-                      </LabelLarge>
-                      <Tag.Root
-                        size="sm"
-                        colorPalette={STATUS_PALETTE[status]}
-                      >
-                        <Tag.Label>{t(`status-${status}`)}</Tag.Label>
-                      </Tag.Root>
+      <SimpleGrid
+        columns={{ base: 1, lg: 2 }}
+        gridTemplateColumns={{ lg: "1fr 380px" }}
+        alignItems="start"
+        gap="24px"
+      >
+        {/* Left — what the model has to work with. */}
+        <VStack alignItems="stretch" gap="24px">
+          {isReady ? (
+            <Card.Root borderColor="border.overlay">
+              <Card.Body>
+                <VStack alignItems="stretch" gap="8px">
+                  <TitleMedium color="content.primary">
+                    {t("data-completeness-title")}
+                  </TitleMedium>
+                  <VStack alignItems="stretch" gap="0">
+                    {SUMMARY_STEPS.map((step, index) => (
+                      <CompletenessRow
+                        key={step.key}
+                        label={t(`step-${step.key}`)}
+                        status={states[step.key]?.status ?? "not-started"}
+                        sub={states[step.key]?.sub}
+                        href={stepHref(
+                          lng,
+                          cityId,
+                          inventoryId,
+                          step.segment,
+                          "preflight",
+                        )}
+                        isLast={index === SUMMARY_STEPS.length - 1}
+                        t={t}
+                      />
+                    ))}
+                  </VStack>
+                </VStack>
+              </Card.Body>
+            </Card.Root>
+          ) : (
+            <MeedCardSkeleton lines={6} />
+          )}
+
+          {/* Confirmed exclusions */}
+          <Card.Root borderColor="border.overlay">
+            <Card.Body>
+              <VStack alignItems="stretch" gap="12px">
+                <TitleMedium color="content.primary">
+                  {t("exclusions-title")}
+                </TitleMedium>
+
+                {hasExclusionCriteria ? (
+                  <VStack alignItems="stretch" gap="10px">
+                    <VStack alignItems="stretch" gap="2px">
+                      <LabelMedium color="content.secondary">
+                        {t("excluded-sectors-label")}
+                      </LabelMedium>
+                      <BodySmall color="content.secondary">
+                        {preferences!.excludedSectors.length > 0
+                          ? preferences!.excludedSectors
+                              .map((s) => t(`sector-${kebab(s)}`))
+                              .join(", ")
+                          : t("none")}
+                      </BodySmall>
                     </VStack>
+                    <VStack alignItems="stretch" gap="2px">
+                      <LabelMedium color="content.secondary">
+                        {t("excluded-co-benefits-label")}
+                      </LabelMedium>
+                      <BodySmall color="content.secondary">
+                        {preferences!.excludedCoBenefits.length > 0
+                          ? preferences!.excludedCoBenefits
+                              .map((k) => t(`co-benefit-${kebab(k)}`))
+                              .join(", ")
+                          : t("none")}
+                      </BodySmall>
+                    </VStack>
+                    <VStack alignItems="stretch" gap="2px">
+                      <LabelMedium color="content.secondary">
+                        {t("excluded-free-text-label")}
+                      </LabelMedium>
+                      <BodySmall color="content.secondary">
+                        {preferences!.excludeText.trim() || t("none")}
+                      </BodySmall>
+                    </VStack>
+                  </VStack>
+                ) : (
+                  <BodySmall color="content.tertiary" fontStyle="italic">
+                    {t("no-exclusion-criteria")}
+                  </BodySmall>
+                )}
+
+                {confirmedExclusions.length > 0 ? (
+                  <BodySmall color="content.secondary">
+                    {t("confirmed-exclusions-count", {
+                      count: confirmedExclusions.length,
+                    })}
+                  </BodySmall>
+                ) : (
+                  <BodySmall color="content.tertiary">
+                    {t("no-confirmed-exclusions")}
+                  </BodySmall>
+                )}
+
+                <Caption color="content.tertiary">
+                  {t("legal-screening-note")}
+                </Caption>
+
+                <Link
+                  asChild
+                  alignSelf="flex-start"
+                  color="content.link"
+                  fontFamily="heading"
+                  fontSize="label.md"
+                  fontWeight="semibold"
+                  _focusVisible={FOCUS_RING}
+                >
+                  <NextLink
+                    href={stepHref(
+                      lng,
+                      cityId,
+                      inventoryId,
+                      "preferences",
+                      "preflight",
+                    )}
+                  >
+                    {t("edit-exclusion-criteria")}
+                  </NextLink>
+                </Link>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </VStack>
+
+        {/* Right — how confident the model is, and how it is weighted. */}
+        <VStack alignItems="stretch" gap="24px">
+          {isReady ? (
+            <Card.Root borderColor="border.overlay">
+              <Card.Body>
+                <VStack alignItems="stretch" gap="10px">
+                  <TitleMedium color="content.primary">
+                    {t("confidence-title")}
+                  </TitleMedium>
+                  <HStack alignItems="baseline" gap="8px">
+                    <TitleLarge
+                      color="content.primary"
+                      fontSize="40px"
+                      lineHeight="44px"
+                      fontVariantNumeric="tabular-nums"
+                    >
+                      {confidence.score}
+                    </TitleLarge>
+                    <BodyMedium color="content.tertiary">
+                      {t("confidence-out-of")}
+                    </BodyMedium>
+                    <MeedStatusTag tone={confidence.tone} ml="auto">
+                      {t(`confidence-verdict-${confidence.verdict}`)}
+                    </MeedStatusTag>
+                  </HStack>
+                  <MeedMeter
+                    value={confidence.score / 100}
+                    tone={confidence.tone}
+                    ariaLabel={t("confidence-aria", {
+                      score: confidence.score,
+                    })}
+                  />
+                  <BodySmall color="content.secondary">
+                    {t("confidence-description")}
+                  </BodySmall>
+                  {confidence.verdict !== "high" && confidence.nextBest && (
+                    <BodySmall color="sentiment.warningDefault">
+                      {t("confidence-hint", {
+                        step: t(`step-${confidence.nextBest.key}`),
+                        points: confidence.nextBest.points,
+                      })}
+                    </BodySmall>
+                  )}
+                </VStack>
+              </Card.Body>
+            </Card.Root>
+          ) : (
+            <MeedCardSkeleton lines={3} />
+          )}
+
+          {/* Scoring weights */}
+          <Card.Root borderColor="border.overlay">
+            <Card.Body>
+              <VStack alignItems="stretch" gap="16px">
+                <HStack gap="10px" alignItems="center" flexWrap="wrap">
+                  <TitleMedium color="content.primary">
+                    {t("scoring-weights-title")}
+                  </TitleMedium>
+                  {isCustomWeights && (
+                    <MeedStatusTag tone="warning">
+                      {t("custom-weights-active")}
+                    </MeedStatusTag>
+                  )}
+                  <MeedStatusTag tone="neutral" ml="auto">
+                    {t("badge-optional")}
+                  </MeedStatusTag>
+                </HStack>
+                <VStack alignItems="stretch" gap="4px">
+                  <BodySmall color="content.secondary">
+                    {t("scoring-weights-description")}
+                  </BodySmall>
+                  <Caption color="content.tertiary">
+                    {t("scoring-weights-defaults", {
+                      impact: DEFAULT_MEED_WEIGHTS.impact,
+                      alignment: DEFAULT_MEED_WEIGHTS.alignment,
+                      feasibility: DEFAULT_MEED_WEIGHTS.feasibility,
+                    })}
+                  </Caption>
+                </VStack>
+                <VStack alignItems="stretch" gap="20px">
+                  {WEIGHT_KEYS.map((key) => (
+                    <WeightSlider
+                      key={key}
+                      label={t(`weight-${key}`)}
+                      description={t(`weight-${key}-description`)}
+                      value={weights[key]}
+                      defaultValue={DEFAULT_MEED_WEIGHTS[key]}
+                      onChange={(v) => handleWeightChange(key, v)}
+                      t={t}
+                    />
+                  ))}
+                </VStack>
+                <HStack gap="10px" flexWrap="wrap" alignItems="center">
+                  <MeedStatusTag
+                    tone={totalIsValid ? "positive" : "negative"}
+                    aria-live="polite"
+                  >
+                    {t("weights-total", { total: totalWeight })}
+                  </MeedStatusTag>
+                  {isCustomWeights && (
                     <CCTerraButton
                       variant="text"
-                      onClick={() =>
-                        router.push(
-                          getMeedPath(lng, cityId, inventoryId, step.segment),
-                        )
-                      }
+                      minW="auto"
+                      px="12px"
+                      onClick={resetWeights}
+                      _focusVisible={FOCUS_RING}
                     >
-                      {status === "complete" ? t("edit-step") : t("enter-data")}
+                      {t("reset-to-defaults")}
                     </CCTerraButton>
-                  </HStack>
-                );
-              })}
-            </VStack>
-          </VStack>
-        </Card.Body>
-      </Card.Root>
+                  )}
+                </HStack>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
 
-      {/* Scoring weights */}
-      <Card.Root>
-        <Card.Body>
-          <VStack alignItems="stretch" gap="16px">
-            <HStack gap="10px">
-              <TitleMedium color="content.primary">
-                {t("scoring-weights-title")}
-              </TitleMedium>
-              {isCustomWeights && (
-                <Tag.Root size="sm" colorPalette="orange">
-                  <Tag.Label>{t("custom-weights-active")}</Tag.Label>
-                </Tag.Root>
-              )}
-              <Tag.Root size="sm" colorPalette="blue" ml="auto">
-                <Tag.Label>{t("badge-optional")}</Tag.Label>
-              </Tag.Root>
-            </HStack>
-            <VStack alignItems="stretch" gap="4px">
-              <BodyMedium color="content.secondary">
-                {t("scoring-weights-description")}
-              </BodyMedium>
-              <BodyMedium fontSize="xs" color="content.tertiary">
-                {t("scoring-weights-defaults", {
-                  impact: DEFAULT_MEED_WEIGHTS.impact,
-                  alignment: DEFAULT_MEED_WEIGHTS.alignment,
-                  feasibility: DEFAULT_MEED_WEIGHTS.feasibility,
-                })}
-              </BodyMedium>
-            </VStack>
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap="24px">
-              {WEIGHT_KEYS.map((key) => (
-                <WeightSlider
-                  key={key}
-                  label={t(`weight-${key}`)}
-                  description={t(`weight-${key}-description`)}
-                  value={weights[key]}
-                  defaultValue={DEFAULT_MEED_WEIGHTS[key]}
-                  onChange={(v) => handleWeightChange(key, v)}
-                  t={t}
-                />
-              ))}
-            </SimpleGrid>
-            <HStack gap="10px">
-              <Box
-                px="12px"
-                py="4px"
-                borderRadius="6px"
-                bg="background.neutral"
-              >
-                <LabelLarge color="sentiment.positiveDefault">
-                  {t("weights-total", { total: totalWeight })}
-                </LabelLarge>
-              </Box>
-              {isCustomWeights && (
-                <CCTerraButton variant="outlined" onClick={resetWeights}>
-                  {t("reset-to-defaults")}
+          {/* Generate ranking CTA */}
+          <Card.Root borderColor="border.overlay">
+            <Card.Body>
+              <VStack alignItems="stretch" gap="12px">
+                <MeedGateNotice gate={gate} t={t} id="meed-preflight-gate" />
+                <CCTerraButton
+                  variant="filled"
+                  minW="auto"
+                  px="24px"
+                  alignSelf="flex-start"
+                  leftIcon={<LuZap size={16} />}
+                  disabled={!gate.canGenerate}
+                  aria-describedby="meed-preflight-gate"
+                  onClick={generateRanking}
+                  _focusVisible={FOCUS_RING}
+                >
+                  {t("generate-ranking-cta")}
                 </CCTerraButton>
-              )}
-            </HStack>
-          </VStack>
-        </Card.Body>
-      </Card.Root>
-
-      {/* Confirmed exclusions */}
-      <Card.Root>
-        <Card.Body>
-          <VStack alignItems="stretch" gap="12px">
-            <TitleMedium color="content.primary">
-              {t("exclusions-title")}
-            </TitleMedium>
-
-            {hasExclusionCriteria ? (
-              <Box
-                borderWidth="1px"
-                borderColor="divider.neutral"
-                borderRadius="8px"
-                bg="background.neutral"
-                px="16px"
-                py="14px"
-              >
-                <VStack alignItems="stretch" gap="6px">
-                  <BodyMedium color="content.secondary">
-                    <strong>{t("excluded-sectors-label")}</strong>{" "}
-                    {preferences!.excludedSectors.length > 0
-                      ? preferences!.excludedSectors
-                          .map((s) => t(`sector-${kebab(s)}`))
-                          .join(", ")
-                      : t("none")}
-                  </BodyMedium>
-                  <BodyMedium color="content.secondary">
-                    <strong>{t("excluded-co-benefits-label")}</strong>{" "}
-                    {preferences!.excludedCoBenefits.length > 0
-                      ? preferences!.excludedCoBenefits
-                          .map((k) => t(`co-benefit-${kebab(k)}`))
-                          .join(", ")
-                      : t("none")}
-                  </BodyMedium>
-                  <BodyMedium color="content.secondary">
-                    <strong>{t("excluded-free-text-label")}</strong>{" "}
-                    {preferences!.excludeText.trim() || t("none")}
-                  </BodyMedium>
-                </VStack>
-              </Box>
-            ) : (
-              <BodyMedium color="content.tertiary" fontStyle="italic">
-                {t("no-exclusion-criteria")}
-              </BodyMedium>
-            )}
-
-            {confirmedExclusions.length > 0 ? (
-              <BodyMedium color="content.secondary">
-                {t("confirmed-exclusions-count", {
-                  count: confirmedExclusions.length,
-                })}
-              </BodyMedium>
-            ) : (
-              <BodyMedium color="content.tertiary">
-                {t("no-confirmed-exclusions")}
-              </BodyMedium>
-            )}
-
-            <BodyMedium fontSize="xs" color="content.tertiary">
-              {t("legal-screening-note")}
-            </BodyMedium>
-
-            <CCTerraButton
-              variant="text"
-              alignSelf="flex-start"
-              onClick={() =>
-                router.push(
-                  getMeedPath(lng, cityId, inventoryId, "preferences"),
-                )
-              }
-            >
-              {t("edit-exclusion-criteria")}
-            </CCTerraButton>
-          </VStack>
-        </Card.Body>
-      </Card.Root>
-
-      {/* Generate ranking CTA */}
-      <CCTerraButton variant="filled" w="full" py="24px" onClick={generateRanking}>
-        <HStack gap="10px">
-          <LuZap size={16} />
-          {t("generate-ranking-cta")}
-        </HStack>
-      </CCTerraButton>
+              </VStack>
+            </Card.Body>
+          </Card.Root>
+        </VStack>
+      </SimpleGrid>
     </VStack>
   );
 }

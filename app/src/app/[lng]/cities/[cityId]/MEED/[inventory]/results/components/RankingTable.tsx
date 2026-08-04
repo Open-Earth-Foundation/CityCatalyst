@@ -41,7 +41,7 @@ export function RankingTable({
 }) {
   return (
     <Card.Root overflow="hidden">
-      <Box px="20px" py="16px" borderBottomWidth="1px" borderColor="divider.neutral">
+      <Box px="20px" py="16px" borderBottomWidth="1px" borderColor="border.overlay">
         <TitleMedium color="content.primary">{t("table-title")}</TitleMedium>
         <BodySmall color="content.secondary" mt="2px">
           {t("table-description", { count: actions.length })}

@@ -3,6 +3,8 @@
   "feasibility-note": "Legal verdict shapes 34% of the feasibility score · feasibility shapes 23% of the ranking",
   "precondition-title": "Legal screening runs when your ranking is generated",
   "precondition-body": "Finish the remaining wizard steps and generate your ranking — each candidate action will then be screened against local laws, and any blocked or flagged actions will appear here. You can continue to the next step now.",
+  "precondition-continue": "No action needed here — continue to the next step.",
+  "step-sub": "Screening runs with the ranking",
   "summary-included": "Passed legal review",
   "summary-included-sub": "Included in the ranking",
   "summary-blocked": "Excluded from ranking",

@@ -1,368 +1,106 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-  Box,
   Card,
   HStack,
   Icon,
-  IconButton,
   SimpleGrid,
   Table,
-  Tag,
   VStack,
 } from "@chakra-ui/react";
-import { LuChevronDown, LuChevronRight, LuClipboardList } from "react-icons/lu";
-import type { TFunction } from "i18next";
+import { LuClipboardList, LuTriangleAlert } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetMeedActionsQuery,
   useGetMeedPolicyScoresQuery,
 } from "@/services/api";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
-import { LabelLarge } from "@/components/package/Texts/Label";
+import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { MeedWizardPage } from "../../MeedWizardPage";
+import { MEED_WIZARD_STEPS } from "../../steps";
+import { setMeedStepState } from "../../meedLocalState";
+import { MeedStatusTag } from "../../components/MeedStatusTag";
+import {
+  MeedCardSkeleton,
+  MeedTableSkeleton,
+} from "../../components/MeedSkeletons";
 import { EmptyState } from "../results/components/EmptyState";
+import { buildActionIndex } from "../results/components/actionCatalog";
+import { computePolicyAggregates } from "./policyAggregates";
+import { PolicyActionRow } from "./components/PolicyActionRow";
+import { PolicyColumnHeader } from "./components/PolicyColumnHeader";
+import { ScopeScoreCard } from "./components/ScopeScoreCard";
 import {
-  buildActionIndex,
-  type MeedActionIndex,
-} from "../results/components/actionCatalog";
-import {
-  computePolicyAggregates,
-  docScope,
-  SIGNAL_STRENGTH_NUM,
-  type PolicyScope,
-} from "./policyAggregates";
-
-// ─── Local view of the Global API action-policy-scores response ──────────────
-// (`useGetMeedPolicyScoresQuery` is typed `unknown` — see MeedGlobalApiService.)
-
-interface PolicyEvidence {
-  signal_type?: string;
-  signal_strength?: string;
-  document_name?: string;
-  document_type?: string;
-  evidence_strength?: number;
-}
-
-interface PolicyScore {
-  src_action_id: string;
-  policy_support_score: number;
-  policy_evidence?: PolicyEvidence[];
-}
-
-function extractScores(data: unknown): PolicyScore[] {
-  if (!data || typeof data !== "object") return [];
-  const scores = (data as { scores?: unknown }).scores;
-  if (!Array.isArray(scores)) return [];
-  return scores.filter(
-    (s): s is PolicyScore =>
-      !!s &&
-      typeof s === "object" &&
-      typeof (s as PolicyScore).src_action_id === "string" &&
-      typeof (s as PolicyScore).policy_support_score === "number",
-  );
-}
-
-// ─── Derived per-action rows ──────────────────────────────────────────────────
-
-interface ActionPolicyRow {
-  id: string;
-  score: number;
-  scopeMax: Record<PolicyScope, number | null>;
-  evidence: PolicyEvidence[];
-}
-
-function evidenceStrengthNum(ev: PolicyEvidence): number {
-  return typeof ev.evidence_strength === "number"
-    ? ev.evidence_strength
-    : (SIGNAL_STRENGTH_NUM[ev.signal_strength ?? ""] ?? 0.2);
-}
-
-interface PolicyDerived {
-  rows: ActionPolicyRow[];
-  planCounts: Record<PolicyScope, number>;
-  coverage: Record<PolicyScope, number>;
-}
-
-function derivePolicyRows(scores: PolicyScore[]): PolicyDerived {
-  const planNames: Record<PolicyScope, Set<string>> = {
-    National: new Set(),
-    Regional: new Set(),
-    Municipal: new Set(),
-  };
-  const coverage: Record<PolicyScope, number> = {
-    National: 0,
-    Regional: 0,
-    Municipal: 0,
-  };
-
-  const rows = scores.map((score) => {
-    const scopeMax: Record<PolicyScope, number | null> = {
-      National: null,
-      Regional: null,
-      Municipal: null,
-    };
-    for (const ev of score.policy_evidence ?? []) {
-      const scope = docScope(ev.document_type);
-      scopeMax[scope] = Math.max(scopeMax[scope] ?? 0, evidenceStrengthNum(ev));
-      if (ev.document_name) planNames[scope].add(ev.document_name);
-    }
-    for (const scope of ["National", "Regional", "Municipal"] as const) {
-      if (scopeMax[scope] !== null) coverage[scope] += 1;
-    }
-    return {
-      id: score.src_action_id,
-      score: score.policy_support_score,
-      scopeMax,
-      evidence: score.policy_evidence ?? [],
-    };
-  });
-
-  rows.sort((a, b) => b.score - a.score);
-
-  return {
-    rows,
-    planCounts: {
-      National: planNames.National.size,
-      Regional: planNames.Regional.size,
-      Municipal: planNames.Municipal.size,
-    },
-    coverage,
-  };
-}
-
-// ─── Display helpers ──────────────────────────────────────────────────────────
-
-function scoreColorToken(score: number | null): string {
-  if (score === null) return "content.tertiary";
-  if (score >= 0.75) return "sentiment.positiveDefault";
-  if (score >= 0.4) return "sentiment.warningDefault";
-  return "content.tertiary";
-}
-
-function alignmentLabelKey(score: number | null): string {
-  if (score === null) return "alignment-no-plan";
-  if (score >= 0.75) return "alignment-strong";
-  if (score >= 0.4) return "alignment-moderate";
-  return "alignment-limited";
-}
-
-const SIGNAL_TYPE_KEYS: Record<string, string> = {
-  action: "signal-action",
-  funding: "signal-funding",
-  governance: "signal-governance",
-  sector_priority: "signal-sector",
-  target: "signal-target",
-};
-
-const STRENGTH_LABEL_KEYS: Record<string, string> = {
-  high: "strength-high",
-  medium: "strength-medium",
-  low: "strength-low",
-};
-
-const STRENGTH_PALETTE: Record<string, string> = {
-  high: "green",
-  medium: "orange",
-  low: "gray",
-};
-
-const SCOPE_PALETTE: Record<PolicyScope, string> = {
-  National: "blue",
-  Regional: "orange",
-  Municipal: "green",
-};
-
-const SCOPE_LABEL_KEYS: Record<PolicyScope, string> = {
-  National: "scope-national",
-  Regional: "scope-regional",
-  Municipal: "scope-municipal",
-};
+  derivePolicyRows,
+  extractScores,
+  POLICY_COLUMN_WIDTHS,
+  sortPolicyRows,
+  type PolicySortKey,
+  type SortDirection,
+} from "./policyRows";
 
 const INITIAL_ROWS = 15;
 
-// ─── Components ───────────────────────────────────────────────────────────────
+const POLICY_RANKING_WEIGHT =
+  MEED_WIZARD_STEPS.find((s) => s.key === "policy")?.rankingWeight ?? 22;
 
-function ScoreBar({ pct, color }: { pct: number; color: string }) {
-  return (
-    <Box
-      h="6px"
-      w="full"
-      bg="background.neutral"
-      borderRadius="full"
-      overflow="hidden"
-    >
-      <Box h="full" w={`${pct}%`} bg={color} borderRadius="full" />
-    </Box>
-  );
-}
+const FOCUS_RING = {
+  outline: "2px solid",
+  outlineColor: "content.link",
+  outlineOffset: "2px",
+} as const;
 
-/** Aggregate alignment card for one plan scope (national/regional/municipal). */
-function ScopeScoreCard({
-  scopeLabel,
-  score,
-  description,
-  t,
+/** Failed fetch, with the only useful next step: try again. */
+function PolicyErrorCard({
+  title,
+  body,
+  retryLabel,
+  onRetry,
 }: {
-  scopeLabel: string;
-  score: number | null;
-  description: string;
-  t: TFunction;
+  title: string;
+  body: string;
+  retryLabel: string;
+  onRetry: () => void;
 }) {
-  const pct = score !== null ? Math.round(score * 100) : null;
-  const color = scoreColorToken(score);
   return (
-    <Card.Root>
-      <Card.Body p="16px">
-        <VStack alignItems="stretch" gap="8px">
-          <HStack justifyContent="space-between" alignItems="flex-start">
-            <LabelLarge color="content.tertiary">{scopeLabel}</LabelLarge>
-            <TitleMedium color={color} fontWeight="bold">
-              {pct !== null ? t("percent-value", { value: pct }) : "—"}
-            </TitleMedium>
+    <Card.Root borderColor="sentiment.negativeDefault">
+      <Card.Body>
+        <VStack alignItems="flex-start" gap="12px">
+          <HStack gap="8px">
+            <Icon
+              as={LuTriangleAlert}
+              boxSize="18px"
+              color="sentiment.negativeDefault"
+            />
+            <TitleMedium color="content.primary">{title}</TitleMedium>
           </HStack>
-          <ScoreBar pct={pct ?? 0} color={color} />
-          <LabelLarge color={color}>{t(alignmentLabelKey(score))}</LabelLarge>
-          <BodyMedium fontSize="xs" color="content.tertiary">
-            {description}
-          </BodyMedium>
+          <BodyMedium color="content.secondary">{body}</BodyMedium>
+          <CCTerraButton
+            variant="outlined"
+            minW="auto"
+            px="20px"
+            onClick={onRetry}
+            _focusVisible={FOCUS_RING}
+          >
+            {retryLabel}
+          </CCTerraButton>
         </VStack>
       </Card.Body>
     </Card.Root>
   );
 }
 
-/** One evidence row shown under an expanded action. */
-function EvidenceRow({ ev, t }: { ev: PolicyEvidence; t: TFunction }) {
-  const scope = docScope(ev.document_type);
-  const strength = (ev.signal_strength ?? "").toLowerCase();
-  const strengthKey = STRENGTH_LABEL_KEYS[strength];
-  const pct = Math.round(evidenceStrengthNum(ev) * 100);
-  const signalKey = SIGNAL_TYPE_KEYS[ev.signal_type ?? ""] ?? "signal-other";
-
-  return (
-    <Table.Row bg="background.neutral">
-      <Table.Cell colSpan={5}>
-        <HStack gap="12px" pl="32px" flexWrap="wrap">
-          <BodyMedium color="content.secondary" flex="1" minW="200px">
-            {ev.document_name ?? t("unnamed-document")}
-          </BodyMedium>
-          <Tag.Root colorPalette={SCOPE_PALETTE[scope]} size="sm">
-            <Tag.Label>{t(SCOPE_LABEL_KEYS[scope])}</Tag.Label>
-          </Tag.Root>
-          <BodyMedium fontSize="xs" color="content.tertiary" minW="96px">
-            {t(signalKey)}
-          </BodyMedium>
-          {strengthKey && (
-            <Tag.Root
-              colorPalette={STRENGTH_PALETTE[strength] ?? "gray"}
-              size="sm"
-            >
-              <Tag.Label>{t(strengthKey)}</Tag.Label>
-            </Tag.Root>
-          )}
-          <BodyMedium
-            fontSize="xs"
-            color="content.secondary"
-            minW="40px"
-            textAlign="end"
-            fontVariantNumeric="tabular-nums"
-          >
-            {t("percent-value", { value: pct })}
-          </BodyMedium>
-        </HStack>
-      </Table.Cell>
-    </Table.Row>
-  );
-}
-
-function ScopeCell({ value, t }: { value: number | null; t: TFunction }) {
-  return (
-    <Table.Cell textAlign="end" fontVariantNumeric="tabular-nums">
-      <BodyMedium
-        color={value !== null ? "content.primary" : "content.tertiary"}
-      >
-        {value !== null
-          ? t("percent-value", { value: Math.round(value * 100) })
-          : "—"}
-      </BodyMedium>
-    </Table.Cell>
-  );
-}
-
-/** One action row with expandable top-evidence detail. */
-function ActionRow({
-  row,
-  index,
-  t,
-}: {
-  row: ActionPolicyRow;
-  index: MeedActionIndex;
-  t: TFunction;
+function PolicyAlignmentContent(props: {
+  lng: string;
+  cityId: string;
+  inventoryId: string;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const hasEvidence = row.evidence.length > 0;
-  const pct = Math.round(row.score * 100);
-  const color = scoreColorToken(row.score);
-  const name = index.get(row.id)?.actionName ?? row.id;
-
-  return (
-    <>
-      <Table.Row>
-        <Table.Cell>
-          <HStack gap="8px">
-            {hasEvidence ? (
-              <IconButton
-                aria-label={t(expanded ? "collapse-action" : "expand-action")}
-                size="2xs"
-                variant="ghost"
-                onClick={() => setExpanded((v) => !v)}
-              >
-                <Icon as={expanded ? LuChevronDown : LuChevronRight} />
-              </IconButton>
-            ) : (
-              <Box w="24px" />
-            )}
-            <BodyMedium color="content.primary">{name}</BodyMedium>
-          </HStack>
-        </Table.Cell>
-        <ScopeCell value={row.scopeMax.National} t={t} />
-        <ScopeCell value={row.scopeMax.Regional} t={t} />
-        <ScopeCell value={row.scopeMax.Municipal} t={t} />
-        <Table.Cell textAlign="end">
-          <HStack gap="8px" justifyContent="flex-end">
-            <Box w="48px">
-              <ScoreBar pct={pct} color={color} />
-            </Box>
-            <BodyMedium
-              color="content.primary"
-              fontWeight="semibold"
-              minW="40px"
-              textAlign="end"
-              fontVariantNumeric="tabular-nums"
-            >
-              {t("percent-value", { value: pct })}
-            </BodyMedium>
-          </HStack>
-        </Table.Cell>
-      </Table.Row>
-      {expanded &&
-        row.evidence.map((ev, i) => (
-          <EvidenceRow key={`${row.id}-ev-${i}`} ev={ev} t={t} />
-        ))}
-    </>
-  );
-}
-
-// ─── Screen ───────────────────────────────────────────────────────────────────
-
-function PolicyAlignmentContent(props: { lng: string; cityId: string }) {
-  const { lng, cityId } = props;
+  const { lng, cityId, inventoryId } = props;
   const { t } = useTranslation(lng, "meed-policy");
 
-  const { data, isLoading } = useGetMeedPolicyScoresQuery(
+  const { data, isLoading, isError, refetch } = useGetMeedPolicyScoresQuery(
     { cityId },
     { skip: !cityId },
   );
@@ -372,6 +110,8 @@ function PolicyAlignmentContent(props: { lng: string; cityId: string }) {
   );
 
   const [showAll, setShowAll] = useState(false);
+  const [sortKey, setSortKey] = useState<PolicySortKey>("score");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const scores = useMemo(() => extractScores(data), [data]);
   const aggregates = useMemo(() => computePolicyAggregates(scores), [scores]);
@@ -383,23 +123,94 @@ function PolicyAlignmentContent(props: { lng: string; cityId: string }) {
     () => buildActionIndex(catalogData),
     [catalogData],
   );
+  const sortedRows = useMemo(
+    () => sortPolicyRows(rows, sortKey, sortDirection),
+    [rows, sortKey, sortDirection],
+  );
+
+  const totalActions = rows.length;
+  const nationalPlans = planCounts.National;
+
+  // Reflect this step on the overview and the pre-flight summary.
+  useEffect(() => {
+    if (!inventoryId || totalActions === 0) return;
+    setMeedStepState(inventoryId, "policy", {
+      progress: 100,
+      sub: t("policy-step-sub", { n: totalActions, p: nationalPlans }),
+    });
+  }, [inventoryId, totalActions, nationalPlans, t]);
+
+  const toggleSort = (key: PolicySortKey) => {
+    if (key === sortKey) {
+      setSortDirection((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDirection("desc");
+    }
+  };
+
+  const sortProps = (key: PolicySortKey, columnLabel: string) => ({
+    onSort: () => toggleSort(key),
+    active: sortKey === key,
+    direction: sortDirection,
+    sortAriaLabel: t("sort-by-column", { column: columnLabel }),
+  });
+
+  const weightStrip = (
+    <HStack
+      gap="8px"
+      bg="background.neutral"
+      borderRadius="rounded"
+      px="12px"
+      py="6px"
+      alignItems="center"
+    >
+      <Icon as={LuClipboardList} boxSize="14px" color="content.secondary" />
+      <Caption color="content.secondary">
+        {t("policy-ranking-weight", { weight: POLICY_RANKING_WEIGHT })}
+      </Caption>
+    </HStack>
+  );
+
+  const intro = (
+    <VStack alignItems="stretch" gap="8px">
+      <BodyLarge color="content.secondary">{t("policy-description")}</BodyLarge>
+      {weightStrip}
+    </VStack>
+  );
+
+  if (isError) {
+    return (
+      <VStack alignItems="stretch" gap="24px">
+        {intro}
+        <PolicyErrorCard
+          title={t("policy-error-title")}
+          body={t("policy-error-body")}
+          retryLabel={t("retry")}
+          onRetry={() => void refetch()}
+        />
+      </VStack>
+    );
+  }
 
   if (isLoading) {
     return (
-      <Card.Root>
-        <Card.Body>
-          <BodyLarge color="content.tertiary">{t("loading-policy")}</BodyLarge>
-        </Card.Body>
-      </Card.Root>
+      <VStack alignItems="stretch" gap="24px">
+        {intro}
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap="12px">
+          <MeedCardSkeleton lines={2} />
+          <MeedCardSkeleton lines={2} />
+          <MeedCardSkeleton lines={2} />
+        </SimpleGrid>
+        <MeedTableSkeleton rows={8} />
+      </VStack>
     );
   }
 
   if (rows.length === 0) {
     return (
       <VStack alignItems="stretch" gap="24px">
-        <BodyLarge color="content.secondary">
-          {t("policy-description")}
-        </BodyLarge>
+        {intro}
         <EmptyState
           title={t("no-policy-title")}
           body={t("no-policy-description")}
@@ -408,32 +219,33 @@ function PolicyAlignmentContent(props: { lng: string; cityId: string }) {
     );
   }
 
-  const totalActions = rows.length;
-  const visibleRows = showAll ? rows : rows.slice(0, INITIAL_ROWS);
+  const visibleRows = showAll ? sortedRows : sortedRows.slice(0, INITIAL_ROWS);
+  const [wAction, wNational, wRegional, wMunicipal, wScore] =
+    POLICY_COLUMN_WIDTHS;
 
   return (
     <VStack alignItems="stretch" gap="24px">
-      <BodyLarge color="content.secondary">{t("policy-description")}</BodyLarge>
+      {intro}
 
       <HStack gap="12px" flexWrap="wrap">
-        <Tag.Root colorPalette="green" size="md">
-          <Tag.Label>{t("actions-assessed", { n: totalActions })}</Tag.Label>
-        </Tag.Root>
+        <MeedStatusTag tone="positive">
+          {t("actions-assessed", { n: totalActions })}
+        </MeedStatusTag>
         <HStack
           gap="8px"
           bg="background.neutral"
-          borderRadius="6px"
+          borderRadius="rounded"
           px="12px"
           py="6px"
         >
           <Icon as={LuClipboardList} boxSize="14px" color="content.secondary" />
-          <BodyMedium color="content.secondary">
+          <Caption color="content.secondary">
             {t("policy-signal-note", {
               n: planCounts.National,
               r: planCounts.Regional,
               m: planCounts.Municipal,
             })}
-          </BodyMedium>
+          </Caption>
         </HStack>
       </HStack>
 
@@ -482,45 +294,81 @@ function PolicyAlignmentContent(props: { lng: string; cityId: string }) {
         </BodyMedium>
       </VStack>
 
-      <Card.Root overflow="hidden">
-        <Table.Root size="sm">
+      <Card.Root overflow="hidden" borderColor="border.neutral">
+        <Table.Root size="sm" tableLayout="fixed">
           <Table.Header>
-            <Table.Row>
-              <Table.ColumnHeader>{t("column-action")}</Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-national")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-regional")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-municipal")}
-              </Table.ColumnHeader>
-              <Table.ColumnHeader textAlign="end">
-                {t("column-policy-support")}
-              </Table.ColumnHeader>
+            <Table.Row bg="background.neutral">
+              <PolicyColumnHeader label={t("column-action")} width={wAction} />
+              <PolicyColumnHeader
+                label={t("column-national")}
+                width={wNational}
+                align="end"
+                {...sortProps("National", t("column-national"))}
+              />
+              <PolicyColumnHeader
+                label={t("column-regional")}
+                width={wRegional}
+                align="end"
+                {...sortProps("Regional", t("column-regional"))}
+              />
+              <PolicyColumnHeader
+                label={t("column-municipal")}
+                width={wMunicipal}
+                align="end"
+                {...sortProps("Municipal", t("column-municipal"))}
+              />
+              <PolicyColumnHeader
+                label={t("column-policy-support")}
+                width={wScore}
+                align="end"
+                tip={t("policy-support-tip")}
+                tipAriaLabel={t("policy-support-tip-label")}
+                {...sortProps("score", t("column-policy-support"))}
+              />
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {visibleRows.map((row) => (
-              <ActionRow key={row.id} row={row} index={actionIndex} t={t} />
+              <PolicyActionRow
+                key={row.id}
+                row={row}
+                index={actionIndex}
+                t={t}
+              />
             ))}
           </Table.Body>
         </Table.Root>
       </Card.Root>
 
-      {rows.length > INITIAL_ROWS && (
-        <HStack justifyContent="center">
+      <HStack justifyContent="space-between" flexWrap="wrap" gap="8px">
+        <Caption>
+          {t("sorted-by-note", {
+            column: t(
+              sortKey === "score"
+                ? "column-policy-support"
+                : sortKey === "National"
+                  ? "column-national"
+                  : sortKey === "Regional"
+                    ? "column-regional"
+                    : "column-municipal",
+            ),
+            direction: t(
+              sortDirection === "desc" ? "sort-descending" : "sort-ascending",
+            ),
+          })}
+        </Caption>
+        {rows.length > INITIAL_ROWS && (
           <CCTerraButton
             variant="text"
             onClick={() => setShowAll((v) => !v)}
+            _focusVisible={FOCUS_RING}
           >
             {showAll
               ? t("show-fewer-actions")
               : t("show-more-actions", { n: rows.length })}
           </CCTerraButton>
-        </HStack>
-      )}
+        )}
+      </HStack>
     </VStack>
   );
 }
@@ -528,10 +376,14 @@ function PolicyAlignmentContent(props: { lng: string; cityId: string }) {
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
 }) {
-  const { lng, cityId } = React.use(props.params);
+  const { lng, cityId, inventory } = React.use(props.params);
   return (
     <MeedWizardPage params={props.params} stepKey="policy">
-      <PolicyAlignmentContent lng={lng} cityId={cityId} />
+      <PolicyAlignmentContent
+        lng={lng}
+        cityId={cityId}
+        inventoryId={inventory}
+      />
     </MeedWizardPage>
   );
 }

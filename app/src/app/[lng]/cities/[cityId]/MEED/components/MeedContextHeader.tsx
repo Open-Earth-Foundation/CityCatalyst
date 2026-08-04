@@ -1,19 +1,11 @@
 "use client";
-import {
-  Box,
-  HStack,
-  Icon,
-  Link as ChakraLink,
-  VStack,
-} from "@chakra-ui/react";
-import NextLink from "next/link";
-import { LuChevronLeft, LuChevronRight } from "react-icons/lu";
+import { Box, HStack, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
-import { Overline } from "@/components/package/Texts/Overline";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MeedInventoryMenu } from "./MeedInventoryMenu";
+import { MeedBreadcrumb, type MeedCrumb } from "./MeedBreadcrumb";
 
 export interface MeedContextHeaderProps {
   cityName?: string;
@@ -23,22 +15,19 @@ export interface MeedContextHeaderProps {
   inventories: YearSelectorItem[];
   currentInventoryId: string;
   onInventorySelect: (item: YearSelectorItem) => void;
-  /** Where the back chevron and the second breadcrumb crumb lead. */
-  backHref: string;
-  backLabel: string;
-  /** Current screen, shown as the last breadcrumb crumb. */
-  currentLabel: string;
-  lng: string;
+  crumbs: MeedCrumb[];
   t: TFunction;
 }
 
 /**
- * Slim context bar shown on every screen inside the module except the overview.
+ * Slim context bar shown on every screen inside the module except the landing
+ * screen, which has its own header.
  *
- * The overview keeps the full Hero; repeating that 491px banner on each step
- * pushed the actual content below the fold, but dropping it entirely (as the
- * first version did) left steps with no anchor at all — no city name, no
- * inventory year, and no way to change inventory without going back.
+ * It answers three questions and nothing else: where am I, which city and
+ * inventory is this, and can I change the inventory. Navigating away is the
+ * footer's and the stepper's job — an earlier version also carried a back
+ * chevron beside a "Back to overview" link, which was the same action twice and
+ * left the chevron centred against a two-line block, aligned to nothing.
  */
 export function MeedContextHeader({
   cityName,
@@ -47,12 +36,14 @@ export function MeedContextHeader({
   inventories,
   currentInventoryId,
   onInventorySelect,
-  backHref,
-  backLabel,
-  currentLabel,
-  lng,
+  crumbs,
   t,
 }: MeedContextHeaderProps) {
+  const facts = [
+    emissions?.value ? `${emissions.value} ${emissions.unit}`.trim() : null,
+    inventoryYear ? String(inventoryYear) : null,
+  ].filter(Boolean);
+
   return (
     <Box
       w="full"
@@ -62,52 +53,22 @@ export function MeedContextHeader({
     >
       <Box mx="auto" w="full" maxW="1090px" px="l" py="m">
         <HStack justifyContent="space-between" alignItems="center" gap="m">
-          <HStack gap="m" minW="0">
-            <ChakraLink
-              asChild
-              aria-label={backLabel}
-              color="content.tertiary"
-              _hover={{ color: "content.link" }}
-              _focusVisible={{
-                outline: "2px solid",
-                outlineColor: "content.link",
-                outlineOffset: "2px",
-              }}
-            >
-              <NextLink href={backHref}>
-                <Icon as={LuChevronLeft} boxSize="20px" />
-              </NextLink>
-            </ChakraLink>
-
-            <VStack alignItems="flex-start" gap="0" minW="0">
-              {/* Breadcrumb: where this screen sits, and the way out. */}
-              <HStack gap="xs" color="content.tertiary">
-                <ChakraLink
-                  asChild
-                  color="content.tertiary"
-                  textDecoration="underline"
-                  _hover={{ color: "content.link" }}
-                >
-                  <NextLink href={backHref}>
-                    <Overline>{backLabel}</Overline>
-                  </NextLink>
-                </ChakraLink>
-                <Icon as={LuChevronRight} boxSize="12px" />
-                <Overline color="content.secondary">{currentLabel}</Overline>
-              </HStack>
-              <HStack gap="s" alignItems="baseline" minW="0">
+          {/* One left edge: the trail and the city name share an axis. */}
+          <VStack alignItems="flex-start" gap="xs" minW="0">
+            <MeedBreadcrumb crumbs={crumbs} />
+            <HStack gap="s" alignItems="baseline" minW="0" flexWrap="wrap">
+              {cityName && (
                 <TitleMedium color="content.primary" truncate>
-                  {cityName ?? ""}
+                  {cityName}
                 </TitleMedium>
-                {emissions?.value && (
-                  <BodySmall color="content.tertiary" whiteSpace="nowrap">
-                    {emissions.value} {emissions.unit}
-                    {inventoryYear ? ` · ${inventoryYear}` : ""}
-                  </BodySmall>
-                )}
-              </HStack>
-            </VStack>
-          </HStack>
+              )}
+              {facts.length > 0 && (
+                <BodySmall color="content.tertiary" whiteSpace="nowrap">
+                  {facts.join(" · ")}
+                </BodySmall>
+              )}
+            </HStack>
+          </VStack>
 
           {inventories.length > 0 && (
             <Box flexShrink={0}>

@@ -1,19 +1,11 @@
 "use client";
-import {
-  Box,
-  HStack,
-  Icon,
-  Link as ChakraLink,
-  VStack,
-} from "@chakra-ui/react";
-import NextLink from "next/link";
-import { LuChevronRight } from "react-icons/lu";
+import { Box, HStack, VStack } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { Overline } from "@/components/package/Texts/Overline";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MeedInventoryMenu } from "./MeedInventoryMenu";
+import { MeedBreadcrumb } from "./MeedBreadcrumb";
 
 export interface MeedModuleHeaderProps {
   /** Module display name, used as the last breadcrumb crumb. */
@@ -69,25 +61,12 @@ export function MeedModuleHeader({
     >
       <Box mx="auto" w="full" maxW="1090px" px="l" py="l">
         <VStack alignItems="stretch" gap="m">
-          <HStack gap="xs" color="content.tertiary">
-            <ChakraLink
-              asChild
-              color="content.tertiary"
-              textDecoration="underline"
-              _hover={{ color: "content.link" }}
-              _focusVisible={{
-                outline: "2px solid",
-                outlineColor: "content.link",
-                outlineOffset: "2px",
-              }}
-            >
-              <NextLink href={cityHref}>
-                <Overline>{toolsLabel}</Overline>
-              </NextLink>
-            </ChakraLink>
-            <Icon as={LuChevronRight} boxSize="12px" />
-            <Overline color="content.secondary">{moduleLabel}</Overline>
-          </HStack>
+          <MeedBreadcrumb
+            crumbs={[
+              { label: toolsLabel, href: cityHref },
+              { label: moduleLabel },
+            ]}
+          />
 
           <HStack
             justifyContent="space-between"

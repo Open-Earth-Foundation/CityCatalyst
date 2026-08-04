@@ -62,6 +62,7 @@ export function MeedShell({
   children,
 }: MeedShellProps) {
   const { t } = useTranslation(lng, "meed");
+  const { t: tDashboard } = useTranslation(lng, "dashboard");
   const router = useRouter();
   const ret = useMeedReturn();
   const { states } = useMeedSectionStates(inventoryId);
@@ -135,10 +136,17 @@ export function MeedShell({
         inventories={inventories}
         currentInventoryId={inventoryId}
         onInventorySelect={onInventorySelect}
-        backHref={backHref}
-        backLabel={backLabel}
-        currentLabel={crumb}
-        lng={lng}
+        crumbs={[
+          {
+            label: tDashboard("breadcrumb-tools"),
+            href: `/${lng}/cities/${cityId}`,
+          },
+          {
+            label: tDashboard("breadcrumb-meed"),
+            href: getMeedPath(lng, cityId, inventoryId),
+          },
+          { label: crumb },
+        ]}
         t={t}
       />
 

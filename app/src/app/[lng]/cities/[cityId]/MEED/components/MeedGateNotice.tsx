@@ -1,0 +1,60 @@
+"use client";
+import { HStack, Icon } from "@chakra-ui/react";
+import { LuCircleAlert, LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
+import type { TFunction } from "i18next";
+import { BodyMedium } from "@/components/package/Texts/Body";
+import type { MeedGate } from "../meedGate";
+
+const TONE = {
+  negative: {
+    icon: LuCircleAlert,
+    color: "sentiment.negativeDefault",
+    bg: "sentiment.negativeOverlay",
+  },
+  warning: {
+    icon: LuTriangleAlert,
+    color: "sentiment.warningDefault",
+    bg: "sentiment.warningOverlay",
+  },
+  positive: {
+    icon: LuCircleCheck,
+    color: "interactive.tertiary",
+    bg: "sentiment.positiveOverlay",
+  },
+} as const;
+
+export interface MeedGateNoticeProps {
+  gate: MeedGate;
+  t: TFunction;
+  /** Ties the notice to the button it explains, for screen readers. */
+  id?: string;
+}
+
+/**
+ * The one sentence that says whether a ranking can be generated, and if not,
+ * what is missing.
+ *
+ * Always rendered next to the button it governs rather than hidden in a
+ * tooltip — a disabled button whose only explanation is a `title` attribute is
+ * invisible to keyboard and touch users.
+ */
+export function MeedGateNotice({ gate, t, id }: MeedGateNoticeProps) {
+  const tone = TONE[gate.tone];
+
+  return (
+    <HStack
+      id={id}
+      gap="8px"
+      px="12px"
+      py="8px"
+      borderRadius="rounded"
+      bg={tone.bg}
+      alignItems="flex-start"
+    >
+      <Icon as={tone.icon} boxSize="16px" color={tone.color} mt="2px" />
+      <BodyMedium color={tone.color}>
+        {t(gate.reasonKey, gate.reasonValues)}
+      </BodyMedium>
+    </HStack>
+  );
+}

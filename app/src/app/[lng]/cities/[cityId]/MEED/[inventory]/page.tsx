@@ -2,26 +2,29 @@
 import React, { useMemo } from "react";
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
-import {
-  api,
-  useGetCityPopulationQuery,
-  useGetInventoriesQuery,
-} from "@/services/api";
-import { Box, Card, HStack, Icon, SimpleGrid } from "@chakra-ui/react";
-import { LuArrowRight } from "react-icons/lu";
-import { formatEmissions } from "@/util/helpers";
-import ProgressLoader from "@/components/ProgressLoader";
+import { api, useGetCityPopulationQuery } from "@/services/api";
+import { Box, Card, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { MeedPageLayout } from "../MeedPageLayout";
-import {
-  YearSelector,
-  YearSelectorItem,
-} from "@/components/shared/YearSelector";
+import { formatEmissions } from "@/util/helpers";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { BodyLarge } from "@/components/package/Texts/Body";
+import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
-import { getMeedPath, MEED_WIZARD_STEPS } from "../steps";
+import type { YearSelectorItem } from "@/components/shared/YearSelector";
+import { MeedPageLayout } from "../MeedPageLayout";
+import { MEED_WIZARD_STEPS, getMeedPath } from "../steps";
+import { stepHref } from "../navigation";
+import { countByStatus, useMeedSectionStates } from "../meedStatus";
+import { computeMeedGate } from "../meedGate";
+import { useMeedInventories } from "../useMeedInventories";
+import { MeedSectionCard } from "../components/MeedSectionCard";
+import { MeedGateNotice } from "../components/MeedGateNotice";
+import { MeedMeter } from "../components/MeedMeter";
+import { MeedInventoryMenu } from "../components/MeedInventoryMenu";
+import {
+  MeedCardGridSkeleton,
+  MeedCardSkeleton,
+} from "../components/MeedSkeletons";
 
 export default function MEEDInventoryPage(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
@@ -40,25 +43,12 @@ export default function MEEDInventoryPage(props: {
     skip: !cityId,
   });
 
-  // All inventories for the city, to populate the year selector
-  const { data: allInventories, isLoading: isInventoriesLoading } =
-    useGetInventoriesQuery({ cityId: cityId! }, { skip: !cityId });
+  const { inventories, isLoading: isInventoriesLoading } =
+    useMeedInventories(cityId);
 
-  const inventoriesForYearSelector: YearSelectorItem[] = useMemo(() => {
-    if (!allInventories) return [];
-    return allInventories
-      .filter((inv) => inv.year && inv.inventoryId)
-      .map((inv) => ({
-        year: inv.year!,
-        inventoryId: inv.inventoryId,
-        lastUpdate: inv.lastUpdated || new Date(),
-      }))
-      .sort((a, b) => a.year - b.year);
-  }, [allInventories]);
-
-  const handleYearSelect = (yearData: YearSelectorItem) => {
-    router.push(`/${lng}/cities/${cityId}/MEED/${yearData.inventoryId}`);
-  };
+  const { states, isReady } = useMeedSectionStates(inventoryId);
+  const counts = useMemo(() => countByStatus(states), [states]);
+  const gate = useMemo(() => computeMeedGate(states), [states]);
 
   const { data: userInfo } = api.useGetUserInfoQuery();
   const formattedEmissions = inventory?.totalEmissions
@@ -70,99 +60,160 @@ export default function MEEDInventoryPage(props: {
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
-  if (isInventoryLoading || isInventoriesLoading || isCityLoading) {
-    return (
-      <Box
-        h="full"
-        display="flex"
-        flexDirection="column"
-        bg="background.backgroundLight"
-      >
-        <ProgressLoader />
-      </Box>
-    );
-  }
+  // Pre-flight is the review step, not an input, so it doesn't count towards
+  // how ready the city is.
+  const inputSteps = useMemo(
+    () => MEED_WIZARD_STEPS.filter((s) => s.key !== "preflight"),
+    [],
+  );
+  const settled = inputSteps.filter((s) => {
+    const status = states[s.key]?.status;
+    return status === "complete" || status === "needs-review";
+  }).length;
+  const overallProgress = inputSteps.length ? settled / inputSteps.length : 0;
 
-  if (inventoryError || !inventory) {
+  const onInventorySelect = (item: YearSelectorItem) => {
+    router.push(getMeedPath(lng, cityId, item.inventoryId));
+  };
+
+  const isLoading = isInventoryLoading || isCityLoading || isInventoriesLoading;
+
+  if (inventoryError || (!isLoading && !inventory)) {
     return (
       <Box
         h="full"
+        bg="background.backgroundLight"
         display="flex"
         flexDirection="column"
-        bg="background.backgroundLight"
-        py="56px"
+        alignItems="center"
+        py="96px"
+        px="24px"
+        gap="16px"
       >
-        <BodyLarge textAlign="center" color="content.secondary">
+        <HeadlineSmall>{t("inventory-not-found-title")}</HeadlineSmall>
+        <BodyLarge color="content.secondary" textAlign="center" maxW="520px">
           {t("inventory-not-found")}
         </BodyLarge>
+        <CCTerraButton
+          minW="auto"
+          px="24px"
+          onClick={() => router.push(`/${lng}/cities/${cityId}`)}
+        >
+          {t("back-to-city")}
+        </CCTerraButton>
       </Box>
     );
   }
 
   return (
     <MeedPageLayout
-      inventory={inventory}
+      inventory={inventory ?? null}
       formattedEmissions={formattedEmissions}
       lng={lng}
       population={population ?? null}
       city={city}
     >
-      <HStack justifyContent="space-between" w="full">
-        <HeadlineSmall>{t("overview-title")}</HeadlineSmall>
-        {inventoriesForYearSelector.length > 0 && (
-          <YearSelector
-            inventories={inventoriesForYearSelector}
-            currentInventoryId={inventory.inventoryId}
-            lng={lng}
-            onYearSelect={handleYearSelect}
-            t={t}
-          />
-        )}
-      </HStack>
-      <BodyLarge color="content.secondary">
-        {t("overview-description")}
-      </BodyLarge>
-      <Card.Root>
-        <Card.Body>
-          <TitleMedium>{t("wizard-intro-title")}</TitleMedium>
-          <BodyLarge color="content.secondary" mt="8px">
-            {t("wizard-intro-description")}
-          </BodyLarge>
-          <Box mt="24px">
+      {/* What this is, which inventory it runs on, and the one CTA. */}
+      <VStack alignItems="stretch" gap="16px">
+        <HStack
+          justifyContent="space-between"
+          alignItems="flex-start"
+          gap="24px"
+          flexWrap="wrap"
+        >
+          <Box flex="1" minW="280px">
+            <HeadlineSmall>{t("overview-title")}</HeadlineSmall>
+            <BodyLarge color="content.secondary" mt="8px">
+              {t("overview-description")}
+            </BodyLarge>
+          </Box>
+          <HStack gap="12px" flexShrink={0} alignItems="center">
+            {inventories.length > 0 && (
+              <MeedInventoryMenu
+                inventories={inventories}
+                currentInventoryId={inventoryId}
+                onSelect={onInventorySelect}
+                t={t}
+              />
+            )}
             <CCTerraButton
+              minW="auto"
+              px="24px"
+              disabled={!gate.canGenerate}
+              aria-describedby="meed-gate-notice"
               onClick={() =>
-                router.push(getMeedPath(lng, cityId, inventoryId, "emissions"))
+                router.push(getMeedPath(lng, cityId, inventoryId, "preflight"))
               }
             >
-              {t("start-wizard")}
+              {t("generate-recommendations")}
             </CCTerraButton>
-          </Box>
-        </Card.Body>
-      </Card.Root>
-      <SimpleGrid columns={{ base: 1, md: 2 }} gap="16px">
-        {MEED_WIZARD_STEPS.map((step, i) => (
-          <Card.Root
-            key={step.key}
-            cursor="pointer"
-            _hover={{ borderColor: "content.link" }}
-            onClick={() =>
-              router.push(getMeedPath(lng, cityId, inventoryId, step.segment))
-            }
-          >
+          </HStack>
+        </HStack>
+
+        {isReady ? (
+          <Card.Root borderColor="border.overlay">
             <Card.Body>
-              <HStack justifyContent="space-between" alignItems="flex-start">
-                <TitleMedium color="content.secondary">
-                  {i + 1}. {t(step.labelKey)}
-                </TitleMedium>
-                <Icon as={LuArrowRight} color="content.link" />
-              </HStack>
-              <BodyLarge color="content.tertiary" mt="8px">
-                {t(`${step.labelKey}-description`)}
-              </BodyLarge>
+              <VStack alignItems="stretch" gap="12px">
+                <HStack
+                  justifyContent="space-between"
+                  flexWrap="wrap"
+                  gap="8px"
+                >
+                  <TitleMedium color="content.primary">
+                    {t("readiness-title")}
+                  </TitleMedium>
+                  <BodyMedium color="content.tertiary">
+                    {counts.complete + counts.needsReview + counts.inProgress ===
+                    0
+                      ? t("sections-none-started")
+                      : t("sections-rollup", {
+                          complete: counts.complete,
+                          inProgress: counts.inProgress,
+                          notStarted: counts.notStarted,
+                        })}
+                  </BodyMedium>
+                </HStack>
+                <MeedMeter
+                  value={overallProgress}
+                  tone={gate.canGenerate ? "positive" : "warning"}
+                  ariaLabel={t("readiness-title")}
+                />
+                <MeedGateNotice gate={gate} t={t} id="meed-gate-notice" />
+              </VStack>
             </Card.Body>
           </Card.Root>
-        ))}
-      </SimpleGrid>
+        ) : (
+          <MeedCardSkeleton lines={3} />
+        )}
+      </VStack>
+
+      {/* Inputs — reachable in any order. */}
+      <VStack alignItems="stretch" gap="12px" mt="8px">
+        <Box>
+          <TitleMedium color="content.primary">
+            {t("overview-sections-title")}
+          </TitleMedium>
+          <BodyMedium color="content.secondary" mt="4px">
+            {t("overview-sections-description")}
+          </BodyMedium>
+        </Box>
+
+        {isReady ? (
+          <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap="16px">
+            {inputSteps.map((step) => (
+              <MeedSectionCard
+                key={step.key}
+                step={step}
+                state={states[step.key]}
+                href={stepHref(lng, cityId, inventoryId, step.segment)}
+                t={t}
+              />
+            ))}
+          </SimpleGrid>
+        ) : (
+          <MeedCardGridSkeleton items={6} />
+        )}
+      </VStack>
     </MeedPageLayout>
   );
 }

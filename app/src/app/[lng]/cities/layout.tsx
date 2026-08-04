@@ -31,15 +31,15 @@ export default function CitiesLayout(props: {
     });
 
   useEffect(() => {
-    if (orgData) {
-      const newOrgState = normalizeOrganizationState(orgData);
+    if (!orgData) return;
 
-      if (hasOrganizationChanged(organization, newOrgState)) {
-        setOrganization(newOrgState);
-      }
-      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
-    } else {
-      setTheme("blue_theme");
+    const newOrgState = normalizeOrganizationState(orgData);
+
+    if (hasOrganizationChanged(organization, newOrgState)) {
+      setOrganization(newOrgState);
+    }
+    if (orgData.theme?.themeKey) {
+      setTheme(orgData.theme.themeKey);
     }
   }, [isOrgDataLoading, orgData, organization, setOrganization, setTheme]);
 

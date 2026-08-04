@@ -24,13 +24,15 @@ export function useInventoryOrganization(
   const { setTheme } = useTheme();
 
   useEffect(() => {
-    if (orgData) {
-      const newOrgState = normalizeOrganizationState(orgData);
+    if (!orgData) return;
 
-      if (hasOrganizationChanged(organization, newOrgState)) {
-        setOrganization(newOrgState);
-      }
-      setTheme((orgData?.theme?.themeKey as string) || "blue_theme");
+    const newOrgState = normalizeOrganizationState(orgData);
+
+    if (hasOrganizationChanged(organization, newOrgState)) {
+      setOrganization(newOrgState);
+    }
+    if (orgData.theme?.themeKey) {
+      setTheme(orgData.theme.themeKey as string);
     }
   }, [
     isInventoryOrgDataLoading,

@@ -71,7 +71,16 @@ export default class UserService {
             {
               model: db.models.Organization,
               as: "organization",
-              attributes: ["organizationId", "name"],
+              // Include branding fields used by GET /city/:city/organization
+              // (logoUrl/theme). Omitting them made Home sync wipe logoUrl and
+              // fight cities/layout's getOrganization sync (CC-621 blink).
+              attributes: [
+                "organizationId",
+                "name",
+                "logoUrl",
+                "active",
+                "themeId",
+              ],
             },
           ],
         },

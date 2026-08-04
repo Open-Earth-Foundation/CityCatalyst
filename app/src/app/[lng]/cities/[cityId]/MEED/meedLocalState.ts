@@ -7,7 +7,10 @@
  * mutations then; the call sites should not need to change shape.
  */
 
-import type { MeedTimeframePreference } from "@/util/types/meed";
+import type {
+  MeedPrioritizeCityResult,
+  MeedTimeframePreference,
+} from "@/util/types/meed";
 
 export interface MeedStrategicPreferences {
   sectors: string[];
@@ -118,28 +121,35 @@ export function setMeedStepState(
 
 // ─── Generated ranking ───────────────────────────────────────────────────────
 
-export interface MeedRankingSummary {
+/**
+ * A generated ranking, stored whole.
+ *
+ * The full prioritizer result is kept — not a summary — because the landing
+ * screen and the results screen must never disagree about whether a ranking
+ * exists. Storing a summary for one and leaving the other to its own source is
+ * exactly how the two ended up contradicting each other.
+ */
+export interface MeedStoredRanking {
+  result: MeedPrioritizeCityResult;
   generatedAtUtc: string;
-  totalRanked: number;
-  /** First few action names, already localized when written. */
-  topActions: string[];
-  excludedCount?: number;
   /**
-   * Fingerprint of the inputs this ranking was produced from, so the overview
-   * can tell the user when their answers have moved on since.
+   * Fingerprint of the inputs this ranking came from, so the UI can tell the
+   * user when their answers have moved on since.
    */
   inputsFingerprint?: string;
+  /** True when this came from the catalog-backed mock rather than the service. */
+  isMock?: boolean;
 }
 
-export function getMeedRanking(inventoryId: string): MeedRankingSummary | null {
-  return read<MeedRankingSummary>(key(inventoryId, "ranking"));
+export function getMeedRanking(inventoryId: string): MeedStoredRanking | null {
+  return read<MeedStoredRanking>(key(inventoryId, "ranking"));
 }
 
 export function setMeedRanking(
   inventoryId: string,
-  summary: MeedRankingSummary,
+  ranking: MeedStoredRanking,
 ): void {
-  write(key(inventoryId, "ranking"), summary);
+  write(key(inventoryId, "ranking"), ranking);
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event(MEED_STATE_CHANGED_EVENT));
   }

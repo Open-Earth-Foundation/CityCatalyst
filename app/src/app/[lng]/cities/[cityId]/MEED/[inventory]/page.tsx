@@ -2,7 +2,11 @@
 import React, { useMemo } from "react";
 import { use } from "react";
 import { useTranslation } from "@/i18n/client";
-import { api, useGetCityPopulationQuery } from "@/services/api";
+import {
+  api,
+  useGetCityPopulationQuery,
+  useGetMeedActionsQuery,
+} from "@/services/api";
 import { Box, Card, HStack, SimpleGrid, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { formatEmissions } from "@/util/helpers";
@@ -15,12 +19,9 @@ import { MeedModuleHeader } from "../components/MeedModuleHeader";
 import { MeedRankingCard } from "../components/MeedRankingCard";
 import { MEED_WIZARD_STEPS, getMeedPath } from "../steps";
 import { stepHref } from "../navigation";
-import {
-  countByStatus,
-  inputsFingerprint,
-  useMeedSectionStates,
-} from "../meedStatus";
-import { getMeedRanking, type MeedRankingSummary } from "../meedLocalState";
+import { countByStatus, useMeedSectionStates } from "../meedStatus";
+import { useMeedRanking } from "../useMeedRanking";
+import { buildActionIndex } from "./results/components/actionCatalog";
 import { computeMeedGate } from "../meedGate";
 import { useMeedInventories } from "../useMeedInventories";
 import { MeedSectionCard } from "../components/MeedSectionCard";
@@ -54,17 +55,23 @@ export default function MEEDInventoryPage(props: {
 
   const { states, isReady } = useMeedSectionStates(inventoryId);
 
-  // A generated ranking, if one exists for this inventory. Read after mount
-  // for the same reason the section states are: the store is localStorage.
-  const [ranking, setRanking] = React.useState<MeedRankingSummary | null>(null);
-  React.useEffect(() => {
-    if (isReady && inventoryId) setRanking(getMeedRanking(inventoryId));
-  }, [isReady, inventoryId, states]);
-
-  const isRankingStale = Boolean(
-    ranking?.inputsFingerprint &&
-      ranking.inputsFingerprint !== inputsFingerprint(states),
+  // Same source as the results screen, so the two can never disagree about
+  // whether a ranking exists.
+  const { ranking, isStale: isRankingStale } = useMeedRanking(
+    inventoryId,
+    states,
   );
+
+  // Resolve the highest-ranked action names from the live catalog rather than
+  // storing copies of them alongside the ranking.
+  const { data: catalog } = useGetMeedActionsQuery({ cityId });
+  const topActions = useMemo(() => {
+    if (!ranking) return [];
+    const index = buildActionIndex(catalog);
+    return (ranking.result.ranked_actions ?? [])
+      .slice(0, 3)
+      .map((a) => index.get(a.action_id)?.actionName ?? a.action_id);
+  }, [ranking, catalog]);
   const counts = useMemo(() => countByStatus(states), [states]);
   const gate = useMemo(() => computeMeedGate(states), [states]);
 
@@ -175,7 +182,8 @@ export default function MEEDInventoryPage(props: {
           {/* Once a ranking exists, it — not the setup — is what the user came back for. */}
           {isReady && ranking && (
             <MeedRankingCard
-              summary={ranking}
+              ranking={ranking}
+              topActions={topActions}
               isStale={isRankingStale}
               resultsHref={getMeedPath(lng, cityId, inventoryId, "results")}
               onRerun={() =>

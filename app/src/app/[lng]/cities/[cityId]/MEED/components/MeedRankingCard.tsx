@@ -7,11 +7,13 @@ import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
-import type { MeedRankingSummary } from "../meedLocalState";
+import type { MeedStoredRanking } from "../meedLocalState";
 import { MeedStatusTag } from "./MeedStatusTag";
 
 export interface MeedRankingCardProps {
-  summary: MeedRankingSummary;
+  ranking: MeedStoredRanking;
+  /** Highest-ranked action names, resolved from the live catalog. */
+  topActions: string[];
   /** True when inputs changed after this ranking was produced. */
   isStale: boolean;
   resultsHref: string;
@@ -31,14 +33,16 @@ export interface MeedRankingCardProps {
  * a stale list.
  */
 export function MeedRankingCard({
-  summary,
+  ranking,
+  topActions,
   isStale,
   resultsHref,
   onRerun,
   lng,
   t,
 }: MeedRankingCardProps) {
-  const generated = new Date(summary.generatedAtUtc);
+  const totalRanked = ranking.result.ranked_actions?.length ?? 0;
+  const generated = new Date(ranking.generatedAtUtc);
   const generatedLabel = Number.isNaN(generated.valueOf())
     ? null
     : new Intl.DateTimeFormat(lng, {
@@ -59,7 +63,7 @@ export function MeedRankingCard({
                 {t("ranking-eyebrow")}
               </Overline>
               <TitleMedium color="content.primary">
-                {t("ranking-title", { count: summary.totalRanked })}
+                {t("ranking-title", { count: totalRanked })}
               </TitleMedium>
             </VStack>
             <MeedStatusTag tone={isStale ? "warning" : "positive"}>
@@ -67,12 +71,12 @@ export function MeedRankingCard({
             </MeedStatusTag>
           </HStack>
 
-          {summary.topActions.length > 0 && (
+          {topActions.length > 0 && (
             <VStack alignItems="stretch" gap="xs">
               <Overline color="content.tertiary">
                 {t("ranking-top-actions")}
               </Overline>
-              {summary.topActions.slice(0, 3).map((name, i) => (
+              {topActions.slice(0, 3).map((name: string, i: number) => (
                 <HStack key={`${name}-${i}`} gap="s" alignItems="baseline">
                   <BodySmall
                     color="content.link"

@@ -22,6 +22,7 @@ import { ContextCardGrid } from "./components/ContextCardGrid";
 import { ContextBreakdown } from "./components/ContextBreakdown";
 import { NextStepsBanner } from "./components/NextStepsBanner";
 import { buildActionIndex } from "./components/actionCatalog";
+import { useMeedRanking } from "../../useMeedRanking";
 import { tallyCoBenefits } from "./components/coBenefits";
 import { excludedActionCount, policyBacking } from "./components/rankingFacts";
 
@@ -64,11 +65,11 @@ export default function Page(props: {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // TODO(meed backend): replace with the stored prioritization result for
-  // this inventory once the hiap-meed service layer lands (contract types in
-  // @/util/types/meed). Until then no ranking exists and the empty state
-  // renders.
-  const [ranking] = useState<MeedPrioritizeCityResult | null>(null);
+  // Read through the shared hook so this screen and the landing screen can
+  // never disagree about whether a ranking exists.
+  const { states } = useMeedSectionStates(inventoryId);
+  const { ranking: stored } = useMeedRanking(inventoryId, states);
+  const ranking: MeedPrioritizeCityResult | null = stored?.result ?? null;
   const [selected, setSelected] = useState<MeedRankedActionResult | null>(null);
 
   // One selection, shared by the top-pick cards and the ranking rows, feeding
@@ -103,7 +104,6 @@ export default function Page(props: {
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !inventoryId,
   });
-  const { states } = useMeedSectionStates(inventoryId);
 
   const ranked = useMemo(() => ranking?.ranked_actions ?? [], [ranking]);
   const topPicks = useMemo(() => ranked.slice(0, 3), [ranked]);

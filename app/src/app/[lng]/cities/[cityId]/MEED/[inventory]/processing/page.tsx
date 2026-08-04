@@ -9,7 +9,14 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { useGetMeedActionsQuery } from "@/services/api";
+import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { getMeedPath } from "../../steps";
+import { setMeedRanking } from "../../meedLocalState";
+import { useMeedSectionStates, inputsFingerprint } from "../../meedStatus";
+import { buildMockRanking } from "../../meedMockRanking";
+import { buildActionIndex } from "../results/components/actionCatalog";
+import { api } from "@/services/api";
 
 /** Total scripted animation time before navigating to the results screen. */
 const ANIMATION_MS = 8000;
@@ -145,6 +152,16 @@ export default function Page(props: {
   const [overall, setOverall] = useState(0);
   const [done, setDone] = useState(false);
   const startTime = useRef(Date.now());
+  const mockWritten = useRef(false);
+
+  // Review aid only: with MEED_MOCK_RANKING on, completing this screen stores a
+  // ranking built from the live action catalog so the results screens can be
+  // exercised before the prioritization service exists. Off by default.
+  const { states } = useMeedSectionStates(inventoryId);
+  const { data: catalog } = useGetMeedActionsQuery({ cityId });
+  const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
+    skip: !inventoryId,
+  });
 
   // Scripted progress animation: 0 → 100 over ~8 seconds with ease-in-out.
   // TODO(meed backend): once the prioritization call is wired in, gate the
@@ -171,12 +188,36 @@ export default function Page(props: {
   // Navigate to the results screen shortly after the animation completes.
   useEffect(() => {
     if (!done) return;
+
+    // Guarded: storing the ranking dispatches a state-changed event, which
+    // recreates `states`, which would re-enter this effect forever.
+    if (
+      !mockWritten.current &&
+      hasFeatureFlag(FeatureFlags.MEED_MOCK_RANKING) &&
+      catalog
+    ) {
+      mockWritten.current = true;
+      const result = buildMockRanking(buildActionIndex(catalog), {
+        locode: inventory?.city?.locode ?? "",
+      });
+      if (result) {
+        setMeedRanking(inventoryId, {
+          result,
+          generatedAtUtc: new Date().toISOString(),
+          inputsFingerprint: inputsFingerprint(states),
+          isMock: true,
+        });
+      }
+    }
+
     const timeout = setTimeout(
       () => router.push(`/${lng}/cities/${cityId}/MEED/${inventoryId}/results`),
       NAVIGATE_DELAY_MS,
     );
     return () => clearTimeout(timeout);
-  }, [done, router, lng, cityId, inventoryId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `states` is read
+    // once behind the one-shot guard above; including it would re-enter.
+  }, [done, router, lng, cityId, inventoryId, catalog, inventory]);
 
   const displayPct = done ? 100 : overall;
 

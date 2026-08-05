@@ -289,7 +289,7 @@ export const GeneratePlanDrawer = ({
                         </TitleLarge>
                         <VStack gap="12px" alignItems="flex-start" w="full">
                           {planToDisplay.content.subactions.items.map(
-                            (subaction: any, index: number) => (
+                            (subaction, index: number) => (
                               <Box
                                 key={index}
                                 display="flex"
@@ -335,7 +335,7 @@ export const GeneratePlanDrawer = ({
                         </TitleLarge>
                         <VStack gap="8px" alignItems="flex-start" w="full">
                           {planToDisplay.content.institutions.items.map(
-                            (institution: any, index: number) => (
+                            (institution, index: number) => (
                               <Box
                                 key={index}
                                 p="12px"
@@ -376,7 +376,7 @@ export const GeneratePlanDrawer = ({
                         </TitleLarge>
                         <VStack gap="12px" alignItems="flex-start" w="full">
                           {planToDisplay.content.milestones.items.map(
-                            (milestone: any, index: number) => (
+                            (milestone, index: number) => (
                               <Box
                                 key={index}
                                 display="flex"
@@ -422,7 +422,7 @@ export const GeneratePlanDrawer = ({
                         </TitleLarge>
                         <VStack gap="8px" alignItems="flex-start" w="full">
                           {planToDisplay.content.mitigations.items.map(
-                            (mitigation: any, index: number) => (
+                            (mitigation, index: number) => (
                               <Box
                                 key={index}
                                 p="12px"
@@ -463,7 +463,7 @@ export const GeneratePlanDrawer = ({
                         </TitleLarge>
                         <VStack gap="8px" alignItems="flex-start" w="full">
                           {planToDisplay.content.adaptations.items.map(
-                            (adaptation: any, index: number) => (
+                            (adaptation, index: number) => (
                               <Box
                                 key={index}
                                 p="12px"
@@ -504,7 +504,7 @@ export const GeneratePlanDrawer = ({
                         </TitleLarge>
                         <VStack gap="8px" alignItems="flex-start" w="full">
                           {planToDisplay.content.sdgs.items.map(
-                            (sdg: any, index: number) => (
+                            (sdg, index: number) => (
                               <Box
                                 key={index}
                                 p="12px"

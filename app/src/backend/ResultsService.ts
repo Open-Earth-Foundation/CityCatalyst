@@ -473,8 +473,14 @@ export async function getEmissionsBreakdown(
 /** entry point for results */
 export async function getEmissionResults(inventory: string): Promise<{
   totalEmissions: Decimal;
-  totalEmissionsBySector: any;
-  topEmissionsBySubSector: any;
+  totalEmissionsBySector:
+    | {
+        sectorName: SectorNamesInFE;
+        co2eq: Decimal;
+        percentage: number;
+      }[]
+    | undefined;
+  topEmissionsBySubSector: TopEmission[] | undefined;
 }> {
   const EmissionResults = await getEmissionResultsBatch([inventory]);
   const inventoryEmissionResults = EmissionResults[inventory];

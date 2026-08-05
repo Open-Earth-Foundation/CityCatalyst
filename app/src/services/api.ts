@@ -80,6 +80,8 @@ import type {
   ImportStatusResponse,
   VersionHistoryResponse,
   UserOrganizationsResponse,
+  OCCityAttributes,
+  OCCityDataResponse,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -1034,7 +1036,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { result: Record<string, unknown[]> }) =>
+          response,
       }),
       // Add notation keys to subsectors with missing data missing
       updateOrCreateNotationKeys: builder.mutation({
@@ -1050,7 +1053,7 @@ export const api = createApi({
           method: "POST",
           body: { notationKeys: data.notationKeys },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
       }),
       createOrganization: builder.mutation({
         query: (data: {
@@ -1216,7 +1219,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -1228,7 +1231,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { errors: unknown[] }) => response,
       }),
       markCitiesPublic: builder.mutation({
         query: (data: { projectId: string }) => ({
@@ -1355,7 +1358,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/projects/${data.projectId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteCityUser: builder.mutation({
@@ -1363,7 +1366,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${data.cityId}/user?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteOrganizationAdminUser: builder.mutation({
@@ -1371,7 +1374,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/organizations/${data.organizationId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       getUserAccessStatus: builder.query({
@@ -1407,15 +1410,38 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["Cities", "Organizations"],
       }),
-      getProjectBoundaries: builder.query({
+      getProjectBoundaries: builder.query<
+        Array<{
+          city: {
+            id: string;
+            name: string;
+            locode: string;
+            latestInventoryId: string;
+          };
+          boundingBox: BoundingBox;
+          data: GeoJSON;
+        }>,
+        string
+      >({
         query: (projectId: string) => ({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
-        transformResponse: (response: any) => response.result,
+        transformResponse: (response: {
+          result: Array<{
+            city: {
+              id: string;
+              name: string;
+              locode: string;
+              latestInventoryId: string;
+            };
+            boundingBox: BoundingBox;
+            data: GeoJSON;
+          }>;
+        }) => response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({
@@ -1621,7 +1647,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${cityId}`,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: [
           "CityData",
           "Projects",
@@ -1644,7 +1670,7 @@ export const api = createApi({
             active: activeStatus,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: ["Organizations", "Organization"],
       }),
       updateUserRoleInOrganization: builder.mutation({
@@ -1762,7 +1788,8 @@ export const api = createApi({
             csrfToken,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data.code,
+        transformResponse: (response: { data: { code: string } }) =>
+          response.data.code,
       }),
       getBulkCityLocations: builder.query<
         CityLocationResponse[],
@@ -1954,7 +1981,7 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
-          mappingOverrides?: Record<string, any>;
+          mappingOverrides?: Record<string, unknown>;
         }
       >({
         query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
@@ -2119,15 +2146,17 @@ export const openclimateAPI = createApi({
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
-    getOCCity: builder.query<any, string>({
+    getOCCity: builder.query<OCCityAttributes[], string>({
       query: (q) => `/api/v1/search/city?q=${q}`,
-      transformResponse: (response: any) => {
-        return response.data.filter((item: any) => item.type === "city");
+      transformResponse: (response: {
+        data: Array<OCCityAttributes & { type: string }>;
+      }) => {
+        return response.data.filter((item) => item.type === "city");
       },
     }),
-    getOCCityData: builder.query<any, string>({
+    getOCCityData: builder.query<OCCityDataResponse, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
-      transformResponse: (response: any) => {
+      transformResponse: (response: { data: OCCityDataResponse }) => {
         return response.data;
       },
     }),

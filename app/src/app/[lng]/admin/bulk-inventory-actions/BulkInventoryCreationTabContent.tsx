@@ -143,12 +143,12 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
             description: t("bulk-inventory-creation-loading"),
           });
         } else {
-          if (isConnectSourcesData?.errors.length > 0) {
+          if ((isConnectSourcesData?.errors.length ?? 0) > 0) {
             toaster.create({
               type: "error",
               description: t("bulk-inventory-connection-error"),
             });
-            logger.error(isConnectSourcesData.errors);
+            logger.error(isConnectSourcesData?.errors);
           } else {
             toaster.create({
               type: "success",

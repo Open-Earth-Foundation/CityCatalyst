@@ -13,6 +13,7 @@ import {
 } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
+import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -206,6 +207,23 @@ export interface OCCityAttributes {
   is_part_of: string;
   root_path_geo: any;
   area: number;
+}
+
+export interface OCPopulationEntry {
+  year: number;
+  population: number;
+  datasource: { name: string };
+}
+
+/**
+ * Full response shape from OpenClimate's actor endpoint (used by
+ * getOCCityData), which includes population history and — for countries —
+ * emissions data keyed by source ID. OCCityAttributes covers just the
+ * subset used by city search results.
+ */
+export interface OCCityDataResponse extends OCCityAttributes {
+  population: OCPopulationEntry[];
+  emissions: Record<string, { data: GHGICountryEmissionsEntry[] }>;
 }
 
 declare module "next-auth" {

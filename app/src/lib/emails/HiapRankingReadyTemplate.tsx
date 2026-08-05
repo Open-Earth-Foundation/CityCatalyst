@@ -9,7 +9,7 @@ import {
   Html,
   Preview,
   Text,
-} from "@react-email/components";
+} from "react-email";
 
 export default function HiapRankingReadyTemplate({
   user,

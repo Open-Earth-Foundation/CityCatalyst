@@ -58,7 +58,8 @@ const BrandSettingsTab = ({
       items: themeOptions
         ? themeOptions?.map((theme) => ({
             value: theme.themeId,
-            key: theme.themeKey,
+            // Do not name this `key` — collection/React treat that specially.
+            themeKey: theme.themeKey,
             label: t(theme.themeKey),
             color: KeyColorMapping[theme.themeKey as themeType],
           }))
@@ -82,11 +83,22 @@ const BrandSettingsTab = ({
     return options?.items.find((item) => item.value === selectedTheme);
   }, [selectedTheme, options?.items]);
 
+  // Keep select selection in sync with saved org themeId.
   useEffect(() => {
-    if (organization) {
-      setSelectedTheme((organization?.themeId as string) ?? blueTheme?.themeId);
+    if (organization?.themeId) {
+      setSelectedTheme(organization.themeId as string);
+    } else if (blueTheme?.themeId) {
+      setSelectedTheme(blueTheme.themeId);
     }
-  }, [organization, blueTheme, setSelectedTheme]);
+  }, [organization?.themeId, blueTheme?.themeId]);
+
+  // Drive next-themes from the org record (updated immediately on save via cache patch).
+  useEffect(() => {
+    const themeKey = organization?.theme?.themeKey;
+    if (themeKey) {
+      setTheme(themeKey);
+    }
+  }, [organization?.theme?.themeKey, setTheme]);
 
   const { showErrorToast } = UseErrorToast({
     title: t("error-message"),
@@ -99,11 +111,20 @@ const BrandSettingsTab = ({
   const handleSubmit = async () => {
     if (!organization?.organizationId) return;
 
+    const nextThemeKey =
+      themeOptions?.find((theme) => theme.themeId === selectedTheme)
+        ?.themeKey ?? "blue_theme";
+    const previousThemeKey = organization?.theme?.themeKey ?? "blue_theme";
+
+    // Optimistic apply; org query cache is patched with the same themeKey on success.
+    setTheme(nextThemeKey);
+
     try {
       const response = await setWhiteLabel({
         organizationId: organization?.organizationId,
         whiteLabelData: {
           themeId: selectedTheme,
+          themeKey: nextThemeKey,
           logo: file ? file : undefined,
           clearLogoUrl: clearImage,
         },
@@ -116,12 +137,17 @@ const BrandSettingsTab = ({
 
       setFile(null);
       setClearImage(false);
-      setTheme(selectedThemeValue?.key as string);
       setOrganization({
         logoUrl: response?.logoUrl ?? null,
       });
+      // Persist theme for next-themes, then reload so branding remounts cleanly.
+      setTheme(nextThemeKey);
       showSuccessToast();
+      window.setTimeout(() => {
+        window.location.reload();
+      }, 400);
     } catch (err) {
+      setTheme(previousThemeKey);
       logger.error({ err: err }, "Failed to update white label settings:");
       showErrorToast();
     }
@@ -132,12 +158,6 @@ const BrandSettingsTab = ({
       selectedTheme !== organization?.themeId || file !== null || clearImage
     );
   }, [selectedTheme, organization?.themeId, file, clearImage]);
-
-  useEffect(() => {
-    if (organization) {
-      setSelectedTheme((organization?.themeId as string) ?? blueTheme?.themeId);
-    }
-  }, [organization, blueTheme, setSelectedTheme]);
 
   return (
     <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">

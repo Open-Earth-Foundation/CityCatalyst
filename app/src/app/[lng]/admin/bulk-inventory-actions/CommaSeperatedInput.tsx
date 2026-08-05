@@ -17,8 +17,8 @@ interface CommaSeperatedInputProps {
     | "connectSources";
   inputType: string;
   tipContent: React.ReactNode;
-  initialValues?: any[];
-  onChange: (values: any) => void;
+  initialValues?: string[];
+  onChange: (values: string[]) => void;
 }
 
 const CommaSeperatedInput: FC<CommaSeperatedInputProps> = ({
@@ -104,7 +104,7 @@ const CommaSeperatedInput: FC<CommaSeperatedInputProps> = ({
           >
             <MdWarning height="16px" width="16px" />
             <Text fontSize="body.md" fontStyle="normal">
-              {(errors as any)?.message as string}
+              {errors?.message}
             </Text>
           </Box>
         )}

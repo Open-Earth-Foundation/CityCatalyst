@@ -53,7 +53,7 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter, useParams, usePathname } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
@@ -79,11 +79,11 @@ import { SubsectorDatasetFilterSelect } from "@/components/GHGI/inventory-pages/
 import type {
   DataSourceWithRelations,
   DataStep,
+  GlobalAPISourceResponse,
   SubSectorWithRelations,
 } from "@/components/GHGI/data-step/types";
 
 import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 import { Button } from "@/components/ui/button";
@@ -345,13 +345,17 @@ export default function AddDataSteps() {
 
   const [selectedSource, setSelectedSource] =
     useState<DataSourceWithRelations>();
-  const [selectedSourceData, setSelectedSourceData] = useState<any>();
+  const [selectedSourceData, setSelectedSourceData] =
+    useState<GlobalAPISourceResponse>();
   const {
     open: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
+  const onSourceClick = (
+    source: DataSourceWithRelations,
+    data: GlobalAPISourceResponse,
+  ) => {
     setSelectedSource(source);
     setSelectedSourceData(data);
     onSourceDrawerOpen();
@@ -504,7 +508,7 @@ export default function AddDataSteps() {
     sectorName: string,
     cityId: string,
   ) {
-    deleteUserFile({ fileId, cityId }).then((res: any) => {
+    deleteUserFile({ fileId, cityId }).then((res) => {
       if (res.error) {
         showError(
           "file-deletion-error",
@@ -583,15 +587,6 @@ export default function AddDataSteps() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const MotionBox = motion.create(
-    // the display name is added below, but the linter isn't picking it up
-    // eslint-disable-next-line react/display-name
-    forwardRef<HTMLDivElement, any>((props, ref) => (
-      <Box ref={ref} {...props} />
-    )),
-  );
-  MotionBox.displayName = "MotionBox";
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
@@ -1559,7 +1554,7 @@ export default function AddDataSteps() {
                                     <Box w="full" position="relative" pl="63px">
                                       {file.subsectors
                                         ?.split(",")
-                                        .map((item: any) => (
+                                        .map((item) => (
                                           <Tag
                                             key={item}
                                             mt={2}

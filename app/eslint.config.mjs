@@ -28,6 +28,14 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  {
+    // .cjs files are explicitly CommonJS — require() is the only valid
+    // syntax there, ESM import statements aren't legal in this extension.
+    files: ["**/*.cjs"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

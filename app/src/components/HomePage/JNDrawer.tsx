@@ -40,7 +40,7 @@ import { useTranslation } from "@/i18n/client";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { CustomSelect } from "../ui/custom-select";
-import { Modules, StageNames } from "@/util/constants";
+import { Modules } from "@/util/constants";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";

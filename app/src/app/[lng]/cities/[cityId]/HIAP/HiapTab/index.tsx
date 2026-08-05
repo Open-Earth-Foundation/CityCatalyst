@@ -89,7 +89,10 @@ export function HiapTab({
   type,
   inventory,
   cityData,
-  onTriggerHiap,
+  // Callers pass this, but the component tracks its own trigger state
+  // internally (see userTriggeredHiap below) and never invokes it — likely
+  // vestigial from before that internal state existed. Left as-is.
+  onTriggerHiap: _onTriggerHiap,
 }: {
   type: ACTION_TYPES;
   inventory: InventoryResponse | null;

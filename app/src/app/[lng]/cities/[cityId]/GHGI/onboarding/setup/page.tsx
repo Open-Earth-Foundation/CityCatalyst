@@ -312,7 +312,9 @@ export default function OnboardingSetup(props: {
     }
   }, [activeStep, isUploadMode]);
 
-  const [selectedProject, setSelectedProject] = useState<string[]>([]);
+  // Tracked but never read/sent to addInventory yet — looks like unfinished
+  // wiring rather than dead code, left as-is pending a follow-up ticket.
+  const [_selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
     if (projectId) {
       setSelectedProject([projectId!]);

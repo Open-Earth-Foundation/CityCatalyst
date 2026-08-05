@@ -17,8 +17,8 @@ export const getClimateRiskAssessmentTool: Tool = {
 };
 
 export async function execute(
-  params: any,
-  session: AppSession
+  _params: any,
+  _session: AppSession
 ): Promise<any> {
   return {
     success: false,

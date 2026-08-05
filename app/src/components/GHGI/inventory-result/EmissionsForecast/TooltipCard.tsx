@@ -4,7 +4,6 @@ import { convertKgToTonnes, formatNumber } from "@/util/helpers";
 import { getColorForSeries } from "./EmissionsForecastChart";
 import type { TFunction } from "i18next";
 import { EmissionsForecastData } from "@/util/types";
-import type { Point, LineSeries } from "@nivo/line";
 
 interface LineChartData {
   id: string;
@@ -13,7 +12,7 @@ interface LineChartData {
 }
 
 interface TooltipCardProps {
-  point: Point<LineSeries>;
+  point: { data: { x: string } };
   data: LineChartData[];
   forecast: EmissionsForecastData;
   t: TFunction;

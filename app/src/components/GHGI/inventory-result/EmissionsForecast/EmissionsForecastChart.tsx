@@ -9,7 +9,7 @@ import {
 } from "@/util/constants";
 import { Box } from "@chakra-ui/react";
 import { convertKgToTonnes } from "@/util/helpers";
-import { ResponsiveLine } from "@nivo/line";
+import { LineCustomSvgLayerProps, ResponsiveLine } from "@nivo/line";
 import CustomLegend from "@/components/GHGI/inventory-result/EmissionsForecast/CustomLegend";
 import TooltipCard from "./TooltipCard";
 import { TooltipProvider, useCustomTooltip } from "./CustomTooltipContext";
@@ -26,7 +26,14 @@ export const getColorForSeries = (seriesId: string) => {
   return sectorOrSubsector?.color || "semantic.dangerOverlay";
 };
 
-function CustomTooltipLayer(props: any) {
+type CustomTooltipLayerProps = LineCustomSvgLayerProps<LineChartData> & {
+  data: LineChartData[];
+  forecast: EmissionsForecastData;
+  t: TFunction;
+  numberFormat?: string;
+};
+
+function CustomTooltipLayer(props: CustomTooltipLayerProps) {
   const {
     innerWidth,
     innerHeight,
@@ -40,14 +47,14 @@ function CustomTooltipLayer(props: any) {
   } = props;
 
   // Get all unique x values (years) from all series
-  const allXValues = series[0]?.data?.map((d: any) => d.data.x) || [];
+  const allXValues = series[0]?.data?.map((d) => d.data.x) || [];
   const sliceWidth = innerWidth / Math.max(allXValues.length - 1, 1);
 
   const { showTooltipFromEvent, hideTooltip } = useCustomTooltip();
 
   return (
     <g>
-      {allXValues.map((xValue: any, index: number) => {
+      {allXValues.map((xValue, index: number) => {
         const x = xScale(xValue) ?? 0;
         const sliceX = index === 0 ? 0 : x - sliceWidth / 2;
         const width =
@@ -58,7 +65,7 @@ function CustomTooltipLayer(props: any) {
         const handleMouseMove = (event: React.MouseEvent) => {
           // Find the first series' point at this x position to use as the primary point
           const primaryPoint = series[0]?.data?.find(
-            (d: any) => d.data.x === xValue,
+            (d) => d.data.x === xValue,
           );
 
           if (!primaryPoint) return;

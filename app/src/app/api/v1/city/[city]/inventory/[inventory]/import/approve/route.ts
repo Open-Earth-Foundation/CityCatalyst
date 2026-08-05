@@ -74,6 +74,12 @@ import { Op } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import type { ExtractedRow } from "@/backend/InventoryExtractionService";
 
+interface ImportValidationResults {
+  adapterType?: string;
+  detectedColumns?: Record<string, number>;
+  headerKey?: string;
+}
+
 const approveImportSchema = z.object({
   importedFileId: z.string().uuid(),
   mappingOverrides: z.record(z.any()).optional(),
@@ -229,14 +235,17 @@ async function runApproveImportInBackground(args: {
 
   try {
     const mappingConfiguration = (importedFile.mappingConfiguration || {}) as {
-      overrides?: Record<string, any>;
+      // For xlsx/csv: columnName -> internal key (string). For PDF imports:
+      // row index (stringified) -> per-row field overrides (object).
+      overrides?: Record<string, unknown>;
       rows?: unknown;
       keyValueShaped?: boolean;
     };
     const mappingOverrides = mappingConfiguration.overrides;
 
-    const validationResults = (importedFile.validationResults as any) || {};
-    const adapterType = validationResults?.adapterType as string | undefined;
+    const validationResults =
+      (importedFile.validationResults as ImportValidationResults) || {};
+    const adapterType = validationResults?.adapterType;
     let importResult: ECRFImportResult;
 
     // Pre-extracted rows: PDF, Path B key-value, or Adapter D (near-ecrf) — no file re-parse.
@@ -447,7 +456,8 @@ async function runApproveImportInBackground(args: {
         importedFile.fileType,
       );
 
-      const validationResults = importedFile.validationResults as any;
+      const validationResults =
+        importedFile.validationResults as ImportValidationResults;
       const detectedColumns: Record<string, number> = {
         ...(validationResults?.detectedColumns || {}),
       };
@@ -460,7 +470,7 @@ async function runApproveImportInBackground(args: {
       ) {
         const headers = parsedData.primarySheet.headers;
         for (const [columnName, key] of Object.entries(mappingOverrides)) {
-          if (!key) continue;
+          if (!key || typeof key !== "string") continue;
           const idx = headers.findIndex((h) => h === columnName);
           if (idx !== -1) {
             detectedColumns[key] = idx;
@@ -499,8 +509,9 @@ async function runApproveImportInBackground(args: {
     // Persist mapping feedback for Path B (AI-shaped) files so future uploads
     // with the same header structure get a warm-start prompt hint.
     if (useExtractedRows && extractedRows && extractedRows.length > 0) {
-      const vr = (importedFile.validationResults as any) ?? {};
-      const headerKey = vr.headerKey as string | undefined;
+      const vr =
+        (importedFile.validationResults as ImportValidationResults) ?? {};
+      const headerKey = vr.headerKey;
       if (headerKey) {
         const feedbackBuffer =
           await InventoryFileStorageService.resolveImportedFileBuffer(

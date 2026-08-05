@@ -54,28 +54,28 @@ interface SectorGroup {
   // Include the full sector data (extracted from the first item)
   sector: {
     sectorId: string;
-    sectorName: string;
     referenceNumber?: string;
   };
   items: SubcategoryItem[];
 }
 
-const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
+const groupScopesBySector = (
+  data: Record<string, ScopeData[]>,
+): SectorGroup[] => {
   return Object.entries(data).map(([sectorRef, items]) => {
     const sector = items[0]?.subSector; // assume all items in this group share the same sector
     return {
       sectorRef: sectorRef as SectorReference,
       sector: {
-        sectorId: sector?.sectorId,
-        sectorName: sector?.sectorName,
+        sectorId: sector?.sectorId ?? "",
         referenceNumber: sector?.referenceNumber,
       },
       items: items.map((item) => ({
-        subSectorId: item.subSector.subsectorId,
-        subSectorName: item.subSector.subsectorName,
-        subCategoryId: item.subCategory.subcategoryId,
-        subCategoryName: item.subCategory.subcategoryName,
-        subCategoryReferenceNumber: item.subCategory.referenceNumber,
+        subSectorId: item.subSector?.subsectorId ?? "",
+        subSectorName: item.subSector?.subsectorName ?? "",
+        subCategoryId: item.subCategory?.subcategoryId ?? "",
+        subCategoryName: item.subCategory?.subcategoryName ?? "",
+        subCategoryReferenceNumber: item.subCategory?.referenceNumber ?? "",
       })),
     };
   });
@@ -256,8 +256,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     } else {
       // Bulk update all cards that have been edited
       const currentSectorSubCategoryIds =
-        sectorData?.result[selectedSector]?.map(
-          (scope: any) => scope.subCategory.subcategoryId,
+        (sectorData?.result[selectedSector] as ScopeData[] | undefined)?.map(
+          (scope) => scope.subCategory?.subcategoryId,
         ) || [];
 
       notationKeys = Object.entries(cardInputs)
@@ -377,7 +377,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // Our API response now contains a `result` object keyed by sector ref.
   const groupedSectors: SectorGroup[] = useMemo(() => {
     if (sectorData?.result) {
-      return groupScopesBySector(sectorData.result);
+      return groupScopesBySector(
+        sectorData.result as Record<string, ScopeData[]>,
+      );
     }
     return [];
   }, [sectorData?.result]);

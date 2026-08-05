@@ -107,7 +107,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     reset();
   };
 
-  const handleCustomError = (error: any, fallbackTitle: string) => {
+  const handleCustomError = (error: CustomError, fallbackTitle: string) => {
     const errorBody = error?.data?.error;
     const errorData = errorBody?.data;
     const errorKey = errorData?.errorKey || "unknown-error";
@@ -186,7 +186,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => onOpenChange(e.open)}
+      onOpenChange={(e) => onOpenChange(e.open)}
       onExitComplete={closeFunction}
     >
       <DialogBackdrop />

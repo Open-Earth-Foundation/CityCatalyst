@@ -575,7 +575,7 @@ export default class ECRFImportService {
     });
 
     if (subcategory) {
-      const subsector = (subcategory as any).subsector;
+      const subsector = subcategory.subsector;
       if (!subsector) {
         return null;
       }
@@ -616,7 +616,7 @@ export default class ECRFImportService {
       return null;
     }
 
-    const sector = (subsector as any).sector;
+    const sector = subsector.sector;
     if (!sector) {
       return null;
     }

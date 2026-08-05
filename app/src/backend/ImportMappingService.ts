@@ -1,7 +1,10 @@
 import InventoryProgressService from "@/backend/InventoryProgressService";
 import ECRFImportService from "@/backend/ECRFImportService";
 import type { Inventory } from "@/models/Inventory";
-import { getScopesForInventoryAndSector } from "@/util/constants";
+import {
+  getScopesForInventoryAndSector,
+  InventoryType,
+} from "@/util/constants";
 import type { ParsedFileData } from "@/backend/FileParserService";
 
 export interface ECRFRowMapping {
@@ -133,7 +136,7 @@ export default class ImportMappingService {
               }
 
               const allowedScopes = getScopesForInventoryAndSector(
-                inventoryType as any,
+                inventoryType as InventoryType,
                 sector.referenceNumber,
               );
 
@@ -169,7 +172,7 @@ export default class ImportMappingService {
           }
 
           const allowedScopes = getScopesForInventoryAndSector(
-            inventoryType as any,
+            inventoryType as InventoryType,
             sector.referenceNumber,
           );
 

@@ -10,6 +10,8 @@ import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
 import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
+import type { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import type { Inventory } from "@/models/Inventory";
 
 /**
  * Cron job endpoint to check HIAP job statuses and start next batches
@@ -117,7 +119,7 @@ export async function GET(req: NextRequest) {
     // Step 2: Check status for each unique jobId
     for (const job of pendingJobs) {
       try {
-        const lang = (job.langs as any)[0] as LANGUAGES; // Get first language from array
+        const lang = job.langs[0] as LANGUAGES; // Get first language from array
 
         // Call appropriate function based on job type
         const isComplete = job.isBulk
@@ -155,7 +157,11 @@ export async function GET(req: NextRequest) {
             ],
           });
 
-          const projectId = (ranking as any)?.inventory?.city?.projectId;
+          const projectId = (
+            ranking as
+              | (HighImpactActionRanking & { inventory: Inventory })
+              | null
+          )?.inventory?.city?.projectId;
           if (projectId) {
             // Step 4: Start next batch for this project if there are TO_DO rankings
             const nextBatch =

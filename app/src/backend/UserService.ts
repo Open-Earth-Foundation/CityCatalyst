@@ -2,6 +2,7 @@ import { db } from "@/models";
 import createHttpError from "http-errors";
 
 import {
+  CityResponse,
   InviteStatus,
   OrganizationRole,
   ProjectWithCitiesResponse,
@@ -676,7 +677,7 @@ export default class UserService {
         cities: (project.cities ?? []).map((city) => ({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as any,
+          inventories: city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
@@ -708,7 +709,7 @@ export default class UserService {
         projectsById[projectId].cities.push({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as any,
+          inventories: city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,

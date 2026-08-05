@@ -74,15 +74,15 @@ export function ActivityDataTab({
 }: {
   t: TFunction;
   register: (name: string, options?: unknown) => unknown;
-  errors: Record<string, any>;
+  errors: Record<string, unknown>;
   prefix: string;
-  watch: (name: string) => any;
+  watch: (name: string) => unknown;
   setValue: (name: string, value: unknown) => void;
   gpcReferenceNumber: string;
   emissionsFactors: EmissionsFactorWithDataSources[];
 }) {
   const selectedEmissionFactorType =
-    watch(prefix + "emissionFactorType") || "custom";
+    (watch(prefix + "emissionFactorType") as string) || "custom";
   // TODO cache with useEffect and useState?
   const scopeEmissionsFactors = emissionsFactors.filter(
     (factor) => factor.gpcReferenceNumber === gpcReferenceNumber,
@@ -110,7 +110,9 @@ export function ActivityDataTab({
 
   // TODO this should happen in default form value, as the form still contains null/ undefined here
   const selectedUnit =
-    watch(prefix + "activityDataUnit") ?? scopeUnits[0] ?? "";
+    (watch(prefix + "activityDataUnit") as string | undefined) ??
+    scopeUnits[0] ??
+    "";
   const selectedUnitShort = selectedUnit.split(" ")[0];
 
   useEffect(() => {

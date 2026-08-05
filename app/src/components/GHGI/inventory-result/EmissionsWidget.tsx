@@ -20,6 +20,7 @@ import {
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
 import { FiHeart } from "react-icons/fi";
+import { IconType } from "react-icons";
 import { api } from "@/services/api";
 
 const EmissionsWidgetCard = ({
@@ -29,9 +30,9 @@ const EmissionsWidgetCard = ({
   isLoading = false,
   numberFormat,
 }: {
-  icon: any;
+  icon?: IconType;
   value?: number | undefined;
-  field: any;
+  field: React.ReactNode;
   showProgress: boolean;
   isLoading?: boolean;
   numberFormat?: string;
@@ -43,7 +44,7 @@ const EmissionsWidgetCard = ({
     : "N/A";
 
   return (
-    <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
+    <HStack align="center" marginY={"9px"} justify="space-between">
       <Stack w="full" height={"83px"}>
         <HStack align="start">
           {isLoading ? (

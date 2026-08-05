@@ -151,7 +151,10 @@ export async function execute(
 
       try {
         // Copy actions synchronously and return them immediately
-        existingActions = await copyRankedActionsToLang(ranking, lng);
+        existingActions = (await copyRankedActionsToLang(
+          ranking,
+          lng,
+        )) as unknown as typeof existingActions;
         // Apply limit after copying
         existingActions = existingActions.slice(0, limit);
         logger.info(

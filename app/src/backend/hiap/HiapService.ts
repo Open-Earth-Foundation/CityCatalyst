@@ -3,8 +3,12 @@ import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
 import PopulationService from "../PopulationService";
-import { getTotalEmissionsBySector } from "../ResultsService";
+import {
+  getTotalEmissionsBySector,
+  EmissionsBySector,
+} from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import { HighImpactActionRanked } from "@/models/HighImpactActionRanked";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
@@ -61,28 +65,6 @@ const getClient = (() => {
     return client;
   };
 })();
-
-export interface GlobalApiClimateAction {
-  ActionID: string;
-  ActionName: string;
-  ActionType: ACTION_TYPES[];
-  Hazard: string[] | null;
-  Sector: string[] | null;
-  Subsector: string[] | null;
-  PrimaryPurpose: string[];
-  Description: string;
-  CoBenefits: { [k: string]: number };
-  EquityAndInclusionConsiderations: string;
-  GHGReductionPotential: { [k: string]: string };
-  AdaptationEffectiveness: string | null;
-  CostInvestmentNeeded: string | null;
-  TimelineForImplementation: string | null;
-  Dependencies: string[];
-  KeyPerformanceIndicators: string[];
-  PowersAndMandates: string[] | null;
-  AdaptationEffectivenessPerHazard: { [k: string]: string };
-  biome: string | null;
-}
 
 export const findExistingRanking = async (
   inventoryId: string,
@@ -365,7 +347,7 @@ export const checkSingleActionRankingJob = async (
  */
 async function processBulkJobResults(
   jobId: string,
-  bulkResponse: { prioritizerResponseList: any[] },
+  bulkResponse: { prioritizerResponseList: PrioritizerResponse[] },
 ): Promise<boolean> {
   // Get all rankings that share this jobId
   const rankings = await db.models.HighImpactActionRanking.findAll({
@@ -586,7 +568,10 @@ function extractLocalizedString(
 }
 
 /** Ensure ranked action text fields are strings for the requested language. */
-export function normalizeRankedActionForLang(action: any, lang: LANGUAGES) {
+export function normalizeRankedActionForLang(
+  action: HighImpactActionRanked,
+  lang: LANGUAGES,
+): Record<string, unknown> {
   const plain = typeof action.toJSON === "function" ? action.toJSON() : action;
   return {
     ...plain,
@@ -605,21 +590,47 @@ export function normalizeRankedActionForLang(action: any, lang: LANGUAGES) {
   };
 }
 
+interface MergedRankedAction {
+  actionId: string;
+  rank: number;
+  explanation: { explanations?: Record<string, string> };
+  type: ACTION_TYPES;
+  isSelected?: boolean;
+  name?: string;
+  hazard: string[] | null;
+  sector: string[] | null;
+  subsector: string[] | null;
+  primaryPurpose: string[];
+  description?: string;
+  cobenefits: { [k: string]: number };
+  equityAndInclusionConsiderations?: string;
+  GHGReductionPotential: { [k: string]: string };
+  adaptationEffectiveness: string | null;
+  costInvestmentNeeded: string | null;
+  timelineForImplementation: string | null;
+  dependencies: string[];
+  keyPerformanceIndicators: string[];
+  powersAndMandates: string[] | null;
+  adaptationEffectivenessPerHazard: { [k: string]: string };
+  biome: string | null;
+}
+
 async function fetchAndMergeRankedActions(
   lang: LANGUAGES,
   rankedActions: {
     actionId: string;
     rank: number;
-    explanation: any;
+    explanation: { explanations?: Record<string, string> };
+    isSelected?: boolean;
     type: ACTION_TYPES;
   }[],
-) {
+): Promise<MergedRankedAction[]> {
   const allActions = await GlobalAPIService.fetchAllClimateActions(lang);
 
   return rankedActions
-    .map((rankedAction) => {
+    .map((rankedAction): MergedRankedAction | null => {
       const details = allActions.find(
-        (a: any) => a.ActionID === rankedAction.actionId,
+        (a) => a.ActionID === rankedAction.actionId,
       );
       if (!details) {
         logger.error(
@@ -654,14 +665,14 @@ async function fetchAndMergeRankedActions(
         biome: details.biome,
       };
     })
-    .filter((r) => r !== null);
+    .filter((r): r is MergedRankedAction => r !== null);
 }
 
 // Helper: Check if actions already exist for a language and return them if they do
 async function checkExistingActions(
   rankingId: string,
   lang: LANGUAGES,
-): Promise<any[] | null> {
+): Promise<HighImpactActionRanked[] | null> {
   const existingActions = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: rankingId, lang },
   });
@@ -676,7 +687,9 @@ async function checkExistingActions(
 }
 
 // Helper: Normalize field to array (handles strings and nulls)
-function normalizeToArray(value: any): string[] | undefined {
+function normalizeToArray(
+  value: string | string[] | null | undefined,
+): string[] | undefined {
   if (value === null || value === undefined) {
     return undefined;
   }
@@ -711,7 +724,7 @@ function normalizeToArray(value: any): string[] | undefined {
 async function createRankedActionRecord(
   rankingId: string,
   lang: LANGUAGES,
-  rankedAction: any,
+  rankedAction: MergedRankedAction | null,
   inventoryId: string,
   userId: string | undefined,
 ): Promise<boolean> {
@@ -726,27 +739,37 @@ async function createRankedActionRecord(
         rank: rankedAction.rank,
         type: rankedAction.type,
         explanation: rankedAction.explanation,
-        name: rankedAction.name,
+        name: rankedAction.name ?? "",
         hazards: normalizeToArray(rankedAction.hazard),
         sectors: normalizeToArray(rankedAction.sector),
         subsectors: normalizeToArray(rankedAction.subsector),
         primaryPurposes: normalizeToArray(rankedAction.primaryPurpose),
         description: rankedAction.description,
-        cobenefits: rankedAction.cobenefits,
+        cobenefits: rankedAction.cobenefits as unknown as Record<
+          string,
+          object
+        >,
         equityAndInclusionConsiderations:
           rankedAction.equityAndInclusionConsiderations,
-        GHGReductionPotential: rankedAction.GHGReductionPotential,
-        adaptationEffectiveness: rankedAction.adaptationEffectiveness,
-        costInvestmentNeeded: rankedAction.costInvestmentNeeded,
-        timelineForImplementation: rankedAction.timelineForImplementation,
+        GHGReductionPotential: rankedAction.GHGReductionPotential as unknown as Record<
+          string,
+          object
+        >,
+        adaptationEffectiveness: rankedAction.adaptationEffectiveness ?? undefined,
+        costInvestmentNeeded: rankedAction.costInvestmentNeeded ?? undefined,
+        timelineForImplementation:
+          rankedAction.timelineForImplementation ?? undefined,
         dependencies: normalizeToArray(rankedAction.dependencies),
         keyPerformanceIndicators: normalizeToArray(
           rankedAction.keyPerformanceIndicators,
         ),
         powersAndMandates: normalizeToArray(rankedAction.powersAndMandates),
         adaptationEffectivenessPerHazard:
-          rankedAction.adaptationEffectivenessPerHazard,
-        biome: rankedAction.biome,
+          rankedAction.adaptationEffectivenessPerHazard as unknown as Record<
+            string,
+            object
+          >,
+        biome: rankedAction.biome ?? undefined,
         // Keep selection in sync when copying ranked rows into a new language
         isSelected: Boolean(rankedAction.isSelected),
       },
@@ -773,13 +796,19 @@ async function createRankedActionRecord(
 // Helper: Save ranked actions for a language and return the actions
 async function saveRankedActionsForLanguage(
   ranking: HighImpactActionRanking,
-  rankedActions: any[],
+  rankedActions: {
+    actionId: string;
+    rank: number;
+    explanation: { explanations?: Record<string, string> };
+    type: ACTION_TYPES;
+    isSelected?: boolean;
+  }[],
   lang: LANGUAGES,
-): Promise<any[]> {
+): Promise<Record<string, unknown>[]> {
   // Check if actions already exist for this language
   const existingActions = await checkExistingActions(ranking.id, lang);
   if (existingActions) {
-    return existingActions;
+    return existingActions as unknown as Record<string, unknown>[];
   }
 
   // Note: No race condition check needed here because we prevent multiple
@@ -908,7 +937,7 @@ export const checkActionRankingJob = async (
 
 // Helper to get emissions for a sector by name
 function getSectorEmissions(
-  emissionsBySector: any[],
+  emissionsBySector: EmissionsBySector[],
   sectorName: string,
 ): number | null {
   const value = emissionsBySector.find(
@@ -1101,14 +1130,18 @@ async function findOrSelectRanking(
 
 // Helper: Get ranked actions for a ranking and language
 async function getRankedActionsForLang(
-  ranking: any,
+  ranking: HighImpactActionRanking,
   lang: LANGUAGES,
   type?: ACTION_TYPES,
-) {
+): Promise<Record<string, unknown>[]> {
   // Repair any pre-existing per-language selection drift before reading
   await syncRankedActionSelectionsAcrossLanguages(ranking.id);
 
-  const whereClause: any = { hiaRankingId: ranking.id, lang };
+  const whereClause: {
+    hiaRankingId: string;
+    lang: LANGUAGES;
+    type?: ACTION_TYPES;
+  } = { hiaRankingId: ranking.id, lang };
 
   // Add type filter only if type is provided
   if (type) {
@@ -1365,7 +1398,7 @@ function getSelectedActionsFileName(locode: string, type: ACTION_TYPES) {
   return `data/selected/${type}/${locode}.json`;
 }
 
-const streamToString = async (stream: any) => {
+const streamToString = async (stream: NodeJS.ReadableStream) => {
   // AWS S3 returns a stream-like object with 'on' method in Node.js backend
   const chunks: Uint8Array[] = [];
 
@@ -1396,7 +1429,8 @@ export const readSelectedActionsFile = async (
     const response = await client.send(command);
     const body = response.Body;
     if (!body) return [];
-    const data = await streamToString(body);
+    // Always a Node.js Readable in this backend runtime (see streamToString).
+    const data = await streamToString(body as NodeJS.ReadableStream);
     try {
       return JSON.parse(data); // This will be an array of action IDs
     } catch {
@@ -1678,7 +1712,7 @@ export async function migrateProjectActionSelections(
             ],
             attributes: ["id"],
           });
-          const rankingIds = rankings.map((r: any) => r.id);
+          const rankingIds = rankings.map((r) => r.id);
 
           logger.info(
             `Found ${rankingIds.length} rankings for ${locode}, ${actionType} (year: ${year})`,

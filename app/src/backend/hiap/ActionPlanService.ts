@@ -4,6 +4,7 @@ import { db } from "@/models";
 import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
 import { hiapApiWrapper } from "./HiapApiService";
+import { LegacyActionPlanData } from "./types";
 
 // Interfaces updated to work with new table structure
 
@@ -17,24 +18,24 @@ export interface CreateActionPlanInput {
   language: string;
 
   // Plan metadata
-  cityName?: string;
-  createdAtTimestamp?: string;
+  cityName?: string | null;
+  createdAtTimestamp?: string | null;
 
   // Plan content from introduction
-  cityDescription?: string;
-  actionDescription?: string;
-  nationalStrategyExplanation?: string;
+  cityDescription?: string | null;
+  actionDescription?: string | null;
+  nationalStrategyExplanation?: string | null;
 
   // Structured plan data
-  subactions?: any;
-  institutions?: any;
-  milestones?: any;
-  timeline?: any;
-  costBudget?: any;
-  merIndicators?: any;
-  mitigations?: any;
-  adaptations?: any;
-  sdgs?: any;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 
   // Tracking
   createdBy?: string;
@@ -46,24 +47,24 @@ export interface UpdateActionPlanInput {
   language?: string;
 
   // Plan metadata
-  cityName?: string;
-  createdAtTimestamp?: string;
+  cityName?: string | null;
+  createdAtTimestamp?: string | null;
 
   // Plan content
-  cityDescription?: string;
-  actionDescription?: string;
-  nationalStrategyExplanation?: string;
+  cityDescription?: string | null;
+  actionDescription?: string | null;
+  nationalStrategyExplanation?: string | null;
 
   // Structured plan data
-  subactions?: any;
-  institutions?: any;
-  milestones?: any;
-  timeline?: any;
-  costBudget?: any;
-  merIndicators?: any;
-  mitigations?: any;
-  adaptations?: any;
-  sdgs?: any;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 }
 
 export interface UpsertActionPlanInput {
@@ -74,7 +75,7 @@ export interface UpsertActionPlanInput {
   inventoryId?: string;
   actionName: string;
   language: string;
-  planData: any; // Legacy HIAP API format - will be transformed
+  planData: LegacyActionPlanData; // Legacy HIAP API format - will be transformed
   createdBy?: string;
 }
 
@@ -83,7 +84,7 @@ export default class ActionPlanService {
    * Transform legacy planData format to new column structure
    */
   private static transformPlanData(
-    planData: any,
+    planData: LegacyActionPlanData,
   ): Partial<CreateActionPlanInput> {
     const result: Partial<CreateActionPlanInput> = {};
 
@@ -91,7 +92,7 @@ export default class ActionPlanService {
     if (planData.metadata) {
       result.cityName = planData.metadata.cityName;
       result.createdAtTimestamp = planData.metadata.createdAt;
-      result.actionName = planData.metadata.actionName;
+      result.actionName = planData.metadata.actionName ?? undefined;
     }
 
     // Extract introduction content
@@ -122,7 +123,9 @@ export default class ActionPlanService {
   /**
    * Transform database record back to legacy planData format for API compatibility
    */
-  private static transformToLegacyFormat(actionPlan: ActionPlan): any {
+  private static transformToLegacyFormat(
+    actionPlan: ActionPlan,
+  ): LegacyActionPlanData {
     return {
       metadata: {
         cityName: actionPlan.cityName,
@@ -388,7 +391,7 @@ export default class ActionPlanService {
     actionId: string,
     language: string,
     cityId: string,
-  ): Promise<{ planData: any } | null> {
+  ): Promise<{ planData: LegacyActionPlanData } | null> {
     try {
       const actionPlans = await this.getActionPlansByCityId(
         cityId,

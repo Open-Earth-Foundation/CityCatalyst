@@ -45,3 +45,36 @@ export interface PrioritizerRequest {
 export interface PrioritizerResponseBulk {
   prioritizerResponseList: PrioritizerResponse[];
 }
+
+/**
+ * The action plan format used by the HIAP plan-creator API (both sent for
+ * translation and received back), and stored/read via ActionPlanService's
+ * transformPlanData/transformToLegacyFormat. This is a loosely-typed
+ * external API payload, not the DB column shape (see models/ActionPlan.ts).
+ */
+export interface LegacyActionPlanData {
+  metadata?: {
+    cityName?: string | null;
+    createdAt?: string | null;
+    actionName?: string | null;
+    locode?: string | null;
+    actionId?: string | null;
+    language?: string | null;
+  };
+  content?: {
+    introduction?: {
+      city_description?: string | null;
+      action_description?: string | null;
+      national_strategy_explanation?: string | null;
+    };
+    subactions?: object | null;
+    institutions?: object | null;
+    milestones?: object | null;
+    timeline?: object | null;
+    costBudget?: object | null;
+    merIndicators?: object | null;
+    mitigations?: object | null;
+    adaptations?: object | null;
+    sdgs?: object | null;
+  };
+}

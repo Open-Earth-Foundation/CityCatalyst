@@ -1,5 +1,6 @@
 import type {
   DataSourceWithRelations,
+  GlobalAPISourceResponse,
   InventoryValueData,
   SubSectorWithRelations,
 } from "@/components/GHGI/data-step/types";
@@ -135,7 +136,7 @@ export type DataSource = DataSourceAttributes & {
 };
 export type DataSourceResponse = {
   source: DataSourceWithRelations;
-  data: any;
+  data: GlobalAPISourceResponse;
 };
 
 export interface GetDataSourcesResult {
@@ -205,7 +206,7 @@ export interface OCCityAttributes {
   actor_id: string;
   name: string;
   is_part_of: string;
-  root_path_geo: any;
+  root_path_geo: { actor_id: string; name: string; type: string }[];
   area: number;
 }
 
@@ -912,7 +913,7 @@ export interface FieldMapping {
 export interface ReviewData {
   importSummary: ImportSummary;
   fieldMappings: FieldMapping[];
-  mappingPreview?: any;
+  mappingPreview?: unknown;
 }
 
 export interface ImportStatusResponse {

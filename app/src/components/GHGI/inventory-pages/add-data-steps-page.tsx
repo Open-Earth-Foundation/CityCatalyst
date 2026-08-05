@@ -25,7 +25,7 @@ import {
   groupBy,
   nameToI18NKey,
 } from "@/util/helpers";
-import { bigIntToDecimal } from "@/util/big_int";
+import Decimal from "decimal.js";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
@@ -1206,13 +1206,13 @@ export default function AddDataSteps() {
                                         gap={2}
                                       >
                                         {data?.totals?.emissions?.co2eq_100yr != null &&
-                                          data.totals.emissions.co2eq_100yr !== 0n && (
+                                          Number(data.totals.emissions.co2eq_100yr) !== 0 && (
                                             <Text
                                               fontSize="display.sm"
                                               fontWeight="semibold"
                                             >
                                               {convertKgToTonnes(
-                                                bigIntToDecimal(
+                                                new Decimal(
                                                   data.totals.emissions.co2eq_100yr,
                                                 ).toNumber(),
                                               )}

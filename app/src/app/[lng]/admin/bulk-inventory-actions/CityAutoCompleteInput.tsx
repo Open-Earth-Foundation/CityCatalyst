@@ -70,7 +70,7 @@ const CityAutocompleteInput: React.FC<CityAutocompleteInputProps> = ({
     pathCopy
       ?.reverse()
       .slice(1)
-      .map((parent: any) => {
+      .map((parent) => {
         if (pathString) {
           pathString = pathString + " > ";
         }

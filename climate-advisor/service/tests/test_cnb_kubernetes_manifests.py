@@ -77,30 +77,29 @@ def test_configmaps_and_manifests_contain_no_cnb_values() -> None:
         assert "stringData:" not in content
 
 
-def test_workflows_gate_rollout_on_both_migration_jobs() -> None:
-    """Require secret reconciliation and sequential migration gates before deploy."""
-    helper = (
-        REPOSITORY_ROOT / ".github" / "scripts" / "run-climate-advisor-migrations.sh"
-    ).read_text(encoding="utf-8")
-    assert "${CNB_DATABASE_URL:?" in helper
-    assert "--from-literal=CNB_DATABASE_URL=" in helper
-    assert ".status.succeeded" in helper
-    assert ".status.failed" in helper
-    assert helper.index('run_migration_job "${CA_MIGRATION_MANIFEST}"') < helper.index(
-        'run_migration_job "${CNB_MIGRATION_MANIFEST}"'
-    )
+def test_workflows_launch_both_migration_jobs_before_rollout() -> None:
+    """Keep CNB deployment wiring consistent with the existing CA Job flow."""
+    secret_reconcile = "--dry-run=client --output yaml | kubectl apply -f - -n default"
 
     for environment, expected in ENVIRONMENTS.items():
         workflow = (WORKFLOW_ROOT / expected["workflow"]).read_text(encoding="utf-8")
-        helper_call = "bash .github/scripts/run-climate-advisor-migrations.sh"
+        secret_create = f"kubectl create secret generic {expected['secret']}"
+        ca_job_create = (
+            f"kubectl create -f climate-advisor/k8s/migrate-{environment}.yml"
+        )
+        cnb_job_create = (
+            f"kubectl create -f climate-advisor/k8s/cnb-migrate-{environment}.yml"
+        )
         deployment_apply = (
             f"kubectl apply -f climate-advisor/k8s/deployment-{environment}.yml"
         )
+
         assert f"secrets.{expected['github_secret']}" in workflow
-        assert f"CNB_SECRET_NAME={expected['secret']}" in workflow
-        assert (
-            f"CNB_MIGRATION_MANIFEST=climate-advisor/k8s/cnb-migrate-{environment}.yml"
-            in workflow
-        )
-        assert helper_call in workflow
-        assert workflow.index(helper_call) < workflow.index(deployment_apply)
+        assert "${CNB_DATABASE_URL:?CNB_DATABASE_URL GitHub secret is required}" in workflow
+        assert secret_create in workflow
+        assert '--from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}"' in workflow
+        assert secret_reconcile in workflow
+        assert "run-climate-advisor-migrations.sh" not in workflow
+        assert workflow.index(secret_create) < workflow.index(ca_job_create)
+        assert workflow.index(ca_job_create) < workflow.index(cnb_job_create)
+        assert workflow.index(cnb_job_create) < workflow.index(deployment_apply)

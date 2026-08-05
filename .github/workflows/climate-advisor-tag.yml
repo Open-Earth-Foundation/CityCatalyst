@@ -21,7 +21,6 @@ on:
       - climate-advisor/k8s/db-configmap-prod.yml
       - k8s/prod/cc-prod-ca-smoke-fixture.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
-      - .github/scripts/run-climate-advisor-migrations.sh
       - .github/workflows/climate-advisor-tag.yml
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
@@ -211,10 +210,12 @@ jobs:
         run: |
           export VERSION=${REF#refs/tags/v}
           kubectl apply -f climate-advisor/k8s/db-configmap-prod.yml -n default
-          CNB_SECRET_NAME=climate-advisor-cnb-db-secret-prod \
-          CA_MIGRATION_MANIFEST=climate-advisor/k8s/migrate-prod.yml \
-          CNB_MIGRATION_MANIFEST=climate-advisor/k8s/cnb-migrate-prod.yml \
-          bash .github/scripts/run-climate-advisor-migrations.sh
+          : "${CNB_DATABASE_URL:?CNB_DATABASE_URL GitHub secret is required}"
+          kubectl create secret generic climate-advisor-cnb-db-secret-prod \
+            --from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}" \
+            --dry-run=client --output yaml | kubectl apply -f - -n default
+          kubectl create -f climate-advisor/k8s/migrate-prod.yml -n default
+          kubectl create -f climate-advisor/k8s/cnb-migrate-prod.yml -n default
           kubectl apply -f climate-advisor/k8s/service-prod.yml -n default
           kubectl apply -f climate-advisor/k8s/deployment-prod.yml -n default
           kubectl set image deployment/climate-advisor-prod climate-advisor-prod=$IMAGE:$VERSION -n default

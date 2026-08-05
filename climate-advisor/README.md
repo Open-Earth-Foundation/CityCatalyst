@@ -940,12 +940,13 @@ containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
 migration Job consume that Secret with `secretRef`; CNB credentials do not
 belong in the existing database ConfigMaps or in checked-in Secret manifests.
 
-Deployments run sequential gates: the existing CA migration Job, the CNB Job
-(`alembic -c cnb-alembic.ini upgrade head`), then the application rollout. Job
-logs are printed and a failed or timed-out migration stops the rollout. For
-production, take an RDS snapshot or schema backup first; roll back the
-application image independently and do not automatically downgrade a schema
-after application data has been written.
+Each deployment workflow launches the existing CA migration Job, then the CNB
+Job (`alembic -c cnb-alembic.ini upgrade head`), before applying the application
+rollout. This follows the existing Climate Advisor deployment pattern; the
+workflow does not wait for either Job to finish. Check the Kubernetes Jobs and
+their logs to confirm migration success. For production, take an RDS snapshot
+or schema backup first; roll back the application image independently and do
+not automatically downgrade a schema after application data has been written.
 
 ## Observability
 

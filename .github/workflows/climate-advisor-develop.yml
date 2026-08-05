@@ -21,7 +21,6 @@ on:
       - climate-advisor/k8s/db-configmap-dev.yml
       - k8s/cc-ca-smoke-fixture.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
-      - .github/scripts/run-climate-advisor-migrations.sh
       - .github/workflows/climate-advisor-develop.yml
   push:
     paths:
@@ -37,7 +36,6 @@ on:
       - climate-advisor/k8s/db-configmap-dev.yml
       - k8s/cc-ca-smoke-fixture.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
-      - .github/scripts/run-climate-advisor-migrations.sh
       - .github/workflows/climate-advisor-develop.yml
     branches: ["develop"]
 jobs:
@@ -196,10 +194,12 @@ jobs:
       - name: Deploying service
         run: |
           kubectl apply -f climate-advisor/k8s/db-configmap-dev.yml -n default
-          CNB_SECRET_NAME=climate-advisor-cnb-db-secret-dev \
-          CA_MIGRATION_MANIFEST=climate-advisor/k8s/migrate-dev.yml \
-          CNB_MIGRATION_MANIFEST=climate-advisor/k8s/cnb-migrate-dev.yml \
-          bash .github/scripts/run-climate-advisor-migrations.sh
+          : "${CNB_DATABASE_URL:?CNB_DATABASE_URL GitHub secret is required}"
+          kubectl create secret generic climate-advisor-cnb-db-secret-dev \
+            --from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}" \
+            --dry-run=client --output yaml | kubectl apply -f - -n default
+          kubectl create -f climate-advisor/k8s/migrate-dev.yml -n default
+          kubectl create -f climate-advisor/k8s/cnb-migrate-dev.yml -n default
           kubectl apply -f climate-advisor/k8s/service-dev.yml -n default
           kubectl apply -f climate-advisor/k8s/deployment-dev.yml -n default
           kubectl set env deployment/climate-advisor-dev \

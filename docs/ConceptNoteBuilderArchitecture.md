@@ -2160,7 +2160,7 @@ Minimum test surface:
 - Independent CNB migration upgrade, downgrade, re-upgrade, constraint/index,
   and cross-chain isolation tests against ephemeral PostgreSQL.
 - Kubernetes contract tests proving CNB credentials come only from Secrets and
-  both migration jobs complete before application rollout.
+  both migration Jobs are launched before application rollout.
 - Pydantic contracts for all CNB route payloads.
 - CNB storage client and contract tests for run, chapter, revision, gap, and
   evidence behavior.

@@ -14,13 +14,13 @@ export interface ImportedInventoryFileAttributes {
   fileType: "xlsx" | "csv" | "pdf";
   fileSize: number;
   /** @deprecated Use s3Key instead. Kept nullable for backfill transition. */
-  data?: Buffer | any;
+  data?: Buffer | Uint8Array | null;
   /** S3 object key for the uploaded file. Replaces the `data` BYTEA column. */
   s3Key?: string | null;
   originalFileName: string;
   importStatus: ImportStatusEnum;
-  mappingConfiguration?: Record<string, any> | null;
-  validationResults?: Record<string, any> | null;
+  mappingConfiguration?: Record<string, unknown> | null;
+  validationResults?: Record<string, unknown> | null;
   errorLog?: string | null;
   rowCount?: number | null;
   processedRowCount?: number | null;
@@ -62,12 +62,12 @@ export class ImportedInventoryFile
   declare fileName: string;
   declare fileType: "xlsx" | "csv" | "pdf";
   declare fileSize: number;
-  declare data?: Buffer | any;
+  declare data?: Buffer | Uint8Array | null;
   declare s3Key?: string | null;
   declare originalFileName: string;
   declare importStatus: ImportStatusEnum;
-  declare mappingConfiguration?: Record<string, any> | null;
-  declare validationResults?: Record<string, any> | null;
+  declare mappingConfiguration?: Record<string, unknown> | null;
+  declare validationResults?: Record<string, unknown> | null;
   declare errorLog?: string | null;
   declare rowCount?: number | null;
   declare processedRowCount?: number | null;

@@ -71,7 +71,7 @@ export default function ReviewPage() {
   const { data: userInfo } = api.useGetUserInfoQuery();
 
   const { data: inventory } = api.useGetInventoryQuery(
-    userInfo?.defaultInventoryId!,
+    userInfo?.defaultInventoryId ?? "",
     { skip: !userInfo },
   );
   const cityId = inventory?.city.cityId;

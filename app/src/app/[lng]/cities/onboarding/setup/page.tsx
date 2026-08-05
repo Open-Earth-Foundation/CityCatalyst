@@ -173,7 +173,7 @@ export default function OnboardingSetup(props: {
   }, [yearAlreadyExists, selectedYear]);
 
   const { data: cityArea } = api.useGetCityBoundaryQuery(
-    ocCityData?.actor_id!,
+    ocCityData?.actor_id ?? "",
     { skip: !ocCityData?.actor_id },
   );
 
@@ -289,6 +289,9 @@ export default function OnboardingSetup(props: {
   // Steps 1, 2: merge form data and advance.
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
     if (activeStep === 0) {
+      // Guaranteed by the disabled state of the submit button, which requires ocCityData.
+      if (!ocCityData) return;
+
       const selectedProjectId =
         selectedProject.length > 0 ? selectedProject[0] : undefined;
       if (EnterpriseMode && selectedProjectId) {
@@ -312,8 +315,8 @@ export default function OnboardingSetup(props: {
       const nextData: OnboardingData = {
         ...data,
         ...formData,
-        locode: ocCityData?.actor_id!,
-        name: ocCityData?.name!,
+        locode: ocCityData.actor_id,
+        name: ocCityData.name,
       };
       setData(nextData);
 

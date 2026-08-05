@@ -196,7 +196,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           fontWeight="bold"
         >
           <Table.Row>
-            {filteredFields?.length! > 0 && (
+            {filteredFields.length > 0 && (
               <Table.ColumnHeader
                 title={t(filteredFields[0].id)}
                 maxWidth="200px"
@@ -264,7 +264,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                 key={i}
                 truncate
               >
-                {filteredFields?.length! > 0 && (
+                {filteredFields.length > 0 && (
                   <Table.Cell>
                     {t(activity.activityData?.[filteredFields[0].id])}
                   </Table.Cell>

@@ -92,7 +92,7 @@ const EmissionsWidget = ({
   const {
     data: countryEmissions,
     isLoading: isLoadingCountryEmissions,
-  } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId!, {
+  } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId ?? "", {
     skip: !inventory?.inventoryId,
   });
 

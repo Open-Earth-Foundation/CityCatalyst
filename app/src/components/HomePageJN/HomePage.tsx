@@ -122,7 +122,9 @@ export default function HomePage({
   const { data: allModules, isLoading: isAllModulesLoading } =
     useGetModulesQuery();
   const { data: projectModules, isLoading: isProjectModulesLoading } =
-    useGetProjectModulesQuery(city?.projectId!, { skip: !city?.projectId });
+    useGetProjectModulesQuery(city?.projectId ?? "", {
+      skip: !city?.projectId,
+    });
 
   const modulesByStage =
     allModules?.reduce(

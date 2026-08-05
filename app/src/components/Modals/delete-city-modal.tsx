@@ -54,7 +54,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
   const onSubmit: SubmitHandler<{ password: string }> = async (data) => {
     await requestPasswordConfirm({
       password: data.password!,
-      token: token?.verificationToken!,
+      token: token?.verificationToken ?? "",
     }).then(async (res: any) => {
       if (res.data?.comparePassword) {
         await removeCity({

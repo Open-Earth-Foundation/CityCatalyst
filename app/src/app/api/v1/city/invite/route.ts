@@ -133,8 +133,8 @@ export const POST = apiHandler(async (req, { session }) => {
       user: { email: body.email, name: body.name },
       city,
       invitingUser: {
-        name: session?.user.name!,
-        email: session?.user.email!,
+        name: session.user.name ?? "",
+        email: session.user.email ?? "",
       },
       members: city.users,
       language: invitingUser?.preferredLanguage,

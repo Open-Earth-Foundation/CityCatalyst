@@ -331,7 +331,8 @@ const EmissionDataSection = ({
               renderSuggestedActivities()
             ) : (
               <Box>
-                {getInputMethodology(methodology?.id!) === "direct-measure" ? (
+                {getInputMethodology(methodology?.id ?? "") ===
+                "direct-measure" ? (
                   <DirectMeasureTable
                     t={t}
                     referenceNumber={refNumberWithScope}

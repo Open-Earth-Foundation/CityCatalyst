@@ -288,13 +288,13 @@ export function EmissionPerSectors({
   const [selectedView, setSelectedView] = useState("table");
 
   const { data: yearlyGhgResult, isLoading: isLoadingYearlgyGhg } =
-    useGetYearOverYearResultsQuery(inventory?.cityId!, {
-      skip: !inventory?.cityId,
+    useGetYearOverYearResultsQuery(inventory.cityId ?? "", {
+      skip: !inventory.cityId,
     });
 
   const { data: cityYears, isLoading } = useGetCityYearsQuery(
-    inventory?.cityId!,
-    { skip: !inventory?.cityId },
+    inventory.cityId ?? "",
+    { skip: !inventory.cityId },
   );
 
   const loadingState = isLoading || isLoadingYearlgyGhg;

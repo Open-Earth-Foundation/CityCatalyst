@@ -308,7 +308,7 @@ export default function SelectCityStep({
 
   // Fetch city area/boundary for the selected city to display "Total land area"
   const { data: cityBoundary, isFetching: isAreaLoading } =
-    api.useGetCityBoundaryQuery(ocCityData?.actor_id!, {
+    api.useGetCityBoundaryQuery(ocCityData?.actor_id ?? "", {
       skip: !ocCityData?.actor_id,
     });
   const area = cityBoundary?.area ?? ocCityData?.area ?? 0;

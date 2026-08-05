@@ -40,7 +40,7 @@ export function Hero({
   hideMap = false,
   numberFormat,
 }: HeroProps) {
-  useGetOCCityDataQuery(city?.locode!, {
+  useGetOCCityDataQuery(city?.locode ?? "", {
     skip: !city?.locode,
   });
 

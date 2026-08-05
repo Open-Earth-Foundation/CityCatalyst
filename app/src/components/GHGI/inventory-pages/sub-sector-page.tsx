@@ -140,9 +140,10 @@ function SubSectorPage(props: {
   };
 
   const getFilteredSubsectorScopes = () => {
-    if (!inventoryData) return [];
+    if (!inventoryData || !subSectorData?.referenceNumber) return [];
+    const subSectorReferenceNumber = subSectorData.referenceNumber;
     return Object.entries(MANUAL_INPUT_HIERARCHY)
-      .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
+      .filter(([key]) => key.startsWith(subSectorReferenceNumber))
       .map(([k, v]) => ({ ...v, referenceNumber: k }))
       .filter((scope) => {
         return getScopesForInventoryAndSector(

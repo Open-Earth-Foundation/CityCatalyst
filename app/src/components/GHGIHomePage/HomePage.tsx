@@ -185,12 +185,12 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
-  const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
+  const { data: city } = api.useGetCityQuery(inventory?.cityId ?? "", {
     skip: !inventory?.cityId,
   });
 
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { cityId: inventory?.cityId ?? "", year: inventory?.year ?? 0 },
     { skip: !inventory?.cityId || !inventory?.year },
   );
 

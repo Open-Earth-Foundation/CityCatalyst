@@ -107,9 +107,13 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   const DEFAULT_STATUS = "pending";
   const formData = new FormData();
 
-  const cityId = inventoryData?.city.cityId!;
+  const cityId = inventoryData?.city.cityId;
 
   const onSubmit: SubmitHandler<FileData> = async (data) => {
+    if (!userInfo || !cityId) {
+      return;
+    }
+
     const base64FileString = await fileToBase64(uploadedFile);
     const filename = uploadedFile.name;
     const file = appendFileToFormData(
@@ -117,7 +121,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
       `${filename}`,
     );
 
-    formData.append("userId", userInfo?.userId!);
+    formData.append("userId", userInfo.userId);
     formData.append("fileName", filename);
     formData.append("inventoryId", inventory!);
     formData.append("sector", currentStep.name);

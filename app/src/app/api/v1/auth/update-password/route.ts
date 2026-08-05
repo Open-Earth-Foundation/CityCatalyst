@@ -60,7 +60,7 @@ import bcrypt from "bcrypt";
 
 export const POST = apiHandler(async (req, { session }) => {
   const body = updatePasswordRequest.parse(await req.json());
-  const user = await UserService.findUser(session?.user.id!, session);
+  const user = await UserService.findUser(session?.user.id ?? "", session);
 
   if (!user) {
     throw new createHttpError.NotFound(

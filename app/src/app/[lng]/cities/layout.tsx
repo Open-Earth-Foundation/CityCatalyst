@@ -26,7 +26,7 @@ export default function CitiesLayout(props: {
 
   // Get organization data using organizationId from context
   const { data: orgData, isLoading: isOrgDataLoading } =
-    useGetOrganizationQuery(organization?.organizationId!, {
+    useGetOrganizationQuery(organization?.organizationId ?? "", {
       skip: !organization?.organizationId,
     });
 

@@ -102,7 +102,7 @@ export default function HIAPInventoryPage(props: {
     : { value: t("N/A"), unit: "" };
 
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { cityId: inventory?.cityId ?? "", year: inventory?.year ?? 0 },
     { skip: !inventory?.cityId || !inventory?.year },
   );
 

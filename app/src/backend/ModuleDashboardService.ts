@@ -21,7 +21,7 @@ export class ModuleDashboardService {
   public static async getGHGIDashboardData(
     cityId: string,
     inventory: Inventory,
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const city = await db.models.City.findOne({
         where: { cityId },
@@ -81,7 +81,7 @@ export class ModuleDashboardService {
     cityId: string,
     inventory: Inventory,
     lng: string = "en",
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const city = await db.models.City.findOne({
         where: { cityId },
@@ -105,13 +105,13 @@ export class ModuleDashboardService {
       const mitigationData = await this.getHIAPStatusData(
         inventory.inventoryId,
         ACTION_TYPES.Mitigation,
-        lng as any,
+        lng as LANGUAGES,
       );
 
       const adaptationData = await this.getHIAPStatusData(
         inventory.inventoryId,
         ACTION_TYPES.Adaptation,
-        lng as any,
+        lng as LANGUAGES,
       );
 
       return {
@@ -131,7 +131,7 @@ export class ModuleDashboardService {
     cityId: string,
     inventory: Inventory,
     resilienceScore?: number | null,
-  ): Promise<TopRisksResult & { inventoryId: string }> {
+  ): Promise<TopRisksResult & { inventoryId: string; error?: string }> {
     try {
       const city = await db.models.City.findOne({
         where: { cityId },
@@ -180,7 +180,7 @@ export class ModuleDashboardService {
         topRisks: [],
         inventoryId: inventory.inventoryId,
         error: `Failed to fetch CCRA data: ${(error as Error).message}`,
-      } as any;
+      };
     }
   }
 
@@ -191,7 +191,7 @@ export class ModuleDashboardService {
     inventoryId: string,
     type: ACTION_TYPES,
     lng: LANGUAGES,
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const { ranking, rankedActions, unrankedActions } =
         await ActionService.getActions(inventoryId, type, lng);

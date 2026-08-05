@@ -8,8 +8,17 @@ import {
 import { hiapServiceWrapper } from "./HiapService";
 import { hiapApiWrapper } from "./HiapApiService";
 import { Op, QueryTypes } from "sequelize";
+import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import { Inventory } from "@/models/Inventory";
+import { City } from "@/models/City";
 
-interface CityInventoryData {
+// The `inventory`/`city` associations are eager-loaded via `include` below
+// but aren't declared on the HighImpactActionRanking model class itself.
+type RankingWithInventoryAndCity = HighImpactActionRanking & {
+  inventory: Inventory & { city: City };
+};
+
+export interface CityInventoryData {
   cityId: string;
   inventoryId: string;
   locode: string;
@@ -169,7 +178,7 @@ export class BulkHiapPrioritizationService {
 
     // Build cities data for the batch
     const citiesData: CityInventoryData[] = todoRankings.map((ranking) => {
-      const inventory = (ranking as any).inventory;
+      const inventory = (ranking as RankingWithInventoryAndCity).inventory;
       const city = inventory.city;
       return {
         cityId: city.cityId,
@@ -228,7 +237,7 @@ export class BulkHiapPrioritizationService {
       `c.locode = ANY(ARRAY[:cityLocodes])`,
     ];
 
-    const replacements: any = {
+    const replacements: Record<string, unknown> = {
       status: HighImpactActionRankingStatus.FAILURE,
       actionType,
       projectId,
@@ -262,7 +271,7 @@ export class BulkHiapPrioritizationService {
       },
     );
 
-    const excludedCount = (result as any)[1] || 0;
+    const excludedCount = result[1] || 0;
 
     logger.info(
       { excludedCount, cityLocodes },
@@ -311,7 +320,7 @@ export class BulkHiapPrioritizationService {
       `c.project_id = :projectId`,
     ];
 
-    const replacements: any = {
+    const replacements: Record<string, unknown> = {
       status: HighImpactActionRankingStatus.FAILURE,
       actionType,
       projectId,
@@ -351,7 +360,7 @@ export class BulkHiapPrioritizationService {
     );
 
     // Result is [undefined, rowCount] for UPDATE queries
-    const retriedCount = (result as any)[1] || 0;
+    const retriedCount = result[1] || 0;
 
     logger.info(
       { retriedCount, excludedCount, projectId, actionType },
@@ -411,7 +420,7 @@ export class BulkHiapPrioritizationService {
       },
     );
 
-    const unexcludedCount = (result as any)[1] || 0;
+    const unexcludedCount = result[1] || 0;
 
     logger.info(
       { unexcludedCount, projectId, actionType },

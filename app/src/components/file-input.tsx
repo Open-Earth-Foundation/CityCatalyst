@@ -1,4 +1,9 @@
-import { Box, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  VStack,
+  type FileUploadFileChangeDetails,
+} from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { useState, DragEvent, Dispatch, SetStateAction } from "react";
 import { FiUpload } from "react-icons/fi";
@@ -31,7 +36,7 @@ const FileInput: React.FC<FileUploadProps> = ({
     setDragging(false);
   };
 
-  const handleDrop = (e: any) => {
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
@@ -40,7 +45,7 @@ const FileInput: React.FC<FileUploadProps> = ({
     }
   };
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: FileUploadFileChangeDetails) => {
     if (e.acceptedFiles && e.acceptedFiles[0]) {
       onFileSelect(e.acceptedFiles[0]);
       setUploadedFile(e.acceptedFiles[0]);
@@ -67,7 +72,7 @@ const FileInput: React.FC<FileUploadProps> = ({
         maxW="206px"
         w="full"
         alignItems="stretch"
-        onFileChange={(e: any) => handleChange(e)}
+        onFileChange={(e) => handleChange(e)}
         border="none"
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}

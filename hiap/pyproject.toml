@@ -37,7 +37,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "ipykernel>=7.3.0",
-    "matplotlib>=3.11.0",
+    "matplotlib>=3.11.1",
     "numpy>=2.4.6",
     "seaborn>=0.13.2",
     "shap>=0.52.0",

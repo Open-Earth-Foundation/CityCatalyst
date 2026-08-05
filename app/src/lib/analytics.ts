@@ -104,7 +104,7 @@ function shouldTrack(): boolean {
 
 export function trackEvent(
   eventName: string,
-  properties?: Record<string, any>,
+  properties?: Record<string, unknown>,
 ) {
   if (!shouldTrack()) {
     return;
@@ -121,7 +121,7 @@ export function trackEvent(
   posthog.capture(eventName, enhancedProperties);
 }
 
-export function identifyUser(userId: string, properties?: Record<string, any>) {
+export function identifyUser(userId: string, properties?: Record<string, unknown>) {
   if (!shouldTrack()) {
     return;
   }
@@ -139,7 +139,7 @@ export function resetUser() {
   posthog.reset();
 }
 
-export function setUserProperties(properties: Record<string, any>) {
+export function setUserProperties(properties: Record<string, unknown>) {
   if (!shouldTrack()) {
     return;
   }

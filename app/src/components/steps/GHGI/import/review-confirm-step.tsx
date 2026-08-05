@@ -99,19 +99,27 @@ export default function ReviewConfirmStep({
     rowsFound: data?.rowCount || 0,
     fieldsMapped:
       reviewData?.fieldMappings?.length ||
-      validationResults?.columns?.filter((col: any) => col.interpretedAs)
-        .length ||
+      validationResults?.columns?.filter((col) => col.interpretedAs).length ||
       0,
   };
 
+  interface FieldMappingRow {
+    sourceColumn: string;
+    mappedField: string;
+    sampleValue: string | null;
+  }
+
   // Use field mappings from reviewData, or fallback to validation results
-  const fieldMappings =
-    reviewData?.fieldMappings ||
+  const fieldMappings: FieldMappingRow[] =
+    reviewData?.fieldMappings?.map((mapping) => ({
+      ...mapping,
+      sampleValue: null,
+    })) ||
     validationResults?.columns
-      ?.filter((col: any) => col.interpretedAs)
-      .map((col: any) => ({
+      ?.filter((col) => col.interpretedAs)
+      .map((col) => ({
         sourceColumn: col.columnName,
-        mappedField: col.interpretedAs,
+        mappedField: col.interpretedAs ?? "",
         sampleValue: col.exampleValue || null,
       })) ||
     [];
@@ -184,7 +192,7 @@ export default function ReviewConfirmStep({
           </Table.Header>
           <Table.Body>
             {fieldMappings && fieldMappings.length > 0 ? (
-              fieldMappings.map((mapping: any, index: number) => (
+              fieldMappings.map((mapping, index: number) => (
                 <Table.Row key={index} h="72px">
                   <Table.Cell>
                     <Text fontWeight="medium">{mapping.sourceColumn}</Text>

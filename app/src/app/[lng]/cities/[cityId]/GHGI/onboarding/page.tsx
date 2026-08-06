@@ -60,16 +60,15 @@ export default function Onboarding(props: {
           >
             {t("select-inventory-creation-method")}
           </Heading>
-
+          {/* Inventory creation method */}
           <Box
             bg="base.light"
             borderRadius="xl"
-            borderWidth="1px"
-            borderColor="border.neutral"
             p="24px"
             display="flex"
             alignItems="center"
             gap="24px"
+            shadow="md"
           >
             <RadioGroup.Root
               value={selection}
@@ -78,70 +77,9 @@ export default function Onboarding(props: {
               }
               display="flex"
               flexDirection="column"
-              gap="0"
+              gap="40px"
               flex="1"
             >
-              {/* Upload option */}
-              <RadioGroup.Item
-                value="upload"
-                alignItems="flex-start"
-                gap="16px"
-                p="12px"
-                cursor="pointer"
-                borderRadius="lg"
-                _hover={{ bg: "background.backgroundLight" }}
-                data-testid="upload-inventory-option"
-              >
-                <RadioGroup.ItemHiddenInput />
-                <RadioGroup.ItemIndicator
-                  mt="3px"
-                  color="content.link"
-                  borderColor="border.neutral"
-                  _checked={{
-                    borderColor: "content.link",
-                    color: "content.link",
-                  }}
-                  flexShrink={0}
-                />
-                <Box>
-                  <RadioGroup.ItemText asChild>
-                    <Text
-                      fontWeight="600"
-                      fontSize="body.lg"
-                      color="content.primary"
-                      lineHeight="24px"
-                    >
-                      {t("upload-an-existing-inventory")}
-                    </Text>
-                  </RadioGroup.ItemText>
-                  <Text
-                    fontSize="body.md"
-                    color="content.tertiary"
-                    mt="4px"
-                    lineHeight="20px"
-                  >
-                    <Trans
-                      i18nKey="upload-existing-inventory-option-description"
-                      t={t}
-                      components={[
-                        <span key="0" />,
-                        <strong key="1" />,
-                        <strong key="2" />,
-                        <strong key="3" />,
-                        <strong key="4" />,
-                      ]}
-                    />
-                  </Text>
-                </Box>
-              </RadioGroup.Item>
-
-              {/* Divider */}
-              <Box
-                borderBottomWidth="1px"
-                borderColor="border.neutral"
-                mx="16px"
-              />
-
               {/* Create new option */}
               <RadioGroup.Item
                 value="create"
@@ -171,6 +109,7 @@ export default function Onboarding(props: {
                       fontSize="body.lg"
                       color="content.primary"
                       lineHeight="24px"
+                      fontFamily="body"
                     >
                       {t("create-new-inventory-option")}
                     </Text>
@@ -180,6 +119,7 @@ export default function Onboarding(props: {
                     color="content.tertiary"
                     mt="4px"
                     lineHeight="20px"
+                    fontFamily="body"
                   >
                     <Trans
                       i18nKey="create-new-inventory-option-description"
@@ -189,6 +129,62 @@ export default function Onboarding(props: {
                         <strong key="1" />,
                         <strong key="2" />,
                         <strong key="3" />,
+                      ]}
+                    />
+                  </Text>
+                </Box>
+              </RadioGroup.Item>
+
+              {/* Upload option */}
+              <RadioGroup.Item
+                value="upload"
+                alignItems="flex-start"
+                gap="16px"
+                p="12px"
+                cursor="pointer"
+                borderRadius="lg"
+                _hover={{ bg: "background.backgroundLight" }}
+                data-testid="upload-inventory-option"
+              >
+                <RadioGroup.ItemHiddenInput />
+                <RadioGroup.ItemIndicator
+                  mt="3px"
+                  color="content.link"
+                  borderColor="border.neutral"
+                  _checked={{
+                    borderColor: "content.link",
+                    color: "content.link",
+                  }}
+                  flexShrink={0}
+                />
+                <Box>
+                  <RadioGroup.ItemText asChild>
+                    <Text
+                      fontWeight="600"
+                      fontSize="body.lg"
+                      color="content.primary"
+                      lineHeight="24px"
+                      fontFamily="body"
+                    >
+                      {t("upload-an-existing-inventory")}
+                    </Text>
+                  </RadioGroup.ItemText>
+                  <Text
+                    fontSize="body.md"
+                    color="content.tertiary"
+                    mt="4px"
+                    lineHeight="20px"
+                    fontFamily="body"
+                  >
+                    <Trans
+                      i18nKey="upload-existing-inventory-option-description"
+                      t={t}
+                      components={[
+                        <span key="0" />,
+                        <strong key="1" />,
+                        <strong key="2" />,
+                        <strong key="3" />,
+                        <strong key="4" />,
                       ]}
                     />
                   </Text>
@@ -208,7 +204,7 @@ export default function Onboarding(props: {
           </Box>
         </VStack>
       </Box>
-
+      {/* Bottom bar */}
       <Box
         bg="base.light"
         h="96px"

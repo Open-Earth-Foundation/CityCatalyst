@@ -40,13 +40,18 @@ export default function Onboarding(props: {
             variant="ghost"
             onClick={() => router.back()}
             color="content.link"
-            mb="16px"
+            mb="40px"
           >
             <Icon as={MdArrowBack} boxSize={6} />
             {t("go-back")}
           </Button>
           {/* city name */}
-          <Text fontSize="body.lg" fontWeight="600" color="content.tertiary">
+          <Text
+            fontSize="body.lg"
+            fontWeight="600"
+            color="content.tertiary"
+            mb="24px"
+          >
             {city?.name}
           </Text>
           <Heading
@@ -55,7 +60,7 @@ export default function Onboarding(props: {
             fontSize="display.sm"
             lineHeight="44px"
             fontWeight="600"
-            mb="32px"
+            mb="24px"
             data-testid="start-page-heading"
           >
             {t("select-inventory-creation-method")}
@@ -68,7 +73,7 @@ export default function Onboarding(props: {
             display="flex"
             alignItems="center"
             gap="24px"
-            shadow="md"
+            shadow="sm"
           >
             <RadioGroup.Root
               value={selection}
@@ -79,6 +84,7 @@ export default function Onboarding(props: {
               flexDirection="column"
               gap="40px"
               flex="1"
+              variant="subtle"
             >
               {/* Create new option */}
               <RadioGroup.Item
@@ -95,10 +101,10 @@ export default function Onboarding(props: {
                 <RadioGroup.ItemIndicator
                   mt="3px"
                   color="content.link"
-                  borderColor="border.neutral"
+                  bg="gray.muted"
                   _checked={{
-                    borderColor: "content.link",
-                    color: "content.link",
+                    color: "base.light",
+                    backgroundColor: "content.alternative",
                   }}
                   flexShrink={0}
                 />
@@ -150,10 +156,10 @@ export default function Onboarding(props: {
                 <RadioGroup.ItemIndicator
                   mt="3px"
                   color="content.link"
-                  borderColor="border.neutral"
+                  bg="gray.muted"
                   _checked={{
-                    borderColor: "content.link",
-                    color: "content.link",
+                    color: "base.light",
+                    backgroundColor: "content.alternative",
                   }}
                   flexShrink={0}
                 />

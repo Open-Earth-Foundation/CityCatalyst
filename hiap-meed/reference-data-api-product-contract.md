@@ -33,7 +33,7 @@ The JSON examples below are complete for the proposed public contracts: every pr
 
 | Data needed | HIAP-MEED request | Caller-controlled inputs | Main output |
 | --- | --- | --- | --- |
-| City attributes | `GET /v1/city_attributes/{locode}` | `locode` | `city` |
+| City attributes | `GET /v1/cities/{locode}/attributes` | `locode` | `city` |
 | Action catalogue | `GET /v1/action-pathways` | optional repeated `language` | `actions[]` |
 | Policy evidence and scores | `GET /v1/cities/{locode}/action-policy-scores` | `locode` | `scores[]`, `aggregates` |
 | Mitigation feasibility | `GET /v1/cities/{locode}/action-mitigation-feasibility-scores` | `locode`, `country_code` | `scores[]` |
@@ -46,7 +46,7 @@ The JSON examples below are complete for the proposed public contracts: every pr
 ### Request
 
 ```http
-GET /v1/city_attributes/CL%20IQQ
+GET /v1/cities/CL%20IQQ/attributes
 ```
 
 | Input | Location | Type | Required | Example |
@@ -80,7 +80,7 @@ GET /v1/city_attributes/CL%20IQQ
     "backend_consumer": "hiap-meed",
     "upstream_provider": "global-api",
     "api_context": {
-      "endpoint": "GET /v1/city_attributes/{locode}",
+      "endpoint": "GET /v1/cities/{locode}/attributes",
       "locode": "CL IQQ"
     },
     "total_records": 1

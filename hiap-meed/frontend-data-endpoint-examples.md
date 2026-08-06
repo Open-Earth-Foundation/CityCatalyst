@@ -11,7 +11,7 @@ These examples use the proposed **same rules and current data** guarantee. They 
 Maps Global API `GET /api/v0/city_attributes/{locode}`.
 
 ```http
-GET /v1/city_attributes/CL%20IQQ
+GET /v1/cities/CL%20IQQ/attributes
 ```
 
 ```json
@@ -37,7 +37,7 @@ GET /v1/city_attributes/CL%20IQQ
     "backend_consumer": "hiap-meed",
     "upstream_provider": "global-api",
     "api_context": {
-      "endpoint": "GET /v1/city_attributes/{locode}",
+      "endpoint": "GET /v1/cities/{locode}/attributes",
       "locode": "CL IQQ"
     },
     "total_records": 1

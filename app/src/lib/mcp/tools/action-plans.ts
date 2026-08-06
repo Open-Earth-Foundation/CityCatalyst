@@ -49,7 +49,10 @@ export async function execute(
     limit?: number;
   },
   session: AppSession
-): Promise<any> {
+): Promise<
+  | { success: true; data: Record<string, unknown> }
+  | { success: false; error: string; data: null }
+> {
   try {
     const { 
       inventoryId,

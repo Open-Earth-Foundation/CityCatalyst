@@ -262,9 +262,22 @@ export function debugFeatureFlags(): void {
   console.groupEnd();
 }
 
+declare global {
+  interface Window {
+    qaFlags?: {
+      set: typeof setQAFeatureFlag;
+      clear: typeof clearQAFeatureFlag;
+      clearAll: typeof clearAllQAFeatureFlags;
+      list: typeof listQAFeatureFlags;
+      debug: typeof debugFeatureFlags;
+      FeatureFlags: typeof FeatureFlags;
+    };
+  }
+}
+
 // Make QA functions globally available in browser console for easy testing
 if (typeof window !== "undefined") {
-  (window as any).qaFlags = {
+  window.qaFlags = {
     set: setQAFeatureFlag,
     clear: clearQAFeatureFlag,
     clearAll: clearAllQAFeatureFlags,

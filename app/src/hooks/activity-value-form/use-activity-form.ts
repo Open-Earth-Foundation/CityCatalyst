@@ -1,7 +1,12 @@
 import { Path, useForm } from "react-hook-form";
 import { useEffect, useMemo } from "react";
 import { ActivityValue } from "@/models/ActivityValue";
-import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
+import {
+  Activity,
+  ExtraField,
+  Methodology,
+  SuggestedActivity,
+} from "@/util/form-schema";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 
 export const generateDefaultActivityFormValues = (
@@ -84,31 +89,32 @@ const useActivityForm = ({
   const { fields, units, title, activityId, hideEmissionFactors } =
     useMemo(() => {
       let fields: ExtraField[] = [];
-      let units = null;
+      let units: string[] | undefined = undefined;
       let title = "";
       let activityId = null;
-      let hideEmissionFactors = false;
+      let hideEmissionFactors: boolean | undefined = false;
 
       if (methodology?.id.includes("direct-measure")) {
         fields = methodology.fields as ExtraField[];
       } else {
+        const activityFields = methodology.fields as Activity[] | undefined;
         const foundIndex =
-          methodology.fields?.findIndex(
+          activityFields?.findIndex(
             (ac) => ac.activitySelectedOption === selectedActivityOption,
           ) ?? 0;
 
         const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
 
         hideEmissionFactors =
-          methodology?.fields?.[selectedActivityIndex].hideEmissionFactorsInput;
-        fields = methodology?.fields?.[selectedActivityIndex][
+          activityFields?.[selectedActivityIndex].hideEmissionFactorsInput;
+        fields = activityFields?.[selectedActivityIndex][
           "extra-fields"
         ] as ExtraField[];
-        units = methodology?.fields?.[selectedActivityIndex].units;
-        title = methodology?.fields?.[selectedActivityIndex][
+        units = activityFields?.[selectedActivityIndex].units;
+        title = activityFields?.[selectedActivityIndex][
           "activity-title"
         ] as string;
-        activityId = methodology?.fields?.[selectedActivityIndex]["id"];
+        activityId = activityFields?.[selectedActivityIndex]["id"];
       }
 
       return {

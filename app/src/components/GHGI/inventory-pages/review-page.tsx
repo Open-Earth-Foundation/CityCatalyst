@@ -88,7 +88,7 @@ export default function ReviewPage() {
         const formData = new FormData();
         for (const fileData of sector.files) {
           const file = appendFileToFormData(
-            fileData.data,
+            fileData.data!,
             `${fileData.fileName}`,
           );
           formData.append("userId", fileData.userId!);

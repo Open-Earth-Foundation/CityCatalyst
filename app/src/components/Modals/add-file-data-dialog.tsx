@@ -162,7 +162,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
               scopes: fileData.scopes.join(","),
               userId: fileData.userId,
               sector: fileData.sector,
-              data: base64FileString,
+              data: base64FileString as string,
               // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
               url: fileData.url,
               size: fileData.file.size,

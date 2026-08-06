@@ -130,7 +130,10 @@ function FormattedNumberInput<T extends FieldValues>({
    * in the old vs new formatted strings.
    */
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, fieldOnChange: (v: any) => void) => {
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      fieldOnChange: (v: string) => void,
+    ) => {
       const input = e.target;
       const oldValue = input.value;
       const cursorPos = input.selectionStart ?? oldValue.length;

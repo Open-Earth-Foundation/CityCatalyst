@@ -4,6 +4,7 @@ import {
   Controller,
   FieldErrors,
   UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import type { GHGIFormInputs } from "@/util/GHGI/types";
 import { useEffect } from "react";
@@ -47,7 +48,7 @@ export default function SetInventoryDetailsStep({
   register: UseFormRegister<GHGIFormInputs>;
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
-  setValue: any;
+  setValue: UseFormSetValue<GHGIFormInputs>;
   years: number[];
   selectedYearArray?: string[];
   setSelectedYearArray: (value: string[]) => void;

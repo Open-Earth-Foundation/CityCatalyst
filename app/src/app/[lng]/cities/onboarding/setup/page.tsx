@@ -22,6 +22,7 @@ import type {
   FieldErrors,
   SubmitHandler,
   UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
@@ -432,7 +433,7 @@ export default function OnboardingSetup(props: {
               register={register as unknown as UseFormRegister<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
-              setValue={setValue}
+              setValue={setValue as unknown as UseFormSetValue<GHGIFormInputs>}
               years={years}
               selectedYearArray={selectedYearArray}
               setSelectedYearArray={setSelectedYearArray}

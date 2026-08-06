@@ -2,8 +2,11 @@ import { TFunction } from "i18next";
 import { Button } from "./ui/button";
 import { Icon } from "@chakra-ui/react";
 import { InventoryButtonCheckIcon } from "./icons";
+import { ControllerRenderProps, FieldValues } from "react-hook-form";
 
-export default function CustomSelectableButton({
+export default function CustomSelectableButton<
+  TFieldValues extends FieldValues = FieldValues,
+>({
   field,
   value,
   inputValue,
@@ -11,7 +14,7 @@ export default function CustomSelectableButton({
   t,
 }: {
   value: string;
-  field: any;
+  field: ControllerRenderProps<TFieldValues>;
   inputValue: string;
   inputValueFunction: (value: string) => void;
   t: TFunction;

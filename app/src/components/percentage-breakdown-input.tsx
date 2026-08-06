@@ -68,7 +68,7 @@ interface FormInputProps {
   label: string;
   tooltipInfo?: string;
   value?: string | null | undefined;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues>;
   isDisabled?: boolean;
   error: FieldError | undefined;
   setError: UseFormSetError<FieldValues>;

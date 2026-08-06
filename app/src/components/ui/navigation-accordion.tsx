@@ -10,7 +10,7 @@ interface NavigationItem {
 
 interface NavigationAccordionProps {
   title: string;
-  icon: React.ComponentType<any>;
+  icon: React.ElementType;
   items: NavigationItem[];
   t: (key: string) => string;
   defaultOpen?: boolean;

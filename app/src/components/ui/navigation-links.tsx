@@ -5,7 +5,7 @@ interface NavigationItem {
   label: string;
   href?: string;
   onClick?: () => void;
-  icon: React.ComponentType<any>;
+  icon: React.ElementType;
 }
 
 interface NavigationLinksProps {

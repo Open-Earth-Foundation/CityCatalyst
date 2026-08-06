@@ -6,6 +6,7 @@ import { MdArrowForward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { BodyXLarge } from "./package/Texts/Body";
 import { DisplayLarge } from "./package/Texts/Display";
+import { isFetchBaseQueryError } from "@/util/helpers";
 
 const MissingCityDashboard = ({
   lng,
@@ -14,14 +15,14 @@ const MissingCityDashboard = ({
 }: {
   lng: string;
   cityId?: string;
-  error?: any;
+  error?: unknown;
   isPublic?: boolean;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
 
   // Determine if it's a 401 (access denied) or 404 (city not found)
-  const is401Error = error?.status === 401;
+  const is401Error = isFetchBaseQueryError(error) && error.status === 401;
   const isAccessDenied = is401Error;
 
   const title = isAccessDenied ? t("access-denied") : t("city-not-found");

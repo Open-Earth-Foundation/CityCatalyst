@@ -17,9 +17,9 @@ export const getClimateRiskAssessmentTool: Tool = {
 };
 
 export async function execute(
-  _params: any,
+  _params: Record<string, unknown>,
   _session: AppSession
-): Promise<any> {
+): Promise<{ success: false; error: string; data: null }> {
   return {
     success: false,
     error: "Tool not yet implemented",

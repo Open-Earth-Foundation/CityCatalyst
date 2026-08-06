@@ -769,14 +769,24 @@ const JNDrawer = ({
                           key={stage}
                           title={t("journey." + stage)}
                           icon={stageIcons[stage]}
-                          items={modules.map((mod) => ({
-                            label:
-                              mod.name[lng] ||
-                              mod.name.en ||
-                              mod.name[Object.keys(mod.name)[0]] ||
-                              mod.id,
-                            href: `/${lng}/cities/${selectedCity}${mod.url}`,
-                          }))}
+                          items={modules.map((mod) => {
+                            // External tool URLs (e.g. Replit apps) must not be
+                            // prefixed with the city path — that produced
+                            // .../cities/{id}https://... (CC-651).
+                            const isExternal =
+                              mod.url.startsWith("http://") ||
+                              mod.url.startsWith("https://");
+                            return {
+                              label:
+                                mod.name[lng] ||
+                                mod.name.en ||
+                                mod.name[Object.keys(mod.name)[0]] ||
+                                mod.id,
+                              href: isExternal
+                                ? mod.url
+                                : `/${lng}/cities/${selectedCity}${mod.url}`,
+                            };
+                          })}
                           t={t}
                         />
                       );

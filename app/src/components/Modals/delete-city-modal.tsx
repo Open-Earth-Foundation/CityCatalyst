@@ -25,7 +25,7 @@ import { Trans } from "react-i18next/TransWithoutContext";
 
 interface DeleteCityDialogProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   cityData: CityAttributes;
   t: TFunction;
 }
@@ -55,7 +55,7 @@ const DeleteCityDialog: FC<DeleteCityDialogProps> = ({
     await requestPasswordConfirm({
       password: data.password!,
       token: token?.verificationToken ?? "",
-    }).then(async (res: any) => {
+    }).then(async (res) => {
       if (res.data?.comparePassword) {
         await removeCity({
           cityId: cityData.cityId!,

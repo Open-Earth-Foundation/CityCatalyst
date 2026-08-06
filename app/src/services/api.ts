@@ -668,7 +668,7 @@ export const api = createApi({
       }),
 
       requestVerification: builder.mutation<
-        string,
+        { comparePassword: boolean },
         { password: string; token: string }
       >({
         query: ({ password, token }) => ({

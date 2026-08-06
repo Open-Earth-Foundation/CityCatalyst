@@ -23,7 +23,7 @@ import { logger } from "@/services/logger";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   t: TFunction;
   selectedActivityValue: ActivityValue | undefined;
   resetSelectedActivityValue: () => void;
@@ -74,7 +74,7 @@ const DeleteActivityModal: FC<DeleteAllActivitiesModalProps> = ({
       <DialogRoot
         preventScroll
         open={isOpen}
-        onOpenChange={(e: any) => setDeleteActivityDialogOpen(e.open)}
+        onOpenChange={(e) => setDeleteActivityDialogOpen(e.open)}
       >
         <DialogBackdrop />
         <DialogContent minH="388px" minW="568px" marginTop="10%">

@@ -65,7 +65,7 @@ const DeleteInventoryDialog: FC<DeleteInventoryDialogProps> = ({
     await requestPasswordConfirm({
       password: data.password!,
       token: token?.verificationToken,
-    }).then(async (res: any) => {
+    }).then(async (res) => {
       if (res.data?.comparePassword) {
         await deleteInventory({
           inventoryId,

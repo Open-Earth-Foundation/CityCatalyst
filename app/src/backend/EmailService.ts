@@ -3,7 +3,7 @@ import type { User, UserAttributes } from "@/models/User";
 import { Organization } from "@/models/Organization";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
 import { logger } from "@/services/logger";
 import ProjectCreatedNotificationTemplate from "@/lib/emails/ProjectCreatedNotificationTemplate";

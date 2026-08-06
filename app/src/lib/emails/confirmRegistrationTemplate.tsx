@@ -11,7 +11,7 @@ import {
   Link,
   Preview,
   Text,
-} from "@react-email/components";
+} from "react-email";
 
 export default function ConfirmRegistrationTemplate({
   url = "/",

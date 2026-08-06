@@ -1,5 +1,5 @@
 import posthog from "posthog-js";
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 import Cookies from "js-cookie";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 

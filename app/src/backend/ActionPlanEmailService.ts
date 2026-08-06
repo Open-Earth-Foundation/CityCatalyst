@@ -1,4 +1,4 @@
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import ActionPlanReadyTemplate from "@/lib/emails/ActionPlanReadyTemplate";
 import NotificationService from "@/backend/NotificationService";
 import { User } from "@/models/User";

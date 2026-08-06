@@ -10,23 +10,23 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import { MdAdd, MdMoreVert } from "react-icons/md";
+import {
+  MdMoreVert,
+  MdOutlinePerson,
+  MdOutlinePersonAddAlt,
+} from "react-icons/md";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
-import {
-  AccordionItem,
-  AccordionItemContent,
-  AccordionItemTrigger,
-  AccordionRoot,
-} from "@/components/ui/accordion";
+import { AccordionItemContent } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
-import DataTable from "@/components/ui/data-table";
+import DataTableAlt from "@/components/ui/data-table-alt";
 import {
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
+  UserRole,
 } from "@/util/types";
 import {
   MenuContent,
@@ -35,13 +35,15 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Tag } from "@/components/ui/tag";
 import AddCollaboratorsModal from "@/components/GHGIHomePage/AddCollaboratorModal/AddCollaboratorsModal";
 import { uniqBy } from "lodash";
 import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUserModal";
-import { Trans } from "react-i18next";
+import UpgradeToAdminModal from "./UpgradeToAdminModal";
 import { useSession } from "next-auth/react";
-import { OrganizationSelector } from "../OrganizationSelector";
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { useUserPermissions } from "@/hooks/useUserPermissions";
+import ProjectSearchInput from "../ProjectSearchInput";
+import { TFunction } from "i18next";
 
 const TeamSettings = ({
   lng,
@@ -69,15 +71,21 @@ const TeamSettings = ({
     },
   };
 
-  const [selectedOrganization, setSelectedOrganization] =
-    React.useState<string>();
+  const { organization: orgContext } = useOrganizationContext();
+  const selectedOrganization = orgContext?.organizationId;
   const [selectedProject, setSelectedProject] = React.useState<string[]>(
     initialProjectId ? [initialProjectId] : [],
   );
   const [selectedCity, setSelectedCity] = React.useState<string | null>(
     initialCityId ?? "",
   );
+  const [projectSearchTerm, setProjectSearchTerm] = useState("");
   const sessionData = useSession();
+  const { userRole } = useUserPermissions({
+    organizationId: selectedOrganization,
+    skip: !selectedOrganization,
+  });
+  const canManageTeam = userRole === UserRole.ORG_ADMIN;
 
   const { data: organization, isLoading: isOrganizationLoading } =
     api.useGetOrganizationQuery(selectedOrganization!, {
@@ -130,41 +138,36 @@ const TeamSettings = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
 
-  const selectedCityData = useMemo(() => {
-    if (!projectsData || !selectedProject) return null;
-    const selectedProjectData = projectsData.find(
-      (project) => project.projectId === selectedProject[0],
+  const filteredProjectsData = useMemo(() => {
+    if (!projectsData) return [];
+    const query = projectSearchTerm.trim().toLowerCase();
+    if (!query) return projectsData;
+
+    return projectsData.filter((project) =>
+      project.name.toLowerCase().includes(query),
     );
-    if (!selectedProjectData) return null;
-    return selectedProjectData.cities.find(
-      (city) => city.cityId === selectedCity,
-    );
-  }, [selectedCity, selectedProject, projectsData]);
+  }, [projectsData, projectSearchTerm]);
 
   const selectedProjectData = useMemo(() => {
-    if (!projectsData) return null;
-    const selectedProjectData = projectsData.find(
+    return projectsData?.find(
       (project) => project.projectId === selectedProject[0],
     );
-    return selectedProjectData;
-  }, [selectedProject, projectsData]);
+  }, [projectsData, selectedProject]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
   const [userToRemove, setUserToRemove] = useState<ProjectUserResponse | null>(
     null,
   );
+  const [userToUpgrade, setUserToUpgrade] =
+    useState<ProjectUserResponse | null>(null);
   if (isOrganizationLoading || isLoading) {
     return <ProgressLoader />;
   }
 
   return (
     <Box>
-      <OrganizationSelector
-        value={selectedOrganization}
-        onValueChange={setSelectedOrganization}
-        t={t}
-      />
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box>
           <Heading
@@ -178,7 +181,7 @@ const TeamSettings = ({
           >
             {t("teams")}
           </Heading>
-          <Text color="content.tertiary" fontSize="body.lg">
+          <Text color="content.tertiary" fontSize="body.lg" fontFamily="body">
             {t("teams-description")}
           </Text>
         </Box>
@@ -189,8 +192,8 @@ const TeamSettings = ({
           h="48px"
           mt="auto"
         >
-          <Icon as={MdAdd} h={8} w={8} />
-          {t("invite-collaborator")}
+          <Icon as={MdOutlinePersonAddAlt} h={6} w={6} />
+          {t("invite-team-member")}
         </Button>
       </Box>
       {projectsData?.length === 0 && (
@@ -205,36 +208,65 @@ const TeamSettings = ({
       )}
       <Box
         display="flex"
-        gap={9}
+        gap="48px"
         mt={12}
         alignItems="flex-start"
-        justifyContent="space-between"
+        borderWidth="1px"
+        borderColor="border.overlay"
+        borderRadius="8px"
+        p="16px"
       >
-        <Box w="250px" overflowY="hidden">
+        <Box
+          w="271px"
+          overflowY="hidden"
+          display="flex"
+          flexDirection="column"
+          gap="24px"
+          h="500px"
+        >
           <Text
             fontSize="title.md"
-            mb={3}
             fontWeight="semibold"
             color="content.secondary"
           >
             {t("projects")}
           </Text>
-          <AccordionRoot
+          <ProjectSearchInput
+            value={projectSearchTerm}
+            onChange={setProjectSearchTerm}
+            t={t}
+          />
+          <Accordion.Root
             variant="plain"
             value={selectedProject}
             onValueChange={(val) => {
               setSelectedProject(val.value);
               setSelectedCity(null);
             }}
+            borderWidth="1px"
+            borderColor="border.overlay"
+            p="12px"
+            w="full"
+            h="400px"
+            overflowY="scroll"
           >
-            {projectsData?.map((item) => (
-              <AccordionItem key={item.projectId} value={item.projectId}>
-                <AccordionItemTrigger
+            {filteredProjectsData.length === 0 && (
+              <Text
+                fontSize="body.md"
+                fontWeight="medium"
+                color="content.tertiary"
+                p={4}
+              >
+                {t("no-data")}
+              </Text>
+            )}
+            {filteredProjectsData.map((item) => (
+              <Accordion.Item key={item.projectId} value={item.projectId}>
+                <Accordion.ItemTrigger
                   onClick={() => {
                     setSelectedCity(null);
                   }}
                   w="full"
-                  hideIndicator
                   padding="0px"
                   asChild
                 >
@@ -264,6 +296,7 @@ const TeamSettings = ({
                     <Accordion.ItemIndicator
                       color="currentColor"
                       rotate={{ base: "-90deg", _open: "-180deg" }}
+                      mr="24px"
                     >
                       <Icon
                         as={LuChevronDown}
@@ -272,7 +305,7 @@ const TeamSettings = ({
                       />
                     </Accordion.ItemIndicator>
                   </Button>
-                </AccordionItemTrigger>
+                </Accordion.ItemTrigger>
                 <AccordionItemContent padding="0px" pb={4}>
                   {item.cities.length === 0 && (
                     <Text
@@ -304,18 +337,19 @@ const TeamSettings = ({
                           <Tabs.Trigger
                             key={city.cityId}
                             value={city.cityId}
-                            fontFamily="heading"
+                            fontFamily="body"
                             justifyContent={"left"}
                             letterSpacing={"wide"}
                             color="content.secondary"
                             lineHeight="20px"
                             fontStyle="normal"
-                            fontSize="label.lg"
+                            fontSize="body.md"
+                            fontWeight="medium"
                             minH="52px"
                             w="full"
                             _selected={{
                               color: "content.link",
-                              fontSize: "label.lg",
+                              fontSize: "body.md",
                               fontWeight: "medium",
                               backgroundColor: "background.neutral",
                               borderRadius: "8px",
@@ -331,116 +365,152 @@ const TeamSettings = ({
                     </Tabs.Root>
                   )}
                 </AccordionItemContent>
-              </AccordionItem>
+              </Accordion.Item>
             ))}
-          </AccordionRoot>
+          </Accordion.Root>
         </Box>
-        <Box w="full">
+        <Box w="723px">
           {isLoadingProjectUsers ? (
             <ProgressLoader />
           ) : (
-            <DataTable
+            <DataTableAlt
               data={userList}
               searchable={true}
               pagination={true}
+              itemsPerPage={50}
+              searchPlaceholder={t("search-by-name-or-email")}
               filterOptions={Object.keys(TagMapping).map((item) => ({
                 value: item,
                 label: TagMapping[item as OrganizationRole].text,
               }))}
               filterProperty={"role"}
-              title={organization?.name as string}
-              subtitle={
-                <Trans
-                  i18nKey="collaborators-subheading"
-                  t={t}
-                  values={{
-                    name: selectedCityData?.name || selectedProjectData?.name,
-                  }}
-                  components={{
-                    bold: <strong />,
-                  }}
-                />
-              }
+              title={t("collaborators")}
               columns={[
-                { header: t("email"), accessor: "email" },
-                { header: t("role"), accessor: "role" },
-                { header: "", accessor: null },
+                { header: t("name"), accessor: "name", width: "30%" },
+                { header: t("email"), accessor: "email", width: "35%" },
+                { header: t("role"), accessor: "role", width: "20%" },
+                { header: "", accessor: null, width: "15%" },
               ]}
-              renderRow={(item, idx) => (
-                <Table.Row key={idx}>
-                  <Table.Cell>{item.email}</Table.Cell>
-                  <Table.Cell title={item.role}>
-                    {" "}
-                    <Tag
-                      size="lg"
-                      colorPalette={
-                        TagMapping[item.role as OrganizationRole].color
-                      }
-                    >
-                      {t(TagMapping[item.role as OrganizationRole].text)}
-                    </Tag>
-                  </Table.Cell>
+              renderRow={(item, idx) => {
+                const displayName =
+                  item.name?.trim() || item.email.split("@")[0] || "—";
 
-                  <Table.Cell>
-                    {sessionData.data?.user.email !== item.email && (
-                      <MenuRoot>
-                        <MenuTrigger asChild>
-                          <IconButton
-                            data-testid="activity-more-icon"
-                            aria-label="more-icon"
-                            variant="ghost"
-                            color="content.tertiary"
-                          >
-                            <Icon as={MdMoreVert} size="lg" />
-                          </IconButton>
-                        </MenuTrigger>
-                        <MenuContent
-                          w="auto"
-                          borderRadius="8px"
-                          shadow="2dp"
-                          px="0"
-                        >
-                          <MenuItem
-                            value={t("remove-user")}
-                            valueText={t("remove-user")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => {
-                              setIsDeleteModalOpen(true);
-                              setUserToRemove(item);
-                            }}
-                          >
-                            <Icon
-                              color="sentiment.negativeDefault"
-                              as={RiDeleteBin6Line}
-                              h="24px"
-                              w="24px"
-                              _groupHover={{
-                                color: "white",
-                              }}
-                            />
-                            <Text
-                              color="content.primary"
-                              _groupHover={{
-                                color: "white",
-                              }}
+                return (
+                  <Table.Row key={idx} fontFamily="body">
+                    <Table.Cell maxW="0" title={displayName}>
+                      <Text truncate color="content.primary" fontSize="body.md">
+                        {displayName}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell maxW="0" title={item.email}>
+                      <Text truncate color="content.primary" fontSize="body.md">
+                        {item.email}
+                      </Text>
+                    </Table.Cell>
+                    <Table.Cell title={item.role}>
+                      <CustomTag role={item.role} t={t} />
+                    </Table.Cell>
+                    <Table.Cell textAlign="right">
+                      {canManageTeam &&
+                        sessionData.data?.user.email !== item.email && (
+                          <MenuRoot>
+                            <MenuTrigger asChild>
+                              <IconButton
+                                data-testid="activity-more-icon"
+                                aria-label="more-icon"
+                                variant="ghost"
+                                color="content.tertiary"
+                                _hover={{ bg: "background.controlHover" }}
+                                _expanded={{ bg: "background.controlHover" }}
+                              >
+                                <Icon as={MdMoreVert} size="lg" />
+                              </IconButton>
+                            </MenuTrigger>
+                            <MenuContent
+                              w="auto"
+                              borderRadius="8px"
+                              shadow="2dp"
+                              px="0"
                             >
-                              {t("remove-user")}
-                            </Text>
-                          </MenuItem>
-                        </MenuContent>
-                      </MenuRoot>
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              )}
+                              {item.role === OrganizationRole.COLLABORATOR && (
+                                <MenuItem
+                                  value={t("upgrade-to-admin")}
+                                  valueText={t("upgrade-to-admin")}
+                                  p="16px"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap="16px"
+                                  _hover={{
+                                    bg: "content.link",
+                                    cursor: "pointer",
+                                  }}
+                                  className="group"
+                                  onClick={() => {
+                                    setIsUpgradeModalOpen(true);
+                                    setUserToUpgrade(item);
+                                  }}
+                                >
+                                  <Icon
+                                    as={MdOutlinePerson}
+                                    h="24px"
+                                    w="24px"
+                                    color="content.secondary"
+                                    _groupHover={{
+                                      color: "white",
+                                    }}
+                                  />
+                                  <Text
+                                    color="content.primary"
+                                    _groupHover={{
+                                      color: "white",
+                                    }}
+                                  >
+                                    {t("upgrade-to-admin")}
+                                  </Text>
+                                </MenuItem>
+                              )}
+                              <MenuItem
+                                value={t("remove-user")}
+                                valueText={t("remove-user")}
+                                p="16px"
+                                display="flex"
+                                alignItems="center"
+                                gap="16px"
+                                _hover={{
+                                  bg: "content.link",
+                                  cursor: "pointer",
+                                }}
+                                className="group"
+                                onClick={() => {
+                                  setIsDeleteModalOpen(true);
+                                  setUserToRemove(item);
+                                }}
+                              >
+                                <Icon
+                                  color="sentiment.negativeDefault"
+                                  as={RiDeleteBin6Line}
+                                  h="24px"
+                                  w="24px"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
+                                />
+                                <Text
+                                  color="content.primary"
+                                  _groupHover={{
+                                    color: "white",
+                                  }}
+                                >
+                                  {t("remove-user")}
+                                </Text>
+                              </MenuItem>
+                            </MenuContent>
+                          </MenuRoot>
+                        )}
+                    </Table.Cell>
+                  </Table.Row>
+                );
+              }}
             />
           )}
         </Box>
@@ -465,6 +535,51 @@ const TeamSettings = ({
         user={userToRemove}
         organization={organization}
       />
+      <UpgradeToAdminModal
+        t={t}
+        isOpen={isUpgradeModalOpen}
+        onClose={() => {
+          setIsUpgradeModalOpen(false);
+          setUserToUpgrade(null);
+        }}
+        onOpenChange={setIsUpgradeModalOpen}
+        user={userToUpgrade}
+        organizationId={selectedOrganization}
+        projectName={selectedProjectData?.name}
+      />
+    </Box>
+  );
+};
+
+export const SettingsTagMapping = {
+  [OrganizationRole.ORG_ADMIN]: { text: "owner" },
+  [OrganizationRole.ADMIN]: { text: "admin" },
+  [OrganizationRole.COLLABORATOR]: { color: "yellow", text: "collaborator" },
+};
+
+const CustomTag = ({ role, t }: { role: OrganizationRole; t: TFunction }) => {
+  const text = SettingsTagMapping[role].text;
+  return (
+    <Box
+      bg="background.neutral"
+      p="4px"
+      w="fit-content"
+      px="16px"
+      borderWidth="1px"
+      borderColor="content.alternative"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="30px"
+    >
+      <Text
+        color="content.alternative"
+        fontSize="body.md"
+        fontWeight="medium"
+        fontFamily="body"
+      >
+        {t(text)}
+      </Text>
     </Box>
   );
 };

@@ -1,5 +1,5 @@
 "use client";
-import { use } from "react";
+import { use, Suspense } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,7 +21,7 @@ export default function OrganizationSettingsLayout(props: {
       <NavigationBar showMenu lng={lng} />
       <Toaster />
       <Box w="full" h="full">
-        {props.children}
+        <Suspense fallback={null}>{props.children}</Suspense>
       </Box>
     </Box>
   );

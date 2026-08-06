@@ -40,7 +40,7 @@ export default function CitiesTable({
       ]}
       selectKey="cityId"
       renderRow={(item, idx) => (
-        <Table.Row key={idx} _hover={{ bg: "background.alternativeLight" }}>
+        <Table.Row key={idx} _hover={{ bg: "border.neutral" }}>
           <Table.Cell>
             <Link
               href={`/${lng}/cities/${item.cityId}`}
@@ -73,7 +73,7 @@ export default function CitiesTable({
           </Table.Cell>
           <Table.Cell>
             <Link
-              href={`/${lng}/organization/${organizationId}/account-settings?tab=team&project=${projectId}&city=${item.cityId}`}
+              href={`/${lng}/settings?tab=team&organization=${organizationId}&project=${projectId}&city=${item.cityId}`}
               color="content.link"
               textDecoration="underline"
               fontFamily="body"

@@ -2,10 +2,11 @@ import { TFunction } from "i18next";
 import { Link, VStack, Card } from "@chakra-ui/react";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium } from "@/components/package/Texts/Body";
+import { env } from "@/lib/runtime-env";
 
 export const NoModulesCard = ({ t }: { t: TFunction }) => {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    env("NEXT_PUBLIC_SUPPORT_EMAILS") ||
     "info@openearth.org,greta@openearth.org";
   return (
     <Card.Root

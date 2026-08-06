@@ -19,6 +19,7 @@ import React from "react";
 import { useParams } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { TbInfoTriangle } from "react-icons/tb";
+import { env } from "@/lib/runtime-env";
 
 interface AccountFrozenWarningModalProps {
   isOpen: boolean;
@@ -83,7 +84,7 @@ const AccountFrozenWarningModal = ({
                 i18nKey="account-frozen-warning-text"
                 values={{
                   email:
-                    process.env.NEXT_PUBLIC_SUPPORT_EMAILS?.split(",").join(
+                    env("NEXT_PUBLIC_SUPPORT_EMAILS")?.split(",").join(
                       " or ",
                     ) || "info@openearth.org",
                 }}

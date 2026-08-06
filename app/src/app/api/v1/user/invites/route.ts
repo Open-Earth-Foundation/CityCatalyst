@@ -22,7 +22,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import { InviteUserToMultipleCitiesTemplate } from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";

@@ -11,6 +11,7 @@ import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import type { CCRASummary, CityWithProjectDataResponse } from "@/util/types";
 import type { InventoryAttributes } from "@/models/init-models";
+import { env } from "@/lib/runtime-env";
 
 interface CCRAWidgetProps {
   cityId: string;
@@ -24,7 +25,7 @@ interface CCRAWidgetProps {
 }
 
 const CCRA_REPLIT_URL =
-  process.env.NEXT_PUBLIC_CC_CCRA_REPLIT_URL ??
+  env("NEXT_PUBLIC_CC_CCRA_REPLIT_URL") ??
   "https://citycatalyst-ccra.replit.app";
 
 export const CCRAWidget: React.FC<CCRAWidgetProps> = ({

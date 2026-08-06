@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.modules.prioritizer import api as prioritizer_api
 from app.modules.prioritizer.api import (
     get_action_financial_feasibility_scores_data_api_client,
     get_action_mitigation_feasibility_scores_data_api_client,
@@ -16,6 +17,10 @@ from app.modules.prioritizer.api import (
     get_city_data_api_client,
     get_legal_data_api_client,
 )
+from app.modules.prioritizer.services.report_translation import (
+    ReportTranslationProviderError,
+    ReportTranslationValidationError,
+)
 from app.modules.prioritizer.internal_models import (
     Action,
     ActionFinancialFeasibilityScoresFetchResult,
@@ -23,6 +28,10 @@ from app.modules.prioritizer.internal_models import (
     ActionPathwaysFetchResult,
     ActionPolicyScoresFetchResult,
     CityData,
+)
+from app.modules.prioritizer.report_models import (
+    ReportChapterInput,
+    ReportGenerationResult,
 )
 
 
@@ -90,9 +99,8 @@ class MockFinancialFeasibilityDataApiClient:
         return ActionFinancialFeasibilityScoresFetchResult(scores_by_action_id={})
 
 
-@pytest.mark.integration
-def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
-    """Output-plan endpoint should return one isolated report for one action."""
+def _configure_output_plan_dependency_overrides() -> None:
+    """Configure deterministic source clients for output-plan endpoint tests."""
     app.dependency_overrides[get_city_data_api_client] = lambda: MockCityDataApiClient(
         city=CityData(
             city_name="Santiago",
@@ -127,6 +135,12 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
         lambda: MockFinancialFeasibilityDataApiClient()
     )
 
+
+@pytest.mark.integration
+def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
+    """Output-plan endpoint should return one isolated report for one action."""
+    _configure_output_plan_dependency_overrides()
+
     try:
         with TestClient(app) as test_client:
             response = test_client.post(
@@ -151,6 +165,70 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     assert body["metadata"]["source_context"]["ranking_basis"] == (
         "frontend_prioritization_snapshot"
     )
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ("translation_error", "error_code", "retryable", "retry_after"),
+    [
+        (
+            ReportTranslationValidationError("invalid translated chapter"),
+            "report_translation_validation_failed",
+            False,
+            None,
+        ),
+        (
+            ReportTranslationProviderError(
+                "Report translation provider is temporarily unavailable"
+            ),
+            "report_translation_provider_unavailable",
+            True,
+            "5",
+        ),
+    ],
+)
+def test_output_plan_translation_failures_expose_safe_retry_contract(
+    monkeypatch: pytest.MonkeyPatch,
+    translation_error: Exception,
+    error_code: str,
+    retryable: bool,
+    retry_after: str | None,
+) -> None:
+    """Only transient provider failures should advise frontend retries."""
+    _configure_output_plan_dependency_overrides()
+    generate_chapters = prioritizer_api.generate_output_plan_chapters
+
+    def generate_without_llm(
+        *, chapter_inputs: list[ReportChapterInput], use_llm: bool
+    ) -> ReportGenerationResult:
+        """Build deterministic English chapters while exercising production flow."""
+        del use_llm
+        return generate_chapters(chapter_inputs=chapter_inputs, use_llm=False)
+
+    def fail_translation(**kwargs: object) -> None:
+        """Raise the configured translation failure after English generation."""
+        del kwargs
+        raise translation_error
+
+    monkeypatch.setattr(
+        prioritizer_api,
+        "generate_output_plan_chapters",
+        generate_without_llm,
+    )
+    monkeypatch.setattr(prioritizer_api, "translate_output_plan", fail_translation)
+    payload = _report_request_payload()
+    payload["requestData"]["debugContextOnly"] = False  # type: ignore[index]
+
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post("/v1/reports/output-plan", json=payload)
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 502
+    assert response.json()["detail"]["error_code"] == error_code
+    assert response.json()["detail"]["retryable"] is retryable
+    assert response.headers.get("Retry-After") == retry_after
 
 
 @pytest.mark.integration

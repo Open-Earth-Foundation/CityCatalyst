@@ -6,7 +6,7 @@ import json
 import logging
 from pathlib import Path
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.modules.prioritizer.internal_models import ScoredAction
 from app.modules.prioritizer.llm_config import (
@@ -64,12 +64,16 @@ def _feasibility_component_value(
 class ExplanationItem(BaseModel):
     """Structured explanation row returned by the LLM."""
 
+    model_config = ConfigDict(extra="forbid")
+
     action_id: str
     explanation: str
 
 
 class ExplanationBatch(BaseModel):
     """Top-level structured output returned by the LLM."""
+
+    model_config = ConfigDict(extra="forbid")
 
     explanations: list[ExplanationItem]
 
@@ -156,18 +160,19 @@ def _generate_explanations_for_language(
     explanations_by_action_id: dict[str, str] = {}
     parsed: ExplanationBatch | None = None
     for attempt in range(1, MAX_LANGUAGE_ATTEMPTS + 1):
-        completion = client.chat.completions.parse(
+        completion = client.chat.completions.create(
             model=model_name,
             temperature=get_explanations_temperature(),
-            response_format=ExplanationBatch,
+            response_format=_explanation_response_format(),
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
         )
-        candidate = completion.choices[0].message.parsed
-        if candidate is None:
-            raise ValueError("LLM did not return parsable structured explanation output")
+        content = completion.choices[0].message.content
+        if not content:
+            raise ValueError("LLM did not return structured explanation output")
+        candidate = ExplanationBatch.model_validate_json(content)
         explanations_by_action_id = _rows_to_explanations(
             explanation_rows=candidate.explanations,
             expected_action_ids=expected_action_ids,
@@ -221,6 +226,18 @@ def _generate_explanations_for_language(
         },
     }
     return explanations_by_action_id, llm_io_payload
+
+
+def _explanation_response_format() -> dict[str, object]:
+    """Return the strict JSON Schema for explanation batches."""
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "prioritization_explanation_response",
+            "strict": True,
+            "schema": ExplanationBatch.model_json_schema(),
+        },
+    }
 
 
 def _warn_if_prompt_is_large(*, prompt: str, locode: str, action_count: int) -> None:

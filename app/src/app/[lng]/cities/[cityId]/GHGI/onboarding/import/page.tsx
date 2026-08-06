@@ -12,6 +12,7 @@ import { UseErrorToast, UseInfoToast, UseSuccessToast } from "@/hooks/Toasts";
 import UploadFileStep from "@/components/steps/GHGI/import/upload-file-step";
 import InventoryMappingStep from "@/components/steps/GHGI/import/inventory-mapping-step";
 import ReviewConfirmStep from "@/components/steps/GHGI/import/review-confirm-step";
+import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inventory-step";
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
@@ -39,6 +40,7 @@ function ImportButton({
   importedFileId,
   mappingOverrides,
   onImport,
+  onImportProgressChange,
   t,
 }: {
   cityId: string;
@@ -46,6 +48,7 @@ function ImportButton({
   importedFileId: string;
   mappingOverrides: Record<string, string>;
   onImport: () => void;
+  onImportProgressChange: (inProgress: boolean) => void;
   t: TFunction;
 }) {
   const dispatch = useAppDispatch();
@@ -92,8 +95,10 @@ function ImportButton({
         makeSuccessToast(t("import-completed"), t("import-completed-description"));
         onImport();
       },
-      onFailure: (res) =>
-        makeErrorToast("Import failed", resolveErrorMessage(res.errorLog, "Failed to import data", t)),
+      onFailure: (res) => {
+        onImportProgressChange(false);
+        makeErrorToast("Import failed", resolveErrorMessage(res.errorLog, "Failed to import data", t));
+      },
       onPollError: (err) =>
         logger.debug(
           { err, cityId, inventoryId, importedFileId },
@@ -105,6 +110,9 @@ function ImportButton({
   const handleImport = async () => {
     if (!importedFileId) return;
     stopImportPolling();
+    // Swap ReviewConfirmStep for the importing panel before approve polling
+    // can clear reviewData from the shared status cache.
+    onImportProgressChange(true);
 
     const overridesToSend = Object.fromEntries(
       Object.entries(mappingOverrides).filter(([, v]) => v !== ""),
@@ -132,6 +140,7 @@ function ImportButton({
         return;
       }
       if ((result as { importStatus?: string }).importStatus === "failed") {
+        onImportProgressChange(false);
         makeErrorToast(
           "Import failed",
           resolveErrorMessage(
@@ -142,7 +151,9 @@ function ImportButton({
         );
         return;
       }
+      onImportProgressChange(false);
     } catch (error: unknown) {
+      onImportProgressChange(false);
       makeErrorToast(
         "Import failed",
         getApiErrorMessage(error, "Failed to import data"),
@@ -206,6 +217,7 @@ export default function ImportPage(props: {
     useState(false);
   const [isExtractInProgress, setIsExtractInProgress] = useState(false);
   const [isInterpretInProgress, setIsInterpretInProgress] = useState(false);
+  const [isImportInProgress, setIsImportInProgress] = useState(false);
   const [mappingOverrides, setMappingOverrides] = useState<
     Record<string, string>
   >({});
@@ -870,15 +882,22 @@ export default function ImportPage(props: {
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <ReviewConfirmStep
-                    t={t}
-                    cityId={cityId}
-                    cityName={inventory?.city?.name}
-                    inventoryId={inventoryId}
-                    importedFileId={importedFileId}
-                    onImport={() => { }}
-                    onEditMapping={goToPrevStep}
-                  />
+                  {isImportInProgress ? (
+                    <ImportingInventoryStep
+                      t={t}
+                      cityName={inventory?.city?.name}
+                    />
+                  ) : (
+                    <ReviewConfirmStep
+                      t={t}
+                      cityId={cityId}
+                      cityName={inventory?.city?.name}
+                      inventoryId={inventoryId}
+                      importedFileId={importedFileId}
+                      onImport={() => { }}
+                      onEditMapping={goToPrevStep}
+                    />
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -970,6 +989,7 @@ export default function ImportPage(props: {
                     py="16px"
                     px="24px"
                     h="64px"
+                    disabled={isImportInProgress}
                     onClick={() => {
                       handleNavigation(() => {
                         setUploadedFile(null);
@@ -979,6 +999,7 @@ export default function ImportPage(props: {
                         setTabularPendingInterpretation(false);
                         setIsExtractInProgress(false);
                         setIsInterpretInProgress(false);
+                        setIsImportInProgress(false);
                         setMappingOverrides({});
                         setExtractionProgress(null);
                         setStep(0);
@@ -998,6 +1019,7 @@ export default function ImportPage(props: {
                     inventoryId={inventoryId}
                     importedFileId={importedFileId}
                     mappingOverrides={mappingOverrides}
+                    onImportProgressChange={setIsImportInProgress}
                     onImport={() => {
                       router.push(`/${lng}/cities/${cityId}/GHGI/${inventoryId}`);
                     }}

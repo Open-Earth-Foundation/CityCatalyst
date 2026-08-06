@@ -524,6 +524,7 @@ export type ProjectWithCitiesResponse = ProjectWithCities[];
 
 export type ProjectUserResponse = {
   email: string;
+  name?: string | null;
   role: OrganizationRole;
   status: InviteStatus;
   cityId?: string;

@@ -40,6 +40,7 @@ const SearchInput = ({
       }
     >
       <Input
+        h="12"
         minWidth="350px"
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder={placeholder}

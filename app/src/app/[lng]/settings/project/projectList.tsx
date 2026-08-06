@@ -1,14 +1,6 @@
 import { ProjectWithCities } from "@/util/types";
 import React, { useState } from "react";
-import {
-  Accordion,
-  Box,
-  Icon,
-  Input,
-  InputGroup,
-  Tabs,
-  Text,
-} from "@chakra-ui/react";
+import { Accordion, Box, Icon, Tabs, Text } from "@chakra-ui/react";
 import {
   AccordionItem,
   AccordionItemContent,
@@ -17,7 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
 import { TFunction } from "i18next";
-import { MdSearch } from "react-icons/md";
+import ProjectSearchInput from "../ProjectSearchInput";
 
 interface ProjectListProps {
   t: TFunction;
@@ -65,18 +57,12 @@ const ProjectList: React.FC<ProjectListProps> = ({
       >
         {t("projects")}
       </Text>
-      <InputGroup mb={6} startElement={<Icon as={MdSearch} size="md" />}>
-        <Input
-          placeholder={t("search-by-project")}
-          borderRadius="4px"
-          borderWidth="1px"
-          borderColor="border.neutral"
-          shadow="sm"
-          bg="base.light"
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-        />
-      </InputGroup>
+      <ProjectSearchInput
+        value={searchTerm}
+        onChange={handleSearch}
+        t={t}
+        mb={6}
+      />
       <Box
         p={3}
         borderRadius="12px"

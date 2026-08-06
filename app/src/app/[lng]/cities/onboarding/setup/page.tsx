@@ -325,10 +325,10 @@ export default function OnboardingSetup(props: {
         setIsCreatingCity(true);
         const area = cityArea?.area ?? ocCityData?.area ?? undefined;
         const region = ocCityData?.root_path_geo.filter(
-          (item: any) => item.type === "adm1",
+          (item) => item.type === "adm1",
         )[0];
         const country = ocCityData?.root_path_geo.filter(
-          (item: any) => item.type === "country",
+          (item) => item.type === "country",
         )[0];
 
         try {

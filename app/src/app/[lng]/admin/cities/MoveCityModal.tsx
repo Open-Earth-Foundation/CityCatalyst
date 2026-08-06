@@ -241,7 +241,7 @@ const MoveCityModal = (props: MoveCityModalProps) => {
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
       }}
       onExitComplete={closeModalActions}

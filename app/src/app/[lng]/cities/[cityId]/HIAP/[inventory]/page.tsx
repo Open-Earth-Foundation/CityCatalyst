@@ -154,7 +154,7 @@ export default function HIAPInventoryPage(props: {
           actions={hiapData}
           inventory={null}
           actionType={activeActionType}
-          lng={lng as any}
+          lng={lng as LANGUAGES}
           isReprioritizing={isLoading}
         />
         <Tabs.Root

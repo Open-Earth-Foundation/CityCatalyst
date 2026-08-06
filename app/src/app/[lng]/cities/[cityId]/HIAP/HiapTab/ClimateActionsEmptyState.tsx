@@ -30,7 +30,7 @@ const TopActionsDataState = ({
   actionType: ACTION_TYPES;
   onRefetch: () => void;
   isActionsPending: boolean;
-  error?: any;
+  error?: unknown;
 }) => {
   const { data: inventoryProgress, isLoading } =
     api.useGetInventoryProgressQuery(inventory?.inventoryId || "", {

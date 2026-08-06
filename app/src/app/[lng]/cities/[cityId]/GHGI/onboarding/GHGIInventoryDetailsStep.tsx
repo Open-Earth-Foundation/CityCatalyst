@@ -4,6 +4,7 @@ import {
   Controller,
   FieldErrors,
   UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import { GHGIFormInputs } from "@/util/GHGI/types";
 import { useEffect, useState } from "react";
@@ -47,7 +48,7 @@ export default function GHGIInventoryDetailsStep({
   register: UseFormRegister<GHGIFormInputs>;
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
-  setValue: any;
+  setValue: UseFormSetValue<GHGIFormInputs>;
   years: number[];
 }) {
   const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =

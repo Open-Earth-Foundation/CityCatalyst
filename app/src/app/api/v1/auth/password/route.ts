@@ -41,7 +41,7 @@ import { apiHandler } from "@/util/api";
 import { resetPasswordRequest } from "@/util/validation";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
-import jwt, { TokenExpiredError } from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { logger } from "@/services/logger";
 
@@ -70,7 +70,7 @@ export const POST = apiHandler(async (req: Request) => {
     }
   }
 
-  const email = (resetTokenData as any).email;
+  const email = (resetTokenData as JwtPayload).email;
   const user = await db.models.User.findOne({ where: { email } });
 
   if (!user) {

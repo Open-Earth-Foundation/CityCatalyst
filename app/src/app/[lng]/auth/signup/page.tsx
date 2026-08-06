@@ -107,7 +107,14 @@ export default function Signup() {
         setError(message);
         return;
       }
-      const userData = (await res.json()) as any;
+      const userData = (await res.json()) as {
+        user: {
+          email: string;
+          name?: string;
+          preferredLanguage?: string;
+          role?: string;
+        };
+      };
 
       // Track user registration
       trackEvent("user_registered", {

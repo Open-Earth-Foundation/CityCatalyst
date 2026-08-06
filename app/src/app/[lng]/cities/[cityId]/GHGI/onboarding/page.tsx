@@ -2,12 +2,13 @@
 import { use, useState } from "react";
 
 import { useTranslation } from "@/i18n/client";
-import { Box, Heading, Icon, RadioGroup, Text, VStack } from "@chakra-ui/react";
+import { Box, Heading, Icon, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { Radio, RadioGroup } from "@/components/ui/radio";
 import { api } from "@/services/api";
 
 type InventoryCreationMode = "upload" | "create" | "";
@@ -75,7 +76,7 @@ export default function Onboarding(props: {
             gap="24px"
             shadow="sm"
           >
-            <RadioGroup.Root
+            <RadioGroup
               value={selection}
               onValueChange={(details) =>
                 setSelection(details.value as InventoryCreationMode)
@@ -84,11 +85,11 @@ export default function Onboarding(props: {
               flexDirection="column"
               gap="40px"
               flex="1"
-              variant="subtle"
             >
               {/* Create new option */}
-              <RadioGroup.Item
+              <Radio
                 value="create"
+                variant="filled"
                 alignItems="flex-start"
                 gap="16px"
                 p="12px"
@@ -97,29 +98,16 @@ export default function Onboarding(props: {
                 _hover={{ bg: "background.backgroundLight" }}
                 data-testid="create-inventory-option"
               >
-                <RadioGroup.ItemHiddenInput />
-                <RadioGroup.ItemIndicator
-                  mt="3px"
-                  color="content.link"
-                  bg="gray.muted"
-                  _checked={{
-                    color: "base.light",
-                    backgroundColor: "content.alternative",
-                  }}
-                  flexShrink={0}
-                />
                 <Box>
-                  <RadioGroup.ItemText asChild>
-                    <Text
-                      fontWeight="600"
-                      fontSize="body.lg"
-                      color="content.primary"
-                      lineHeight="24px"
-                      fontFamily="body"
-                    >
-                      {t("create-new-inventory-option")}
-                    </Text>
-                  </RadioGroup.ItemText>
+                  <Text
+                    fontWeight="600"
+                    fontSize="body.lg"
+                    color="content.primary"
+                    lineHeight="24px"
+                    fontFamily="body"
+                  >
+                    {t("create-new-inventory-option")}
+                  </Text>
                   <Text
                     fontSize="body.md"
                     color="content.tertiary"
@@ -139,11 +127,12 @@ export default function Onboarding(props: {
                     />
                   </Text>
                 </Box>
-              </RadioGroup.Item>
+              </Radio>
 
               {/* Upload option */}
-              <RadioGroup.Item
+              <Radio
                 value="upload"
+                variant="filled"
                 alignItems="flex-start"
                 gap="16px"
                 p="12px"
@@ -152,29 +141,16 @@ export default function Onboarding(props: {
                 _hover={{ bg: "background.backgroundLight" }}
                 data-testid="upload-inventory-option"
               >
-                <RadioGroup.ItemHiddenInput />
-                <RadioGroup.ItemIndicator
-                  mt="3px"
-                  color="content.link"
-                  bg="gray.muted"
-                  _checked={{
-                    color: "base.light",
-                    backgroundColor: "content.alternative",
-                  }}
-                  flexShrink={0}
-                />
                 <Box>
-                  <RadioGroup.ItemText asChild>
-                    <Text
-                      fontWeight="600"
-                      fontSize="body.lg"
-                      color="content.primary"
-                      lineHeight="24px"
-                      fontFamily="body"
-                    >
-                      {t("upload-an-existing-inventory")}
-                    </Text>
-                  </RadioGroup.ItemText>
+                  <Text
+                    fontWeight="600"
+                    fontSize="body.lg"
+                    color="content.primary"
+                    lineHeight="24px"
+                    fontFamily="body"
+                  >
+                    {t("upload-an-existing-inventory")}
+                  </Text>
                   <Text
                     fontSize="body.md"
                     color="content.tertiary"
@@ -195,8 +171,8 @@ export default function Onboarding(props: {
                     />
                   </Text>
                 </Box>
-              </RadioGroup.Item>
-            </RadioGroup.Root>
+              </Radio>
+            </RadioGroup>
 
             <Box flexShrink={0} lineHeight={0}>
               <Image
@@ -218,8 +194,6 @@ export default function Onboarding(props: {
         pos="fixed"
         bottom="0"
         left="0"
-        borderTopWidth="1px"
-        borderColor="border.neutral"
         data-onboarding-bottom-bar
       >
         <Box

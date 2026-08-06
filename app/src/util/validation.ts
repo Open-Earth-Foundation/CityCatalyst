@@ -381,3 +381,22 @@ export const conceptNoteStartRequest = z
   });
 
 export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;
+
+export const nativeInputCatalogRegisterRequest = z.object({
+  kind: z.string().trim().min(1).max(64),
+  owning_module: z.string().trim().min(1).max(64),
+  source_type: z.string().trim().min(1).max(64),
+  source_id: z.string().trim().min(1).max(255),
+  user_id: z.string().uuid().nullable().optional(),
+  inventory_id: z.string().uuid().nullable().optional(),
+  city_id: z.string().uuid().nullable().optional(),
+  project_id: z.string().uuid().nullable().optional(),
+  organization_id: z.string().uuid().nullable().optional(),
+  content_digest: z.string().trim().min(1).max(128).nullable().optional(),
+  markdown_ready: z.boolean().nullable().optional(),
+  labels: z.record(z.string(), z.unknown()).nullable().optional(),
+});
+
+export type NativeInputCatalogRegisterRequest = z.infer<
+  typeof nativeInputCatalogRegisterRequest
+>;

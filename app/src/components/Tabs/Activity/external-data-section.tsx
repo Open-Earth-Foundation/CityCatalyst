@@ -28,6 +28,7 @@ import { getTranslationFromDict } from "@/i18n";
 import { DataCheckIcon } from "@/components/icons";
 import { FiTarget } from "react-icons/fi";
 import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
+import type { DataSourceWithRelations } from "@/components/GHGI/data-step/types";
 import { api } from "@/services/api";
 import { convertKgToTonnes } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -333,7 +334,9 @@ const ExternalDataSection = ({
       </Box>
       <SourceDrawer
         inventoryId={inventoryValue.inventoryId!}
-        source={{ ...inventoryValue, ...source } as any}
+        source={
+          { ...inventoryValue, ...source } as unknown as DataSourceWithRelations
+        }
         hideActions={true}
         totalEmissionsData={inventoryValue.co2eq as unknown as string}
         sourceData={null}

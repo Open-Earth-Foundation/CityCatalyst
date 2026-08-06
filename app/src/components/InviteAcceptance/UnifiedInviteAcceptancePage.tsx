@@ -224,7 +224,7 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
               const allCities = citiesResult.data;
               const invitedCityIds = validatedRequest.cityIds.split(",");
               const invitedCities = invitedCityIds.map((cityId) => {
-                const city = allCities.find((c: any) => c.cityId === cityId);
+                const city = allCities.find((c) => c.cityId === cityId);
                 return {
                   cityId,
                   cityName: city?.name || "Unknown City",

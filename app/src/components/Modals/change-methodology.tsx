@@ -67,7 +67,7 @@ const ChangeMethodology: FC<ChangeMethodologyProps> = ({
     <>
       <DialogRoot
         open={isOpen}
-        onOpenChange={(e: any) => setChangeMethodology(e.open)}
+        onOpenChange={(e) => setChangeMethodology(e.open)}
         onExitComplete={onClose}
       >
         <DialogBackdrop />

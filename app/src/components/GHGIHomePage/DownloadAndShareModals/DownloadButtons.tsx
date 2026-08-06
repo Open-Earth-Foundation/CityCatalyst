@@ -36,7 +36,7 @@ const DownloadButtons = ({
   const showToast = (
     title: string,
     description: string,
-    status: any,
+    status: STATUS,
     duration: number | null,
   ) => {
     // Replace previous toast notifications

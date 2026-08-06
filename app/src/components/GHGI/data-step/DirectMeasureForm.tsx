@@ -28,7 +28,7 @@ export function DirectMeasureForm({
 }: {
   t: TFunction;
   register: UseFormRegister<FieldValues>;
-  errors: Record<string, any>;
+  errors: Record<string, unknown>;
   className?: string;
   prefix?: string;
 }) {

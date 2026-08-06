@@ -53,7 +53,7 @@ export function SourceDrawer({
   isOpen: boolean;
   onClose: () => void;
   onConnectClick?: () => void;
-  finalFocusRef?: RefObject<any>;
+  finalFocusRef?: RefObject<HTMLElement | null>;
   isConnectLoading?: boolean;
   totalEmissionsData?: string;
   t: TFunction;

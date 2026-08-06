@@ -82,9 +82,10 @@ export function useChat({ inventoryId, t }: UseChatProps) {
             setMessages((prev) => appendMessage(prev, "assistant", ""));
             setIsGenerating(true);
           },
-          onTextDelta: (delta: any) => {
-            if (delta.value != null) {
-              setMessages((prev) => appendToLastMessage(prev, delta.value));
+          onTextDelta: (delta: unknown) => {
+            const value = (delta as { value?: string } | undefined)?.value;
+            if (value != null) {
+              setMessages((prev) => appendToLastMessage(prev, value));
             }
           },
           onRunCompleted: () => {
@@ -92,7 +93,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
             setIsGenerating(false);
             setAssistantStartedResponding(false);
           },
-          onRequiresAction: async (event: any) => {
+          onRequiresAction: async (event: unknown) => {
             // Handle function calls for legacy implementation
             // This would need the full function call handling logic
             console.log("Requires action:", event);

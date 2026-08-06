@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TFunction } from "i18next";
 import {
   Control,
+  FieldErrors,
   FieldValues,
   UseFormClearErrors,
   UseFormGetValues,
@@ -30,12 +31,12 @@ interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
   watch: UseFormWatch<Inputs>;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues>;
   submit: () => void;
   fields: ExtraField[];
   hideEmissionFactors?: boolean;
   units?: string[];
-  errors: Record<string, any>;
+  errors: FieldErrors<FieldValues>;
   setError: UseFormSetError<Inputs>;
   clearErrors: UseFormClearErrors<Inputs>;
   emissionsFactorTypes: EmissionFactorTypes[];
@@ -66,7 +67,7 @@ export type Inputs = {
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
     ch4EmissionFactorUnit: string;
-    wasteCompositionType?: string;
+    wasteCompositionType?: string | null;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;

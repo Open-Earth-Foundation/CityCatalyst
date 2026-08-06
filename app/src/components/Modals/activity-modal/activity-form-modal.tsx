@@ -3,7 +3,7 @@
 import { api, useUpdateActivityValueMutation } from "@/services/api";
 import { Button, DialogOpenChangeDetails } from "@chakra-ui/react";
 import { Dispatch, FC, SetStateAction } from "react";
-import { SubmitHandler } from "react-hook-form";
+import { Control, FieldValues, SubmitHandler } from "react-hook-form";
 import { TFunction } from "i18next";
 import { getInputMethodology } from "@/util/helpers";
 import type { SuggestedActivity } from "@/util/form-schema";
@@ -342,7 +342,7 @@ const AddActivityModal: FC<AddActivityModalProps> = ({
             submit={submit}
             register={register}
             watch={watch}
-            control={control}
+            control={control as unknown as Control<FieldValues>}
             fields={fields}
             units={units}
             targetActivityValue={targetActivityValue}

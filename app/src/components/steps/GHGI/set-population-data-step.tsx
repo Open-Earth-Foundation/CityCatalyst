@@ -1,5 +1,10 @@
 import { TFunction } from "i18next";
-import { Control, Controller, FieldErrors } from "react-hook-form";
+import {
+  Control,
+  Controller,
+  FieldErrors,
+  UseFormSetValue,
+} from "react-hook-form";
 import type {
   GHGICountryEmissionsEntry,
   GHGIFormInputs,
@@ -44,14 +49,14 @@ export default function SetPopulationDataStep({
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
   years: number[];
-  watch: (name: string) => any;
+  watch: (name: string) => unknown;
   ocCityData?: OCCityAttributes;
   setData: (data: GeneralOnboardingData) => void;
-  setValue: any;
+  setValue: UseFormSetValue<GHGIFormInputs>;
   numberOfYearsDisplayed: number;
   numberFormat?: string;
 }) {
-  const yearInput = watch("year");
+  const yearInput = watch("year") as string | undefined;
   const year: number | null = yearInput ? parseInt(yearInput) : null;
 
   // Watch population values

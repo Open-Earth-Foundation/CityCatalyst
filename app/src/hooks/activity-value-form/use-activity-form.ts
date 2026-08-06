@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { Path, useForm } from "react-hook-form";
 import { useEffect, useMemo } from "react";
 import { ActivityValue } from "@/models/ActivityValue";
 import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
@@ -13,7 +13,7 @@ export const generateDefaultActivityFormValues = (
     activityType: selectedActivity?.id,
     ...(fields
       ? {
-          ...fields.reduce((acc: Record<string, any>, field) => {
+          ...fields.reduce((acc: Record<string, unknown>, field) => {
             acc[field.id] = field.multiselect
               ? []
               : field.type === "number"
@@ -75,10 +75,10 @@ const useActivityForm = ({
     control,
     getValues,
     formState: { errors },
-  } = useForm<Inputs | any>();
+  } = useForm<Inputs>();
 
   const selectedActivityOption = watch(
-    `activity.${methodology.activitySelectionField?.id as string}`,
+    `activity.${methodology.activitySelectionField?.id as string}` as Path<Inputs>,
   );
 
   const { fields, units, title, activityId, hideEmissionFactors } =
@@ -131,33 +131,42 @@ const useActivityForm = ({
                 methodology.activitySelectionField.id
               ],
           }),
-          dataQuality: targetActivityValue?.metadata?.dataQuality,
-          dataComments: targetActivityValue?.metadata?.sourceExplanation,
-          CH4EmissionFactor:
-            methodology.id === "direct-measure"
-              ? targetActivityValue?.activityData?.ch4_amount
-              : extractGasAmount("CH4", targetActivityValue).amount,
-          CO2EmissionFactor:
-            methodology.id === "direct-measure"
-              ? targetActivityValue?.activityData?.co2_amount
-              : extractGasAmount("CO2", targetActivityValue).amount,
-          N2OEmissionFactor:
-            methodology.id === "direct-measure"
-              ? targetActivityValue?.activityData?.n2o_amount
-              : extractGasAmount("N2O", targetActivityValue).amount,
-          emissionFactorType: targetActivityValue.metadata?.emissionFactorType,
-          emissionFactorTypeReference:
-            targetActivityValue.metadata?.emissionFactorTypeReference,
-          emissionsFactorName:
-            targetActivityValue.metadata?.emissionsFactorName,
+          dataQuality: targetActivityValue?.metadata?.dataQuality as
+            | string
+            | undefined,
+          dataComments: targetActivityValue?.metadata?.sourceExplanation as
+            | string
+            | undefined,
+          CH4EmissionFactor: (methodology.id === "direct-measure"
+            ? targetActivityValue?.activityData?.ch4_amount
+            : extractGasAmount("CH4", targetActivityValue).amount) as
+            | number
+            | undefined,
+          CO2EmissionFactor: (methodology.id === "direct-measure"
+            ? targetActivityValue?.activityData?.co2_amount
+            : extractGasAmount("CO2", targetActivityValue).amount) as
+            | number
+            | undefined,
+          N2OEmissionFactor: (methodology.id === "direct-measure"
+            ? targetActivityValue?.activityData?.n2o_amount
+            : extractGasAmount("N2O", targetActivityValue).amount) as
+            | number
+            | undefined,
+          emissionFactorType: targetActivityValue.metadata?.emissionFactorType as
+            | string
+            | undefined,
+          emissionFactorReference: targetActivityValue.metadata
+            ?.emissionFactorTypeReference as string | undefined,
+          emissionFactorName: targetActivityValue.metadata
+            ?.emissionFactorName as string | undefined,
           co2EmissionFactorUnit: extractGasAmount("CO2", targetActivityValue)
             .units,
           n2oEmissionFactorUnit: extractGasAmount("N2O", targetActivityValue)
             .units,
           ch4EmissionFactorUnit: extractGasAmount("CH4", targetActivityValue)
             .units,
-          wasteCompositionType:
-            targetActivityValue.metadata?.wasteCompositionType || null,
+          wasteCompositionType: (targetActivityValue.metadata
+            ?.wasteCompositionType || null) as string | null,
         },
       });
     } else {

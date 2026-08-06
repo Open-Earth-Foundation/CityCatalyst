@@ -58,7 +58,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
         </Box>
       </Box>
       <Box w="full" position="relative" pl="50px">
-        {tags?.map((item: any) => (
+        {tags?.map((item) => (
           <Tag.Root
             key={item}
             mt={2}

@@ -28,7 +28,11 @@ export default class FileParserService {
    */
   public static async parseXLSX(buffer: Buffer): Promise<ParsedFileData> {
     const workbook = new Excel.Workbook();
-    await workbook.xlsx.load(buffer as any);
+    // exceljs's Buffer type comes from a different @types/node snapshot than
+    // this project's, so the two Buffer types don't structurally match.
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
 
     const sheets: ParsedSheet[] = [];
 

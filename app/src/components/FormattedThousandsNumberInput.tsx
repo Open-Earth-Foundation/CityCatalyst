@@ -4,6 +4,7 @@ import {
   Control,
   FieldValues,
   Path,
+  PathValue,
   RegisterOptions,
   useController,
 } from "react-hook-form";
@@ -28,7 +29,7 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
     name,
     control,
     rules,
-    defaultValue: "" as any,
+    defaultValue: "" as PathValue<TFieldValues, Path<TFieldValues>>,
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

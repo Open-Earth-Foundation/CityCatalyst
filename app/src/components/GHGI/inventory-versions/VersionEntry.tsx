@@ -4,6 +4,27 @@ import { UseErrorToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
 import { formatEmissions } from "@/util/helpers";
 import { VersionHistoryEntry } from "@/util/types";
+
+interface VersionChangeEntry {
+  versionId: string;
+  author: string;
+  date: Date;
+  isDeleted?: boolean;
+  // GHGI-specific fields
+  referenceNumber?: string;
+  subCategory?: string;
+  totalEmissions?: string;
+  previousTotalEmissions?: string;
+  totalEmissionsChangeSign?: number;
+  source?: string;
+  hasDataSource?: boolean;
+  previousSource?: string;
+  hasPreviousDataSource?: boolean;
+  // HIAP-specific fields
+  name?: string;
+  isSelected?: boolean;
+  rank?: number;
+}
 import {
   Box,
   Button,
@@ -54,7 +75,7 @@ function getChangeSign(entry: VersionHistoryEntry): number {
 
 function renderChangeText(
   t: TFunction,
-  change: any,
+  change: VersionChangeEntry,
   moduleName: string = "ghgi",
 ): string {
   if (moduleName === "hiap") {
@@ -151,7 +172,7 @@ export default function VersionEntry({
     firstEntry.mostRecentAssociatedVersion?.versionId;
   const inventoryId = firstEntry.version.inventoryId;
 
-  let changes: Record<string, any>[] = [];
+  let changes: VersionChangeEntry[] = [];
 
   if (moduleName === "ghgi") {
     changes = versionEntries.map((entry) => ({
@@ -200,9 +221,9 @@ export default function VersionEntry({
       date: new Date(entry.version.created ?? 0),
       isDeleted: entry.version.isDeleted,
       // module specific fields
-      name: entry.version.data?.name,
-      isSelected: entry.version.data?.isSelected,
-      rank: entry.version.data?.rank,
+      name: entry.version.data?.name as string | undefined,
+      isSelected: entry.version.data?.isSelected as boolean | undefined,
+      rank: entry.version.data?.rank as number | undefined,
     }));
   }
 

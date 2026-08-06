@@ -144,7 +144,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
       duration: 2000,
     });
 
-    await addUserFile({ formData, cityId }).then((res: any) => {
+    await addUserFile({ formData, cityId }).then((res) => {
       if (res.error) {
         showErrorToast();
       } else {
@@ -159,14 +159,13 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
               fileId: fileData.id,
               fileName: fileData.fileName,
               subsectors: fileData.subsectors.join(","),
-              scopes: fileData.scopes,
+              scopes: fileData.scopes.join(","),
               userId: fileData.userId,
               sector: fileData.sector,
               data: base64FileString,
               // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
               url: fileData.url,
               size: fileData.file.size,
-              fileType: fileData.fileType,
               cityId: fileData.cityId,
             },
           }),
@@ -289,8 +288,11 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                           value={scope.value.toString()}
                           borderColor="interactive.secondary"
                           {...register("scopes", { required: true })}
-                          onChange={(e: any) =>
-                            handleSelectedScopes(scope.value, e.target.checked)
+                          onCheckedChange={(details) =>
+                            handleSelectedScopes(
+                              scope.value,
+                              details.checked === true,
+                            )
                           }
                           checked={selectedScopes.includes(scope.value)}
                         />

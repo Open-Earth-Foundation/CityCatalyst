@@ -275,8 +275,3 @@ class VectorDBIntegrationTests(unittest.TestCase):
             await engine.dispose()
 
         asyncio.run(_test_similarity_setup())
-
-
-if __name__ == "__main__":
-    # Run the tests
-    unittest.main(verbosity=2)

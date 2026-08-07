@@ -344,6 +344,7 @@ class ReviewStationaryEnergyDraftRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_unique_proposals(self) -> "ReviewStationaryEnergyDraftRequest":
+        """Reject duplicate proposal identifiers in one review request."""
         seen: set[UUID] = set()
         duplicates: set[str] = set()
         for decision in self.decisions:

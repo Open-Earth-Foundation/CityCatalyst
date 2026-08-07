@@ -54,6 +54,7 @@ def stationary_energy_scope_matches_target(
     source_scope: Mapping[str, Any] | None,
 ) -> bool:
     """Return whether a source scope can satisfy a Stationary Energy target row."""
+    # Reject incomplete scopes before comparing their normalized identifiers.
     if not target_ref or not source_scope:
         return False
 

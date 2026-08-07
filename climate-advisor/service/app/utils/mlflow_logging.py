@@ -106,6 +106,7 @@ def _install_live_span_set_tag_compatibility() -> None:
         return
 
     def set_tag(self: Any, key: str, value: Any) -> None:
+        """Map the legacy tag method to the current span attribute API."""
         self.set_attribute(key, value)
 
     setattr(LiveSpan, "set_tag", set_tag)
@@ -161,6 +162,7 @@ def initialize_mlflow() -> bool:
 
 def _experiment_id(experiment_name: str) -> str | None:
     """Return an experiment id, creating the experiment when the backend permits it."""
+    # Treat an unavailable optional MLflow backend as a no-op.
     if mlflow is None:
         return None
     cached_id = _EXPERIMENT_IDS.get(experiment_name)
@@ -271,6 +273,7 @@ def start_trace_span(
     attributes: Mapping[str, object] | None = None,
 ) -> Iterator[Any | None]:
     """Start one best-effort MLflow span inside the active trace context."""
+    # Execute the workflow in ordered, observable stages.
     if not _INITIALIZED or mlflow is None:
         yield None
         return
@@ -467,9 +470,11 @@ def _set_span_value(
     name: str,
 ) -> None:
     """Set redacted span data without allowing observability to break runtime work."""
+    # Treat optional or incomplete tracing backends as a no-op.
     method = getattr(span, method_name, None)
     if not callable(method):
         return
+    # Normalize and redact values before they reach the tracing backend.
     try:
         method(_json_safe(value))
     except Exception as error:
@@ -509,6 +514,7 @@ def _string_map(values: Mapping[str, object]) -> dict[str, str]:
 
 def _json_safe(value: Any, *, key: str | None = None) -> Any:
     """Convert arbitrary values to JSON-safe, redacted objects."""
+    # Redact sensitive keys before recursively normalizing artifact values.
     if key is not None and _is_sensitive_key(key):
         return REDACTED_VALUE
     if hasattr(value, "model_dump"):

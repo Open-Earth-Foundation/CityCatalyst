@@ -4,6 +4,7 @@ from typing import Any
 
 from app.config.settings import get_settings
 from app.middleware.request_context import RequestContextMiddleware, get_request_id
+from app.utils.logging_config import configure_logging
 from app.routes.concept_note_city_context import (
     router as concept_note_city_context_router,
 )
@@ -24,12 +25,8 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware import Middleware
 
-# Configure basic logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[logging.StreamHandler()]
-)
+# Configure process logging once at the service entrypoint.
+configure_logging()
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -42,6 +39,7 @@ def create_problem_details(
     detail: str = "",
     type_: str = "about:blank",
 ) -> dict[str, Any]:
+    """Build an RFC 7807-style problem response with request context."""
     instance = str(request.url)
     return {
         "type": type_,
@@ -54,6 +52,7 @@ def create_problem_details(
 
 
 def get_app() -> FastAPI:
+    """Create and configure the Climate Advisor FastAPI application."""
     settings = get_settings()
 
     middleware = [
@@ -77,10 +76,12 @@ def get_app() -> FastAPI:
     # Lifespan: log service lifecycle
     @app.on_event("startup")
     async def _startup() -> None:
+        """Log that the application has completed startup."""
         logger.info("Service started", extra={"service": "climate-advisor"})
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
+        """Log that the application is beginning shutdown."""
         logger.info("Service stopping", extra={"service": "climate-advisor"})
 
     # Routers
@@ -99,7 +100,11 @@ def get_app() -> FastAPI:
 
     # Exception handlers -> Problem Details
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request,
+        exc: RequestValidationError,
+    ) -> JSONResponse:
+        """Return validation failures as problem details."""
         problem = create_problem_details(
             request,
             status=422,
@@ -110,7 +115,11 @@ def get_app() -> FastAPI:
         return JSONResponse(status_code=422, content=problem, media_type="application/problem+json")
 
     @app.exception_handler(StarletteHTTPException)
-    async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+    async def http_exception_handler(
+        request: Request,
+        exc: StarletteHTTPException,
+    ) -> JSONResponse:
+        """Return Starlette HTTP errors as problem details."""
         # Covers 404/400/etc raised via HTTPException
         problem = create_problem_details(
             request,
@@ -121,7 +130,8 @@ def get_app() -> FastAPI:
         return JSONResponse(status_code=exc.status_code, content=problem, media_type="application/problem+json")
 
     @app.exception_handler(ValueError)
-    async def value_error_handler(request: Request, exc: ValueError):
+    async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+        """Return domain value errors as bad-request problem details."""
         problem = create_problem_details(
             request,
             status=400,
@@ -131,7 +141,11 @@ def get_app() -> FastAPI:
         return JSONResponse(status_code=400, content=problem, media_type="application/problem+json")
 
     @app.exception_handler(Exception)
-    async def generic_exception_handler(request: Request, exc: Exception):
+    async def generic_exception_handler(
+        request: Request,
+        exc: Exception,
+    ) -> JSONResponse:
+        """Log unhandled errors and return a safe problem response."""
         logger.exception("Unhandled exception occurred", exc_info=exc)
         problem = create_problem_details(
             request,

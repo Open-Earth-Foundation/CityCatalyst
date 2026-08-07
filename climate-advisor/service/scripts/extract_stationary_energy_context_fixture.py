@@ -1,17 +1,22 @@
 """
-Extract existing CityCatalyst data into a mock CA Stationary Energy context fixture.
+Brief: Extract CityCatalyst data into a Stationary Energy mock fixture.
 
-Usage from climate-advisor/:
-  uv run --directory service python -m scripts.extract_stationary_energy_context_fixture \
-    --user-id <cc-user-id> \
-    --city-id <city-id> \
-    --inventory-id <inventory-id> \
-    --token <cc-jwt-token>
+Inputs:
+- CLI args: `--user-id` is required; `--city-id` and `--inventory-id` select a
+  scope or default to the first accessible inventory. `--base-url`, `--token`,
+  `--timeout`, and `--output` control API access and the JSON destination.
+- Files/paths: reads the CityCatalyst GPC reference table and writes one JSON
+  fixture matching `LoadStationaryEnergyContextResponse`.
+- Env vars: `CC_BASE_URL` and `CA_E2E_CC_TOKEN` provide optional defaults for
+  their corresponding CLI arguments.
 
-If --city-id and --inventory-id are omitted, the script tries to pick the first
-inventory from /api/v1/user/inventories. The fixture output matches CA's
-LoadStationaryEnergyContextResponse shape and can be served by
-service/scripts/run_stationary_energy_mock_flow.py.
+Outputs:
+- Writes the extracted fixture JSON and prints a compact record-count summary.
+
+Usage (from project root):
+- uv run --directory service python -m scripts.extract_stationary_energy_context_fixture \
+    --user-id <cc-user-id> --city-id <city-id> \
+    --inventory-id <inventory-id> --token <cc-jwt-token>
 """
 
 from __future__ import annotations
@@ -20,7 +25,6 @@ import argparse
 import json
 import os
 import re
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -28,9 +32,6 @@ import requests
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = SERVICE_ROOT.parent
-for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
-    if import_root not in sys.path:
-        sys.path.insert(0, import_root)
 
 DEFAULT_OUTPUT = (
     SERVICE_ROOT
@@ -147,6 +148,7 @@ def _build_inventory_context(
 
 def _build_taxonomy() -> list[dict[str, Any]]:
     """Build the Stationary Energy taxonomy list from the shared GPC reference table."""
+    # Keep fixture extraction usable when the optional shared reference is absent.
     if not GPC_REFERENCE_PATH.exists():
         return []
 
@@ -184,6 +186,7 @@ def _build_taxonomy() -> list[dict[str, Any]]:
 
 def _build_current_values(results: dict[str, Any]) -> list[dict[str, Any]]:
     """Extract current inventory values from Stationary Energy results payloads."""
+    # Normalize CityCatalyst response envelopes before filtering sector rows.
     data = _unwrap_data(results)
     if not isinstance(data, dict):
         return []
@@ -210,6 +213,7 @@ def _build_current_values(results: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _source_scope(source: dict[str, Any]) -> dict[str, Any]:
     """Project a datasource payload into the CA source-scope shape."""
+    # Accept current and legacy field spellings while emitting one stable shape.
     subcategory = _first(source, "subCategory", "subcategory")
     subsector = _first(source, "subSector", "subsector")
     if isinstance(subcategory, dict):
@@ -256,6 +260,7 @@ def _build_source_candidate(
     status: str,
 ) -> dict[str, Any]:
     """Map one datasource entry into the CA source-candidate fixture shape."""
+    # Unwrap provider-specific source envelopes before deriving stable identifiers.
     source = item.get("source") if isinstance(item.get("source"), dict) else item
     publisher = _first(source, "publisher")
     publisher = publisher if isinstance(publisher, dict) else {}
@@ -316,8 +321,8 @@ def _choose_inventory(
     )
 
 
-def main() -> int:
-    """Extract a Stationary Energy context fixture from live CityCatalyst endpoints."""
+def parse_args() -> argparse.Namespace:
+    """Parse CityCatalyst scope, authentication, and output options."""
     parser = argparse.ArgumentParser(
         description="Extract CC city/inventory data into a CA Stationary Energy mock fixture.",
     )
@@ -326,9 +331,15 @@ def main() -> int:
     parser.add_argument("--user-id", required=True)
     parser.add_argument("--city-id", default=None)
     parser.add_argument("--inventory-id", default=None)
-    parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
+    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--timeout", type=int, default=120)
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main() -> None:
+    """Extract a Stationary Energy context fixture from CityCatalyst endpoints."""
+    # Resolve CLI scope and authentication before issuing capability requests.
+    args = parse_args()
 
     city_id = args.city_id
     inventory_id = args.inventory_id
@@ -342,8 +353,7 @@ def main() -> int:
         city_id, inventory_id = _choose_inventory(inventories)
 
     if not city_id or not inventory_id:
-        print("Unable to determine city_id and inventory_id", file=sys.stderr)
-        return 1
+        raise SystemExit("Unable to determine city_id and inventory_id")
 
     city = _unwrap_data(
         _fetch_json(args.base_url, f"/api/v1/city/{city_id}", token=args.token, timeout=args.timeout)
@@ -387,7 +397,7 @@ def main() -> int:
         },
     }
 
-    output = Path(args.output)
+    output = args.output
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8") as handle:
         json.dump(fixture, handle, indent=2, ensure_ascii=True)
@@ -398,8 +408,7 @@ def main() -> int:
     print(f"Taxonomy rows: {len(fixture['taxonomy'])}")
     print(f"Current values: {len(fixture['current_values'])}")
     print(f"Source candidates: {len(fixture['source_candidates'])}")
-    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

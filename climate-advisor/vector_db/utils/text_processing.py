@@ -7,6 +7,7 @@ This module provides functions for:
 - Text cleaning and preprocessing
 """
 
+import logging
 import re
 from pathlib import Path
 from typing import List, Optional, Dict, Any
@@ -14,17 +15,10 @@ from typing import List, Optional, Dict, Any
 from PyPDF2 import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# Import configuration
-try:
-    from vector_db.config_loader import get_embedding_config
-except ImportError:
-    # Handle case when running module directly
-    import sys
+from vector_db.config_loader import get_embedding_config
 
-    project_root = Path(__file__).resolve().parents[2]
-    if str(project_root) not in sys.path:
-        sys.path.append(str(project_root))
-    from vector_db.config_loader import get_embedding_config
+
+logger = logging.getLogger(__name__)
 
 
 class PDFProcessor:
@@ -45,6 +39,7 @@ class PDFProcessor:
             FileNotFoundError: If the PDF file doesn't exist
             Exception: If there's an error reading the PDF
         """
+        # Reject missing files before initializing the PDF reader.
         if not Path(file_path).exists():
             raise FileNotFoundError(f"PDF file not found: {file_path}")
 
@@ -72,7 +67,7 @@ class LocalRecursiveTextSplitter:
         chunk_size: Optional[int] = None,
         chunk_overlap: Optional[int] = None,
         separators: Optional[List[str]] = None
-    ):
+    ) -> None:
         """
         Initialize the text splitter.
 
@@ -162,6 +157,7 @@ class LocalRecursiveTextSplitter:
 
     def _split_into_units(self, text: str, separators: List[str]) -> List[str]:
         """Recursively split text into ordered units that can be merged into chunks."""
+        # Stop recursion once content fits or no text remains.
         if not text:
             return []
 
@@ -270,7 +266,8 @@ class TextSplitter(LocalRecursiveTextSplitter):
         chunk_size: Optional[int] = None,
         chunk_overlap: Optional[int] = None,
         separators: Optional[List[str]] = None
-    ):
+    ) -> None:
+        """Initialize the production LangChain splitter from shared settings."""
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separators=separators)
         self.splitter = RecursiveCharacterTextSplitter(
             chunk_size=self.chunk_size,
@@ -303,7 +300,11 @@ class TextSplitter(LocalRecursiveTextSplitter):
 class DocumentProcessor:
     """High-level document processing combining PDF extraction and text splitting."""
 
-    def __init__(self, chunk_size: Optional[int] = None, chunk_overlap: Optional[int] = None):
+    def __init__(
+        self,
+        chunk_size: Optional[int] = None,
+        chunk_overlap: Optional[int] = None,
+    ) -> None:
         """
         Initialize the document processor.
 
@@ -393,23 +394,28 @@ class DocumentProcessor:
         Returns:
             List of processed document data
         """
+        # Validate the directory before discovering PDF inputs in stable order.
         directory = Path(directory_path)
         if not directory.exists() or not directory.is_dir():
             raise ValueError(f"Directory not found: {directory_path}")
 
         pdf_files = list(directory.glob("*.pdf"))
         if not pdf_files:
-            print(f"No PDF files found in {directory_path}")
+            logger.info("No PDF files found in %s", directory_path)
             return []
 
         processed_docs = []
         for pdf_file in pdf_files:
             try:
-                print(f"Processing {pdf_file.name}...")
+                logger.info("Processing %s", pdf_file.name)
                 doc_data = self.process_pdf_file(str(pdf_file))
                 processed_docs.append(doc_data)
-                print(f"[SUCCESS] Processed {pdf_file.name} ({len(doc_data['chunks'])} chunks)")
-            except Exception as e:
-                print(f"[FAILED] Failed to process {pdf_file.name}: {str(e)}")
+                logger.info(
+                    "Processed %s (%s chunks)",
+                    pdf_file.name,
+                    len(doc_data["chunks"]),
+                )
+            except Exception:
+                logger.exception("Failed to process %s", pdf_file.name)
 
         return processed_docs

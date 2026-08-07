@@ -1,20 +1,19 @@
 """
-Mint a CityCatalyst JWT token for CA E2E runs and optionally write it to .env.
+Brief: Mint a CityCatalyst JWT for Climate Advisor E2E runs.
 
-Usage (from climate-advisor/):
-  uv run --directory service python -m scripts.mint_ca_e2e_token --user-id <user_id>
+Inputs:
+- CLI args: `--user-id` is required; `--env-path` and `--env-key` select the
+  destination; `--skip-write` avoids file changes; `--print-token` explicitly
+  opts into printing the secret token.
+- Files/paths: optionally updates the selected `.env`-format file.
+- Env vars: `CC_BASE_URL` and `CC_API_KEY` authorize token creation.
 
-Equivalent command from the service directory:
-  uv run python -m scripts.mint_ca_e2e_token --user-id <user_id>
+Outputs:
+- Logs redacted token metadata and optionally updates one environment variable
+  or prints the token to stdout.
 
-Optional flags:
-  --env-path   Path to the .env file to update (default: climate-advisor/.env)
-  --env-key    Env var key to set (default: CA_E2E_CC_TOKEN)
-  --print-token Print the token to stdout (disabled by default)
-  --skip-write  Do not update the .env file
-
-Required environment:
-  CC_BASE_URL, CC_API_KEY
+Usage (from project root):
+- uv run --directory service python -m scripts.mint_ca_e2e_token --user-id <user_id>
 """
 
 from __future__ import annotations
@@ -23,15 +22,16 @@ import argparse
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional
 
 from app.services.citycatalyst_client import CityCatalystClient, TokenRefreshError
+from app.utils.logging_config import configure_logging
 from app.utils.token_manager import redact_token
 
 logger = logging.getLogger("mint_ca_e2e_token")
 
 
 def _update_env_value(env_path: Path, key: str, value: str) -> None:
+    """Set one environment-file value while preserving unrelated entries."""
     lines: list[str] = []
     if env_path.exists():
         lines = env_path.read_text(encoding="utf-8").splitlines()
@@ -52,12 +52,15 @@ def _update_env_value(env_path: Path, key: str, value: str) -> None:
 
 
 async def _mint_token(user_id: str) -> tuple[str, int]:
+    """Mint and return a CityCatalyst token and its lifetime."""
     async with CityCatalystClient() as client:
         token, expires_in = await client.refresh_token(user_id)
     return token, expires_in
 
 
-def main() -> None:
+def parse_args() -> argparse.Namespace:
+    """Parse the user scope and token output options."""
+    # Separate token destination controls from the required CityCatalyst user scope.
     parser = argparse.ArgumentParser(
         description="Mint a CityCatalyst user token and store it for CA E2E tests.",
     )
@@ -86,9 +89,15 @@ def main() -> None:
         action="store_true",
         help="Do not update the .env file.",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    logging.basicConfig(level=logging.INFO)
+
+def main() -> None:
+    """Mint a scoped CityCatalyst token and optionally persist or print it."""
+    # Configure logging before any token request or filesystem write.
+    args = parse_args()
+
+    configure_logging()
     env_path = Path(args.env_path)
 
     try:

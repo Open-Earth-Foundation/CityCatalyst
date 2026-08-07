@@ -83,6 +83,7 @@ class RawResearchBatchInput(BaseModel):
 
 def parse_args() -> argparse.Namespace:
     """Parse the project, research, optional funder, and batch-selection inputs."""
+    # Keep single-request and batch inputs mutually understandable at the CLI boundary.
     parser = argparse.ArgumentParser(
         description=(
             "Research funded-project examples for a required target project "
@@ -185,6 +186,7 @@ def apply_similar_project_defaults(payload: object) -> object:
 
 def load_request(path: Path, *, target_project: Any) -> Any:
     """Validate one request or batch and attach the target project to each."""
+    # Resolve application imports only after the CLI has selected an input mode.
     ensure_service_directory_on_path()
     from app.models.cnb.research import FundingOpportunityResearchRequest
 
@@ -312,6 +314,7 @@ def execute_research_request(
     propose_candidates: Callable[..., list[Any]],
 ) -> ResearchArtifactRecord:
     """Run one research request, enrich funded projects, and write review JSON."""
+    # Complete research before adding optional funder identity enrichment.
     bundle = run_research(
         request,
         output_root=output_root,
@@ -335,6 +338,7 @@ def run_batch_research(
     propose_candidates: Callable[..., list[Any]],
 ) -> list[ResearchArtifactRecord]:
     """Run the existing single-request workflow once for each batch request."""
+    # Preserve request order so the emitted manifest remains deterministic.
     artifacts: list[ResearchArtifactRecord] = []
     for index, request in enumerate(batch.requests, start=1):
         logger.info(
@@ -360,21 +364,20 @@ def main() -> None:
     """Run research, attach canonical-funder candidates, and save the review JSON."""
     # Step 1: parse CLI input and configure logging before any expensive work.
     args = parse_args()
-    logging.basicConfig(
-        level=getattr(logging, args.log_level),
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
-
     # Step 2: import the shared service code lazily so this module has no import-time path side effects.
     ensure_service_directory_on_path()
     from openai import OpenAI
 
-    from app.config import get_settings
+    from app.config.settings import get_settings
+    from app.utils.logging_config import configure_logging
     from app.services.cnb.funder_identity_match import (
         propose_funder_identity_candidates,
     )
+
     from app.services.openrouter_client import build_openrouter_client_options
     from app.services.cnb.research_service import run_funding_opportunity_research
+
+    configure_logging(level=args.log_level)
 
     # Step 3: validate the target project, research manifest, and optional selection.
     selected_batch_position: tuple[int, int] | None = None

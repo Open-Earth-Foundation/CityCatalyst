@@ -1,3 +1,5 @@
+"""Persist Concept Note Builder Markdown upload state."""
+
 from __future__ import annotations
 
 import logging
@@ -25,6 +27,7 @@ class ConceptNoteMarkdownRepositoryError(Exception):
     """Base error with a stable public code and HTTP status."""
 
     def __init__(self, code: str, status_code: int, message: str) -> None:
+        """Create a stable repository error for route-layer translation."""
         super().__init__(message)
         self.code = code
         self.status_code = status_code
@@ -34,6 +37,7 @@ class ConceptNoteStorageUnavailable(ConceptNoteMarkdownRepositoryError):
     """Raised when configured Concept Note workflow storage is unavailable."""
 
     def __init__(self) -> None:
+        """Create the standard unavailable-storage repository error."""
         super().__init__(
             "cnb_storage_unavailable",
             503,
@@ -133,6 +137,7 @@ class UnavailableConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         run_id: UUID,
         payload: ConceptNoteUploadCreateRequest,
     ) -> ConceptNoteUploadSnapshot:
+        """Raise because upload storage is unavailable."""
         raise ConceptNoteStorageUnavailable()
 
     async def get_upload(
@@ -142,6 +147,7 @@ class UnavailableConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         run_id: UUID,
         upload_id: UUID,
     ) -> ConceptNoteUploadSnapshot:
+        """Raise because upload storage is unavailable."""
         raise ConceptNoteStorageUnavailable()
 
     async def register_markdown(
@@ -152,6 +158,7 @@ class UnavailableConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         upload_id: UUID,
         payload: ConceptNoteMarkdownRequest,
     ) -> ConceptNoteUploadSnapshot:
+        """Raise because upload storage is unavailable."""
         raise ConceptNoteStorageUnavailable()
 
     async def mark_failed(
@@ -162,6 +169,7 @@ class UnavailableConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         upload_id: UUID,
         error_code: str,
     ) -> ConceptNoteUploadSnapshot:
+        """Raise because upload storage is unavailable."""
         raise ConceptNoteStorageUnavailable()
 
     async def retry_upload(
@@ -171,6 +179,7 @@ class UnavailableConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         run_id: UUID,
         upload_id: UUID,
     ) -> ConceptNoteUploadSnapshot:
+        """Raise because upload storage is unavailable."""
         raise ConceptNoteStorageUnavailable()
 
     async def get_delivery_context(
@@ -178,6 +187,7 @@ class UnavailableConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         *,
         upload_id: UUID,
     ) -> ConceptNoteUploadSnapshot:
+        """Raise because upload storage is unavailable."""
         raise ConceptNoteStorageUnavailable()
 
 
@@ -188,6 +198,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         self,
         session_factory: async_sessionmaker[AsyncSession],
     ) -> None:
+        """Bind Markdown persistence to the shared async session factory."""
         self._session_factory = session_factory
 
     async def create_upload(
@@ -198,6 +209,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         payload: ConceptNoteUploadCreateRequest,
     ) -> ConceptNoteUploadSnapshot:
         """Create or idempotently replay one pre-conversion upload."""
+        # Lock the owning run and check for an idempotent replay.
         try:
             async with self._session_factory() as session, session.begin():
                 run = await _require_owned_run(
@@ -220,6 +232,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     )
                     return _snapshot(existing)
 
+                # Insert the immutable upload identity with race-safe replay handling.
                 upload = ConceptNoteUpload(
                     upload_id=payload.upload_id,
                     run_id=run_id,
@@ -249,6 +262,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     )
                     return _snapshot(existing)
 
+                # Advance the parent run timestamp after successful creation.
                 _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
@@ -271,6 +285,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         upload_id: UUID,
     ) -> ConceptNoteUploadSnapshot:
         """Return one owned upload."""
+        # Resolve the requested data and enforce its scope constraints.
         try:
             async with self._session_factory() as session:
                 await _require_owned_run(
@@ -304,6 +319,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         payload: ConceptNoteMarkdownRequest,
     ) -> ConceptNoteUploadSnapshot:
         """Persist one immutable CC Markdown pointer and mark it ready."""
+        # Lock and validate the owned upload identity.
         try:
             async with self._session_factory() as session, session.begin():
                 run = await _require_owned_run(
@@ -328,6 +344,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     filename=payload.filename,
                     source_label=payload.source_label,
                 )
+                # Treat an identical existing Markdown pointer as an idempotent replay.
                 if upload.markdown_sha256 is not None:
                     _validate_existing_markdown(
                         existing=upload,
@@ -337,6 +354,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     )
                     return _snapshot(upload)
 
+                # Apply the one-way queued-to-ready lifecycle transition.
                 upload.markdown_s3_key = payload.markdown_s3_key
                 upload.markdown_sha256 = payload.sha256
                 upload.page_count = payload.page_count
@@ -367,6 +385,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         error_code: str,
     ) -> ConceptNoteUploadSnapshot:
         """Mark a non-ready upload failed without deleting its identity."""
+        # Apply the state transition while preserving workflow invariants.
         try:
             async with self._session_factory() as session, session.begin():
                 run = await _require_owned_run(
@@ -415,6 +434,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         upload_id: UUID,
     ) -> ConceptNoteUploadSnapshot:
         """Return a failed upload to queued state."""
+        # Apply the state transition while preserving workflow invariants.
         try:
             async with self._session_factory() as session, session.begin():
                 run = await _require_owned_run(
@@ -461,6 +481,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         upload_id: UUID,
     ) -> ConceptNoteUploadSnapshot:
         """Return upload metadata to an authenticated CC service request."""
+        # Resolve the requested data and enforce its scope constraints.
         try:
             async with self._session_factory() as session:
                 upload = await session.get(ConceptNoteUpload, upload_id)
@@ -487,6 +508,8 @@ async def _require_owned_run(
     user_id: str,
     run_id: UUID,
 ) -> ConceptNoteRun:
+    """Lock and return a run owned by the user, or raise a repository error."""
+    # Apply the complete validation contract before returning.
     run = await session.scalar(
         select(ConceptNoteRun).where(ConceptNoteRun.run_id == run_id).with_for_update()
     )
@@ -516,6 +539,8 @@ def _require_upload_binding(
     run_id: UUID,
     user_id: str,
 ) -> None:
+    """Require an upload to be bound to the requested run and user."""
+    # Apply the complete validation contract before returning.
     if upload is None:
         raise ConceptNoteMarkdownRepositoryError(
             "concept_note_upload_not_found",
@@ -544,6 +569,8 @@ def _validate_upload_identity(
     filename: str,
     source_label: str | None,
 ) -> None:
+    """Reject attempts to change immutable upload identity fields."""
+    # Validate ownership and run binding before comparing immutable metadata.
     _require_upload_binding(
         upload=existing,
         run_id=run_id,
@@ -564,6 +591,7 @@ def _validate_existing_markdown(
     markdown_sha256: str,
     page_count: int,
 ) -> None:
+    """Reject attempts to replace the immutable Markdown artifact identity."""
     if (
         existing.markdown_s3_key != markdown_s3_key
         or existing.markdown_sha256 != markdown_sha256
@@ -577,6 +605,7 @@ def _validate_existing_markdown(
 
 
 def _snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
+    """Create the API-safe snapshot returned by repository operations."""
     return ConceptNoteUploadSnapshot(
         upload_id=upload.upload_id,
         run_id=upload.run_id,
@@ -600,6 +629,7 @@ def _raise_storage_unavailable(
     run_id: UUID | None = None,
     upload_id: UUID | None = None,
 ) -> None:
+    """Log a storage failure and raise the stable repository exception."""
     logger.exception(
         message,
         extra={

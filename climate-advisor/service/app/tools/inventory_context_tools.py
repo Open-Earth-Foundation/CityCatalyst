@@ -161,6 +161,7 @@ def build_inventory_capability_tools(
         loader: CapabilityLoader,
     ) -> str:
         """Call one CC inventory capability route with explicit tool arguments."""
+        # Execute the workflow in ordered, observable stages.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
@@ -214,6 +215,7 @@ def build_inventory_capability_tools(
         for every inventory year for a matching city.
         """
 
+        # Send only explicit user filters to the inventory discovery capability.
         request_payload: Dict[str, Any] = {
             "user_id": user_id,
             "include_all_city_years": include_all_city_years,
@@ -244,6 +246,7 @@ def build_inventory_capability_tools(
         inventory_list_accessible. Do not expose these raw IDs to the user.
         """
 
+        # Require identifiers selected through inventory discovery before loading status.
         request_payload = _explicit_inventory_payload(
             action=INVENTORY_STATUS_OVERVIEW_ACTION,
             user_id=user_id,
@@ -274,6 +277,7 @@ def build_inventory_capability_tools(
         inventory_list_accessible. Do not expose these raw IDs to the user.
         """
 
+        # Require identifiers selected through inventory discovery before loading emissions.
         request_payload = _explicit_inventory_payload(
             action=INVENTORY_EMISSIONS_CONTEXT_ACTION,
             user_id=user_id,
@@ -331,6 +335,7 @@ def _explicit_inventory_payload(
     inventory_id: str,
 ) -> Dict[str, Any] | str:
     """Build a scoped inventory capability payload from default tool args."""
+    # Assemble the normalized result in deterministic order.
     if not city_id or not city_id.strip():
         return _error_payload(
             action=action,

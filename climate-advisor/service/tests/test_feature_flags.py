@@ -24,7 +24,3 @@ class FeatureFlagTests(unittest.TestCase):
             )
         )
         self.assertFalse(has_feature_flag(FeatureFlags.STATIONARY_ENERGY_AGENTIC, ""))
-
-
-if __name__ == "__main__":
-    unittest.main()

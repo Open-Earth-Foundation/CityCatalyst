@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 import logging
-import os
-import re
-import sys
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.config.settings import _load_llm_config
+from app.config.settings import Settings, _load_llm_config
 from app.db.session import get_session_factory
 
 # Import models and services from the service package
@@ -32,6 +29,7 @@ class VectorSearchMatch:
     file_path: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
+        """Serialize one vector match for an agent tool response."""
         # Return full content without truncation
         return {
             "filename": self.filename,
@@ -54,6 +52,7 @@ class ToolInvocationRecord:
     error: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
+        """Serialize tool invocation metadata and results."""
         payload = {
             "name": self.name,
             "status": self.status,
@@ -87,7 +86,7 @@ class ClimateVectorSearchTool:
     def __init__(
         self,
         *,
-        settings=None,
+        settings: Settings | None = None,
         session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
         embedding_service: Optional[EmbeddingService] = None,
     ) -> None:
@@ -114,6 +113,7 @@ class ClimateVectorSearchTool:
         self._embedding_service = embedding_service
 
     def _get_session_factory(self) -> Optional[async_sessionmaker[AsyncSession]]:
+        """Return the injected or lazily configured database session factory."""
         if self._session_factory is not None:
             return self._session_factory
         try:
@@ -126,6 +126,7 @@ class ClimateVectorSearchTool:
         return self._session_factory
 
     def _get_embedding_service(self) -> Optional[EmbeddingService]:
+        """Return the injected or lazily configured embedding service."""
         if self._embedding_service is not None:
             return self._embedding_service
         try:
@@ -260,6 +261,8 @@ class ClimateVectorSearchTool:
         embedding: EmbeddingResult,
         limit: int,
     ) -> ClimateToolResult:
+        """Query vector embeddings and assemble the tool result."""
+        # Build the distance query from the generated question embedding.
         logger.info(
             "Executing vector database search - model: %s, limit: %s, min_score: %s",
             embedding.model,
@@ -287,11 +290,13 @@ class ClimateVectorSearchTool:
             .limit(limit)
         )
 
+        # Fetch and score the bounded nearest-neighbor result set.
         result = await session.execute(stmt)
         rows = result.fetchall()
 
         logger.info("Vector search returned %s raw results from database", len(rows))
 
+        # Normalize rows and enforce the configured similarity threshold.
         matches: List[VectorSearchMatch] = []
         filtered_count = 0
         for row in rows:
@@ -335,6 +340,7 @@ class ClimateVectorSearchTool:
                 matches[0].score,
             )
 
+        # Return an explicit empty invocation when no evidence clears the threshold.
         if not matches:
             logger.warning(
                 "Vector search completed with no matches - question: '%s', raw_results: %s, filtered: %s",
@@ -360,6 +366,7 @@ class ClimateVectorSearchTool:
                 reason="no_matches",
             )
 
+        # Assemble the successful tool trace and prompt context.
         invocation = ToolInvocationRecord(
             name=self.tool_name,
             status="success",
@@ -381,6 +388,7 @@ class ClimateVectorSearchTool:
         )
 
     def _build_prompt_context(self, matches: Sequence[VectorSearchMatch]) -> str:
+        """Format vector matches as grounded context for the runtime prompt."""
         lines: List[str] = [
             "Relevant climate knowledge base excerpts were retrieved. Use them to ground your response when helpful.",
         ]

@@ -55,6 +55,7 @@ def notation_stage_message_payload(
     blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
 ) -> dict[str, Any]:
     """Build localized-message metadata after staging notation keys."""
+    # Assemble the normalized result in deterministic order.
     if selected_choices and not blocked_choices:
         return message_payload(
             "tool-message-notation-stage-success",
@@ -80,6 +81,7 @@ def bulk_confirmation_message_payload(
     pending_required_count: int,
 ) -> dict[str, Any]:
     """Build localized-message metadata for bulk confirmation previews."""
+    # Assemble the normalized result in deterministic order.
     if selected_choices and not blocked_choices:
         return message_payload(
             "tool-message-bulk-confirm-success",
@@ -105,6 +107,7 @@ def notation_bulk_confirmation_message_payload(
     blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
 ) -> dict[str, Any]:
     """Build localized-message metadata for notation-key bulk previews."""
+    # Assemble the normalized result in deterministic order.
     if selected_choices and not blocked_choices:
         return message_payload(
             "tool-message-notation-bulk-confirm-success",
@@ -129,6 +132,7 @@ def staged_change_confirmation_message_payload(
     blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
 ) -> dict[str, Any]:
     """Build localized-message metadata for staged-source change previews."""
+    # Assemble the normalized result in deterministic order.
     if selected_choices and not blocked_choices:
         return message_payload(
             "tool-message-staged-change-confirm-success",
@@ -154,6 +158,7 @@ def staged_rollback_confirmation_message_payload(
     pending_required_count: int,
 ) -> dict[str, Any]:
     """Build localized-message metadata for staged-source rollback previews."""
+    # Assemble the normalized result in deterministic order.
     if selected_choices and not blocked_choices:
         return message_payload(
             "tool-message-staged-rollback-confirm-success",
@@ -207,6 +212,7 @@ def notation_rollback_result_message_payload(
     blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
 ) -> dict[str, Any]:
     """Build localized-message metadata after rolling back staged notation keys."""
+    # Assemble the normalized result in deterministic order.
     if selected_choices and not blocked_choices:
         return message_payload(
             "tool-message-notation-rollback-success",

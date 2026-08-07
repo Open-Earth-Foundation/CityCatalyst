@@ -111,6 +111,7 @@ async def load_hiap_context(
     token: str,
 ) -> HiapContext:
     """Load persisted HIAP context without triggering prioritization."""
+    # Resolve the requested data and enforce its scope constraints.
     selected_inventory_id = inventory_uuid(selected_inventory)
     payload = await cc_client.load_hiap_context(
         request_payload={
@@ -164,6 +165,7 @@ def select_newest_inventory(
     city_id: UUID,
 ) -> Mapping[str, Any] | None:
     """Choose by year desc, update time desc, then inventory UUID asc."""
+    # Resolve the requested data and enforce its scope constraints.
     cities = data.get("cities")
     if not isinstance(cities, list):
         raise ConceptNoteCityContextDataError(
@@ -205,6 +207,7 @@ def compact_ghgi_context(
     emissions_data: Mapping[str, Any],
 ) -> GhgiContext:
     """Merge status and emissions into five ordered GPC sectors."""
+    # Validate the aggregate status and emissions contracts.
     completion = status_data.get("completion")
     if not isinstance(completion, Mapping) or completion.get("missing") is None:
         raise ConceptNoteCityContextDataError(
@@ -216,6 +219,7 @@ def compact_ghgi_context(
             "Inventory emissions total is missing"
         )
 
+    # Index both sources before assembling the ordered GPC sectors.
     status_by_sector = records_by_reference(status_data.get("by_sector"))
     emissions_by_sector = records_by_reference(emissions_data.get("by_sector"))
 
@@ -250,12 +254,14 @@ def compact_ghgi_context(
             )
         )
 
+    # Derive overall availability after all sector rows are normalized.
     overall_missing = count(completion.get("missing"))
     availability = (
         "partial"
         if overall_missing > 0 or any(sector.missing > 0 for sector in sectors)
         else "available"
     )
+    # Validate the final API model at the service boundary.
     try:
         return GhgiContext(
             availability=availability,
@@ -342,6 +348,7 @@ def parse_timestamp(value: Any) -> datetime:
 
 def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
     """Require and index each canonical GPC sector exactly once."""
+    # Enforce the canonical sector set before indexing records by reference.
     if not isinstance(value, list):
         raise ConceptNoteCityContextDataError("Sector data must be an array")
     indexed: dict[str, Mapping[str, Any]] = {}
@@ -369,6 +376,7 @@ def records_by_reference(value: Any) -> dict[str, Mapping[str, Any]]:
 
 def top_sources(value: Any) -> list[GhgiTopSource]:
     """Return at most five emitters ordered by emissions descending."""
+    # Validate emitter records before selecting the largest contributors.
     if not isinstance(value, list):
         raise ConceptNoteCityContextDataError("Top emitters must be an array")
 

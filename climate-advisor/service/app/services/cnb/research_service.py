@@ -11,7 +11,7 @@ from uuid import uuid4
 
 from openai import OpenAI
 
-from app.config import Settings, get_settings
+from app.config.settings import Settings, get_settings
 from app.models.cnb.research import (
     AgentTurn,
     FundingOpportunityResearchBundle,
@@ -219,6 +219,7 @@ def build_run_metadata(
     mlflow_run: object | None,
 ) -> ResearchRunMetadata:
     """Create reproducibility metadata from code-owned runtime facts."""
+    # Assemble the normalized result in deterministic order.
     run_info = getattr(mlflow_run, "info", None)
     mlflow_run_id = getattr(run_info, "run_id", None)
     return ResearchRunMetadata(
@@ -242,6 +243,7 @@ def log_run_artifacts(
     run_directory: Path,
 ) -> None:
     """Record the review bundle and trace in the active best-effort MLflow run."""
+    # Split opportunity and project records into review-friendly MLflow artifacts.
     funded_projects = [
         record for record in bundle.funding_records if not record.is_opportunity
     ]

@@ -10,11 +10,8 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_session_factory
-from app.middleware import get_request_id
-from app.models.db.stationary_energy_draft import (
-    StationaryEnergyDraftRun,
-    StationaryEnergyReviewDecision,
-)
+from app.middleware.request_context import get_request_id
+from app.models.db.stationary_energy_draft import StationaryEnergyDraftRun
 from app.models.stationary_energy_drafts import (
     DraftStalenessResponse,
     ListStationaryEnergyDraftsResponse,
@@ -122,6 +119,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> StartStationaryEnergyDraftResponse:
         """Create and start a new Stationary Energy draft run."""
+        # Resolve a fresh session and reload the durable draft state.
         trace_id = get_request_id()
         if payload.thread_id is not None:
             thread = await self.thread_service.get_thread(payload.thread_id)
@@ -173,6 +171,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> StartStationaryEnergyDraftResponse:
         """Retry a non-terminal draft run using the latest available token context."""
+        # Apply the state transition while preserving workflow invariants.
         trace_id = get_request_id()
         draft_run = await self._get_draft_run_or_404(draft_run_id)
         token, allowed_capabilities = await self._require_scope_token_and_capabilities(
@@ -218,6 +217,7 @@ class StationaryEnergyDraftService:
         operation: str = "start",
     ) -> StartStationaryEnergyDraftResponse:
         """Run Stationary Energy draft generation inside an MLflow request run."""
+        # Open a request-scoped trace with stable workflow metadata.
         started_at = time.perf_counter()
         with start_run(
             run_name=f"stationary_energy_draft_{operation}_request",
@@ -244,6 +244,7 @@ class StationaryEnergyDraftService:
                 ),
             },
         ):
+            # Capture the bounded generation inputs before orchestration begins.
             log_json_artifact(
                 "request/stationary_energy_draft_generation.json",
                 {
@@ -258,6 +259,7 @@ class StationaryEnergyDraftService:
                     "allowed_capabilities": allowed_capabilities,
                 },
             )
+            # Execute generation and record either its response or failure artifact.
             try:
                 response = await self._run_draft_generation_impl(
                     draft_run=draft_run,
@@ -468,6 +470,7 @@ class StationaryEnergyDraftService:
         trace_id: str | None,
     ) -> None:
         """Run background proposal generation inside its own MLflow run."""
+        # Open a nested trace for the asynchronous generation task.
         started_at = time.perf_counter()
         with start_run(
             run_name="stationary_energy_draft_generation_background",
@@ -489,6 +492,7 @@ class StationaryEnergyDraftService:
             },
             nested=True,
         ):
+            # Snapshot background inputs before opening a fresh database session.
             log_json_artifact(
                 "generation/background_input.json",
                 {
@@ -506,6 +510,7 @@ class StationaryEnergyDraftService:
                     "trace_id": trace_id,
                 },
             )
+            # Delegate durable generation and failure recovery to the worker body.
             await self._generate_rows_background_impl(
                 draft_run_id=draft_run_id,
                 context=context,
@@ -536,6 +541,7 @@ class StationaryEnergyDraftService:
         started_at: float,
     ) -> None:
         """Generate deterministic proposals in a fresh DB session."""
+        # Execute the workflow in ordered, observable stages.
         factory = get_session_factory()
         rows = list(context.taxonomy)
         try:
@@ -559,6 +565,7 @@ class StationaryEnergyDraftService:
                     }
                 )
 
+                # Generate and persist deterministic proposals from the context snapshot.
                 total = 0
                 proposals = build_deterministic_proposals(
                     taxonomy_rows=rows,
@@ -585,6 +592,7 @@ class StationaryEnergyDraftService:
                         len(rows),
                     )
 
+                # Finalize the run with its compact context and permission summaries.
                 summary = context_summary(
                     context,
                     allowed_capabilities,
@@ -605,6 +613,7 @@ class StationaryEnergyDraftService:
                 )
                 await session.commit()
 
+                # Attach the active draft to its thread without failing the completed run.
                 try:
                     await persist_thread_draft_run_id(
                         thread_service=service.thread_service,
@@ -633,6 +642,7 @@ class StationaryEnergyDraftService:
                         "taxonomy_rows": len(rows),
                     },
                 )
+        # Persist a terminal failure snapshot from an independent recovery session.
         except Exception as exc:
             logger.exception(
                 "Stationary Energy deterministic generation failed run=%s: %s",
@@ -679,6 +689,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
         """Return the persisted draft snapshot plus connected-source staleness metadata."""
+        # Resolve the requested data and enforce its scope constraints.
         draft_run = await self._get_draft_run_or_404(draft_run_id)
         await self._require_scope_token_and_capabilities(
             requested_user_id=requested_user_id,
@@ -705,6 +716,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> StationaryEnergyDraftStatusResponse:
         """Return the latest active draft for a user and Stationary Energy scope."""
+        # Revalidate the requested scope before exposing a resumable draft.
         await self._require_scope_token_and_capabilities(
             requested_user_id=requested_user_id,
             city_id=city_id,
@@ -740,6 +752,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> ListStationaryEnergyDraftsResponse:
         """Return every active draft for a user and Stationary Energy scope."""
+        # Resolve the requested data and enforce its scope constraints.
         await self._require_scope_token_and_capabilities(
             requested_user_id=requested_user_id,
             city_id=city_id,
@@ -766,6 +779,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
         """Persist review decisions inside an MLflow Climate Advisor run."""
+        # Load and authorize the complete draft-review scope.
         started_at = time.perf_counter()
         with start_run(
             run_name="stationary_energy_review_request",
@@ -816,6 +830,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> ReviewStationaryEnergyDraftResponse:
         """Persist a complete review decision set and finalize staged choices."""
+        # Apply the state transition while preserving workflow invariants.
         draft_run = await self._get_draft_run_or_404(draft_run_id)
         log_tags(
             {
@@ -835,6 +850,7 @@ class StationaryEnergyDraftService:
             raise HTTPException(status_code=403, detail="Draft run does not belong to user")
         self._require_generation_complete(draft_run)
 
+        # Validate and materialize one versioned decision per proposal.
         proposal_by_id = {
             proposal.proposal_id: proposal for proposal in draft_run.proposals
         }
@@ -861,6 +877,7 @@ class StationaryEnergyDraftService:
             candidate_by_datasource=candidate_by_datasource,
             next_review_versions=next_review_versions,
         )
+        # Record the normalized review artifact before persistence.
         log_json_artifact(
             "review/review_decisions.json",
             {
@@ -870,6 +887,7 @@ class StationaryEnergyDraftService:
             },
         )
 
+        # Persist decisions, consume staged choices, and advance workflow state.
         await self.repository.persist_review_decisions(decisions)
         await self.repository.mark_staged_review_selections_saved(
             draft_run_id=draft_run.draft_run_id,
@@ -881,6 +899,7 @@ class StationaryEnergyDraftService:
             workflow_step="review",
         )
 
+        # Assemble the API response from the saved decision models.
         return ReviewStationaryEnergyDraftResponse(
             draft_run_id=draft_run.draft_run_id,
             user_id=payload.user_id,
@@ -898,6 +917,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> SaveStationaryEnergyDraftResponse:
         """Commit reviewed rows inside an MLflow Climate Advisor run."""
+        # Load the reviewed draft and enforce ownership and workflow readiness.
         started_at = time.perf_counter()
         with start_run(
             run_name="stationary_energy_save_request",
@@ -943,6 +963,7 @@ class StationaryEnergyDraftService:
         authorization: str | None = None,
     ) -> SaveStationaryEnergyDraftResponse:
         """Commit accepted reviewed rows into CityCatalyst and persist the outcome."""
+        # Apply the state transition while preserving workflow invariants.
         draft_run = await self._get_draft_run_or_404(draft_run_id)
         log_tags(
             {
@@ -967,6 +988,7 @@ class StationaryEnergyDraftService:
                 detail="Draft has no review decisions to save",
             )
 
+        # Refresh authorization and resolve the current commit capabilities.
         token = await self.ensure_user_token(
             user_id=payload.user_id,
             thread_id=draft_run.thread_id,
@@ -985,6 +1007,7 @@ class StationaryEnergyDraftService:
                 detail="Stationary Energy save is not allowed for this draft",
             )
 
+        # Select only the latest decisions that still require a CityCatalyst commit.
         latest_decisions = latest_review_decisions(draft_run.review_decisions)
         pending_decisions = [
             decision
@@ -999,6 +1022,7 @@ class StationaryEnergyDraftService:
             )
             return to_save_response(draft_run, status_override="no_changes")
 
+        # Partition pending decisions into ordinary and notation-key commit rows.
         proposal_by_id = {
             proposal.proposal_id: proposal for proposal in draft_run.proposals
         }
@@ -1012,6 +1036,7 @@ class StationaryEnergyDraftService:
                 detail="Stationary Energy notation-key save is not allowed for this draft",
             )
 
+        # Commit accepted sources and manual overrides through the ordinary endpoint.
         cc_results: list[dict[str, Any]] = []
         if rows:
             commit_payload = {
@@ -1045,6 +1070,7 @@ class StationaryEnergyDraftService:
                 )
             cc_results = [result for result in raw_results if isinstance(result, dict)]
 
+        # Commit notation keys through their capability-gated endpoint.
         notation_results: list[dict[str, Any]] = []
         if notation_rows:
             notation_payload = {
@@ -1085,6 +1111,7 @@ class StationaryEnergyDraftService:
                 result for result in raw_notation_results if isinstance(result, dict)
             ]
 
+        # Merge remote and local results back into versioned review decisions.
         results_by_key: dict[tuple[str, int], dict[str, Any]] = {}
         for result in [*cc_results, *notation_results, *local_results]:
             key = commit_result_key(result)
@@ -1095,6 +1122,7 @@ class StationaryEnergyDraftService:
             pending_decisions=pending_decisions,
             results_by_key=results_by_key,
         )
+        # Derive and persist the final save state before responding.
         save_status = save_status_after_commit(
             latest_decisions=latest_decisions,
             attempted=pending_decisions,
@@ -1119,6 +1147,7 @@ class StationaryEnergyDraftService:
         workflow: str,
     ) -> dict[str, object]:
         """Build common MLflow tags for Stationary Energy agentic runs."""
+        # Use one stable tag set across Stationary Energy workflow traces.
         return {
             "request_kind": request_kind,
             "endpoint": endpoint,
@@ -1143,6 +1172,7 @@ class StationaryEnergyDraftService:
         extra: dict[str, Any] | None = None,
     ) -> None:
         """Log operation duration metrics and a small summary artifact."""
+        # Record bounded timing metadata without logging request payloads or tokens.
         duration_ms = (time.perf_counter() - started_at) * 1000
         extra = extra or {}
         numeric_extra = {
@@ -1226,6 +1256,7 @@ class StationaryEnergyDraftService:
         token: str,
     ) -> list[str]:
         """Load allowed capabilities while mapping CC auth failures to local HTTP errors."""
+        # Resolve the requested data and enforce its scope constraints.
         try:
             return await self.cc_client.get_stationary_energy_allowed_capabilities(
                 user_id=user_id,
@@ -1255,6 +1286,7 @@ class StationaryEnergyDraftService:
         token: str | None,
     ) -> str:
         """Return a usable CityCatalyst token, refreshing and persisting it when needed."""
+        # Reject absent credentials before attempting refresh or persistence.
         if not token:
             raise HTTPException(
                 status_code=401,
@@ -1304,6 +1336,7 @@ class StationaryEnergyDraftService:
         token: str,
     ) -> LoadStationaryEnergyContextResponse:
         """Load and normalize the bounded Stationary Energy context payload from CC."""
+        # Resolve the requested data and enforce its scope constraints.
         context_request = LoadStationaryEnergyContextRequest(
             user_id=user_id,
             city_id=city_id,
@@ -1331,6 +1364,7 @@ class StationaryEnergyDraftService:
         trace_id: str | None,
     ) -> None:
         """Persist a failed draft status plus a redacted error summary."""
+        # Apply the state transition while preserving workflow invariants.
         await self.repository.update_draft_run(
             draft_run,
             status="failed",
@@ -1351,6 +1385,7 @@ class StationaryEnergyDraftService:
         authorization: str | None,
     ) -> DraftStalenessResponse:
         """Compare the stored draft snapshot to the current connected source set."""
+        # Assemble the normalized result in deterministic order.
         if draft_run.status in GENERATION_IN_PROGRESS_STATUSES:
             return DraftStalenessResponse()
 

@@ -14,11 +14,10 @@ from __future__ import annotations
 import json
 import logging
 from typing import Any, Dict, List, Optional, Tuple
-from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.config import get_settings
+from app.config.settings import get_settings
 from app.models.db.message import Message, MessageRole
 from app.services.message_service import MessageService
 
@@ -33,7 +32,7 @@ class HistoryManager:
         thread_id: Any,
         user_id: str,
         session_factory: Optional[async_sessionmaker[AsyncSession]],
-    ):
+    ) -> None:
         """Initialize the history manager.
 
         Args:
@@ -60,6 +59,7 @@ class HistoryManager:
             List of Message objects ordered oldest -> newest. Returns empty list
             if database is unavailable.
         """
+        # Resolve the requested data and enforce its scope constraints.
         if not self.session_factory:
             logger.debug("Session factory unavailable; returning empty message history")
             return []
@@ -208,6 +208,7 @@ class HistoryManager:
             The Agents SDK forwards these dicts directly to the OpenAI Responses API as
             `input[]` items, and unknown fields (like `tools_used`) cause a 400 error.
         """
+        # Emit only fields accepted by the Responses API message contract.
         msg_dict: Dict[str, Any] = {
             "role": message.role.value,
             "content": message.text,

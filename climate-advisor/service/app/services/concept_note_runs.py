@@ -15,7 +15,7 @@ from app.models.concept_note_runs import (
     ConceptNoteStartRequest,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.runs import ConceptNoteRunRepository
+from app.db.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
@@ -50,6 +50,7 @@ class ConceptNoteRunService:
         authorization: str | None,
     ) -> ConceptNoteRunResponse:
         """Create or replay a run after validating user and city access."""
+        # Execute the workflow in ordered, observable stages.
         token = _require_bearer_token(authorization)
         await self._authorize_scope(
             token=token,
@@ -92,6 +93,7 @@ class ConceptNoteRunService:
         authorization: str | None,
     ) -> ConceptNoteRunResponse:
         """Return an owned run after revalidating current city access."""
+        # Resolve the requested data and enforce its scope constraints.
         token = _require_bearer_token(authorization)
         canonical_user_id = await self._authorize_user(
             token=token,
@@ -120,6 +122,7 @@ class ConceptNoteRunService:
         authorization: str | None,
     ) -> ConceptNoteRunListResponse:
         """Return the authenticated user's runs for one accessible city."""
+        # Resolve the requested data and enforce its scope constraints.
         token = _require_bearer_token(authorization)
         canonical_user_id = await self._authorize_scope(
             token=token,

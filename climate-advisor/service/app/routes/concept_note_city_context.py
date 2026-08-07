@@ -13,7 +13,7 @@ from app.models.concept_note_city_context import (
     GhgiContext,
     HiapContext,
 )
-from app.persistence.concept_notes.city_context import (
+from app.db.concept_notes.city_context import (
     ConceptNoteCityContextRepository,
     ConceptNoteCityContextRepositoryError,
     get_concept_note_city_context_repository,

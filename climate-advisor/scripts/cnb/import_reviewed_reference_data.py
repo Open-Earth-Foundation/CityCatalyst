@@ -42,6 +42,7 @@ logger = logging.getLogger(__name__)
 
 def parse_args() -> argparse.Namespace:
     """Parse paired artifact paths, database environment, and execution mode."""
+    # Keep validation-only mode explicit so imports never happen by accident.
     parser = argparse.ArgumentParser(
         description="Validate and import reviewed CNB funded-project reference data."
     )
@@ -83,15 +84,14 @@ def main() -> None:
     """Load, pair, validate, and optionally import reviewed reference data."""
     # Step 1: configure CLI logging and the service import path.
     args = parse_args()
-    logging.basicConfig(
-        level=getattr(logging, args.log_level),
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
     service_directory = Path(__file__).resolve().parents[2] / "service"
     if str(service_directory) not in sys.path:
         sys.path.insert(0, str(service_directory))
 
     from app.models.cnb.research import FundingOpportunityResearchBundle
+    from app.utils.logging_config import configure_logging
+
+    configure_logging(level=args.log_level)
     from app.services.cnb.review_import import (
         PostgresReviewedReferenceDataWriter,
         ReviewedReferenceDataArtifact,

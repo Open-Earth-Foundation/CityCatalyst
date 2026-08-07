@@ -1,3 +1,1 @@
-from app.db.base import Base, metadata
-
-__all__ = ["Base", "metadata"]
+"""Database session, metadata, and persistence package."""

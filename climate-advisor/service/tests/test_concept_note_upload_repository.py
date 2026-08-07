@@ -10,13 +10,13 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from app.db import Base
+from app.db.base import Base
 from app.models.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteUploadCreateRequest,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
-from app.persistence.concept_notes.markdown import (
+from app.db.concept_notes.markdown import (
     ConceptNoteMarkdownRepositoryError,
     SqlAlchemyConceptNoteMarkdownRepository,
 )

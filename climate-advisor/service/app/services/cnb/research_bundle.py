@@ -265,6 +265,7 @@ def preserve_authoritative_seeds(
     conflicts: list[ResearchConflict],
 ) -> tuple[FunderDraft, list[FundingRecordDraft]]:
     """Restore request names and retain model-proposed replacements as conflicts."""
+    # Normalize the source values while preserving authoritative data.
     opportunity = next(item for item in funding_records if item.is_opportunity)
     checks = {
         "funder.name": (funder.name, request.funder_name),
@@ -304,6 +305,7 @@ def retain_conflict_evidence(
     evidence: list[FieldEvidence],
 ) -> tuple[list[ResearchConflict], list[ResearchGap]]:
     """Remove conflict links to evidence rejected by current-run provenance checks."""
+    # Normalize the source values while preserving authoritative data.
     retained_refs = {item.evidence_ref for item in evidence}
     validated_conflicts: list[ResearchConflict] = []
     gaps: list[ResearchGap] = []
@@ -380,6 +382,7 @@ def parse_publication_date(
     gaps: list[ResearchGap],
 ) -> date | None:
     """Parse model-facing ISO dates without rejecting the full research result."""
+    # Normalize the source values while preserving authoritative data.
     if assessment is None or assessment.publication_date is None:
         return None
     try:
@@ -407,6 +410,7 @@ def add_evidence_coverage_gaps(
     gaps: list[ResearchGap],
 ) -> list[ResearchGap]:
     """Flag populated material fields that do not have source evidence."""
+    # Add only newly discovered gaps so repeated validation stays idempotent.
     additions = [
         ResearchGap(
             target_path=path,
@@ -467,6 +471,7 @@ def material_paths(
     funder_criteria: list[FunderCriterionDraft],
 ) -> Iterable[str]:
     """Yield populated non-seed leaves using stable record references in paths."""
+    # Exclude seeded request fields because they do not require external evidence.
     opportunity = next(item for item in funding_records if item.is_opportunity)
     seed_paths = {
         "funder.name",
@@ -481,6 +486,7 @@ def material_paths(
 
     def walk(value: JsonValue, path: str) -> Iterable[str]:
         """Recursively yield evidence paths for populated JSON values."""
+        # Walk containers recursively while preserving stable reference-based paths.
         if isinstance(value, dict):
             for key, item in value.items():
                 child_path = f"{path}.{key}" if path else key

@@ -18,12 +18,17 @@ logger = logging.getLogger(__name__)
 
 
 class ThreadService:
-    def __init__(self, session: AsyncSession):
+    """Persist, authorize, and update Climate Advisor threads."""
+
+    def __init__(self, session: AsyncSession) -> None:
+        """Bind the service to an async database session."""
         self.session = session
 
     async def create_thread(
         self, payload: ThreadCreateRequest, *, thread_id: Optional[Union[str, UUID]] = None
     ) -> Thread:
+        """Create and flush a thread with an optional caller-supplied UUID."""
+        # Execute the workflow in ordered, observable stages.
         if thread_id is None:
             thread_uuid = uuid4()
         elif isinstance(thread_id, UUID):
@@ -46,6 +51,7 @@ class ThreadService:
         return thread
 
     async def get_thread(self, thread_id: Union[str, UUID]) -> Thread | None:
+        """Return a thread by UUID, raising for malformed identifiers."""
         # Validate UUID format before querying
         original_thread_id = thread_id
         if isinstance(thread_id, str):
@@ -67,6 +73,7 @@ class ThreadService:
         return result.scalar_one_or_none()
 
     async def touch_thread(self, thread: Thread) -> None:
+        """Update a thread's last-active timestamp and flush it."""
         thread.last_updated = datetime.now(timezone.utc)
         await self.session.flush()
 
@@ -77,6 +84,7 @@ class ThreadService:
             ThreadNotFoundException: if the thread does not exist.
             ThreadAccessDeniedException: if the thread belongs to a different user.
         """
+        # Resolve the requested data and enforce its scope constraints.
         logger.debug(
             "Getting thread for user - thread_id=%r (type=%s), user_id=%s",
             thread_id,

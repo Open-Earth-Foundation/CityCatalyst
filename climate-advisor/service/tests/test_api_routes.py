@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import StaticPool
 
 from app.main import get_app
-from app.db import Base
+from app.db.base import Base
 
 
 class HealthRouteTests(unittest.TestCase):
@@ -357,8 +357,6 @@ class ResponseFormatTests(unittest.TestCase):
         
         # OPTIONS should return 200 if CORS is enabled
         self.assertEqual(response.status_code, 200)
-
-
 class CORSTests(unittest.TestCase):
     """Tests for CORS configuration."""
 
@@ -372,7 +370,3 @@ class CORSTests(unittest.TestCase):
         
         # Check that we can set CORS headers (depends on configuration)
         self.assertEqual(response.status_code, 200)
-
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)

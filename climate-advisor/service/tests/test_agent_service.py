@@ -683,7 +683,3 @@ class InventoryToolIntegrationTests(unittest.TestCase):
                 instructions,
             )
             mock_settings.llm.prompts.get_prompt.assert_not_called()
-
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)

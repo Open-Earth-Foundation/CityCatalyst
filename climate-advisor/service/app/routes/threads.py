@@ -30,7 +30,9 @@ async def create_thread(
     payload: ThreadCreateRequest,
     response: Response,
     session: AsyncSession = Depends(get_session),
-):
+) -> ThreadCreateResponse:
+    """Create and persist a thread for the requesting user."""
+    # Execute the workflow in ordered, observable stages.
     logger.info(
         "=== POST /threads request received ===\n"
         "  user_id: %s\n"
@@ -84,6 +86,7 @@ async def create_thread(
 
 @router.options("/threads", include_in_schema=False)
 async def options_threads() -> Response:
+    """Return the CORS preflight response for thread creation."""
     return Response(status_code=status.HTTP_200_OK)
 
 
@@ -97,6 +100,8 @@ async def get_thread_messages(
     limit: int | None = Query(default=None, ge=1, le=100),
     session: AsyncSession = Depends(get_session),
 ) -> ThreadMessagesResponse:
+    """Return an owned thread's messages in chronological order."""
+    # Resolve the requested data and enforce its scope constraints.
     thread_service = ThreadService(session)
     message_service = MessageService(session)
     thread = await thread_service.get_thread_for_user(thread_id, user_id)

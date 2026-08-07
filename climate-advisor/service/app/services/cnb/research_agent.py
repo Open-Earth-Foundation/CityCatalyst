@@ -300,6 +300,7 @@ def structured_output_retry_input(
     validation_error: ValidationError,
 ) -> str | list[dict[str, JsonValue]]:
     """Add a compact correction instruction for a schema-invalid model result."""
+    # Keep retry feedback compact so validation errors do not consume the prompt budget.
     errors = validation_error.errors(include_url=False, include_input=False)
     error_lines = []
     for error in errors:

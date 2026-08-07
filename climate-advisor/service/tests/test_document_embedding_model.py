@@ -4,7 +4,7 @@ import unittest
 
 from pgvector.sqlalchemy import Vector
 
-from vector_db.models.document import DocumentEmbedding
+from app.models.db.document_embedding import DocumentEmbedding
 
 
 class DocumentEmbeddingModelTests(unittest.TestCase):
@@ -40,7 +40,3 @@ class DocumentEmbeddingModelTests(unittest.TestCase):
     def test_filename_chunk_composite_index_exists(self) -> None:
         index_columns = {tuple(index.columns.keys()) for index in DocumentEmbedding.__table__.indexes}
         self.assertIn(("filename", "chunk_index"), index_columns)
-
-
-if __name__ == "__main__":
-    unittest.main()

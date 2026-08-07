@@ -141,6 +141,7 @@ async def retry_stationary_energy_draft(
     session: AsyncSession = Depends(get_session),
 ) -> StartStationaryEnergyDraftResponse:
     """Retry a draft run after revalidating the request bearer token with CC."""
+    # Apply the state transition while preserving workflow invariants.
     service = StationaryEnergyDraftService(session)
     try:
         response = await service.retry_draft(

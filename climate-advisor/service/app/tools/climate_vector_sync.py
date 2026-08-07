@@ -9,12 +9,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Optional
 
 from agents import function_tool
 
-from app.tools.climate_vector_tool import ClimateVectorSearchTool, ClimateToolResult
-from app.config import get_settings
+from app.config.settings import get_settings
+from app.tools.climate_vector_tool import ClimateToolResult, ClimateVectorSearchTool
 
 logger = logging.getLogger(__name__)
 
@@ -142,5 +141,5 @@ async def climate_vector_search(question: str) -> str:
         - "Show me my inventory data"
         - "What inventories do I have access to?"
     """
+    # Delegate through the shared async search path to keep sync and agent behavior aligned.
     return await _run_vector_search(question)
-

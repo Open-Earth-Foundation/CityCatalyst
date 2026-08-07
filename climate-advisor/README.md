@@ -424,7 +424,7 @@ Recommended (uses `docker-compose.yml` in `climate-advisor/`):
 
 ```bash
 cd climate-advisor
-docker compose up -d postgres
+docker compose up -d --wait postgres
 ```
 
 Make sure Docker Desktop (or another Docker daemon) is running before invoking
@@ -443,14 +443,14 @@ without CityCatalyst using that port, `localhost:5432` can also work.
 Manual alternative:
 
 ```bash
-docker run --name ca-postgres \
+docker run --name climate-advisor-db-manual \
   -e POSTGRES_USER=climateadvisor \
   -e POSTGRES_PASSWORD=climateadvisor \
   -e POSTGRES_DB=climateadvisor \
   -p 5432:5432 \
   -d pgvector/pgvector:pg15
 
-docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+docker exec climate-advisor-db-manual psql -U climateadvisor -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
 ```
 
 ### 4. Install Dependencies And Setup Database
@@ -458,7 +458,7 @@ docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTE
 ```bash
 cd climate-advisor
 uv sync --locked --group dev
-uv run python scripts/setup_database.py
+uv run --directory service python -m scripts.setup_database
 ```
 
 ### 5. Run The Service
@@ -744,7 +744,7 @@ cd climate-advisor
 cp /path/to/documents/*.pdf vector_db/files/
 
 # Process PDFs and upload embeddings
-uv run python vector_db/upload_to_db.py --directory vector_db/files
+uv run --directory service python -m scripts.upload_vector_documents --directory ../vector_db/files
 ```
 
 ### 2. Vector Search Configuration
@@ -767,7 +767,7 @@ embedding_service:
 ### 3. Create Vector Index (After Data)
 
 ```bash
-docker exec ca-postgres psql -U climateadvisor -d climateadvisor << EOF
+docker compose exec -T postgres psql -U climateadvisor -d climateadvisor << EOF
 CREATE INDEX IF NOT EXISTS ix_document_embeddings_vector
 ON document_embeddings
 USING ivfflat (embedding_vector vector_cosine_ops)
@@ -1121,10 +1121,10 @@ uv run --directory service python -m alembic current
 
 ```bash
 # Verify pgvector extension
-docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "\dx vector"
+docker compose exec postgres psql -U climateadvisor -d climateadvisor -c "\dx vector"
 
 # Check embeddings table
-docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "SELECT COUNT(*) FROM document_embeddings;"
+docker compose exec postgres psql -U climateadvisor -d climateadvisor -c "SELECT COUNT(*) FROM document_embeddings;"
 ```
 
 ### Token Refresh Failures

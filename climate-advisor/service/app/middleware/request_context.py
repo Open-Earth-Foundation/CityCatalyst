@@ -1,3 +1,5 @@
+from collections.abc import Awaitable, Callable
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
@@ -14,12 +16,18 @@ _request_id_ctx: contextvars.ContextVar[str] = contextvars.ContextVar("request_i
 
 
 def get_request_id() -> str:
+    """Return the request ID bound to the current context."""
     rid = _request_id_ctx.get()
     return rid
 
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(
+        self,
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]],
+    ) -> Response:
+        """Bind a request ID and log request duration and outcome."""
         # Capture or create request id
         req_id = request.headers.get("x-request-id") or str(uuid.uuid4())
         _request_id_ctx.set(req_id)

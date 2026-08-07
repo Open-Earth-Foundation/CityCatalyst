@@ -206,7 +206,3 @@ class ClimateVectorSearchToolBehaviorTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result.invocation.status, "no_results")
         self.assertEqual(result.invocation.arguments.get("top_k"), _default_top_k)
         self.assertEqual(result.invocation.results, [])
-
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)

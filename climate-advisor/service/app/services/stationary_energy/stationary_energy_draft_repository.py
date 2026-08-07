@@ -34,6 +34,7 @@ class StationaryEnergyDraftRepository:
         trace_id: str | None,
     ) -> StationaryEnergyDraftRun:
         """Insert a new Stationary Energy draft run row and flush it."""
+        # Execute the workflow in ordered, observable stages.
         draft_run = StationaryEnergyDraftRun(
             user_id=user_id,
             city_id=city_id,
@@ -169,6 +170,7 @@ class StationaryEnergyDraftRepository:
         trace_id: str | None = None,
     ) -> StationaryEnergyDraftRun:
         """Apply partial field updates to a draft run and flush them."""
+        # Apply the state transition while preserving workflow invariants.
         if status is not None:
             draft_run.status = status
         if workflow_step is not None:
@@ -189,6 +191,7 @@ class StationaryEnergyDraftRepository:
         candidates: list[dict[str, Any]],
     ) -> list[StationaryEnergyDraftSourceCandidate]:
         """Replace the stored candidate snapshot for a draft run."""
+        # Apply the state transition while preserving workflow invariants.
         await self.session.execute(
             delete(StationaryEnergyDraftSourceCandidate).where(
                 StationaryEnergyDraftSourceCandidate.draft_run_id == draft_run_id
@@ -213,6 +216,7 @@ class StationaryEnergyDraftRepository:
         proposals: list[dict[str, Any]],
     ) -> list[StationaryEnergyDraftProposal]:
         """Replace the stored proposal snapshot for a draft run."""
+        # Apply the state transition while preserving workflow invariants.
         await self.session.execute(
             delete(StationaryEnergyDraftProposal).where(
                 StationaryEnergyDraftProposal.draft_run_id == draft_run_id
@@ -341,6 +345,7 @@ class StationaryEnergyDraftRepository:
         proposal_ids: set[UUID] | None = None,
     ) -> list[StationaryEnergyStagedReviewSelection]:
         """Mark active staged selections as rolled back."""
+        # Apply the state transition while preserving workflow invariants.
         selections = await self.get_staged_review_selections(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -363,6 +368,7 @@ class StationaryEnergyDraftRepository:
         proposal_ids: list[UUID],
     ) -> dict[UUID, int]:
         """Return the next decision version number for each reviewed proposal."""
+        # Resolve the requested data and enforce its scope constraints.
         if not proposal_ids:
             return {}
 

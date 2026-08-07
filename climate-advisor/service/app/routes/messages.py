@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Union
-from uuid import UUID
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.config import get_settings
+from app.config.settings import get_settings
 from app.db.session import get_session_factory, get_session_optional
-from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
@@ -32,6 +30,7 @@ configure_agents_tracing(settings)
 
 @router.options("/messages", include_in_schema=False)
 async def options_messages() -> Response:
+    """Return the CORS preflight response for message streaming."""
     return Response(status_code=200)
 
 

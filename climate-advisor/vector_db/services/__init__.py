@@ -1,1 +1,1 @@
-# Vector database services
+"""Vector database service package."""

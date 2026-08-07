@@ -1,41 +1,34 @@
 """
-Review CA E2E output with the same LLM and print pass/fail summary.
+Brief: Grade saved Climate Advisor E2E responses with the configured LLM.
 
-Usage (from climate-advisor/):
-  uv run --directory service python -m scripts.review_ca_e2e
+Inputs:
+- CLI args: `--input` selects the response JSON, `--model` optionally overrides
+  the configured orchestrator, and `--output` selects the report path.
+- Files/paths: reads a JSON list produced by `scripts.run_ca_e2e`.
+- Env vars: `OPENROUTER_API_KEY` authorizes the configured review model.
 
-Optional flags:
-  --input  Path to the CA E2E response JSON (default: tests/output/ca_e2e_responses.json)
-  --model  Model override (default: llm_config.yaml default model)
-  --output Path to save the evaluation JSON (default: <input_dir>/responses_eval.json)
+Outputs:
+- Writes a JSON pass-rate report and prints a compact failed-case summary.
 
-Required environment:
-  OPENROUTER_API_KEY
-
-Output:
-  Writes a JSON summary with pass rate and failed cases to responses_eval.json
-  in the same folder as the input file (unless --output is provided).
+Usage (from project root):
+- uv run --directory service python -m scripts.review_ca_e2e
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
 import openai
 from agents import Agent, RunConfig, Runner, ToolCallOutputItem, function_tool
 from agents.model_settings import ModelSettings
+from agents.result import RunResult
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = SERVICE_ROOT.parent
-for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
-    if import_root not in sys.path:
-        sys.path.insert(0, import_root)
 
-from app.config import get_settings
+from app.config.settings import get_settings
 from app.services.openrouter_client import build_openrouter_client_options
 
 TEST_ROOT = SERVICE_ROOT / "tests"
@@ -80,6 +73,7 @@ def _load_cases(path: Path) -> List[Dict[str, Any]]:
 
 def _build_review_prompt(case: Dict[str, Any]) -> str:
     """Build the bounded grading prompt for one recorded CA E2E case."""
+    # Retain only the request and response evidence needed by the grader.
     request = case.get("request") or {}
     if not isinstance(request, dict):
         request = {}
@@ -112,7 +106,7 @@ def _build_review_prompt(case: Dict[str, Any]) -> str:
     )
 
 
-def _extract_decision(result) -> Optional[str]:
+def _extract_decision(result: RunResult) -> Optional[str]:
     """Extract the Yes/No grading tool output from an agent run result."""
     for item in result.new_items:
         if isinstance(item, ToolCallOutputItem):
@@ -122,19 +116,21 @@ def _extract_decision(result) -> Optional[str]:
     return None
 
 
-def main() -> int:
-    """Review saved CA E2E cases with the LLM and write a summary report."""
+def parse_args() -> argparse.Namespace:
+    """Parse response input, model override, and report destination."""
+    # Keep provider selection optional so centralized configuration remains default.
     parser = argparse.ArgumentParser(
         description="Review CA E2E responses with the LLM and print pass rate.",
     )
     parser.add_argument(
         "--input",
-        default=str(DEFAULT_INPUT_PATH),
+        type=Path,
+        default=DEFAULT_INPUT_PATH,
         help="Path to the CA E2E response JSON.",
     )
     parser.add_argument(
         "--model",
-        default=None,
+        type=Path,
         help="Optional model override (defaults to llm_config.yaml).",
     )
     parser.add_argument(
@@ -142,29 +138,31 @@ def main() -> int:
         default=None,
         help="Path to save the evaluation JSON.",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main() -> None:
+    """Review saved CA E2E cases with the LLM and write a summary report."""
+    # Validate local artifacts and configuration before starting provider calls.
+    args = parse_args()
 
     try:
         default_model = _configure_openrouter()
     except RuntimeError as exc:
-        print(str(exc), file=sys.stderr)
-        return 1
+        raise SystemExit(str(exc)) from exc
 
     model = args.model or default_model
-    input_path = Path(args.input)
+    input_path = args.input
     if not input_path.exists():
-        print(f"Input file not found: {input_path}", file=sys.stderr)
-        return 1
+        raise SystemExit(f"Input file not found: {input_path}")
 
     try:
         cases = _load_cases(input_path)
     except ValueError as exc:
-        print(str(exc), file=sys.stderr)
-        return 1
+        raise SystemExit(str(exc)) from exc
 
     if not cases:
-        print("No cases found in the input file.", file=sys.stderr)
-        return 1
+        raise SystemExit("No cases found in the input file")
 
     settings = get_settings()
     temperature = settings.llm.models.orchestrator.temperature
@@ -225,7 +223,7 @@ def main() -> int:
     total = passed + len(failed)
     pass_rate = (passed / total) * 100 if total else 0.0
 
-    output_path = Path(args.output) if args.output else input_path.parent / "responses_eval.json"
+    output_path = args.output or input_path.parent / "responses_eval.json"
     output_payload = {
         "input_path": str(input_path),
         "model": model,
@@ -246,8 +244,7 @@ def main() -> int:
             print(f"- {case.get('name')}: {question}")
             if case.get("error"):
                 print(f"  reason: {case['error']}")
-    return 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()

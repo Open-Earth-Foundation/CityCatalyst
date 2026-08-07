@@ -1,2 +1,2 @@
-__all__ = []
+"""Climate Advisor FastAPI application package."""
 

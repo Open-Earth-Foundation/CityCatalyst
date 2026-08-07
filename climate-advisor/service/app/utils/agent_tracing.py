@@ -6,7 +6,7 @@ from typing import Any
 from agents import set_trace_processors
 from langsmith.wrappers import OpenAIAgentsTracingProcessor
 
-from app.config import get_settings
+from app.config.settings import get_settings
 
 
 logger = logging.getLogger(__name__)
@@ -16,6 +16,7 @@ _TRACING_CONFIGURED = False
 
 def configure_agents_tracing(settings: Any | None = None) -> bool:
     """Configure LangSmith tracing for OpenAI Agents SDK once per process."""
+    # Guard process-wide tracing setup so repeated app initialization is harmless.
     global _TRACING_CONFIGURED
 
     settings = settings or get_settings()

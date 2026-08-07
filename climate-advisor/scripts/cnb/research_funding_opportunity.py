@@ -47,6 +47,7 @@ DEFAULT_OUTPUT = Path("output/cnb_research")
 
 def parse_args() -> argparse.Namespace:
     """Parse the input manifest, output root, and logging level."""
+    # Require one source manifest while keeping output and logging controls optional.
     parser = argparse.ArgumentParser(
         description=(
             "Research one known funding opportunity and write local review artifacts."
@@ -80,11 +81,6 @@ def main() -> None:
     """Validate the manifest, run research, and report the artifact directory."""
     # Step 1: parse CLI options and configure process-level logging.
     args = parse_args()
-    logging.basicConfig(
-        level=getattr(logging, args.log_level),
-        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    )
-
     # Step 2: expose the service package only for this CLI process.
     service_directory = Path(__file__).resolve().parents[2] / "service"
     if str(service_directory) not in sys.path:
@@ -92,6 +88,9 @@ def main() -> None:
 
     from app.models.cnb.research import FundingOpportunityResearchRequest
     from app.services.cnb.research_service import run_funding_opportunity_research
+    from app.utils.logging_config import configure_logging
+
+    configure_logging(level=args.log_level)
 
     # Step 3: validate the authoritative request before making external calls.
     try:

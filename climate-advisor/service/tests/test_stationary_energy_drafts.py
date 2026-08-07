@@ -23,7 +23,7 @@ from agents.tool import ToolContext
 
 pytest.importorskip("pgvector.sqlalchemy")
 
-from app.db import Base
+from app.db.base import Base
 from app.db.session import get_session
 from app.main import get_app
 from app.models.db.stationary_energy_draft import (
@@ -3133,7 +3133,3 @@ class StationaryEnergyProposalBuilderTests(unittest.TestCase):
             proposal["alternative_candidate_ids"],
             [candidate_2["candidate_id"]],
         )
-
-
-if __name__ == "__main__":
-    unittest.main()

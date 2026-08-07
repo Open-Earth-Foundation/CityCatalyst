@@ -19,7 +19,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 pytest.importorskip("pgvector.sqlalchemy")
 
-from app.db import Base
+from app.db.base import Base
 from app.db.session import get_session
 from app.main import get_app
 from app.models.db.stationary_energy_draft import StationaryEnergyDraftRun

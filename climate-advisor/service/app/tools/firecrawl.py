@@ -119,6 +119,7 @@ class FirecrawlClient:
         http_client: httpx.Client | None = None,
     ) -> None:
         """Configure authenticated Firecrawl access and the run snapshot directory."""
+        # Fail at construction so unauthenticated network calls cannot be attempted later.
         if not api_key:
             raise ValueError("FIRECRAWL_API_KEY must be set")
 
@@ -211,6 +212,7 @@ class FirecrawlClient:
 
     def scrape(self, *, url: str) -> dict[str, JsonValue]:
         """Scrape one URL to Markdown and save it as a review source."""
+        # Trace the provider request and retain its Markdown for later review.
         with start_trace_span(
             name="firecrawl.scrape",
             span_type="TOOL",
@@ -247,6 +249,7 @@ class FirecrawlClient:
 
     def extract(self, *, url: str, extraction_prompt: str) -> dict[str, JsonValue]:
         """Run Firecrawl JSON extraction while retaining the underlying Markdown."""
+        # Trace structured extraction while preserving the supporting source material.
         with start_trace_span(
             name="firecrawl.extract",
             span_type="TOOL",
@@ -390,6 +393,7 @@ def execute_firecrawl_tool(
     arguments: dict[str, JsonValue],
 ) -> dict[str, JsonValue]:
     """Dispatch one model tool call to the explicitly allowed Firecrawl methods."""
+    # Execute the workflow in ordered, observable stages.
     if tool_name == "firecrawl_search":
         include_domains = arguments.get("include_domains")
         return client.search(

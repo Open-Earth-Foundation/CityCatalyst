@@ -40,6 +40,7 @@ class InventoryCheckResponse(BaseModel):
 async def user_inventories_check(payload: InventoryCheckRequest) -> InventoryCheckResponse:
     """Fetch inventories for the provided user ID using the CityCatalyst client."""
 
+    # Keep this development route scoped to the explicitly supplied user.
     user_id = payload.user_id
     async with CityCatalystClient() as client:
         try:

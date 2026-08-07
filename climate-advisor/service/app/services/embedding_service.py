@@ -3,11 +3,10 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import List, Optional
 
 import httpx
 
-from app.config import get_settings
+from app.config.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -15,26 +14,35 @@ logger = logging.getLogger(__name__)
 @dataclass
 class EmbeddingResult:
     """Result from generating an embedding."""
+
     success: bool
-    embedding: Optional[List[float]] = None
+    embedding: list[float] | None = None
     model: str = ""
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class EmbeddingService:
     """Service for generating embeddings using OpenAI API."""
     
-    def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None):
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str | None = None,
+    ) -> None:
+        """Initialize the embedding endpoint from centralized settings."""
         settings = get_settings()
         self.api_key = api_key or settings.openai_api_key
         self.model = model or settings.llm.api.openai.embedding_model
         self.base_url = settings.llm.api.openai.base_url
+        timeout_ms = settings.llm.api.openai.timeout_ms
+        self.timeout_seconds = timeout_ms / 1000 if timeout_ms else 30.0
         
         if not self.api_key:
             logger.warning("OpenAI API key not configured - embedding service will not work")
     
     async def generate_embedding(self, text: str) -> EmbeddingResult:
         """Generate an embedding for the given text."""
+        # Reject unusable requests before creating an HTTP client.
         if not self.api_key:
             return EmbeddingResult(
                 success=False,
@@ -59,7 +67,7 @@ class EmbeddingService:
                         "model": self.model,
                         "input": text.strip()
                     },
-                    timeout=30.0
+                    timeout=self.timeout_seconds,
                 )
                 
                 response.raise_for_status()
@@ -73,16 +81,18 @@ class EmbeddingService:
                     model=self.model
                 )
                 
-        except httpx.HTTPStatusError as e:
-            logger.error(f"HTTP error generating embedding: {e.response.status_code} - {e.response.text}")
+        except httpx.HTTPStatusError as exc:
+            logger.error(
+                "Embedding request failed with HTTP %s",
+                exc.response.status_code,
+            )
             return EmbeddingResult(
                 success=False,
-                error=f"HTTP {e.response.status_code}: {e.response.text[:200]}"
+                error=f"HTTP {exc.response.status_code}: {exc.response.text[:200]}",
             )
-        except Exception as e:
-            logger.error(f"Error generating embedding: {e}")
+        except Exception as exc:
+            logger.exception("Embedding request failed")
             return EmbeddingResult(
                 success=False,
-                error=str(e)
+                error=str(exc),
             )
-

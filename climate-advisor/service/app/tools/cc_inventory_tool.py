@@ -32,6 +32,7 @@ class CCInventoryToolResult:
     status_code: Optional[int] = None
 
     def to_dict(self) -> Dict[str, Any]:
+        """Serialize the result while omitting unset optional fields."""
         payload: Dict[str, Any] = {"success": self.success}
         if self.data is not None:
             payload["data"] = self.data
@@ -50,6 +51,7 @@ class CCInventoryTool:
     tool_name = "cc_inventory_query"
 
     def __init__(self, client: Optional[CityCatalystClient] = None) -> None:
+        """Store an injected CityCatalyst client or create the default client."""
         self.cc_client = client or CityCatalystClient()
 
     async def fetch_inventory(
@@ -61,6 +63,7 @@ class CCInventoryTool:
         thread_id: Union[str, UUID],
     ) -> CCInventoryToolResult:
         """Fetch a single inventory record by ID."""
+        # Resolve the requested data and enforce its scope constraints.
         if not token:
             return CCInventoryToolResult(
                 success=False,
@@ -94,6 +97,7 @@ class CCInventoryTool:
         thread_id: Union[str, UUID],
     ) -> CCInventoryToolResult:
         """Fetch all inventories available to the authenticated user."""
+        # Resolve the requested data and enforce its scope constraints.
         if not token:
             return CCInventoryToolResult(
                 success=False,
@@ -127,6 +131,7 @@ class CCInventoryTool:
         thread_id: Union[str, UUID],
     ) -> CCInventoryToolResult:
         """Fetch all available data sources for a specific inventory."""
+        # Resolve the requested data and enforce its scope constraints.
         if not token:
             return CCInventoryToolResult(
                 success=False,

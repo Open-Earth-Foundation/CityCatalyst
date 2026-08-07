@@ -5,10 +5,12 @@ This module provides functionality to load and access configuration
 parameters from the embedding_config.yml file.
 """
 
-import os
-import yaml
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Dict, Any, Optional, Union
+from typing import Any
+
+import yaml
 
 
 class EmbeddingConfig:
@@ -19,7 +21,7 @@ class EmbeddingConfig:
     easy access to configuration parameters.
     """
     
-    def __init__(self, config_path: Optional[str] = None):
+    def __init__(self, config_path: str | Path | None = None) -> None:
         """
         Initialize configuration loader.
         
@@ -28,11 +30,11 @@ class EmbeddingConfig:
         """
         if config_path is None:
             # Default to embedding_config.yml in the same directory as this file
-            config_path = str(Path(__file__).parent / "embedding_config.yml")
+            config_path = Path(__file__).parent / "embedding_config.yml"
         
         self._config = self._load_config(config_path)
     
-    def _load_config(self, config_path: Union[str, Path]) -> Dict[str, Any]:
+    def _load_config(self, config_path: str | Path) -> dict[str, Any]:
         """
         Load configuration from YAML file.
         
@@ -46,14 +48,16 @@ class EmbeddingConfig:
             FileNotFoundError: If config file doesn't exist
             yaml.YAMLError: If config file is invalid
         """
-        if not os.path.exists(config_path):
-            raise FileNotFoundError(f"Configuration file not found: {config_path}")
+        # Resolve and validate the caller-selected file before parsing YAML.
+        resolved_path = Path(config_path)
+        if not resolved_path.exists():
+            raise FileNotFoundError(f"Configuration file not found: {resolved_path}")
         
-        with open(config_path, 'r') as f:
-            config = yaml.safe_load(f)
+        with resolved_path.open("r", encoding="utf-8") as config_file:
+            config = yaml.safe_load(config_file)
         
         if config is None:
-            raise ValueError(f"Configuration file is empty: {config_path}")
+            raise ValueError(f"Configuration file is empty: {resolved_path}")
         
         return config
     
@@ -93,7 +97,7 @@ class EmbeddingConfig:
 
 
 # Global config instance
-_config_instance = None
+_config_instance: EmbeddingConfig | None = None
 
 
 def get_embedding_config() -> EmbeddingConfig:

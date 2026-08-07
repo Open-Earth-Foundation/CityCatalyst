@@ -1,16 +1,19 @@
 """
-Smoke-test the deployed Climate Advisor to CityCatalyst auth contract.
+Brief: Smoke-test the deployed Climate Advisor-to-CityCatalyst auth contract.
 
-Run from the deployed Climate Advisor container:
-  python -m scripts.smoke_cc_contract
+Inputs:
+- CLI args: optional user, city, inventory, expected audience, and expected
+  capability identifiers override their environment-backed defaults.
+- Files/paths: none.
+- Env vars: `CC_BASE_URL` and `CC_API_KEY` configure CityCatalyst access;
+  `CA_SMOKE_USER_ID`, `CA_SMOKE_CITY_ID`, and `CA_SMOKE_INVENTORY_ID` provide
+  optional scope defaults.
 
-Required environment unless passed as arguments:
-  CA_SMOKE_USER_ID
-  CA_SMOKE_CITY_ID
-  CA_SMOKE_INVENTORY_ID
+Outputs:
+- Logs pass/fail details and exits non-zero when token or capability checks fail.
 
-The script uses the deployed CC_BASE_URL and CC_API_KEY already present in the
-Climate Advisor pod. It never logs the shared key or minted JWT value.
+Usage (from project root or deployed service container):
+- uv run --directory service python -m scripts.smoke_cc_contract
 """
 
 from __future__ import annotations
@@ -26,6 +29,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClientError,
     TokenRefreshError,
 )
+from app.utils.logging_config import configure_logging
 from app.utils.token_manager import parse_jwt_claims
 
 logger = logging.getLogger("smoke_cc_contract")
@@ -38,6 +42,7 @@ DEFAULT_SMOKE_INVENTORY_ID = "33333333-3333-4333-8333-333333333333"
 
 
 def _env_or_arg(value: str | None, env_name: str, default: str | None = None) -> str:
+    """Resolve a required value from a CLI argument, environment, or default."""
     resolved = value or os.environ.get(env_name) or default
     if not resolved:
         raise ValueError(f"{env_name} is required")
@@ -45,6 +50,7 @@ def _env_or_arg(value: str | None, env_name: str, default: str | None = None) ->
 
 
 def _audience_matches(audience: Any, expected: str | None) -> bool:
+    """Return whether a scalar or list JWT audience contains the expected value."""
     if not expected:
         return True
     normalized_expected = expected.rstrip("/")
@@ -60,6 +66,7 @@ def _audience_matches(audience: Any, expected: str | None) -> bool:
 
 async def run_smoke(args: argparse.Namespace) -> int:
     """Run the CC token exchange and capability smoke."""
+    # Resolve the complete test scope before minting credentials or calling capabilities.
     try:
         user_id = _env_or_arg(
             args.user_id,
@@ -137,8 +144,9 @@ async def run_smoke(args: argparse.Namespace) -> int:
     return 0
 
 
-def build_parser() -> argparse.ArgumentParser:
-    """Build the CLI parser."""
+def parse_args() -> argparse.Namespace:
+    """Parse smoke-test scope and expected contract values."""
+    # Expose explicit overrides while retaining stable local smoke defaults.
     parser = argparse.ArgumentParser(
         description="Smoke-test the deployed CA to CC auth contract.",
     )
@@ -157,13 +165,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_EXPECTED_CAPABILITY,
         help="Capability that must be present in the CC response.",
     )
-    return parser
+    return parser.parse_args()
 
 
 def main() -> None:
-    """CLI entrypoint."""
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s:%(name)s:%(message)s")
-    args = build_parser().parse_args()
+    """Run the deployed CityCatalyst authentication smoke test."""
+    configure_logging(format_string="%(levelname)s:%(name)s:%(message)s")
+    args = parse_args()
     raise SystemExit(asyncio.run(run_smoke(args)))
 
 

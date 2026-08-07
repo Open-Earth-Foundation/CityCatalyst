@@ -177,10 +177,12 @@ class HiapContext(StrictContract):
     @model_validator(mode="after")
     def validate_categories(self) -> HiapContext:
         """Require category types and an availability consistent with both."""
+        # Keep mitigation and adaptation records in their declared collections.
         if any(action.type != "mitigation" for action in self.mitigation.actions):
             raise ValueError("Mitigation context contains another action type")
         if any(action.type != "adaptation" for action in self.adaptation.actions):
             raise ValueError("Adaptation context contains another action type")
+        # Derive availability from populated sections so metadata cannot drift.
         statuses = {
             self.mitigation.status,
             self.adaptation.status,

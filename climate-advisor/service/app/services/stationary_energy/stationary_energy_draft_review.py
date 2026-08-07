@@ -48,7 +48,6 @@ def resolve_selected_candidate(
     candidate_by_datasource: dict[str, StationaryEnergyDraftSourceCandidate],
 ) -> StationaryEnergyDraftSourceCandidate | None:
     """Resolve an override_source decision to the stored candidate snapshot."""
-    # Resolve the requested data and enforce its scope constraints.
     if decision_input.action != "override_source":
         return None
     if not decision_input.selected_source_id:
@@ -75,7 +74,6 @@ def validate_review_action(
     selected_candidate: StationaryEnergyDraftSourceCandidate | None,
 ) -> None:
     """Validate a review decision against the stored proposal and candidate scope."""
-    # Validate acceptance against the stored recommendation.
     if decision_input.action == "accept" and proposal.recommended_candidate_id is None:
         raise HTTPException(
             status_code=400,
@@ -89,7 +87,6 @@ def validate_review_action(
             status_code=400,
             detail="Cannot accept a proposal without a recommended datasource",
         )
-    # Validate source overrides against candidate applicability and target scope.
     if decision_input.action == "override_source" and selected_candidate is None:
         raise HTTPException(
             status_code=400,
@@ -119,7 +116,6 @@ def validate_review_action(
                 f"({stationary_energy_scope_label(proposal.target_ref)})"
             ),
         )
-    # Require both value and unit for manual overrides.
     if (
         decision_input.action == "override_manual"
         and decision_input.manual_value is None
@@ -136,7 +132,6 @@ def validate_review_action(
             status_code=400,
             detail="manual_unit is required for override_manual",
         )
-    # Validate notation-key reason and explanation as one atomic choice.
     if decision_input.action == "set_notation_key":
         notation_key = (decision_input.notation_key or "").strip().upper()
         unavailable_explanation = (
@@ -168,7 +163,6 @@ def validate_complete_review_decisions(
     proposal_by_id: dict[UUID, StationaryEnergyDraftProposal],
 ) -> None:
     """Require one and only one review decision for every proposal in the draft."""
-    # Apply the complete validation contract before returning.
     if not proposal_by_id:
         raise HTTPException(
             status_code=400,
@@ -219,7 +213,6 @@ def build_review_decisions(
     next_review_versions: dict[UUID, int],
 ) -> list[StationaryEnergyReviewDecision]:
     """Build validated persisted review decisions and update proposal statuses in place."""
-    # Resolve and validate each decision against the immutable draft snapshot.
     review_decisions: list[StationaryEnergyReviewDecision] = []
     for decision_input in decisions:
         proposal = proposal_by_id.get(decision_input.proposal_id)
@@ -238,7 +231,6 @@ def build_review_decisions(
         )
         validate_review_action(decision_input, proposal, selected_candidate)
 
-        # Build the persisted decision with its next monotonic version.
         review_decisions.append(
             StationaryEnergyReviewDecision(
                 draft_run_id=draft_run_id,
@@ -357,7 +349,6 @@ def build_commit_rows(
     proposal_by_id: dict[UUID, StationaryEnergyDraftProposal],
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     """Build the CityCatalyst commit payload rows and any local failure results."""
-    # Partition reviewed decisions into normal, notation, and local-failure rows.
     rows: list[dict[str, Any]] = []
     notation_rows: list[dict[str, Any]] = []
     local_results: list[dict[str, Any]] = []
@@ -372,7 +363,6 @@ def build_commit_rows(
             )
             continue
 
-        # Build notation-key commits under their stricter target contract.
         if decision.action == "set_notation_key":
             if decision.notation_key not in ALLOWED_NOTATION_KEY_REASONS:
                 local_results.append(
@@ -418,7 +408,6 @@ def build_commit_rows(
             )
             continue
 
-        # Build explicit manual overrides only when both numeric fields exist.
         if decision.action == "override_manual":
             if decision.manual_value is None:
                 local_results.append(
@@ -450,7 +439,6 @@ def build_commit_rows(
             )
             continue
 
-        # Resolve ordinary accepted/overridden source rows last.
         selected_source_id = (
             decision.selected_source_id or proposal.recommended_datasource_id
         )
@@ -539,7 +527,6 @@ def save_status_after_commit(
     attempted: list[StationaryEnergyReviewDecision],
 ) -> str:
     """Summarize the final draft save status from the latest review commit states."""
-    # Distinguish an empty commit from attempted rows with mixed outcomes.
     if not attempted:
         return "no_changes"
 

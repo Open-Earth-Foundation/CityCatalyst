@@ -18,7 +18,7 @@ pytest.importorskip("pgvector.sqlalchemy")
 
 from agents import Runner
 
-from app.db.base import Base
+from app.db import Base
 import app.models.db.message  # noqa: F401
 import app.models.db.thread  # noqa: F401
 from app.models.db.stationary_energy_draft import (

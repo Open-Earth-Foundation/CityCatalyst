@@ -1,1 +1,1 @@
-"""Vector database utility package."""
+# Vector database utilities

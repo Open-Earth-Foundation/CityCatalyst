@@ -1,22 +1,13 @@
 from __future__ import annotations
 
-import logging
 from typing import Any, AsyncGenerator
+import logging
 
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.exc import ArgumentError
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
 from sqlalchemy.pool import NullPool
 
-from app.config.settings import get_settings
-
-
 def _ensure_asyncpg_url(url: str) -> str:
-    """Normalize a PostgreSQL URL for SQLAlchemy's asyncpg driver."""
     if "+asyncpg" in url:
         return url
     if url.startswith("postgresql://"):
@@ -29,12 +20,13 @@ def _ensure_asyncpg_url(url: str) -> str:
 
 logger = logging.getLogger(__name__)
 
+from app.config.settings import get_settings
+
 _engine = None
 _session_factory: async_sessionmaker[AsyncSession] | None = None
 
 
-def _create_engine() -> AsyncEngine:
-    """Create and cache the service engine and async session factory."""
+def _create_engine():
     global _engine, _session_factory
     if _engine is not None and _session_factory is not None:
         return _engine
@@ -75,8 +67,7 @@ def _create_engine() -> AsyncEngine:
     return engine
 
 
-def get_engine() -> AsyncEngine:
-    """Return the shared async engine, creating it on first use."""
+def get_engine():
     global _engine
     if _engine is None:
         _create_engine()
@@ -85,7 +76,6 @@ def get_engine() -> AsyncEngine:
 
 
 def get_session_factory() -> async_sessionmaker[AsyncSession]:
-    """Return the shared async session factory, creating it on first use."""
     global _session_factory
     if _session_factory is None:
         _create_engine()
@@ -94,7 +84,6 @@ def get_session_factory() -> async_sessionmaker[AsyncSession]:
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    """Yield a transactional request session and roll back on failure."""
     session_factory = get_session_factory()
     async with session_factory() as session:
         try:
@@ -103,10 +92,9 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
             await session.rollback()
             raise
 
-
 async def get_session_optional() -> AsyncGenerator[AsyncSession | None, None]:
-    """Yield a session when available, otherwise yield ``None``."""
-    # Keep optional database outages from preventing non-persistent request paths.
+    """Return a session when available, otherwise yield None without raising.
+    """
     try:
         session_factory = get_session_factory()
     except Exception:

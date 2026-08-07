@@ -198,18 +198,6 @@ workflow state in PostgreSQL.
 
 ## Service And Utility Layers
 
-### Database Layer
-
-- `db/session.py`
-  - Owns the shared async SQLAlchemy engine and session factory.
-- `db/concept_notes/`
-  - Persists Concept Note runs, upload/Markdown pointers, and compact city
-    context snapshots. Concept Note persistence stays under the database layer
-    rather than a parallel top-level persistence package.
-- `models/db/document_embedding.py`
-  - Defines the canonical pgvector-backed document-chunk model used by upload
-    utilities, migrations, and runtime similarity search.
-
 ### Route Layer
 
 - `routes/threads.py`
@@ -371,11 +359,6 @@ Stationary Energy chat also has a dedicated prompt budget:
 - SQLAlchemy async sessions back thread, message, and draft workflow
   persistence.
 - pgvector stores semantic-search embeddings for the climate knowledge base.
-- Vector document processing remains reusable code under `vector_db/`, while
-  operational entrypoints live under `service/scripts/` and use the shared
-  database/session layer. Upload and initialization are run as
-  `python -m scripts.upload_vector_documents` and
-  `python -m scripts.initialize_vector_db` from the service environment.
 
 ## Conversation History And Prompt Budgets
 

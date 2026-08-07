@@ -29,7 +29,6 @@ def build_openrouter_client_options(
 ) -> OpenRouterClientOptions:
     """Resolve shared OpenRouter client settings from Climate Advisor config."""
 
-    # Assemble the normalized result in deterministic order.
     api_key = getattr(settings, "openrouter_api_key", None)
     if not api_key:
         raise error_cls(missing_api_key_message)

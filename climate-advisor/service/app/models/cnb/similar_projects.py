@@ -62,7 +62,6 @@ class CnbSimilarProjectSearchRequest(SimilarProjectsModel):
     @model_validator(mode="after")
     def validate_search_context(self) -> "CnbSimilarProjectSearchRequest":
         """Require a meaningful project profile and same-funder identity."""
-        # Apply the complete validation contract before returning.
         if self.funder_scope == "same_funder" and self.funder_id is None:
             raise ValueError("funder_id is required when funder_scope=same_funder")
 
@@ -346,7 +345,6 @@ class CnbSimilarProjectReviewRunArtifact(SimilarProjectsModel):
     @model_validator(mode="after")
     def validate_review_artifact(self) -> "CnbSimilarProjectReviewRunArtifact":
         """Keep one generated review artifact internally self-consistent."""
-        # Apply the complete validation contract before returning.
         _require_utc_datetime(self.generated_at, "generated_at")
         CnbSimilarProjectReviewRunInput(
             search_request=self.search_request,

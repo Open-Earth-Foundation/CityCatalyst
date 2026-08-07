@@ -38,7 +38,6 @@ def trim_datasource_entry(source: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         Trimmed datasource dictionary. Returns empty dict if input is invalid.
     """
-    # Keep malformed tool payloads from breaking the parent chat workflow.
     try:
         
         trimmed: Dict[str, Any] = {}
@@ -241,7 +240,6 @@ def trim_vector_search_matches(matches: List[Dict[str, Any]], top_k: int = 3) ->
         if not matches:
             return []
         
-        # Preserve match order while bounding content and metadata per result.
         trimmed_matches: List[Dict[str, Any]] = []
         for match in matches[:top_k]:  # Limit to top_k (configurable)
             trimmed: Dict[str, Any] = {}

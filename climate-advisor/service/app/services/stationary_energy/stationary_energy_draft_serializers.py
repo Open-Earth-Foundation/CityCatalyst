@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Any
+from uuid import UUID
 
 from app.models.db.stationary_energy_draft import (
     StationaryEnergyDraftProposal,
@@ -91,7 +92,6 @@ def to_review_decision_response(
     decision: StationaryEnergyReviewDecision,
 ) -> ReviewDecisionResponse:
     """Serialize a persisted review decision into the API response contract."""
-    # Assemble the normalized result in deterministic order.
     return ReviewDecisionResponse(
         decision_id=decision.decision_id,
         draft_run_id=decision.draft_run_id,
@@ -125,7 +125,6 @@ def to_staged_review_selection_response(
     selection: StationaryEnergyStagedReviewSelection,
 ) -> StagedReviewSelectionResponse:
     """Serialize a staged tool selection into the API response contract."""
-    # Assemble the normalized result in deterministic order.
     return StagedReviewSelectionResponse(
         selection_id=selection.selection_id,
         draft_run_id=selection.draft_run_id,

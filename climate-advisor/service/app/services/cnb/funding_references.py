@@ -45,7 +45,6 @@ class PostgresFundingReferenceValidator:
         selected_funding_record_id: UUID | None,
     ) -> None:
         """Require supplied records to exist and share the requested funder."""
-        # Apply the complete validation contract before returning.
         if funder_id is None:
             return
 
@@ -89,7 +88,6 @@ class PostgresFundingReferenceValidator:
         funding_record_id: UUID,
     ) -> None:
         """Require one funding record owned by the supplied funder."""
-        # Apply the complete validation contract before returning.
         result = await session.execute(
             text(
                 "SELECT funder_id FROM funding_records "

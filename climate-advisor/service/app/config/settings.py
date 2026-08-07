@@ -17,7 +17,7 @@ Key Components:
 - get_settings(): Singleton factory for application-wide config access
 
 Usage:
-    from app.config.settings import get_settings
+    from app.config import get_settings
     settings = get_settings()
     # Access LLM config: settings.llm.models.orchestrator.name
     # Access app config: settings.port, settings.database_url
@@ -50,7 +50,6 @@ def _load_environment() -> None:
     service_root = Path(__file__).resolve().parents[3]  # climate-advisor/
 
     def _within_service(path: Path) -> bool:
-        """Return whether a path is contained by the Climate Advisor root."""
         try:
             path.relative_to(service_root)
         except ValueError:
@@ -99,14 +98,12 @@ _load_environment()
 
 
 def _parse_bool(value: Optional[str], default: bool = False) -> bool:
-    """Parse a permissive environment boolean or return its default."""
     if value is None:
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _parse_int(value: Optional[str], default: Optional[int]) -> Optional[int]:
-    """Parse an integer environment value or return its default."""
     if value is None:
         return default
     try:
@@ -521,7 +518,6 @@ _settings: Settings | None = None
 
 
 def _parse_cors_origins(env_value: str | None) -> List[str]:
-    """Parse configured CORS origins or return local-development defaults."""
     if not env_value:
         return [
             "http://localhost:8000",
@@ -531,7 +527,6 @@ def _parse_cors_origins(env_value: str | None) -> List[str]:
 
 
 def get_settings() -> Settings:
-    """Return the cached application settings instance."""
     global _settings
     if _settings is None:
         _load_environment()

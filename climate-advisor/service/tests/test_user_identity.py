@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.db.base import Base
+from app.db import Base
 from app.exceptions import ThreadAccessDeniedException
 from app.models.db.message import Message, MessageRole
 from app.models.requests import MessageCreateRequest, ThreadCreateRequest
@@ -118,3 +118,7 @@ class UserIdentityPersistenceTests(unittest.IsolatedAsyncioTestCase):
         token = await handler.load_token_from_thread()
 
         self.assertEqual(token, "legacy-token")
+
+
+if __name__ == "__main__":
+    unittest.main()

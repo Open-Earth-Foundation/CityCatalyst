@@ -135,7 +135,6 @@ class LocalReviewReferenceDataClient:
 
 def parse_args() -> argparse.Namespace:
     """Parse local matching input, output, provenance, and logging options."""
-    # Expose preserved-run and reviewed-pair modes without mixing their provenance fields.
     parser = argparse.ArgumentParser(
         description=(
             "Run configured CNB similar-project matching and write a local "
@@ -271,7 +270,6 @@ def build_run_input_from_reviewed_pairs(
 
 def load_run_input_from_args(args: argparse.Namespace) -> Any:
     """Resolve either preserved input mode or reviewed-pair local input mode."""
-    # Reject ambiguous mode combinations before loading any local artifacts.
     research_paths = list(args.research)
     review_paths = list(args.review)
     if args.input is not None:
@@ -317,7 +315,6 @@ def build_run_metadata(
     prompt_sha256: str,
 ) -> Any:
     """Build strict, mode-specific provenance for the emitted artifact."""
-    # Emit only the provenance fields valid for the selected input mode.
     from app.models.cnb.similar_projects import (
         CnbSimilarProjectReviewedArtifactPair,
         CnbSimilarProjectReviewedArtifactProvenance,
@@ -368,20 +365,21 @@ def main() -> None:
     """Validate input, call the matcher, and save its review bundle."""
     # Step 1: configure logging and expose service imports without side effects.
     args = parse_args()
+    logging.basicConfig(
+        level=getattr(logging, args.log_level),
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
     ensure_service_directory_on_path()
 
     from openai import OpenAI
 
-    from app.config.settings import get_settings
+    from app.config import get_settings
     from app.models.cnb.similar_projects import (
         CnbSimilarProjectReviewRunArtifact,
         CnbSimilarProjectReviewState,
     )
     from app.services.openrouter_client import build_openrouter_client_options
     from app.services.cnb.similar_project_search import ProjectMatchingService
-    from app.utils.logging_config import configure_logging
-
-    configure_logging(level=args.log_level)
 
     # Step 2: reject malformed input or missing provenance before a provider call.
     try:

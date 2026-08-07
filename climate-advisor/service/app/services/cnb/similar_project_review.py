@@ -115,7 +115,6 @@ def _candidate_funding_record_id(record: FundingRecordDraft) -> UUID:
 
 def _candidate_scalar_score(candidate: CnbSimilarProjectCandidate) -> int:
     """Prefer the candidate carrying the richest reviewed scalar coverage."""
-    # Reward reviewed scalar coverage without changing deterministic ordering.
     scalar_values = (
         candidate.funder_name,
         candidate.award_status,

@@ -77,7 +77,6 @@ def compact_stationary_energy_prompt_payload(
     drop_source_data: bool = False,
 ) -> dict[str, Any]:
     """Trim source-candidate payload detail to fit a configured prompt budget."""
-    # Assemble the normalized result in deterministic order.
     compacted = deepcopy(payload)
     candidates = compacted.get("source_candidates")
     if isinstance(candidates, list):
@@ -104,7 +103,6 @@ def compact_stationary_energy_source_candidate(
     drop_source_data: bool = False,
 ) -> Any:
     """Trim a single source-candidate payload according to prompt-budget limits."""
-    # Assemble the normalized result in deterministic order.
     if not isinstance(candidate, dict):
         return candidate
 
@@ -139,7 +137,6 @@ def trim_messages_to_budget(
     budget: StationaryEnergyPromptBudget,
 ) -> tuple[list[dict[str, Any]], TokenCount, int]:
     """Drop oldest non-stationary chat messages until the prompt fits the budget."""
-    # Preserve the stationary snapshot while evicting the oldest chat context first.
     trimmed = list(messages)
     token_count = count_prompt_tokens(
         [instruction_text, trimmed],
@@ -186,12 +183,8 @@ def _is_stationary_energy_context_message(message: dict[str, Any]) -> bool:
     return "<context>" in content and any(marker in content for marker in markers)
 
 
-def _tokenizer_for_model(
-    model: str | None,
-    fallback_encoding: str,
-) -> tiktoken.Encoding:
+def _tokenizer_for_model(model: str | None, fallback_encoding: str):
     """Resolve the best available tokenizer for a model name with fallback."""
-    # Prefer the model-specific tokenizer and fall back to stable base encodings.
     candidates = []
     if model:
         candidates.append(model)

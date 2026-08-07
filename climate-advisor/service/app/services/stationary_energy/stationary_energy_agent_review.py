@@ -136,7 +136,6 @@ class StationaryEnergyAgentReviewService:
         authorization: str | None,
     ) -> StationaryEnergyNotationKeyListToolResult:
         """Return eligible Stationary Energy notation-key targets."""
-        # Resolve the requested data and enforce its scope constraints.
         token = require_bearer_token(extract_bearer_token(authorization))
         draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
@@ -199,7 +198,6 @@ class StationaryEnergyAgentReviewService:
         authorization: str | None,
     ) -> StationaryEnergyBulkReviewConfirmationToolResult:
         """Validate notation-key choices without staging them."""
-        # Validate authorization and draft state before previewing staged choices.
         token = require_bearer_token(extract_bearer_token(authorization))
         draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
@@ -250,7 +248,6 @@ class StationaryEnergyAgentReviewService:
         action_name: str = "stationary_energy_apply_bulk_notation_choices",
     ) -> StationaryEnergyAgentReviewToolResult:
         """Stage validated notation-key choices in CA-owned review state."""
-        # Apply the state transition while preserving workflow invariants.
         token = require_bearer_token(extract_bearer_token(authorization))
         draft_run = await self._load_owned_reviewable_draft(
             draft_run_id=draft_run_id,
@@ -308,7 +305,6 @@ class StationaryEnergyAgentReviewService:
         target_ids: list[str] | None = None,
     ) -> StationaryEnergyAgentReviewToolResult:
         """Remove one or more active staged notation-key choices."""
-        # Apply the state transition while preserving workflow invariants.
         draft_run, staged = await self._load_draft_with_staged(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -792,7 +788,6 @@ class StationaryEnergyAgentReviewService:
         user_id: str,
     ) -> dict[str, int]:
         """Count saved review decisions that are ready for inventory confirmation."""
-        # Count only saved decisions eligible for the inventory confirmation gate.
         draft_run = await self._load_owned_reviewable_draft(
             draft_run_id=draft_run_id,
             user_id=user_id,
@@ -853,7 +848,6 @@ class StationaryEnergyAgentReviewService:
         tool_call_id: str | None,
     ) -> list[StationaryEnergyStagedReviewSelection]:
         """Convert resolved choices into staged selection rows."""
-        # Resolve the requested data and enforce its scope constraints.
         return [
             StationaryEnergyStagedReviewSelection(
                 draft_run_id=draft_run.draft_run_id,
@@ -879,7 +873,6 @@ class StationaryEnergyAgentReviewService:
         user_id: str,
     ) -> StationaryEnergyDraftRun:
         """Load a draft and verify user ownership plus mutable status."""
-        # Resolve the requested data and enforce its scope constraints.
         draft_run = await self.repository.get_draft_run(draft_run_id)
         if draft_run is None:
             raise HTTPException(
@@ -928,7 +921,6 @@ class StationaryEnergyAgentReviewService:
         target_ids: list[str] | None,
     ) -> list[UUID] | None:
         """Resolve optional notation rollback target ids into proposal ids."""
-        # Treat omitted filters as a request to roll back every staged notation choice.
         if proposal_ids is None and target_ids is None:
             return None
 

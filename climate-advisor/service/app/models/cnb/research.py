@@ -311,7 +311,6 @@ class FundingOpportunityResearchResult(ResearchModel):
     @model_validator(mode="after")
     def validate_result_references(self) -> "FundingOpportunityResearchResult":
         """Require one opportunity and valid record, evidence, and conflict links."""
-        # Validate uniqueness across every stable reference namespace.
         reference_lists = (
             (
                 "funding_records.funding_record_ref",
@@ -334,7 +333,6 @@ class FundingOpportunityResearchResult(ResearchModel):
         for field_name, values in reference_lists:
             _ensure_unique(values, field_name)
 
-        # Enforce the single-opportunity invariant for schema version 2.0.
         opportunity_refs = {
             item.funding_record_ref
             for item in self.funding_records
@@ -343,7 +341,6 @@ class FundingOpportunityResearchResult(ResearchModel):
         if len(opportunity_refs) != 1:
             raise ValueError("funding_records must contain exactly one opportunity")
 
-        # Validate all foreign-reference relationships against retained records.
         record_refs = {item.funding_record_ref for item in self.funding_records}
         for record in self.funding_records:
             if record.funder_ref != self.funder.funder_ref:
@@ -362,7 +359,6 @@ class FundingOpportunityResearchResult(ResearchModel):
                     "evidence.funding_record_ref must reference a funding record"
                 )
 
-        # Reject conflict records that point to missing evidence.
         evidence_refs = {item.evidence_ref for item in self.evidence}
         for conflict in self.conflicts:
             unknown_refs = set(conflict.evidence_refs) - evidence_refs

@@ -24,8 +24,7 @@ class TokenHandler:
         thread_id: Union[str, UUID],
         user_id: str,
         session_factory: Optional[async_sessionmaker[AsyncSession]],
-    ) -> None:
-        """Bind token operations to one user, thread, and optional database."""
+    ):
         self.thread_id = thread_id
         self.user_id = user_id
         self.session_factory = session_factory

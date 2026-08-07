@@ -136,7 +136,6 @@ def build_stationary_energy_review_tools(
         must not be staged by the agent.
         """
 
-        # Require the scoped runtime token before exposing eligible notation rows.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
@@ -229,7 +228,6 @@ def build_stationary_energy_review_tools(
         notation-key choice for the same target/proposal.
         """
 
-        # Require the scoped request token before resolving or staging a target.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
@@ -381,7 +379,6 @@ def build_stationary_energy_review_tools(
         does not stage choices or write inventory data.
         """
 
-        # Validate runtime authorization before building a UI confirmation payload.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
@@ -428,7 +425,6 @@ def build_stationary_energy_review_tools(
         staged review state only, never committed inventory data.
         """
 
-        # Require a confirmed runtime context before staging notation choices.
         token = token_ref.get("value")
         if not token:
             return _error_payload(
@@ -609,7 +605,6 @@ def build_stationary_energy_review_tools(
         saved review decisions or committed inventory data.
         """
 
-        # Normalize optional filters before deleting active staged selections.
         try:
             parsed_proposal_ids = _parse_optional_uuid_list(proposal_ids)
         except ValueError:

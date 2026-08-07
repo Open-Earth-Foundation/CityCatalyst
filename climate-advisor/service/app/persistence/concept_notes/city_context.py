@@ -1,5 +1,3 @@
-"""Persist Concept Note Builder city-context state."""
-
 from __future__ import annotations
 
 import copy
@@ -22,7 +20,6 @@ class ConceptNoteCityContextRepositoryError(Exception):
     """Base repository error with a stable public code and HTTP status."""
 
     def __init__(self, code: str, status_code: int, message: str) -> None:
-        """Create a stable repository error for route-layer translation."""
         super().__init__(message)
         self.code = code
         self.status_code = status_code
@@ -34,7 +31,6 @@ class ConceptNoteCityContextStorageUnavailable(
     """Raised when the configured CNB workflow storage cannot be reached."""
 
     def __init__(self) -> None:
-        """Create the standard unavailable-storage repository error."""
         super().__init__(
             "cnb_storage_unavailable",
             503,
@@ -85,7 +81,6 @@ class SqlAlchemyConceptNoteCityContextRepository(
         self,
         session_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        """Bind city-context persistence to the shared async session factory."""
         self._session_factory = session_factory
 
     async def load_run_context(
@@ -96,7 +91,6 @@ class SqlAlchemyConceptNoteCityContextRepository(
         city_id: UUID,
     ) -> ConceptNoteRunContext:
         """Validate ownership and city binding, then load the current snapshot."""
-        # Resolve the requested data and enforce its scope constraints.
         try:
             async with self._session_factory() as session:
                 row = (
@@ -136,7 +130,6 @@ class SqlAlchemyConceptNoteCityContextRepository(
         hiap_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Lock the run and atomically persist supplied CC context updates."""
-        # Lock and authorize the owning run before reading its context bundle.
         try:
             async with self._session_factory() as session, session.begin():
                 run_row = (
@@ -158,7 +151,6 @@ class SqlAlchemyConceptNoteCityContextRepository(
                     city_id=city_id,
                 )
 
-                # Load the existing bundle under the same transaction lock.
                 bundle_row = (
                     await session.execute(
                         text(
@@ -175,13 +167,11 @@ class SqlAlchemyConceptNoteCityContextRepository(
                 current_bundle = (
                     bundle_row.get("context_bundle") if bundle_row else None
                 )
-                # Merge only the supplied CityCatalyst context sections.
                 merged_bundle = merge_cc_context_into_bundle(
                     current_bundle=current_bundle,
                     ghgi_context=ghgi_context,
                     hiap_context=hiap_context,
                 )
-                # Upsert the complete merged bundle atomically.
                 statement = text(
                     """
                         INSERT INTO concept_note_context_bundles (
@@ -255,7 +245,6 @@ def validated_run_context(
     city_id: UUID,
 ) -> ConceptNoteRunContext:
     """Validate existence, ownership, city binding, and bundle shape."""
-    # Apply the complete validation contract before returning.
     if row is None:
         raise ConceptNoteCityContextRepositoryError(
             "concept_note_run_not_found",
@@ -292,7 +281,6 @@ def merge_cc_context_into_bundle(
     hiap_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Replace supplied CC sections while preserving unrelated bundle content."""
-    # Apply the state transition while preserving workflow invariants.
     if ghgi_context is None and hiap_context is None:
         raise ValueError("At least one CC context section must be supplied")
     if current_bundle is None:

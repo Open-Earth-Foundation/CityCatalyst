@@ -1,18 +1,8 @@
 #!/bin/bash
-# Brief: Prepare the local Climate Advisor database and verify service health.
-#
-# Inputs:
-# - Files: project-root .env with CA_DATABASE_URL and OPENROUTER_API_KEY.
-# - Tools: Docker Compose, uv, curl, and grep available on PATH.
-#
-# Outputs:
-# - Starts the Compose postgres service, applies Alembic migrations, and reports
-#   whether an already-running Climate Advisor service passes its health check.
-#
-# Usage (from project root):
-# - bash scripts/setup.sh
+# Climate Advisor Setup Script
+# This script helps set up the Climate Advisor service from scratch
 
-set -euo pipefail
+set -e
 
 echo "Climate Advisor Setup Script"
 echo "================================="
@@ -29,7 +19,7 @@ fi
 echo "Found .env configuration file"
 
 # Check if required environment variables are set
-if ! grep -Eq '^OPENROUTER_API_KEY=.+$' .env || ! grep -Eq '^CA_DATABASE_URL=.+$' .env; then
+if ! grep -q "OPENROUTER_API_KEY" .env || ! grep -q "CA_DATABASE_URL" .env; then
     echo "Required environment variables not found in .env"
     echo "   Please ensure OPENROUTER_API_KEY and CA_DATABASE_URL are set"
     exit 1
@@ -37,14 +27,24 @@ fi
 
 echo "Required environment variables are configured"
 
-# Start the configured pgvector database and wait for its health check.
-echo "Starting the PostgreSQL service..."
-docker compose up -d --wait postgres
-echo "PostgreSQL service is ready"
+# Check if PostgreSQL container is running
+if ! docker ps | grep -q "ca-postgres"; then
+    echo "PostgreSQL container 'ca-postgres' not found"
+    echo "   Starting PostgreSQL container..."
+
+    docker run --name ca-postgres -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=postgres \
+      -p 5432:5432 -d postgres:15
+
+    echo "PostgreSQL container started"
+    echo "   Waiting 10 seconds for PostgreSQL to be ready..."
+    sleep 10
+else
+    echo "PostgreSQL container is already running"
+fi
 
 # Set up the database
 echo "Setting up database schema..."
-uv run --directory service python -m scripts.setup_database
+uv run python scripts/setup_database.py
 
 echo "Database schema created successfully"
 

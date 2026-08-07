@@ -10,7 +10,7 @@ from sqlalchemy.pool import StaticPool
 from app.models.concept_note_runs import ConceptNoteStartRequest
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.thread import Thread
-from app.db.concept_notes.runs import ConceptNoteRunRepository
+from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,

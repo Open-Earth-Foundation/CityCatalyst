@@ -26,7 +26,6 @@ def context_summary_with_error(
     trace_id: str | None,
 ) -> dict[str, Any]:
     """Merge a redacted error summary into an existing draft context summary."""
-    # Redact provider details before storing a bounded operational error summary.
     context_summary = dict(existing or {})
     safe_message = LogSafeFormatter.redact_tokens(str(exc))[:500]
     context_summary["error_summary"] = {
@@ -138,7 +137,6 @@ def context_summary(
     applicable_source_candidates_count: int | None = None,
 ) -> dict[str, Any]:
     """Build the stored draft context summary from the loaded Stationary Energy scope."""
-    # Persist only the compact scope fields needed to resume draft work.
     return {
         "city": context.city.model_dump(mode="json", exclude_none=True),
         "inventory": context.inventory.model_dump(mode="json", exclude_none=True),

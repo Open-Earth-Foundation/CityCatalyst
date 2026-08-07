@@ -37,32 +37,32 @@ Use the helper script from the `climate-advisor/` root:
 
 ```bash
 # Apply all pending migrations
-uv run --directory service python -m scripts.migrate upgrade
+uv run --directory service python migrate.py upgrade
 
 # Check current migration status
-uv run --directory service python -m scripts.migrate current
+uv run --directory service python migrate.py current
 
 # View migration history
-uv run --directory service python -m scripts.migrate history
+uv run --directory service python migrate.py history
 ```
 
 ### Creating New Migrations
 
 #### Auto-generate from model changes (recommended):
 ```bash
-uv run --directory service python -m scripts.migrate auto "add new column to users table"
+uv run --directory service python migrate.py auto "add new column to users table"
 ```
 
 #### Create empty migration for custom changes:
 ```bash
-uv run --directory service python -m scripts.migrate create "add custom index"
+uv run --directory service python migrate.py create "add custom index"
 ```
 
 ### Rolling Back Migrations
 
 ```bash
 # Downgrade one migration
-uv run --directory service python -m scripts.migrate downgrade
+uv run --directory service python migrate.py downgrade
 
 # Downgrade to specific revision
 uv run --directory service python -m alembic downgrade <revision_id>
@@ -76,15 +76,15 @@ Auto-generated migrations might not capture all changes correctly. Always review
 ### 2. **Use Descriptive Names**
 ```bash
 # Good
-uv run --directory service python -m scripts.migrate auto "add user preferences table"
+uv run --directory service python migrate.py auto "add user preferences table"
 
 # Bad  
-uv run --directory service python -m scripts.migrate auto "changes"
+uv run --directory service python migrate.py auto "changes"
 ```
 
 ### 3. **Test Migrations Both Ways**
-- Test upgrade: `uv run --directory service python -m scripts.migrate upgrade`
-- Test downgrade: `uv run --directory service python -m scripts.migrate downgrade`
+- Test upgrade: `uv run --directory service python migrate.py upgrade`
+- Test downgrade: `uv run --directory service python migrate.py downgrade`
 
 ### 4. **Handle Data Migrations Carefully**
 For complex data transformations, create custom migrations:
@@ -117,15 +117,15 @@ def upgrade() -> None:
 
 1. Create/modify your SQLAlchemy models in `app/models/db/`
 2. Import the model in `migrations/env.py` (if not already imported)
-3. Generate migration: `uv run --directory service python -m scripts.migrate auto "add new model"`
+3. Generate migration: `uv run --directory service python migrate.py auto "add new model"`
 4. Review the generated migration file
-5. Test the migration: `uv run --directory service python -m scripts.migrate upgrade`
-6. Test rollback: `uv run --directory service python -m scripts.migrate downgrade`
+5. Test the migration: `uv run --directory service python migrate.py upgrade`
+6. Test rollback: `uv run --directory service python migrate.py downgrade`
 
 ### Modifying Existing Models
 
 1. Update your SQLAlchemy model
-2. Generate migration: `uv run --directory service python -m scripts.migrate auto "modify model description"`
+2. Generate migration: `uv run --directory service python migrate.py auto "modify model description"`
 3. Review and test as above
 
 ## Environment Variables
@@ -142,7 +142,7 @@ def upgrade() -> None:
 #### **Migration fails with "relation already exists"**
 ```bash
 # Check current migration state
-uv run --directory service python -m scripts.migrate current
+uv run --directory service python migrate.py current
 
 # Mark current state without running migrations
 uv run --directory service python -m alembic stamp head
@@ -188,9 +188,9 @@ For testing with different databases:
 ```bash
 # SQLite (for testing)
 export CA_DATABASE_URL="sqlite:///./test.db"
-uv run --directory service python -m scripts.migrate upgrade
+uv run --directory service python migrate.py upgrade
 
 # PostgreSQL (production)
 export CA_DATABASE_URL="postgresql://user:pass@localhost:5432/climate_advisor"
-uv run --directory service python -m scripts.migrate upgrade
+uv run --directory service python migrate.py upgrade
 ```

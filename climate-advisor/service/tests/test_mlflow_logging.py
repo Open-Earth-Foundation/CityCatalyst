@@ -9,7 +9,7 @@ from types import ModuleType, SimpleNamespace
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
-import app.utils.mlflow_logging as mlflow_logging
+from app.utils import mlflow_logging
 from app.utils.streaming_handler import StreamingHandler
 
 

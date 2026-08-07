@@ -161,7 +161,6 @@ def _validate_decisions(
     decision_set: FunderIdentityLlmDecisionSet,
 ) -> dict[str, FunderIdentityLlmDecision]:
     """Reject omitted records, duplicate matches, and model-invented identifiers."""
-    # Apply the complete validation contract before returning.
     expected_record_refs = {
         record.funding_record_ref for record in matchable_records
     }

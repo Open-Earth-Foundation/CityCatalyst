@@ -8,18 +8,24 @@ This service provides functionality to:
 """
 
 import asyncio
-import logging
+from typing import List, Optional, Dict, Any
+import time
 from dataclasses import dataclass
-from typing import List, Optional
 
 from openai import AsyncOpenAI, OpenAIError
+import numpy as np
 import tiktoken
 
+# Import settings from the service app
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'service'))
+
 from app.config.settings import get_settings
-from vector_db.config_loader import get_embedding_config
 
-
-logger = logging.getLogger(__name__)
+# Import embedding configuration
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from config_loader import get_embedding_config
 
 
 @dataclass
@@ -40,7 +46,7 @@ class EmbeddingService:
     Handles rate limiting, batching, and error handling for embedding generation.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         """Initialize the embedding service with OpenAI client."""
         self.settings = get_settings()
         self.config = get_embedding_config()
@@ -108,12 +114,8 @@ class EmbeddingService:
             # Log a warning if chunk exceeds token limit - this shouldn't happen with proper chunking
             text_tokens = self.calculate_tokens(text)
             if text_tokens > self.max_tokens:
-                logger.warning(
-                    "Text chunk has %s tokens, exceeding the %s-token limit; "
-                    "consider reducing chunk_size in embedding_config.yml",
-                    text_tokens,
-                    self.max_tokens,
-                )
+                print(f"Warning: Text chunk has {text_tokens} tokens, exceeding limit of {self.max_tokens}. "
+                      f"Consider reducing chunk_size in embedding_config.yml")
 
             response = await self.client.embeddings.create(
                 input=text,

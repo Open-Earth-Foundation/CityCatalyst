@@ -12,7 +12,7 @@ from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
-from app.config.settings import get_settings
+from app.config import get_settings
 from app.models.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteMarkdownResponse,
@@ -21,7 +21,7 @@ from app.models.concept_note_markdown import (
     ConceptNoteUploadFailureRequest,
     ConceptNoteUploadStatusResponse,
 )
-from app.db.concept_notes.markdown import (
+from app.persistence.concept_notes.markdown import (
     ConceptNoteMarkdownRepository,
     ConceptNoteMarkdownRepositoryError,
     ConceptNoteUploadSnapshot,
@@ -63,7 +63,6 @@ async def authenticate_user(
     cc_client: CityCatalystClient,
 ) -> tuple[str | None, JSONResponse | None]:
     """Resolve the canonical CC user before any stateful repository action."""
-    # Apply the complete validation contract before returning.
     authorization = request.headers.get("Authorization", "")
     if not authorization.startswith("Bearer ") or not authorization[7:].strip():
         return None, problem(401, "invalid_bearer_token", "Bearer token is required")
@@ -135,7 +134,6 @@ def validate_markdown_artifact(
     payload: ConceptNoteMarkdownRequest,
 ) -> str | None:
     """Validate the fetched artifact and immutable pointer identity."""
-    # Apply the complete validation contract before returning.
     if (
         artifact.markdown_s3_key != payload.markdown_s3_key
         or artifact.sha256 != payload.sha256
@@ -192,7 +190,6 @@ async def create_concept_note_upload(
     cc_client: CityCatalystClient = Depends(get_citycatalyst_client),
 ) -> JSONResponse | ConceptNoteMarkdownResponse:
     """Create or replay the authoritative pre-conversion upload row."""
-    # Execute the workflow in ordered, observable stages.
     user_id, auth_error = await authenticate_user(request, cc_client)
     if auth_error:
         return auth_error
@@ -229,7 +226,6 @@ async def get_concept_note_upload(
     cc_client: CityCatalystClient = Depends(get_citycatalyst_client),
 ) -> JSONResponse | ConceptNoteUploadStatusResponse:
     """Return safe lifecycle metadata for one owned upload."""
-    # Resolve the requested data and enforce its scope constraints.
     user_id, auth_error = await authenticate_user(request, cc_client)
     if auth_error:
         return auth_error
@@ -259,7 +255,6 @@ async def ingest_concept_note_markdown(
     cc_client: CityCatalystClient = Depends(get_citycatalyst_client),
 ) -> JSONResponse | ConceptNoteMarkdownResponse:
     """Verify the CC object, then persist its immutable pointer as ready."""
-    # Authenticate before resolving or persisting any CityCatalyst-owned object.
     user_id, auth_error = await authenticate_user(request, cc_client)
     if auth_error:
         return auth_error
@@ -315,7 +310,6 @@ async def mark_concept_note_upload_failed(
     cc_client: CityCatalystClient = Depends(get_citycatalyst_client),
 ) -> JSONResponse | ConceptNoteMarkdownResponse:
     """Persist a stable upload or OCR failure code."""
-    # Apply the state transition while preserving workflow invariants.
     user_id, auth_error = await authenticate_user(request, cc_client)
     if auth_error:
         return auth_error
@@ -351,7 +345,6 @@ async def retry_concept_note_upload(
     cc_client: CityCatalystClient = Depends(get_citycatalyst_client),
 ) -> JSONResponse | ConceptNoteMarkdownResponse:
     """Return a failed authoritative upload row to queued state."""
-    # Apply the state transition while preserving workflow invariants.
     user_id, auth_error = await authenticate_user(request, cc_client)
     if auth_error:
         return auth_error

@@ -285,7 +285,6 @@ def _row_total_emissions_signature(row: dict[str, Any]) -> tuple[Any, ...] | Non
 
 def _row_gas_emissions_signature(row: dict[str, Any]) -> tuple[Any, ...] | None:
     """Return a comparable gas-level emissions signature for one row."""
-    # Normalize gas values into a stable signature for exact row comparison.
     gases = row.get("gases")
     if not isinstance(gases, list):
         return None
@@ -338,7 +337,6 @@ def _deterministic_multi_source_proposal(
     status: str = "conflict",
 ) -> dict[str, Any]:
     """Build a multi-source proposal with a ranked recommendation + alternatives."""
-    # Rank comparable sources deterministically before exposing alternatives.
     ranked = sorted(
         candidates, key=lambda candidate: _candidate_rank_key(candidate, inventory_year)
     )
@@ -469,7 +467,6 @@ def _deterministic_single_source_proposal(
     current_value: dict[str, Any] | None,
 ) -> dict[str, Any]:
     """Build a "ready" proposal copying a single source's data row verbatim."""
-    # Preserve the sole source row verbatim when no conflict resolution is needed.
     return {
         "target_ref": row_payload,
         "current_value": current_value,

@@ -86,7 +86,6 @@ def is_token_expired(token: str, buffer_seconds: int = 60) -> bool:
     Returns:
         True if token is expired or expiring soon, False otherwise
     """
-    # Treat malformed or expiry-free tokens as unusable rather than guessing validity.
     claims = parse_jwt_claims(token)
     if not claims or "exp" not in claims:
         logger.warning("Token has no expiry claim")
@@ -205,12 +204,10 @@ class LogSafeFormatter:
         Returns:
             Message with tokens redacted
         """
-        # Leave empty log messages unchanged and redact every supported token shape.
         if not message:
             return message
         
-        def replacer(match: re.Match[str]) -> str:
-            """Replace one token-bearing match with a redacted representation."""
+        def replacer(match):
             prefix = match.group(1)
             token = match.group(2)
             redacted = redact_token(token)

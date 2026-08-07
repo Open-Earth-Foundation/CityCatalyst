@@ -10,7 +10,6 @@ from typing import Literal, Protocol
 from uuid import UUID
 
 from pydantic import BaseModel, Field, JsonValue, model_validator
-from psycopg2.extensions import connection as PostgresConnection
 
 from app.models.cnb.research import (
     FieldEvidence,
@@ -177,7 +176,6 @@ def _raw_path_tokens(path: str) -> list[str]:
 
 def _resolve_reviewed_value(reviewed_data: ReviewedReferenceData, path: str) -> object:
     """Resolve one stable review path against the typed reviewed payload."""
-    # Resolve the requested data and enforce its scope constraints.
     current: object = reviewed_data
     for token in _raw_path_tokens(path):
         if isinstance(current, BaseModel):
@@ -218,7 +216,6 @@ def _resolve_reviewed_value(reviewed_data: ReviewedReferenceData, path: str) -> 
 
 def _review_values_equal(actual: object, reviewed: JsonValue) -> bool:
     """Compare typed reviewed fields with their JSON decision representation."""
-    # Apply the state transition while preserving workflow invariants.
     if isinstance(actual, UUID):
         return str(actual) == str(reviewed)
     if isinstance(actual, Decimal):
@@ -432,7 +429,7 @@ class PostgresReviewedReferenceDataWriter:
             raise ValueError("CNB database URL must not be empty")
         self._database_url = database_url
 
-    def _connect(self) -> PostgresConnection:
+    def _connect(self):
         """Open a psycopg connection only when the local importer runs."""
         import psycopg2
 

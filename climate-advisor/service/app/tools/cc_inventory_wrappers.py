@@ -57,7 +57,6 @@ def build_cc_datasource_tools(
         identify the inventory, then pass its inventory_id here only when the
         user asks about available datasources.
         """
-        # Reject empty inventory identifiers before invoking the legacy capability.
         if not inventory_id or not inventory_id.strip():
             logger.warning("cc_get_all_datasources called without inventory_id")
             return _serialize(

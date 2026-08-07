@@ -7,7 +7,7 @@ import unittest
 
 TEST_ROOT = Path(__file__).resolve().parent
 
-from vector_db.splitter_baseline import build_baseline
+from service.scripts.splitter_baseline import build_baseline
 from vector_db.utils.text_processing import TextSplitter
 
 
@@ -93,3 +93,7 @@ class TextSplitterTests(unittest.TestCase):
             current["output_metrics"]["token_max"],
             baseline["output_metrics"]["token_max"] + 64,
         )
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -13,8 +13,8 @@ from uuid import UUID
 from agents import RunConfig, Runner, gen_trace_id
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.config.settings import Settings, get_settings
-from app.middleware.request_context import get_request_id
+from app.config import Settings, get_settings
+from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
 from app.services.agent_service import AgentService
 from app.services.stationary_energy.stationary_energy_chat_context import (
@@ -103,7 +103,6 @@ class StreamingHandler:
         Yields:
             SSE formatted bytes for streaming response
         """
-        # Build the normal chat-context payload under the configured budget.
         req_id = self._request_id()
         settings = get_settings()
         started_at = time.perf_counter()
@@ -479,7 +478,6 @@ class StreamingHandler:
         context_payload: Dict[str, Any],
     ) -> Dict[str, str]:
         """Format a compact Stationary Energy draft snapshot as a system message."""
-        # Build the normal chat-context payload under the configured token budget.
         budget = get_stationary_energy_prompt_budget(get_settings(), "chat_context")
         baseline_payload = compact_stationary_energy_prompt_payload(
             context_payload,
@@ -498,7 +496,6 @@ class StreamingHandler:
         initial_system_content = self._stationary_energy_system_content(
             initial_message["content"]
         )
-        # Measure the full baseline before applying lossy compaction.
         initial_count = count_prompt_tokens(
             [initial_system_content],
             model=self.agent_model,
@@ -514,7 +511,6 @@ class StreamingHandler:
             )
             return initial_message
 
-        # Fall back to the minimal contract when the baseline exceeds the limit.
         compacted_payload = build_minimal_stationary_energy_context_payload(
             baseline_payload,
             initial_tokens=initial_count.tokens,
@@ -533,7 +529,6 @@ class StreamingHandler:
             fallback_encoding=budget.tokenizer_encoding,
         )
 
-        # Apply the final hard-limit fallback if the first compact form is still large.
         if compacted_count.tokens > budget.max_prompt_tokens:
             compacted_message = format_stationary_energy_context_message(
                 build_minimal_stationary_energy_context_payload(
@@ -552,7 +547,6 @@ class StreamingHandler:
                 fallback_encoding=budget.tokenizer_encoding,
             )
 
-        # Record the chosen prompt size without logging the payload itself.
         logger.info(
             "Stationary Energy chat context tokens=%s initial_tokens=%s max_prompt_tokens=%s tokenizer=%s compacted=%s",
             compacted_count.tokens,
@@ -775,7 +769,6 @@ class StreamingHandler:
         self, agent: Any, payload: MessageCreateRequest
     ) -> AsyncIterator[bytes]:
         """Fallback streaming method if Runner fails."""
-        # Use the legacy message stream only when the primary Runner path is unavailable.
         if not (hasattr(agent, "messages") and hasattr(agent.messages, "run_stream")):
             raise RuntimeError("No fallback streaming method available")
 
@@ -1134,7 +1127,6 @@ class StreamingHandler:
         payload: MessageCreateRequest,
     ) -> dict[str, object]:
         """Return shared workflow values for MLflow run and trace context."""
-        # Correlate agentic draft work without attaching raw workflow payloads.
         draft_run_id = self._draft_run_id_from_payload(payload)
         has_agentic_context = bool(draft_run_id)
         return {
@@ -1163,7 +1155,6 @@ class StreamingHandler:
         payload: MessageCreateRequest,
     ) -> bool:
         """Attach the CA thread id as the MLflow trace session id."""
-        # Apply the state transition while preserving workflow invariants.
         workflow_context = self._mlflow_workflow_context(payload)
         request_id = self._request_id()
         inventory_id = payload.inventory_id or self.inventory_id
@@ -1231,7 +1222,6 @@ class StreamingHandler:
         status: str | None = None,
     ) -> None:
         """Log final chat artifacts and metrics for the active MLflow run."""
-        # Record the bounded final transcript and timing after streaming completes.
         assistant_content = "".join(self.assistant_tokens)
         duration_ms = (time.perf_counter() - started_at) * 1000
         stream_status = status or ("ok" if ok else "error")

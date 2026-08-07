@@ -11,7 +11,7 @@ from uuid import UUID
 from openai import OpenAI
 from pydantic import JsonValue
 
-from app.config.settings import get_settings
+from app.config import get_settings
 from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
     CnbSimilarProjectEvidence,
@@ -84,7 +84,6 @@ class ProjectMatchingService:
         reference_data_client: CnbReferenceDataClient | None = None,
     ) -> None:
         """Store injected dependencies for deterministic retrieval and matching."""
-        # Retain injected boundaries so matching remains deterministic and testable.
         self.openai_client = openai_client
         self.workflow_store = workflow_store
         self.model_name = model_name
@@ -105,7 +104,6 @@ class ProjectMatchingService:
         store_responses: bool = False,
     ) -> "ProjectMatchingService":
         """Build the matcher from the configured research model and matching prompt."""
-        # Resolve all model and prompt choices from centralized application settings.
         settings = get_settings()
         model_config = settings.llm.models.funding_research
         prompt = settings.llm.prompts.get_prompt("cnb_similar_project_matching")
@@ -236,7 +234,6 @@ class ProjectMatchingService:
         candidates: list[CnbSimilarProjectCandidate],
     ) -> list[ShortlistedCandidate]:
         """Order V1 candidates by preferred fields without adding hard gates."""
-        # Assemble the normalized result in deterministic order.
         normalized_request_tags = normalize_project_tags(request.project_tags)
         ranked_candidates: list[tuple[tuple[object, ...], ShortlistedCandidate]] = []
 
@@ -321,7 +318,6 @@ class ProjectMatchingService:
         shortlist: list[ShortlistedCandidate],
     ) -> CnbSimilarProjectLlmDecisionSet:
         """Call the injected Responses API client with a strict decision schema."""
-        # Resolve the requested data and enforce its scope constraints.
         current_project = request.model_dump(
             mode="json",
             exclude={"run_id", "limit", "funder_scope"},
@@ -380,7 +376,6 @@ class ProjectMatchingService:
         decision_set: CnbSimilarProjectLlmDecisionSet,
     ) -> None:
         """Reject invented IDs, unsupported tags, or foreign evidence references."""
-        # Apply the complete validation contract before returning.
         shortlist_map = {
             item.candidate.funding_record_id: item
             for item in shortlist
@@ -468,7 +463,6 @@ class ProjectMatchingService:
         decision_set: CnbSimilarProjectLlmDecisionSet,
     ) -> list[CnbSimilarProjectMatch]:
         """Persist only selected decisions and retain referenced evidence rows."""
-        # Assemble the normalized result in deterministic order.
         shortlist_map = {
             item.candidate.funding_record_id: item
             for item in shortlist
@@ -517,7 +511,6 @@ class ProjectMatchingService:
         caveats: list[str],
     ) -> CnbSimilarProjectSearchRunResult:
         """Replace persisted matches, rebuild similar_projects, and emit one signal."""
-        # Persist the final selection before publishing the completion signal.
         self.workflow_store.replace_selected_similar_project_matches(
             run_id=request.run_id,
             matches=matches,
@@ -556,7 +549,6 @@ class ProjectMatchingService:
         candidate: CnbSimilarProjectCandidate,
     ) -> list[str]:
         """Explain request/candidate gaps instead of silently excluding records."""
-        # Surface missing comparison fields instead of treating absence as mismatch.
         caveats: list[str] = []
         compared_fields = (
             ("category", request.category, candidate.category),

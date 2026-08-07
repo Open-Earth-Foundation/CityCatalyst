@@ -1,19 +1,16 @@
 """
-Brief: Exercise the Stationary Energy draft flow against a mock CityCatalyst.
+Run the Stationary Energy draft flow against CA using a mock CC capability server.
 
-Inputs:
-- CLI args: `--fixture` selects mock load-context JSON, `--output` selects the
-  result JSON, and `--user-id`/`--locale` customize the request scope.
-- Files/paths: reads one Stationary Energy context fixture.
-- Env vars: none required; temporary CityCatalyst settings are restored after
-  the run.
+Usage from climate-advisor/:
+  uv run --directory service python -m scripts.run_stationary_energy_mock_flow
 
-Outputs:
-- Writes start/status/review responses and captured mock requests to JSON, and
-  prints a compact status summary.
+This starts a local mock CC server that serves:
+  POST /api/v1/internal/ca/capabilities/allowed-capabilities
+  POST /api/v1/internal/ca/capabilities/ghgi/stationary-energy/load-context
 
-Usage (from project root):
-- uv run --directory service python -m scripts.run_stationary_energy_mock_flow
+Then it calls CA's real FastAPI route handlers with an in-memory SQLite database.
+The output JSON contains the start/status/review responses and the requests that
+CA sent to the mock CC server.
 """
 
 from __future__ import annotations
@@ -23,19 +20,19 @@ import asyncio
 import base64
 import json
 import os
+import sys
 from pathlib import Path
-from typing import Any, AsyncIterator
+from typing import AsyncIterator
 
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import (
-    AsyncEngine,
-    AsyncSession,
-    async_sessionmaker,
-    create_async_engine,
-)
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = SERVICE_ROOT.parent
+for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
 
 from tests.mock_cc_stationary_energy_server import start_mock_cc_server
 
@@ -46,7 +43,7 @@ DEFAULT_OUTPUT = TEST_ROOT / "output" / "stationary_energy_mock_flow.json"
 
 def _unsigned_jwt(user_id: str) -> str:
     """Build a deterministic unsigned JWT for local mock-flow testing."""
-    def encode_json(payload: dict[str, Any]) -> str:
+    def encode_json(payload: dict) -> str:
         """Base64url-encode a JSON payload segment for the unsigned JWT."""
         raw = json.dumps(payload, separators=(",", ":")).encode("utf-8")
         return base64.urlsafe_b64encode(raw).decode("ascii").rstrip("=")
@@ -58,7 +55,7 @@ def _unsigned_jwt(user_id: str) -> str:
     )
 
 
-def _load_fixture(path: Path) -> dict[str, Any]:
+def _load_fixture(path: Path) -> dict:
     """Load the mock Stationary Energy context fixture from disk."""
     with path.open("r", encoding="utf-8") as handle:
         payload = json.load(handle)
@@ -67,13 +64,9 @@ def _load_fixture(path: Path) -> dict[str, Any]:
     return payload
 
 
-async def _create_session_factory() -> tuple[
-    AsyncEngine,
-    async_sessionmaker[AsyncSession],
-]:
+async def _create_session_factory() -> tuple:
     """Create an in-memory SQLite engine and session factory for the mock flow."""
-    # Import all mapped models before creating the shared in-memory schema.
-    from app.db.base import Base
+    from app.db import Base
     from app.models.db import document_embedding as _document_embedding  # noqa: F401
     from app.models.db import message as _message  # noqa: F401
     from app.models.db import stationary_energy_draft as _stationary_energy_draft  # noqa: F401
@@ -94,18 +87,16 @@ async def _create_session_factory() -> tuple[
     return engine, session_factory
 
 
-async def _dispose_engine(engine: AsyncEngine) -> None:
+async def _dispose_engine(engine) -> None:
     """Drop the in-memory schema and dispose the temporary SQLAlchemy engine."""
-    from app.db.base import Base
+    from app.db import Base
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
     await engine.dispose()
 
 
-def _build_review_decisions(
-    status_payload: dict[str, Any],
-) -> list[dict[str, str]]:
+def _build_review_decisions(status_payload: dict) -> list[dict]:
     """Accept recommended rows and leave unresolved rows empty for the mock review step."""
     decisions: list[dict] = []
     for proposal in status_payload.get("proposals") or []:
@@ -119,25 +110,19 @@ def _build_review_decisions(
     return decisions
 
 
-def parse_args() -> argparse.Namespace:
-    """Parse fixture, output, user, and locale options."""
+def main() -> int:
+    """Run the CA draft start/status/review flow against the mock CC server."""
     parser = argparse.ArgumentParser(
         description="Run CA Stationary Energy endpoints with mock CC load_context data.",
     )
-    parser.add_argument("--fixture", type=Path, default=DEFAULT_FIXTURE)
-    parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--fixture", default=str(DEFAULT_FIXTURE))
+    parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument("--user-id", default="mock-user")
     parser.add_argument("--locale", default="en")
-    return parser.parse_args()
+    args = parser.parse_args()
 
-
-def main() -> None:
-    """Run the CA draft start/status/review flow against the mock CC server."""
-    # Start isolated database and mock HTTP dependencies before exercising the flow.
-    args = parse_args()
-
-    fixture_path = args.fixture
-    output_path = args.output
+    fixture_path = Path(args.fixture)
+    output_path = Path(args.output)
     fixture = _load_fixture(fixture_path)
 
     city_id = fixture["city"]["city_id"]
@@ -240,8 +225,7 @@ def main() -> None:
             print(f"Source candidates: {len(status_payload.get('source_candidates') or [])}")
         if review_response:
             print(f"Review status: {review_response.status_code}")
-        if not start_response.is_success:
-            raise SystemExit(1)
+        return 0 if start_response.is_success else 1
     finally:
         server.shutdown()
         server.server_close()
@@ -255,4 +239,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

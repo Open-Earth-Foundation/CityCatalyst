@@ -39,13 +39,24 @@ import argparse
 import json
 import os
 import re
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from fastapi.testclient import TestClient
 
+try:
+    from pgvector import sqlalchemy as _pgvector_sqlalchemy  # noqa: F401
+except ModuleNotFoundError:
+    print("pgvector is required for CA E2E runs.", file=sys.stderr)
+    sys.exit(1)
+
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = SERVICE_ROOT.parent
+for import_root in (str(SERVICE_ROOT), str(REPO_ROOT)):
+    if import_root not in sys.path:
+        sys.path.insert(0, import_root)
 
 from app.main import get_app
 from app.utils.token_manager import is_token_expired, redact_token
@@ -101,7 +112,6 @@ def _render_payload(value: Any, variables: Dict[str, Any]) -> Any:
 
 def _parse_sse_events(raw_text: str) -> List[Dict[str, Any]]:
     """Parse an SSE response body into structured event dictionaries."""
-    # Accumulate multiline SSE data until each event boundary is reached.
     events: List[Dict[str, Any]] = []
     event_type: Optional[str] = None
     event_id: Optional[str] = None
@@ -205,7 +215,6 @@ def _find_tool_invocation(tools_used: List[Dict[str, Any]], name: str) -> Option
 
 def _extract_inventory_meta(tools_used: List[Dict[str, Any]]) -> Dict[str, str]:
     """Extract inventory id and city name hints from tool outputs for later prompts."""
-    # Prefer structured discovery output and retain only fields needed by later cases.
     tool = _find_tool_invocation(tools_used, "inventory_list_accessible")
     if not tool:
         return {}
@@ -270,20 +279,17 @@ def _env_override(name: str) -> Optional[str]:
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments for the CA E2E prompt runner."""
-    # Group endpoint, case-selection, and output controls in one CLI contract.
     parser = argparse.ArgumentParser(
         description="Run CA E2E prompts and save responses.",
     )
     parser.add_argument(
         "--prompts",
-        type=Path,
         default=os.getenv("CA_E2E_PROMPTS_PATH", str(FIXTURE_PATH)),
         help="Path to prompt JSON file.",
     )
     parser.add_argument(
         "--output",
-        type=Path,
-        default=DEFAULT_OUTPUT_PATH,
+        default=str(DEFAULT_OUTPUT_PATH),
         help="Output JSON path.",
     )
     parser.add_argument(
@@ -306,9 +312,8 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main() -> int:
     """Run the configured CA prompt cases and persist their responses to disk."""
-    # Resolve runtime configuration before creating HTTP requests or output files.
     args = parse_args()
     required_env = [
         "CA_DATABASE_URL",
@@ -319,26 +324,29 @@ def main() -> None:
     ]
     missing = [name for name in required_env if not os.getenv(name)]
     if missing:
-        raise SystemExit(
-            f"Missing required environment variables: {', '.join(missing)}"
-        )
+        print(f"Missing required environment variables: {', '.join(missing)}", file=sys.stderr)
+        return 1
 
     token = os.getenv("CA_E2E_CC_TOKEN", "")
     if not token or is_token_expired(token):
-        raise SystemExit("CA_E2E_CC_TOKEN is missing or expired")
+        print("CA_E2E_CC_TOKEN is missing or expired.", file=sys.stderr)
+        return 1
 
-    prompts_path = args.prompts
+    prompts_path = Path(args.prompts)
     if not prompts_path.exists():
-        raise SystemExit(f"Prompt file not found: {prompts_path}")
+        print(f"Prompt file not found: {prompts_path}", file=sys.stderr)
+        return 1
 
     prompt_data = _load_prompt_data(prompts_path)
     defaults = prompt_data.get("defaults", {})
     if not isinstance(defaults, dict):
-        raise SystemExit("Prompt JSON defaults must be an object")
+        print("Prompt JSON defaults must be an object.", file=sys.stderr)
+        return 1
 
     cases = prompt_data.get("cases", [])
     if not isinstance(cases, list) or not cases:
-        raise SystemExit("Prompt JSON must include a non-empty cases list")
+        print("Prompt JSON must include a non-empty cases list.", file=sys.stderr)
+        return 1
 
     app = get_app()
     client = TestClient(app)
@@ -473,11 +481,12 @@ def main() -> None:
     finally:
         client.close()
 
-    output_path = args.output
+    output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(responses, indent=2), encoding="utf-8")
     print(f"Saved responses to {output_path}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

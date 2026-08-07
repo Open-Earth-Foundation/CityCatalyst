@@ -1,5 +1,3 @@
-"""Persist Concept Note Builder run state."""
-
 from __future__ import annotations
 
 from uuid import UUID
@@ -64,7 +62,6 @@ class ConceptNoteRunRepository:
         trace_id: str | None,
     ) -> tuple[ConceptNoteRun, bool]:
         """Create a run and empty bundle, or return a concurrent replay."""
-        # Execute the workflow in ordered, observable stages.
         existing = await self.get_by_idempotency_key(
             user_id=user_id,
             idempotency_key=idempotency_key,
@@ -126,7 +123,6 @@ class ConceptNoteRunRepository:
         city_id: str,
     ) -> list[ConceptNoteRun]:
         """Load a user's runs for one city in deterministic activity order."""
-        # Resolve the requested data and enforce its scope constraints.
         query = (
             select(ConceptNoteRun)
             .where(

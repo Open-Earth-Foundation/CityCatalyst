@@ -294,12 +294,10 @@ class StationaryEnergyReviewChoiceResolver:
         staged: list[StationaryEnergyStagedReviewSelection],
     ) -> list[StationaryEnergyNotationKeyTarget]:
         """Merge CC notation-key targets with CA staged/saved review state."""
-        # Normalize the capability response before joining local draft state.
         raw_targets = targets_payload.get("targets")
         if not isinstance(raw_targets, list):
             raw_targets = []
 
-        # Index proposal, staged, and saved choices by their stable identities.
         proposal_by_target_id = self._proposal_by_notation_target_id()
         staged_by_proposal = {
             selection.proposal_id: selection
@@ -307,7 +305,6 @@ class StationaryEnergyReviewChoiceResolver:
             if selection.status == "active" and selection.action == "set_notation_key"
         }
         latest_decisions = latest_review_decisions(self.draft_run.review_decisions)
-        # Assemble one merged target view for every eligible CC target.
         targets: list[StationaryEnergyNotationKeyTarget] = []
         for raw_target in raw_targets:
             if not isinstance(raw_target, dict):
@@ -366,7 +363,6 @@ class StationaryEnergyReviewChoiceResolver:
         list[StationaryEnergyAgentReviewBlockedChoice],
     ]:
         """Validate notation-key choices against CC-eligible targets."""
-        # Index eligible targets by both public target and proposal identities.
         selected_choices: list[StationaryEnergyAgentReviewChoice] = []
         blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice] = []
         targets = self.notation_targets(targets_payload, staged=[])
@@ -375,7 +371,6 @@ class StationaryEnergyReviewChoiceResolver:
             target.proposal_id: target for target in targets if target.proposal_id
         }
 
-        # Validate each requested choice without discarding blocked results.
         for choice in choices:
             target = None
             if choice.target_id:
@@ -405,7 +400,6 @@ class StationaryEnergyReviewChoiceResolver:
                 )
                 continue
 
-            # Normalize the notation contract and require its explanation.
             notation_key = choice.notation_key.upper()
             unavailable_reason = ALLOWED_NOTATION_KEY_REASONS.get(notation_key)
             if unavailable_reason is None:
@@ -431,7 +425,6 @@ class StationaryEnergyReviewChoiceResolver:
                 )
                 continue
 
-            # Emit a fully resolved review choice for later staging.
             selected_choices.append(
                 StationaryEnergyAgentReviewChoice(
                     proposal_id=target.proposal_id,
@@ -463,7 +456,6 @@ class StationaryEnergyReviewChoiceResolver:
         list[StationaryEnergyAgentReviewBlockedChoice],
     ]:
         """Return requested active staged notation selections plus blockers."""
-        # Restrict confirmation to active staged notation choices and report blockers.
         notation_staged = [
             selection
             for selection in staged
@@ -908,7 +900,6 @@ class StationaryEnergyReviewChoiceResolver:
         proposal: StationaryEnergyDraftProposal,
     ) -> list[StationaryEnergyDraftSourceCandidate]:
         """Return applicable candidates the user can choose for a proposal."""
-        # Preserve proposal ordering while resolving only applicable candidates.
         candidate_by_id = self._candidate_by_id()
         ids = [
             (

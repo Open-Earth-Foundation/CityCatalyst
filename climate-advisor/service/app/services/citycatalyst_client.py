@@ -13,12 +13,11 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from types import TracebackType
-from typing import Any, Dict, Optional, Self, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import httpx
 
-from app.config.settings import get_settings
+from app.config import get_settings
 from app.utils.token_manager import (
     is_token_expired,
     parse_jwt_claims,
@@ -72,7 +71,7 @@ class CityCatalystClient:
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
         timeout: int = 30,
-    ) -> None:
+    ):
         """Initialize CityCatalyst client.
 
         Args:
@@ -108,16 +107,11 @@ class CityCatalystClient:
             await self._client.aclose()
             self._client = None
 
-    async def __aenter__(self) -> Self:
+    async def __aenter__(self):
         """Async context manager entry."""
         return self
 
-    async def __aexit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_val: BaseException | None,
-        exc_tb: TracebackType | None,
-    ) -> None:
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
         await self.close()
 
@@ -204,7 +198,6 @@ class CityCatalystClient:
         user_id: str,
     ) -> tuple[str, int, dict[str, Any]]:
         """Validate refresh fields and JWT claims when the token exposes them."""
-        # Apply the complete validation contract before returning.
         if not isinstance(data, dict):
             raise TokenRefreshError("Invalid token refresh response")
 
@@ -422,7 +415,6 @@ class CityCatalystClient:
 
     async def validate_user_identity(self, token: str) -> str:
         """Validate a CC-issued bearer token and return its canonical user ID."""
-        # Apply the complete validation contract before returning.
         if not self.base_url:
             raise CityCatalystClientError(
                 "CC_BASE_URL not configured",
@@ -632,7 +624,6 @@ class CityCatalystClient:
         token: Optional[str] = None,
     ) -> list[str]:
         """Return the allowed Stationary Energy internal capabilities for a workflow step."""
-        # Resolve the requested data and enforce its scope constraints.
         payload = {
             "user_id": user_id,
             "city_id": city_id,
@@ -786,7 +777,6 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If API call fails
         """
-        # Fail before network I/O when the shared CityCatalyst endpoint is absent.
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
@@ -829,7 +819,6 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If API call fails
         """
-        # Fail before network I/O when the shared CityCatalyst endpoint is absent.
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
@@ -879,7 +868,6 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If API call fails
         """
-        # Fail before network I/O when the shared CityCatalyst endpoint is absent.
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 
@@ -922,7 +910,6 @@ class CityCatalystClient:
         Raises:
             CityCatalystClientError: If API call fails
         """
-        # Fail before network I/O when the shared CityCatalyst endpoint is absent.
         if not self.base_url:
             raise CityCatalystClientError("CC_BASE_URL not configured")
 

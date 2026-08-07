@@ -10,10 +10,7 @@ from app.models.db.message import Message, MessageRole
 
 
 class MessageService:
-    """Persist and retrieve messages through one async database session."""
-
-    def __init__(self, session: AsyncSession) -> None:
-        """Bind the service to an async database session."""
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def create_message(
@@ -25,8 +22,6 @@ class MessageService:
         role: MessageRole,
         tools_used: Optional[Any] = None,
     ) -> Message:
-        """Create and flush one message without committing the transaction."""
-        # Execute the workflow in ordered, observable stages.
         message = Message(
             message_id=uuid4(),
             thread_id=thread_id,
@@ -47,7 +42,6 @@ class MessageService:
         text: str,
         tools_used: Optional[Any] = None,
     ) -> Message:
-        """Create a user-authored message."""
         return await self.create_message(
             thread_id=thread_id,
             user_id=user_id,
@@ -64,7 +58,6 @@ class MessageService:
         text: str,
         tools_used: Optional[Any] = None,
     ) -> Message:
-        """Create an assistant-authored message."""
         return await self.create_message(
             thread_id=thread_id,
             user_id=user_id,

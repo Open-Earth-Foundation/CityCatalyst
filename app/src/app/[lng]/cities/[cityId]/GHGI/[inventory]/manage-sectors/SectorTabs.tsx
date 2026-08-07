@@ -136,7 +136,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [showDialog, setShowDialog] = useState(false);
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const [, setNextRoute] = useState<string | null>(null);
   const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
 
   const {
@@ -187,7 +186,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   useEffect(() => {
     if (pathname !== prevPathname) {
       if (isDirty) {
-        setNextRoute(pathname);
         setShowDialog(true);
         // Prevent navigation by pushing back to previous path
         router.replace(prevPathname);
@@ -366,7 +364,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
-    setNextRoute(null);
     setShowDialog(false);
 
     // Force a re-render of the form by resetting the selected sector

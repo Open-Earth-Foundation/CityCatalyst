@@ -65,9 +65,14 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteRun,
   ConceptNoteRunListResponse,
+  ConceptNoteUploadRequest,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatusRequest,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  StartConceptNoteRunRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -130,6 +135,7 @@ export const api = createApi({
     "PersonalAccessToken",
     "AdminModules",
     "ConceptNoteRuns",
+    "ConceptNoteUpload",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -2151,6 +2157,61 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
+      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
+        query: (runId) => `concept-notes/${runId}`,
+      }),
+      startConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        StartConceptNoteRunRequest
+      >({
+        query: ({ cityId, idempotencyKey, name }) => ({
+          url: "concept-notes/start",
+          method: "POST",
+          body: {
+            city_id: cityId,
+            idempotency_key: idempotencyKey,
+            name,
+          },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      uploadConceptNotePdf: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadRequest
+      >({
+        query: ({ formData, runId }) => ({
+          url: `concept-notes/${runId}/uploads`,
+          method: "POST",
+          body: formData,
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteUploadStatus: builder.query<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) =>
+          `concept-notes/${runId}/uploads/${uploadId}`,
+        providesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteUpload: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) => ({
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
     };
   },
 });
@@ -2298,5 +2359,10 @@ export const {
   useUpdateModuleMutation,
   useDeleteModuleMutation,
   useGetConceptNoteRunsQuery,
+  useGetConceptNoteRunQuery,
+  useStartConceptNoteRunMutation,
+  useUploadConceptNotePdfMutation,
+  useGetConceptNoteUploadStatusQuery,
+  useRetryConceptNoteUploadMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

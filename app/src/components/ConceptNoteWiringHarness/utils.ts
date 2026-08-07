@@ -1,7 +1,6 @@
-export const CONCEPT_NOTE_PDF_MAX_BYTES = 20 * 1024 * 1024;
+import type { ConceptNoteUploadStatus } from "@/util/types";
 
-export type ConceptNoteUploadStatus =
-  "queued" | "processing" | "ready" | "failed";
+export const CONCEPT_NOTE_PDF_MAX_BYTES = 20 * 1024 * 1024;
 
 export type ConceptNotePdfValidationError =
   "invalid-pdf-type" | "empty-pdf" | "oversized-pdf" | "invalid-pdf-signature";
@@ -63,4 +62,10 @@ export function uploadStatusTranslationKey(
     default:
       return "status-not-started";
   }
+}
+
+export function shouldPollConceptNoteUpload(
+  status: ConceptNoteUploadStatus | null,
+): boolean {
+  return status === "queued" || status === "processing";
 }

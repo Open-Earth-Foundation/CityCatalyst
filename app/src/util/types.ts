@@ -996,3 +996,31 @@ export interface ConceptNoteRun {
 export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
 }
+
+export interface StartConceptNoteRunRequest {
+  cityId: string;
+  idempotencyKey: string;
+  name: string;
+}
+
+export type ConceptNoteUploadStatus =
+  "queued" | "processing" | "ready" | "failed";
+
+export interface ConceptNoteUploadResponse {
+  uploadId: string;
+  runId?: string;
+  status: ConceptNoteUploadStatus;
+  pageCount?: number | null;
+  errorCode?: string;
+}
+
+export interface ConceptNoteUploadRequest {
+  cityId: string;
+  formData: FormData;
+  runId: string;
+}
+
+export interface ConceptNoteUploadStatusRequest {
+  runId: string;
+  uploadId: string;
+}

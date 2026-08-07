@@ -4,6 +4,7 @@ import {
   CONCEPT_NOTE_PDF_MAX_BYTES,
   formatFileSize,
   requireConceptNoteUploadIdentity,
+  shouldPollConceptNoteUpload,
   uploadStatusTranslationKey,
   validateConceptNotePdf,
 } from "@/components/ConceptNoteWiringHarness/utils";
@@ -43,6 +44,13 @@ describe("Concept Note Builder wiring helpers", () => {
     expect(formatFileSize(2 * 1024 * 1024)).toBe("2.0 MiB");
     expect(uploadStatusTranslationKey("processing")).toBe("status-converting");
     expect(uploadStatusTranslationKey("ready")).toBe("status-ready");
+  });
+
+  it("polls only while conversion can still advance", () => {
+    expect(shouldPollConceptNoteUpload("queued")).toBe(true);
+    expect(shouldPollConceptNoteUpload("processing")).toBe(true);
+    expect(shouldPollConceptNoteUpload("ready")).toBe(false);
+    expect(shouldPollConceptNoteUpload("failed")).toBe(false);
   });
 
   it("reads the camelCase CityCatalyst upload identity", () => {

@@ -4,7 +4,7 @@ import {
   CONCEPT_NOTE_PDF_MAX_BYTES,
   formatFileSize,
   requireConceptNoteUploadIdentity,
-  uploadStatusLabel,
+  uploadStatusTranslationKey,
   validateConceptNotePdf,
 } from "@/components/ConceptNoteWiringHarness/utils";
 
@@ -23,9 +23,9 @@ describe("Concept Note Builder wiring helpers", () => {
   });
 
   it("rejects an invalid signature even when the MIME type is PDF", async () => {
-    await expect(
-      validateConceptNotePdf(pdfFile(["not a pdf"])),
-    ).resolves.toMatch("valid PDF signature");
+    await expect(validateConceptNotePdf(pdfFile(["not a pdf"]))).resolves.toBe(
+      "invalid-pdf-signature",
+    );
   });
 
   it("rejects a PDF over the public upload limit", async () => {
@@ -34,13 +34,15 @@ describe("Concept Note Builder wiring helpers", () => {
       value: CONCEPT_NOTE_PDF_MAX_BYTES + 1,
     });
 
-    await expect(validateConceptNotePdf(oversized)).resolves.toMatch("20 MiB");
+    await expect(validateConceptNotePdf(oversized)).resolves.toBe(
+      "oversized-pdf",
+    );
   });
 
   it("formats visible file and status metadata", () => {
     expect(formatFileSize(2 * 1024 * 1024)).toBe("2.0 MiB");
-    expect(uploadStatusLabel("processing")).toBe("Converting");
-    expect(uploadStatusLabel("ready")).toBe("Ready");
+    expect(uploadStatusTranslationKey("processing")).toBe("status-converting");
+    expect(uploadStatusTranslationKey("ready")).toBe("status-ready");
   });
 
   it("reads the camelCase CityCatalyst upload identity", () => {

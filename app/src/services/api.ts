@@ -129,6 +129,7 @@ export const api = createApi({
     "VersionHistory",
     "PersonalAccessToken",
     "AdminModules",
+    "ConceptNoteRuns",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -2146,6 +2147,9 @@ export const api = createApi({
           url: "concept-notes",
           params: { city_id: cityId },
         }),
+        providesTags: (_result, _error, cityId) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
       }),
     };
   },

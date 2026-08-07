@@ -3,6 +3,9 @@ export const CONCEPT_NOTE_PDF_MAX_BYTES = 20 * 1024 * 1024;
 export type ConceptNoteUploadStatus =
   "queued" | "processing" | "ready" | "failed";
 
+export type ConceptNotePdfValidationError =
+  "invalid-pdf-type" | "empty-pdf" | "oversized-pdf" | "invalid-pdf-signature";
+
 export function requireConceptNoteUploadIdentity(upload: {
   uploadId?: string;
   status?: ConceptNoteUploadStatus;
@@ -15,26 +18,24 @@ export function requireConceptNoteUploadIdentity(upload: {
 
 export async function validateConceptNotePdf(
   file: File,
-): Promise<string | null> {
+): Promise<ConceptNotePdfValidationError | null> {
   if (
     file.type !== "application/pdf" ||
     !file.name.toLowerCase().endsWith(".pdf")
   ) {
-    return "Choose a PDF file.";
+    return "invalid-pdf-type";
   }
   if (file.size === 0) {
-    return "The PDF is empty.";
+    return "empty-pdf";
   }
   if (file.size > CONCEPT_NOTE_PDF_MAX_BYTES) {
-    return "The PDF is larger than 20 MiB.";
+    return "oversized-pdf";
   }
 
   const signature = new TextDecoder("ascii").decode(
     await file.slice(0, 5).arrayBuffer(),
   );
-  return signature === "%PDF-"
-    ? null
-    : "The selected file does not have a valid PDF signature.";
+  return signature === "%PDF-" ? null : "invalid-pdf-signature";
 }
 
 export function formatFileSize(bytes: number): string {
@@ -47,19 +48,19 @@ export function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MiB`;
 }
 
-export function uploadStatusLabel(
+export function uploadStatusTranslationKey(
   status: ConceptNoteUploadStatus | null,
 ): string {
   switch (status) {
     case "queued":
-      return "Queued";
+      return "status-queued";
     case "processing":
-      return "Converting";
+      return "status-converting";
     case "ready":
-      return "Ready";
+      return "status-ready";
     case "failed":
-      return "Failed";
+      return "status-failed";
     default:
-      return "Not started";
+      return "status-not-started";
   }
 }

@@ -532,11 +532,11 @@ export type ThemeResponse = {
 };
 
 export enum LANGUAGES {
-  "en" = "en",
-  "es" = "es",
-  "pt" = "pt",
-  "de" = "de",
-  "fr" = "fr",
+  en = "en",
+  es = "es",
+  pt = "pt",
+  de = "de",
+  fr = "fr",
 }
 
 export type OrganizationWithThemeResponse = {

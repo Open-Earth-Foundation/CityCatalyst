@@ -20,7 +20,6 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
 import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-step";
-import ConfirmStep from "@/components/steps/GHGI/confirm-inventory-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
@@ -98,22 +97,17 @@ export default function OnboardingSetup(props: {
     ? [
         { title: t("set-inventory-details-step") },
         { title: t("set-population-step") },
-        { title: t("confirm-step") },
       ]
     : [
         { title: t("set-inventory-details-step") },
         { title: t("set-population-step") },
         { title: t("set-third-party-data-step") },
-        { title: t("confirm-step") },
       ];
-
-  const confirmStepIndex = isUploadMode ? 2 : 3;
 
   const {
     value: activeStep,
     goToNextStep,
     goToPrevStep,
-    setStep,
   } = useSteps({
     defaultStep: 0,
     count: steps.length,
@@ -394,22 +388,6 @@ export default function OnboardingSetup(props: {
               onValueChange={setThirdPartyDataChoice}
             />
           )}
-          {activeStep === confirmStepIndex && (
-            <ConfirmStep
-              cityName={data.name}
-              t={t}
-              locode={data.locode}
-              population={
-                typeof cityPopulation === "string"
-                  ? parseInt(cityPopulation as string)
-                  : cityPopulation
-              }
-              inventoryGoal={inventoryGoal}
-              year={data.year}
-              setStep={setStep}
-              numberFormat={userInfo?.numberFormat}
-            />
-          )}
         </Box>
         <Box
           bg="white"
@@ -454,16 +432,19 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={handleSubmit(onSubmit)}
+                  onClick={
+                    isUploadMode ? onConfirm : handleSubmit(onSubmit)
+                  }
                   px="24px"
                   h="64px"
+                  loading={isUploadMode && isConfirming}
                 >
                   <Text
                     fontFamily="button.md"
                     fontWeight="600"
                     letterSpacing="wider"
                   >
-                    {t("continue")}
+                    {t(isUploadMode ? "create-inventory" : "continue")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>
@@ -473,35 +454,18 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={goToNextStep}
+                  onClick={onConfirm}
                   px="24px"
                   h="64px"
                   disabled={!thirdPartyDataChoice}
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep == confirmStepIndex && (
-                <Button
-                  h={16}
-                  w="auto"
                   loading={isConfirming}
-                  px="24px"
-                  onClick={onConfirm}
                 >
                   <Text
                     fontFamily="button.md"
                     fontWeight="600"
                     letterSpacing="wider"
                   >
-                    {t("continue")}
+                    {t("create-inventory")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>

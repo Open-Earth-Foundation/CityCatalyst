@@ -65,6 +65,7 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteRunListResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
 } from "@/util/types";
@@ -717,14 +718,13 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["FileData"],
       }),
-      getUserFiles: builder.query({
+      getUserFiles: builder.query<UserFileResponse[], string>({
         query: (cityId: string) => ({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse[] }) => {
-          return response.data;
-        },
+        transformResponse: (response: { data: UserFileResponse[] }) =>
+          response.data,
 
         providesTags: ["FileData"],
       }),
@@ -2141,6 +2141,12 @@ export const api = createApi({
           response.data,
         providesTags: ["Organizations"],
       }),
+      getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
+        query: (cityId) => ({
+          url: "concept-notes",
+          params: { city_id: cityId },
+        }),
+      }),
     };
   },
 });
@@ -2287,5 +2293,6 @@ export const {
   useCreateModuleMutation,
   useUpdateModuleMutation,
   useDeleteModuleMutation,
+  useGetConceptNoteRunsQuery,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

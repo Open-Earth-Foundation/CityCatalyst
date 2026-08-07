@@ -1407,6 +1407,28 @@ idempotency_key_reused`.
 - Does not yet create document chapters or load the selected funder template;
   the response directs the next backend step to `load_context`.
 
+### Dashboard Run Read Contract
+
+`GET /v1/concept-notes?user_id=...&city_id=...` is a backend/UI read operation,
+not an agent tool. It validates the CC-issued bearer token, requires the query
+user to match the canonical token identity, rechecks live city access, and
+returns only that user's runs for the requested city. Results are ordered by
+`updated_at DESC`, `created_at DESC`, and `run_id DESC`.
+
+Each list item contains `run_id`, optional `thread_id`, display name, city and
+stored project/funding identifiers, persisted `status` and `workflow_step`,
+`progress_summary`, and creation/update timestamps. `run_id` is the durable
+identifier used by the existing single-run detail route. `progress_summary`
+maps directly from `concept_note_runs.context_summary` and defaults to an empty
+object; this contract does not infer percentages or document/upload counts.
+CityCatalyst exposes the same list at
+`GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
+rejecting malformed or mixed-city successful responses from Climate Advisor.
+The CityCatalyst dashboard consumes this contract at
+`/{lng}/cities/{cityId}/concept-notes`. Its first implementation exposes only
+new-note and resume navigation; inferred progress percentages and unsupported
+duplicate, delete, and export actions remain intentionally absent.
+
 ### Always-On Agent Context
 
 Run status is not an agent tool. The agent should always receive current run
@@ -2054,6 +2076,7 @@ agent tool.
 
 ```text
 POST /v1/concept-notes/start
+GET  /v1/concept-notes?user_id={user_id}&city_id={city_id}
 POST /v1/concept-notes/{run_id}/cc-context
 GET  /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
@@ -2075,6 +2098,7 @@ POST /v1/concept-notes/{run_id}/export/pdf
 
 ```text
 POST /api/v1/concept-notes/start
+GET  /api/v1/concept-notes?city_id={city_id}
 GET  /api/v1/concept-notes/{run_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads

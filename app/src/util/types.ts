@@ -977,3 +977,22 @@ export type UserOrganizationsResponse = {
   name: string;
   role: OrganizationRole;
 }[];
+
+export interface ConceptNoteRun {
+  run_id: string;
+  thread_id: string | null;
+  name: string;
+  city_id: string;
+  project_id: string | null;
+  funder_id: string | null;
+  selected_funding_record_id: string | null;
+  status: string;
+  workflow_step: string;
+  progress_summary: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConceptNoteRunListResponse {
+  runs: ConceptNoteRun[];
+}

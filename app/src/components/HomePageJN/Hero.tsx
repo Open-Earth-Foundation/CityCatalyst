@@ -2,7 +2,6 @@
 import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
-import { useGetOCCityDataQuery } from "@/services/api";
 import { Box, Icon, Spinner, HStack, VStack, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import { MdOutlineAspectRatio } from "react-icons/md";
@@ -40,10 +39,6 @@ export function Hero({
   hideMap = false,
   numberFormat,
 }: HeroProps) {
-  useGetOCCityDataQuery(city?.locode ?? "", {
-    skip: !city?.locode,
-  });
-
   const formattedEmissions =
     ghgiCityData?.totalEmissions != null
       ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)

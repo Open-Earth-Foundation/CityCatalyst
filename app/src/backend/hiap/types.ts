@@ -1,3 +1,5 @@
+import { ACTION_TYPES } from "@/util/types";
+
 export interface PrioritizerResponse {
   metadata: PrioritizerResponseMetadata;
   rankedActionsMitigation: PrioritizerRankedAction[];
@@ -15,6 +17,31 @@ export interface PrioritizerRankedAction {
   explanation: {
     explanations?: Record<string, string>;
   };
+}
+
+export interface MergedRankedAction {
+  actionId: string;
+  rank: number;
+  explanation: { explanations?: Record<string, string> };
+  type: ACTION_TYPES;
+  isSelected?: boolean;
+  name?: string;
+  hazard: string[] | null;
+  sector: string[] | null;
+  subsector: string[] | null;
+  primaryPurpose: string[];
+  description?: string;
+  cobenefits: { [k: string]: number };
+  equityAndInclusionConsiderations?: string;
+  GHGReductionPotential: { [k: string]: string };
+  adaptationEffectiveness: string | null;
+  costInvestmentNeeded: string | null;
+  timelineForImplementation: string | null;
+  dependencies: string[];
+  keyPerformanceIndicators: string[];
+  powersAndMandates: string[] | null;
+  adaptationEffectivenessPerHazard: { [k: string]: string };
+  biome: string | null;
 }
 
 export interface CityContextData {

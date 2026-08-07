@@ -4,6 +4,26 @@ import { UseErrorToast } from "@/hooks/Toasts";
 import { api } from "@/services/api";
 import { formatEmissions } from "@/util/helpers";
 import { VersionHistoryEntry } from "@/util/types";
+import {
+  Box,
+  Button,
+  HStack,
+  Icon,
+  Spacer,
+  Table,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { TFunction } from "i18next";
+import { useState } from "react";
+import {
+  MdCheckBox,
+  MdCheckBoxOutlineBlank,
+  MdKeyboardArrowDown,
+  MdKeyboardArrowUp,
+  MdPersonOutline,
+  MdReplay,
+} from "react-icons/md";
 
 interface VersionChangeEntry {
   versionId: string;
@@ -25,26 +45,6 @@ interface VersionChangeEntry {
   isSelected?: boolean;
   rank?: number;
 }
-import {
-  Box,
-  Button,
-  HStack,
-  Icon,
-  Spacer,
-  Table,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
-import { TFunction } from "i18next";
-import { useState } from "react";
-import {
-  MdCheckBox,
-  MdCheckBoxOutlineBlank,
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
-  MdPersonOutline,
-  MdReplay,
-} from "react-icons/md";
 
 function toEmissionsString(totalEmissions: number, format?: string): string {
   const { value, unit } = formatEmissions(totalEmissions, format);

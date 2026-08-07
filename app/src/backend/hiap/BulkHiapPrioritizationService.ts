@@ -8,15 +8,6 @@ import {
 import { hiapServiceWrapper } from "./HiapService";
 import { hiapApiWrapper } from "./HiapApiService";
 import { Op, QueryTypes } from "sequelize";
-import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
-import { Inventory } from "@/models/Inventory";
-import { City } from "@/models/City";
-
-// The `inventory`/`city` associations are eager-loaded via `include` below
-// but aren't declared on the HighImpactActionRanking model class itself.
-type RankingWithInventoryAndCity = HighImpactActionRanking & {
-  inventory: Inventory & { city: City };
-};
 
 export interface CityInventoryData {
   cityId: string;
@@ -178,7 +169,7 @@ export class BulkHiapPrioritizationService {
 
     // Build cities data for the batch
     const citiesData: CityInventoryData[] = todoRankings.map((ranking) => {
-      const inventory = (ranking as RankingWithInventoryAndCity).inventory;
+      const inventory = ranking.inventory;
       const city = inventory.city;
       return {
         cityId: city.cityId,

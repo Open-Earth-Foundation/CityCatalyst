@@ -17,6 +17,7 @@ import {
   PrioritizerResponse,
   PrioritizerCityData,
   PrioritizerRankedAction,
+  MergedRankedAction,
 } from "./types";
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
@@ -588,31 +589,6 @@ export function normalizeRankedActionForLang(
       plain.equityAndInclusionConsiderations ??
       "",
   };
-}
-
-interface MergedRankedAction {
-  actionId: string;
-  rank: number;
-  explanation: { explanations?: Record<string, string> };
-  type: ACTION_TYPES;
-  isSelected?: boolean;
-  name?: string;
-  hazard: string[] | null;
-  sector: string[] | null;
-  subsector: string[] | null;
-  primaryPurpose: string[];
-  description?: string;
-  cobenefits: { [k: string]: number };
-  equityAndInclusionConsiderations?: string;
-  GHGReductionPotential: { [k: string]: string };
-  adaptationEffectiveness: string | null;
-  costInvestmentNeeded: string | null;
-  timelineForImplementation: string | null;
-  dependencies: string[];
-  keyPerformanceIndicators: string[];
-  powersAndMandates: string[] | null;
-  adaptationEffectivenessPerHazard: { [k: string]: string };
-  biome: string | null;
 }
 
 async function fetchAndMergeRankedActions(

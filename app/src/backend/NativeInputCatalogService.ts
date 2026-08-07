@@ -57,15 +57,6 @@ function validateRegistrationInput(input: RegisterNativeInputInput): void {
   }
 }
 
-function catalogModel() {
-  if (!db.models.NativeInputCatalog) {
-    throw new createHttpError.InternalServerError(
-      "NativeInputCatalog model is not initialized",
-    );
-  }
-  return db.models.NativeInputCatalog;
-}
-
 function toAttributes(input: RegisterNativeInputInput) {
   return {
     kind: input.kind,
@@ -88,7 +79,7 @@ async function findNonWithdrawnBySource(
   input: RegisterNativeInputInput,
   transaction?: Transaction,
 ): Promise<NativeInputCatalog | null> {
-  return catalogModel().findOne({
+  return db.models.NativeInputCatalog.findOne({
     where: {
       sourceType: input.sourceType,
       sourceId: input.sourceId,
@@ -108,9 +99,12 @@ export async function registerNativeInput(
   if (existing) return { catalog: existing, created: false };
 
   try {
-    const catalog = await catalogModel().create(toAttributes(input), {
-      transaction,
-    });
+    const catalog = await db.models.NativeInputCatalog.create(
+      toAttributes(input),
+      {
+        transaction,
+      },
+    );
     return { catalog, created: true };
   } catch (error) {
     // The partial unique index closes the race between concurrent registrations.
@@ -124,7 +118,7 @@ export async function registerNativeInput(
 export async function withdrawNativeInput(
   catalogId: string,
 ): Promise<NativeInputCatalog> {
-  const catalog = await catalogModel().findByPk(catalogId);
+  const catalog = await db.models.NativeInputCatalog.findByPk(catalogId);
   if (!catalog) {
     throw new createHttpError.NotFound("Native input catalog entry not found");
   }
@@ -149,7 +143,7 @@ export async function supersedeNativeInput(
   }
 
   return db.sequelize.transaction(async (transaction) => {
-    const current = await catalogModel().findByPk(catalogId, {
+    const current = await db.models.NativeInputCatalog.findByPk(catalogId, {
       transaction,
       lock: transaction.LOCK.UPDATE,
     });

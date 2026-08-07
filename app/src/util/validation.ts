@@ -384,16 +384,16 @@ export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;
 
 export const nativeInputCatalogRegisterRequest = z.object({
   kind: z.string().trim().min(1).max(64),
-  owning_module: z.string().trim().min(1).max(64),
-  source_type: z.string().trim().min(1).max(64),
-  source_id: z.string().trim().min(1).max(255),
-  user_id: z.string().uuid().nullable().optional(),
-  inventory_id: z.string().uuid().nullable().optional(),
-  city_id: z.string().uuid().nullable().optional(),
-  project_id: z.string().uuid().nullable().optional(),
-  organization_id: z.string().uuid().nullable().optional(),
-  content_digest: z.string().trim().min(1).max(128).nullable().optional(),
-  markdown_ready: z.boolean().nullable().optional(),
+  owningModule: z.string().trim().min(1).max(64),
+  sourceType: z.string().trim().min(1).max(64),
+  sourceId: z.string().trim().min(1).max(255),
+  userId: z.string().uuid().nullable().optional(),
+  inventoryId: z.string().uuid().nullable().optional(),
+  cityId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  organizationId: z.string().uuid().nullable().optional(),
+  contentDigest: z.string().trim().min(1).max(128).nullable().optional(),
+  markdownReady: z.boolean().nullable().optional(),
   labels: z.record(z.string(), z.unknown()).nullable().optional(),
 });
 

@@ -56,16 +56,16 @@ export const POST = apiHandler(async (req, { params }) => {
 
   const result = await supersedeNativeInput(parsedParams.data.id, {
     kind: body.kind,
-    owningModule: body.owning_module,
-    sourceType: body.source_type,
-    sourceId: body.source_id,
-    userId: body.user_id,
-    inventoryId: body.inventory_id,
-    cityId: body.city_id,
-    projectId: body.project_id,
-    organizationId: body.organization_id,
-    contentDigest: body.content_digest,
-    markdownReady: body.markdown_ready,
+    owningModule: body.owningModule,
+    sourceType: body.sourceType,
+    sourceId: body.sourceId,
+    userId: body.userId,
+    inventoryId: body.inventoryId,
+    cityId: body.cityId,
+    projectId: body.projectId,
+    organizationId: body.organizationId,
+    contentDigest: body.contentDigest,
+    markdownReady: body.markdownReady,
     labels: body.labels,
   });
 

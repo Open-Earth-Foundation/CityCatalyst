@@ -450,13 +450,12 @@ export default function OnboardingSetup(props: {
           {activeStep === 2 && (
             <SetPopulationDataStep
               t={t}
-              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               years={years}
               numberOfYearsDisplayed={numberOfYearsDisplayed}
               setData={setData}
-              setValue={setValue}
+              setValue={setValue as unknown as UseFormSetValue<GHGIFormInputs>}
               watch={watch}
               ocCityData={ocCityData}
               numberFormat={userInfo?.numberFormat}

@@ -227,7 +227,10 @@ const ActivityModalBody = ({
 
   // Validate emission factors in real-time (only when custom factor type is selected)
   useEffect(() => {
-    const validateEmissionFactor = (value: number, fieldName: string) => {
+    const validateEmissionFactor = (
+      value: number,
+      fieldName: "CO2EmissionFactor" | "N2OEmissionFactor" | "CH4EmissionFactor",
+    ) => {
       // Only validate if custom emission factor type is selected
       if (emissionsFactorTypeValue !== "custom") {
         clearErrors(`activity.${fieldName}`);

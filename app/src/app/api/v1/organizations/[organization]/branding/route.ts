@@ -47,7 +47,7 @@ import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import UserService from "@/backend/UserService";
 
-export const PATCH = apiHandler(async (req, { params }) => {
+export const PATCH = apiHandler(async (req, { params, session }) => {
   const { organization: organizationId } = params;
   await UserService.validateIsAdminOrOrgAdmin(session, organizationId);
 

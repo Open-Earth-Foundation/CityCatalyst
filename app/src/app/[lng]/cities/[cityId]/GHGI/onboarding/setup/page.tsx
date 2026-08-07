@@ -377,7 +377,6 @@ export default function OnboardingSetup(props: {
           {activeStep === 1 && (
             <SetPopulationDataStep
               t={t}
-              register={register}
               control={control}
               errors={errors}
               years={years}

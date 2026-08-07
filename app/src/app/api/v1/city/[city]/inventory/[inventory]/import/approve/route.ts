@@ -59,6 +59,10 @@ import ECRFImportService, {
   type ECRFRowData,
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
+import {
+  syncGHGIImportedInventorySource,
+  syncGHGIInventory,
+} from "@/backend/GHGINativeInputCatalogService";
 import FormatAdapterService from "@/backend/FormatAdapterService";
 import {
   resolveGpcRefNo,
@@ -227,6 +231,8 @@ async function runApproveImportInBackground(args: {
     );
     return;
   }
+
+  await syncGHGIImportedInventorySource(importedFile);
 
   try {
     const mappingConfiguration = (importedFile.mappingConfiguration || {}) as {
@@ -496,6 +502,7 @@ async function runApproveImportInBackground(args: {
         importSummary,
       },
     });
+    await syncGHGIInventory(importedFile);
 
     // Persist mapping feedback for Path B (AI-shaped) files so future uploads
     // with the same header structure get a warm-start prompt hint.

@@ -8,6 +8,7 @@ import { db } from "@/models";
 import { QueryTypes } from "sequelize";
 import { logger } from "@/services/logger";
 import { DEFAULT_PROJECT_ID } from "@/util/constants";
+import { withdrawGHGICatalogForCity } from "@/backend/GHGINativeInputCatalogService";
 /**
  * @swagger
  * /api/v1/city/{city}:
@@ -159,6 +160,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
       );
     }
   }
+  await withdrawGHGICatalogForCity(params.city);
   await city.destroy();
   return NextResponse.json({ data: city, deleted: true });
 });

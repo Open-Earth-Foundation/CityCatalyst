@@ -558,7 +558,7 @@ describe("Inventory API", () => {
     // expect(totalProgress.total).toEqual(27);
   });
 
-  it.skip("should submit an inventory to the CDP test API", async () => {
+  it("should submit an inventory to the CDP test API", async () => {
     const req = mockRequest({});
     const res = await submitInventory(req, {
       params: Promise.resolve({ inventory: inventory.inventoryId }),

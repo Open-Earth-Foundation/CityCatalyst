@@ -7,7 +7,7 @@ const TEST_COUNTRY = "Test Country";
 const TEST_QUESTION = "1";
 const TEST_RESPONSE = { rowId: "test", content: "Test response" };
 
-describe.skip("CDPService", () => {
+describe("CDPService", () => {
   let cityID: string | null = null;
 
   beforeAll(async () => {

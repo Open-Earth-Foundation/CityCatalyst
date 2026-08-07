@@ -37,6 +37,15 @@ export function humanizeLifecycleValue(value: string): string {
   return normalized.charAt(0).toUpperCase() + normalized.slice(1);
 }
 
+export function conceptNoteResumeHref(
+  lng: string,
+  cityId: string,
+  runId: string,
+): string {
+  const query = new URLSearchParams({ runId });
+  return `/${lng}/cities/${cityId}/concept-notes/wiring?${query}`;
+}
+
 export function formatRelativeTime(
   value: string,
   locale: string,

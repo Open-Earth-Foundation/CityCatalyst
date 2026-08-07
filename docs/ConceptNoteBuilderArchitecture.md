@@ -1414,6 +1414,8 @@ not an agent tool. It validates the CC-issued bearer token, requires the query
 user to match the canonical token identity, rechecks live city access, and
 returns only that user's runs for the requested city. Results are ordered by
 `updated_at DESC`, `created_at DESC`, and `run_id DESC`.
+Registering an upload or moving it to failed, queued-for-retry, or ready refreshes
+the parent run's `updated_at`, so those run-scoped actions affect dashboard order.
 
 Each list item contains `run_id`, optional `thread_id`, display name, city and
 stored project/funding identifiers, persisted `status` and `workflow_step`,
@@ -1426,8 +1428,10 @@ CityCatalyst exposes the same list at
 rejecting malformed or mixed-city successful responses from Climate Advisor.
 The CityCatalyst dashboard consumes this contract at
 `/{lng}/cities/{cityId}/concept-notes`. Its first implementation exposes only
-new-note and resume navigation; inferred progress percentages and unsupported
-duplicate, delete, and export actions remain intentionally absent.
+new-note and resume navigation. Resume carries the durable run ID and loads the
+authorized single-run detail before continuing; inferred progress percentages
+and unsupported duplicate, delete, and export actions remain intentionally
+absent.
 
 ### Always-On Agent Context
 

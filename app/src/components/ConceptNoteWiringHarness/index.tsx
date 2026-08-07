@@ -25,14 +25,15 @@ import {
 
 import styles from "./ConceptNoteWiringHarness.module.css";
 import {
-  ConceptNoteUploadStatus,
   formatFileSize,
+  requireConceptNoteUploadIdentity,
+  type ConceptNoteUploadStatus,
   uploadStatusLabel,
   validateConceptNotePdf,
 } from "./utils";
 
 type Screen = "home" | "scope";
-type RequestStage = "idle" | "creating" | "uploading" | "polling";
+type RequestStage = "idle" | "loading" | "creating" | "uploading" | "polling";
 
 interface CityResponse {
   data?: {
@@ -45,16 +46,16 @@ interface CityResponse {
 
 interface RunResponse {
   run_id?: string;
+  city_id?: string;
+  name?: string;
 }
 
 interface UploadResponse {
-  upload_id?: string;
+  uploadId?: string;
+  runId?: string;
   status?: ConceptNoteUploadStatus;
-  filename?: string;
-  source_label?: string | null;
-  page_count?: number | null;
-  error_code?: string;
-  completed_at?: string | null;
+  pageCount?: number | null;
+  errorCode?: string;
 }
 
 const POLL_INTERVAL_MS = 2_000;
@@ -91,17 +92,22 @@ function newDefaultName() {
 
 export default function ConceptNoteWiringHarness({
   cityId,
+  initialRunId,
 }: {
   cityId: string;
+  initialRunId?: string;
 }) {
-  const [screen, setScreen] = useState<Screen>("home");
+  const [screen, setScreen] = useState<Screen>(initialRunId ? "scope" : "home");
   const [cityName, setCityName] = useState("Selected city");
   const [cityCountry, setCityCountry] = useState<string | null>(null);
   const [noteName, setNoteName] = useState(newDefaultName);
   const [sourceLabel, setSourceLabel] = useState("Supporting document");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [stage, setStage] = useState<RequestStage>("idle");
+  const [stage, setStage] = useState<RequestStage>(
+    initialRunId ? "loading" : "idle",
+  );
+  const [resumeRunId, setResumeRunId] = useState(initialRunId ?? null);
   const [runId, setRunId] = useState<string | null>(null);
   const [uploadId, setUploadId] = useState<string | null>(null);
   const [uploadStatus, setUploadStatus] =
@@ -132,6 +138,51 @@ export default function ConceptNoteWiringHarness({
     };
   }, [cityId]);
 
+  useEffect(() => {
+    if (!resumeRunId) {
+      return;
+    }
+
+    let active = true;
+    setStage("loading");
+    setError(null);
+    void fetch(`/api/v1/concept-notes/${encodeURIComponent(resumeRunId)}`, {
+      cache: "no-store",
+    })
+      .then((response) => responsePayload<RunResponse>(response))
+      .then((run) => {
+        if (
+          !run.run_id ||
+          !run.name ||
+          run.run_id !== resumeRunId ||
+          run.city_id !== cityId
+        ) {
+          throw new Error("The selected concept note could not be resumed.");
+        }
+        if (active) {
+          setRunId(run.run_id);
+          setNoteName(run.name);
+        }
+      })
+      .catch((resumeError: unknown) => {
+        if (active) {
+          setError(
+            resumeError instanceof Error
+              ? resumeError.message
+              : "The selected concept note could not be resumed.",
+          );
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setStage("idle");
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, [cityId, resumeRunId]);
+
   const pollUpload = useCallback(async () => {
     if (!runId || !uploadId) {
       return;
@@ -141,13 +192,14 @@ export default function ConceptNoteWiringHarness({
       { cache: "no-store" },
     );
     const payload = await responsePayload<UploadResponse>(response);
-    if (!payload.status) {
-      throw new Error("Upload status response is missing a status.");
+    const identity = requireConceptNoteUploadIdentity(payload);
+    if (identity.uploadId !== uploadId || payload.runId !== runId) {
+      throw new Error("Upload status response does not match this run.");
     }
     setUploadDetails(payload);
-    setUploadStatus(payload.status);
+    setUploadStatus(identity.status);
     setStage(
-      payload.status === "queued" || payload.status === "processing"
+      identity.status === "queued" || identity.status === "processing"
         ? "polling"
         : "idle",
     );
@@ -184,6 +236,7 @@ export default function ConceptNoteWiringHarness({
     setUploadStatus(null);
     setUploadDetails(null);
     setError(null);
+    setResumeRunId(null);
     idempotencyKey.current = crypto.randomUUID();
   }
 
@@ -221,6 +274,9 @@ export default function ConceptNoteWiringHarness({
     if (runId) {
       return runId;
     }
+    if (resumeRunId) {
+      throw new Error("The selected concept note could not be resumed.");
+    }
     setStage("creating");
     const response = await fetch("/api/v1/concept-notes/start", {
       method: "POST",
@@ -247,20 +303,22 @@ export default function ConceptNoteWiringHarness({
     const formData = new FormData();
     formData.set("file", selectedFile);
     if (sourceLabel.trim()) {
-      formData.set("source_label", sourceLabel.trim());
+      formData.set("sourceLabel", sourceLabel.trim());
     }
     const response = await fetch(
       `/api/v1/concept-notes/${targetRunId}/uploads`,
       { method: "POST", body: formData },
     );
     const payload = await responsePayload<UploadResponse>(response);
-    if (!payload.upload_id || !payload.status) {
-      throw new Error("Upload response is missing its durable identity.");
-    }
-    setUploadId(payload.upload_id);
-    setUploadStatus(payload.status);
+    const identity = requireConceptNoteUploadIdentity(payload);
+    setUploadId(identity.uploadId);
+    setUploadStatus(identity.status);
     setUploadDetails(payload);
-    setStage("polling");
+    setStage(
+      identity.status === "queued" || identity.status === "processing"
+        ? "polling"
+        : "idle",
+    );
   }
 
   async function submitWiringTest(event: FormEvent<HTMLFormElement>) {
@@ -300,7 +358,11 @@ export default function ConceptNoteWiringHarness({
         { method: "POST" },
       );
       const payload = await responsePayload<UploadResponse>(response);
-      setUploadStatus(payload.status || "queued");
+      const identity = requireConceptNoteUploadIdentity(payload);
+      if (identity.uploadId !== uploadId) {
+        throw new Error("Retry response does not match this upload.");
+      }
+      setUploadStatus(identity.status);
       setUploadDetails((current) => ({ ...current, ...payload }));
     } catch (retryError) {
       setStage("idle");
@@ -428,7 +490,9 @@ export default function ConceptNoteWiringHarness({
         <div className={styles.scopeHeader}>
           <div>
             <p className={styles.eyebrow}>S2 · Scope and context</p>
-            <h1>Start a new concept note</h1>
+            <h1>
+              {resumeRunId ? "Resume concept note" : "Start a new concept note"}
+            </h1>
           </div>
           <span className={styles.localBadge}>Local wiring harness</span>
         </div>
@@ -479,7 +543,7 @@ export default function ConceptNoteWiringHarness({
                   value={noteName}
                   onChange={(event) => setNoteName(event.target.value)}
                   maxLength={120}
-                  disabled={Boolean(runId)}
+                  disabled={Boolean(resumeRunId || runId)}
                   required
                 />
               </label>
@@ -642,17 +706,19 @@ export default function ConceptNoteWiringHarness({
                       <strong>
                         {stage === "creating"
                           ? "Creating durable run"
-                          : stage === "uploading"
-                            ? "Storing source PDF"
-                            : statusLabel}
+                          : stage === "loading"
+                            ? "Loading concept note"
+                            : stage === "uploading"
+                              ? "Storing source PDF"
+                              : statusLabel}
                       </strong>
                       <small>
                         {uploadStatus === "ready"
-                          ? uploadDetails?.page_count === 1
+                          ? uploadDetails?.pageCount === 1
                             ? "1 page delivered"
-                            : `${uploadDetails?.page_count || "All"} pages delivered`
+                            : `${uploadDetails?.pageCount || "All"} pages delivered`
                           : uploadStatus === "failed"
-                            ? uploadDetails?.error_code ||
+                            ? uploadDetails?.errorCode ||
                               "Conversion needs attention"
                             : "The page refreshes this status automatically"}
                       </small>
@@ -696,7 +762,11 @@ export default function ConceptNoteWiringHarness({
                   type="submit"
                   disabled={isBusy || Boolean(uploadId)}
                 >
-                  {isBusy ? "Working…" : "Create run and convert"}
+                  {isBusy
+                    ? "Working…"
+                    : runId
+                      ? "Upload and continue"
+                      : "Create run and convert"}
                   {!isBusy && <FiArrowRight aria-hidden />}
                 </button>
               )}

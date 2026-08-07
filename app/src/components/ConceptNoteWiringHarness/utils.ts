@@ -3,6 +3,16 @@ export const CONCEPT_NOTE_PDF_MAX_BYTES = 20 * 1024 * 1024;
 export type ConceptNoteUploadStatus =
   "queued" | "processing" | "ready" | "failed";
 
+export function requireConceptNoteUploadIdentity(upload: {
+  uploadId?: string;
+  status?: ConceptNoteUploadStatus;
+}): { uploadId: string; status: ConceptNoteUploadStatus } {
+  if (!upload.uploadId || !upload.status) {
+    throw new Error("Upload response is missing its durable identity.");
+  }
+  return { uploadId: upload.uploadId, status: upload.status };
+}
+
 export async function validateConceptNotePdf(
   file: File,
 ): Promise<string | null> {

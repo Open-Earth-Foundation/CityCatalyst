@@ -33,6 +33,7 @@ import { api } from "@/services/api";
 import type { ConceptNoteRun } from "@/util/types";
 
 import {
+  conceptNoteResumeHref,
   formatRelativeTime,
   getRunStatusPresentation,
   humanizeLifecycleValue,
@@ -561,7 +562,7 @@ export function ConceptNoteDashboard({
                       workflow: workflowLabel,
                       time: updatedLabel,
                     })}
-                    resumeHref={wiringHref}
+                    resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
                     resumeLabel={t("resume")}
                   />
                 );

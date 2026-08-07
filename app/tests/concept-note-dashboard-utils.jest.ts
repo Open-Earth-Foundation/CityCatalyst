@@ -1,6 +1,7 @@
 import { describe, expect, it } from "@jest/globals";
 
 import {
+  conceptNoteResumeHref,
   formatRelativeTime,
   getRunStatusPresentation,
   humanizeLifecycleValue,
@@ -31,5 +32,11 @@ describe("Concept Note dashboard presentation helpers", () => {
       "2 hours ago",
     );
     expect(formatRelativeTime("not-a-date", "en", now)).toBe("");
+  });
+
+  it("uses the durable run ID in resume navigation", () => {
+    expect(conceptNoteResumeHref("en", "city-1", "run-1")).toBe(
+      "/en/cities/city-1/concept-notes/wiring?runId=run-1",
+    );
   });
 });

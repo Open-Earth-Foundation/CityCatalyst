@@ -3,6 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import {
   CONCEPT_NOTE_PDF_MAX_BYTES,
   formatFileSize,
+  requireConceptNoteUploadIdentity,
   uploadStatusLabel,
   validateConceptNotePdf,
 } from "@/components/ConceptNoteWiringHarness/utils";
@@ -40,5 +41,20 @@ describe("Concept Note Builder wiring helpers", () => {
     expect(formatFileSize(2 * 1024 * 1024)).toBe("2.0 MiB");
     expect(uploadStatusLabel("processing")).toBe("Converting");
     expect(uploadStatusLabel("ready")).toBe("Ready");
+  });
+
+  it("reads the camelCase CityCatalyst upload identity", () => {
+    expect(
+      requireConceptNoteUploadIdentity({
+        uploadId: "11111111-1111-4111-8111-111111111111",
+        status: "queued",
+      }),
+    ).toEqual({
+      uploadId: "11111111-1111-4111-8111-111111111111",
+      status: "queued",
+    });
+    expect(() => requireConceptNoteUploadIdentity({})).toThrow(
+      "durable identity",
+    );
   });
 });

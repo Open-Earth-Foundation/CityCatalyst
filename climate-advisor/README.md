@@ -598,10 +598,11 @@ normalized request returns the original run with HTTP `200` and
 `GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
 and live city access, then returns only that user's runs for the selected city.
 Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
-the result is stable and most-recently-updated first. Each item includes the
-durable `run_id`, optional chat `thread_id`, stored scope identifiers, lifecycle
-fields, timestamps, and `progress_summary` copied from the persisted
-`context_summary`.
+the result is stable and most-recently-updated first. Upload registration and
+failed, retry, or ready lifecycle transitions refresh the parent run's
+`updated_at`. Each item includes the durable `run_id`, optional chat `thread_id`,
+stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
+copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
 revalidates current city access before responding. It exposes the same persisted

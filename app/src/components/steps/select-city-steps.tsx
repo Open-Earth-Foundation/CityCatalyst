@@ -459,7 +459,7 @@ export default function SelectCityStep({
                     border="1px solid #E6E7FF"
                   >
                     {!isLoading && !cityInputQuery && <RecentSearches t={t} />}
-                    {isLoading && <Text px={4}>Fetching Cities...</Text>}
+                    {isLoading && <Text px={4}>{t("fetching-cities")}</Text>}
                     {isSuccess &&
                       cities &&
                       cities.map((city: OCCityAttributes) => {

@@ -274,6 +274,7 @@
   "ask-ai": "Preguntar a Clima AI",
   "help-button": "Necesito ayuda",
   "select-your-city": "Selecciona tu ciudad",
+  "fetching-cities": "Buscando ciudades...",
   "confirm-inventory-description": "Revise los datos del inventario de su ciudad antes de continuar.",
   "chat-suggestion-gpc-definition-1": "¿Qué es GPC?",
   "chat-suggestion-gpc-definition-1-message": "¿Qué es el marco del Protocolo de Gases de Efecto Invernadero para Ciudades (GPC)?",

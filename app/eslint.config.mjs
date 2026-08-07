@@ -16,6 +16,16 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
   ]),
   {
+    // Pin the React version instead of "detect" (eslint-config-next's default):
+    // eslint-plugin-react's auto-detection calls context.getFilename(), which
+    // doesn't exist on ESLint 9's flat-config context object and throws.
+    settings: {
+      react: {
+        version: "19.2.8",
+      },
+    },
+  },
+  {
     rules: {
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [

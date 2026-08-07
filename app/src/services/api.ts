@@ -82,6 +82,7 @@ import type {
   UserOrganizationsResponse,
   OCCityAttributes,
   OCCityDataResponse,
+  ProjectBoundary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -1413,35 +1414,13 @@ export const api = createApi({
         transformResponse: (response: unknown) => response,
         invalidatesTags: ["Cities", "Organizations"],
       }),
-      getProjectBoundaries: builder.query<
-        Array<{
-          city: {
-            id: string;
-            name: string;
-            locode: string;
-            latestInventoryId: string;
-          };
-          boundingBox: BoundingBox;
-          data: GeoJSON;
-        }>,
-        string
-      >({
+      getProjectBoundaries: builder.query<Array<ProjectBoundary>, string>({
         query: (projectId: string) => ({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
-        transformResponse: (response: {
-          result: Array<{
-            city: {
-              id: string;
-              name: string;
-              locode: string;
-              latestInventoryId: string;
-            };
-            boundingBox: BoundingBox;
-            data: GeoJSON;
-          }>;
-        }) => response.result,
+        transformResponse: (response: { result: Array<ProjectBoundary> }) =>
+          response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({

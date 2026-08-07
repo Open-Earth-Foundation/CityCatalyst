@@ -31,6 +31,8 @@ import type {
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
+import type { BoundingBox } from "@/util/geojson";
+import type { GeoJSON } from "geojson";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -996,3 +998,14 @@ export type UserOrganizationsResponse = {
   name: string;
   role: OrganizationRole;
 }[];
+
+export interface ProjectBoundary {
+  city: {
+    id: string;
+    name: string;
+    locode: string;
+    latestInventoryId: string;
+  };
+  boundingBox: BoundingBox;
+  data: GeoJSON;
+}

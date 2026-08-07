@@ -13,7 +13,6 @@ interface UseResourceValidationOptions {
   }; // RTK Query hook result
   lng: string;
   resourceType: 'inventory' | 'city';
-  fallbackRoute?: string;
 }
 
 interface UseResourceValidationReturn {

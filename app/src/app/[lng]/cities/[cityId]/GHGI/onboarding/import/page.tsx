@@ -894,7 +894,6 @@ export default function ImportPage(props: {
                       cityName={inventory?.city?.name}
                       inventoryId={inventoryId}
                       importedFileId={importedFileId}
-                      onImport={() => { }}
                       onEditMapping={goToPrevStep}
                     />
                   )}

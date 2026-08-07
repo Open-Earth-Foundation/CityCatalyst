@@ -6,8 +6,6 @@ import { MdAdd } from "react-icons/md";
 
 interface SuggestedActivityCardProps {
   t: TFunction;
-  id: string;
-  isSelected: boolean;
   prefillKey: string;
   prefillValue: string;
   onActivityAdded?: () => void;

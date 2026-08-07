@@ -1117,8 +1117,6 @@ export default class UserService {
     return responseObject;
   }
 
-  public async fetchUserProjects() {}
-
   public static ensureIsAdmin(session: AppSession | null) {
     // Ensure user is signed in
     const isSignedIn = !!session?.user;

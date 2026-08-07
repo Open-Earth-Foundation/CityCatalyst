@@ -2035,7 +2035,7 @@ export const CitiesBuildingIcon = () => {
   );
 };
 
-export const CityLimitIcon = ({}: { color: string }) => {
+export const CityLimitIcon = () => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

@@ -9,6 +9,7 @@ import {
   UseFormSetError,
 } from "react-hook-form";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
 import { NumberInputProps } from "./ui/number-input";
 import { decimalSeparators, formatNumber } from "@/util/helpers";
 import { NumberFormatEnum } from "@/util/enums";
@@ -27,7 +28,7 @@ interface FormattedNumberInputProps<T extends FieldValues>
   miniAddon?: boolean;
   testId?: string;
   localization?: string;
-  t: (key: string, options?: Record<string, unknown>) => string;
+  t: TFunction;
   max?: number;
   min?: number;
   numberFormat?: string;

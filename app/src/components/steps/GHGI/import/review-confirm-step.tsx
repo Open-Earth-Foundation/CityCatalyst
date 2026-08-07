@@ -25,7 +25,6 @@ interface ReviewConfirmStepProps {
   cityName?: string;
   inventoryId: string;
   importedFileId: string;
-  onImport: () => void;
   onEditMapping?: () => void;
 }
 

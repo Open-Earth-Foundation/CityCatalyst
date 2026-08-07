@@ -19,8 +19,6 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import { FiHeart } from "react-icons/fi";
-import { IconType } from "react-icons";
 import { api } from "@/services/api";
 
 const EmissionsWidgetCard = ({
@@ -30,7 +28,6 @@ const EmissionsWidgetCard = ({
   isLoading = false,
   numberFormat,
 }: {
-  icon?: IconType;
   value?: number | undefined;
   field: React.ReactNode;
   showProgress: boolean;
@@ -126,7 +123,6 @@ const EmissionsWidget = ({
         </Trans>
       ),
       value: inventory?.totalEmissions ?? undefined,
-      icon: FiHeart,
       showProgress: false,
       isLoading: false,
     },
@@ -141,7 +137,6 @@ const EmissionsWidget = ({
         ></Trans>
       ),
       value: emissionsPerCapita,
-      icon: FiHeart,
       showProgress: false,
       isLoading: false,
     },
@@ -162,10 +157,9 @@ const EmissionsWidget = ({
 
         <Card.Body>
           <Stack separator={<StackSeparator />}>
-            {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
+            {EmissionsData.map(({ id, field, value, showProgress }) => (
               <EmissionsWidgetCard
                 key={id}
-                icon={icon}
                 value={value}
                 field={field}
                 showProgress={showProgress}

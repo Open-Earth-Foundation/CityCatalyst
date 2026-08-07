@@ -83,7 +83,6 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<FileData>();
@@ -262,9 +261,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                   <DropdownSelectInput
                     subsectors={subsectors}
                     setValue={setValue}
-                    watch={watch}
                     t={t}
-                    register={register}
                   />
                   <Box>
                     {errors.subsectors && (

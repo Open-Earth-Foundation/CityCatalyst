@@ -8,7 +8,6 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { RefObject } from "react";
 import { MdArrowBack, MdHomeWork, MdInfoOutline } from "react-icons/md";
 import type { DataSourceWithRelations, GlobalAPISourceResponse } from "./types";
 import { getTranslationFromDict } from "@/i18n";
@@ -53,7 +52,6 @@ export function SourceDrawer({
   isOpen: boolean;
   onClose: () => void;
   onConnectClick?: () => void;
-  finalFocusRef?: RefObject<HTMLElement | null>;
   isConnectLoading?: boolean;
   totalEmissionsData?: string;
   t: TFunction;

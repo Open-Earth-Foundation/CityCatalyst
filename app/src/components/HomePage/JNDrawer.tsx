@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/menu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
+import type { TFunction } from "i18next";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { CustomSelect } from "../ui/custom-select";
@@ -53,7 +54,7 @@ const ProjectFilterSection = ({
   currentCityId,
   organizationId,
 }: {
-  t: (key: string) => string;
+  t: TFunction;
   projectsData: ProjectWithCitiesResponse;
   lng: string;
   currentCityId?: string;

@@ -8,7 +8,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 interface MethodologyCardProps {
   id: string;
   inputRequired?: string[];
-  isSelected: boolean;
   t: TFunction;
   disabled: boolean;
   handleCardSelect: (methodologyId: Methodology) => void;

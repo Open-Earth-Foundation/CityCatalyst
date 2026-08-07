@@ -8,7 +8,6 @@ interface ByScopeViewProps {
   sector?: { sectorName: string };
   isOpen: boolean;
   onClose: () => void;
-  totalEmissionsData?: string;
   t: TFunction;
   inventoryId: string;
   numberFormat?: string;

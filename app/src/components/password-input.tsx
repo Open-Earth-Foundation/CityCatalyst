@@ -34,16 +34,13 @@ export default function PasswordInput({
 }) {
   const labelName = name || t("password");
 
-  const passwordInvalid =
-    shouldValidate &&
-    isSubmitted &&
-    watchPassword.length > 0 &&
-    !isPasswordPatternValid(watchPassword);
-
   const passwordValid = isPasswordPatternValid(watchPassword);
 
   // Show hint until the password fully satisfies the pattern, only after a submit attempt
   const showHint = shouldValidate && isSubmitted && !passwordValid;
+
+  // Same condition as showHint — whenever the hint is visible post-submit, it's invalid
+  const passwordInvalid = showHint;
 
   return (
     <Field
@@ -80,11 +77,11 @@ export default function PasswordInput({
       {/* Password pattern hint — hidden once the password is valid */}
       {showHint && (
         <Text
-          fontSize="body.md"
-          color={passwordInvalid ? "sentiment.negativeDefault" : "content.tertiary"}
-          letterSpacing="wide"
           fontFamily="body"
-          mt={2}
+          fontSize="body.sm"
+          fontWeight="regular"
+          lineHeight="16px"
+          color={passwordInvalid ? "fg.error" : "content.tertiary"}
         >
           {t("password-hint")}
         </Text>

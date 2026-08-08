@@ -821,7 +821,7 @@ export async function shapeKeyValueToRows(
       ? responseContent.slice(0, LOG_LIMIT) + `...[truncated]`
       : responseContent;
   logger.debug(
-    { keyValueShapeLength: responseContent.length },
+    { keyValueShapeLength: responseContent.length, keyValueShapeResponse: truncated },
     "Key-value shape LLM output",
   );
 

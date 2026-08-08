@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HStack, Text } from "@chakra-ui/react";
-import { MdPersonAdd } from "react-icons/md";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import InviteCollaboratorsStep, {
   type InviteCollaboratorsStepRef,
 } from "@/components/steps/GHGI/invite-collaborators-step";

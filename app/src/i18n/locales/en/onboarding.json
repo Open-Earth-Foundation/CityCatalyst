@@ -8,6 +8,7 @@
   "no-results-details": "Try searching for another city",
   "setup-city-details": "In this step, you'll select your city to later configure your city's Green House Gas emissions inventory.",
   "select-your-city": "Select your city",
+  "fetching-cities": "Fetching cities...",
   "go-back": "Go Back",
   "continue": "Continue",
   "extract-with-ai": "Extract with AI",

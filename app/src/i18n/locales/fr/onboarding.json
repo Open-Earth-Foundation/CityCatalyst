@@ -272,6 +272,7 @@
   "ask-ai": "Demander à Clima AI",
   "help-button": "Besoin d’aide",
   "select-your-city": "Sélectionnez votre ville",
+  "fetching-cities": "Recherche des villes...",
   "confirm-inventory-description": "Revoyez les données de l’inventaire de votre ville avant de continuer.",
   "chat-suggestion-gpc-definition-1": "Qu’est-ce que le GPC ?",
   "chat-suggestion-gpc-definition-1-message": "Qu’est-ce que le cadre du Protocole GES pour les villes (GPC) ?",

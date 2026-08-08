@@ -278,9 +278,9 @@ test.describe.skip("CSV Download", () => {
     if (records.length === 0) {
       expect(csvContent).toContain("Inventory Reference");
     } else {
-      for (const record of records as any[]) {
+      for (const record of records as Record<string, string>[]) {
         // Verify no undefined or null values in unexpected places
-        for (const [key, value] of Object.entries(record)) {
+        for (const [, value] of Object.entries(record)) {
           expect(typeof value).toBe("string"); // CSV values are strings
         }
       }
@@ -458,8 +458,8 @@ test.describe.skip("CSV Download", () => {
     expect(records.length).toBeGreaterThan(0);
 
     // Look for our test data in the CSV - must find exact match
-    const testDataRecord = records.find(
-      (record: any) => record["Data source name"] === "test-value",
+    const testDataRecord = (records as Record<string, string>[]).find(
+      (record) => record["Data source name"] === "test-value",
     );
 
     // Verify our test data is actually in the CSV

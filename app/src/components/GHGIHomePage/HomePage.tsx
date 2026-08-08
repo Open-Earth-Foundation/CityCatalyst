@@ -50,7 +50,9 @@ export default function HomePage({
   const cookieLanguage = Cookies.get("i18next");
   const router = useRouter();
   // Check if user is authenticated otherwise route to login page
-  isPublic || CheckUserSession();
+  if (!isPublic) {
+    CheckUserSession();
+  }
   const language = cookieLanguage ?? lng;
   const { inventory: inventoryParam, cityId: cityIdParam } = useParams();
   const inventoryParamValue: string | undefined = Array.isArray(inventoryParam)
@@ -178,12 +180,12 @@ export default function HomePage({
       skip: !inventoryIdFromParam,
     });
 
-  const { data: city } = api.useGetCityQuery(inventory?.cityId!, {
+  const { data: city } = api.useGetCityQuery(inventory?.cityId ?? "", {
     skip: !inventory?.cityId,
   });
 
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { cityId: inventory?.cityId ?? "", year: inventory?.year ?? 0 },
     { skip: !inventory?.cityId || !inventory?.year },
   );
 

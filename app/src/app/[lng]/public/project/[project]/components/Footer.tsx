@@ -2,7 +2,6 @@
 import { Box, Link, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import NextLink from "next/link";
 
 export interface FooterProps {
   copyright: string;
@@ -48,7 +47,7 @@ const Footer = ({ copyright, links }: FooterProps) => {
               display="inline-block"
             >
               {organization?.logoUrl ? (
-                <img
+                <Image
                   src={organization.logoUrl}
                   height={40}
                   width={250}

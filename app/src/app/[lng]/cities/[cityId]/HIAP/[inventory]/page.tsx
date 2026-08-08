@@ -75,7 +75,6 @@ export default function HIAPInventoryPage(props: {
   const {
     data: hiapData,
     isLoading,
-    error,
     refetch,
   } = useGetHiapQuery(
     {
@@ -103,7 +102,7 @@ export default function HIAPInventoryPage(props: {
     : { value: t("N/A"), unit: "" };
 
   const { data: population } = useGetCityPopulationQuery(
-    { cityId: inventory?.cityId!, year: inventory?.year! },
+    { cityId: inventory?.cityId ?? "", year: inventory?.year ?? 0 },
     { skip: !inventory?.cityId || !inventory?.year },
   );
 
@@ -155,7 +154,7 @@ export default function HIAPInventoryPage(props: {
           actions={hiapData}
           inventory={null}
           actionType={activeActionType}
-          lng={lng as any}
+          lng={lng as LANGUAGES}
           isReprioritizing={isLoading}
         />
         <Tabs.Root

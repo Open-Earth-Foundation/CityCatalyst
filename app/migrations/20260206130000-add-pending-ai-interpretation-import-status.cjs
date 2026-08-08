@@ -14,7 +14,7 @@ module.exports = {
     `);
   },
 
-  async down(queryInterface) {
+  async down() {
     // PostgreSQL does not support removing a value from an enum easily; would require recreate enum + update rows.
     // No-op for safety; document that rollback requires manual steps if needed.
   },

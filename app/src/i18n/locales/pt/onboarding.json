@@ -273,6 +273,7 @@
   "ask-ai": "Perguntar à Clima AI",
   "help-button": "Preciso de ajuda",
   "select-your-city": "Selecione a sua cidade",
+  "fetching-cities": "A procurar cidades...",
   "confirm-inventory-description": "Revise os dados do inventário da sua cidade antes de prosseguir.",
   "chat-suggestion-gpc-definition-1": "O que é GPC?",
   "chat-suggestion-gpc-definition-1-message": "O que é a estrutura do Protocolo de GEE para Cidades (GPC)?",

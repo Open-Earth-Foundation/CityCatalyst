@@ -40,7 +40,7 @@ export function MethodologyTableOfContents({
     setExpandedItems(details.value);
   };
 
-  const handleClick = (id: string) => (e: React.MouseEvent) => {
+  const handleClick = (id: string) => () => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 

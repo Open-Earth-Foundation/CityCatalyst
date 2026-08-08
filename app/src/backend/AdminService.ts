@@ -1,7 +1,6 @@
 import { AppSession } from "@/lib/auth";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
-import { Roles } from "@/util/types";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceConnectService from "./DataSourceConnectService";
@@ -30,7 +29,7 @@ export interface BulkInventoryUpdateProps {
 }
 
 export interface CreateBulkInventoriesResponse {
-  errors: { locode: string; error: any }[];
+  errors: { locode: string; error: unknown }[];
   results: { locode: string; result: string[] }[];
 }
 
@@ -41,7 +40,7 @@ export default class AdminService {
   ): Promise<CreateBulkInventoriesResponse> {
     UserService.ensureIsAdmin(session);
 
-    const errors: { locode: string; error: any }[] = [];
+    const errors: { locode: string; error: unknown }[] = [];
     const results: { locode: string; result: string[] }[] = [];
 
     // Find user accounts to add to created inventories

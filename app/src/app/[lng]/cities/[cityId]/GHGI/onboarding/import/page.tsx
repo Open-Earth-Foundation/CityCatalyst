@@ -16,6 +16,7 @@ import ImportingInventoryStep from "@/components/steps/GHGI/import/importing-inv
 import DataLossWarningModal from "@/components/Modals/data-loss-warning-modal";
 import { api } from "@/services/api";
 import { logger } from "@/services/logger";
+import { getApiErrorMessage } from "@/util/helpers";
 import type { ImportStatusResponse } from "@/util/types";
 import { readImportChunkProgress } from "@/util/import-chunk-progress";
 import { usePollUntil } from "@/hooks/usePollUntil";
@@ -151,11 +152,11 @@ function ImportButton({
         return;
       }
       onImportProgressChange(false);
-    } catch (error: any) {
+    } catch (error: unknown) {
       onImportProgressChange(false);
       makeErrorToast(
         "Import failed",
-        error?.data?.message || error?.message || "Failed to import data",
+        getApiErrorMessage(error, "Failed to import data"),
       );
     }
   };
@@ -360,7 +361,6 @@ export default function ImportPage(props: {
   const {
     startPolling: startExtractionPolling,
     stopPolling: stopExtractionPolling,
-    isPolling: isExtractionPolling,
   } = usePollUntil<ImportStatusResponse>({
     fetch: useCallback(() => {
       if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
@@ -399,7 +399,6 @@ export default function ImportPage(props: {
   const {
     startPolling: startInterpretPolling,
     stopPolling: stopInterpretPolling,
-    isPolling: isInterpretPolling,
   } = usePollUntil<ImportStatusResponse>({
     fetch: useCallback(() => {
       if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
@@ -489,12 +488,8 @@ export default function ImportPage(props: {
           );
         setTimeout(() => goToNextStep(), 150);
       }
-    } catch (error: any) {
-      const message =
-        error?.data?.error?.message ||
-        error?.data?.message ||
-        error?.message ||
-        t("failed-to-upload-file");
+    } catch (error: unknown) {
+      const message = getApiErrorMessage(error, t("failed-to-upload-file"));
       makeErrorToast(t("upload-failed"), message);
     }
   };
@@ -545,11 +540,11 @@ export default function ImportPage(props: {
         importedFileId,
       }).unwrap();
       setTimeout(() => goToNextStep(), 150);
-    } catch (error: any) {
+    } catch (error: unknown) {
       stopExtractionPolling();
       setIsExtractInProgress(false);
       setExtractionProgress(null);
-      const apiMessage = error?.data?.message || error?.message || "";
+      const apiMessage = getApiErrorMessage(error);
       const message =
         apiMessage === "Inventory not found for the target year"
           ? t("inventory-not-found-for-target-year")
@@ -589,11 +584,13 @@ export default function ImportPage(props: {
       }
       setTabularPendingInterpretation(false);
       setTimeout(() => goToNextStep(), 150);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setIsInterpretInProgress(false);
       setExtractionProgress(null);
-      const message =
-        error?.data?.message || error?.message || t("ai-extraction-failed-default");
+      const message = getApiErrorMessage(
+        error,
+        t("ai-extraction-failed-default"),
+      );
       makeErrorToast(t("interpretation-failed") ?? "Interpretation failed", message);
     }
   };
@@ -897,7 +894,6 @@ export default function ImportPage(props: {
                       cityName={inventory?.city?.name}
                       inventoryId={inventoryId}
                       importedFileId={importedFileId}
-                      onImport={() => { }}
                       onEditMapping={goToPrevStep}
                     />
                   )}

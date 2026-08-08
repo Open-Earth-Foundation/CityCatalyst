@@ -29,7 +29,17 @@ interface PopulationDataResult {
   countryLocode?: string;
 }
 
-type FetchPopulationResult = PopulationEntry & { data: any };
+interface OpenClimateActorResponse {
+  data: {
+    name?: string;
+    is_part_of?: string;
+    population?: PopulationEntry[];
+  };
+}
+
+type FetchPopulationResult = PopulationEntry & {
+  data: OpenClimateActorResponse;
+};
 
 export default class OpenClimateService {
   public static async getCityName(cityLocode: string): Promise<string | null> {
@@ -116,9 +126,9 @@ export default class OpenClimateService {
     actorLocode: string,
     inventoryYear: number,
     baseUrl: string,
-  ): Promise<(Record<string, any> & FetchPopulationResult) | null> {
+  ): Promise<FetchPopulationResult | null> {
     const request = await fetch(baseUrl + actorLocode);
-    const data = await request.json();
+    const data = (await request.json()) as OpenClimateActorResponse;
 
     const result = findClosestYear(
       data.data.population,

@@ -62,7 +62,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   }
 
   // redirect to dashboard if user is already authenticated
-  const { data: _session, status } = useSession();
+  useSession();
 
   const { showSuccessToast: showLoginSuccessToast } = UseSuccessToast({
     title: t("verified-toast-title"),

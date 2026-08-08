@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "endpoint": "PROPOSED GET /api/v1/climate-finance/opportunities",
+    "contract_status": "proposed_cnb_extension_of_current_global_api",
+    "country_code": "US",
+    "subdivision_code": "US-MN",
+    "status": "draft_example",
+    "count": 7
+  },
+  "data": [
+    {
+      "opportunity_id": "us-mn-bwsr-cwf-pp-fy27",
+      "funder_id": "us-mn-bwsr",
+      "provider_ids": [],
+      "opportunity_name": "Clean Water Fund — Projects & Practices competitive grant",
+      "route": "A",
+      "instrument": "grant",
+      "cycle": "FY27"
+    },
+    {
+      "opportunity_id": "us-mn-bwsr-cwf-drinking-water-fy27",
+      "funder_id": "us-mn-bwsr",
+      "provider_ids": [],
+      "opportunity_name": "Clean Water Fund — Drinking Water competitive grant",
+      "route": "A",
+      "instrument": "grant",
+      "cycle": "FY27"
+    },
+    {
+      "opportunity_id": "us-mn-dnr-fhm-2025",
+      "funder_id": "us-mn-dnr",
+      "provider_ids": [],
+      "opportunity_name": "Flood Hazard Mitigation Grant Assistance",
+      "route": "A",
+      "instrument": "cost-share-grant",
+      "cycle": "2025"
+    },
+    {
+      "opportunity_id": "us-mn-pfa-wif-dwsrf-2025",
+      "funder_id": "us-mn-pfa",
+      "provider_ids": [],
+      "opportunity_name": "Water Infrastructure Fund + Drinking Water State Revolving Fund",
+      "route": "B",
+      "instrument": "grant+loan",
+      "cycle": "2025"
+    },
+    {
+      "opportunity_id": "us-mn-pfa-wif-cwsrf-2025",
+      "funder_id": "us-mn-pfa",
+      "provider_ids": [
+        "us-mn-mpca"
+      ],
+      "opportunity_name": "Water Infrastructure Fund + Clean Water State Revolving Fund",
+      "route": "B",
+      "instrument": "grant+loan",
+      "cycle": "2025"
+    },
+    {
+      "opportunity_id": "us-mn-mncifa-2024-2026",
+      "funder_id": "us-mn-mncifa",
+      "provider_ids": [],
+      "opportunity_name": "MnCIFA closed-loan portfolio",
+      "route": "D",
+      "instrument": "green-bank-loan",
+      "cycle": "2024-2026"
+    },
+    {
+      "opportunity_id": "us-mn-cwsrf-sfy26",
+      "funder_id": "us-mn-pfa",
+      "provider_ids": [
+        "us-mn-mpca"
+      ],
+      "opportunity_name": "Clean Water State Revolving Fund",
+      "route": "B",
+      "instrument": "loan-srf",
+      "cycle": "SFY2026"
+    }
+  ]
+}

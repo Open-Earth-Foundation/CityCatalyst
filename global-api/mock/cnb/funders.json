@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "endpoint": "PROPOSED GET /api/v1/climate-finance/funders",
+    "contract_status": "proposed_cnb_extension_not_in_current_global_api",
+    "country_code": "US",
+    "subdivision_code": "US-MN",
+    "status": "draft_example",
+    "count": 5,
+    "source_datasets": [
+      "mn-funder-profiles",
+      "mn-climate-awards"
+    ]
+  },
+  "data": [
+    {
+      "funder_id": "us-mn-bwsr",
+      "funder_name": "Minnesota Board of Water & Soil Resources",
+      "short_name": "BWSR",
+      "funder_level": "state",
+      "country_code": "US",
+      "subdivision_code": "US-MN",
+      "status": "active"
+    },
+    {
+      "funder_id": "us-mn-pfa",
+      "funder_name": "Minnesota Public Facilities Authority",
+      "short_name": "PFA",
+      "funder_level": "state",
+      "country_code": "US",
+      "subdivision_code": "US-MN",
+      "status": "active"
+    },
+    {
+      "funder_id": "us-mn-mpca",
+      "funder_name": "Minnesota Pollution Control Agency",
+      "short_name": "MPCA",
+      "funder_level": "state",
+      "country_code": "US",
+      "subdivision_code": "US-MN",
+      "status": "active"
+    },
+    {
+      "funder_id": "us-mn-dnr",
+      "funder_name": "Minnesota Department of Natural Resources",
+      "short_name": "MN DNR",
+      "funder_level": "state",
+      "country_code": "US",
+      "subdivision_code": "US-MN",
+      "status": "active"
+    },
+    {
+      "funder_id": "us-mn-mncifa",
+      "funder_name": "Minnesota Climate Innovation Finance Authority",
+      "short_name": "MnCIFA",
+      "funder_level": "state",
+      "country_code": "US",
+      "subdivision_code": "US-MN",
+      "status": "active"
+    }
+  ]
+}

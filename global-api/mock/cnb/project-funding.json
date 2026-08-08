@@ -1,0 +1,299 @@
+{
+  "meta": {
+    "endpoint": "PROPOSED GET /api/v1/climate-finance/project-funding",
+    "contract_status": "proposed_cnb_extension_not_in_current_global_api",
+    "country_code": "US",
+    "subdivision_code": "US-MN",
+    "status": "draft_example",
+    "count": 12
+  },
+  "data": [
+    {
+      "project_funding_id": "mn-funding-a-bwsr-fy27-001",
+      "project_id": "mn-project-a-bwsr-fy27-001",
+      "opportunity_id": "us-mn-bwsr-cwf-pp-fy27",
+      "cycle": "FY27",
+      "current_status": "awarded",
+      "instrument": "grant",
+      "requested_amount": null,
+      "committed_amount": 500000,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "awarded",
+          "as_of": "2026-06",
+          "source_record_id": "A-bwsr-fy27-001"
+        }
+      ],
+      "source_url": "https://bwsr.state.mn.us/sites/default/files/2026-06/FY27%20CWF%20Projects%20and%20Practices%20Awards.pdf"
+    },
+    {
+      "project_funding_id": "mn-funding-a-bwsr-fy27-005",
+      "project_id": "mn-project-a-bwsr-fy27-005",
+      "opportunity_id": "us-mn-bwsr-cwf-pp-fy27",
+      "cycle": "FY27",
+      "current_status": "awarded",
+      "instrument": "grant",
+      "requested_amount": null,
+      "committed_amount": 371000,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "awarded",
+          "as_of": "2026-06",
+          "source_record_id": "A-bwsr-fy27-005"
+        }
+      ],
+      "source_url": "https://bwsr.state.mn.us/sites/default/files/2026-06/FY27%20CWF%20Projects%20and%20Practices%20Awards.pdf"
+    },
+    {
+      "project_funding_id": "mn-funding-a-bwsr-fy27-010",
+      "project_id": "mn-project-a-bwsr-fy27-010",
+      "opportunity_id": "us-mn-bwsr-cwf-drinking-water-fy27",
+      "cycle": "FY27",
+      "current_status": "awarded",
+      "instrument": "grant",
+      "requested_amount": null,
+      "committed_amount": 85000,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "awarded",
+          "as_of": "2026-06",
+          "source_record_id": "A-bwsr-fy27-010"
+        }
+      ],
+      "source_url": "https://bwsr.state.mn.us/sites/default/files/2026-06/FY27%20CWF%20Projects%20and%20Practices%20Awards.pdf"
+    },
+    {
+      "project_funding_id": "mn-funding-a-dnr-fhm-2025-004",
+      "project_id": "mn-project-a-dnr-fhm-2025-004",
+      "opportunity_id": "us-mn-dnr-fhm-2025",
+      "cycle": "2025",
+      "current_status": "awarded",
+      "instrument": "cost-share-grant",
+      "requested_amount": null,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": {
+        "maximum_cost_share_percent": 50
+      },
+      "status_history": [
+        {
+          "status": "awarded",
+          "as_of": "2025-10-22",
+          "source_record_id": "A-dnr-fhm-2025-004"
+        }
+      ],
+      "source_url": "https://www.dnr.state.mn.us/news/2025/10/22/minnesota-dnr-awards-9-million-flood-hazard-mitigation-grants"
+    },
+    {
+      "project_funding_id": "mn-funding-b-wif-aurora-2025",
+      "project_id": "mn-project-b-wif-aurora-2025",
+      "opportunity_id": "us-mn-pfa-wif-dwsrf-2025",
+      "cycle": "2025",
+      "current_status": "funded",
+      "instrument": "grant+loan",
+      "requested_amount": null,
+      "committed_amount": 5000000,
+      "paid_amount": null,
+      "project_total_amount": 33000000,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "funded",
+          "as_of": "2025",
+          "source_record_id": "B-wif-aurora-2025"
+        }
+      ],
+      "source_url": "https://www.kaxe.org/local-news/2025-06-27/greater-mn-water-projects-flow-legislatures-bonding-package"
+    },
+    {
+      "project_funding_id": "mn-funding-b-srf-appleton-2025",
+      "project_id": "mn-project-b-srf-appleton-2025",
+      "opportunity_id": "us-mn-pfa-wif-cwsrf-2025",
+      "cycle": "2025",
+      "current_status": "funded",
+      "instrument": "grant+loan",
+      "requested_amount": null,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "funded",
+          "as_of": "2025",
+          "source_record_id": "B-srf-appleton-2025"
+        }
+      ],
+      "source_url": "https://www.kaxe.org/local-news/2025-06-27/greater-mn-water-projects-flow-legislatures-bonding-package"
+    },
+    {
+      "project_funding_id": "mn-funding-d-mncifa-2026-01",
+      "project_id": "mn-project-d-mncifa-2026-01",
+      "opportunity_id": "us-mn-mncifa-2024-2026",
+      "cycle": "2024-2026",
+      "current_status": "funded",
+      "instrument": "green-bank-loan",
+      "requested_amount": null,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "funded",
+          "as_of": "2026-01",
+          "source_record_id": "D-mncifa-2026-01"
+        }
+      ],
+      "source_url": "https://mncifa.mn.gov/projects"
+    },
+    {
+      "project_funding_id": "mn-funding-d-mncifa-2026-05",
+      "project_id": "mn-project-d-mncifa-2026-05",
+      "opportunity_id": "us-mn-mncifa-2024-2026",
+      "cycle": "2024-2026",
+      "current_status": "funded",
+      "instrument": "green-bank-loan",
+      "requested_amount": null,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": null,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "funded",
+          "as_of": "2026-01",
+          "source_record_id": "D-mncifa-2026-05"
+        }
+      ],
+      "source_url": "https://mncifa.mn.gov/projects"
+    },
+    {
+      "project_funding_id": "mn-funding-cwsrf-280694-sfy26",
+      "project_id": "mn-project-cwsrf-280694",
+      "opportunity_id": "us-mn-cwsrf-sfy26",
+      "cycle": "SFY2026",
+      "current_status": "on-PPL",
+      "instrument": "loan-srf",
+      "requested_amount": null,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": 18455000,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "on-PPL",
+          "as_of": "2026-01",
+          "rank": 1,
+          "priority_points": 113.2,
+          "source_record_id": "B-cwsrf-ppl-2026-001"
+        }
+      ],
+      "source_url": "https://mn.gov/deed/assets/2026-clean-water-intended-use-plan_tcm1045-719237.pdf"
+    },
+    {
+      "project_funding_id": "mn-funding-cwsrf-281049-sfy26",
+      "project_id": "mn-project-cwsrf-281049",
+      "opportunity_id": "us-mn-cwsrf-sfy26",
+      "cycle": "SFY2026",
+      "current_status": "on-IUP-nonfundable",
+      "instrument": "loan-srf",
+      "requested_amount": 54000000,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": 76000000,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "on-PPL",
+          "as_of": "2026-01",
+          "rank": 3,
+          "priority_points": 106.05,
+          "project_total_amount": 69300000,
+          "source_record_id": "B-cwsrf-ppl-2026-003"
+        },
+        {
+          "status": "on-IUP-nonfundable",
+          "as_of": "2026-01",
+          "rank": 3,
+          "priority_points": 106,
+          "iup_part": "Nonfundable-C2",
+          "requested_amount": 54000000,
+          "project_total_amount": 76000000,
+          "source_record_id": "B-cwsrf-iup-2026-281049-PS01"
+        }
+      ],
+      "source_url": "https://mn.gov/deed/assets/2026-clean-water-intended-use-plan_tcm1045-719237.pdf"
+    },
+    {
+      "project_funding_id": "mn-funding-cwsrf-280679-sfy26",
+      "project_id": "mn-project-cwsrf-280679",
+      "opportunity_id": "us-mn-cwsrf-sfy26",
+      "cycle": "SFY2026",
+      "current_status": "on-IUP-fundable",
+      "instrument": "loan-srf",
+      "requested_amount": 39858198,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": 39858198,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "on-IUP-fundable",
+          "as_of": "2026-01",
+          "rank": 5,
+          "priority_points": 88,
+          "iup_part": "Fundable-A",
+          "source_record_id": "B-cwsrf-iup-2026-280679-PS01b"
+        }
+      ],
+      "source_url": "https://mn.gov/deed/assets/2026-clean-water-intended-use-plan_tcm1045-719237.pdf"
+    },
+    {
+      "project_funding_id": "mn-funding-cwsrf-280808-sfy26",
+      "project_id": "mn-project-cwsrf-280808",
+      "opportunity_id": "us-mn-cwsrf-sfy26",
+      "cycle": "SFY2026",
+      "current_status": "on-IUP-nonfundable",
+      "instrument": "loan-srf",
+      "requested_amount": 1380425,
+      "committed_amount": null,
+      "paid_amount": null,
+      "project_total_amount": 1380425,
+      "currency": "USD",
+      "terms": null,
+      "status_history": [
+        {
+          "status": "on-IUP-nonfundable",
+          "as_of": "2026-01",
+          "rank": 333,
+          "priority_points": 33,
+          "iup_part": "Nonfundable-C1",
+          "source_record_id": "B-cwsrf-iup-2026-280808-PS01"
+        }
+      ],
+      "source_url": "https://mn.gov/deed/assets/2026-clean-water-intended-use-plan_tcm1045-719237.pdf"
+    }
+  ]
+}

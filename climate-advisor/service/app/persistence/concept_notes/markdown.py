@@ -249,6 +249,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     )
                     return _snapshot(existing)
 
+                # Keep dashboard ordering aligned with upload lifecycle activity.
                 _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
@@ -344,6 +345,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                 upload.ingest_error_code = None
                 upload.ingest_started_at = upload.ingest_started_at or func.now()
                 upload.ingest_completed_at = func.now()
+                # Keep dashboard ordering aligned with upload lifecycle activity.
                 _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
@@ -393,6 +395,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                 upload.ingest_status = "failed"
                 upload.ingest_error_code = error_code
                 upload.ingest_completed_at = func.now()
+                # Keep dashboard ordering aligned with upload lifecycle activity.
                 _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
@@ -441,6 +444,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                 upload.ingest_status = "queued"
                 upload.ingest_error_code = None
                 upload.ingest_completed_at = None
+                # Keep dashboard ordering aligned with upload lifecycle activity.
                 _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)

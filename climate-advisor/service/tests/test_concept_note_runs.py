@@ -7,7 +7,10 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.models.concept_note_runs import ConceptNoteStartRequest
+from app.models.concept_note_runs import (
+    ConceptNoteRunListResponse,
+    ConceptNoteStartRequest,
+)
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
@@ -97,7 +100,7 @@ async def _list_runs(
     user_id: str = "owner-1",
     city_id: UUID | None = None,
     authorization: str | None = "Bearer token",
-):
+) -> ConceptNoteRunListResponse:
     """List runs with the default authorized test scope."""
     return await service.list_runs(
         requested_user_id=user_id,

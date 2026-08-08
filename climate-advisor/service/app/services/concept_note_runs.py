@@ -120,6 +120,7 @@ class ConceptNoteRunService:
         authorization: str | None,
     ) -> ConceptNoteRunListResponse:
         """Return the authenticated user's runs for one accessible city."""
+        # Authorize the requested user and city before reading persisted runs.
         token = _require_bearer_token(authorization)
         canonical_user_id = await self._authorize_scope(
             token=token,
@@ -130,6 +131,8 @@ class ConceptNoteRunService:
             user_id=canonical_user_id,
             city_id=str(city_id),
         )
+
+        # Serialize the ordered rows into the stable list contract.
         return ConceptNoteRunListResponse(
             runs=[_to_list_item(run) for run in runs]
         )

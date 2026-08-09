@@ -594,13 +594,24 @@ empty `concept_note_context_bundles` row in one transaction. The run starts as
 Creation is idempotent per `(user_id, idempotency_key)`. Replaying the same
 normalized request returns the original run with HTTP `200` and
 `created: false`; using that key with different input returns HTTP `409`.
+
+`GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
+and live city access, then returns only that user's runs for the selected city.
+Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
+the result is stable and most-recently-updated first. Upload registration and
+failed, retry, or ready lifecycle transitions refresh the parent run's
+`updated_at`. Each item includes the durable `run_id`, optional chat `thread_id`,
+stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
+copied from the persisted `context_summary`.
+
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
-revalidates current city access before responding. The Alembic revision
-`20260729_120000` provisions `concept_note_runs`,
-`concept_note_context_bundles`, and `concept_note_uploads` in
-`CA_DATABASE_URL`. When `thread_id` is supplied, the start operation also
-requires that durable chat thread to belong to the authenticated user; it
-remains an integration identifier rather than a run-table foreign key.
+revalidates current city access before responding. It exposes the same persisted
+status, workflow step, and progress summary as the list contract. The Alembic
+revision `20260729_120000` provisions `concept_note_runs`,
+`concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
+When `thread_id` is supplied, the start operation also requires that durable
+chat thread to belong to the authenticated user; it remains an integration
+identifier rather than a run-table foreign key.
 
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start` and

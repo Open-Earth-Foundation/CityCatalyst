@@ -31,9 +31,7 @@ from app.services.cnb.reference_data_client import (
 
 logger = logging.getLogger(__name__)
 COMPLETION_SIGNAL = "concept_note_context_bundle_ready"
-REFERENCE_FETCH_MULTIPLIER = 5
 SHORTLIST_MULTIPLIER = 3
-MAX_REFERENCE_CANDIDATES = 100
 MAX_SHORTLIST_CANDIDATES = 50
 
 
@@ -148,7 +146,6 @@ class ProjectMatchingService:
                 if request.funder_scope == "same_funder"
                 else None
             ),
-            limit=self._reference_fetch_limit(request.limit),
         )
         eligible_candidates = self._filter_eligible_candidates(
             request=request,
@@ -189,13 +186,6 @@ class ProjectMatchingService:
             request=request,
             matches=matches,
             caveats=result_caveats,
-        )
-
-    def _reference_fetch_limit(self, result_limit: int) -> int:
-        """Bound reference-data reads while still allowing a meaningful shortlist."""
-        return min(
-            max(result_limit * REFERENCE_FETCH_MULTIPLIER, result_limit),
-            MAX_REFERENCE_CANDIDATES,
         )
 
     def _filter_eligible_candidates(

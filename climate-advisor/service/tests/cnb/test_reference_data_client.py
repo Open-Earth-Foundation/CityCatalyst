@@ -48,10 +48,10 @@ def _record_row() -> dict[str, object]:
     }
 
 
-def test_candidate_read_is_bounded_and_keeps_only_valid_evidence(
+def test_candidate_read_fetches_full_scope_and_keeps_only_valid_evidence(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Map valid rows while enforcing the hard retrieval bound."""
+    """Map valid rows without truncating the scoped reference corpus."""
     client = PostgresCnbReferenceDataClient("postgresql://configured")
     observed: dict[str, object] = {}
 
@@ -79,15 +79,11 @@ def test_candidate_read_is_bounded_and_keeps_only_valid_evidence(
 
     monkeypatch.setattr(client, "_fetch_rows", fetch_rows)
 
-    candidates = client.list_funded_project_candidates(
-        funder_id=FUNDER_ID,
-        limit=500,
-    )
+    candidates = client.list_funded_project_candidates(funder_id=FUNDER_ID)
 
     assert observed == {
         "database_url": "postgresql://configured",
         "funder_id": FUNDER_ID,
-        "limit": 100,
     }
     assert len(candidates) == 1
     candidate = candidates[0]
@@ -105,7 +101,7 @@ def test_cross_funder_empty_corpus_is_not_reported_as_unavailable(
     client = PostgresCnbReferenceDataClient("postgresql://configured")
     monkeypatch.setattr(client, "_fetch_rows", lambda **_kwargs: ([], []))
 
-    assert client.list_funded_project_candidates(funder_id=None, limit=10) == []
+    assert client.list_funded_project_candidates(funder_id=None) == []
 
 
 def test_postgres_queries_apply_scope_order_and_source_join(
@@ -144,7 +140,6 @@ def test_postgres_queries_apply_scope_order_and_source_join(
     records, evidence = client._fetch_rows(
         database_url="postgresql://configured",
         funder_id=FUNDER_ID,
-        limit=7,
     )
 
     assert records == [_record_row()]
@@ -154,7 +149,8 @@ def test_postgres_queries_apply_scope_order_and_source_join(
     assert "fr.is_opportunity = FALSE" in record_query
     assert "fr.funder_id = %(funder_id)s::uuid" in record_query
     assert "ORDER BY f.name, fr.name, fr.funding_record_id" in record_query
-    assert record_parameters == {"funder_id": str(FUNDER_ID), "limit": 7}
+    assert "LIMIT" not in record_query
+    assert record_parameters == {"funder_id": str(FUNDER_ID)}
     assert "JOIN source_documents AS source" in evidence_query
     assert "source.url AS source_url" in evidence_query
     assert evidence_parameters == {"funding_record_ids": [str(RECORD_ID)]}
@@ -183,7 +179,7 @@ def test_database_failure_never_exposes_connection_details(
             match="CNB reference data is unavailable",
         ) as error,
     ):
-        client.list_funded_project_candidates(funder_id=None, limit=10)
+        client.list_funded_project_candidates(funder_id=None)
 
     combined_output = f"{error.value}\n{caplog.text}"
     assert password not in combined_output
@@ -205,4 +201,4 @@ def test_missing_configuration_has_a_distinct_safe_error(
         CnbReferenceDataUnavailable,
         match="CNB reference data is not configured",
     ):
-        client.list_funded_project_candidates(funder_id=None, limit=10)
+        client.list_funded_project_candidates(funder_id=None)

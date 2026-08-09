@@ -77,8 +77,8 @@ def test_configmaps_and_manifests_contain_no_cnb_values() -> None:
         assert "stringData:" not in content
 
 
-def test_workflows_launch_both_migration_jobs_before_rollout() -> None:
-    """Keep CNB deployment wiring consistent with the existing CA Job flow."""
+def test_workflows_wait_for_cnb_migration_before_rollout() -> None:
+    """Require the new CNB migration to succeed before application rollout."""
     secret_reconcile = "--dry-run=client --output yaml | kubectl apply -f - -n default"
 
     for environment, expected in ENVIRONMENTS.items():
@@ -90,6 +90,7 @@ def test_workflows_launch_both_migration_jobs_before_rollout() -> None:
         cnb_job_create = (
             f"kubectl create -f climate-advisor/k8s/cnb-migrate-{environment}.yml"
         )
+        cnb_job_wait = "kubectl wait"
         deployment_apply = (
             f"kubectl apply -f climate-advisor/k8s/deployment-{environment}.yml"
         )
@@ -100,6 +101,11 @@ def test_workflows_launch_both_migration_jobs_before_rollout() -> None:
         assert '--from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}"' in workflow
         assert secret_reconcile in workflow
         assert "run-climate-advisor-migrations.sh" not in workflow
+        assert 'cnb_migration_job="$(' in workflow
+        assert "--for=condition=complete" in workflow
+        assert "--timeout=300s" in workflow
+        assert '"${cnb_migration_job}"' in workflow
         assert workflow.index(secret_create) < workflow.index(ca_job_create)
         assert workflow.index(ca_job_create) < workflow.index(cnb_job_create)
-        assert workflow.index(cnb_job_create) < workflow.index(deployment_apply)
+        assert workflow.index(cnb_job_create) < workflow.index(cnb_job_wait)
+        assert workflow.index(cnb_job_wait) < workflow.index(deployment_apply)

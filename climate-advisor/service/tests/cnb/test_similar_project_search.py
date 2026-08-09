@@ -51,15 +51,14 @@ class FakeStore:
 class FakeReferenceData:
     def __init__(self, candidates: list[CnbSimilarProjectCandidate]) -> None:
         self.candidates = candidates
-        self.calls: list[tuple[UUID | None, int]] = []
+        self.calls: list[UUID | None] = []
 
     def list_funded_project_candidates(
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
-        self.calls.append((funder_id, limit))
+        self.calls.append(funder_id)
         return self.candidates
 
 
@@ -277,7 +276,7 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     ]
     assert store.matches == result.result.matches
     assert store.context == (result.result.matches, [])
-    assert reference_data.calls == [(request.funder_id, 5)]
+    assert reference_data.calls == [request.funder_id]
     payload = json.loads(responses.calls[0]["input"])
     assert responses.calls[0]["store"] is False
     assert [item["funding_record_id"] for item in payload["candidates"]] == [
@@ -380,7 +379,7 @@ def test_cross_funder_mode_reads_all_funders() -> None:
 
     service.run(request)
 
-    assert reference_data.calls == [(None, 5)]
+    assert reference_data.calls == [None]
 
 
 @pytest.mark.parametrize(

@@ -23,7 +23,6 @@ class CnbReferenceDataClient(Protocol):
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
         """Return reviewed candidates, optionally restricted to one funder."""
 
@@ -43,23 +42,18 @@ class PostgresCnbReferenceDataClient:
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
         """Return deterministic funded-project candidates with valid evidence."""
-        if limit <= 0:
-            raise ValueError("limit must be positive")
-
         # Step 1: resolve configuration without opening a connection at import time.
         database_url = self._database_url or get_settings().cnb_database_url
         if not database_url:
             raise CnbReferenceDataUnavailable("CNB reference data is not configured")
 
-        # Step 2: fetch bounded records and their evidence in two queries.
+        # Step 2: fetch all scoped records and their evidence in two queries.
         try:
             rows, evidence_rows = self._fetch_rows(
                 database_url=database_url,
                 funder_id=funder_id,
-                limit=min(limit, 100),
             )
         except Exception as exc:
             logger.error(
@@ -117,9 +111,8 @@ class PostgresCnbReferenceDataClient:
         *,
         database_url: str,
         funder_id: UUID | None,
-        limit: int,
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-        """Execute bounded record and evidence queries in one read transaction."""
+        """Read all scoped records and their evidence in one transaction."""
         import psycopg2
         from psycopg2.extras import RealDictCursor
 
@@ -156,11 +149,9 @@ class PostgresCnbReferenceDataClient:
                     WHERE fr.is_opportunity = FALSE
                       AND (%(funder_id)s::uuid IS NULL OR fr.funder_id = %(funder_id)s::uuid)
                     ORDER BY f.name, fr.name, fr.funding_record_id
-                    LIMIT %(limit)s
                     """,
                     {
                         "funder_id": str(funder_id) if funder_id else None,
-                        "limit": limit,
                     },
                 )
                 records = [dict(row) for row in cursor.fetchall()]
@@ -238,7 +229,6 @@ class UnavailableCnbReferenceDataClient:
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
         """Return no candidates when reference data is not available yet."""
         scope = str(funder_id) if funder_id is not None else "all funders"

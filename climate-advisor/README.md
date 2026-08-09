@@ -156,8 +156,9 @@ It waits for an ingested project upload and reads reviewed awards through the
 typed CNB reference-data contract. `same_funder` is the default retrieval scope;
 an explicit `cross_funder` request may compare reviewed awards from multiple
 canonical funders while retaining each candidate's real funder identity. It
-uses a first-version deterministic shortlist based on exact normalized fields
-and reviewed tag overlap. Its explicit V1 policy is:
+retrieves the complete scoped corpus before building a bounded, first-version
+deterministic shortlist based on exact normalized fields and reviewed tag
+overlap. Its explicit V1 policy is:
 
 - **hard eligibility:** requested same-funder scope, a funded non-opportunity
   record, and retained evidence
@@ -997,12 +998,12 @@ migration Job consume that Secret with `secretRef`; CNB credentials do not
 belong in the existing database ConfigMaps or in checked-in Secret manifests.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
-Job (`alembic -c cnb-alembic.ini upgrade head`), before applying the application
-rollout. This follows the existing Climate Advisor deployment pattern; the
-workflow does not wait for either Job to finish. Check the Kubernetes Jobs and
-their logs to confirm migration success. For production, take an RDS snapshot
-or schema backup first; roll back the application image independently and do
-not automatically downgrade a schema after application data has been written.
+Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB
+Job to complete and stops before the application rollout if that migration
+fails; the existing CA Job behavior is unchanged. For production, take an RDS
+snapshot or schema backup first; roll back the application image independently
+and do not automatically downgrade a schema after application data has been
+written.
 
 ## Observability
 

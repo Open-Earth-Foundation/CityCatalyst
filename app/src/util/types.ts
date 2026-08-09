@@ -555,11 +555,11 @@ export type ThemeResponse = {
 };
 
 export enum LANGUAGES {
-  "en" = "en",
-  "es" = "es",
-  "pt" = "pt",
-  "de" = "de",
-  "fr" = "fr",
+  en = "en",
+  es = "es",
+  pt = "pt",
+  de = "de",
+  fr = "fr",
 }
 
 export type OrganizationWithThemeResponse = {
@@ -1025,6 +1025,10 @@ export interface ConceptNoteRun {
   progress_summary: Record<string, unknown>;
   created_at: string;
   updated_at: string;
+}
+
+export interface ConceptNoteRunListResponse {
+  runs: ConceptNoteRun[];
 }
 
 export interface StartConceptNoteRunRequest {

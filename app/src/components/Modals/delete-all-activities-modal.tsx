@@ -21,11 +21,11 @@ import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
 interface DeleteAllActivitiesModalProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   t: TFunction;
   inventoryId: string;
   subsectorId: string;
-  setDeleteActivityAllDialogOpen: Function;
+  setDeleteActivityAllDialogOpen: (open: boolean) => void;
 }
 
 const DeleteAllActivitiesModal: FC<DeleteAllActivitiesModalProps> = ({

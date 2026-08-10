@@ -1,4 +1,10 @@
-import { Select, MultiValueProps, OptionProps } from "chakra-react-select";
+import {
+  Select,
+  MultiValueProps,
+  OptionProps,
+  GroupBase,
+  StylesConfig,
+} from "chakra-react-select";
 import { Box, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 
@@ -7,20 +13,27 @@ import { CloseButton } from "./ui/close-button";
 import { Checkbox } from "./ui/checkbox";
 import { MdWarning } from "react-icons/md";
 
+interface MultiSelectOption {
+  label: string;
+  value: string;
+}
+
 interface MultiSelectInputProps {
   title: string;
   options: string[];
   placeholder: string;
   activity: string;
-  errors: Record<string, any>;
+  errors: Record<string, unknown>;
   t: TFunction;
   multiselect?: boolean;
   required?: boolean;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues>;
   selectedActivity?: string;
 }
 
-const CustomMultiValue = (props: MultiValueProps<any>) => {
+const CustomMultiValue = (
+  props: MultiValueProps<MultiSelectOption, true, GroupBase<MultiSelectOption>>,
+) => {
   const { data, removeProps } = props;
 
   return (
@@ -45,7 +58,9 @@ const CustomMultiValue = (props: MultiValueProps<any>) => {
   );
 };
 
-const CustomOption = (props: OptionProps<any>) => {
+const CustomOption = (
+  props: OptionProps<MultiSelectOption, true, GroupBase<MultiSelectOption>>,
+) => {
   const { data, isSelected, innerRef, innerProps } = props;
 
   return (
@@ -66,16 +81,17 @@ const CustomOption = (props: OptionProps<any>) => {
   );
 };
 
-const customStyles = (error: boolean) => ({
-  control: (provided: any, state: any) => ({
+const customStyles = (
+  error: boolean,
+): StylesConfig<MultiSelectOption, true, GroupBase<MultiSelectOption>> => ({
+  control: (provided, state) => ({
     ...provided,
     borderRadius: "4px",
-    borderColor:
-      state.isHovered || state.isFocused
-        ? "#2351DC"
-        : error
-          ? "#F23D33"
-          : "#D7D8FB",
+    borderColor: state.isFocused
+      ? "#2351DC"
+      : error
+        ? "#F23D33"
+        : "#D7D8FB",
     background: error ? "#FFEAEE" : "#fff",
     boxShadow: "0px 1px 2px -1px #0000001A, 0px 1px 3px 0px #00001F1A",
     minHeight: "48px",
@@ -84,7 +100,7 @@ const customStyles = (error: boolean) => ({
       borderColor: "#2351DC",
     },
   }),
-  placeholder: (provided: any) => ({
+  placeholder: (provided) => ({
     ...provided,
     fontSize: "16px",
     color: "#A0AEC0",
@@ -102,7 +118,10 @@ const MultiSelectWithCheckbox = ({
   control,
   selectedActivity,
 }: MultiSelectInputProps) => {
-  const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
+  const error = activity.split(".").reduce<unknown>(
+    (acc, key) => (acc as Record<string, unknown> | undefined)?.[key],
+    errors,
+  ) as { message?: string } | undefined;
   let preselectedValue = selectedActivity
     ? {
         label: t(selectedActivity),

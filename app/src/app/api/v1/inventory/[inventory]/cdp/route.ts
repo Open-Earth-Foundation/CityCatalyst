@@ -24,7 +24,7 @@
  *         description: CDP service disabled.
  */
 import UserService from "@/backend/UserService";
-import CDPService from "@/backend/CDPService";
+import CDPService, { CDPMatrixRow } from "@/backend/CDPService";
 
 import { logger } from "@/services/logger";
 import { apiHandler } from "@/util/api";
@@ -40,8 +40,8 @@ const EMISSIONS_INVENTORY_QUESTION = 0;
 const EMISSIONS_INVENTORY_ANSWER = "Yes";
 const EMISSIONS_MATRIX_QUESTION = 2;
 
-function findRow(rows: any[], regex: RegExp): string | null {
-  const row = rows.find((row: any) => row.title.match(regex));
+function findRow(rows: CDPMatrixRow[], regex: RegExp): string | null {
+  const row = rows.find((row) => row.title.match(regex));
   return row ? row.id : null;
 }
 
@@ -111,9 +111,14 @@ export const POST = apiHandler(async (_req, { session, params }) => {
   const section = questionnaire.sections[EMISSIONS_SECTION];
   const question = section.questions[EMISSIONS_INVENTORY_QUESTION];
 
-  const yes = question.options.find((option: any) => {
+  const yes = question.options?.find((option) => {
     return option.name === EMISSIONS_INVENTORY_ANSWER;
   });
+  if (!yes) {
+    throw new createHttpError.FailedDependency(
+      `CDP questionnaire is missing the "${EMISSIONS_INVENTORY_ANSWER}" option for question ${question.id}`,
+    );
+  }
 
   logger.debug(`Got question: ${JSON.stringify(question)}`);
 
@@ -123,14 +128,19 @@ export const POST = apiHandler(async (_req, { session, params }) => {
     ];
   logger.debug(`Got matrix question: ${JSON.stringify(matrix)}`);
 
-  const col = matrix.columns.find((column: any) => {
+  const col = matrix.columns?.find((column) => {
     return column.text.match(/^Emissions/);
   });
+  if (!col) {
+    throw new createHttpError.FailedDependency(
+      `CDP questionnaire matrix is missing an "Emissions" column for question ${matrix.id}`,
+    );
+  }
 
   const rows = (
     await Promise.all(
       cdpEmissionsRows.map(async (rowData) => {
-        const rowId = findRow(matrix.rows, rowData.rowRegex);
+        const rowId = findRow(matrix.rows ?? [], rowData.rowRegex);
         if (!rowId) {
           logger.error("Couldn't find row id for: " + rowData.rowRegex);
           return null;

@@ -179,8 +179,6 @@ export const GET = apiHandler(async (req, { params }) => {
             cityId,
             inventory,
             lng,
-            undefined, // No session for public
-            false,
           ).catch((err) => {
             logger.error({ error: err }, "Error fetching HIAP dashboard");
             return null;

@@ -57,7 +57,6 @@ function countryFromLanguage(language: string) {
 
 export function NavigationBar({
   lng,
-  showNav = true,
   isPublic = false,
   showMenu = false,
   isAuth = false,
@@ -193,9 +192,11 @@ export function NavigationBar({
           )}
           {logoUrl && !isAuth ? (
             <Link href={homePath}>
-              <img
+              <Image
                 src={logoUrl}
                 alt="Org logo"
+                width={250}
+                height={50}
                 style={{
                   objectFit: "cover",
                   height: "50px",

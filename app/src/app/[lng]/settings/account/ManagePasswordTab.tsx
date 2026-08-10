@@ -11,6 +11,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import { api } from "@/services/api";
 import { Toaster } from "@/components/ui/toaster";
 import { UseSuccessToast } from "@/hooks/Toasts";
+import { getApiErrorMessage } from "@/util/helpers";
 
 interface ManagePasswordProps {
   t: TFunction;
@@ -68,16 +69,16 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
       confirmPassword: data.confirmPassword,
     };
     try {
-      const res: any = await updatePassword(body);
+      const res = await updatePassword(body);
       if (res.error) {
-        setError(res.error.data.error.message);
+        setError(getApiErrorMessage(res.error));
         return;
       }
       showSuccessToast();
       reset();
       setError("");
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     }
   };
 

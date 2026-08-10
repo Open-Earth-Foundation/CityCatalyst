@@ -5,7 +5,6 @@ import type {
 import type {
   DraftProposal,
   DraftStatusResponse,
-  SourceCandidate,
 } from "@/components/StationaryEnergyDraft/types";
 import {
   compareProposalsByGpcReference,

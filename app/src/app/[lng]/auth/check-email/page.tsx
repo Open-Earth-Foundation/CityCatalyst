@@ -7,7 +7,7 @@ import NextLink from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, use } from "react";
 
-function DynamicContent({ t }: { t: Function }) {
+function DynamicContent({ t }: { t: (key: string) => string }) {
   const searchParams = useSearchParams();
   const email = searchParams.get("email_address");
   const isReset = !!searchParams.get("reset");

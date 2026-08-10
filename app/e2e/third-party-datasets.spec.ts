@@ -1,5 +1,4 @@
 import { expect, test } from "@playwright/test";
-import { indexPageRegex, regexForPath } from "./utils";
 import { navigateToGHGIModule } from "./helpers";
 
 const testIds = {

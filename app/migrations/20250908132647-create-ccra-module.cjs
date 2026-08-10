@@ -2,7 +2,7 @@
 
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up() {
     // Disabled, now handled by Module seeder
     /* await queryInterface.bulkInsert("Module", [
       {
@@ -38,7 +38,7 @@ module.exports = {
     ]); */
   },
 
-  async down(queryInterface, Sequelize) {
+  async down() {
     /* await queryInterface.bulkDelete("Module", {
       id: "3d1a4b2c-8e7f-4d5a-9c6b-1f2e3d4c5b6a",
     }); */

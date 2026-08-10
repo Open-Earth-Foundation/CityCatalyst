@@ -218,7 +218,7 @@ export default function ReviewConfirmStep({
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
-              <Table.ColumnHeader>{t("value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("example-value")}</Table.ColumnHeader>
               <Table.ColumnHeader>{t("map-to")}</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>

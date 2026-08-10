@@ -487,7 +487,7 @@ export default function OnboardingSetup(props: {
                     fontWeight="600"
                     letterSpacing="wider"
                   >
-                    {t(isUploadMode ? "create-inventory" : "continue")}
+                    {t("continue")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>

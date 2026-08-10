@@ -140,7 +140,7 @@ No `language` returns all available localizations. Repeating it, for example `?l
 }
 ```
 
-- **Backend logic:** fetch the canonical catalogue with all languages, then return all, one, or the requested language set. Production uses Global API; configured mocks remain test/local behavior only.
+- **Backend logic:** fetch the canonical catalogue with all languages and use the same prioritizable-action selector as exclusion preview, prioritization, and output-plan generation. Return only actions whose normalized `action_type` is `mitigation`, then return all, one, or the requested language set. Production uses Global API; configured mocks remain test/local behavior only.
 
 ## 3. Action policy scores
 
@@ -278,6 +278,14 @@ GET /v1/cities/CL%20IQQ/climate-finance/feasibility?country_code=CL
       "financial_feasibility": 0.66,
       "route": "technical_assistance",
       "reason": "Several municipal support routes are available."
+    },
+    {
+      "action_id": "c40_0099",
+      "action_name": "Improve district energy systems",
+      "sector": "stationary_energy",
+      "financial_feasibility": null,
+      "route": null,
+      "reason": "No current finance score is available."
     }
   ],
   "meta": {
@@ -289,13 +297,13 @@ GET /v1/cities/CL%20IQQ/climate-finance/feasibility?country_code=CL
       "locode": "CL IQQ",
       "country_code": "CL"
     },
-    "total_records": 1
+    "total_records": 2
   },
   "warnings": []
 }
 ```
 
-- **Backend logic:** reuse the current action-ID mapping and missing-release behavior; return valid numeric scores in the agreed deterministic order.
+- **Backend logic:** reuse the current action-ID mapping and missing-release behavior; retain every normalized source row; sort numeric scores from highest to lowest and place missing scores last. A missing source score is returned as `financial_feasibility: null`; the prioritizer's internal neutral `0.5` fallback is not source data.
 
 ## 6. Climate-finance opportunities
 

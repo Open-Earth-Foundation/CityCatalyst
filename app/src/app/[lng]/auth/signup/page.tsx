@@ -193,6 +193,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         />
         <input type="hidden" {...register("preferredLanguage")} />
         <Field
+          mt="s"
           invalid={!!errors.acceptTerms}
           errorText={errors.acceptTerms?.message}
         >
@@ -222,6 +223,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           formNoValidate
           loading={isSubmitting}
           disabled={isSubmitting}
+          mt="s"
           h={16}
           width="full"
           bgColor="interactive.secondary"

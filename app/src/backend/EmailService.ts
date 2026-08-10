@@ -505,6 +505,7 @@ export default class EmailService {
         InviteUserToMultipleCitiesTemplate({
           url,
           email,
+          name: user?.name,
           cities,
           brandInformation,
           language: user?.preferredLanguage,

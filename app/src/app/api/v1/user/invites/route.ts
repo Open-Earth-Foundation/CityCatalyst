@@ -281,6 +281,7 @@ export const POST = apiHandler(async (req, { session }) => {
           InviteUserToMultipleCitiesTemplate({
             url,
             email,
+            name: doesInvitedUserExist?.name,
             cities: cities,
             language: invitingUser?.preferredLanguage,
             ...(emailBranding

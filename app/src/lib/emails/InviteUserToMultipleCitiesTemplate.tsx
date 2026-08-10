@@ -18,12 +18,14 @@ import { LANGUAGES } from "@/util/types";
 export function InviteUserToMultipleCitiesTemplate({
   url,
   email,
+  name,
   cities,
   brandInformation,
   language,
 }: {
   url?: string;
   email: string;
+  name?: string;
   cities: City[];
   brandInformation?: {
     color: string;
@@ -78,34 +80,11 @@ export function InviteUserToMultipleCitiesTemplate({
               </Section>
             )}
             <Section style={{ padding: "24px" }}>
-              <Text style={headingGreen}>{t("invite-multiple.title")}</Text>
+              <Text style={heading}>{t("invite-multiple.title")}</Text>
               <Text style={greeting}>
-                {t("invite-multiple.greeting", { email })}
+                {t("invite-multiple.greeting", { name: name || email })}
               </Text>
-              <Text style={paragraph}>
-                {t("invite-multiple.message", {
-                  citiesCount:
-                    cities?.length === 1
-                      ? t("invite-multiple.this-city")
-                      : t("invite-multiple.these-cities"),
-                })}
-              </Text>
-              <div>
-                {cities?.map(({ countryLocode, name }) => (
-                  <div style={cityBox} key={name}>
-                    <div
-                      style={{
-                        background: `url('https://flagsapi.com/${countryLocode}/flat/64.png') no-repeat center center`,
-                        backgroundSize: "cover",
-                        height: "32px",
-                        width: "32px",
-                        flexShrink: 0,
-                      }}
-                    />
-                    <div style={cityNameText}>{name}</div>
-                  </div>
-                ))}
-              </div>
+              <Text style={paragraph}>{t("invite-multiple.message")}</Text>
               <Section style={buttonSection}>
                 <Link
                   href={url}
@@ -157,17 +136,19 @@ const brandHeading = {
   color: "#2351DC",
 };
 
-const greeting = {
-  fontSize: "14px",
-  lineHeight: "1.4",
-  color: "#484848",
+// Matches the theme's body.lg / regular / 24 / wide tokens (app-theme.ts)
+const bodyLarge = {
+  fontFamily: '"Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  fontSize: "16px",
+  lineHeight: "24px",
+  fontWeight: "400",
+  letterSpacing: "0.5px",
+  color: "#00001F", // theme content.primary
 };
 
-const paragraph = {
-  fontSize: "14px",
-  lineHeight: "1.4",
-  color: "#484848",
-};
+const greeting = bodyLarge;
+
+const paragraph = bodyLarge;
 
 const urlLink = {
   fontSize: "14px",
@@ -186,29 +167,13 @@ const footerText = {
   color: "#79797A",
 };
 
-const cityBox = {
-  display: "flex",
-  padding: "16px",
-  alignItems: "center",
-  gap: "16px",
-  borderRadius: "8px",
-  border: "1px solid #E6E7FF",
-  margin: "32px",
-};
-
-const cityNameText = {
-  fontSize: "14px",
-  fontStyle: "normal",
-  fontWeight: "500",
-  lineHeight: "32px", // Match this with the flag height
-  letterSpacing: "0.5px",
-  color: "#484848",
-};
-
-const headingGreen = {
-  fontSize: "24px",
-  lineHeight: "32px",
-  fontWeight: "700",
-  color: "#24BE00",
+// Matches the theme's title.lg / semibold / 28 tokens (app-theme.ts)
+const heading = {
+  fontFamily:
+    'Poppins,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+  fontSize: "22px",
+  lineHeight: "28px",
+  fontWeight: "600",
+  color: "#00001F", // theme content.primary
   marginTop: "50px",
 };

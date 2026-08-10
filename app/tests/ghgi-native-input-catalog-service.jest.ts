@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import {
   afterEach,
   beforeAll,
+  beforeEach,
   describe,
   expect,
   it,
@@ -9,6 +11,7 @@ import {
 
 const catalogModel = {
   create: jest.fn(),
+  findAll: jest.fn(),
   findOne: jest.fn(),
   update: jest.fn(),
 };
@@ -24,11 +27,20 @@ const mockDb = {
 };
 
 jest.unstable_mockModule("@/models", () => ({ db: mockDb }));
+const resolveImportedFileBuffer = jest.fn();
+jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
+  default: { resolveImportedFileBuffer },
+}));
+jest.unstable_mockModule("@/services/logger", () => ({
+  logger: { error: jest.fn(), info: jest.fn() },
+}));
 
 let registerGHGIImportedInventorySource: typeof import("@/backend/GHGINativeInputCatalogService").registerGHGIImportedInventorySource;
 let registerGHGIInventory: typeof import("@/backend/GHGINativeInputCatalogService").registerGHGIInventory;
 let registerGHGIOcrArtifact: typeof import("@/backend/GHGINativeInputCatalogService").registerGHGIOcrArtifact;
 let withdrawGHGICatalogForInventory: typeof import("@/backend/GHGINativeInputCatalogService").withdrawGHGICatalogForInventory;
+let syncGHGIImportedInventorySource: typeof import("@/backend/GHGINativeInputCatalogService").syncGHGIImportedInventorySource;
+let syncPendingGHGIOcrArtifacts: typeof import("@/backend/GHGINativeInputCatalogService").syncPendingGHGIOcrArtifacts;
 
 beforeAll(async () => {
   ({
@@ -36,6 +48,8 @@ beforeAll(async () => {
     registerGHGIInventory,
     registerGHGIOcrArtifact,
     withdrawGHGICatalogForInventory,
+    syncGHGIImportedInventorySource,
+    syncPendingGHGIOcrArtifacts,
   } = await import("@/backend/GHGINativeInputCatalogService"));
 });
 
@@ -50,7 +64,7 @@ const ids = {
 };
 
 function makeImportedFile(overrides: Record<string, unknown> = {}) {
-  return {
+  const importedFile = {
     id: "44444444-4444-4444-8444-444444444444",
     ...ids,
     fileName: "stored-report.pdf",
@@ -60,10 +74,18 @@ function makeImportedFile(overrides: Record<string, unknown> = {}) {
     importStatus: "completed",
     completedAt: new Date("2026-08-07T12:00:00.000Z"),
     ...overrides,
-  } as never;
+  } as Record<string, unknown> & { update: jest.Mock };
+  importedFile.update = jest.fn(async (values: Record<string, unknown>) => {
+    Object.assign(importedFile, values);
+  });
+  return importedFile as never;
 }
 
 describe("GHGI NativeInputCatalog adapter", () => {
+  beforeEach(() => {
+    resolveImportedFileBuffer.mockResolvedValue(null);
+  });
+
   it("registers the uploaded source as a separate immutable pointer", async () => {
     catalogModel.findOne.mockResolvedValue(null);
     catalogModel.create.mockResolvedValue({ id: "catalog-source" });
@@ -84,6 +106,36 @@ describe("GHGI NativeInputCatalog adapter", () => {
         inventoryId: ids.inventoryId,
         cityId: ids.cityId,
       }),
+      expect.anything(),
+    );
+  });
+
+  it("preserves the source digest when the first catalog write fails", async () => {
+    const importedFile = makeImportedFile({
+      contentDigest: null,
+      data: Buffer.from("source-file"),
+    });
+    const expectedDigest = createHash("sha256")
+      .update("source-file")
+      .digest("hex");
+    resolveImportedFileBuffer.mockResolvedValue(Buffer.from("source-file"));
+    catalogModel.findOne.mockResolvedValue(null);
+    catalogModel.create.mockRejectedValueOnce(new Error("temporary failure"));
+
+    await expect(
+      syncGHGIImportedInventorySource(importedFile),
+    ).resolves.toBeNull();
+
+    catalogModel.create.mockResolvedValue({ id: "catalog-source" });
+    await expect(
+      syncGHGIImportedInventorySource(importedFile),
+    ).resolves.toEqual(expect.objectContaining({ created: true }));
+
+    expect(importedFile.update).toHaveBeenCalledWith({
+      contentDigest: expectedDigest,
+    });
+    expect(catalogModel.create).toHaveBeenLastCalledWith(
+      expect.objectContaining({ contentDigest: expectedDigest }),
       expect.anything(),
     );
   });
@@ -137,6 +189,42 @@ describe("GHGI NativeInputCatalog adapter", () => {
       }),
       expect.anything(),
     );
+  });
+
+  it("skips registered OCR jobs before applying the retry limit", async () => {
+    const oldJob = {
+      id: "ocr-old",
+      sourceType: "inventory_import",
+      sourceId: "44444444-4444-4444-8444-444444444444",
+      status: "succeeded",
+      resultS3Key: "old.md",
+      resultSha256: "old-sha256",
+      pageCount: 1,
+    };
+    const newerJob = {
+      ...oldJob,
+      id: "ocr-new",
+      resultS3Key: "new.md",
+      resultSha256: "new-sha256",
+    };
+    catalogModel.findAll.mockResolvedValue([{ sourceId: oldJob.id }]);
+    pdfOcrJobModel.findAll
+      .mockResolvedValueOnce([oldJob])
+      .mockResolvedValueOnce([newerJob]);
+    importedFileModel.findByPk.mockResolvedValue(makeImportedFile());
+    catalogModel.findOne.mockResolvedValue(null);
+    catalogModel.create.mockResolvedValue({ id: "catalog-ocr" });
+
+    await expect(syncPendingGHGIOcrArtifacts(1)).resolves.toHaveLength(1);
+
+    expect(catalogModel.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sourceId: newerJob.id,
+        contentDigest: newerJob.resultSha256,
+      }),
+      expect.anything(),
+    );
+    expect(pdfOcrJobModel.findAll).toHaveBeenCalledTimes(2);
   });
 
   it("withdraws active GHGI catalog entries before inventory deletion", async () => {

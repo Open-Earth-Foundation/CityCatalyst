@@ -1,8 +1,10 @@
+import { createHash } from "node:crypto";
 import { Op } from "sequelize";
 
 import { db } from "@/models";
 import type { ImportedInventoryFile } from "@/models/ImportedInventoryFile";
 import type { PdfOcrJob } from "@/models/PdfOcrJob";
+import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import { registerNativeInput } from "@/backend/NativeInputCatalogService";
 import { logger } from "@/services/logger";
 
@@ -42,6 +44,20 @@ export async function registerGHGIImportedInventorySource(
     markdownReady: false,
     labels: sourceMetadata(importedFile),
   });
+}
+
+export async function resolveGHGIImportedInventorySourceDigest(
+  importedFile: ImportedInventoryFile,
+): Promise<string | null> {
+  if (importedFile.contentDigest) return importedFile.contentDigest;
+
+  const buffer =
+    await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+  if (!buffer) return null;
+
+  const contentDigest = createHash("sha256").update(buffer).digest("hex");
+  await importedFile.update({ contentDigest });
+  return contentDigest;
 }
 
 export async function registerGHGIInventory(
@@ -125,7 +141,12 @@ export function syncGHGIImportedInventorySource(
   contentDigest?: string | null,
 ) {
   return tryCatalogSync(
-    () => registerGHGIImportedInventorySource(importedFile, contentDigest),
+    async () =>
+      registerGHGIImportedInventorySource(
+        importedFile,
+        contentDigest ??
+          (await resolveGHGIImportedInventorySourceDigest(importedFile)),
+      ),
     { importedFileId: importedFile.id, catalogKind: "inventory_source_file" },
   );
 }
@@ -147,17 +168,50 @@ export function syncGHGIOcrArtifact(job: PdfOcrJob) {
 }
 
 export async function syncPendingGHGIOcrArtifacts(limit: number) {
-  const jobs = await db.models.PdfOcrJob.findAll({
+  const registeredCatalogEntries = await db.models.NativeInputCatalog.findAll({
     where: {
-      sourceType: "inventory_import",
-      status: "succeeded",
-      resultS3Key: { [Op.ne]: null },
-      resultSha256: { [Op.ne]: null },
+      owningModule: GHGI_MODULE,
+      sourceType: "pdf_ocr_job",
+      availability: { [Op.ne]: "withdrawn" },
     },
-    order: [["completedAt", "ASC"]],
-    limit,
+    attributes: ["sourceId"],
   });
-  return Promise.all(jobs.map((job) => syncGHGIOcrArtifact(job)));
+  const registeredJobIds = new Set(
+    registeredCatalogEntries.map((entry) => entry.sourceId),
+  );
+  const batchSize = Math.max(limit, 1);
+  const pendingJobs: PdfOcrJob[] = [];
+  let offset = 0;
+
+  while (pendingJobs.length < limit) {
+    const jobs = await db.models.PdfOcrJob.findAll({
+      where: {
+        sourceType: "inventory_import",
+        status: "succeeded",
+        resultS3Key: { [Op.ne]: null },
+        resultSha256: { [Op.ne]: null },
+      },
+      order: [
+        ["completedAt", "ASC"],
+        ["id", "ASC"],
+      ],
+      limit: batchSize,
+      offset,
+    });
+
+    if (jobs.length === 0) break;
+
+    pendingJobs.push(
+      ...jobs.filter((job: PdfOcrJob) => !registeredJobIds.has(job.id)),
+    );
+    offset += jobs.length;
+
+    if (jobs.length < batchSize) break;
+  }
+
+  return Promise.all(
+    pendingJobs.slice(0, limit).map((job) => syncGHGIOcrArtifact(job)),
+  );
 }
 
 export async function withdrawGHGICatalogForInventory(

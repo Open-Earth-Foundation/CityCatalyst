@@ -13,6 +13,7 @@ export interface ImportedInventoryFileAttributes {
   fileName: string;
   fileType: "xlsx" | "csv" | "pdf";
   fileSize: number;
+  contentDigest?: string | null;
   /** @deprecated Use s3Key instead. Kept nullable for backfill transition. */
   data?: Buffer | any;
   /** S3 object key for the uploaded file. Replaces the `data` BYTEA column. */
@@ -34,6 +35,7 @@ export type ImportedInventoryFileId =
   ImportedInventoryFile[ImportedInventoryFilePk];
 export type ImportedInventoryFileOptionalAttributes =
   | "data"
+  | "contentDigest"
   | "s3Key"
   | "mappingConfiguration"
   | "validationResults"
@@ -62,6 +64,7 @@ export class ImportedInventoryFile
   declare fileName: string;
   declare fileType: "xlsx" | "csv" | "pdf";
   declare fileSize: number;
+  declare contentDigest?: string | null;
   declare data?: Buffer | any;
   declare s3Key?: string | null;
   declare originalFileName: string;
@@ -148,6 +151,11 @@ export class ImportedInventoryFile
           type: DataTypes.BIGINT,
           allowNull: false,
           field: "file_size",
+        },
+        contentDigest: {
+          type: DataTypes.STRING(128),
+          allowNull: true,
+          field: "content_digest",
         },
         data: {
           type: DataTypes.BLOB,

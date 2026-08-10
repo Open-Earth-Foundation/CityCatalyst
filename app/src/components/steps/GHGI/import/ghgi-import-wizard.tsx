@@ -252,6 +252,9 @@ export default function GhgiImportWizard({
     Record<string, string>
   >({});
   const [showDataLossModal, setShowDataLossModal] = useState(false);
+  const [dataLossVariant, setDataLossVariant] = useState<
+    "leave" | "reset-upload"
+  >("leave");
   const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
   const [extractionProgress, setExtractionProgress] = useState<{
     current: number;
@@ -653,8 +656,12 @@ export default function GhgiImportWizard({
   }, [pathname]);
 
   // Handle navigation attempts (back button, router.push, etc.)
-  const handleNavigation = (navigationFn: () => void) => {
+  const handleNavigation = (
+    navigationFn: () => void,
+    variant: "leave" | "reset-upload" = "leave",
+  ) => {
     if (hasUnsavedProgress) {
+      setDataLossVariant(variant);
       setPendingNavigation(() => navigationFn);
       setShowDataLossModal(true);
     } else {
@@ -1033,7 +1040,7 @@ export default function GhgiImportWizard({
                         setMappingOverrides({});
                         setExtractionProgress(null);
                         setStep(0);
-                      });
+                      }, "reset-upload");
                     }}
                   >
                     <Text
@@ -1067,6 +1074,7 @@ export default function GhgiImportWizard({
         onConfirm={handleConfirmLeave}
         onCancel={handleCancelLeave}
         t={t}
+        variant={dataLossVariant}
       />
     </>
   );

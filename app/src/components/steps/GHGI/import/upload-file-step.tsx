@@ -97,7 +97,7 @@ export default function UploadFileStep({
         bg="white"
         w="full"
         borderRadius="lg"
-        shadow="md"
+        shadow="xs"
       >
         {isUploading ? (
           <VStack
@@ -106,9 +106,9 @@ export default function UploadFileStep({
             alignItems="center"
             justifyContent="center"
           >
-            <Spinner size="lg" />
+            <Spinner size="lg" color="interactive.secondary" />
             <Box textAlign="center">
-              <Text fontWeight="medium" fontSize="body.md">
+              <Text fontWeight="bold" fontSize="body.md" mb="8px">
                 {t("uploading-file")}
               </Text>
               <Text fontSize="body.sm" color="content.tertiary">

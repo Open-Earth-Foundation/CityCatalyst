@@ -7,8 +7,10 @@ import Image from "next/image";
 import NextLink from "next/link";
 import { MdArrowForward, MdUpload } from "react-icons/md";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 
 export default function Onboarding(props: {
   params: Promise<{ lng: string }>;
@@ -16,7 +18,9 @@ export default function Onboarding(props: {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { status } = useSession();
   const [acceptOrgInvite] = api.useAcceptOrganizationAdminInviteMutation();
   const acceptedOnce = useRef(false);
 
@@ -26,22 +30,35 @@ export default function Onboarding(props: {
     const organizationId = searchParams.get("organizationId");
 
     if (!token || !email || !organizationId || acceptedOnce.current) return;
+
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      acceptedOnce.current = true;
+      const callbackUrl = `${pathname}?${searchParams.toString()}`;
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
+    }
+
     acceptedOnce.current = true;
 
     const cleanedEmail = email.replace(/ /g, "+").replace(/%40/g, "@");
     acceptOrgInvite({ token, email: cleanedEmail, organizationId })
       .unwrap()
-      .catch(() => {
-        // Silently ignore errors (e.g. already accepted) and let onboarding proceed
+      .catch((err) => {
+        // Ignore "already accepted" and let onboarding proceed; log anything else
+        logger.error(err, "Failed to accept organization admin invite");
       });
-  }, [searchParams, acceptOrgInvite]);
+  }, [searchParams, acceptOrgInvite, status, pathname, router]);
 
   const steps = [1, 2, 3, 4];
   const projectId = searchParams.get("project");
-  const setupHref = projectId ? `setup?project=${projectId}` : "setup";
+  const setupHref = projectId
+    ? `${pathname}/setup?project=${projectId}`
+    : `${pathname}/setup`;
   const uploadSetupHref = projectId
-    ? `setup?project=${projectId}&mode=upload`
-    : "setup?mode=upload";
+    ? `${pathname}/setup?project=${projectId}&mode=upload`
+    : `${pathname}/setup?mode=upload`;
 
   return (
     <>
@@ -84,7 +101,7 @@ export default function Onboarding(props: {
           </Box>
           <Box>
             <Image
-              src="/assets/onboarding-buildings-illustration.png"
+              src="/assets/onboarding-building-illustration.png"
               alt="buildings.png"
               height={420}
               width={900}

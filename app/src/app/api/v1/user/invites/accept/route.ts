@@ -85,6 +85,14 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
+  if (session.user.email?.toLowerCase() !== email.toLowerCase()) {
+    logger.error({
+      sessionEmail: session.user.email,
+      inviteEmail: email,
+    }, "[UserInviteAccept] Logged-in user does not match invited email");
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
   const invites = await db.models.CityInvite.findAll({
     where: {
       cityId: { [Op.in]: cityIds },

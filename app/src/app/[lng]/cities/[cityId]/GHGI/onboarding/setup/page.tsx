@@ -32,6 +32,7 @@ import { isFetchBaseQueryError } from "@/util/helpers";
 import ThirdPartyInventoryDataStep, {
   THIRD_PARTY_DATA_FILL_YES,
 } from "@/components/steps/GHGI/set-third-party-step";
+import GhgiImportWizard from "@/components/steps/GHGI/import/ghgi-import-wizard";
 
 type Inputs = GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
@@ -94,25 +95,45 @@ export default function OnboardingSetup(props: {
     }
   }, [cityData]);
 
-  const steps = isUploadMode
-    ? [
-        { title: t("set-inventory-details-step") },
-        { title: t("set-population-step") },
-      ]
-    : [
-        { title: t("set-inventory-details-step") },
-        { title: t("set-population-step") },
-        { title: t("set-third-party-data-step") },
-      ];
+  // Create: details → population → third-party (3).
+  // Upload: details → population → upload → mapping → review (5, no third-party).
+  const steps = useMemo(
+    () =>
+      isUploadMode
+        ? [
+            { title: t("set-inventory-details-step") },
+            { title: t("set-population-step") },
+            { title: t("upload-file-step") },
+            { title: t("inventory-mapping-step") },
+            { title: t("review-confirm-step") },
+          ]
+        : [
+            { title: t("set-inventory-details-step") },
+            { title: t("set-population-step") },
+            { title: t("set-third-party-data-step") },
+          ],
+    [isUploadMode, t],
+  );
 
   const {
     value: activeStep,
     goToNextStep,
     goToPrevStep,
+    setStep,
   } = useSteps({
     defaultStep: 0,
     count: steps.length,
   });
+
+  // Inventory created mid-flow in upload mode; import steps reuse this id.
+  const [createdInventoryId, setCreatedInventoryId] = useState<string | null>(
+    null,
+  );
+
+  // Keep the viewport at the top when the stepper advances (CC-617).
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeStep]);
 
   const [addCityPopulation] = useAddCityPopulationMutation();
   const [addInventory] = useAddInventoryMutation();
@@ -268,15 +289,11 @@ export default function OnboardingSetup(props: {
 
       setConfirming(false);
 
-      // Check if we're in upload mode
-      const mode = params.get("mode");
-      if (mode === "upload") {
-        // Route to import page with the newly created inventory ID
-        router.push(
-          `/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`,
-        );
+      if (isUploadMode) {
+        // Stay on setup: jump to import steps with a continuous 5-step ProgressSteps.
+        setCreatedInventoryId(inventory.inventoryId);
+        setStep(2);
       } else {
-        // Default behavior: route to home page
         router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
       }
     } catch (err: unknown) {
@@ -317,6 +334,23 @@ export default function OnboardingSetup(props: {
 
   if (isProjectsLoading || isCityLoading) {
     return <ProgressLoader />;
+  }
+
+  // Upload mode after inventory create: same wizard, continuous 5-step ProgressSteps.
+  if (isUploadMode && createdInventoryId && activeStep >= 2) {
+    return (
+      <GhgiImportWizard
+        lng={lng}
+        cityId={cityId}
+        inventoryId={createdInventoryId}
+        progressSteps={steps}
+        progressStepOffset={2}
+        onExitFirstStep={() => setStep(1)}
+        onComplete={(id) => {
+          router.push(`/${lng}/cities/${cityId}/GHGI/${id}`);
+        }}
+      />
+    );
   }
 
   return (

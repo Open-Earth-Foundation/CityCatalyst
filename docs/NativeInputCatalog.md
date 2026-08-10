@@ -43,3 +43,15 @@ All endpoints require non-empty `X-Service-Name` and a matching `X-Service-Key` 
 - `POST /api/v1/internal/native-input-catalog/{id}/supersede` — create a replacement and supersede the current row.
 
 Producer modules will call this contract in follow-up work. CC-636 intentionally does not wire GHGI, HIAP, HIAP-MEED, CNB, or Clima discovery call sites.
+
+## GHGI producer mapping (CC-637)
+
+GHGI registers three durable identities through the shared service:
+
+| Catalog kind | Source type / identity | Registration boundary | Markdown |
+|---|---|---|---|
+| `inventory_source_file` | `imported_inventory_file` / `ImportedInventoryFile.id` | After the uploaded file row and its storage object are durable | `false` |
+| `inventory_import` | `inventory` / `Inventory.inventoryId` | After `ImportedInventoryFile.importStatus` becomes `completed` | `null` |
+| `inventory_ocr` | `pdf_ocr_job` / `PdfOcrJob.id` | After the OCR job is `succeeded` with result digest, page count, and stored Markdown | `true` |
+
+`PdfOcrJob.id` is the stable OCR-result identity across retries. A new uploaded source creates a new imported-file row and a new OCR job, while repeated registration of an existing identity remains idempotent. Catalog failures are logged and retried from normal status polling or the OCR cron without rerunning import extraction or OCR. Inventory and city deletion withdraws active GHGI rows before the owning records are removed.

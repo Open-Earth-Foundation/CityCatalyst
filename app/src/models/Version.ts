@@ -11,7 +11,7 @@ export interface VersionAttributes {
   previousVersionId?: string; // ID of the previous version entry of the same table entry
   table?: string;
   moduleName?: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   isDeleted?: boolean;
   created?: Date;
   lastUpdated?: Date;
@@ -46,7 +46,7 @@ export class Version
   declare previousVersionId?: string; // ID of the previous version entry of the same table entry
   declare table?: string;
   declare moduleName?: string;
-  declare data?: Record<string, any>;
+  declare data?: Record<string, unknown>;
   declare isDeleted?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;

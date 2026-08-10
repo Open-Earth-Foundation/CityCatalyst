@@ -10,7 +10,6 @@ import {
   Input,
   Table,
   Text,
-  VStack,
 } from "@chakra-ui/react";
 import { IoIosArrowBack } from "react-icons/io";
 import { MdSearch } from "react-icons/md";
@@ -55,7 +54,7 @@ function isLabelValueOption<TValue>(
  * Title, search, filter, and pagination sit on one toolbar row;
  * the table body scrolls independently with truncated cell content.
  */
-function DataTableAlt<T extends Record<string, any>>({
+function DataTableAlt<T extends object>({
   data,
   title,
   columns,

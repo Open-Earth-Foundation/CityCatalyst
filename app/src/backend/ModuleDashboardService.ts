@@ -12,7 +12,6 @@ import createHttpError from "http-errors";
 import { Inventory } from "@/models/Inventory";
 import { CcraService, TopRisksResult } from "./ccra/CcraService";
 import { fetchCCRATopRisksData } from "./ccra/CcraApiService";
-import { AppSession } from "@/lib/auth";
 import ActionService from "./hiap/ActionService";
 
 export class ModuleDashboardService {
@@ -22,7 +21,7 @@ export class ModuleDashboardService {
   public static async getGHGIDashboardData(
     cityId: string,
     inventory: Inventory,
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const city = await db.models.City.findOne({
         where: { cityId },
@@ -82,9 +81,7 @@ export class ModuleDashboardService {
     cityId: string,
     inventory: Inventory,
     lng: string = "en",
-    session?: AppSession,
-    ignoreExisting: boolean = false,
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const city = await db.models.City.findOne({
         where: { cityId },
@@ -108,13 +105,13 @@ export class ModuleDashboardService {
       const mitigationData = await this.getHIAPStatusData(
         inventory.inventoryId,
         ACTION_TYPES.Mitigation,
-        lng as any,
+        lng as LANGUAGES,
       );
 
       const adaptationData = await this.getHIAPStatusData(
         inventory.inventoryId,
         ACTION_TYPES.Adaptation,
-        lng as any,
+        lng as LANGUAGES,
       );
 
       return {
@@ -134,7 +131,7 @@ export class ModuleDashboardService {
     cityId: string,
     inventory: Inventory,
     resilienceScore?: number | null,
-  ): Promise<TopRisksResult & { inventoryId: string }> {
+  ): Promise<TopRisksResult & { inventoryId: string; error?: string }> {
     try {
       const city = await db.models.City.findOne({
         where: { cityId },
@@ -183,7 +180,7 @@ export class ModuleDashboardService {
         topRisks: [],
         inventoryId: inventory.inventoryId,
         error: `Failed to fetch CCRA data: ${(error as Error).message}`,
-      } as any;
+      };
     }
   }
 
@@ -194,7 +191,7 @@ export class ModuleDashboardService {
     inventoryId: string,
     type: ACTION_TYPES,
     lng: LANGUAGES,
-  ): Promise<any> {
+  ): Promise<Record<string, unknown>> {
     try {
       const { ranking, rankedActions, unrankedActions } =
         await ActionService.getActions(inventoryId, type, lng);

@@ -77,7 +77,9 @@ export interface Methodology {
   activities?: Activity[];
   inputRequired?: string[];
   formula?: string;
-  fields?: any[];
+  // Direct-measure methodologies store ExtraField[] here; activity-selection
+  // methodologies store Activity[] (each with its own nested "extra-fields").
+  fields?: ExtraField[] | Activity[];
   suggestedActivities?: SuggestedActivity[];
   suggestedActivitiesId?: string;
   activityTypeField?: string;

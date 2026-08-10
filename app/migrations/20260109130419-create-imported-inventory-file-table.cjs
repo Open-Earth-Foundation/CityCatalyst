@@ -133,7 +133,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("ImportedInventoryFile");
     await queryInterface.sequelize.query(`
       DROP TYPE IF EXISTS "enum_ImportedInventoryFile_import_status";

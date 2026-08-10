@@ -153,15 +153,17 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     const allActions = await GlobalAPIService.fetchAllClimateActions(lng);
 
     // Filter actions by the requested action type
-    const actionsOfType = allActions.filter((action: any) => {
+    const actionsOfType = allActions.filter((action) => {
       return action.ActionType && action.ActionType.includes(type);
     });
 
+    // A brand-new ranking job (just started) has no rankedActions field yet
+    const rankedActions =
+      "rankedActions" in rankingData ? rankingData.rankedActions : [];
+
     // Extract ranked action IDs to filter them out from unranked
     const rankedActionIds = new Set(
-      ((rankingData as any).rankedActions || []).map(
-        (action: any) => action.actionId,
-      ),
+      rankedActions.map((action) => action.actionId),
     );
 
     // Get unranked action selections from database (any language — selections are shared)
@@ -174,17 +176,17 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
     });
 
     const selectedUnrankedActionIds = new Set(
-      unrankedSelections.map((selection: any) => selection.actionId),
+      unrankedSelections.map((selection) => selection.actionId),
     );
 
     // Get unranked actions (all actions minus ranked ones) and transform them to HIAction format
-    const rawUnrankedActions = actionsOfType.filter((action: any) => {
+    const rawUnrankedActions = actionsOfType.filter((action) => {
       return !rankedActionIds.has(action.ActionID);
     });
 
     // Transform unranked actions to HIAction format
     const unrankedActions = rawUnrankedActions.map(
-      (action: any, index: number) => {
+      (action, index: number) => {
         const baseAction = {
           id: action.ActionID,
           actionId: action.ActionID,
@@ -192,7 +194,7 @@ export const GET = apiHandler(async (req: NextRequest, { params, session }) => {
             getTranslationFromDictionary(action.ActionName, lng) ??
             action.ActionName ??
             "",
-          rank: ((rankingData as any).rankedActions || []).length + index + 1,
+          rank: rankedActions.length + index + 1,
           description:
             getTranslationFromDictionary(action.Description, lng) ??
             action.Description ??

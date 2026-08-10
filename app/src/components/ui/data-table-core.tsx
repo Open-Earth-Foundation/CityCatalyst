@@ -33,7 +33,7 @@ function DataTableCore<T>({
   const someSelected =
     currentRowKeys.some((key) => selectedRowKeys.includes(key)) && !allSelected;
 
-  const toggleSelectAll = (e: CheckedChangeDetails) => {
+  const toggleSelectAll = () => {
     let newSelected = [];
     if (allSelected) {
       newSelected = selectedRowKeys.filter(

@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import { z } from "zod";
-import createHttpError from "http-errors";
 import { languages } from "@/i18n/settings";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
-import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
+import { HIAction, LANGUAGES } from "@/util/types";
 
 const generateRankingRequest = z.object({
   action: z.any(), // HIAction object - using z.any() for flexibility

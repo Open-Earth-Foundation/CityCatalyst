@@ -5,7 +5,6 @@ import { MethodologyCreationAttributes } from "@/models/Methodology";
 import { EmissionsFactorCreationAttributes } from "@/models/EmissionsFactor";
 import { DataSourceEmissionsFactorCreationAttributes } from "@/models/DataSourceEmissionsFactor";
 import env from "@next/env";
-import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 
 interface EmissionsFactorPublisher {
@@ -40,17 +39,13 @@ interface EmissionsFactorValue {
   reference: string | null;
   methodology_id: string;
   methodology_name: string;
-  metadata: any;
+  metadata: Record<string, unknown> | string | null;
   actor_id?: string;
 }
 
 interface EmissionsFactorDataSourceMapping {
   datasource_id: string;
   emissions_factor_id: string;
-}
-
-interface APIResponse<T> {
-  [key: string]: T[];
 }
 
 async function fetchEmissionsFactorData(baseUrl: string) {
@@ -73,7 +68,7 @@ async function fetchEmissionsFactorData(baseUrl: string) {
     },
   ];
 
-  const results: Record<string, any> = {};
+  const results: Record<string, unknown[]> = {};
 
   for (const endpoint of endpoints) {
     const url = `${baseUrl}${endpoint.path}`;
@@ -104,73 +99,75 @@ async function fetchEmissionsFactorData(baseUrl: string) {
   return results;
 }
 
-function transformEmissionsFactorData(apiData: Record<string, any>) {
-  const publishers: PublisherCreationAttributes[] =
-    apiData.emissions_factor_publisher.map((pub: EmissionsFactorPublisher) => ({
+function transformEmissionsFactorData(apiData: Record<string, unknown[]>) {
+  const publisherData =
+    apiData.emissions_factor_publisher as EmissionsFactorPublisher[];
+  const dataSourceData =
+    apiData.emissions_factor_datasource as EmissionsFactorDataSource[];
+  const methodologyData =
+    apiData.emissions_factor_methodologies as EmissionsFactorMethodology[];
+  const emissionsFactorData = apiData.emissions_factor as EmissionsFactorValue[];
+  const mappingData =
+    apiData.emissions_factor_datasource_mapping as EmissionsFactorDataSourceMapping[];
+
+  const publishers: PublisherCreationAttributes[] = publisherData.map(
+    (pub) => ({
       publisherId: pub.publisher_id,
       name: pub.name,
       url: pub.URL,
-    }));
+    }),
+  );
 
-  const dataSources: DataSourceI18nCreationAttributes[] =
-    apiData.emissions_factor_datasource.map(
-      (ds: EmissionsFactorDataSource) => ({
-        datasourceId: ds.datasource_id,
-        datasourceName: ds.datasource_name,
-        // TODO: Consider changing from { user: ... } to { en: ... } for clarity
-        // Currently matches the pattern used in the original seeder (20231114094254-emissions-factors.cjs)
-        datasetName: ds.dataset_name
-          ? { user: ds.dataset_name }
-          : null,
-        sourceType: "emissions_factor",
-        datasetUrl: ds.URL,
-        datasetDescription: null,
-        accessType: "public",
-        geographicalLocation: "global",
-        startYear: null,
-        endYear: null,
-        latestAccountingYear: null,
-        frequencyOfUpdate: null,
-        spatialResolution: null,
-        language: "en",
-        accessibility: "free",
-        dataQuality: null,
-        notes: `Emissions factor data from ${ds.datasource_name}. For more details see ${ds.URL}`,
-        units: null,
-        methodologyUrl: null,
-        methodologyDescription: null,
-        transformationDescription: null,
-        publisherId: ds.publisher_id,
-        retrievalMethod: "api",
-        apiEndpoint: null,
-        created: new Date(),
-        lastUpdated: new Date(),
-        priority: 1,
-      }),
-    );
+  const dataSources: DataSourceI18nCreationAttributes[] = dataSourceData.map(
+    (ds) => ({
+      datasourceId: ds.datasource_id,
+      datasourceName: ds.datasource_name,
+      // TODO: Consider changing from { user: ... } to { en: ... } for clarity
+      // Currently matches the pattern used in the original seeder (20231114094254-emissions-factors.cjs)
+      datasetName: ds.dataset_name ? { user: ds.dataset_name } : undefined,
+      sourceType: "emissions_factor",
+      url: ds.URL,
+      datasetDescription: undefined,
+      accessType: "public",
+      geographicalLocation: "global",
+      startYear: undefined,
+      endYear: undefined,
+      latestAccountingYear: undefined,
+      frequencyOfUpdate: undefined,
+      spatialResolution: undefined,
+      language: "en",
+      accessibility: "free",
+      dataQuality: undefined,
+      notes: `Emissions factor data from ${ds.datasource_name}. For more details see ${ds.URL}`,
+      units: undefined,
+      methodologyUrl: undefined,
+      methodologyDescription: undefined,
+      transformationDescription: undefined,
+      publisherId: ds.publisher_id,
+      retrievalMethod: "api",
+      apiEndpoint: undefined,
+      created: new Date(),
+      lastUpdated: new Date(),
+      priority: 1,
+    }),
+  );
 
-  const methodologies: MethodologyCreationAttributes[] =
-    apiData.emissions_factor_methodologies.map(
-      (meth: EmissionsFactorMethodology) => ({
-        methodologyId: meth.methodology_id,
-        methodology: meth.methodology,
-        methodologyUrl: meth.methodology_url,
-        datasourceId: meth.datasource_id,
-      }),
-    );
+  const methodologies: MethodologyCreationAttributes[] = methodologyData.map(
+    (meth) => ({
+      methodologyId: meth.methodology_id,
+      methodology: meth.methodology,
+      methodologyUrl: meth.methodology_url ?? undefined,
+      datasourceId: meth.datasource_id,
+    }),
+  );
 
   // Create a map of methodology_id to methodology name for lookup
   const methodologyMap = new Map(
-    apiData.emissions_factor_methodologies.map(
-      (meth: EmissionsFactorMethodology) => [
-        meth.methodology_id,
-        meth.methodology,
-      ],
-    ),
+    methodologyData.map((meth) => [meth.methodology_id, meth.methodology]),
   );
 
   const emissionsFactors: EmissionsFactorCreationAttributes[] =
-    apiData.emissions_factor.map((ef: EmissionsFactorValue) => ({
+    emissionsFactorData.map((ef) => ({
       id: ef.id,
       gas: ef.gas,
       gpcReferenceNumber: ef.gpc_reference_number,
@@ -191,12 +188,10 @@ function transformEmissionsFactorData(apiData: Record<string, any>) {
     }));
 
   const dataSourceEmissionsFactors: DataSourceEmissionsFactorCreationAttributes[] =
-    apiData.emissions_factor_datasource_mapping.map(
-      (mapping: EmissionsFactorDataSourceMapping) => ({
-        datasourceId: mapping.datasource_id,
-        emissionsFactorId: mapping.emissions_factor_id,
-      }),
-    );
+    mappingData.map((mapping) => ({
+      datasourceId: mapping.datasource_id,
+      emissionsFactorId: mapping.emissions_factor_id,
+    }));
 
   return {
     publishers,

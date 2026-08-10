@@ -128,11 +128,11 @@ export async function POST(req: NextRequest) {
       expires_in: 3600,
       token_type: "Bearer",
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error(
       {
-        error: error.message,
-        stack: error.stack,
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
       },
       "Failed to issue CA user token",
     );

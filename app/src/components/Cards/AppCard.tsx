@@ -34,7 +34,7 @@ export function AppCard({ lng, app }: AppCardProps) {
           description: t("my-apps-revoke-success"),
           duration: 5000,
         });
-      } catch (error) {
+      } catch {
         toaster.error({
           title: t("error"),
           description: t("my-apps-revoke-error"),

@@ -273,6 +273,7 @@
   "ask-ai": "Clima AI fragen",
   "help-button": "Hilfe benötigt",
   "select-your-city": "Wählen Sie Ihre Stadt",
+  "fetching-cities": "Städte werden geladen...",
   "confirm-inventory-description": "Überprüfen Sie die Daten für das Inventar Ihrer Stadt, bevor Sie fortfahren.",
   "chat-suggestion-gpc-definition-1": "Was ist GPC?",
   "chat-suggestion-gpc-definition-1-message": "Was ist das GHG-Protokoll für Städte (GPC) Rahmenwerk?",

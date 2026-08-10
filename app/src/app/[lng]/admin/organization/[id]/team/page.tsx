@@ -87,8 +87,7 @@ const AdminOrganizationTeamPage = (props: {
   const { data: organization, isLoading: isOrganizationLoading } =
     useGetOrganizationQuery(id);
 
-  const [updateUserRole, { isLoading: isUpdatingUserRole }] =
-    useUpdateUserRoleInOrganizationMutation();
+  const [updateUserRole] = useUpdateUserRoleInOrganizationMutation();
 
   const { data: projectsData, isLoading } = useGetProjectsQuery(
     {

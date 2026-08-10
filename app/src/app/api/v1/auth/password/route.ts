@@ -41,7 +41,7 @@ import { apiHandler } from "@/util/api";
 import { resetPasswordRequest } from "@/util/validation";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { logger } from "@/services/logger";
 
@@ -61,16 +61,16 @@ export const POST = apiHandler(async (req: Request) => {
       body.resetToken,
       process.env.RESET_TOKEN_SECRET,
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     // handle reset token errors
-    if (error.name === "TokenExpiredError") {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.Unauthorized("Reset token has expired.");
     } else {
       throw createHttpError.Unauthorized("Invalid reset token.");
     }
   }
 
-  const email = (resetTokenData as any).email;
+  const email = (resetTokenData as JwtPayload).email;
   const user = await db.models.User.findOne({ where: { email } });
 
   if (!user) {

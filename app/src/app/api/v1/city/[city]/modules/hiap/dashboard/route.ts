@@ -89,7 +89,6 @@ export const GET = apiHandler(async (req: Request, context) => {
   const {
     inventoryId,
     lng = "en",
-    ignoreExisting,
   } = querySchema.parse({
     inventoryId: searchParams.get("inventoryId"),
     lng: searchParams.get("lng"),
@@ -121,8 +120,6 @@ export const GET = apiHandler(async (req: Request, context) => {
     cityId,
     inventory,
     lng,
-    session ?? undefined,
-    ignoreExisting,
   );
 
   return NextResponse.json({

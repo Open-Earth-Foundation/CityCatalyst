@@ -3,7 +3,7 @@ import {
   Control,
   Controller,
   FieldErrors,
-  UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import type {
   GHGICountryEmissionsEntry,
@@ -13,18 +13,10 @@ import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useEffect, useState } from "react";
 import { findClosestYear } from "@/util/helpers";
-import {
-  Box,
-  createListCollection,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Icon, Text } from "@chakra-ui/react";
 import FormattedThousandsNumber from "@/components/FormattedThousandsNumberInput";
-import { MdCheck, MdErrorOutline, MdInfoOutline } from "react-icons/md";
+import { MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
-import { InputGroup } from "../../ui/input-group";
 import { logger } from "@/services/logger";
 import {
   NativeSelectField,
@@ -42,7 +34,6 @@ type GeneralOnboardingData = {
 
 export default function SetPopulationDataStep({
   t,
-  register,
   errors,
   control,
   years,
@@ -54,31 +45,18 @@ export default function SetPopulationDataStep({
   numberFormat,
 }: {
   t: TFunction;
-  register: UseFormRegister<GHGIFormInputs>;
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
   years: number[];
-  watch: Function;
+  watch: (name: string) => unknown;
   ocCityData?: OCCityAttributes;
   setData: (data: GeneralOnboardingData) => void;
-  setValue: any;
+  setValue: UseFormSetValue<GHGIFormInputs>;
   numberOfYearsDisplayed: number;
   numberFormat?: string;
 }) {
-  const yearInput = watch("year");
+  const yearInput = watch("year") as string | undefined;
   const year: number | null = yearInput ? parseInt(yearInput) : null;
-
-  // Watch population values
-  const cityPopulation = watch("cityPopulation");
-  const cityPopulationYear = watch("cityPopulationYear");
-  const regionPopulation = watch("regionPopulation");
-  const regionPopulationYear = watch("regionPopulationYear");
-  const countryPopulation = watch("countryPopulation");
-  const countryPopulationYear = watch("countryPopulationYear");
-
-  const yearsCollection = createListCollection({
-    items: years.map((year) => ({ label: year.toString(), value: year })),
-  });
 
   const locode = ocCityData?.actor_id;
   const { data: cityData } = useGetOCCityDataQuery(locode!, {
@@ -272,63 +250,50 @@ export default function SetPopulationDataStep({
                 )
               }
             >
-              <InputGroup
-                endElement={
-                  !!countryPopulationYear &&
-                  !!countryPopulation && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={8}
-                    />
-                  )
-                }
-              >
-                <Controller
-                  name="countryPopulationYear"
-                  control={control}
-                  rules={{
-                    required: t("inventory-year-required"),
-                  }}
-                  render={({ field }) => (
-                    <NativeSelectRoot
-                      size="lg"
-                      w="217px"
-                      borderRadius="4px"
-                      borderWidth="1px"
-                      borderColor={
-                        errors?.countryPopulationYear?.message
-                          ? "sentiment.negativeDefault"
-                          : ""
-                      }
-                      background={
-                        errors?.countryPopulationYear?.message
-                          ? "sentiment.negativeOverlay"
-                          : ""
-                      }
+              <Controller
+                name="countryPopulationYear"
+                control={control}
+                rules={{
+                  required: t("inventory-year-required"),
+                }}
+                render={({ field }) => (
+                  <NativeSelectRoot
+                    size="lg"
+                    w="217px"
+                    borderRadius="4px"
+                    borderWidth="1px"
+                    borderColor={
+                      errors?.countryPopulationYear?.message
+                        ? "sentiment.negativeDefault"
+                        : ""
+                    }
+                    background={
+                      errors?.countryPopulationYear?.message
+                        ? "sentiment.negativeOverlay"
+                        : ""
+                    }
+                  >
+                    <NativeSelectField
+                      name="countryPopulationYear"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        field.onChange(
+                          e.target.value ? parseInt(e.target.value) : null,
+                        );
+                      }}
                     >
-                      <NativeSelectField
-                        name="countryPopulationYear"
-                        value={field.value}
-                        placeholder={t("inventory-year-placeholder")}
-                        onChange={(e) => {
-                          field.onChange(
-                            e.target.value ? parseInt(e.target.value) : null,
-                          );
-                        }}
-                      >
-                        {years.map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </NativeSelectField>
-                    </NativeSelectRoot>
-                  )}
-                />
-              </InputGroup>
+                      <option value="" disabled hidden>
+                        {t("inventory-year-placeholder")}
+                      </option>
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </NativeSelectField>
+                  </NativeSelectRoot>
+                )}
+              />
             </Field>
           </Box>
         </Box>
@@ -393,63 +358,50 @@ export default function SetPopulationDataStep({
                 </Text>
               }
             >
-              <InputGroup
-                endElement={
-                  !!regionPopulationYear &&
-                  !!regionPopulation && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={8}
-                    />
-                  )
-                }
-              >
-                <Controller
-                  name="regionPopulationYear"
-                  control={control}
-                  rules={{
-                    required: t("inventory-year-required"),
-                  }}
-                  render={({ field }) => (
-                    <NativeSelectRoot
-                      size="lg"
-                      w="217px"
-                      borderRadius="4px"
-                      borderWidth="1px"
-                      borderColor={
-                        errors?.regionPopulationYear?.message
-                          ? "sentiment.negativeDefault"
-                          : ""
-                      }
-                      background={
-                        errors?.regionPopulationYear?.message
-                          ? "sentiment.negativeOverlay"
-                          : ""
-                      }
+              <Controller
+                name="regionPopulationYear"
+                control={control}
+                rules={{
+                  required: t("inventory-year-required"),
+                }}
+                render={({ field }) => (
+                  <NativeSelectRoot
+                    size="lg"
+                    w="217px"
+                    borderRadius="4px"
+                    borderWidth="1px"
+                    borderColor={
+                      errors?.regionPopulationYear?.message
+                        ? "sentiment.negativeDefault"
+                        : ""
+                    }
+                    background={
+                      errors?.regionPopulationYear?.message
+                        ? "sentiment.negativeOverlay"
+                        : ""
+                    }
+                  >
+                    <NativeSelectField
+                      name="regionPopulationYear"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        field.onChange(
+                          e.target.value ? parseInt(e.target.value) : null,
+                        );
+                      }}
                     >
-                      <NativeSelectField
-                        name="regionPopulationYear"
-                        value={field.value}
-                        placeholder={t("inventory-year-placeholder")}
-                        onChange={(e) => {
-                          field.onChange(
-                            e.target.value ? parseInt(e.target.value) : null,
-                          );
-                        }}
-                      >
-                        {years.map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </NativeSelectField>
-                    </NativeSelectRoot>
-                  )}
-                />
-              </InputGroup>
+                      <option value="" disabled hidden>
+                        {t("inventory-year-placeholder")}
+                      </option>
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </NativeSelectField>
+                  </NativeSelectRoot>
+                )}
+              />
             </Field>
           </Box>
         </Box>
@@ -518,63 +470,50 @@ export default function SetPopulationDataStep({
                 )
               }
             >
-              <InputGroup
-                endElement={
-                  !!cityPopulationYear &&
-                  !!cityPopulation && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={8}
-                    />
-                  )
-                }
-              >
-                <Controller
-                  name="cityPopulationYear"
-                  control={control}
-                  rules={{
-                    required: t("inventory-year-required"),
-                  }}
-                  render={({ field }) => (
-                    <NativeSelectRoot
-                      size="lg"
-                      w="217px"
-                      borderRadius="4px"
-                      borderWidth="1px"
-                      borderColor={
-                        errors?.cityPopulationYear?.message
-                          ? "sentiment.negativeDefault"
-                          : ""
-                      }
-                      background={
-                        errors?.cityPopulationYear?.message
-                          ? "sentiment.negativeOverlay"
-                          : ""
-                      }
+              <Controller
+                name="cityPopulationYear"
+                control={control}
+                rules={{
+                  required: t("inventory-year-required"),
+                }}
+                render={({ field }) => (
+                  <NativeSelectRoot
+                    size="lg"
+                    w="217px"
+                    borderRadius="4px"
+                    borderWidth="1px"
+                    borderColor={
+                      errors?.cityPopulationYear?.message
+                        ? "sentiment.negativeDefault"
+                        : ""
+                    }
+                    background={
+                      errors?.cityPopulationYear?.message
+                        ? "sentiment.negativeOverlay"
+                        : ""
+                    }
+                  >
+                    <NativeSelectField
+                      name="cityPopulationYear"
+                      value={field.value ?? ""}
+                      onChange={(e) => {
+                        field.onChange(
+                          e.target.value ? parseInt(e.target.value) : null,
+                        );
+                      }}
                     >
-                      <NativeSelectField
-                        name="cityPopulationYear"
-                        value={field.value}
-                        placeholder={t("inventory-year-placeholder")}
-                        onChange={(e) => {
-                          field.onChange(
-                            e.target.value ? parseInt(e.target.value) : null,
-                          );
-                        }}
-                      >
-                        {years.map((year) => (
-                          <option key={year} value={year}>
-                            {year}
-                          </option>
-                        ))}
-                      </NativeSelectField>
-                    </NativeSelectRoot>
-                  )}
-                />
-              </InputGroup>
+                      <option value="" disabled hidden>
+                        {t("inventory-year-placeholder")}
+                      </option>
+                      {years.map((year) => (
+                        <option key={year} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </NativeSelectField>
+                  </NativeSelectRoot>
+                )}
+              />
             </Field>
           </Box>
         </HStack>

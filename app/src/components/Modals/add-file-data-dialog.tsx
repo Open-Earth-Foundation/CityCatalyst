@@ -1,15 +1,7 @@
 "use client";
 
 import React, { FC, useState } from "react";
-import {
-  Box,
-  CheckboxGroup,
-  Fieldset,
-  For,
-  Icon,
-  Separator,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Fieldset, Icon, Separator, Text } from "@chakra-ui/react";
 import DropdownSelectInput from "../dropdown-select-input";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 
@@ -91,9 +83,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   const {
     register,
     handleSubmit,
-    watch,
     setValue,
-    getValues,
     formState: { errors },
   } = useForm<FileData>();
 
@@ -116,9 +106,13 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
   const DEFAULT_STATUS = "pending";
   const formData = new FormData();
 
-  const cityId = inventoryData?.city.cityId!;
+  const cityId = inventoryData?.city.cityId;
 
   const onSubmit: SubmitHandler<FileData> = async (data) => {
+    if (!userInfo || !cityId) {
+      return;
+    }
+
     const base64FileString = await fileToBase64(uploadedFile);
     const filename = uploadedFile.name;
     const file = appendFileToFormData(
@@ -126,7 +120,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
       `${filename}`,
     );
 
-    formData.append("userId", userInfo?.userId!);
+    formData.append("userId", userInfo.userId);
     formData.append("fileName", filename);
     formData.append("inventoryId", inventory!);
     formData.append("sector", currentStep.name);
@@ -149,7 +143,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
       duration: 2000,
     });
 
-    await addUserFile({ formData, cityId }).then((res: any) => {
+    await addUserFile({ formData, cityId }).then((res) => {
       if (res.error) {
         showErrorToast();
       } else {
@@ -164,14 +158,13 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
               fileId: fileData.id,
               fileName: fileData.fileName,
               subsectors: fileData.subsectors.join(","),
-              scopes: fileData.scopes,
+              scopes: fileData.scopes.join(","),
               userId: fileData.userId,
               sector: fileData.sector,
-              data: base64FileString,
+              data: base64FileString as string,
               // TODO this should not be passed in but rather set on the server (only necessary for AWS S3 or external hosting)
               url: fileData.url,
               size: fileData.file.size,
-              fileType: fileData.fileType,
               cityId: fileData.cityId,
             },
           }),
@@ -268,9 +261,7 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                   <DropdownSelectInput
                     subsectors={subsectors}
                     setValue={setValue}
-                    watch={watch}
                     t={t}
-                    register={register}
                   />
                   <Box>
                     {errors.subsectors && (
@@ -294,8 +285,11 @@ const AddFileDataDialog: FC<AddFileDataDialogProps> = ({
                           value={scope.value.toString()}
                           borderColor="interactive.secondary"
                           {...register("scopes", { required: true })}
-                          onChange={(e: any) =>
-                            handleSelectedScopes(scope.value, e.target.checked)
+                          onCheckedChange={(details) =>
+                            handleSelectedScopes(
+                              scope.value,
+                              details.checked === true,
+                            )
                           }
                           checked={selectedScopes.includes(scope.value)}
                         />

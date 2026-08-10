@@ -19,7 +19,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
       await queryInterface.removeColumn("ActivityValue", "co2eq", {
         transaction,

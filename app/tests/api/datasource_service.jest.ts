@@ -72,7 +72,7 @@ describe("DataSourceService.applyGlobalAPISource", () => {
   it("should apply global API source successfully", async () => {
     jest
       .spyOn(DataSourceService, "retrieveGlobalAPISource")
-      .mockImplementation((..._args) => {
+      .mockImplementation(() => {
         return Promise.resolve(data);
       });
     const result = await DataSourceService.applyGlobalAPISource(

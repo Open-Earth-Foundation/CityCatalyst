@@ -1,7 +1,5 @@
 "use strict";
 
-const { v4 } = require("uuid");
-
 const defaultOrgData = {
   organization_id: "5a84ebff-33ee-457e-ab52-512b5731978b",
   name: "cc_organization_default",
@@ -22,7 +20,7 @@ const defaultProjectData = {
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.bulkInsert("Organization", [defaultOrgData]);
 
     await queryInterface.bulkInsert("Project", [defaultProjectData]);
@@ -39,7 +37,7 @@ module.exports = {
     );
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.bulkUpdate(
       "City",
       {

@@ -6,7 +6,11 @@ import AuthorizeForm from "./AuthorizeForm";
 import RedirectToLogin from "@/components/Navigation/RedirectToLogin";
 import OAuthNotEnabled from "./OAuthNotEnabled";
 
-export default async function AuthorizePage({ params }: { params: any }) {
+export default async function AuthorizePage({
+  params,
+}: {
+  params: Promise<{ lng: string }>;
+}) {
   const { lng } = await params;
 
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {

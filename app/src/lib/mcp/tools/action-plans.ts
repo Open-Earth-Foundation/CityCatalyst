@@ -49,7 +49,10 @@ export async function execute(
     limit?: number;
   },
   session: AppSession
-): Promise<any> {
+): Promise<
+  | { success: true; data: Record<string, unknown> }
+  | { success: false; error: string; data: null }
+> {
   try {
     const { 
       inventoryId,
@@ -151,7 +154,10 @@ export async function execute(
 
       try {
         // Copy actions synchronously and return them immediately
-        existingActions = await copyRankedActionsToLang(ranking, lng);
+        existingActions = (await copyRankedActionsToLang(
+          ranking,
+          lng,
+        )) as unknown as typeof existingActions;
         // Apply limit after copying
         existingActions = existingActions.slice(0, limit);
         logger.info(

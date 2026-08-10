@@ -5,7 +5,6 @@ import { MethodologyCreationAttributes } from "@/models/Methodology";
 import { FormulaInputCreationAttributes } from "@/models/FormulaInput";
 import { DataSourceFormulaInputCreationAttributes } from "@/models/DataSourceFormulaInput";
 import env from "@next/env";
-import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
 import createHttpError from "http-errors";
 import _ from "lodash";
@@ -53,10 +52,6 @@ interface FormulaInputValue {
 interface FormulaInputDataSourceMapping {
   datasource_id: string;
   formula_input_id: string;
-}
-
-interface APIResponse<T> {
-  [key: string]: T[];
 }
 
 // Utility function for snake_case to camelCase conversion (unused but kept for potential future use)
@@ -108,60 +103,66 @@ async function fetchFormulaData(baseUrl: string) {
   return results;
 }
 
-function transformFormulaData(apiData: Record<string, any>) {
-  const publishers: PublisherCreationAttributes[] = apiData.formula_input_publisher.map((pub: FormulaInputPublisher) => ({
+function transformFormulaData(apiData: Record<string, unknown[]>) {
+  const publisherData = apiData.formula_input_publisher as FormulaInputPublisher[];
+  const dataSourceData = apiData.formula_input_datasource as FormulaInputDataSource[];
+  const methodologyData = apiData.formula_input_methodology as FormulaInputMethodology[];
+  const formulaInputData = apiData.formula_input as FormulaInputValue[];
+  const mappingData = apiData.formula_input_datasource_mapping as FormulaInputDataSourceMapping[];
+
+  const publishers: PublisherCreationAttributes[] = publisherData.map((pub) => ({
     publisherId: pub.publisher_id,
     name: pub.name,
     url: pub.URL,
   }));
 
-  const dataSources: DataSourceI18nCreationAttributes[] = apiData.formula_input_datasource.map((ds: FormulaInputDataSource) => ({
+  const dataSources: DataSourceI18nCreationAttributes[] = dataSourceData.map((ds) => ({
     datasourceId: ds.datasource_id,
     datasourceName: ds.datasource_name,
     // TODO: Consider changing from { user: ... } to { en: ... } for clarity
     // Currently matches the pattern used in the original seeder
-    datasetName: ds.dataset_name ? { user: ds.dataset_name } : null,
+    datasetName: ds.dataset_name ? { user: ds.dataset_name } : undefined,
     sourceType: "formula_input", // Default value
-    datasetUrl: ds.URL,
-    datasetDescription: null,
+    url: ds.URL,
+    datasetDescription: undefined,
     accessType: "public", // Default value
     geographicalLocation: "global", // Default value
-    startYear: null,
-    endYear: null,
-    latestAccountingYear: null,
-    frequencyOfUpdate: null,
-    spatialResolution: null,
+    startYear: undefined,
+    endYear: undefined,
+    latestAccountingYear: undefined,
+    frequencyOfUpdate: undefined,
+    spatialResolution: undefined,
     language: "en", // Default value
     accessibility: "free", // Default value
-    dataQuality: null,
+    dataQuality: undefined,
     notes: `Formula input data from ${ds.datasource_name}. For more details see ${ds.URL}`,
-    units: null,
-    methodologyUrl: null,
-    methodologyDescription: null,
-    transformationDescription: null,
+    units: undefined,
+    methodologyUrl: undefined,
+    methodologyDescription: undefined,
+    transformationDescription: undefined,
     publisherId: ds.publisher_id,
     retrievalMethod: "api",
-    apiEndpoint: null,
+    apiEndpoint: undefined,
     created: new Date(),
     lastUpdated: new Date(),
     priority: 1,
   }));
 
-  const methodologies: MethodologyCreationAttributes[] = apiData.formula_input_methodology.map((meth: FormulaInputMethodology) => ({
+  const methodologies: MethodologyCreationAttributes[] = methodologyData.map((meth) => ({
     methodologyId: meth.methodology_id,
     methodology: meth.methodology,
-    methodologyUrl: meth.methodology_url,
+    methodologyUrl: meth.methodology_url ?? undefined,
     datasourceId: meth.datasource_id,
   }));
 
-  const formulaInputs: FormulaInputCreationAttributes[] = apiData.formula_input.map((fi: FormulaInputValue) => ({
+  const formulaInputs: FormulaInputCreationAttributes[] = formulaInputData.map((fi) => ({
     formulaInputId: fi.formulainput_id,
     gas: fi.gas,
     parameterCode: fi.parameter_code,
     parameterName: fi.parameter_name,
     methodologyName: fi.methodology_name,
     gpcRefno: fi.gpc_refno,
-    year: fi.year,
+    year: fi.year ?? undefined,
     formulaInputValue: fi.formula_input_value,
     formulaInputUnits: fi.formula_input_units,
     formulaName: fi.formula_name,
@@ -173,7 +174,7 @@ function transformFormulaData(apiData: Record<string, any>) {
     methodologyId: fi.methodology_id,
   }));
 
-  const dataSourceFormulaInputs: DataSourceFormulaInputCreationAttributes[] = apiData.formula_input_datasource_mapping.map((mapping: FormulaInputDataSourceMapping) => ({
+  const dataSourceFormulaInputs: DataSourceFormulaInputCreationAttributes[] = mappingData.map((mapping) => ({
     datasourceId: mapping.datasource_id,
     formulaInputId: mapping.formula_input_id,
   }));

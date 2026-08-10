@@ -28,6 +28,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { useGetCityQuery } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import ThirdPartyInventoryDataStep, {
   THIRD_PARTY_DATA_FILL_YES,
 } from "@/components/steps/GHGI/set-third-party-step";
@@ -50,7 +51,7 @@ export default function OnboardingSetup(props: {
     setValue,
     watch,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
   const params = useSearchParams();
@@ -211,9 +212,6 @@ export default function OnboardingSetup(props: {
   const onConfirm = async () => {
     setConfirming(true);
 
-    const projectId =
-      selectedProject?.length > 0 ? selectedProject[0] : undefined;
-
     try {
       // Log population data before sending
       const populationData = {
@@ -229,11 +227,14 @@ export default function OnboardingSetup(props: {
       logger.info({ populationData }, "Onboarding - Sending population data");
 
       await addCityPopulation(populationData).unwrap();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to add city or population");
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
       makeErrorToast(
         t("failed-to-add-city"),
-        t(err.data?.error?.message ?? ""),
+        t(errorData?.error?.message ?? ""),
       );
       setConfirming(false);
       return;
@@ -278,9 +279,12 @@ export default function OnboardingSetup(props: {
         // Default behavior: route to home page
         router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err }, "Failed to create new inventory!");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
+      makeErrorToast("failed-to-create-inventory", errorData?.error?.message);
       setConfirming(false);
     }
   };
@@ -302,7 +306,9 @@ export default function OnboardingSetup(props: {
     }
   }, [activeStep, isUploadMode]);
 
-  const [selectedProject, setSelectedProject] = useState<string[]>([]);
+  // Tracked but never read/sent to addInventory yet — looks like unfinished
+  // wiring rather than dead code, left as-is pending a follow-up ticket.
+  const [_selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
     if (projectId) {
       setSelectedProject([projectId!]);
@@ -319,7 +325,11 @@ export default function OnboardingSetup(props: {
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              router.back();
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"
@@ -361,7 +371,6 @@ export default function OnboardingSetup(props: {
           {activeStep === 1 && (
             <SetPopulationDataStep
               t={t}
-              register={register}
               control={control}
               errors={errors}
               years={years}

@@ -16,7 +16,7 @@ export interface EmissionsFactorAttributes {
   id: string;
   gpcReferenceNumber?: string;
   emissionsPerActivity?: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   url?: string;
   gas?: string;
   units?: string;
@@ -73,7 +73,7 @@ export class EmissionsFactor
   declare actorId?: string | null;
   declare methodologyName?: string | null;
   declare methodologyId?: string | null;
-  declare metadata?: Record<string, any>;
+  declare metadata?: Record<string, unknown>;
   declare reference?: string | null;
   declare deprecated?: boolean;
   declare created?: Date;

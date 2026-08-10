@@ -1,9 +1,12 @@
 import { Box, HStack, Icon, Input, Text, Textarea } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import React from "react";
 import {
   Control,
   Controller,
+  FieldErrors,
   FieldValues,
+  Path,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -16,13 +19,14 @@ import {
   NativeSelectRoot,
 } from "@/components/ui/native-select";
 import { BodyMedium } from "@/components/package/Texts/Body";
+import { Inputs } from "../activity-modal-body";
 
 interface DataQualitySectionProps {
   t: TFunction;
-  register: UseFormRegister<any>;
-  control: Control<FieldValues, any>;
-  errors: Record<string, any>;
-  setValue: UseFormSetValue<any>;
+  register: UseFormRegister<Inputs>;
+  control: Control<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  setValue: UseFormSetValue<Inputs>;
   fields: ExtraField[];
 }
 
@@ -40,6 +44,10 @@ export const DataQualitySection = ({
     (f) => f.id.includes("-source") && f.type === "text",
   );
 
+  const activityErrors = errors?.activity as
+    | Record<string, { message?: string } | undefined>
+    | undefined;
+
   return (
     <>
       <HStack display="flex" flexDirection="column" mt={4} gap={4} mb={5}>
@@ -52,16 +60,16 @@ export const DataQualitySection = ({
             control={control}
             render={({ field }) => (
               <NativeSelectRoot
-                borderWidth={errors?.activity?.dataQuality ? "1px" : 0}
+                borderWidth={activityErrors?.dataQuality ? "1px" : 0}
                 border="inputBox"
                 borderRadius="4px"
                 borderColor={
-                  errors?.activity?.dataQuality
+                  activityErrors?.dataQuality
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.dataQuality
+                  activityErrors?.dataQuality
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -81,7 +89,7 @@ export const DataQualitySection = ({
                   aria-label={t("data-quality")}
                   placeholder={t("data-quality-placeholder")}
                   value={field.value}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     field.onChange(e.target.value);
                     setValue("activity.dataQuality", e.target.value);
                   }}
@@ -95,7 +103,7 @@ export const DataQualitySection = ({
               </NativeSelectRoot>
             )}
           />
-          {errors.activity?.dataQuality && (
+          {activityErrors?.dataQuality && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <Text fontSize="body.md">{t("data-quality-form-label")}</Text>
@@ -111,15 +119,15 @@ export const DataQualitySection = ({
               placeholder={t("data-source-placeholder")}
               h="48px"
               shadow="1dp"
-              borderWidth={errors?.activity?.[sourceField.id] ? "1px" : 0}
+              borderWidth={activityErrors?.[sourceField.id] ? "1px" : 0}
               border="inputBox"
               borderColor={
-                errors?.activity?.[sourceField.id]
+                activityErrors?.[sourceField.id]
                   ? "sentiment.negativeDefault"
                   : ""
               }
               background={
-                errors?.activity?.[sourceField.id]
+                activityErrors?.[sourceField.id]
                   ? "sentiment.negativeOverlay"
                   : ""
               }
@@ -129,17 +137,17 @@ export const DataQualitySection = ({
                 shadow: "none",
                 borderColor: "content.link",
               }}
-              {...register(`activity.${sourceField.id}` as any, {
+              {...register(`activity.${sourceField.id}` as Path<Inputs>, {
                 required:
                   sourceField.required === false ? false : t("value-required"),
               })}
             />
 
-            {errors?.activity?.[sourceField.id] && (
+            {activityErrors?.[sourceField.id] && (
               <Box display="flex" gap="6px" alignItems="center" mt="6px">
                 <Icon as={MdWarning} color="sentiment.negativeDefault" />
                 <Text fontSize="body.md">
-                  {errors?.activity?.[sourceField.id]?.message}
+                  {activityErrors?.[sourceField.id]?.message}
                 </Text>
               </Box>
             )}
@@ -153,16 +161,16 @@ export const DataQualitySection = ({
         >
           <Textarea
             data-testid="source-reference"
-            borderWidth={errors?.activity?.dataComments ? "1px" : 0}
+            borderWidth={activityErrors?.dataComments ? "1px" : 0}
             border="inputBox"
             borderRadius="4px"
             shadow="1dp"
             h="96px"
             borderColor={
-              errors?.activity?.dataComments ? "sentiment.negativeDefault" : ""
+              activityErrors?.dataComments ? "sentiment.negativeDefault" : ""
             }
             background={
-              errors?.activity?.dataComments ? "sentiment.negativeOverlay" : ""
+              activityErrors?.dataComments ? "sentiment.negativeOverlay" : ""
             }
             _focus={{
               borderWidth: "1px",
@@ -174,11 +182,11 @@ export const DataQualitySection = ({
               required: t("data-comments-required"),
             })}
           />
-          {errors.activity?.dataComments && (
+          {activityErrors?.dataComments && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium fontSize="body.md">
-                {errors?.activity?.dataComments?.message}
+                {activityErrors?.dataComments?.message}
               </BodyMedium>
             </Box>
           )}

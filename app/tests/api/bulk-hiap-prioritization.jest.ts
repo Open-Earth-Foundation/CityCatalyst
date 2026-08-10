@@ -25,7 +25,38 @@ import {
 import { GET as CHECK_HIAP_JOBS_CRON } from "@/app/api/v1/cron/check-hiap-jobs/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 import { Op } from "sequelize";
-import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
+import {
+  BulkHiapPrioritizationService,
+  CityInventoryData,
+} from "@/backend/hiap/BulkHiapPrioritizationService";
+
+// Exposes BulkHiapPrioritizationService's private static methods for testing,
+// avoiding `as any` at each call site below.
+type BulkHiapPrioritizationServiceTestAccess = {
+  fetchCitiesWithInventories: (
+    projectId: string,
+    year: number,
+  ) => Promise<CityInventoryData[]>;
+  createRankingRecords: (
+    citiesData: CityInventoryData[],
+    actionType: ACTION_TYPES,
+    languages: LANGUAGES[],
+  ) => Promise<void>;
+  processBatch: (
+    batchCities: CityInventoryData[],
+    actionType: ACTION_TYPES,
+    languages: LANGUAGES[],
+    batchNumber: number,
+  ) => Promise<{ taskId: string }>;
+  markBatchRankingsAsFailed: (
+    batchCities: CityInventoryData[],
+    actionType: ACTION_TYPES,
+    errorMessage: string,
+  ) => Promise<void>;
+};
+
+const BulkHiapPrioritizationServiceInternal =
+  BulkHiapPrioritizationService as unknown as BulkHiapPrioritizationServiceTestAccess;
 import {
   checkBulkActionRankingJob,
   checkSingleActionRankingJob,
@@ -115,19 +146,16 @@ describe("Bulk HIAP Prioritization API", () => {
       .mockResolvedValue({
         cityContextData: {
           locode: "XX-TST-1",
-          location: "Test City",
-          inventoryYear: "2024",
-          populationYear: "",
-          population: "",
-          region: "",
-          area: "",
-          gdp: "",
-          summary: "",
-          resources: [],
-          hazards: [],
+          populationSize: 100000,
         },
-        emissionsData: {},
-      } as any);
+        cityEmissionsData: {
+          stationaryEnergyEmissions: 1000,
+          transportationEmissions: 2000,
+          wasteEmissions: 500,
+          ippuEmissions: 300,
+          afoluEmissions: 200,
+        },
+      });
 
     // Mock HIAP API wrapper functions - these are the actual external API calls
     jest
@@ -204,7 +232,7 @@ describe("Bulk HIAP Prioritization API", () => {
             rankedActionsAdaptation: [],
           },
         ],
-      } as any);
+      });
 
     // Mock GlobalAPIService.fetchAllClimateActions to return test climate action data
     jest.spyOn(GlobalAPIService, "fetchAllClimateActions").mockResolvedValue([
@@ -271,7 +299,7 @@ describe("Bulk HIAP Prioritization API", () => {
         AdaptationEffectivenessPerHazard: {},
         biome: null,
       },
-    ] as any);
+    ]);
   });
 
   afterEach(async () => {
@@ -514,7 +542,7 @@ describe("Bulk HIAP Prioritization API", () => {
           },
         ];
 
-        await (BulkHiapPrioritizationService as any).createRankingRecords(
+        await BulkHiapPrioritizationServiceInternal.createRankingRecords(
           citiesData,
           ACTION_TYPES.Mitigation,
           [LANGUAGES.en],
@@ -544,14 +572,14 @@ describe("Bulk HIAP Prioritization API", () => {
         ];
 
         // Create first time
-        await (BulkHiapPrioritizationService as any).createRankingRecords(
+        await BulkHiapPrioritizationServiceInternal.createRankingRecords(
           citiesData,
           ACTION_TYPES.Mitigation,
           [LANGUAGES.en],
         );
 
         // Create again (should upsert)
-        await (BulkHiapPrioritizationService as any).createRankingRecords(
+        await BulkHiapPrioritizationServiceInternal.createRankingRecords(
           citiesData,
           ACTION_TYPES.Mitigation,
           [LANGUAGES.en],
@@ -571,12 +599,14 @@ describe("Bulk HIAP Prioritization API", () => {
 
     describe("fetchCitiesWithInventories", () => {
       it("fetches cities with inventories for a project and year", async () => {
-        const cities = await (
-          BulkHiapPrioritizationService as any
-        ).fetchCitiesWithInventories(projectId, 2024);
+        const cities =
+          await BulkHiapPrioritizationServiceInternal.fetchCitiesWithInventories(
+            projectId,
+            2024,
+          );
 
         expect(cities.length).toBeGreaterThan(0);
-        cities.forEach((city: any) => {
+        cities.forEach((city) => {
           expect(city.cityId).toBeTruthy();
           expect(city.inventoryId).toBeTruthy();
           expect(city.locode).toBeTruthy();
@@ -585,17 +615,21 @@ describe("Bulk HIAP Prioritization API", () => {
       });
 
       it("returns empty array for non-existent project", async () => {
-        const cities = await (
-          BulkHiapPrioritizationService as any
-        ).fetchCitiesWithInventories(randomUUID(), 2024);
+        const cities =
+          await BulkHiapPrioritizationServiceInternal.fetchCitiesWithInventories(
+            randomUUID(),
+            2024,
+          );
 
         expect(cities.length).toBe(0);
       });
 
       it("returns empty array for year with no inventories", async () => {
-        const cities = await (
-          BulkHiapPrioritizationService as any
-        ).fetchCitiesWithInventories(projectId, 1900);
+        const cities =
+          await BulkHiapPrioritizationServiceInternal.fetchCitiesWithInventories(
+            projectId,
+            1900,
+          );
 
         expect(cities.length).toBe(0);
       });
@@ -625,7 +659,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
         const errorMessage = "Test error: API timeout";
 
-        await (BulkHiapPrioritizationService as any).markBatchRankingsAsFailed(
+        await BulkHiapPrioritizationServiceInternal.markBatchRankingsAsFailed(
           citiesData,
           ACTION_TYPES.Mitigation,
           errorMessage,
@@ -668,9 +702,12 @@ describe("Bulk HIAP Prioritization API", () => {
           cityName: `Test City ${idx + 1}`,
         }));
 
-        const result = await (
-          BulkHiapPrioritizationService as any
-        ).processBatch(citiesData, ACTION_TYPES.Mitigation, [LANGUAGES.en], 1);
+        const result = await BulkHiapPrioritizationServiceInternal.processBatch(
+          citiesData,
+          ACTION_TYPES.Mitigation,
+          [LANGUAGES.en],
+          1,
+        );
 
         // Verify taskId was returned
         expect(result.taskId).toBe("mock-bulk-task-id");
@@ -741,7 +778,7 @@ describe("Bulk HIAP Prioritization API", () => {
         }));
 
         try {
-          await (BulkHiapPrioritizationService as any).processBatch(
+          await BulkHiapPrioritizationServiceInternal.processBatch(
             citiesData,
             ACTION_TYPES.Mitigation,
             [LANGUAGES.en],
@@ -801,7 +838,7 @@ describe("Bulk HIAP Prioritization API", () => {
         ];
 
         await expect(
-          (BulkHiapPrioritizationService as any).processBatch(
+          BulkHiapPrioritizationServiceInternal.processBatch(
             citiesData,
             ACTION_TYPES.Mitigation,
             [LANGUAGES.en],
@@ -881,7 +918,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
         // Create additional inventories and rankings (more than BATCH_SIZE)
         const extraInventories = await Promise.all(
-          Array.from({ length: 5 }, async (_, idx) => {
+          Array.from({ length: 5 }, async () => {
             const inventory = await db.models.Inventory.create({
               inventoryId: randomUUID(),
               cityId: cityIds[0], // Reuse existing city
@@ -893,7 +930,7 @@ describe("Bulk HIAP Prioritization API", () => {
 
         // Create rankings for these new inventories
         const extraRankings = await Promise.all(
-          extraInventories.map((inventory, idx) =>
+          extraInventories.map((inventory) =>
             db.models.HighImpactActionRanking.create({
               id: randomUUID(),
               inventoryId: inventory.inventoryId,
@@ -1067,7 +1104,7 @@ describe("Bulk HIAP Prioritization API", () => {
               rankedActionsAdaptation: [],
             },
           ],
-        } as any);
+        });
 
       // Call checkBulkActionRankingJob
       const isComplete = await checkBulkActionRankingJob(
@@ -1162,7 +1199,7 @@ describe("Bulk HIAP Prioritization API", () => {
               ],
             },
           ],
-        } as any);
+        });
 
       // Process the job
       await checkBulkActionRankingJob(
@@ -1284,7 +1321,7 @@ describe("Bulk HIAP Prioritization API", () => {
               rankedActionsAdaptation: [],
             },
           ],
-        } as any);
+        });
 
       // Process the batch
       await checkBulkActionRankingJob(
@@ -1358,7 +1395,7 @@ describe("Bulk HIAP Prioritization API", () => {
               rankedActionsAdaptation: [],
             },
           ],
-        } as any);
+        });
 
       // Process the job
       await checkBulkActionRankingJob(
@@ -1459,7 +1496,7 @@ describe("Bulk HIAP Prioritization API", () => {
               rankedActionsAdaptation: [],
             },
           ],
-        } as any);
+        });
 
       // Process the job
       await checkBulkActionRankingJob(
@@ -1590,7 +1627,7 @@ describe("Bulk HIAP Prioritization API", () => {
               rankedActionsAdaptation: [],
             },
           ],
-        } as any);
+        });
 
       const ranking = await db.models.HighImpactActionRanking.create({
         id: randomUUID(),
@@ -1801,7 +1838,7 @@ describe("Bulk HIAP Prioritization API", () => {
             { actionId: "test-action-1", rank: 1, explanation: {} },
           ],
           rankedActionsAdaptation: [],
-        } as any);
+        });
 
       // Process the job
       await checkSingleActionRankingJob(
@@ -2415,7 +2452,7 @@ describe("Bulk HIAP Prioritization API", () => {
           AdaptationEffectivenessPerHazard: {},
           biome: null,
         },
-      ] as any);
+      ]);
 
       jest
         .spyOn(HiapApiService.hiapApiWrapper, "getBulkPrioritizationResult")
@@ -2436,7 +2473,7 @@ describe("Bulk HIAP Prioritization API", () => {
               rankedActionsAdaptation: [],
             },
           ],
-        } as any);
+        });
 
       // Call cron endpoint
       const response = await callHiapCronJobRoute();

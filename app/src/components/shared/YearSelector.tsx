@@ -1,7 +1,7 @@
 "use client";
 import { Card, Box, Text, Heading, SimpleGrid } from "@chakra-ui/react";
 import { de, enUS, es, fr, it, pt } from "date-fns/locale";
-import { format } from "date-fns";
+import { format, Locale } from "date-fns";
 import React, { useState } from "react";
 import { TFunction } from "i18next";
 import {
@@ -11,7 +11,7 @@ import {
   AccordionRoot,
 } from "@/components/ui/accordion";
 
-const localesMap: Record<string, any> = {
+const localesMap: Record<string, Locale> = {
   en: enUS,
   es: es,
   pt: pt,

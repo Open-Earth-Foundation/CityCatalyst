@@ -12,7 +12,6 @@ import { useTheme } from "next-themes";
 import { useEffect, useMemo, useState } from "react";
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
-import ProgressLoader from "@/components/ProgressLoader";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { FileUploadRoot } from "@/components/ui/file-upload";

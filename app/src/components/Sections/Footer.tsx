@@ -1,4 +1,4 @@
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
@@ -25,7 +25,7 @@ const Footer = ({ lng }: { lng: string }) => {
         <Box display="flex" w="full" pb={12} gap="xxl-7">
           <Box>
             {logoUrl ? (
-              <img src={logoUrl} width={200} alt="Org logo" />
+              <Image src={logoUrl} width={200} height={40} alt="Org logo" />
             ) : (
               <Image
                 src="/assets/city_catalyst_logo.svg"

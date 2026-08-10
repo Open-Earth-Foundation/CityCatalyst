@@ -4,9 +4,7 @@ import { use, useEffect, useRef } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { MdArrowForward, MdUpload } from "react-icons/md";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/services/api";
 

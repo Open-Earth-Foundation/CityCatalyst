@@ -5,8 +5,11 @@ import {
   FieldValues,
   Path,
   PathValue,
+  UseFormClearErrors,
+  UseFormSetError,
 } from "react-hook-form";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
 import { NumberInputProps } from "./ui/number-input";
 import { decimalSeparators, formatNumber } from "@/util/helpers";
 import { NumberFormatEnum } from "@/util/enums";
@@ -15,8 +18,8 @@ interface FormattedNumberInputProps<T extends FieldValues>
   extends NumberInputProps {
   control: Control<T>;
   name: Path<T>;
-  setError?: Function;
-  clearErrors?: Function;
+  setError?: UseFormSetError<T>;
+  clearErrors?: UseFormClearErrors<T>;
   defaultValue?: PathValue<T, Path<T>>;
   isDisabled?: boolean;
   placeholder?: string;
@@ -25,7 +28,7 @@ interface FormattedNumberInputProps<T extends FieldValues>
   miniAddon?: boolean;
   testId?: string;
   localization?: string;
-  t: Function;
+  t: TFunction;
   max?: number;
   min?: number;
   numberFormat?: string;
@@ -53,8 +56,6 @@ function countSeparatorsBefore(
 
 function FormattedNumberInput<T extends FieldValues>({
   control,
-  setError,
-  id,
   testId,
   name,
   defaultValue,
@@ -62,12 +63,10 @@ function FormattedNumberInput<T extends FieldValues>({
   children,
   placeholder,
   miniAddon,
-  clearErrors,
   t,
   min,
   max,
   numberFormat,
-  ...rest
 }: FormattedNumberInputProps<T>) {
   const normalizedFormat = numberFormat ?? NumberFormatEnum.COMMA_AND_DOT;
   const decimalSeparator = decimalSeparators[normalizedFormat];
@@ -132,7 +131,10 @@ function FormattedNumberInput<T extends FieldValues>({
    * in the old vs new formatted strings.
    */
   const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>, fieldOnChange: (v: any) => void) => {
+    (
+      e: React.ChangeEvent<HTMLInputElement>,
+      fieldOnChange: (v: string) => void,
+    ) => {
       const input = e.target;
       const oldValue = input.value;
       const cursorPos = input.selectionStart ?? oldValue.length;

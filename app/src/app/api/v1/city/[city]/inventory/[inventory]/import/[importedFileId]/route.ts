@@ -582,7 +582,10 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         const mappingPreview = await ImportMappingService.createMappingPreview(
           inventory,
           parsedData,
-          importedFile.validationResults.detectedColumns,
+          importedFile.validationResults?.detectedColumns as Record<
+            string,
+            number
+          >,
         );
 
         const fieldMappings: Array<{

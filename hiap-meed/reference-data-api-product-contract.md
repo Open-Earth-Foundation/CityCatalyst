@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This is the product review of the seven proposed HIAP-MEED reference-data APIs. It shows which data each endpoint provides, the complete caller-controlled input shape, a representative response containing every proposed public field, and the backend-owned filtering.
+This is the product-facing contract for the seven HIAP-MEED reference-data APIs. It shows which data each endpoint provides, the complete caller-controlled input shape, a representative response containing every public field, and the backend-owned filtering.
 
-This proposal covers only the `hiap-meed` backend. For full example payloads, see [`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md). For implementation details, see [`implementation-plan-proposal.md`](implementation-plan-proposal.md).
+This contract covers only the `hiap-meed` backend. For full example payloads, see [`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md). For implementation details, see [`implementation-plan-proposal.md`](implementation-plan-proposal.md).
 
 ## Shared contract rules
 
@@ -12,7 +12,7 @@ This proposal covers only the `hiap-meed` backend. For full example payloads, se
 - HIAP-MEED owns Global API URL construction, technical parameters, limits, validation, normalization, ordering, and post-filtering.
 - Callers cannot provide `top_evidence_limit`, `eligible_actor`, catalogue limits, Global API URLs, or arbitrary upstream parameters.
 - Public routes and existing processing workflows use the same internal HIAP-MEED operations.
-- The proposed guarantee is **same rules and current data**, not reuse of an exact earlier Global API snapshot.
+- The guarantee is **same rules and current data**, not reuse of an exact earlier Global API snapshot.
 
 Every successful response also contains:
 
@@ -27,13 +27,13 @@ meta: {
 warnings: string[]
 ```
 
-The JSON examples below are complete for the proposed public contracts: every proposed response field is shown. Dynamic lists and maps contain representative entries. The examples are proposals for product approval, not already implemented responses.
+The JSON examples below are complete for the public contracts: every response field is shown. Dynamic lists and maps contain representative entries.
 
 ## API overview
 
 | Data needed | HIAP-MEED request | Caller-controlled inputs | Main output |
 | --- | --- | --- | --- |
-| City attributes | `GET /v1/city_attributes/{locode}` | `locode` | `city` |
+| City attributes | `GET /v1/cities/{locode}/attributes` | `locode` | `city` |
 | Action catalogue | `GET /v1/action-pathways` | optional repeated `language` | `actions[]` |
 | Policy evidence and scores | `GET /v1/cities/{locode}/action-policy-scores` | `locode` | `scores[]`, `aggregates` |
 | Mitigation feasibility | `GET /v1/cities/{locode}/action-mitigation-feasibility-scores` | `locode`, `country_code` | `scores[]` |
@@ -46,7 +46,7 @@ The JSON examples below are complete for the proposed public contracts: every pr
 ### Request
 
 ```http
-GET /v1/city_attributes/CL%20IQQ
+GET /v1/cities/CL%20IQQ/attributes
 ```
 
 | Input | Location | Type | Required | Example |
@@ -80,7 +80,7 @@ GET /v1/city_attributes/CL%20IQQ
     "backend_consumer": "hiap-meed",
     "upstream_provider": "global-api",
     "api_context": {
-      "endpoint": "GET /v1/city_attributes/{locode}",
+      "endpoint": "GET /v1/cities/{locode}/attributes",
       "locode": "CL IQQ"
     },
     "total_records": 1
@@ -140,7 +140,7 @@ No `language` returns all available localizations. Repeating it, for example `?l
 }
 ```
 
-- **Backend logic:** fetch the canonical catalogue with all languages, then return all, one, or the requested language set. Production uses Global API; configured mocks remain test/local behavior only.
+- **Backend logic:** fetch the canonical catalogue with all languages, then apply the same prioritizable-action rule used by exclusion preview, prioritization, and output-plan generation. Only actions whose normalized `action_type` is `mitigation` are included. The language parameter only changes which localizations are returned. Production uses Global API; configured mocks remain test/local behavior only.
 
 ## 3. Action policy scores
 
@@ -278,6 +278,14 @@ GET /v1/cities/CL%20IQQ/climate-finance/feasibility?country_code=CL
       "financial_feasibility": 0.66,
       "route": "technical_assistance",
       "reason": "Several municipal support routes are available."
+    },
+    {
+      "action_id": "c40_0099",
+      "action_name": "Improve district energy systems",
+      "sector": "stationary_energy",
+      "financial_feasibility": null,
+      "route": null,
+      "reason": "No current finance score is available."
     }
   ],
   "meta": {
@@ -289,13 +297,14 @@ GET /v1/cities/CL%20IQQ/climate-finance/feasibility?country_code=CL
       "locode": "CL IQQ",
       "country_code": "CL"
     },
-    "total_records": 1
+    "total_records": 2
   },
   "warnings": []
 }
 ```
 
-- **Backend logic:** reuse the current action-ID mapping and missing-release behavior; return valid numeric scores in the agreed deterministic order.
+- **Backend logic:** reuse the current action-ID mapping and missing-release behavior and retain every normalized row. Numeric scores are ordered from highest to lowest, followed by rows with `financial_feasibility: null`.
+- **Important:** `null` means that Global API did not provide a score. Prioritization may apply its existing neutral `0.5` algorithm fallback, but the GET response does not present that fallback as source data.
 
 ## 6. Climate-finance opportunities
 
@@ -352,7 +361,7 @@ GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&r
 }
 ```
 
-- **Backend logic:** force municipal eligibility and a screening limit of 50; apply status, recurrence, climate-relevance, municipal-application, route, and technical-assistance rules; return up to five current and five monitoring entries.
+- **Backend logic:** force municipal eligibility and a screening limit of 50; exclude inactive rows from the current list; keep recurring closed rows for monitoring; prefer explicit climate relevance, direct municipal application, and technical assistance; narrow current rows to technical assistance when that route is requested and matching rows exist; return up to five current and five monitoring entries.
 - **Missing sector:** preserve the current backend behavior—skip the upstream fetch and return an empty result with a warning.
 - **Not caller knobs:** `eligible_actor` and `limit`.
 
@@ -409,8 +418,8 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
 - Data families with current “no release” semantics return `200`, an empty data section, and a warning.
 - No new error envelope is introduced.
 
-## Product decisions requested
+## Implemented product decisions
 
-- Approve the seven endpoint purposes and caller-controlled inputs.
-- Approve the main output sections and product-visible fields.
-- Confirm **same rules and current data** is sufficient; exact snapshot reuse is not included.
+- The seven routes expose the caller-controlled inputs and output sections shown above.
+- Technical upstream parameters, limits, raw payloads, and diagnostics are not public inputs or response fields.
+- Consistency means **same rules and current data**; exact snapshot reuse is not included.

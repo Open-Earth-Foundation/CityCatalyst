@@ -1,17 +1,17 @@
-# Proposed HIAP-MEED Reference-Data API Examples
+# HIAP-MEED Reference-Data API Examples
 
-These detailed examples support the backend implementation proposed in [`implementation-plan-proposal.md`](implementation-plan-proposal.md). For the lightweight product review, see [`reference-data-api-product-contract.md`](reference-data-api-product-contract.md). The seven HIAP-MEED endpoints are not implemented yet and should be finalized through the CC-594 contract review. Changes to CityCatalyst consumer code are outside this proposal.
+These detailed examples document the backend implementation in [`implementation-plan-proposal.md`](implementation-plan-proposal.md). For the lightweight product contract, see [`reference-data-api-product-contract.md`](reference-data-api-product-contract.md). Changes to CityCatalyst consumer code remain outside this backend implementation.
 
 Each route has a direct Global API data-family mapping. HIAP-MEED owns technical query parameters, upstream validation, normalization, and post-fetch selection; responses are not raw passthroughs.
 
-These examples use the proposed **same rules and current data** guarantee. They do not include a snapshot identifier: a later prioritize or output-plan request applies the same canonical HIAP-MEED logic but may observe newer Global API data. An exact-snapshot guarantee would require a separately approved contract change.
+These examples use the **same rules and current data** guarantee. They do not include a snapshot identifier: a later prioritize or output-plan request applies the same canonical HIAP-MEED logic but may observe newer Global API data. An exact-snapshot guarantee would require a separately approved contract change.
 
 ## 1. City attributes
 
 Maps Global API `GET /api/v0/city_attributes/{locode}`.
 
 ```http
-GET /v1/city_attributes/CL%20IQQ
+GET /v1/cities/CL%20IQQ/attributes
 ```
 
 ```json
@@ -37,7 +37,7 @@ GET /v1/city_attributes/CL%20IQQ
     "backend_consumer": "hiap-meed",
     "upstream_provider": "global-api",
     "api_context": {
-      "endpoint": "GET /v1/city_attributes/{locode}",
+      "endpoint": "GET /v1/cities/{locode}/attributes",
       "locode": "CL IQQ"
     },
     "total_records": 1
@@ -48,7 +48,7 @@ GET /v1/city_attributes/CL%20IQQ
 
 ## 2. Action pathways
 
-Maps Global API `GET /api/v1/action-pathways`. HIAP-MEED keeps the current canonical `lang=all` upstream query and projects the requested localization set in the public response.
+Maps Global API `GET /api/v1/action-pathways`. HIAP-MEED keeps the current canonical `lang=all` upstream query, applies the same prioritizable-action selector used by exclusion preview, prioritization, and output-plan generation, and then projects the requested localization set. The selector includes only actions whose normalized `action_type` is `mitigation`.
 
 ```http
 GET /v1/action-pathways?language=es
@@ -197,6 +197,14 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
       "financial_feasibility": 0.66,
       "route": "technical_assistance",
       "reason": "Several municipal support routes are available."
+    },
+    {
+      "action_id": "c40_0099",
+      "action_name": "Improve district energy systems",
+      "sector": "stationary_energy",
+      "financial_feasibility": null,
+      "route": null,
+      "reason": "No current finance score is available."
     }
   ],
   "meta": {
@@ -208,13 +216,13 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
       "locode": "CL IQQ",
       "country_code": "CL"
     },
-    "total_records": 1
+    "total_records": 2
   },
   "warnings": []
 }
 ```
 
-The response does not expose Global API opportunity/project links. The two explicit HIAP-MEED endpoints below provide those resources.
+Every normalized financial row is returned. Numeric scores appear from highest to lowest and rows without a source score appear last with `financial_feasibility: null`. The prioritizer's neutral `0.5` fallback remains an algorithm rule and is not returned as source data. The response does not expose Global API opportunity/project links; the two explicit HIAP-MEED endpoints below provide those resources.
 
 ## 6. Climate-finance opportunities
 

@@ -11,6 +11,7 @@ import pytest
 from botocore.exceptions import ClientError, NoCredentialsError, PartialCredentialsError
 from pydantic import ValidationError
 
+from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.scoring_config import is_activity_data_level_mapping_enabled
 from app.modules.prioritizer.models import (
     ActionLegalAssessmentS3CsvRow,
@@ -34,6 +35,7 @@ from app.services.action_financial_feasibility_scores_api import (
 from app.services.action_pathways_api import (
     ACTION_PATHWAYS_ENDPOINT,
     ActionPathwaysApiService,
+    select_prioritizable_actions,
 )
 from app.services.city_attributes_api import (
     DEFAULT_CITY_ATTRIBUTES_BASE_URL,
@@ -103,6 +105,34 @@ def test_mock_action_client_loads_actions_from_file() -> None:
     assert isinstance(actions[0].emissions, dict)
     assert isinstance(actions[0].emissions.get("subsector_number"), list)
     assert isinstance(actions[0].co_benefits, dict)
+
+
+@pytest.mark.unit
+def test_select_prioritizable_actions_owns_action_membership() -> None:
+    """Shared selection keeps only mitigation and reports other or missing types."""
+    mitigation = Action(
+        action_id="mitigation",
+        action_name="Mitigation action",
+        action_type="Mitigation",
+    )
+    missing_type = Action(
+        action_id="missing",
+        action_name="Untyped action",
+        action_type=None,
+    )
+    adaptation = Action(
+        action_id="adaptation",
+        action_name="Adaptation action",
+        action_type="adaptation",
+    )
+
+    selected, excluded, missing = select_prioritizable_actions(
+        [mitigation, missing_type, adaptation]
+    )
+
+    assert [action.action_id for action in selected] == ["mitigation"]
+    assert [action.action_id for action in excluded] == ["adaptation"]
+    assert [action.action_id for action in missing] == ["missing"]
 
 
 @pytest.mark.unit

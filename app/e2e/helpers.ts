@@ -312,10 +312,12 @@ export async function createInventoryThroughOnboarding(
 
   await dismissCookieConsent(page);
 
-  // Step 3: Click "Start Inventory" button
-  const startButton = page.getByTestId("start-inventory-button");
-  await expect(startButton).toBeVisible();
-  await startButton.click();
+  // Step 3: Select "Create a new inventory" and continue
+  await expect(page.getByTestId("start-page-heading")).toBeVisible();
+  await page.getByTestId("create-inventory-option").click();
+  const startContinueButton = page.getByTestId("continue-button");
+  await expect(startContinueButton).toBeEnabled();
+  await startContinueButton.click();
 
   // Step 4: Wait for redirect to GHGI onboarding setup
   await page.waitForURL("**/cities/*/GHGI/onboarding/setup/**");

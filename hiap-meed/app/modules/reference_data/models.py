@@ -116,11 +116,12 @@ class ReferenceDataMeta(ReferenceDataContract):
 
 
 class CityIndicatorResponse(ReferenceDataContract):
-    """One city indicator returned as a name, measured value, and unit."""
+    """One city indicator with its source value, unit, and display category."""
 
     key: str
     value: float | str | None
     unit: str | None
+    category: str | None
 
 
 class CityResponse(ReferenceDataContract):
@@ -144,8 +145,29 @@ class CityAttributesResponse(ReferenceDataContract):
     warnings: list[str]
 
 
+class ActionImpactResponse(ReferenceDataContract):
+    """Emissions impact details supplied by Global API for one action."""
+
+    sector_number: str
+    subsector_number: list[int]
+    gpc_reference_number: list[str]
+    impact_relationship: str | None
+    impact_text: str | None
+    impact_numeric: int | None
+    methodology: str | None
+
+
+class ActionCoBenefitResponse(ReferenceDataContract):
+    """One named co-benefit supplied by Global API for one action."""
+
+    impact_relationship: str | None
+    impact_text: str | None
+    impact_numeric: int | None
+    methodology: str | None
+
+
 class ActionPathwayResponse(ReferenceDataContract):
-    """Action catalogue fields that HIAP-MEED returns to its consumers."""
+    """Prioritizable action fields and impacts returned to consumers."""
 
     action_id: str
     action_name: str
@@ -155,6 +177,8 @@ class ActionPathwayResponse(ReferenceDataContract):
     description_i18n: dict[str, str]
     investment_cost: str | None
     implementation_timeline: str | None
+    co_benefits: dict[str, ActionCoBenefitResponse]
+    emissions: ActionImpactResponse | None
 
 
 class ActionPathwaysResponse(ReferenceDataContract):
@@ -166,11 +190,14 @@ class ActionPathwaysResponse(ReferenceDataContract):
 
 
 class PolicyEvidenceResponse(ReferenceDataContract):
-    """Policy document and government level supporting one action score."""
+    """Policy evidence details supplied for one action and government level."""
 
     scope: str
     document_name: str | None
     relevance: str | None
+    evidence_strength: float | None
+    signal_strength: str | None
+    signal_type: str | None
 
 
 class ActionPolicyScoreResponse(ReferenceDataContract):
@@ -221,8 +248,43 @@ class ActionMitigationScoresResponse(ReferenceDataContract):
     warnings: list[str]
 
 
+class FinancialActionInputsResponse(ReferenceDataContract):
+    """Action cost and preparation inputs behind a feasibility score."""
+
+    capital_intensity: float | None
+    preparation_complexity: float | None
+
+
+class FinancialCityInputsResponse(ReferenceDataContract):
+    """City profile input behind a feasibility score."""
+
+    profile: str | None
+
+
+class FinancialFinanceInputsResponse(ReferenceDataContract):
+    """Funding-access inputs behind a feasibility score."""
+
+    fund_access: str | None
+    n_reachable_opportunities: int | None
+
+
+class FinancialEvidenceInputsResponse(ReferenceDataContract):
+    """Comparable-project count behind a feasibility score."""
+
+    n_existing_projects: int | None
+
+
+class FinancialFeasibilityInputsResponse(ReferenceDataContract):
+    """Source inputs that explain a financial-feasibility result."""
+
+    action: FinancialActionInputsResponse
+    city: FinancialCityInputsResponse
+    finance: FinancialFinanceInputsResponse
+    evidence: FinancialEvidenceInputsResponse
+
+
 class ActionFinancialScoreResponse(ReferenceDataContract):
-    """Financial-feasibility source row returned without backend diagnostics."""
+    """Financial-feasibility source row, including its display inputs."""
 
     action_id: str
     action_name: str | None
@@ -230,6 +292,7 @@ class ActionFinancialScoreResponse(ReferenceDataContract):
     financial_feasibility: float | None
     route: str | None
     reason: str | None
+    inputs: FinancialFeasibilityInputsResponse
 
 
 class ActionFinancialScoresResponse(ReferenceDataContract):
@@ -267,13 +330,35 @@ class ClimateFinanceOpportunitiesResponse(ReferenceDataContract):
     warnings: list[str]
 
 
+class ClimateFinanceProjectFundingSourceResponse(ReferenceDataContract):
+    """Funding source details displayed for a comparable project."""
+
+    cycle: str | int | None
+    amount: float | None
+    amount_unit: str | None
+    funder_name: str | None
+
+
+class ClimateFinanceProjectActionMatchResponse(ReferenceDataContract):
+    """Action match and confidence supplied for a comparable project."""
+
+    action_id: str
+    confidence: str | None
+
+
 class ClimateFinanceProjectResponse(ReferenceDataContract):
-    """Comparable climate-project fields returned to HIAP-MEED consumers."""
+    """Comparable project details supplied by the shared catalogue query."""
 
     project_name: str
+    project_name_i18n: dict[str, str]
+    sector: str | None
     jurisdiction: str | None
     lifecycle_stage: str | None
     funding_channel: str | None
+    cost_total: float | None
+    amount_unit: str | None
+    funding_sources: list[ClimateFinanceProjectFundingSourceResponse]
+    action_matches: list[ClimateFinanceProjectActionMatchResponse]
 
 
 class ClimateFinanceProjectsResponse(ReferenceDataContract):

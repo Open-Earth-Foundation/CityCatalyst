@@ -1431,9 +1431,30 @@ def test_finance_catalogue_services_fetch_named_opportunities_and_projects(
                 "data": [
                     {
                         "project_name": "Street lighting upgrade",
+                        "project_name_i18n": {
+                            "en": "Street lighting upgrade",
+                            "es": "Mejora del alumbrado publico",
+                        },
+                        "sector": "stationary_energy",
                         "jurisdiction": "Santa Cruz",
                         "lifecycle_stage": "in-execution",
                         "funding_channel": "public investment",
+                        "cost_total": 1200,
+                        "amount_unit": "CLP_thousands",
+                        "funding_sources": [
+                            {
+                                "cycle": "2025",
+                                "amount": 1200,
+                                "amount_unit": "CLP_thousands",
+                                "funder_name": "Regional Fund",
+                            }
+                        ],
+                        "action_matches": [
+                            {
+                                "action_id": "icare_0040",
+                                "confidence": "goal_aligned",
+                            }
+                        ],
                     }
                 ],
             }
@@ -1476,6 +1497,15 @@ def test_finance_catalogue_services_fetch_named_opportunities_and_projects(
     )
     assert projects_result.projects[0].project_name == "Street lighting upgrade"
     assert projects_result.projects[0].jurisdiction == "Santa Cruz"
+    assert projects_result.projects[0].sector == "stationary_energy"
+    assert projects_result.projects[0].cost_total == 1200
+    assert projects_result.projects[0].funding_sources[0]["funder_name"] == (
+        "Regional Fund"
+    )
+    assert projects_result.projects[0].action_matches[0] == {
+        "action_id": "icare_0040",
+        "confidence": "goal_aligned",
+    }
     assert projects_result.source_metadata["total"] == 1
     assert (
         projects_result.source_metadata["upstream_endpoint"]

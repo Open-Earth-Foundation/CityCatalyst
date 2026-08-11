@@ -40,9 +40,16 @@ from app.modules.reference_data.models import (
     CityIndicatorResponse,
     CityResponse,
     ClimateFinanceOpportunitiesResponse,
+    ClimateFinanceProjectActionMatchResponse,
+    ClimateFinanceProjectFundingSourceResponse,
     ClimateFinanceProjectResponse,
     ClimateFinanceProjectsResponse,
     CurrentFinanceOpportunityResponse,
+    FinancialActionInputsResponse,
+    FinancialCityInputsResponse,
+    FinancialEvidenceInputsResponse,
+    FinancialFeasibilityInputsResponse,
+    FinancialFinanceInputsResponse,
     MonitoringFinanceOpportunityResponse,
     PolicyAggregatesResponse,
     PolicyEvidenceResponse,
@@ -82,6 +89,7 @@ def _city_indicators(city: CityData) -> list[CityIndicatorResponse]:
                 key=key,
                 value=value.get("attribute_value"),
                 unit=value.get("attribute_units"),
+                category=value.get("attribute_category"),
             )
         )
     return indicators
@@ -95,7 +103,8 @@ def build_city_attributes_response(
     """
     Return the public city record for the requested locode.
 
-    Every normalized city indicator is included as a key, value, and unit.
+    Every normalized city indicator is included with its value, unit, and
+    upstream display category.
     Upstream URLs, datasource details, and the raw Global API payload stay out
     of the response.
     """
@@ -158,6 +167,8 @@ def build_action_pathways_response(
             ),
             investment_cost=action.investment_cost,
             implementation_timeline=action.implementation_timeline,
+            co_benefits=action.co_benefits,
+            emissions=action.emissions,
         )
         for action in result.actions
     ]
@@ -263,6 +274,9 @@ def build_action_policy_scores_response(
                         evidence.get("signal_relation")
                         or evidence.get("doc_relevance")
                     ),
+                    evidence_strength=evidence.get("evidence_strength"),
+                    signal_strength=evidence.get("signal_strength"),
+                    signal_type=evidence.get("signal_type"),
                 )
                 for evidence in record.policy_evidence
             ],
@@ -342,8 +356,9 @@ def build_action_financial_scores_response(
 
     Scored rows are sorted from highest to lowest, followed by rows whose score
     is missing. Missing values remain null because the neutral value used by
-    prioritization is an algorithm rule, not Global API data. Internal calculation
-    inputs and diagnostic links are not returned to the frontend.
+    prioritization is an algorithm rule, not Global API data. The source inputs
+    used by the frontend to explain the score are returned unchanged; diagnostic
+    links and any unknown input keys remain private.
     """
     # Keep the canonical record set while ordering scored rows first for display.
     records = list(result.scores_by_action_id.values())
@@ -362,6 +377,7 @@ def build_action_financial_scores_response(
             financial_feasibility=record.financial_feasibility,
             route=record.route,
             reason=record.reason,
+            inputs=_financial_feasibility_inputs(record.inputs),
         )
         for record in records
     ]
@@ -378,6 +394,32 @@ def build_action_financial_scores_response(
             country_code=normalized_country_code,
         ),
         warnings=_warnings(result.warning),
+    )
+
+
+def _financial_feasibility_inputs(
+    inputs: dict[str, Any],
+) -> FinancialFeasibilityInputsResponse:
+    """Return only the source inputs used to explain feasibility in the UI."""
+    action = inputs.get("action") if isinstance(inputs.get("action"), dict) else {}
+    city = inputs.get("city") if isinstance(inputs.get("city"), dict) else {}
+    finance = inputs.get("finance") if isinstance(inputs.get("finance"), dict) else {}
+    evidence = (
+        inputs.get("evidence") if isinstance(inputs.get("evidence"), dict) else {}
+    )
+    return FinancialFeasibilityInputsResponse(
+        action=FinancialActionInputsResponse(
+            capital_intensity=action.get("capital_intensity"),
+            preparation_complexity=action.get("preparation_complexity"),
+        ),
+        city=FinancialCityInputsResponse(profile=city.get("profile")),
+        finance=FinancialFinanceInputsResponse(
+            fund_access=finance.get("fund_access"),
+            n_reachable_opportunities=finance.get("n_reachable_opportunities"),
+        ),
+        evidence=FinancialEvidenceInputsResponse(
+            n_existing_projects=evidence.get("n_existing_projects"),
+        ),
     )
 
 
@@ -447,15 +489,37 @@ def build_climate_finance_projects_response(
     Return the comparable projects selected for a country and action.
 
     The Global API client has already applied the backend-owned five-project
-    limit. Internal funding details and upstream request metadata are omitted.
+    limit. Display fields from those source rows are returned without deriving
+    new values; upstream request metadata remains private.
     """
     # Keep the source order selected by the shared projects service.
     projects = [
         ClimateFinanceProjectResponse(
             project_name=record.project_name,
+            project_name_i18n=record.project_name_i18n,
+            sector=record.sector,
             jurisdiction=record.jurisdiction,
             lifecycle_stage=record.lifecycle_stage,
             funding_channel=record.funding_channel,
+            cost_total=record.cost_total,
+            amount_unit=record.amount_unit,
+            funding_sources=[
+                ClimateFinanceProjectFundingSourceResponse(
+                    cycle=source.get("cycle"),
+                    amount=source.get("amount"),
+                    amount_unit=source.get("amount_unit"),
+                    funder_name=source.get("funder_name"),
+                )
+                for source in record.funding_sources
+            ],
+            action_matches=[
+                ClimateFinanceProjectActionMatchResponse(
+                    action_id=match["action_id"],
+                    confidence=match.get("confidence"),
+                )
+                for match in record.action_matches
+                if isinstance(match.get("action_id"), str)
+            ],
         )
         for record in result.projects
     ]

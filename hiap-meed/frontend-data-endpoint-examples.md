@@ -28,7 +28,8 @@ GET /v1/cities/CL%20IQQ/attributes
       {
         "key": "unemployment_rate",
         "value": 8.1,
-        "unit": "%"
+        "unit": "%",
+        "category": "economic"
       }
     ]
   },
@@ -71,7 +72,24 @@ With no `language` query, the response includes all available localizations. Rep
         "es": "Rehabilitar edificios municipales y mejorar la gestión energética."
       },
       "investment_cost": "medium",
-      "implementation_timeline": "5-10 years"
+      "implementation_timeline": "5-10 years",
+      "co_benefits": {
+        "air_quality": {
+          "impact_relationship": "direct",
+          "impact_text": "Cleaner urban air",
+          "impact_numeric": 2,
+          "methodology": "Source assessment"
+        }
+      },
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": [1],
+        "gpc_reference_number": ["I.1.1"],
+        "impact_relationship": "reduces",
+        "impact_text": "Lower building emissions",
+        "impact_numeric": -2,
+        "methodology": "Source assessment"
+      }
     }
   ],
   "meta": {
@@ -109,7 +127,10 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
         {
           "scope": "national",
           "document_name": "National Energy Efficiency Plan",
-          "relevance": "supporting"
+          "relevance": "supporting",
+          "evidence_strength": 0.8,
+          "signal_strength": "high",
+          "signal_type": "explicit_target"
         }
       ]
     }
@@ -196,7 +217,23 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
       "sector": "stationary_energy",
       "financial_feasibility": 0.66,
       "route": "technical_assistance",
-      "reason": "Several municipal support routes are available."
+      "reason": "Several municipal support routes are available.",
+      "inputs": {
+        "action": {
+          "capital_intensity": 0.8,
+          "preparation_complexity": 0.9
+        },
+        "city": {
+          "profile": "delivery-ready"
+        },
+        "finance": {
+          "fund_access": "direct",
+          "n_reachable_opportunities": 17
+        },
+        "evidence": {
+          "n_existing_projects": 6
+        }
+      }
     },
     {
       "action_id": "c40_0099",
@@ -204,7 +241,23 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
       "sector": "stationary_energy",
       "financial_feasibility": null,
       "route": null,
-      "reason": "No current finance score is available."
+      "reason": "No current finance score is available.",
+      "inputs": {
+        "action": {
+          "capital_intensity": null,
+          "preparation_complexity": null
+        },
+        "city": {
+          "profile": null
+        },
+        "finance": {
+          "fund_access": null,
+          "n_reachable_opportunities": null
+        },
+        "evidence": {
+          "n_existing_projects": null
+        }
+      }
     }
   ],
   "meta": {
@@ -222,7 +275,7 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
 }
 ```
 
-Every normalized financial row is returned. Numeric scores appear from highest to lowest and rows without a source score appear last with `financial_feasibility: null`. The prioritizer's neutral `0.5` fallback remains an algorithm rule and is not returned as source data. The response does not expose Global API opportunity/project links; the two explicit HIAP-MEED endpoints below provide those resources.
+Every normalized financial row is returned. Numeric scores appear from highest to lowest and rows without a source score appear last with `financial_feasibility: null`. `inputs` contains the upstream explanation values used by the frontend; unknown diagnostic input keys and Global API links are not exposed. The prioritizer's neutral `0.5` fallback remains an algorithm rule and is not returned as source data. The two explicit HIAP-MEED endpoints below provide opportunity and project resources.
 
 ## 6. Climate-finance opportunities
 
@@ -284,9 +337,30 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
   "projects": [
     {
       "project_name": "Municipal Building Retrofit Programme",
+      "project_name_i18n": {
+        "en": "Municipal Building Retrofit Programme",
+        "es": "Programa municipal de rehabilitación de edificios"
+      },
+      "sector": "stationary_energy",
       "jurisdiction": "Valparaíso",
       "lifecycle_stage": "implementation",
-      "funding_channel": "public investment"
+      "funding_channel": "public investment",
+      "cost_total": 71987,
+      "amount_unit": "CLP_thousands",
+      "funding_sources": [
+        {
+          "cycle": "2025",
+          "amount": 71987,
+          "amount_unit": "CLP_thousands",
+          "funder_name": "Regional Development Fund"
+        }
+      ],
+      "action_matches": [
+        {
+          "action_id": "c40_0012",
+          "confidence": "goal_aligned"
+        }
+      ]
     }
   ],
   "meta": {

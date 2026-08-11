@@ -155,6 +155,19 @@ def _finance_client() -> FinanceClient:
                     financial_feasibility=0.66,
                     route="technical_assistance",
                     reason="Support is available.",
+                    inputs={
+                        "action": {
+                            "capital_intensity": 0.8,
+                            "preparation_complexity": 0.9,
+                        },
+                        "city": {"profile": "delivery-ready"},
+                        "finance": {
+                            "fund_access": "direct",
+                            "n_reachable_opportunities": 17,
+                        },
+                        "evidence": {"n_existing_projects": 6},
+                        "diagnostic": "not public",
+                    },
                 ),
                 "c40_missing": ActionFinancialFeasibilityScoreRecord(
                     action_id="c40_missing",
@@ -187,10 +200,32 @@ def _finance_client() -> FinanceClient:
             projects=[
                 ClimateFinanceProjectRecord(
                     project_name="Building retrofit programme",
+                    project_name_i18n={
+                        "en": "Building retrofit programme",
+                        "es": "Programa de rehabilitacion de edificios",
+                    },
+                    sector="stationary_energy",
                     jurisdiction="Valparaiso",
                     lifecycle_stage="implementation",
                     funding_channel="public investment",
-                    funding_sources=[{"diagnostic": "not public"}],
+                    cost_total=71987,
+                    amount_unit="CLP_thousands",
+                    funding_sources=[
+                        {
+                            "cycle": "2025",
+                            "amount": 71987,
+                            "amount_unit": "CLP_thousands",
+                            "funder_name": "Regional Fund",
+                            "diagnostic": "not public",
+                        }
+                    ],
+                    action_matches=[
+                        {
+                            "action_id": "c40_0012",
+                            "confidence": "goal_aligned",
+                            "diagnostic": "not public",
+                        }
+                    ],
                 )
             ]
         ),
@@ -216,6 +251,7 @@ def test_city_attributes_route_returns_complete_stable_projection(
                 "unemployment_rate": {
                     "attribute_value": 8.1,
                     "attribute_units": "%",
+                    "attribute_category": "economic",
                     "datasource": "diagnostic",
                 }
             },
@@ -234,7 +270,14 @@ def test_city_attributes_route_returns_complete_stable_projection(
         "population_size": 191468,
         "area_km2": 2242.1,
         "population_density": 85.4,
-        "indicators": [{"key": "unemployment_rate", "value": 8.1, "unit": "%"}],
+        "indicators": [
+            {
+                "key": "unemployment_rate",
+                "value": 8.1,
+                "unit": "%",
+                "category": "economic",
+            }
+        ],
     }
     assert payload["meta"]["api_context"]["locode"] == "CL IQQ"
     assert "source_metadata" not in payload
@@ -255,6 +298,23 @@ def test_action_pathways_route_projects_repeated_languages(client: TestClient) -
                     description_i18n={"en": "Retrofit buildings.", "es": "Edificios."},
                     investment_cost="medium",
                     implementation_timeline="5-10 years",
+                    co_benefits={
+                        "air_quality": {
+                            "impact_relationship": "direct",
+                            "impact_text": "Cleaner urban air",
+                            "impact_numeric": 2,
+                            "methodology": "source assessment",
+                        }
+                    },
+                    emissions={
+                        "sector_number": "I",
+                        "subsector_number": [1],
+                        "gpc_reference_number": ["I.1.1"],
+                        "impact_relationship": "reduces",
+                        "impact_text": "Lower building emissions",
+                        "impact_numeric": -2,
+                        "methodology": "source assessment",
+                    },
                 ),
                 Action(
                     action_id="adaptation_0001",
@@ -289,7 +349,13 @@ def test_action_pathways_route_projects_repeated_languages(client: TestClient) -
         "description_i18n",
         "investment_cost",
         "implementation_timeline",
+        "co_benefits",
+        "emissions",
     }
+    assert action["co_benefits"]["air_quality"]["impact_text"] == (
+        "Cleaner urban air"
+    )
+    assert action["emissions"]["gpc_reference_number"] == ["I.1.1"]
 
 
 @pytest.mark.integration
@@ -310,12 +376,15 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
                         "document_type": "parcc",
                         "document_name": "Regional plan",
                         "signal_relation": "supporting",
+                        "signal_type": "explicit_target",
+                        "signal_strength": "medium",
                         "evidence_strength": 0.6,
                     },
                     {
                         "document_type": "paccc",
                         "document_name": "Municipal plan",
                         "doc_relevance": "direct",
+                        "signal_type": "named_action",
                         "signal_strength": "high",
                     },
                 ],
@@ -335,11 +404,17 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
             "scope": "regional",
             "document_name": "Regional plan",
             "relevance": "supporting",
+            "evidence_strength": 0.6,
+            "signal_strength": "medium",
+            "signal_type": "explicit_target",
         },
         {
             "scope": "municipal",
             "document_name": "Municipal plan",
             "relevance": "direct",
+            "evidence_strength": None,
+            "signal_strength": "high",
+            "signal_type": "named_action",
         },
     ]
     assert payload["aggregates"] == {
@@ -386,7 +461,7 @@ def test_mitigation_route_uses_caller_country_without_inventing_scores(
 
 @pytest.mark.integration
 def test_financial_route_keeps_canonical_rows_and_sorts_scores(client: TestClient) -> None:
-    """Finance route keeps missing scores, sorts them last, and hides diagnostics."""
+    """Finance route keeps source rows, display inputs, and stable score order."""
     app.dependency_overrides[get_action_financial_feasibility_scores_data_api_client] = (
         _finance_client
     )
@@ -403,7 +478,13 @@ def test_financial_route_keeps_canonical_rows_and_sorts_scores(client: TestClien
         "c40_missing",
     ]
     assert data[-1]["financial_feasibility"] is None
-    assert "inputs" not in data[0]
+    assert data[0]["inputs"] == {
+        "action": {"capital_intensity": 0.8, "preparation_complexity": 0.9},
+        "city": {"profile": "delivery-ready"},
+        "finance": {"fund_access": "direct", "n_reachable_opportunities": 17},
+        "evidence": {"n_existing_projects": 6},
+    }
+    assert "diagnostic" not in data[0]["inputs"]
     assert "links" not in data[0]
 
 
@@ -458,7 +539,7 @@ def test_opportunities_route_skips_upstream_fetch_when_sector_is_missing(
 def test_projects_route_returns_backend_limited_public_projection(
     client: TestClient,
 ) -> None:
-    """Projects route returns only the approved fields from canonical results."""
+    """Projects route returns the display fields from canonical source results."""
     app.dependency_overrides[get_action_financial_feasibility_scores_data_api_client] = (
         _finance_client
     )
@@ -471,9 +552,27 @@ def test_projects_route_returns_backend_limited_public_projection(
     assert response.json()["projects"] == [
         {
             "project_name": "Building retrofit programme",
+            "project_name_i18n": {
+                "en": "Building retrofit programme",
+                "es": "Programa de rehabilitacion de edificios",
+            },
+            "sector": "stationary_energy",
             "jurisdiction": "Valparaiso",
             "lifecycle_stage": "implementation",
             "funding_channel": "public investment",
+            "cost_total": 71987.0,
+            "amount_unit": "CLP_thousands",
+            "funding_sources": [
+                {
+                    "cycle": "2025",
+                    "amount": 71987.0,
+                    "amount_unit": "CLP_thousands",
+                    "funder_name": "Regional Fund",
+                }
+            ],
+            "action_matches": [
+                {"action_id": "c40_0012", "confidence": "goal_aligned"}
+            ],
         }
     ]
 

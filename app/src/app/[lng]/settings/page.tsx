@@ -5,7 +5,6 @@ import { useTranslation } from "@/i18n/client";
 import {
   Box,
   Button,
-  Heading,
   HStack,
   Icon,
   IconButton,

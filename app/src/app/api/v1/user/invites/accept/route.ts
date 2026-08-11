@@ -119,7 +119,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const failedInvites: { cityId: string }[] = [];
 
   if (tokenContent.role === "admin" && tokenContent.projectId) {
-    const [projectAdmin, created] = await ProjectAdmin.findOrCreate({
+    const [, created] = await ProjectAdmin.findOrCreate({
       where: { projectId: tokenContent.projectId, userId: session.user.id },
       defaults: {
         projectAdminId: randomUUID(),

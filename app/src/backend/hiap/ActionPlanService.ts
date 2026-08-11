@@ -4,6 +4,7 @@ import { db } from "@/models";
 import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
 import { hiapApiWrapper } from "./HiapApiService";
+import { LegacyActionPlanData } from "./types";
 
 // Interfaces updated to work with new table structure
 
@@ -17,24 +18,24 @@ export interface CreateActionPlanInput {
   language: string;
 
   // Plan metadata
-  cityName?: string;
-  createdAtTimestamp?: string;
+  cityName?: string | null;
+  createdAtTimestamp?: string | null;
 
   // Plan content from introduction
-  cityDescription?: string;
-  actionDescription?: string;
-  nationalStrategyExplanation?: string;
+  cityDescription?: string | null;
+  actionDescription?: string | null;
+  nationalStrategyExplanation?: string | null;
 
   // Structured plan data
-  subactions?: any;
-  institutions?: any;
-  milestones?: any;
-  timeline?: any;
-  costBudget?: any;
-  merIndicators?: any;
-  mitigations?: any;
-  adaptations?: any;
-  sdgs?: any;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 
   // Tracking
   createdBy?: string;
@@ -46,24 +47,24 @@ export interface UpdateActionPlanInput {
   language?: string;
 
   // Plan metadata
-  cityName?: string;
-  createdAtTimestamp?: string;
+  cityName?: string | null;
+  createdAtTimestamp?: string | null;
 
   // Plan content
-  cityDescription?: string;
-  actionDescription?: string;
-  nationalStrategyExplanation?: string;
+  cityDescription?: string | null;
+  actionDescription?: string | null;
+  nationalStrategyExplanation?: string | null;
 
   // Structured plan data
-  subactions?: any;
-  institutions?: any;
-  milestones?: any;
-  timeline?: any;
-  costBudget?: any;
-  merIndicators?: any;
-  mitigations?: any;
-  adaptations?: any;
-  sdgs?: any;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 }
 
 export interface UpsertActionPlanInput {
@@ -74,7 +75,7 @@ export interface UpsertActionPlanInput {
   inventoryId?: string;
   actionName: string;
   language: string;
-  planData: any; // Legacy HIAP API format - will be transformed
+  planData: LegacyActionPlanData; // Legacy HIAP API format - will be transformed
   createdBy?: string;
 }
 
@@ -83,7 +84,7 @@ export default class ActionPlanService {
    * Transform legacy planData format to new column structure
    */
   private static transformPlanData(
-    planData: any,
+    planData: LegacyActionPlanData,
   ): Partial<CreateActionPlanInput> {
     const result: Partial<CreateActionPlanInput> = {};
 
@@ -91,7 +92,7 @@ export default class ActionPlanService {
     if (planData.metadata) {
       result.cityName = planData.metadata.cityName;
       result.createdAtTimestamp = planData.metadata.createdAt;
-      result.actionName = planData.metadata.actionName;
+      result.actionName = planData.metadata.actionName ?? undefined;
     }
 
     // Extract introduction content
@@ -122,7 +123,9 @@ export default class ActionPlanService {
   /**
    * Transform database record back to legacy planData format for API compatibility
    */
-  private static transformToLegacyFormat(actionPlan: ActionPlan): any {
+  private static transformToLegacyFormat(
+    actionPlan: ActionPlan,
+  ): LegacyActionPlanData {
     return {
       metadata: {
         cityName: actionPlan.cityName,
@@ -185,7 +188,7 @@ export default class ActionPlanService {
       });
 
       return actionPlan;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to create action plan");
       throw createHttpError.InternalServerError("Failed to create action plan");
     }
@@ -208,7 +211,7 @@ export default class ActionPlanService {
       });
 
       return actionPlan;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plan by ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
@@ -259,7 +262,7 @@ export default class ActionPlanService {
         order: [["created", "DESC"]],
       });
       return actionPlans;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plans by city ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plans",
@@ -305,7 +308,7 @@ export default class ActionPlanService {
       }
 
       return await this.getActionPlanById(input.id);
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to update action plan");
       throw createHttpError.InternalServerError("Failed to update action plan");
     }
@@ -321,7 +324,7 @@ export default class ActionPlanService {
       });
 
       return deletedRowsCount > 0;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to delete action plan");
       throw createHttpError.InternalServerError("Failed to delete action plan");
     }
@@ -375,7 +378,7 @@ export default class ActionPlanService {
 
         return { actionPlan: newPlan, created: true };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to upsert action plan");
       throw createHttpError.InternalServerError("Failed to upsert action plan");
     }
@@ -388,7 +391,7 @@ export default class ActionPlanService {
     actionId: string,
     language: string,
     cityId: string,
-  ): Promise<{ planData: any } | null> {
+  ): Promise<{ planData: LegacyActionPlanData } | null> {
     try {
       const actionPlans = await this.getActionPlansByCityId(
         cityId,
@@ -404,7 +407,7 @@ export default class ActionPlanService {
       // Transform back to legacy format
       const planData = this.transformToLegacyFormat(actionPlan);
       return { planData };
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plan by key");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
@@ -520,7 +523,7 @@ export default class ActionPlanService {
       }
 
       return actionPlans;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, cityId, language, actionId },
         "Failed to get action plans",

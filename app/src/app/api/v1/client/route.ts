@@ -61,7 +61,6 @@ import { Client, LangMap } from "@/util/types";
 import { z } from "zod";
 import { nanoid } from "nanoid";
 import { db } from "@/models";
-import { isNamespaceExport } from "typescript";
 
 /** gets all available clients */
 export const GET = apiHandler(async (_req, { session }) => {

@@ -374,7 +374,7 @@ export async function buildHiapInventoryContext(
     try {
       const catalogue = (await GlobalAPIService.fetchAllClimateActions(
         requestedLanguage,
-      )) as ClimateActionRecord[];
+      )) as unknown as ClimateActionRecord[];
       catalogueById = new Map(
         catalogue
           .filter((action) => typeof action.ActionID === "string")

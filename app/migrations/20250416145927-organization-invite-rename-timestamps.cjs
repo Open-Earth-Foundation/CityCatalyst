@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     // the previous migration was edited after being deployed, so make sure this column is renamed
     try {
       await queryInterface.renameColumn(
@@ -20,7 +20,7 @@ module.exports = {
     }
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.renameColumn(
       "OrganizationInvite",
       "created",

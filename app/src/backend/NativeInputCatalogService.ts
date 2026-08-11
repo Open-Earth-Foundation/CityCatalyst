@@ -89,6 +89,19 @@ async function findNonWithdrawnBySource(
   });
 }
 
+async function repairMissingContentDigest(
+  catalog: NativeInputCatalog,
+  input: RegisterNativeInputInput,
+  transaction?: Transaction,
+): Promise<void> {
+  if (!catalog.contentDigest && input.contentDigest) {
+    await catalog.update(
+      { contentDigest: input.contentDigest },
+      { transaction },
+    );
+  }
+}
+
 export async function registerNativeInput(
   input: RegisterNativeInputInput,
   transaction?: Transaction,
@@ -96,7 +109,10 @@ export async function registerNativeInput(
   validateRegistrationInput(input);
 
   const existing = await findNonWithdrawnBySource(input, transaction);
-  if (existing) return { catalog: existing, created: false };
+  if (existing) {
+    await repairMissingContentDigest(existing, input, transaction);
+    return { catalog: existing, created: false };
+  }
 
   try {
     const catalog = await db.models.NativeInputCatalog.create(
@@ -111,6 +127,7 @@ export async function registerNativeInput(
     if (!(error instanceof UniqueConstraintError)) throw error;
     const racedCatalog = await findNonWithdrawnBySource(input, transaction);
     if (!racedCatalog) throw error;
+    await repairMissingContentDigest(racedCatalog, input, transaction);
     return { catalog: racedCatalog, created: false };
   }
 }

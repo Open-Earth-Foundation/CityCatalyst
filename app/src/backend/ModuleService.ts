@@ -1,24 +1,27 @@
 import { db } from "@/models";
 import { ModuleAccessService } from "./ModuleAccessService";
-import type { ModuleAttributes } from "@/models/Module";
+import type { Module, ModuleAttributes } from "@/models/Module";
+import type { ProjectModules } from "@/models/ProjectModules";
+
+type ProjectModulesWithModule = ProjectModules & { module: Module };
 
 export class ModuleService {
   public static async getEnabledProjectModules(
     projectId: string,
   ): Promise<ModuleAttributes[]> {
-    const projectModules = await db.models.ProjectModules.findAll({
+    const projectModules = (await db.models.ProjectModules.findAll({
       where: { projectId: projectId },
       include: [{ model: db.models.Module, as: "module" }],
-    });
+    })) as ProjectModulesWithModule[];
 
     // Filter out expired modules using the same logic as ModuleAccessService
     const enabledModules = [];
     for (const pm of projectModules) {
-      const expiresOn = (pm as any).expiresOn || null;
+      const expiresOn = pm.expiresOn || null;
       const isExpired = expiresOn && new Date() > new Date(expiresOn);
-      
+
       if (!isExpired) {
-        enabledModules.push((pm as any).module);
+        enabledModules.push(pm.module);
       }
     }
 
@@ -51,6 +54,6 @@ export class ModuleService {
       throw new Error(`City ${cityId} not found`);
     }
 
-    return this.getEnabledProjectModules((city as any).project.projectId);
+    return this.getEnabledProjectModules(city.project.projectId);
   }
 }

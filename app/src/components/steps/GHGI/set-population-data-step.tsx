@@ -3,7 +3,7 @@ import {
   Control,
   Controller,
   FieldErrors,
-  UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import type {
   GHGICountryEmissionsEntry,
@@ -13,14 +13,7 @@ import { OCCityAttributes } from "@/util/types";
 import { useGetOCCityDataQuery } from "@/services/api";
 import { useEffect, useState } from "react";
 import { findClosestYear } from "@/util/helpers";
-import {
-  Box,
-  createListCollection,
-  Heading,
-  HStack,
-  Icon,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Heading, HStack, Icon, Text } from "@chakra-ui/react";
 import FormattedThousandsNumber from "@/components/FormattedThousandsNumberInput";
 import { MdErrorOutline, MdInfoOutline } from "react-icons/md";
 import { Field } from "@/components/ui/field";
@@ -41,7 +34,6 @@ type GeneralOnboardingData = {
 
 export default function SetPopulationDataStep({
   t,
-  register,
   errors,
   control,
   years,
@@ -53,23 +45,18 @@ export default function SetPopulationDataStep({
   numberFormat,
 }: {
   t: TFunction;
-  register: UseFormRegister<GHGIFormInputs>;
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
   years: number[];
-  watch: Function;
+  watch: (name: string) => unknown;
   ocCityData?: OCCityAttributes;
   setData: (data: GeneralOnboardingData) => void;
-  setValue: any;
+  setValue: UseFormSetValue<GHGIFormInputs>;
   numberOfYearsDisplayed: number;
   numberFormat?: string;
 }) {
-  const yearInput = watch("year");
+  const yearInput = watch("year") as string | undefined;
   const year: number | null = yearInput ? parseInt(yearInput) : null;
-
-  const yearsCollection = createListCollection({
-    items: years.map((year) => ({ label: year.toString(), value: year })),
-  });
 
   const locode = ocCityData?.actor_id;
   const { data: cityData } = useGetOCCityDataQuery(locode!, {

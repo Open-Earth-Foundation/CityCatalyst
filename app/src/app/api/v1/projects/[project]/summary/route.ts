@@ -41,7 +41,7 @@ import { db } from "@/models";
 import PopulationService from "@/backend/PopulationService";
 import { QueryTypes } from "sequelize";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (req, { params }) => {
   const { project: projectId } = params;
 
   // TODO perform access control/ only show public inventories

@@ -38,7 +38,7 @@ export function ActionDrawer({
     action.type === ACTION_TYPES.Mitigation
       ? Object.entries(
           (action as MitigationAction).GHGReductionPotential,
-        ).filter(([_, value]) => value !== null)
+        ).filter(([, value]) => value !== null)
       : [];
 
   // Helper to get effectiveness bar value
@@ -80,7 +80,7 @@ export function ActionDrawer({
   if (action.type === ACTION_TYPES.Adaptation) {
     const entries = Object.entries(
       (action as AdaptationAction).adaptationEffectivenessPerHazard,
-    ).filter(([_, effectiveness]) => effectiveness !== null);
+    ).filter(([, effectiveness]) => effectiveness !== null);
     const splitIndex = Math.ceil(entries.length / 2);
     adaptationEffectivenessFirstCol = entries.slice(0, splitIndex);
     adaptationEffectivenessSecondCol = entries.slice(splitIndex);

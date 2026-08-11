@@ -16,6 +16,8 @@ What remains splits cleanly into two piles that do **not** block each other.
 
 **Module delivery — our sequencing choice.** PR #2956 is held in draft **deliberately**, so that what reaches dev does something real rather than being a flag-gated shell. That is a product decision, not a blocker awaiting anyone.
 
+**One open question**, set out at the end of this document. `hiap-meed-service-dev` is `ClusterIP` with no ingress, so `HIAP_MEED_API_URL` can only be exercised from inside the cluster — the first genuine test of the connection therefore has to happen on dev, after something is merged. Whether that is a small connectivity-only change first or a single merge of the whole module is a deploy-pipeline decision, not a frontend one.
+
 ---
 
 ## Architecture, briefly
@@ -112,7 +114,7 @@ Service names verified from `hiap-meed/k8s/service-{dev,test,prod}.yml` — all 
 
 **3. No client, no routes.** Nothing calls hiap-meed. Needs `MeedApiService.ts`, modelled on `backend/hiap/HiapApiService.ts`. This is the half of item 1 that is ours — the workflow supplies the value, our code has to read it.
 
-**4. PR #2956 is held in draft deliberately**, so that what reaches dev does something real rather than being a flag-gated shell. Not a blocker awaiting review — a sequencing choice.
+**4. PR #2956 is held in draft deliberately**, so that what reaches dev does something real rather than being a flag-gated shell. Not a blocker awaiting review — a sequencing choice. See *Open decision* below.
 
 ### Making connectivity verifiable
 
@@ -122,7 +124,7 @@ hiap-meed exposes `GET /health` → `{"status":"healthy"}`. A diagnostic proxy r
 GET /api/v1/city/{city}/modules/meed/health → { url, status, latencyMs }
 ```
 
-turns "is this connected?" into one URL in a browser — no UI walk, no waiting on a 60-second prioritize call to discover an env var was missing. It separates *is the network wired* from *is the payload right*, which otherwise get conflated in-cluster. Pair it with logging the resolved URL at module load (the `HiapService.ts:30` precedent).
+would answer "is this connected?" from one URL, separating *is the network wired* from *is the payload right* — two failures that are otherwise indistinguishable from inside the cluster. Logging the resolved `HIAP_MEED_API_URL` at module load (the `HiapService.ts:30` precedent) serves the same purpose. Whether this is worth a separate merge is the open decision below.
 
 ---
 
@@ -140,13 +142,29 @@ Note: **prioritize does not depend on #2982.** The hiap-meed pod fetches its own
 
 ---
 
-## Sequencing
+## Open decision: how to sequence the first deployment
 
-1. **Wiring PR** — env var (4 files), `MEED_MODULE` in dev flags, `MeedApiService` skeleton, health route. Nothing user-facing, independent of #2982, mergeable immediately. Proves the pod reaches hiap-meed before any real integration exists.
-2. **#2956 merges when the integration is real** — deliberately held so that dev gets a working module, not a shell. Worth noting the cost of holding: 109 files diverging from `develop`, and the reference-data migration adds more. The wiring PR above is the hedge — it puts something concrete and provable on dev without merging the module.
-3. **Prioritize POST** — kills the mock and lights up regulations, processing and results.
-4. **Reference-data migration** — 5 incremental PRs once #2982 is deployed. Carries frontend bugs 1–8.
-5. **Reports** — measure, then decide.
+`HIAP_MEED_API_URL` cannot be verified from a laptop. `hiap-meed-service-dev` is `ClusterIP` with no ingress, so it resolves only from inside the cluster — meaning the first genuine test of the connection can only happen on dev, after something is merged.
+
+#2956 is held in draft so that what reaches dev is a working module rather than a flag-gated shell. That leaves an ordering question:
+
+**Option A — connectivity first.** Merge a small, non-UI change that adds `MeedApiService` and a diagnostic route, so the connection can be confirmed on dev before the module lands. The module PR follows once the wiring is proven.
+
+- Confirms `HIAP_MEED_API_URL` resolves and the pod reaches the service, independently of whether any payload is correct
+- Two merges instead of one; adds code to `develop` that no user-facing feature consumes yet
+
+**Option B — single merge.** Add the deploy values and merge #2956 together, and verify the connection at that point.
+
+- One merge, one review cycle
+- If `HIAP_MEED_API_URL` is wrong or the service is unreachable, that surfaces at the same moment as everything else, against a 109-file change
+
+The trade-off is diagnostic isolation versus merge count. Either works; the choice belongs to whoever owns the deploy pipeline.
+
+## Sequencing after that
+
+1. **Prioritize POST** — replaces the mock and lights up regulations, processing and results.
+2. **Reference-data migration** — 5 incremental PRs once #2982 is deployed. Carries frontend bugs 1–8.
+3. **Reports** — measure, then decide.
 
 Frontend bugs 1–4 are visible and independent of the migration; they can be pulled forward cheaply if a demo is imminent.
 

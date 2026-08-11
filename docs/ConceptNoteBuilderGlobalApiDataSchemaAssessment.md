@@ -1,8 +1,7 @@
 # Current CNB Schema vs. Current Global API
 
 This is a field-level comparison of the CNB reference schema implemented in this
-PR and the live Global API on 10 August 2026. The draft files in
-`global-api/mock/cnb` are not counted as current API coverage.
+PR and the live Global API on 10 August 2026.
 
 | Data | Current CNB schema | Current Global API | Match | What CNB uses it for / what is lost if missing |
 | --- | --- | --- | --- | --- |

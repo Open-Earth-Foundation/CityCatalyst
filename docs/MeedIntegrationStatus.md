@@ -1,0 +1,146 @@
+# Actions & Plans v2 (MEED): integration status
+
+Where the module stands, what is owed by whom, and what is needed to test on dev.
+
+Companions: [`MeedReferenceDataContractDiff.md`](./MeedReferenceDataContractDiff.md) — the field-by-field contract analysis and its resolution — and `MeedModuleImplementation.md`, which documents what was built and lands with [PR #2956](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/2956) (not yet on `develop`).
+
+---
+
+## Summary
+
+The backend contract is **functionally complete**. [PR #2982](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/2982) is approved and merge-clean, and 6 of the 7 gaps we raised were closed in full; the seventh was declined with sound reasoning. Every field the module renders now has a source.
+
+**The critical path is now the frontend.** Three things block a dev test, none of them large:
+
+1. `HIAP_MEED_API_URL` does not exist anywhere in the repo
+2. `MEED_MODULE` is not in dev's `NEXT_PUBLIC_FEATURE_FLAGS`
+3. PR #2956 is still a draft — dev deploys from `develop`, so none of our code reaches dev until it merges
+
+---
+
+## Architecture, briefly
+
+**78 files:** 72 under `app/src/app/[lng]/cities/[cityId]/MEED/`, plus 5 proxy routes, 1 backend service, and a 177-line contract file.
+
+```
+MEED/
+├── layout.tsx + MEEDClientLayout.tsx   page metadata + module access gate
+├── page.tsx                            redirects to the newest inventory
+├── (8 logic files)                     steps · navigation · status · gate · state
+├── components/          14 files       shared chrome + primitives
+└── [inventory]/         46 files       11 screens
+```
+
+**The spine.** `steps.ts` is the canonical 7-step list with ranking weights (emissions 55, context 23, regulations 23, preferences 22, policy 22 optional, finance 23), and it drives the stepper, hub cards and pre-flight from one place. `meedGate.ts` is the single `computeMeedGate()`. `navigation.ts` owns the `?from=` return contract. `useMeedRanking.ts` is the single read point for "does a ranking exist".
+
+**Primitives.** 14 components, all thin data-mapping layers over existing Chakra/CityCatalyst components — no new visual language was invented.
+
+**Data layer.** 5 RTK endpoints (tag `Meed`) → 5 proxy routes → `MeedGlobalApiService` → Global API. Auth is enforced **only** in the proxy routes via `UserService.findUserCity(cityId, context.session)`; the browser never touches the Global API. That is the deliberate change from the prototype, which made 16 direct browser calls upstream.
+
+**State.** Entirely client-side today, keyed `meed:{inventoryId}:*` (`preferences`, `exclusions`, `step:{key}`, `ranking`). No MEED database tables. Two invariants to preserve when this moves server-side: **`confirmed` never regresses** (a data refresh must not undo a human acknowledgement), and **rankings are fingerprinted against their inputs**, so the UI can say "your answers changed since this was generated" rather than silently serving a stale list.
+
+**Navigation.** A graph, not a line — every step is reachable from hub cards, stepper, breadcrumb or URL. `?from=` means editing a step from pre-flight returns you to pre-flight. Only the final generate action is gated, and the gate always explains itself next to the disabled button.
+
+### Real vs. mock today
+
+| Live upstream | CityCatalyst data | Input / derived | Not yet real |
+|---|---|---|---|
+| context, policy, finance | emissions (GHGI cross-read), hub | preferences, pre-flight | regulations *(precondition)*, processing *(8s animation)*, results *(empty, or mock behind a flag)* |
+
+**6 of 11 screens already render live data.** The three that do not are exactly the three that need the prioritizer.
+
+---
+
+## Owed by the backend
+
+All minor; none blocking.
+
+| # | Ask | Why it matters |
+|---|---|---|
+| 1 | **Structured `warnings`** — `{code, params}` instead of English prose | The module ships in 5 languages and cannot translate the current strings. The only outstanding item with user-visible impact |
+| 2 | **`datasource` / `version_label` on `CityIndicatorResponse`** | `INDICATOR_META` hardcodes citations like `"ENDISC 2015"` that live data contradicts (`cl-ine-censo` / `2024`). Without the field we should drop the Source column rather than show a wrong citation |
+| 3 | **Documented vocabulary for `policy_support_category`** | Until then the field goes unused and we keep our own thresholds |
+
+**Declined, and reasonably:** the 5-project / 5+5-opportunity caps mirror the evidence selection plan generation uses. We adapt the copy — `n_reachable_opportunities` reports 30 where we show 5, so the UI must read "5 of 30 shown" rather than silently contradict itself.
+
+**Correction we owe:** an earlier version of the contract diff credited the migration with uncapped policy evidence. That was wrong — the upstream default is already 5 per action and hiap-meed does not pass `top_evidence_limit`. The document has been corrected.
+
+---
+
+## Owed by the frontend
+
+All verified against live upstream data. These are **pre-existing bugs, not migration costs.**
+
+| # | Bug | Impact | Where |
+|---|---|---|---|
+| 1 | **Every action shows "Cross-sector"** — we read a `sector` key that exists on 0 of 102 actions | Whole Sector column, every top-pick card, every detail panel | `results/components/actionCatalog.ts:63` |
+| 2 | **Project costs 1000× too high** — `amount_unit` is `CLP_thousands` on 500/500 projects; we assume millions | Every project card | `finance/labels.ts:223` |
+| 3 | **15% of actions show "Unknown route"** — no branch for `"needs technical assistance"` | Finance table and filter chips | `finance/labels.ts:48` |
+| 4 | **Chilean cities described wrongly** — `profile` is `"Support-ready"` on 102/102, no branch | City profile card | `finance/labels.ts:126` |
+| 5 | **Unknown-scope policy evidence counted as National** | Latent today; the new `scope` is nullable | `policy/policyAggregates.ts` |
+| 6 | **Null-score rows silently dropped** — finance and policy both filter on `typeof === "number"` | Latent; the new contract returns nulls explicitly | `finance/types.ts`, `policy/policyRows.ts` |
+| 7 | **Error cards have never rendered** — `MeedGlobalApiService` swallows every failure to `null` | "Broken" is indistinguishable from "no data" | `backend/meed/MeedGlobalApiService.ts` |
+| 8 | **`warnings[]` never surfaced** | We cannot tell a user their data is partial | all screens |
+| 9 | **Access gate does not withhold render** — `useModuleAccessLayout` only blocks when an `inventory` param is present; the MEED layout has only `{lng, cityId}` | Children render, then redirect asynchronously | `MEEDClientLayout.tsx` |
+| 10 | **`MEED_MODULE` hides the tile, not the routes** — a direct URL still loads, subject only to module access | Worth a deliberate decision | `HomePage.tsx:293` |
+| 11 | **All 5 endpoints typed `unknown`** with casts at the use site | ~150 lines of hand-rolled narrowing, no schema safety | `services/api.ts:209-238` |
+
+Plus mechanical migration work: snake_case renames, `meta.total` → `meta.total_records`, projects array is `projects[]` not `data[]`, a two-group opportunities layout, and **omit `?language=`** — it validates against `("en","es")` only, so `?language=pt` returns 422, while omitting it returns all localizations including `pt`. That is the only route to Portuguese action names.
+
+---
+
+## Wiring needed to test on dev
+
+**1. `HIAP_MEED_API_URL` does not exist.** `HIAP_API_URL` is not in `k8s/cc-web-deploy.yml` — it is set at deploy time by `kubectl set env`:
+
+- `.github/workflows/web-develop.yml:479` → add `"HIAP_MEED_API_URL=http://hiap-meed-service-dev" \`
+- `web-test.yml:259` and `web-tag.yml:242` → same, with the test/prod service names
+- `app/env.example` beside line 65 → `HIAP_MEED_API_URL="http://localhost:8000"`
+
+**2. `MEED_MODULE` is not in dev's flags.** `NEXT_PUBLIC_FEATURE_FLAGS` appears three times in `web-develop.yml` (lines 41, 88, 483) — build-time and runtime. All three need it.
+
+**3. No client, no routes.** Nothing calls hiap-meed. Needs `MeedApiService.ts`, modelled on `backend/hiap/HiapApiService.ts`.
+
+**4. PR #2956 is a draft.** Safe to merge — everything sits behind `MEED_MODULE`, which is off in dev's flag list — but nothing of ours reaches dev until it does.
+
+### Making connectivity verifiable
+
+hiap-meed exposes `GET /health` → `{"status":"healthy"}`. A diagnostic proxy route:
+
+```
+GET /api/v1/city/{city}/modules/meed/health → { url, status, latencyMs }
+```
+
+turns "is this connected?" into one URL in a browser — no UI walk, no waiting on a 60-second prioritize call to discover an env var was missing. It separates *is the network wired* from *is the payload right*, which otherwise get conflated in-cluster. Pair it with logging the resolved URL at module load (the `HiapService.ts:30` precedent).
+
+---
+
+## Endpoint status
+
+| Endpoint | Status |
+|---|---|
+| 7 reference-data GETs | Contract complete, #2982 approved, not deployed. 5 replace existing proxies, 2 are new (opportunities, projects), 1 unused (mitigation-feasibility) |
+| `POST /v1/prioritize` | Contract stable, types already in `util/types/meed.ts`, **not wired** |
+| `POST /v1/prioritize/exclusions/preview` | Not wired. Feeds pre-flight's confirmed-exclusions card, which today nothing ever writes to |
+| `POST /v1/reports/output-plan` | Not wired. Sync vs. async to be decided by measurement, not assumption |
+| `POST /v1/explanations/translate` | Not wired; fallback path only |
+
+Note: **prioritize does not depend on #2982.** The hiap-meed pod fetches its own reference data, so the ranking can be wired while the GETs are still in review.
+
+---
+
+## Sequencing
+
+1. **Wiring PR** — env var (4 files), `MEED_MODULE` in dev flags, `MeedApiService` skeleton, health route. Nothing user-facing, independent of #2982, mergeable immediately. Proves the pod reaches hiap-meed before any real integration exists.
+2. **Get #2956 reviewed and merged.** 109 files; review lead time likely exceeds any of the code above, and everything queues behind it.
+3. **Prioritize POST** — kills the mock and lights up regulations, processing and results.
+4. **Reference-data migration** — 5 incremental PRs once #2982 is deployed. Carries frontend bugs 1–8.
+5. **Reports** — measure, then decide.
+
+Frontend bugs 1–4 are visible and independent of the migration; they can be pulled forward cheaply if a demo is imminent.
+
+## Verification
+
+- **Wiring:** hit the health route on dev; expect `{status:"healthy"}` and the resolved in-cluster URL in the pod logs.
+- **Locally, without cluster access:** `cd hiap-meed && docker compose up` (port 8000, real upstream), then `HIAP_MEED_API_URL=http://localhost:8000`. Use `CL ANT` (attributes + policy + finance + opportunities) and `BR SAO` (policy + finance; no attributes upstream).
+- **Regression:** `npx tsc --noEmit`, `npm run build`, and one load of a non-MEED city page with the flag off.

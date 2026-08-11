@@ -44,7 +44,7 @@ export function ConceptNoteScopeScreen({
   const statusLabel = t(uploadStatusTranslationKey(controller.uploadStatus));
 
   return (
-    <VStack align="stretch" gap={6} maxW="1320px" mx="auto">
+    <VStack align="stretch" gap={6} maxW="1320px" mx="auto" bg="base.light">
       <Button
         type="button"
         width="fit-content"

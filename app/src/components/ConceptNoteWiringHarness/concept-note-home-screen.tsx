@@ -25,7 +25,7 @@ export function ConceptNoteHomeScreen({
   const statusLabel = t(uploadStatusTranslationKey(controller.uploadStatus));
 
   return (
-    <VStack align="stretch" gap={8} maxW="1180px" mx="auto">
+    <VStack align="stretch" gap={8} maxW="1180px" mx="auto" bg="base.light">
       <Flex
         align={{ base: "stretch", md: "end" }}
         direction={{ base: "column", md: "row" }}

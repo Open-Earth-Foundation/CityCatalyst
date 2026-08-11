@@ -4,7 +4,13 @@ import { useTranslation } from "@/i18n/client";
 import { MdArrowBack, MdArrowForward, MdWarning } from "react-icons/md";
 import { Box, HStack, Icon, Text, useSteps } from "@chakra-ui/react";
 import { useRouter, usePathname } from "next/navigation";
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
@@ -79,33 +85,46 @@ function ImportButton({
     showSuccessToast();
   };
 
-  const { startPolling: startImportPolling, stopPolling: stopImportPolling, isPolling: isImportPolling } =
-    usePollUntil<ImportStatusResponse>({
-      fetch: () =>
-        getImportStatus({ cityId, inventoryId, importedFileId }).unwrap() as Promise<ImportStatusResponse>,
-      isTerminal: (res) => {
-        if (res.importStatus === "completed")
-          return { done: true, success: true, data: res };
-        if (res.importStatus === "failed")
-          return { done: true, success: false, data: res };
-        return { done: false };
-      },
-      onSuccess: () => {
-        invalidateInventoryCache();
-        makeSuccessToast(t("import-completed"), t("import-completed-description"));
-        onImport();
-      },
-      onFailure: (res) => {
-        onImportProgressChange(false);
-        makeErrorToast("Import failed", resolveErrorMessage(res.errorLog, "Failed to import data", t));
-      },
-      onPollError: (err) =>
-        logger.debug(
-          { err, cityId, inventoryId, importedFileId },
-          "Approve/import status poll failed",
-        ),
-      intervalMs: 3000,
-    });
+  const {
+    startPolling: startImportPolling,
+    stopPolling: stopImportPolling,
+    isPolling: isImportPolling,
+  } = usePollUntil<ImportStatusResponse>({
+    fetch: () =>
+      getImportStatus({
+        cityId,
+        inventoryId,
+        importedFileId,
+      }).unwrap() as Promise<ImportStatusResponse>,
+    isTerminal: (res) => {
+      if (res.importStatus === "completed")
+        return { done: true, success: true, data: res };
+      if (res.importStatus === "failed")
+        return { done: true, success: false, data: res };
+      return { done: false };
+    },
+    onSuccess: () => {
+      invalidateInventoryCache();
+      makeSuccessToast(
+        t("import-completed"),
+        t("import-completed-description"),
+      );
+      onImport();
+    },
+    onFailure: (res) => {
+      onImportProgressChange(false);
+      makeErrorToast(
+        "Import failed",
+        resolveErrorMessage(res.errorLog, "Failed to import data", t),
+      );
+    },
+    onPollError: (err) =>
+      logger.debug(
+        { err, cityId, inventoryId, importedFileId },
+        "Approve/import status poll failed",
+      ),
+    intervalMs: 3000,
+  });
 
   const handleImport = async () => {
     if (!importedFileId) return;
@@ -135,7 +154,10 @@ function ImportButton({
 
       if ((result as { importStatus?: string }).importStatus === "completed") {
         invalidateInventoryCache();
-        makeSuccessToast(t("import-completed"), t("import-completed-description"));
+        makeSuccessToast(
+          t("import-completed"),
+          t("import-completed-description"),
+        );
         onImport();
         return;
       }
@@ -172,11 +194,7 @@ function ImportButton({
       loading={isImporting || isImportPolling}
       disabled={isImporting || isImportPolling}
     >
-      <Text
-        fontFamily="button.md"
-        fontWeight="600"
-        letterSpacing="wider"
-      >
+      <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
         {t("import-inventory")}
       </Text>
       <MdArrowForward height="24px" width="24px" />
@@ -241,7 +259,8 @@ export default function GhgiImportWizard({
 
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [importedFileId, setImportedFileId] = useState<string | null>(null);
-  const [lastImportStatus, setLastImportStatus] = useState<ImportStatusResponse | null>(null);
+  const [lastImportStatus, setLastImportStatus] =
+    useState<ImportStatusResponse | null>(null);
   const [pdfPendingExtraction, setPdfPendingExtraction] = useState(false);
   const [tabularPendingInterpretation, setTabularPendingInterpretation] =
     useState(false);
@@ -255,7 +274,9 @@ export default function GhgiImportWizard({
   const [dataLossVariant, setDataLossVariant] = useState<
     "leave" | "reset-upload"
   >("leave");
-  const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+  const [pendingNavigation, setPendingNavigation] = useState<
+    (() => void) | null
+  >(null);
   const [extractionProgress, setExtractionProgress] = useState<{
     current: number;
     total: number;
@@ -287,7 +308,11 @@ export default function GhgiImportWizard({
     api.useInterpretImportMutation();
   const [getImportStatus] = api.useLazyGetImportStatusQuery();
   const { data: mappingStepData } = api.useGetImportStatusQuery(
-    { cityId, inventoryId: inventoryId ?? "", importedFileId: importedFileId ?? "" },
+    {
+      cityId,
+      inventoryId: inventoryId ?? "",
+      importedFileId: importedFileId ?? "",
+    },
     { skip: !importedFileId || !inventoryId },
   );
   const { data: inventory } = api.useGetInventoryQuery(inventoryId ?? "", {
@@ -310,14 +335,25 @@ export default function GhgiImportWizard({
     const cols = mappingStepData?.columnMappings?.columns ?? [];
     const reqMappings = mappingStepData?.columnMappings?.requiredMappings ?? [];
     if (cols.length === 0 || reqMappings.length === 0) return false;
-    const MANDATORY = new Set(["gpcRefNo", "sector", "subsector", "activityAmount"]);
+    const MANDATORY = new Set([
+      "gpcRefNo",
+      "sector",
+      "subsector",
+      "activityAmount",
+    ]);
     const keyForLabel = (label: string | null) =>
       label ? (reqMappings.find((r) => r.label === label)?.key ?? "") : "";
-    const effectiveKey = (col: { columnName: string; interpretedAs: string | null }) =>
+    const effectiveKey = (col: {
+      columnName: string;
+      interpretedAs: string | null;
+    }) =>
       col.columnName in mappingOverrides
         ? mappingOverrides[col.columnName]
         : keyForLabel(col.interpretedAs);
-    const isMandatory = (col: { columnName: string; interpretedAs: string | null }) =>
+    const isMandatory = (col: {
+      columnName: string;
+      interpretedAs: string | null;
+    }) =>
       MANDATORY.has(keyForLabel(col.interpretedAs)) ||
       MANDATORY.has(mappingOverrides[col.columnName] ?? "");
     return cols.filter(isMandatory).every((col) => effectiveKey(col) !== "");
@@ -334,7 +370,7 @@ export default function GhgiImportWizard({
       : null;
   const fileYear =
     lastImportStatus?.inferredYearFromFile != null &&
-      Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
+    Number.isFinite(Number(lastImportStatus.inferredYearFromFile))
       ? Number(lastImportStatus.inferredYearFromFile)
       : null;
   const fileYearMismatch =
@@ -343,7 +379,10 @@ export default function GhgiImportWizard({
   useEffect(() => {
     if (!fileYearMismatch || fileYearMismatchToastShownRef.current) return;
     fileYearMismatchToastShownRef.current = true;
-    makeErrorToast(t("file-year-mismatch-title"), t("file-year-mismatch", { year: inventoryYear }));
+    makeErrorToast(
+      t("file-year-mismatch-title"),
+      t("file-year-mismatch", { year: inventoryYear }),
+    );
   }, [fileYearMismatch, inventoryYear, t]);
 
   const {
@@ -355,7 +394,11 @@ export default function GhgiImportWizard({
       const id = uploadPendingIdRef.current;
       if (!id || !cityId || !inventoryId)
         return Promise.reject(new Error("Upload poll: missing id or context"));
-      return getImportStatus({ cityId, inventoryId, importedFileId: id }).unwrap() as Promise<ImportStatusResponse>;
+      return getImportStatus({
+        cityId,
+        inventoryId,
+        importedFileId: id,
+      }).unwrap() as Promise<ImportStatusResponse>;
     }, [cityId, inventoryId, getImportStatus]),
     isTerminal: (res) => {
       if (
@@ -364,7 +407,8 @@ export default function GhgiImportWizard({
         res.importStatus === "waiting_for_approval"
       )
         return { done: true, success: true, data: res };
-      if (res.importStatus === "failed") return { done: true, success: false, data: res };
+      if (res.importStatus === "failed")
+        return { done: true, success: false, data: res };
       return { done: false };
     },
     onSuccess: (res) => {
@@ -377,15 +421,30 @@ export default function GhgiImportWizard({
         setTabularPendingInterpretation(false);
       } else {
         setPdfPendingExtraction(false);
-        setTabularPendingInterpretation(res.importStatus === "pending_ai_interpretation");
-        if (res.importStatus === "waiting_for_approval") setTimeout(() => goToNextStep(), 150);
+        setTabularPendingInterpretation(
+          res.importStatus === "pending_ai_interpretation",
+        );
+        if (res.importStatus === "waiting_for_approval")
+          setTimeout(() => goToNextStep(), 150);
       }
     },
     onFailure: (res) =>
-      makeErrorToast("Upload failed", resolveErrorMessage(res.errorLog, "File validation or processing failed", t)),
+      makeErrorToast(
+        "Upload failed",
+        resolveErrorMessage(
+          res.errorLog,
+          "File validation or processing failed",
+          t,
+        ),
+      ),
     onPollError: (err) =>
       logger.debug(
-        { err, cityId, inventoryId, importedFileId: uploadPendingIdRef.current },
+        {
+          err,
+          cityId,
+          inventoryId,
+          importedFileId: uploadPendingIdRef.current,
+        },
         "Upload status poll failed",
       ),
     intervalMs: 3000,
@@ -396,7 +455,10 @@ export default function GhgiImportWizard({
     stopPolling: stopExtractionPolling,
   } = usePollUntil<ImportStatusResponse>({
     fetch: useCallback(() => {
-      if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
+      if (!importedFileId || !inventoryId)
+        return Promise.reject(
+          new Error("Missing importedFileId or inventoryId"),
+        );
       return getImportStatus({
         cityId,
         inventoryId: inventoryId as string,
@@ -404,8 +466,10 @@ export default function GhgiImportWizard({
       }).unwrap() as Promise<ImportStatusResponse>;
     }, [cityId, inventoryId, importedFileId, getImportStatus]),
     isTerminal: (res) => {
-      if (res.importStatus === "waiting_for_approval") return { done: true, success: true, data: res };
-      if (res.importStatus === "failed") return { done: true, success: false, data: res };
+      if (res.importStatus === "waiting_for_approval")
+        return { done: true, success: true, data: res };
+      if (res.importStatus === "failed")
+        return { done: true, success: false, data: res };
       return { done: false };
     },
     onSuccess: (res) => {
@@ -418,14 +482,20 @@ export default function GhgiImportWizard({
     onFailure: (res) => {
       setIsExtractInProgress(false);
       setExtractionProgress(null);
-      makeErrorToast(t("extraction-failed"), resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t));
+      makeErrorToast(
+        t("extraction-failed"),
+        resolveErrorMessage(res.errorLog, t("ai-extraction-failed-default"), t),
+      );
     },
     onTick: (res) => {
       const progress = readImportChunkProgress(res.mappingConfiguration);
       if (progress) setExtractionProgress(progress);
     },
     onPollError: (err) =>
-      logger.debug({ err, cityId, inventoryId, importedFileId }, "Import status poll failed"),
+      logger.debug(
+        { err, cityId, inventoryId, importedFileId },
+        "Import status poll failed",
+      ),
     intervalMs: 3000,
   });
 
@@ -434,7 +504,10 @@ export default function GhgiImportWizard({
     stopPolling: stopInterpretPolling,
   } = usePollUntil<ImportStatusResponse>({
     fetch: useCallback(() => {
-      if (!importedFileId || !inventoryId) return Promise.reject(new Error("Missing importedFileId or inventoryId"));
+      if (!importedFileId || !inventoryId)
+        return Promise.reject(
+          new Error("Missing importedFileId or inventoryId"),
+        );
       return getImportStatus({
         cityId,
         inventoryId: inventoryId as string,
@@ -442,8 +515,10 @@ export default function GhgiImportWizard({
       }).unwrap() as Promise<ImportStatusResponse>;
     }, [cityId, inventoryId, importedFileId, getImportStatus]),
     isTerminal: (res) => {
-      if (res.importStatus === "waiting_for_approval") return { done: true, success: true, data: res };
-      if (res.importStatus === "failed") return { done: true, success: false, data: res };
+      if (res.importStatus === "waiting_for_approval")
+        return { done: true, success: true, data: res };
+      if (res.importStatus === "failed")
+        return { done: true, success: false, data: res };
       return { done: false };
     },
     onSuccess: (res) => {
@@ -467,7 +542,10 @@ export default function GhgiImportWizard({
       if (progress) setExtractionProgress(progress);
     },
     onPollError: (err) =>
-      logger.debug({ err, cityId, inventoryId, importedFileId }, "Interpret status poll failed"),
+      logger.debug(
+        { err, cityId, inventoryId, importedFileId },
+        "Interpret status poll failed",
+      ),
     intervalMs: 3000,
   });
 
@@ -499,15 +577,19 @@ export default function GhgiImportWizard({
       setUploadedFile(file);
       setImportedFileId(result.id);
       setPdfPendingExtraction(
-        (result as { importStatus?: string; fileType?: string }).importStatus === "pending_ai_extraction" ||
-        (result as { fileType?: string }).fileType === "pdf",
+        (result as { importStatus?: string; fileType?: string })
+          .importStatus === "pending_ai_extraction" ||
+          (result as { fileType?: string }).fileType === "pdf",
       );
       setTabularPendingInterpretation(
-        (result as { importStatus?: string }).importStatus === "pending_ai_interpretation",
+        (result as { importStatus?: string }).importStatus ===
+          "pending_ai_interpretation",
       );
       if (
-        (result as { importStatus?: string }).importStatus !== "pending_ai_extraction" &&
-        (result as { importStatus?: string }).importStatus !== "pending_ai_interpretation"
+        (result as { importStatus?: string }).importStatus !==
+          "pending_ai_extraction" &&
+        (result as { importStatus?: string }).importStatus !==
+          "pending_ai_interpretation"
       ) {
         // Sync upload path (no polling): polls do not run, so fetch status for year-mismatch / inferredYearFromFile
         getImportStatus({ cityId, inventoryId, importedFileId: result.id })
@@ -596,10 +678,7 @@ export default function GhgiImportWizard({
     stopInterpretPolling();
     setIsInterpretInProgress(true);
     setExtractionProgress(null);
-    makeInfoToast(
-      t("interpreting-file"),
-      t("interpreting-file-description"),
-    );
+    makeInfoToast(t("interpreting-file"), t("interpreting-file-description"));
     try {
       const result = await interpretImport({
         cityId,
@@ -629,7 +708,10 @@ export default function GhgiImportWizard({
         error,
         t("ai-extraction-failed-default"),
       );
-      makeErrorToast(t("interpretation-failed") ?? "Interpretation failed", message);
+      makeErrorToast(
+        t("interpretation-failed") ?? "Interpretation failed",
+        message,
+      );
     }
   };
 
@@ -646,7 +728,8 @@ export default function GhgiImportWizard({
 
     if (hasUnsavedProgress) {
       window.addEventListener("beforeunload", handleBeforeUnload);
-      return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+      return () =>
+        window.removeEventListener("beforeunload", handleBeforeUnload);
     }
   }, [hasUnsavedProgress]);
 
@@ -684,7 +767,7 @@ export default function GhgiImportWizard({
 
   return (
     <>
-      <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
+      <Box pt={16} pb={16} w="full" maxW="1090px" mx="auto">
         <Button
           variant="ghost"
           onClick={() => {
@@ -714,7 +797,8 @@ export default function GhgiImportWizard({
           alignItems="flex-start"
           mt={{ base: 8, md: 16 }}
           mb={48}
-          w={"1090px"}
+          w="full"
+          maxW="1090px"
           mx="auto"
           position="relative"
           minH="400px"
@@ -729,7 +813,12 @@ export default function GhgiImportWizard({
                   exit={{ opacity: 0, x: -100 }}
                   transition={{ duration: 0.2, ease: "easeInOut" }}
                 >
-                  <Box w="full" display="flex" flexDirection="column" gap="24px">
+                  <Box
+                    w="full"
+                    display="flex"
+                    flexDirection="column"
+                    gap="24px"
+                  >
                     {inventoryHasData && (
                       <HStack
                         gap={3}
@@ -741,9 +830,18 @@ export default function GhgiImportWizard({
                         borderRadius="md"
                         align="flex-start"
                       >
-                        <Icon as={MdWarning} boxSize={5} color="orange.500" mt="2px" />
+                        <Icon
+                          as={MdWarning}
+                          boxSize={5}
+                          color="orange.500"
+                          mt="2px"
+                        />
                         <Box>
-                          <Text fontWeight="semibold" color="orange.800" fontSize="sm">
+                          <Text
+                            fontWeight="semibold"
+                            color="orange.800"
+                            fontSize="sm"
+                          >
                             {t("inventory-already-has-data-title")}
                           </Text>
                           <Text color="orange.700" fontSize="sm" mt={1}>
@@ -758,132 +856,138 @@ export default function GhgiImportWizard({
                       t={t}
                       cityName={inventory?.city?.name}
                       uploadedFile={uploadedFile}
-                      onFileUpload={inventoryHasData ? () => { } : handleFileUpload}
+                      onFileUpload={
+                        inventoryHasData ? () => {} : handleFileUpload
+                      }
                       onRemoveFile={handleRemoveFile}
                       isUploading={isUploadingFile || isUploadPolling}
                     />
-                    {pdfPendingExtraction && (isExtracting || isExtractInProgress) && (
-                      <Box w="full" mt={2}>
-                        <Text fontSize="sm" color="content.tertiary" mb={2}>
-                          {extractionProgress && extractionProgress.total > 1
-                            ? t("extracting-chunk-progress", {
-                              current: extractionProgress.current,
-                              total: extractionProgress.total,
-                            })
-                            : t("breaking-into-chunks")}
-                        </Text>
-                        {extractionProgress && extractionProgress.total > 1 ? (
-                          <Box
-                            w="full"
-                            h="8px"
-                            bg="background.subtle"
-                            borderRadius="10px"
-                            overflow="hidden"
-                          >
+                    {pdfPendingExtraction &&
+                      (isExtracting || isExtractInProgress) && (
+                        <Box w="full" mt={2}>
+                          <Text fontSize="sm" color="content.tertiary" mb={2}>
+                            {extractionProgress && extractionProgress.total > 1
+                              ? t("extracting-chunk-progress", {
+                                  current: extractionProgress.current,
+                                  total: extractionProgress.total,
+                                })
+                              : t("breaking-into-chunks")}
+                          </Text>
+                          {extractionProgress &&
+                          extractionProgress.total > 1 ? (
                             <Box
-                              h="full"
-                              bg="interactive.primary"
+                              w="full"
+                              h="8px"
+                              bg="background.subtle"
                               borderRadius="10px"
-                              transition="width 0.3s ease"
-                              w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
-                            />
-                          </Box>
-                        ) : (
-                          <Box
-                            w="full"
-                            h="8px"
-                            bg="background.subtle"
-                            borderRadius="10px"
-                            overflow="hidden"
-                            position="relative"
-                          >
-                            <motion.div
-                              style={{
-                                position: "absolute",
-                                left: 0,
-                                top: 0,
-                                height: "100%",
-                                width: "40%",
-                              }}
-                              animate={{ x: ["0%", "250%"] }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                              }}
+                              overflow="hidden"
                             >
                               <Box
                                 h="full"
-                                w="full"
                                 bg="interactive.primary"
                                 borderRadius="10px"
+                                transition="width 0.3s ease"
+                                w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
                               />
-                            </motion.div>
-                          </Box>
-                        )}
-                      </Box>
-                    )}
-                    {tabularPendingInterpretation && (isInterpreting || isInterpretInProgress) && (
-                      <Box w="full" mt={2}>
-                        <Text fontSize="sm" color="content.tertiary" mb={2}>
-                          {extractionProgress && extractionProgress.total > 1
-                            ? t("interpreting-chunk-progress", {
-                              current: extractionProgress.current,
-                              total: extractionProgress.total,
-                            })
-                            : t("interpreting-file-description")}
-                        </Text>
-                        {extractionProgress && extractionProgress.total > 1 ? (
-                          <Box
-                            w="full"
-                            h="8px"
-                            bg="background.subtle"
-                            borderRadius="10px"
-                            overflow="hidden"
-                          >
+                            </Box>
+                          ) : (
                             <Box
-                              h="full"
-                              bg="interactive.primary"
+                              w="full"
+                              h="8px"
+                              bg="background.subtle"
                               borderRadius="10px"
-                              transition="width 0.3s ease"
-                              w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
-                            />
-                          </Box>
-                        ) : (
-                          <Box
-                            w="full"
-                            h="8px"
-                            bg="background.subtle"
-                            borderRadius="10px"
-                            overflow="hidden"
-                            position="relative"
-                          >
-                            <motion.div
-                              style={{
-                                position: "absolute",
-                                left: 0,
-                                top: 0,
-                                height: "100%",
-                                width: "40%",
-                              }}
-                              animate={{ x: ["0%", "250%"] }}
-                              transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                              }}
+                              overflow="hidden"
+                              position="relative"
+                            >
+                              <motion.div
+                                style={{
+                                  position: "absolute",
+                                  left: 0,
+                                  top: 0,
+                                  height: "100%",
+                                  width: "40%",
+                                }}
+                                animate={{ x: ["0%", "250%"] }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                }}
+                              >
+                                <Box
+                                  h="full"
+                                  w="full"
+                                  bg="interactive.primary"
+                                  borderRadius="10px"
+                                />
+                              </motion.div>
+                            </Box>
+                          )}
+                        </Box>
+                      )}
+                    {tabularPendingInterpretation &&
+                      (isInterpreting || isInterpretInProgress) && (
+                        <Box w="full" mt={2}>
+                          <Text fontSize="sm" color="content.tertiary" mb={2}>
+                            {extractionProgress && extractionProgress.total > 1
+                              ? t("interpreting-chunk-progress", {
+                                  current: extractionProgress.current,
+                                  total: extractionProgress.total,
+                                })
+                              : t("interpreting-file-description")}
+                          </Text>
+                          {extractionProgress &&
+                          extractionProgress.total > 1 ? (
+                            <Box
+                              w="full"
+                              h="8px"
+                              bg="background.subtle"
+                              borderRadius="10px"
+                              overflow="hidden"
                             >
                               <Box
                                 h="full"
-                                w="full"
                                 bg="interactive.primary"
                                 borderRadius="10px"
+                                transition="width 0.3s ease"
+                                w={`${(extractionProgress.current / extractionProgress.total) * 100}%`}
                               />
-                            </motion.div>
-                          </Box>
-                        )}
-                      </Box>
-                    )}
+                            </Box>
+                          ) : (
+                            <Box
+                              w="full"
+                              h="8px"
+                              bg="background.subtle"
+                              borderRadius="10px"
+                              overflow="hidden"
+                              position="relative"
+                            >
+                              <motion.div
+                                style={{
+                                  position: "absolute",
+                                  left: 0,
+                                  top: 0,
+                                  height: "100%",
+                                  width: "40%",
+                                }}
+                                animate={{ x: ["0%", "250%"] }}
+                                transition={{
+                                  duration: 1.5,
+                                  repeat: Infinity,
+                                  ease: "easeInOut",
+                                }}
+                              >
+                                <Box
+                                  h="full"
+                                  w="full"
+                                  bg="interactive.primary"
+                                  borderRadius="10px"
+                                />
+                              </motion.div>
+                            </Box>
+                          )}
+                        </Box>
+                      )}
                   </Box>
                 </motion.div>
               )}
@@ -955,7 +1059,10 @@ export default function GhgiImportWizard({
           <Box w="full" display="flex" flexDir="column" gap="32px">
             <Box w="full">
               <Box w="full">
-                <ProgressSteps steps={steps} currentStep={progressCurrentStep} />
+                <ProgressSteps
+                  steps={steps}
+                  currentStep={progressCurrentStep}
+                />
               </Box>
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
@@ -977,12 +1084,16 @@ export default function GhgiImportWizard({
                     inventoryHasData ||
                     !uploadedFile ||
                     !importedFileId ||
-                    (pdfPendingExtraction && (isExtracting || isExtractInProgress)) ||
-                    (tabularPendingInterpretation && (isInterpreting || isInterpretInProgress))
+                    (pdfPendingExtraction &&
+                      (isExtracting || isExtractInProgress)) ||
+                    (tabularPendingInterpretation &&
+                      (isInterpreting || isInterpretInProgress))
                   }
                   loading={
-                    (pdfPendingExtraction && (isExtracting || isExtractInProgress)) ||
-                    (tabularPendingInterpretation && (isInterpreting || isInterpretInProgress))
+                    (pdfPendingExtraction &&
+                      (isExtracting || isExtractInProgress)) ||
+                    (tabularPendingInterpretation &&
+                      (isInterpreting || isInterpretInProgress))
                   }
                 >
                   <Text

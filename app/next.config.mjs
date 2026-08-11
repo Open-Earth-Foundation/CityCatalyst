@@ -20,6 +20,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "*.s3.us-east-1.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname: "*.s3.eu-north-1.amazonaws.com",
         pathname: "/**",
       },

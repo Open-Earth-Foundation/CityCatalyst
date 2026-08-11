@@ -614,11 +614,12 @@ chat thread to belong to the authenticated user; it remains an integration
 identifier rather than a run-table foreign key.
 
 CityCatalyst exposes authenticated proxy routes at
-`POST /api/v1/concept-notes/start` and
-`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the
-session, checks city access, issues the scoped CA token server-side, and
-preserves Climate Advisor response statuses. No frontend screens are part of
-this baseline.
+`POST /api/v1/concept-notes/start`,
+`GET /api/v1/concept-notes?city_id=...`, and
+`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the session,
+checks city access, issues the scoped CA token server-side, and preserves Climate
+Advisor response statuses. The CityCatalyst dashboard consumes the collection
+route; its implementation details live in the repository architecture guide.
 
 ### Concept Note city-context baseline
 

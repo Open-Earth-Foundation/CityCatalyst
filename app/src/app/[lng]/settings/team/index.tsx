@@ -11,6 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import {
+  MdLink,
   MdMoreVert,
   MdOutlinePerson,
   MdOutlinePersonAddAlt,
@@ -23,6 +24,7 @@ import { AccordionItemContent } from "@/components/ui/accordion";
 import { LuChevronDown } from "react-icons/lu";
 import DataTableAlt from "@/components/ui/data-table-alt";
 import {
+  InviteStatus,
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
@@ -44,6 +46,9 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { useUserPermissions } from "@/hooks/useUserPermissions";
 import ProjectSearchInput from "../ProjectSearchInput";
 import { TFunction } from "i18next";
+import { toaster } from "@/components/ui/toaster";
+import { copyInviteUrlsToClipboard } from "@/util/copy-invite-urls";
+import { UseErrorToast } from "@/hooks/Toasts";
 
 const TeamSettings = ({
   lng,
@@ -109,6 +114,12 @@ const TeamSettings = ({
       },
     );
 
+  const [inviteUsers] = api.useInviteUsersMutation();
+  const [createOrganizationInvite] = api.useCreateOrganizationInviteMutation();
+  const { showErrorToast } = UseErrorToast({
+    title: t("invite-error-toast-title"),
+  });
+
   const userList = useMemo(() => {
     if (!projectUsers) return [];
     if (selectedCity) {
@@ -137,6 +148,59 @@ const TeamSettings = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsData]);
+
+  const copyInviteLink = async (item: ProjectUserResponse) => {
+    if (!selectedOrganization) return;
+    toaster.create({
+      title: t("sending-invite"),
+      type: "info",
+    });
+    try {
+      if (item.role === OrganizationRole.ORG_ADMIN) {
+        const inviteResponse = await createOrganizationInvite({
+          organizationId: selectedOrganization,
+          inviteeEmails: [item.email],
+          role: OrganizationRole.ORG_ADMIN,
+        }).unwrap();
+        await copyInviteUrlsToClipboard(inviteResponse.inviteUrls);
+      } else {
+        const cityIds = [
+          ...new Set(
+            (projectUsers ?? [])
+              .filter((user) => user.email === item.email && user.cityId)
+              .map((user) => user.cityId as string),
+          ),
+        ];
+        if (!selectedProject[0] || cityIds.length === 0) {
+          throw new Error("Missing project or city for invite");
+        }
+        const inviteResponse = await inviteUsers({
+          projectId: selectedProject[0],
+          cityIds,
+          invites: [
+            {
+              email: item.email,
+              role:
+                item.role === OrganizationRole.ADMIN
+                  ? "admin"
+                  : "collaborator",
+            },
+          ],
+        }).unwrap();
+        await copyInviteUrlsToClipboard(inviteResponse.inviteUrls);
+      }
+      toaster.dismiss();
+      toaster.create({
+        title: t("invite-sent-success"),
+        description: t("invite-link-copied-to-clipboard"),
+        type: "success",
+        duration: 3000,
+      });
+    } catch {
+      toaster.dismiss();
+      showErrorToast();
+    }
+  };
 
   const filteredProjectsData = useMemo(() => {
     if (!projectsData) return [];
@@ -432,6 +496,40 @@ const TeamSettings = ({
                               shadow="2dp"
                               px="0"
                             >
+                              {item.status !== InviteStatus.ACCEPTED && (
+                                <MenuItem
+                                  value={t("copy-invite-link")}
+                                  valueText={t("copy-invite-link")}
+                                  p="16px"
+                                  display="flex"
+                                  alignItems="center"
+                                  gap="16px"
+                                  _hover={{
+                                    bg: "content.link",
+                                    cursor: "pointer",
+                                  }}
+                                  className="group"
+                                  onClick={() => copyInviteLink(item)}
+                                >
+                                  <Icon
+                                    as={MdLink}
+                                    h="24px"
+                                    w="24px"
+                                    color="content.secondary"
+                                    _groupHover={{
+                                      color: "white",
+                                    }}
+                                  />
+                                  <Text
+                                    color="content.primary"
+                                    _groupHover={{
+                                      color: "white",
+                                    }}
+                                  >
+                                    {t("copy-invite-link")}
+                                  </Text>
+                                </MenuItem>
+                              )}
                               {item.role === OrganizationRole.COLLABORATOR && (
                                 <MenuItem
                                   value={t("upgrade-to-admin")}

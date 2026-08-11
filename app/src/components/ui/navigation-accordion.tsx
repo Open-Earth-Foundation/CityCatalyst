@@ -10,9 +10,9 @@ interface NavigationItem {
 
 interface NavigationAccordionProps {
   title: string;
-  icon: React.ComponentType<any>;
+  icon: React.ElementType;
   items: NavigationItem[];
-  t: Function;
+  t: (key: string) => string;
   defaultOpen?: boolean;
 }
 
@@ -51,25 +51,31 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
             <Accordion.ItemBody border="none" pl="xl">
-              {items.map((item, index) => (
-                <Link
-                  key={index}
-                  rounded={0}
-                  w="full"
-                  h="48px"
-                  gap="12px"
-                  display="flex"
-                  alignItems="center"
-                  href={item.href}
-                  onClick={item.onClick}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <Text fontSize="body.lg" color="content.primary">
-                    {t(item.label)}
-                  </Text>
-                </Link>
-              ))}
+              {items.map((item, index) => {
+                const isExternal =
+                  !!item.href &&
+                  (item.href.startsWith("http://") ||
+                    item.href.startsWith("https://"));
+                return (
+                  <Link
+                    key={index}
+                    rounded={0}
+                    w="full"
+                    h="48px"
+                    gap="12px"
+                    display="flex"
+                    alignItems="center"
+                    href={item.href}
+                    onClick={item.onClick}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    target={isExternal ? "_blank" : undefined}
+                  >
+                    <Text fontSize="body.lg" color="content.primary">
+                      {t(item.label)}
+                    </Text>
+                  </Link>
+                );
+              })}
             </Accordion.ItemBody>
           </Accordion.ItemContent>
         </Accordion.Item>

@@ -358,3 +358,45 @@ export const createChatThreadRequest = z.object({
 });
 
 export type CreateChatThreadRequest = z.infer<typeof createChatThreadRequest>;
+
+export const conceptNoteStartRequest = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    city_id: z.string().uuid(),
+    project_id: z.string().trim().min(1).max(255).nullable().optional(),
+    funder_id: z.string().uuid().nullable().optional(),
+    selected_funding_record_id: z.string().uuid().nullable().optional(),
+    thread_id: z.string().uuid().nullable().optional(),
+    idempotency_key: z.string().uuid(),
+  })
+  .superRefine((request, context) => {
+    if (request.selected_funding_record_id && !request.funder_id) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "funder_id is required when selected_funding_record_id is provided",
+        path: ["funder_id"],
+      });
+    }
+  });
+
+export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;
+
+export const nativeInputCatalogRegisterRequest = z.object({
+  kind: z.string().trim().min(1).max(64),
+  owningModule: z.string().trim().min(1).max(64),
+  sourceType: z.string().trim().min(1).max(64),
+  sourceId: z.string().trim().min(1).max(255),
+  userId: z.string().uuid().nullable().optional(),
+  inventoryId: z.string().uuid().nullable().optional(),
+  cityId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  organizationId: z.string().uuid().nullable().optional(),
+  contentDigest: z.string().trim().min(1).max(128).nullable().optional(),
+  markdownReady: z.boolean().nullable().optional(),
+  labels: z.record(z.string(), z.unknown()).nullable().optional(),
+});
+
+export type NativeInputCatalogRegisterRequest = z.infer<
+  typeof nativeInputCatalogRegisterRequest
+>;

@@ -14,7 +14,7 @@ export interface CustomSelectProps {
   placeholder?: string;
   width?: string;
   height?: string;
-  t: Function;
+  t: (key: string) => string;
   label: string;
 }
 
@@ -54,7 +54,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
     <Box position="relative" w={width}>
       <Text
         as="label"
-        fontSize="label.md"
+        fontSize="label.lg"
         color="content.tertiary"
         fontFamily="heading"
         fontWeight="semibold"
@@ -66,7 +66,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         as="button"
         appearance="none"
         w="full"
-        h="48px"
+        h="12"
+        mt="2"
         display="flex"
         alignItems="center"
         justifyContent="space-between"
@@ -81,7 +82,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         gap="8px"
         cursor="pointer"
         _hover={{
-          borderColor: "content.secondary",
+          borderColor: "content.link",
         }}
         _focus={{
           outline: "none",

@@ -27,7 +27,7 @@ describe("resolveStationaryEnergyDraftResume", () => {
 
   it("loads the CA-backed persisted draft when no query or local cache exists", async () => {
     const persistedDraft = draftFixture("persisted-draft");
-    const refreshDraftStatus = jest.fn(async (_draftRunId: string) =>
+    const refreshDraftStatus = jest.fn(async () =>
       draftFixture("cached-draft"),
     );
     const resumeDraftFromServer = jest.fn(async () => persistedDraft);
@@ -47,9 +47,7 @@ describe("resolveStationaryEnergyDraftResume", () => {
 
   it("uses a draftRunId deep link before trying durable resume", async () => {
     const linkedDraft = draftFixture("linked-draft");
-    const refreshDraftStatus = jest.fn(
-      async (_draftRunId: string) => linkedDraft,
-    );
+    const refreshDraftStatus = jest.fn(async () => linkedDraft);
     const resumeDraftFromServer = jest.fn(async () =>
       draftFixture("server-draft"),
     );
@@ -72,7 +70,7 @@ describe("resolveStationaryEnergyDraftResume", () => {
       draftRunId: "saved-draft",
       threadId: "thread-1",
     });
-    const refreshDraftStatus = jest.fn(async (_draftRunId: string) =>
+    const refreshDraftStatus = jest.fn(async () =>
       draftFixture("saved-draft", "saved"),
     );
     const resumeDraftFromServer = jest.fn(async () =>

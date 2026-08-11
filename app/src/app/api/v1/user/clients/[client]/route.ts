@@ -31,7 +31,8 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { OAuthClient } from "@/models/OAuthClient";
 import { OAuthClientI18N } from "@/models/OAuthClientI18N";
 import { OAuthClientAuthz } from "@/models/OAuthClientAuthz";
-import type { Model } from "sequelize";
+
+type OAuthClientWithI18n = OAuthClient & { i18n?: OAuthClientI18N[] };
 
 /** Return client authorization information for this user */
 
@@ -73,20 +74,21 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     throw createHttpError.NotFound("No client authorization with that id");
   }
 
-  const client = authz.get("client")! as Model;
+  const client = authz.get("client")! as OAuthClientWithI18n;
   const names = Object.fromEntries(
-    (client as any).i18n?.map((r: any) => [r.language, r.name]) ?? [],
+    client.i18n?.map((r) => [r.language, r.name]) ?? [],
   );
   const descriptions = Object.fromEntries(
-    (client as any).i18n?.map((r: any) => [r.language, r.description]) ?? [],
+    client.i18n?.map((r) => [r.language, r.description]) ?? [],
   );
 
-  const {
-    clientId: ignoreCI,
-    userId: ignoreUI,
-    ...authzData
-  } = authz.get({ plain: true });
-  const { i18n: ignoreI18n, ...clientData } = client.get({ plain: true });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured only to exclude these fields from authzData
+  const { clientId: ignoreCI, userId: ignoreUI, ...authzData } =
+    authz.get({ plain: true });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured only to exclude i18n from clientData
+  const { i18n: ignoreI18n, ...clientData } = client.get({
+    plain: true,
+  }) as ReturnType<typeof client.get> & { i18n?: unknown };
   const data = {
     ...authzData,
     client: {

@@ -2,7 +2,7 @@
 import { OrganizationHero } from "@/components/Organization/OrganizationHero";
 import ProgressLoader from "@/components/ProgressLoader";
 import { BodyLarge } from "@/components/package/Texts/Body";
-import { ButtonMedium, ButtonSmall } from "@/components/package/Texts/Button";
+import { ButtonMedium } from "@/components/package/Texts/Button";
 import {
   HeadlineLarge,
   HeadlineSmall,
@@ -17,7 +17,7 @@ import { Box, Card, Icon, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { use, useMemo } from "react";
-import { MdArrowBack, MdArrowForward, MdNavigateNext } from "react-icons/md";
+import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 
 export default function ProjectPage(props: {

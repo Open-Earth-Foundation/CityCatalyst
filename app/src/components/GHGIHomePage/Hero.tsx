@@ -33,7 +33,6 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
-import { NumberFormatEnum } from "@/util/enums";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -56,7 +55,6 @@ interface HeroProps {
 }
 
 export function Hero({
-  currentInventoryId,
   formattedEmissions: { unit, value },
   inventory,
   isInventoryLoading,
@@ -70,6 +68,7 @@ export function Hero({
   const { t } = useTranslation(lng, "dashboard");
   const pathname = usePathname();
   const activeCity = inventory?.city?.name ?? city?.name;
+  const cityArea = inventory?.city.area;
   const activeProject = (() => {
     const projectName = inventory?.city?.project?.name ?? city?.project?.name;
     return projectName === "cc_project_default"
@@ -360,8 +359,7 @@ export function Hero({
                   />
                   <Box>
                     <Box display="flex" gap={1}>
-                      {inventory?.city.area === null ||
-                      inventory?.city.area! === 0 ? (
+                      {cityArea === null || cityArea === 0 ? (
                         <Text
                           fontFamily="heading"
                           color="border.neutral"
@@ -380,7 +378,7 @@ export function Hero({
                           lineHeight="32"
                         >
                           {formatNumber(
-                            Math.round(inventory?.city.area!),
+                            Math.round(cityArea!),
                             numberFormat,
                           )}
                           {/* eslint-disable-next-line i18next/no-literal-string */}

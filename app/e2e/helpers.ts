@@ -289,7 +289,7 @@ export async function createCityThroughOnboarding(page: Page): Promise<string> {
   return cityId;
 }
 
-/** GHGI setup step: third-party data opt-in (after population, before confirm). */
+/** GHGI setup step: third-party data opt-in (final step before inventory is created). */
 export async function completeThirdPartyDataOnboardingStep(
   page: Page,
   choice: "yes" | "no" = "no",
@@ -304,7 +304,9 @@ export async function completeThirdPartyDataOnboardingStep(
       : "third-party-data-choice-no";
   await page.getByTestId(choiceTestId).click();
 
-  const continueBtn = page.getByRole("button", { name: /Continue/i });
+  const continueBtn = page.getByRole("button", {
+    name: /Create Inventory|Continue/i,
+  });
   await expect(continueBtn).toBeEnabled({ timeout: 15000 });
 
   if (options?.waitForInventoryUrl) {
@@ -386,7 +388,7 @@ export async function createInventoryThroughOnboarding(
     await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {
       timeout: 5000,
     });
-  } catch (error) {
+  } catch {
     // Fill population data manually
     await cityPopulationInput.fill("1000000"); // 1 million population
 
@@ -417,7 +419,7 @@ export async function createInventoryThroughOnboarding(
         'select[name="countryPopulationYear"]',
       );
       await countryYearSelect.selectOption("2023");
-    } catch (e) {
+    } catch {
       // Some population fields not found, continuing...
     }
   }
@@ -434,39 +436,9 @@ export async function createInventoryThroughOnboarding(
 
   await page.waitForTimeout(3000);
 
-  await completeThirdPartyDataOnboardingStep(page, "no");
-
-  // Step 8: Confirm and Complete
-  const confirmHeading = page.getByTestId("confirm-city-data-heading");
-  await expect(confirmHeading).toBeVisible({ timeout: 10000 });
-
-  // Click Continue to complete onboarding
-  const continueBtn3 = page.getByRole("button", { name: /Continue/i });
-  await expect(continueBtn3).toBeEnabled({ timeout: 10000 });
-  await continueBtn3.click();
-
-  // Wait for the form submission to process
-  await page.waitForTimeout(5000);
-
-  // Check if we're already on the inventory page (redirect might have happened)
-  const currentUrl = page.url();
-
-  if (currentUrl.includes("/GHGI/") && !currentUrl.includes("/onboarding/")) {
-    // Already redirected to inventory page
-  } else {
-    try {
-      await page.waitForURL("**/cities/*/GHGI/*/", {
-        waitUntil: "domcontentloaded",
-        timeout: 15000,
-      });
-    } catch (error) {
-      // Try to manually navigate if redirect failed
-      const urlParts = currentUrl.split("/");
-      const cityId = urlParts[urlParts.indexOf("cities") + 1];
-      await page.goto(`/${lng}/cities/${cityId}/GHGI`);
-      throw error;
-    }
-  }
+  await completeThirdPartyDataOnboardingStep(page, "no", {
+    waitForInventoryUrl: true,
+  });
 
   // Extract inventoryId from the final URL
   const finalUrl = page.url();

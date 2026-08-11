@@ -2,6 +2,7 @@ import * as Sequelize from "sequelize";
 import { DataTypes, Model, Optional } from "sequelize";
 import { ACTION_TYPES, HighImpactActionRankingStatus } from "@/util/types";
 import { HighImpactActionRanked } from "./HighImpactActionRanked";
+import type { Inventory } from "./Inventory";
 
 export interface HighImpactActionRankingAttributes {
   id: string;
@@ -47,6 +48,9 @@ export class HighImpactActionRanking
   declare userId?: string;
 
   declare highImpactActionRanked: HighImpactActionRanked[];
+
+  // HighImpactActionRanking belongsTo Inventory via inventoryId
+  declare inventory: Inventory;
 
   static initModel(
     sequelize: Sequelize.Sequelize,

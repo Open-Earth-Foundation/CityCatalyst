@@ -1,5 +1,5 @@
 "use client";
-import { use, Suspense } from "react";
+import { Suspense } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";
@@ -8,8 +8,6 @@ export default function OnboardingLayout(props: {
   children: React.ReactNode;
   params: Promise<{ lng: string }>;
 }) {
-  const { lng } = use(props.params);
-
   return (
     <Box
       as="main"

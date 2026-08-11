@@ -64,13 +64,7 @@ import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { db } from "@/models";
 import { NextResponse } from "next/server";
-import { literal, Op } from "sequelize";
-import { z } from "zod";
-
-const getWasteCompositionParams = z.object({
-  inventoryId: z.string().uuid(),
-  methodologyName: z.string(),
-});
+import { Op } from "sequelize";
 
 export const GET = apiHandler(async (_req: Request, context) => {
   if (!context.session) {

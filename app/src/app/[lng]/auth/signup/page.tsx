@@ -7,7 +7,7 @@ import { useTranslation } from "@/i18n/client";
 import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
 import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, use } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
@@ -21,6 +21,7 @@ import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { isPasswordPatternValid } from "@/util/validation";
 import { getHomePath } from "@/util/routes";
+import { getApiErrorMessage } from "@/util/helpers";
 
 type Inputs = {
   inventory?: string;
@@ -36,7 +37,7 @@ type Inputs = {
 const normalizeInviteEmail = (value: string | null): string =>
   (value ?? "").replaceAll(" ", "+");
 
-export default function Signup(props: { params: Promise<{ lng: string }> }) {
+export default function Signup() {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
@@ -57,7 +58,6 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const {
     handleSubmit,
     register,
-    setError: setFormError,
     formState: { errors, isSubmitting, isValid },
     watch,
   } = useForm<Inputs>({
@@ -107,7 +107,14 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         setError(message);
         return;
       }
-      const userData = (await res.json()) as any;
+      const userData = (await res.json()) as {
+        user: {
+          email: string;
+          name?: string;
+          preferredLanguage?: string;
+          role?: string;
+        };
+      };
 
       // Track user registration
       trackEvent("user_registered", {
@@ -134,8 +141,8 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         logger.error(loginResponse, "Failed to login");
         setError(t("invalid-email-password"));
       }
-    } catch (error: any) {
-      setError(error);
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, "Something went wrong"));
     }
   };
 

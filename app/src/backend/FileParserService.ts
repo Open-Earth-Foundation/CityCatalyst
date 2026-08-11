@@ -5,7 +5,7 @@ import { Readable } from "stream";
 export interface ParsedSheet {
   name: string;
   headers: string[];
-  rows: Record<string, any>[];
+  rows: Record<string, string | number | null>[];
   rowCount: number;
   columnCount: number;
 }
@@ -28,13 +28,17 @@ export default class FileParserService {
    */
   public static async parseXLSX(buffer: Buffer): Promise<ParsedFileData> {
     const workbook = new Excel.Workbook();
-    await workbook.xlsx.load(buffer as any);
+    // exceljs's Buffer type comes from a different @types/node snapshot than
+    // this project's, so the two Buffer types don't structurally match.
+    await workbook.xlsx.load(
+      buffer as unknown as Parameters<typeof workbook.xlsx.load>[0],
+    );
 
     const sheets: ParsedSheet[] = [];
 
     workbook.worksheets.forEach((worksheet) => {
       const headers: string[] = [];
-      const rows: Record<string, any>[] = [];
+      const rows: Record<string, string | number | null>[] = [];
 
       // Get headers from first row
       const headerRow = worksheet.getRow(1);
@@ -46,7 +50,7 @@ export default class FileParserService {
       // Parse data rows (starting from row 2)
       for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
         const row = worksheet.getRow(rowNum);
-        const rowData: Record<string, any> = {};
+        const rowData: Record<string, string | number | null> = {};
 
         headers.forEach((header, colNumber) => {
           if (header) {
@@ -116,7 +120,7 @@ export default class FileParserService {
    */
   public static async parseCSV(buffer: Buffer): Promise<ParsedFileData> {
     return new Promise((resolve, reject) => {
-      const rows: Record<string, any>[] = [];
+      const rows: Record<string, string | number | null>[] = [];
       let headers: string[] = [];
 
       const stream = Readable.from(buffer.toString("utf-8"));
@@ -246,10 +250,10 @@ export default class FileParserService {
    * @returns Column value or null
    */
   public static getColumnValue(
-    row: Record<string, any>,
+    row: Record<string, string | number | null>,
     headers: string[],
     columnIndex: number,
-  ): any {
+  ): string | number | null {
     if (columnIndex < 0 || columnIndex >= headers.length) {
       return null;
     }

@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import ECRFImportService, { type ECRFImportResult } from "./ECRFImportService";
+import { type ECRFImportResult } from "./ECRFImportService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
@@ -522,7 +522,7 @@ export default class InventoryImportService {
                 // Find the exclusive option for the group-by field
                 if (groupByField && activity["extra-fields"]) {
                   const groupByFieldDef = activity["extra-fields"].find(
-                    (f: any) => f.id === groupByField && f.exclusive,
+                    (f) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
                     groupByDefaultValue = groupByFieldDef.exclusive;
@@ -530,11 +530,11 @@ export default class InventoryImportService {
                 }
               } else if (methodology && "group-by" in methodology) {
                 // DirectMeasure: group-by and extra-fields are at the top level
-                groupByField = (methodology as any)["group-by"];
+                groupByField = methodology["group-by"];
 
                 if (groupByField && methodology["extra-fields"]) {
                   const groupByFieldDef = methodology["extra-fields"].find(
-                    (f: any) => f.id === groupByField && f.exclusive,
+                    (f) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
                     groupByDefaultValue = groupByFieldDef.exclusive;
@@ -543,7 +543,8 @@ export default class InventoryImportService {
               }
 
               // Build activityData JSONB object using schema mapping
-              const activityData: Record<string, any> = {};
+              const activityData: Record<string, string | number | string[]> =
+                {};
 
               // Map activity amount using activityTitle from schema
               if (row.activityAmount !== undefined) {
@@ -583,9 +584,13 @@ export default class InventoryImportService {
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
                 let sourceFieldName = "data-source";
-                if ((methodology as any)?.["extra-fields"]) {
-                  const methodSourceField = (methodology as any)["extra-fields"].find(
-                    (f: any) => f.id.includes("-source") && f.type === "text",
+                if (
+                  methodology &&
+                  "extra-fields" in methodology &&
+                  methodology["extra-fields"]
+                ) {
+                  const methodSourceField = methodology["extra-fields"].find(
+                    (f) => f.id.includes("-source") && f.type === "text",
                   );
                   if (methodSourceField) {
                     sourceFieldName = methodSourceField.id;
@@ -624,7 +629,7 @@ export default class InventoryImportService {
               }
 
               // Build metadata JSONB object
-              const metadata: Record<string, any> = {};
+              const metadata: Record<string, string | number | string[]> = {};
 
               // Set activityId from schema
               if (activityId) {

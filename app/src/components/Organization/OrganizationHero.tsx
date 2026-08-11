@@ -1,9 +1,5 @@
 import { Tooltip } from "@/components/ui/tooltip";
-import type {
-  CityLocationResponse,
-  OrganizationResponse,
-  ProjectWithCities,
-} from "@/util/types";
+import type { OrganizationResponse, ProjectWithCities } from "@/util/types";
 import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import {
@@ -16,8 +12,6 @@ import { GlobeLocationPinIcon } from "../icons";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { DisplayMedium } from "@/components/package/Texts/Display";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
-import ProjectMap from "../ProjectMap/ProjectMap";
-import { useState } from "react";
 
 interface OrganizationHeroProps {
   organization?: OrganizationResponse;
@@ -32,7 +26,6 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
   organization,
   projects,
   isLoading = false,
-  projectId,
 }) => {
   // Calculate stats
   const totalProjects = projects?.length ?? 0;
@@ -55,10 +48,6 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
     organization?.name === "cc_organization_default"
       ? t("default-organization")
       : organization?.name;
-
-  const [selectedCity, setSelectedCity] = useState<
-    CityLocationResponse | undefined
-  >(undefined);
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">

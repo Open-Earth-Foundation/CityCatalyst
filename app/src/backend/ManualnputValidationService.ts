@@ -113,7 +113,7 @@ export default class ManualInputValidationService {
       if (extraFields && extraFields.length > 0) {
         // handle required fields validation
         await this.requiredFieldValidation({
-          activityData: activityValueParams.activityData as Record<string, any>,
+          activityData: activityValueParams.activityData as Record<string, unknown>,
           requiredFields: extraFields
             .filter((field) => field.required !== false)
             .map((field) => field.id),
@@ -121,7 +121,7 @@ export default class ManualInputValidationService {
 
         // handle exclusive fields validation
         await this.exclusiveFieldValidation({
-          activityData: activityValueParams.activityData as Record<string, any>,
+          activityData: activityValueParams.activityData as Record<string, unknown>,
           exclusiveFieldValue: extraFields
             .filter((field) => field.exclusive)
             .map((f) => ({ id: f.id, value: f.exclusive as string })),
@@ -153,7 +153,7 @@ export default class ManualInputValidationService {
     activityData,
     requiredFields,
   }: {
-    activityData: Record<string, any>;
+    activityData: Record<string, unknown>;
     requiredFields: string[];
   }) {
     const missingFields: string[] = [];
@@ -258,7 +258,7 @@ export default class ManualInputValidationService {
     activityValueId,
     activityTypeField,
   }: {
-    activityData: Record<string, any>;
+    activityData: Record<string, unknown>;
     exclusiveFieldValue: { id: string; value: string }[];
     inventoryValueId: string;
     activityValueId?: string;
@@ -301,7 +301,7 @@ export default class ManualInputValidationService {
           targetFields: [field.id],
           meta: {
             exclusiveFieldValue: exclusiveValue,
-            targetValue: activityData[field.id],
+            targetValue: activityData[field.id] as string | undefined,
           },
         };
 

@@ -4,9 +4,7 @@ import { use, useEffect, useRef } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import NextLink from "next/link";
 import { MdArrowForward, MdUpload } from "react-icons/md";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/services/api";
 
@@ -29,9 +27,11 @@ export default function Onboarding(props: {
     acceptedOnce.current = true;
 
     const cleanedEmail = email.replace(/ /g, "+").replace(/%40/g, "@");
-    acceptOrgInvite({ token, email: cleanedEmail, organizationId }).unwrap().catch(() => {
-      // Silently ignore errors (e.g. already accepted) and let onboarding proceed
-    });
+    acceptOrgInvite({ token, email: cleanedEmail, organizationId })
+      .unwrap()
+      .catch(() => {
+        // Silently ignore errors (e.g. already accepted) and let onboarding proceed
+      });
   }, [searchParams, acceptOrgInvite]);
 
   const steps = [1, 2, 3, 4];
@@ -82,7 +82,7 @@ export default function Onboarding(props: {
           </Box>
           <Box>
             <Image
-              src="/assets/onboarding-buildings-image.png"
+              src="/assets/onboarding-buildings-illustration.png"
               alt="buildings.png"
               height={420}
               width={900}
@@ -90,7 +90,15 @@ export default function Onboarding(props: {
           </Box>
         </Box>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0" data-onboarding-bottom-bar>
+      <Box
+        bg="base.light"
+        h="145px"
+        w="full"
+        pos="fixed"
+        bottom="0"
+        left="0"
+        data-onboarding-bottom-bar
+      >
         {/* Place holder steppers */}
         <HStack p="4px">
           {steps.map((step) => (

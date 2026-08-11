@@ -20,7 +20,6 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
 import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-step";
-import ConfirmStep from "@/components/steps/GHGI/confirm-inventory-data-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
 import { UseErrorToast } from "@/hooks/Toasts";
@@ -29,9 +28,11 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
 import ProjectLimitModal from "@/components/project-limit";
 import { useGetCityQuery } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import ThirdPartyInventoryDataStep, {
   THIRD_PARTY_DATA_FILL_YES,
 } from "@/components/steps/GHGI/set-third-party-step";
+import GhgiImportWizard from "@/components/steps/GHGI/import/ghgi-import-wizard";
 
 type Inputs = GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
@@ -51,7 +52,7 @@ export default function OnboardingSetup(props: {
     setValue,
     watch,
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<Inputs>();
 
   const params = useSearchParams();
@@ -94,20 +95,25 @@ export default function OnboardingSetup(props: {
     }
   }, [cityData]);
 
-  const steps = isUploadMode
-    ? [
-        { title: t("set-inventory-details-step") },
-        { title: t("set-population-step") },
-        { title: t("confirm-step") },
-      ]
-    : [
-        { title: t("set-inventory-details-step") },
-        { title: t("set-population-step") },
-        { title: t("set-third-party-data-step") },
-        { title: t("confirm-step") },
-      ];
-
-  const confirmStepIndex = isUploadMode ? 2 : 3;
+  // Create: details → population → third-party (3).
+  // Upload: details → population → upload → mapping → review (5, no third-party).
+  const steps = useMemo(
+    () =>
+      isUploadMode
+        ? [
+            { title: t("set-inventory-details-step") },
+            { title: t("set-population-step") },
+            { title: t("upload-file-step") },
+            { title: t("inventory-mapping-step") },
+            { title: t("review-confirm-step") },
+          ]
+        : [
+            { title: t("set-inventory-details-step") },
+            { title: t("set-population-step") },
+            { title: t("set-third-party-data-step") },
+          ],
+    [isUploadMode, t],
+  );
 
   const {
     value: activeStep,
@@ -118,6 +124,16 @@ export default function OnboardingSetup(props: {
     defaultStep: 0,
     count: steps.length,
   });
+
+  // Inventory created mid-flow in upload mode; import steps reuse this id.
+  const [createdInventoryId, setCreatedInventoryId] = useState<string | null>(
+    null,
+  );
+
+  // Keep the viewport at the top when the stepper advances (CC-617).
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeStep]);
 
   const [addCityPopulation] = useAddCityPopulationMutation();
   const [addInventory] = useAddInventoryMutation();
@@ -217,9 +233,6 @@ export default function OnboardingSetup(props: {
   const onConfirm = async () => {
     setConfirming(true);
 
-    const projectId =
-      selectedProject?.length > 0 ? selectedProject[0] : undefined;
-
     try {
       // Log population data before sending
       const populationData = {
@@ -235,11 +248,14 @@ export default function OnboardingSetup(props: {
       logger.info({ populationData }, "Onboarding - Sending population data");
 
       await addCityPopulation(populationData).unwrap();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to add city or population");
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
       makeErrorToast(
         t("failed-to-add-city"),
-        t(err.data?.error?.message ?? ""),
+        t(errorData?.error?.message ?? ""),
       );
       setConfirming(false);
       return;
@@ -273,20 +289,19 @@ export default function OnboardingSetup(props: {
 
       setConfirming(false);
 
-      // Check if we're in upload mode
-      const mode = params.get("mode");
-      if (mode === "upload") {
-        // Route to import page with the newly created inventory ID
-        router.push(
-          `/${lng}/cities/${cityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`,
-        );
+      if (isUploadMode) {
+        // Stay on setup: jump to import steps with a continuous 5-step ProgressSteps.
+        setCreatedInventoryId(inventory.inventoryId);
+        setStep(2);
       } else {
-        // Default behavior: route to home page
         router.push(`/${lng}/cities/${cityId}/GHGI/${inventory.inventoryId}`);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err: err }, "Failed to create new inventory!");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
+      makeErrorToast("failed-to-create-inventory", errorData?.error?.message);
       setConfirming(false);
     }
   };
@@ -308,7 +323,9 @@ export default function OnboardingSetup(props: {
     }
   }, [activeStep, isUploadMode]);
 
-  const [selectedProject, setSelectedProject] = useState<string[]>([]);
+  // Tracked but never read/sent to addInventory yet — looks like unfinished
+  // wiring rather than dead code, left as-is pending a follow-up ticket.
+  const [_selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
     if (projectId) {
       setSelectedProject([projectId!]);
@@ -319,13 +336,34 @@ export default function OnboardingSetup(props: {
     return <ProgressLoader />;
   }
 
+  // Upload mode after inventory create: same wizard, continuous 5-step ProgressSteps.
+  if (isUploadMode && createdInventoryId && activeStep >= 2) {
+    return (
+      <GhgiImportWizard
+        lng={lng}
+        cityId={cityId}
+        inventoryId={createdInventoryId}
+        progressSteps={steps}
+        progressStepOffset={2}
+        onExitFirstStep={() => setStep(1)}
+        onComplete={(id) => {
+          router.push(`/${lng}/cities/${cityId}/GHGI/${id}`);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <Box pt={16} pb={16} maxW="full" mx="auto" w="1090px">
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              router.back();
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"
@@ -367,7 +405,6 @@ export default function OnboardingSetup(props: {
           {activeStep === 1 && (
             <SetPopulationDataStep
               t={t}
-              register={register}
               control={control}
               errors={errors}
               years={years}
@@ -392,22 +429,6 @@ export default function OnboardingSetup(props: {
               inventoryType={inventoryGoal}
               value={thirdPartyDataChoice}
               onValueChange={setThirdPartyDataChoice}
-            />
-          )}
-          {activeStep === confirmStepIndex && (
-            <ConfirmStep
-              cityName={data.name}
-              t={t}
-              locode={data.locode}
-              population={
-                typeof cityPopulation === "string"
-                  ? parseInt(cityPopulation as string)
-                  : cityPopulation
-              }
-              inventoryGoal={inventoryGoal}
-              year={data.year}
-              setStep={setStep}
-              numberFormat={userInfo?.numberFormat}
             />
           )}
         </Box>
@@ -454,9 +475,12 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={handleSubmit(onSubmit)}
+                  onClick={
+                    isUploadMode ? onConfirm : handleSubmit(onSubmit)
+                  }
                   px="24px"
                   h="64px"
+                  loading={isUploadMode && isConfirming}
                 >
                   <Text
                     fontFamily="button.md"
@@ -473,35 +497,18 @@ export default function OnboardingSetup(props: {
                   w="auto"
                   gap="8px"
                   py="16px"
-                  onClick={goToNextStep}
+                  onClick={onConfirm}
                   px="24px"
                   h="64px"
                   disabled={!thirdPartyDataChoice}
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
-              )}
-              {activeStep == confirmStepIndex && (
-                <Button
-                  h={16}
-                  w="auto"
                   loading={isConfirming}
-                  px="24px"
-                  onClick={onConfirm}
                 >
                   <Text
                     fontFamily="button.md"
                     fontWeight="600"
                     letterSpacing="wider"
                   >
-                    {t("continue")}
+                    {t("create-inventory")}
                   </Text>
                   <MdArrowForward height="24px" width="24px" />
                 </Button>

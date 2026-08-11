@@ -22,6 +22,20 @@ interface UnifiedInviteAcceptancePageProps {
   inviteType?: InviteType;
 }
 
+type ValidatedInviteRequest =
+  | {
+      type: InviteType.CITY;
+      token: string;
+      email: string;
+      cityIds: string;
+    }
+  | {
+      type: InviteType.ORGANIZATION;
+      token: string;
+      email: string;
+      organizationId: string;
+    };
+
 const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAcceptancePageProps) => {
   const { lng } = use(params);
   const searchParams = useSearchParams();
@@ -102,82 +116,89 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
     });
   };
 
-  const acceptInvite = async () => {
-    if (calledOnce.current) return;
+  // Pure, render-time validation -- an invalid/malformed invite link is a
+  // derived value, not state, so it renders the error view directly below
+  // without ever needing an effect or a setState call.
+  const validatedRequest = ((): ValidatedInviteRequest | null => {
+    const { token, email, cityIds, organizationId } = queryParams;
+    const cleanedEmail = email?.split(" ").join("+").replace(/%40/g, "@");
+
+    if (!token || !cleanedEmail) return null;
+
+    switch (currentInviteType) {
+      case InviteType.CITY: {
+        if (!cityIds || !validateInput(token, cleanedEmail, cityIds)) {
+          return null;
+        }
+        return {
+          type: InviteType.CITY,
+          token: sanitizeInput(token),
+          email: sanitizeInput(cleanedEmail),
+          cityIds: sanitizeInput(cityIds),
+        };
+      }
+      case InviteType.ORGANIZATION: {
+        if (
+          !organizationId ||
+          !validateInput(token, cleanedEmail, organizationId)
+        ) {
+          return null;
+        }
+        return {
+          type: InviteType.ORGANIZATION,
+          token: sanitizeInput(token),
+          email: sanitizeInput(cleanedEmail),
+          organizationId: sanitizeInput(organizationId),
+        };
+      }
+      default:
+        return null;
+    }
+  })();
+
+  useEffect(() => {
+    if (!validatedRequest || calledOnce.current) return;
     calledOnce.current = true;
 
-    try {
-      const { token, email, cityIds, organizationId } = queryParams;
-      const cleanedEmail = email?.split(" ").join("+").replace(/%40/g, "@");
+    (async () => {
+      try {
+        let result;
+        let trackingData: {
+          event: string;
+          properties: Record<string, unknown>;
+        };
 
-      if (!token || !cleanedEmail) {
-        setError(true);
-        setIsLoading(false);
-        return;
-      }
-
-      const sanitizedToken = sanitizeInput(token);
-      const sanitizedEmail = sanitizeInput(cleanedEmail);
-
-      let result;
-      let trackingData;
-
-      switch (currentInviteType) {
-        case InviteType.CITY:
-          if (!cityIds || !validateInput(token, cleanedEmail, cityIds)) {
-            setError(true);
-            setIsLoading(false);
-            return;
-          }
-
-          const sanitizedCityIds = sanitizeInput(cityIds);
+        if (validatedRequest.type === InviteType.CITY) {
           result = await acceptCityInvite({
-            token: sanitizedToken,
-            cityIds: sanitizedCityIds.split(","),
-            email: sanitizedEmail,
+            token: validatedRequest.token,
+            cityIds: validatedRequest.cityIds.split(","),
+            email: validatedRequest.email,
           });
-
           trackingData = {
             event: "collaborator_invitation_accepted",
-            properties: { num_cities: sanitizedCityIds.split(",").length }
+            properties: {
+              num_cities: validatedRequest.cityIds.split(",").length,
+            },
           };
-          break;
-
-        case InviteType.ORGANIZATION:
-          if (!organizationId || !validateInput(token, cleanedEmail, organizationId)) {
-            setError(true);
-            setIsLoading(false);
-            return;
-          }
-
-          const sanitizedOrganizationId = sanitizeInput(organizationId);
+        } else {
           result = await acceptOrgInvite({
-            token: sanitizedToken,
-            organizationId: sanitizedOrganizationId,
-            email: sanitizedEmail,
+            token: validatedRequest.token,
+            organizationId: validatedRequest.organizationId,
+            email: validatedRequest.email,
           });
-
           trackingData = {
             event: "admin_invitation_accepted",
-            properties: { organization_id: sanitizedOrganizationId }
+            properties: { organization_id: validatedRequest.organizationId },
           };
-          break;
-
-        default:
-          setError(true);
-          setIsLoading(false);
-          return;
-      }
-
-      if (result?.error) {
-        setError(true);
-      } else {
-        // Track the event
-        if (trackingData) {
-          trackEvent(trackingData.event, trackingData.properties);
         }
 
-        // Prepare invite data
+        if (result?.error) {
+          setError(true);
+          return;
+        }
+
+        trackEvent(trackingData.event, trackingData.properties);
+
         let finalInviteData: {
           type: InviteType;
           email: string;
@@ -187,22 +208,23 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
             cityId: string;
             cityName: string;
             countryCode?: string;
-          }>} = {
-            type: currentInviteType,
-            email: sanitizedEmail,
-            ...trackingData?.properties,
-            cities: []
+          }>;
+        } = {
+          type: validatedRequest.type,
+          email: validatedRequest.email,
+          ...trackingData.properties,
+          cities: [],
         };
 
         // For city invites, fetch city data to show names and flags
-        if (currentInviteType === InviteType.CITY && cityIds) {
+        if (validatedRequest.type === InviteType.CITY) {
           try {
             const citiesResult = await getCities({});
             if (citiesResult.data) {
               const allCities = citiesResult.data;
-              const invitedCityIds = sanitizeInput(cityIds).split(",");
-              const invitedCities = invitedCityIds.map(cityId => {
-                const city = allCities.find((c: any) => c.cityId === cityId);
+              const invitedCityIds = validatedRequest.cityIds.split(",");
+              const invitedCities = invitedCityIds.map((cityId) => {
+                const city = allCities.find((c) => c.cityId === cityId);
                 return {
                   cityId,
                   cityName: city?.name || "Unknown City",
@@ -214,35 +236,38 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
 
               finalInviteData = {
                 ...finalInviteData,
-                cities: invitedCities
+                cities: invitedCities,
               };
             }
-          } catch (error) {
-            logger.error(error, "Failed to fetch city data for invite");
+          } catch (citiesError) {
+            logger.error(citiesError, "Failed to fetch city data for invite");
           }
         }
 
         setInviteData(finalInviteData);
         setSuccess(true);
         showSuccessToast();
+      } catch (err) {
+        setError(true);
+        logger.error(err, "Failed to accept invite");
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      setError(true);
-      logger.error(error, "Failed to accept invite");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    acceptInvite();
-  }, [queryParams]);
+    })();
+  }, [
+    validatedRequest,
+    acceptCityInvite,
+    acceptOrgInvite,
+    getCities,
+    showSuccessToast,
+  ]);
 
   const handleSuccessClose = () => {
     setSuccess(false);
     router.push("/");
   };
 
+  if (!validatedRequest) return <InviteErrorView lng={lng} />;
   if (isLoading) return <ProgressLoader />;
   if (error) return <InviteErrorView lng={lng} />;
   if (success) return (

@@ -43,7 +43,7 @@ function isLabelValueOption<TValue>(
   );
 }
 
-function DataTable<T extends Record<string, any>>({
+function DataTable<T extends object>({
   data,
   title,
   columns,

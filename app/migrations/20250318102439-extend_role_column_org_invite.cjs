@@ -1,5 +1,5 @@
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.sequelize.query(`
       ALTER TYPE "enum_OrganizationInvite_role" ADD VALUE IF NOT EXISTS 'org_admin';
     `);

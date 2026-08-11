@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
+
 import { db } from "@/models";
 import type { PdfOcrJob } from "@/models/PdfOcrJob";
-import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import { issueClimateAdvisorUserToken } from "@/backend/chat/climate-advisor";
 import {
   joinServiceUrl,
@@ -33,55 +33,30 @@ export class PdfOcrDeliveryError extends Error {
 }
 
 export function serializeMarkdownDeliveryPayload(
-  markdown: string,
   job: PdfOcrJob,
   source: PdfOcrDeliverySource,
 ): string {
-  if (!job.resultSha256 || !job.pageCount) {
+  if (!job.resultS3Key || !job.resultSha256 || !job.pageCount) {
     throw new PdfOcrDeliveryError(
       "ocr_result_incomplete",
       false,
       "OCR result metadata is incomplete",
     );
   }
-  const body = JSON.stringify({
-    markdown,
+  return JSON.stringify({
+    markdown_s3_key: job.resultS3Key,
     filename: source.filename,
     source_label: source.sourceLabel || null,
     page_count: job.pageCount,
     sha256: job.resultSha256,
   });
-  if (
-    Buffer.byteLength(body, "utf8") >
-    getPdfOcrConfig().caMarkdownRequestMaxBytes
-  ) {
-    throw new PdfOcrDeliveryError(
-      "ca_markdown_request_too_large",
-      false,
-      "Climate Advisor Markdown request exceeds the configured maximum",
-    );
-  }
-  return body;
 }
 
-export async function deliverPdfOcrJob(
-  job: PdfOcrJob,
+async function issueDeliveryToken(
   source: PdfOcrDeliverySource,
-): Promise<void> {
-  if (job.status !== "succeeded" || !job.resultS3Key) {
-    throw new PdfOcrDeliveryError(
-      "ocr_result_unavailable",
-      false,
-      "OCR result is not available for delivery",
-    );
-  }
-  const markdown = await InventoryFileStorageService.getTextFile(
-    job.resultS3Key,
-  );
-  const body = serializeMarkdownDeliveryPayload(markdown, job, source);
-  let token: Awaited<ReturnType<typeof issueClimateAdvisorUserToken>>;
+): Promise<Awaited<ReturnType<typeof issueClimateAdvisorUserToken>>> {
   try {
-    token = await issueClimateAdvisorUserToken({ userId: source.userId });
+    return await issueClimateAdvisorUserToken({ userId: source.userId });
   } catch {
     throw new PdfOcrDeliveryError(
       "ca_token_unavailable",
@@ -89,12 +64,20 @@ export async function deliverPdfOcrJob(
       "CC could not issue the Climate Advisor user token",
     );
   }
+}
+
+async function postClimateAdvisorDelivery(
+  source: PdfOcrDeliverySource,
+  suffix: "markdown" | "failed",
+  body: string,
+): Promise<void> {
+  const token = await issueDeliveryToken(source);
   let response: Response;
   try {
     response = await fetch(
       joinServiceUrl(
         requireServiceEnv("CA_BASE_URL"),
-        `/v1/concept-notes/${source.runId}/uploads/${source.uploadId}/markdown`,
+        `/v1/concept-notes/${source.runId}/uploads/${source.uploadId}/${suffix}`,
       ),
       {
         method: "POST",
@@ -122,9 +105,35 @@ export async function deliverPdfOcrJob(
           ? "ca_delivery_transient_error"
           : "ca_delivery_rejected",
       retryable,
-      `Climate Advisor rejected Markdown with status ${response.status}`,
+      `Climate Advisor rejected delivery with status ${response.status}`,
     );
   }
+}
+
+export async function deliverPdfOcrJob(
+  job: PdfOcrJob,
+  source: PdfOcrDeliverySource,
+): Promise<void> {
+  if (job.status === "failed") {
+    await postClimateAdvisorDelivery(
+      source,
+      "failed",
+      JSON.stringify({ error_code: job.errorCode || "pdf_ocr_failed" }),
+    );
+    return;
+  }
+  if (job.status !== "succeeded") {
+    throw new PdfOcrDeliveryError(
+      "ocr_result_unavailable",
+      false,
+      "OCR result is not available for delivery",
+    );
+  }
+  await postClimateAdvisorDelivery(
+    source,
+    "markdown",
+    serializeMarkdownDeliveryPayload(job, source),
+  );
 }
 
 async function recordDeliveryFailure(
@@ -147,13 +156,13 @@ async function recordDeliveryFailure(
   });
 }
 
-/** Process due optional deliveries. Inventory jobs never enter this query. */
+/** Process due terminal OCR outcomes without ever repeating successful OCR. */
 export async function processPdfOcrDeliveries(
   resolveSource: PdfOcrDeliveryResolver,
 ): Promise<number> {
   const jobs = await db.models.PdfOcrJob.findAll({
     where: {
-      status: "succeeded",
+      status: { [Op.in]: ["succeeded", "failed"] },
       deliveryTarget: "climate_advisor",
       [Op.or]: [
         { deliveryStatus: "delivering" },
@@ -170,20 +179,16 @@ export async function processPdfOcrDeliveries(
     limit: 2,
   });
   for (const job of jobs) {
-    const source = await resolveSource(job);
-    if (!source) {
-      await recordDeliveryFailure(
-        job,
-        new PdfOcrDeliveryError(
+    try {
+      const source = await resolveSource(job);
+      if (!source) {
+        throw new PdfOcrDeliveryError(
           "delivery_source_unavailable",
           false,
           "Delivery source metadata is unavailable",
-        ),
-      );
-      continue;
-    }
-    await job.update({ deliveryStatus: "delivering" });
-    try {
+        );
+      }
+      await job.update({ deliveryStatus: "delivering" });
       await deliverPdfOcrJob(job, source);
       await job.update({
         deliveryStatus: "delivered",
@@ -201,6 +206,64 @@ export async function processPdfOcrDeliveries(
   return jobs.length;
 }
 
-/** Inventory-first baseline: future source types register their resolver here. */
-export const resolvePdfOcrDeliverySource: PdfOcrDeliveryResolver = async () =>
-  null;
+export const resolvePdfOcrDeliverySource: PdfOcrDeliveryResolver = async (
+  job,
+) => {
+  if (job.sourceType !== "concept_note_upload") return null;
+  let response: Response;
+  try {
+    response = await fetch(
+      joinServiceUrl(
+        requireServiceEnv("CA_BASE_URL"),
+        `/v1/concept-note-uploads/${job.sourceId}/delivery-context`,
+      ),
+      {
+        headers: {
+          "X-CC-Service-Key": requireServiceEnv("CC_SERVICE_API_KEY"),
+        },
+        signal: AbortSignal.timeout(getPdfOcrConfig().caDeliveryTimeoutMs),
+      },
+    );
+  } catch {
+    throw new PdfOcrDeliveryError(
+      "delivery_source_network_error",
+      true,
+      "Climate Advisor delivery context is unavailable",
+    );
+  }
+  if (!response.ok) {
+    throw new PdfOcrDeliveryError(
+      "delivery_source_unavailable",
+      response.status === 429 || response.status >= 500,
+      `Climate Advisor rejected delivery context with status ${response.status}`,
+    );
+  }
+  let payload: unknown;
+  try {
+    payload = await response.json();
+  } catch {
+    throw new PdfOcrDeliveryError(
+      "delivery_source_invalid",
+      false,
+      "Climate Advisor returned invalid delivery context",
+    );
+  }
+  if (!payload || typeof payload !== "object") return null;
+  const source = payload as Record<string, unknown>;
+  if (
+    source.upload_id !== job.sourceId ||
+    typeof source.run_id !== "string" ||
+    typeof source.user_id !== "string" ||
+    typeof source.filename !== "string"
+  ) {
+    return null;
+  }
+  return {
+    uploadId: source.upload_id,
+    runId: source.run_id,
+    userId: source.user_id,
+    filename: source.filename,
+    sourceLabel:
+      typeof source.source_label === "string" ? source.source_label : null,
+  };
+};

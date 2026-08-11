@@ -115,3 +115,25 @@ class ConceptNoteRunRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def list_for_user_city(
+        self,
+        *,
+        user_id: str,
+        city_id: str,
+    ) -> list[ConceptNoteRun]:
+        """Load a user's runs for one city in deterministic activity order."""
+        query = (
+            select(ConceptNoteRun)
+            .where(
+                ConceptNoteRun.user_id == user_id,
+                ConceptNoteRun.city_id == city_id,
+            )
+            .order_by(
+                ConceptNoteRun.updated_at.desc(),
+                ConceptNoteRun.created_at.desc(),
+                ConceptNoteRun.run_id.desc(),
+            )
+        )
+        result = await self.session.execute(query)
+        return list(result.scalars().all())

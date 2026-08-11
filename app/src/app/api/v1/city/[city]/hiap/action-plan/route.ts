@@ -156,6 +156,7 @@ export const POST = apiHandler(
       actionId: validatedData.actionId,
       highImpactActionRankedId: validatedData.hiActionRankingId,
       cityLocode: validatedData.cityLocode,
+      inventoryId: validatedData.inventoryId,
       actionName: validatedData.actionName,
       language: validatedData.language,
       planData: validatedData.planData,

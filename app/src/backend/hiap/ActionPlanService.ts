@@ -5,6 +5,10 @@ import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
 import { hiapApiWrapper } from "./HiapApiService";
 import { LegacyActionPlanData } from "./types";
+import {
+  syncHIAPActionPlan,
+  withdrawHIAPActionPlanCatalog,
+} from "./HiapNativeInputCatalogService";
 
 // Interfaces updated to work with new table structure
 
@@ -187,6 +191,8 @@ export default class ActionPlanService {
         createdBy: input.createdBy,
       });
 
+      await syncHIAPActionPlan(actionPlan);
+
       return actionPlan;
     } catch (error: unknown) {
       logger.error({ err: error }, "Failed to create action plan");
@@ -307,7 +313,9 @@ export default class ActionPlanService {
         return null;
       }
 
-      return await this.getActionPlanById(input.id);
+      const actionPlan = await this.getActionPlanById(input.id);
+      if (actionPlan) await syncHIAPActionPlan(actionPlan);
+      return actionPlan;
     } catch (error: unknown) {
       logger.error({ err: error }, "Failed to update action plan");
       throw createHttpError.InternalServerError("Failed to update action plan");
@@ -319,6 +327,7 @@ export default class ActionPlanService {
    */
   public static async deleteActionPlan(id: string): Promise<boolean> {
     try {
+      await withdrawHIAPActionPlanCatalog(id);
       const deletedRowsCount = await db.models.ActionPlan.destroy({
         where: { id },
       });

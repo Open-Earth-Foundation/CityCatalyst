@@ -5,7 +5,7 @@ import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
 import NextLink from "next/link";
-import { MdArrowForward, MdUpload } from "react-icons/md";
+import { MdArrowForward } from "react-icons/md";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -51,14 +51,11 @@ export default function Onboarding(props: {
       });
   }, [searchParams, acceptOrgInvite, status, pathname, router]);
 
-  const steps = [1, 2, 3, 4];
+  const steps = [1, 2, 3];
   const projectId = searchParams.get("project");
   const setupHref = projectId
     ? `${pathname}/setup?project=${projectId}`
     : `${pathname}/setup`;
-  const uploadSetupHref = projectId
-    ? `${pathname}/setup?project=${projectId}&mode=upload`
-    : `${pathname}/setup?mode=upload`;
 
   return (
     <>
@@ -139,21 +136,6 @@ export default function Onboarding(props: {
           px="175px"
           gap="16px"
         >
-          <Button
-            w="auto"
-            gap="8px"
-            py="16px"
-            px="24px"
-            h="64px"
-            variant="outline"
-            onClick={() => router.push(uploadSetupHref)}
-            data-testid="upload-inventory-button"
-          >
-            <MdUpload height="24px" width="24px" />
-            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("upload-existing-inventory")}
-            </Text>
-          </Button>
           <Button
             w="auto"
             gap="8px"

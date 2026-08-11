@@ -1,0 +1,424 @@
+# HIAP-MEED Reference-Data API Product Contract
+
+## Purpose
+
+This is the product review of the seven proposed HIAP-MEED reference-data APIs. It shows which data each endpoint provides, the complete caller-controlled input shape, a representative response containing every proposed public field, and the backend-owned filtering.
+
+This proposal covers only the `hiap-meed` backend. For full example payloads, see [`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md). For implementation details, see [`implementation-plan-proposal.md`](implementation-plan-proposal.md).
+
+## Shared contract rules
+
+- Callers choose domain scope: locode, country, requested languages, action, sector, and route where relevant.
+- HIAP-MEED owns Global API URL construction, technical parameters, limits, validation, normalization, ordering, and post-filtering.
+- Callers cannot provide `top_evidence_limit`, `eligible_actor`, catalogue limits, Global API URLs, or arbitrary upstream parameters.
+- Public routes and existing processing workflows use the same internal HIAP-MEED operations.
+- The proposed guarantee is **same rules and current data**, not reuse of an exact earlier Global API snapshot.
+
+Every successful response also contains:
+
+```text
+meta: {
+  generated_at_utc,
+  backend_consumer,
+  upstream_provider,
+  api_context,
+  total_records
+}
+warnings: string[]
+```
+
+The JSON examples below are complete for the proposed public contracts: every proposed response field is shown. Dynamic lists and maps contain representative entries. The examples are proposals for product approval, not already implemented responses.
+
+## API overview
+
+| Data needed | HIAP-MEED request | Caller-controlled inputs | Main output |
+| --- | --- | --- | --- |
+| City attributes | `GET /v1/cities/{locode}/attributes` | `locode` | `city` |
+| Action catalogue | `GET /v1/action-pathways` | optional repeated `language` | `actions[]` |
+| Policy evidence and scores | `GET /v1/cities/{locode}/action-policy-scores` | `locode` | `scores[]`, `aggregates` |
+| Mitigation feasibility | `GET /v1/cities/{locode}/action-mitigation-feasibility-scores` | `locode`, `country_code` | `scores[]` |
+| Financial feasibility | `GET /v1/cities/{locode}/climate-finance/feasibility` | `locode`, `country_code` | `data[]` |
+| Funding opportunities | `GET /v1/climate-finance/opportunities` | `country_code`, optional `sector`, optional `route` | `current[]`, `monitor[]` |
+| Comparable projects | `GET /v1/climate-finance/projects` | `country_code`, `action_id` | `projects[]` |
+
+## 1. City attributes
+
+### Request
+
+```http
+GET /v1/cities/CL%20IQQ/attributes
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `locode` | path | string | yes | `CL IQQ` |
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "city": {
+    "locode": "CL IQQ",
+    "city_name": "Iquique",
+    "country_code": "CL",
+    "region_name": "Tarapacá",
+    "population_size": 191468,
+    "area_km2": 2242.1,
+    "population_density": 85.4,
+    "indicators": [
+      {
+        "key": "unemployment_rate",
+        "value": 8.1,
+        "unit": "%"
+      }
+    ]
+  },
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/cities/{locode}/attributes",
+      "locode": "CL IQQ"
+    },
+    "total_records": 1
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** normalize the locode and map the current city-attributes response into a stable city record.
+
+## 2. Action pathways
+
+### Request
+
+```http
+GET /v1/action-pathways?language=es
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `language` | query, repeatable | string | no | `es` |
+
+No `language` returns all available localizations. Repeating it, for example `?language=en&language=es`, returns exactly those languages.
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "actions": [
+    {
+      "action_id": "c40_0012",
+      "action_name": "Improve energy efficiency in municipal buildings",
+      "action_type": "mitigation",
+      "description": "Retrofit municipal buildings and improve energy management.",
+      "name_i18n": {
+        "es": "Mejorar la eficiencia energética de los edificios municipales"
+      },
+      "description_i18n": {
+        "es": "Rehabilitar edificios municipales y mejorar la gestión energética."
+      },
+      "investment_cost": "medium",
+      "implementation_timeline": "5-10 years"
+    }
+  ],
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/action-pathways"
+    },
+    "total_records": 1
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** fetch the canonical catalogue with all languages and use the same prioritizable-action selector as exclusion preview, prioritization, and output-plan generation. Return only actions whose normalized `action_type` is `mitigation`, then return all, one, or the requested language set. Production uses Global API; configured mocks remain test/local behavior only.
+
+## 3. Action policy scores
+
+### Request
+
+```http
+GET /v1/cities/CL%20IQQ/action-policy-scores
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `locode` | path | string | yes | `CL IQQ` |
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "locode": "CL IQQ",
+  "scores": [
+    {
+      "action_id": "c40_0012",
+      "policy_support_score": 0.78,
+      "policy_support_category": "strong",
+      "finding_count": 4,
+      "document_count": 2,
+      "policy_evidence": [
+        {
+          "scope": "national",
+          "document_name": "National Energy Efficiency Plan",
+          "relevance": "supporting"
+        }
+      ]
+    }
+  ],
+  "aggregates": {
+    "national": 0.78,
+    "regional": 0.72,
+    "municipal": 0.69
+  },
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/cities/{locode}/action-policy-scores",
+      "locode": "CL IQQ"
+    },
+    "total_records": 1
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** use the current HIAP-MEED evidence query and calculate the agreed evidence-scope aggregates from the same normalized result.
+- **Not a caller knob:** `top_evidence_limit`; HIAP-MEED does not add the prototype's value of five.
+
+## 4. Action mitigation-feasibility scores
+
+### Request
+
+```http
+GET /v1/cities/CL%20IQQ/action-mitigation-feasibility-scores?country_code=CL
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `locode` | path | string | yes | `CL IQQ` |
+| `country_code` | query | two-letter country code | yes | `CL` |
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "locode": "CL IQQ",
+  "country_code": "CL",
+  "scores": [
+    {
+      "action_id": "c40_0012",
+      "action_score": 0.71,
+      "rank_within_city": 8,
+      "dimension_scores": {
+        "technical": 0.8,
+        "institutional": 0.62
+      }
+    }
+  ],
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/cities/{locode}/action-mitigation-feasibility-scores",
+      "locode": "CL IQQ",
+      "country_code": "CL"
+    },
+    "total_records": 1
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** validate and normalize the caller scope, then reuse the current action-ID mapping and missing-release behavior.
+- **Important:** missing action scores remain absent; the prioritizer's neutral `0.5` fallback is not returned as source data.
+
+## 5. Financial-feasibility scores
+
+### Request
+
+```http
+GET /v1/cities/CL%20IQQ/climate-finance/feasibility?country_code=CL
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `locode` | path | string | yes | `CL IQQ` |
+| `country_code` | query | two-letter country code | yes | `CL` |
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "locode": "CL IQQ",
+  "country_code": "CL",
+  "data": [
+    {
+      "action_id": "c40_0012",
+      "action_name": "Improve energy efficiency in municipal buildings",
+      "sector": "stationary_energy",
+      "financial_feasibility": 0.66,
+      "route": "technical_assistance",
+      "reason": "Several municipal support routes are available."
+    },
+    {
+      "action_id": "c40_0099",
+      "action_name": "Improve district energy systems",
+      "sector": "stationary_energy",
+      "financial_feasibility": null,
+      "route": null,
+      "reason": "No current finance score is available."
+    }
+  ],
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/cities/{locode}/climate-finance/feasibility",
+      "locode": "CL IQQ",
+      "country_code": "CL"
+    },
+    "total_records": 2
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** reuse the current action-ID mapping and missing-release behavior; retain every normalized source row; sort numeric scores from highest to lowest and place missing scores last. A missing source score is returned as `financial_feasibility: null`; the prioritizer's internal neutral `0.5` fallback is not source data.
+
+## 6. Climate-finance opportunities
+
+### Request
+
+```http
+GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&route=technical_assistance
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `country_code` | query | two-letter country code | yes | `CL` |
+| `sector` | query | string | no, but required to fetch | `stationary_energy` |
+| `route` | query | string | no | `technical_assistance` |
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "current": [
+    {
+      "opportunity_name": "Municipal Energy Technical Assistance Facility",
+      "funder_name": "Example Development Bank",
+      "instrument": "technical_assistance",
+      "status": "open",
+      "source_url": "https://example.org/facility"
+    }
+  ],
+  "monitor": [
+    {
+      "opportunity_name": "Annual Sustainable Cities Call",
+      "funder_name": "Example Climate Fund",
+      "instrument": "grant",
+      "status": "closed",
+      "recurrence": "annual",
+      "source_url": "https://example.org/annual-call"
+    }
+  ],
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/climate-finance/opportunities",
+      "country_code": "CL",
+      "sector": "stationary_energy",
+      "route": "technical_assistance"
+    },
+    "total_records": 2
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** force municipal eligibility and a screening limit of 50; apply status, recurrence, climate-relevance, municipal-application, route, and technical-assistance rules; return up to five current and five monitoring entries.
+- **Missing sector:** preserve the current backend behavior—skip the upstream fetch and return an empty result with a warning.
+- **Not caller knobs:** `eligible_actor` and `limit`.
+
+## 7. Climate-finance projects
+
+### Request
+
+```http
+GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
+```
+
+| Input | Location | Type | Required | Example |
+| --- | --- | --- | --- | --- |
+| `country_code` | query | two-letter country code | yes | `CL` |
+| `action_id` | query | string | yes | `c40_0012` |
+
+**Request body:** none.
+
+### Response (`200`)
+
+```json
+{
+  "projects": [
+    {
+      "project_name": "Municipal Building Retrofit Programme",
+      "jurisdiction": "Valparaíso",
+      "lifecycle_stage": "implementation",
+      "funding_channel": "public investment"
+    }
+  ],
+  "meta": {
+    "generated_at_utc": "2026-08-05T12:00:00Z",
+    "backend_consumer": "hiap-meed",
+    "upstream_provider": "global-api",
+    "api_context": {
+      "endpoint": "GET /v1/climate-finance/projects",
+      "country_code": "CL",
+      "action_id": "c40_0012"
+    },
+    "total_records": 1
+  },
+  "warnings": []
+}
+```
+
+- **Backend logic:** query by the caller-selected country and action and return the same maximum of five projects used by output-plan generation.
+- **Not a caller knob:** `limit`.
+
+## Empty and error behavior
+
+- Malformed or unsupported inputs use the existing FastAPI/Pydantic `422` behavior.
+- Unknown required city/action resources use `404` where that is the current endpoint convention.
+- Upstream failures or invalid upstream payloads use the existing HIAP-MEED `502` error handling.
+- Data families with current “no release” semantics return `200`, an empty data section, and a warning.
+- No new error envelope is introduced.
+
+## Product decisions requested
+
+- Approve the seven endpoint purposes and caller-controlled inputs.
+- Approve the main output sections and product-visible fields.
+- Confirm **same rules and current data** is sufficient; exact snapshot reuse is not included.

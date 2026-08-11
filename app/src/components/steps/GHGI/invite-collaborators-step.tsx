@@ -38,6 +38,7 @@ import {
   useInviteUsersMutation,
 } from "@/services/api";
 import { z } from "zod";
+import { copyInviteUrlsToClipboard } from "@/util/copy-invite-urls";
 
 interface InvitedMember {
   email: string;
@@ -45,7 +46,9 @@ interface InvitedMember {
 }
 
 export interface InviteCollaboratorsStepRef {
-  sendInvites: () => Promise<void>;
+  sendInvites: () => Promise<{
+    inviteUrls?: Record<string, string>;
+  } | void>;
 }
 
 const InviteCollaboratorsStep = forwardRef<
@@ -147,11 +150,14 @@ const InviteCollaboratorsStep = forwardRef<
         !selectedCities.length
       )
         return;
-      await inviteUsers({
+      const result = await inviteUsers({
         projectId: selectedProject[0],
         cityIds: selectedCities,
         invites: invitedMembers.map((m) => ({ email: m.email, role: m.role })),
       }).unwrap();
+
+      await copyInviteUrlsToClipboard(result.inviteUrls);
+      return result;
     },
   }));
 

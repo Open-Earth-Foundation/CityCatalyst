@@ -6,7 +6,7 @@ from app.models.cnb.research import (
     FieldEvidence,
     FunderCriterionResearchResult,
     FunderTemplateResearchResult,
-    FundedProjectResearchResult,
+    FundingRecordResearchResult,
     ResearchConflictResult,
     ResearchRunMetadata,
     TemplateChapterDraft,
@@ -20,11 +20,12 @@ from app.tools.firecrawl import CapturedSource
 from tests.cnb.helpers import build_request, build_result
 
 
-def test_material_paths_use_funded_project_reference() -> None:
+def test_material_paths_use_funding_record_reference() -> None:
     base = build_result()
-    project = FundedProjectResearchResult(
-        funded_project_ref="project-001",
+    project = FundingRecordResearchResult(
+        funding_record_ref="project-001",
         funder_ref="funder-001",
+        is_opportunity=False,
         name="Project",
         interventions=["Prepare the project"],
         award_amount=125000,
@@ -34,23 +35,22 @@ def test_material_paths_use_funded_project_reference() -> None:
         summary="Project-preparation assistance.",
     )
     result = base.model_copy(
-        update={"funded_projects": [*base.funded_projects, project]}
+        update={"funding_records": [*base.funding_records, project]}
     )
-    funder, opportunities, projects, templates, criteria = convert_agent_result(result)
+    funder, records, templates, criteria = convert_agent_result(result)
 
     paths = set(
         material_paths(
             funder=funder,
-            funding_opportunities=opportunities,
-            funded_projects=projects,
+            funding_records=records,
             funder_templates=templates,
             funder_criteria=criteria,
         )
     )
 
-    assert "funded_projects[project-001].interventions" in paths
-    assert "funded_projects[project-001].award_amount" in paths
-    assert "funded_projects[project-001].award_year" in paths
+    assert "funding_records[project-001].interventions" in paths
+    assert "funding_records[project-001].award_amount" in paths
+    assert "funding_records[project-001].award_year" in paths
 
 
 def test_material_paths_use_criterion_template_and_chapter_references() -> None:
@@ -59,7 +59,7 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
             "funder_templates": [
                 FunderTemplateResearchResult(
                     template_ref="template-001",
-                    funding_opportunity_ref="opportunity-001",
+                    funding_record_ref="opportunity-001",
                     template_name="Application form",
                     chapter_schema=[
                         TemplateChapterDraft(
@@ -72,7 +72,7 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
             "funder_criteria": [
                 FunderCriterionResearchResult(
                     criterion_ref="selection-002",
-                    funding_opportunity_ref="opportunity-001",
+                    funding_record_ref="opportunity-001",
                     criterion_type="evaluation",
                     label="Project quality",
                     requirement_text="Describe the proposed investment concept.",
@@ -80,13 +80,12 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
             ],
         }
     )
-    funder, opportunities, projects, templates, criteria = convert_agent_result(result)
+    funder, records, templates, criteria = convert_agent_result(result)
 
     paths = set(
         material_paths(
             funder=funder,
-            funding_opportunities=opportunities,
-            funded_projects=projects,
+            funding_records=records,
             funder_templates=templates,
             funder_criteria=criteria,
         )
@@ -103,13 +102,13 @@ def test_material_paths_use_criterion_template_and_chapter_references() -> None:
 def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
     evidence = FieldEvidence(
         evidence_ref="prior-evidence",
-        funding_opportunity_ref="opportunity-001",
-        target_path="funding_opportunities[opportunity-001].status",
+        funding_record_ref="opportunity-001",
+        target_path="funding_records[opportunity-001].status",
         source_ref="source-prior-content",
         quote_or_summary="Claim captured during an earlier run.",
     )
     conflict = ResearchConflictResult(
-        target_path="funding_opportunities[opportunity-001].status",
+        target_path="funding_records[opportunity-001].status",
         candidate_values=["open", "closed"],
         evidence_refs=[evidence.evidence_ref],
         explanation="Earlier sources disagreed.",
@@ -119,7 +118,7 @@ def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
     )
     now = datetime.now(timezone.utc)
     metadata = ResearchRunMetadata(
-        pipeline_version="3.0",
+        pipeline_version="2.0",
         model_name="test-model",
         reasoning_effort="medium",
         prompt_sha256="prompt-hash",
@@ -151,10 +150,6 @@ def test_bundle_drops_prior_run_evidence_and_its_conflict_links() -> None:
 
     assert bundle.evidence == []
     assert bundle.conflicts[0].evidence_refs == []
-    assert any(
-        "referenced unknown source" in gap
-        for gap in bundle.funding_opportunities[0].known_gaps
-    )
     assert any("referenced unknown source" in gap.reason for gap in bundle.gaps)
     assert any(
         "Conflict evidence was not retained" in gap.reason for gap in bundle.gaps

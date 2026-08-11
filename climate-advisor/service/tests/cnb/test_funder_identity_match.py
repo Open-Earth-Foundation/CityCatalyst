@@ -8,7 +8,7 @@ from uuid import uuid4
 
 import pytest
 
-from app.models.cnb.research import CanonicalFunder, FundedProjectDraft
+from app.models.cnb.research import CanonicalFunder, FundingRecordDraft
 from app.services.cnb.funder_identity_match import (
     FunderIdentityLlmDecision,
     FunderIdentityLlmDecisionSet,
@@ -33,10 +33,12 @@ def _record(
     ref: str,
     *,
     reported_funder_name: str | None,
-) -> FundedProjectDraft:
-    return FundedProjectDraft(
-        funded_project_ref=ref,
+    is_opportunity: bool = False,
+) -> FundingRecordDraft:
+    return FundingRecordDraft(
+        funding_record_ref=ref,
         funder_ref="funder-001",
+        is_opportunity=is_opportunity,
         name=f"Record {ref}",
         reported_funder_name=reported_funder_name,
         selected_funder_id=uuid4(),
@@ -52,7 +54,7 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
         FunderIdentityLlmDecisionSet(
             decisions=[
                 FunderIdentityLlmDecision(
-                    funded_project_ref="project-reported",
+                    funding_record_ref="project-reported",
                     matches=[
                         FunderIdentityLlmMatch(
                             funder_id=canonical_funder.funder_id,
@@ -61,20 +63,21 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
                     ],
                 ),
                 FunderIdentityLlmDecision(
-                    funded_project_ref="project-dossier",
+                    funding_record_ref="project-dossier",
                     matches=[],
                 ),
             ]
         )
     )
-    projects = [
+    records = [
+        _record("opportunity", reported_funder_name=None, is_opportunity=True),
         _record("project-reported", reported_funder_name="MPCA"),
         _record("project-dossier", reported_funder_name=None),
     ]
 
-    reported_project, dossier_project = (
+    opportunity, reported_project, dossier_project = (
         propose_funder_identity_candidates(
-            funded_projects=projects,
+            funding_records=records,
             canonical_funders=[canonical_funder],
             dossier_funder_name="European Investment Bank",
             openai_client=SimpleNamespace(responses=responses),
@@ -90,14 +93,15 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
     assert call["reasoning"] == {"effort": "low"}
     assert call["store"] is False
     payload = json.loads(str(call["input"]))
-    assert [item["identity_name"] for item in payload["funded_projects"]] == [
+    assert [item["identity_name"] for item in payload["funding_records"]] == [
         "MPCA",
         "European Investment Bank",
     ]
-    assert [item["identity_name_source"] for item in payload["funded_projects"]] == [
+    assert [item["identity_name_source"] for item in payload["funding_records"]] == [
         "reported_funder_name",
         "dossier_funder_name",
     ]
+    assert opportunity.selected_funder_id == records[0].selected_funder_id
     assert reported_project.selected_funder_id is None
     assert reported_project.candidate_funders[0].name == canonical_funder.name
     assert dossier_project.selected_funder_id is None
@@ -111,7 +115,7 @@ def test_identity_scan_rejects_model_invented_funder_id() -> None:
         FunderIdentityLlmDecisionSet(
             decisions=[
                 FunderIdentityLlmDecision(
-                    funded_project_ref="project-001",
+                    funding_record_ref="project-001",
                     matches=[
                         FunderIdentityLlmMatch(
                             funder_id=invented_id,
@@ -125,7 +129,7 @@ def test_identity_scan_rejects_model_invented_funder_id() -> None:
 
     with pytest.raises(ValueError, match=str(invented_id)):
         propose_funder_identity_candidates(
-            funded_projects=[
+            funding_records=[
                 _record("project-001", reported_funder_name="Possible Funder")
             ],
             canonical_funders=[canonical_funder],
@@ -141,7 +145,7 @@ def test_identity_scan_skips_provider_when_no_identity_can_be_compared() -> None
     responses = FakeResponses(FunderIdentityLlmDecisionSet(decisions=[]))
 
     [updated] = propose_funder_identity_candidates(
-        funded_projects=[record],
+        funding_records=[record],
         canonical_funders=[CanonicalFunder(funder_id=uuid4(), name="Known Funder")],
         openai_client=SimpleNamespace(responses=responses),
         model_name="small-model",

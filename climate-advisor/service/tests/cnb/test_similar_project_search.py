@@ -91,8 +91,9 @@ def _candidate(
 ) -> CnbSimilarProjectCandidate:
     record_id = uuid4()
     return CnbSimilarProjectCandidate(
-        funded_project_id=record_id,
+        funding_record_id=record_id,
         funder_id=funder_id or request.funder_id,
+        is_opportunity=False,
         is_funded_award=True,
         name=name,
         category="stormwater",
@@ -101,7 +102,7 @@ def _candidate(
             CnbSimilarProjectEvidence(
                 evidence_ref=f"evidence-{name}",
                 source_ref=f"source-{name}",
-                target_path=f"funded_projects[{record_id}].summary",
+                target_path=f"funding_records[{record_id}].summary",
                 quote_or_summary=f"{name} evidence",
             )
         ],
@@ -223,6 +224,9 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
         update={"project_tags": ["stormwater"]}
     )
     wrong_funder = _candidate(request, name="Wrong funder", funder_id=uuid4())
+    opportunity = _candidate(request, name="Opportunity").model_copy(
+        update={"is_opportunity": True}
+    )
     unfunded = _candidate(request, name="Unfunded").model_copy(
         update={"is_funded_award": False}
     )
@@ -232,14 +236,14 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     decisions = CnbSimilarProjectLlmDecisionSet(
         decisions=[
             CnbSimilarProjectLlmDecision(
-                funded_project_id=selected.funded_project_id,
+                funding_record_id=selected.funding_record_id,
                 decision="selected",
                 fit_rationale="Comparable city-led flood project.",
                 matched_tags=["stormwater", "flood", "city-led"],
                 evidence_refs=[selected.evidence[0].evidence_ref],
             ),
             CnbSimilarProjectLlmDecision(
-                funded_project_id=less_related.funded_project_id,
+                funding_record_id=less_related.funding_record_id,
                 decision="rejected",
                 fit_rationale="Fewer curated tags overlap.",
                 matched_tags=["stormwater"],
@@ -251,6 +255,7 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     reference_data = FakeReferenceData(
         [
             wrong_funder,
+            opportunity,
             unfunded,
             unsupported,
             less_related,
@@ -266,17 +271,17 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     result = service.run(request)
 
     assert result.completion_signal == "concept_note_context_bundle_ready"
-    assert [match.funded_project_id for match in result.result.matches] == [
-        selected.funded_project_id
+    assert [match.funding_record_id for match in result.result.matches] == [
+        selected.funding_record_id
     ]
     assert store.matches == result.result.matches
     assert store.context == (result.result.matches, [])
     assert reference_data.calls == [request.funder_id]
     payload = json.loads(responses.calls[0]["input"])
     assert responses.calls[0]["store"] is False
-    assert [item["funded_project_id"] for item in payload["candidates"]] == [
-        str(selected.funded_project_id),
-        str(less_related.funded_project_id),
+    assert [item["funding_record_id"] for item in payload["candidates"]] == [
+        str(selected.funding_record_id),
+        str(less_related.funding_record_id),
     ]
 
 
@@ -357,7 +362,7 @@ def test_cross_funder_mode_reads_all_funders() -> None:
     decisions = CnbSimilarProjectLlmDecisionSet(
         decisions=[
             CnbSimilarProjectLlmDecision(
-                funded_project_id=candidate.funded_project_id,
+                funding_record_id=candidate.funding_record_id,
                 decision="rejected",
                 fit_rationale="Not sufficiently comparable.",
                 matched_tags=["stormwater"],
@@ -397,7 +402,7 @@ def test_service_rejects_ungrounded_model_decisions(
         decisions = CnbSimilarProjectLlmDecisionSet(
             decisions=[
                 CnbSimilarProjectLlmDecision(
-                    funded_project_id=candidate.funded_project_id,
+                    funding_record_id=candidate.funding_record_id,
                     decision="selected",
                     fit_rationale="Comparable project.",
                     matched_tags=(
@@ -443,7 +448,7 @@ def test_no_candidates_completes_with_an_explicit_caveat() -> None:
 
 def test_context_rebuild_changes_only_similar_projects() -> None:
     match = CnbSimilarProjectMatch(
-        funded_project_id=uuid4(),
+        funding_record_id=uuid4(),
         fit_rationale="Comparable funded project.",
     )
     original = {
@@ -454,8 +459,8 @@ def test_context_rebuild_changes_only_similar_projects() -> None:
 
     rebuilt = rebuild_similar_projects_section(original, [match])
 
-    assert rebuilt["similar_projects"][0]["funded_project_id"] == str(
-        match.funded_project_id
+    assert rebuilt["similar_projects"][0]["funding_record_id"] == str(
+        match.funding_record_id
     )
     assert rebuilt["cc_context"] == original["cc_context"]
     assert rebuilt["document_context"] == original["document_context"]

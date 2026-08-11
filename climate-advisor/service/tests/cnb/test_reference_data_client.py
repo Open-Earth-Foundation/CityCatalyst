@@ -16,13 +16,13 @@ from app.services.cnb.reference_data_client import (
 )
 
 FUNDER_ID = UUID("11111111-1111-4111-8111-111111111111")
-PROJECT_ID = UUID("22222222-2222-4222-8222-222222222222")
+RECORD_ID = UUID("22222222-2222-4222-8222-222222222222")
 
 
 def _record_row() -> dict[str, object]:
     """Return one complete funded-project database row."""
     return {
-        "funded_project_id": PROJECT_ID,
+        "funding_record_id": RECORD_ID,
         "funder_id": FUNDER_ID,
         "funder_name": "Example Funder",
         "name": "Resilient district",
@@ -61,17 +61,17 @@ def test_candidate_read_fetches_full_scope_and_keeps_only_valid_evidence(
         observed.update(kwargs)
         return [_record_row()], [
             {
-                "funded_project_id": PROJECT_ID,
+                "funding_record_id": RECORD_ID,
                 "quote_or_summary": "Supported by the retained source.",
                 "source_map": {
                     "evidence_ref": "evidence-1",
                     "source_ref": "source-1",
-                    "target_path": "funded_projects[project-1].name",
+                    "target_path": "funding_records[record-1].name",
                     "source_location": "page 2",
                 },
             },
             {
-                "funded_project_id": PROJECT_ID,
+                "funding_record_id": RECORD_ID,
                 "quote_or_summary": "Malformed and ignored.",
                 "source_map": {"evidence_ref": "missing-required-fields"},
             },
@@ -87,7 +87,7 @@ def test_candidate_read_fetches_full_scope_and_keeps_only_valid_evidence(
     }
     assert len(candidates) == 1
     candidate = candidates[0]
-    assert candidate.funded_project_id == PROJECT_ID
+    assert candidate.is_opportunity is False
     assert candidate.is_funded_award is True
     assert candidate.award_status == "awarded"
     assert candidate.hazards == ["heat"]
@@ -146,14 +146,14 @@ def test_postgres_queries_apply_scope_order_and_source_join(
     assert evidence == []
     record_query, record_parameters = queries[0]
     evidence_query, evidence_parameters = queries[1]
-    assert "FROM funded_projects AS fp" in record_query
-    assert "fp.funder_id = %(funder_id)s::uuid" in record_query
-    assert "ORDER BY f.name, fp.name, fp.funded_project_id" in record_query
+    assert "fr.is_opportunity = FALSE" in record_query
+    assert "fr.funder_id = %(funder_id)s::uuid" in record_query
+    assert "ORDER BY f.name, fr.name, fr.funding_record_id" in record_query
     assert "LIMIT" not in record_query
     assert record_parameters == {"funder_id": str(FUNDER_ID)}
     assert "JOIN source_documents AS source" in evidence_query
     assert "source.url AS source_url" in evidence_query
-    assert evidence_parameters == {"funded_project_ids": [str(PROJECT_ID)]}
+    assert evidence_parameters == {"funding_record_ids": [str(RECORD_ID)]}
 
 
 def test_database_failure_never_exposes_connection_details(

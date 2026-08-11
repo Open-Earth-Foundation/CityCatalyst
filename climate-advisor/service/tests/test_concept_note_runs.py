@@ -47,7 +47,7 @@ def _persisted_run(
         city_id=str(payload.city_id),
         project_id=payload.project_id,
         funder_id=payload.funder_id,
-        selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
+        selected_funding_record_id=payload.selected_funding_record_id,
         status="active",
         workflow_step="assembling_context",
         context_summary={},
@@ -105,7 +105,7 @@ async def test_start_run_creates_after_scope_and_reference_validation() -> None:
     )
     funding_validator.validate.assert_awaited_once_with(
         funder_id=None,
-        selected_funding_opportunity_id=None,
+        selected_funding_record_id=None,
     )
 
 

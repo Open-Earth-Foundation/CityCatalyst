@@ -22,12 +22,11 @@ CNB_TABLES = {
     "concept_note_matched_projects",
     "concept_note_exports",
     "funders",
-    "funding_opportunities",
-    "funded_projects",
+    "funding_records",
     "funder_templates",
     "funder_criteria",
     "source_documents",
-    "funding_evidence",
+    "funding_record_evidence",
 }
 CA_TABLES = {
     "threads",
@@ -55,59 +54,7 @@ def _run_alembic(*, config: str, database_env: str, args: list[str]) -> None:
     assert completed.returncode == 0, completed.stderr
 
 
-def _render_offline_upgrade(*, config: str, database_env: str) -> str:
-    """Render one PostgreSQL migration chain without opening a connection."""
-    environment = os.environ.copy()
-    environment[database_env] = "postgresql://unused:unused@localhost/unused"
-    completed = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "alembic",
-            "-c",
-            config,
-            "upgrade",
-            "head",
-            "--sql",
-        ],
-        cwd=SERVICE_ROOT,
-        env=environment,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-
-    assert completed.returncode == 0, completed.stderr
-    return completed.stdout
-
-
-def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
-    """Keep the deployed CA column aligned with the explicit opportunity API."""
-    sql = _render_offline_upgrade(
-        config="alembic.ini",
-        database_env="CA_DATABASE_URL",
-    )
-    legacy_column = "selected_funding_" + "record_id"
-    assert (
-        f"ALTER TABLE concept_note_runs RENAME {legacy_column} "
-        "TO selected_funding_opportunity_id;"
-    ) in sql
-
-
-def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
-    """Prevent SQLAlchemy naming conventions from double-prefixing checks."""
-    sql = _render_offline_upgrade(
-        config="cnb-alembic.ini",
-        database_env="CNB_DATABASE_URL",
-    )
-
-    assert "CREATE TABLE funding_opportunities" in sql
-    assert "CREATE TABLE funded_projects" in sql
-    assert "CONSTRAINT ck_funding_evidence_exactly_one_parent CHECK" in sql
-    assert "ck_funding_evidence_ck_funding_evidence" not in sql
-
-
-def test_cnb_metadata_contains_only_the_thirteen_owned_tables() -> None:
+def test_cnb_metadata_contains_only_the_twelve_owned_tables() -> None:
     """Keep CA-owned run, context-bundle, and upload tables out of CNB metadata."""
     assert set(CnbBase.metadata.tables) == CNB_TABLES
     assert not {
@@ -151,8 +98,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
     )
 
     expected_indexes = {
-        "funding_opportunities": {"ix_funding_opportunities_funder_name"},
-        "funded_projects": {"ix_funded_projects_funder_name"},
+        "funding_records": {"ix_funding_records_funder_opportunity_name"},
         "concept_note_chapters": {
             "uq_concept_note_chapters_active_position",
             "ix_concept_note_chapters_run_status",
@@ -183,12 +129,8 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         ]
     )
 
-    opportunity_uniques = {
-        item["name"]
-        for item in inspector.get_unique_constraints("funding_opportunities")
-    }
-    project_uniques = {
-        item["name"] for item in inspector.get_unique_constraints("funded_projects")
+    funding_uniques = {
+        item["name"] for item in inspector.get_unique_constraints("funding_records")
     }
     source_uniques = {
         item["name"] for item in inspector.get_unique_constraints("source_documents")
@@ -201,32 +143,29 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         item["name"]
         for item in inspector.get_unique_constraints("concept_note_matched_projects")
     }
-    assert "uq_funding_opportunities_source_identity" in opportunity_uniques
-    assert "uq_funded_projects_source_identity" in project_uniques
+    assert "uq_funding_records_source_identity" in funding_uniques
     assert "uq_source_documents_content_hash_url" in source_uniques
     assert "uq_concept_note_chapter_revisions_number" in revision_uniques
-    assert "uq_concept_note_matched_projects_run_project" in match_uniques
-    assert "uq_funder_templates_opportunity_name" in {
+    assert "uq_concept_note_matched_projects_run_record" in match_uniques
+    assert "uq_funder_templates_record_name" in {
         item["name"] for item in inspector.get_unique_constraints("funder_templates")
     }
 
     expected_fk_deletes = {
-        "funding_opportunities": {("funder_id",): "RESTRICT"},
-        "funded_projects": {("funder_id",): "RESTRICT"},
-        "funder_templates": {("funding_opportunity_id",): "CASCADE"},
+        "funding_records": {("funder_id",): "RESTRICT"},
+        "funder_templates": {("funding_record_id",): "CASCADE"},
         "funder_criteria": {
-            ("funding_opportunity_id",): "CASCADE",
+            ("funding_record_id",): "CASCADE",
             ("source_document_id",): "RESTRICT",
         },
-        "funding_evidence": {
-            ("funding_opportunity_id",): "CASCADE",
-            ("funded_project_id",): "CASCADE",
+        "funding_record_evidence": {
+            ("funding_record_id",): "CASCADE",
             ("source_document_id",): "RESTRICT",
         },
         "concept_note_chapter_revisions": {("chapter_id",): "CASCADE"},
         "concept_note_evidence_links": {("chapter_id",): "CASCADE"},
         "concept_note_gaps": {("chapter_id",): "SET NULL"},
-        "concept_note_matched_projects": {("funded_project_id",): "RESTRICT"},
+        "concept_note_matched_projects": {("funding_record_id",): "RESTRICT"},
     }
     for table_name, expected in expected_fk_deletes.items():
         observed = {
@@ -234,11 +173,6 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             for item in inspector.get_foreign_keys(table_name)
         }
         assert observed == expected
-
-    evidence_checks = {
-        item["name"] for item in inspector.get_check_constraints("funding_evidence")
-    }
-    assert "ck_funding_evidence_exactly_one_parent" in evidence_checks
 
     for table_name in (
         "concept_note_chapters",
@@ -252,21 +186,14 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             for column in item["constrained_columns"]
         }
 
-    opportunity_columns = {
-        item["name"]: item
-        for item in inspector.get_columns("funding_opportunities")
+    funding_columns = {
+        item["name"]: item for item in inspector.get_columns("funding_records")
     }
-    project_columns = {
-        item["name"]: item for item in inspector.get_columns("funded_projects")
-    }
-    assert {"sector", "applicant_type", "known_gaps"} <= set(opportunity_columns)
-    assert {"sector", "applicant_type", "known_gaps"} <= set(project_columns)
-    assert opportunity_columns["funding_opportunity_id"]["default"] is None
-    assert project_columns["funded_project_id"]["default"] is None
-    for column_name in ("hazards", "interventions", "known_gaps"):
-        assert opportunity_columns[column_name]["default"] is not None
+    assert {"sector", "applicant_type", "known_gaps"} <= set(funding_columns)
+    assert funding_columns["known_gaps"]["default"] is not None
+    assert funding_columns["funding_record_id"]["default"] is None
     for column_name in ("hazards", "interventions", "project_tags", "known_gaps"):
-        assert project_columns[column_name]["default"] is not None
+        assert funding_columns[column_name]["default"] is not None
     criteria_columns = {
         item["name"]: item for item in inspector.get_columns("funder_criteria")
     }
@@ -276,7 +203,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
     expected_default_columns = {
         "funders": {"profile"},
         "funder_templates": {"chapter_schema", "required_fields"},
-        "funding_evidence": {"source_map"},
+        "funding_record_evidence": {"source_map"},
         "concept_note_chapters": {
             "status",
             "required",

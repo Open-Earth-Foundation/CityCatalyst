@@ -71,8 +71,8 @@ def test_cnb_research_configuration_matches_runtime_contract() -> None:
     assert config.models.funding_research.reasoning_effort == "medium"
     assert "`current_filled_object`" in prompt_text
     assert "`missing_data`" in prompt_text
-    assert "`funding_opportunities`" in prompt_text
-    assert "`funded_projects`" in prompt_text
+    assert "`funding_records`" in prompt_text
+    assert "`is_opportunity`" in prompt_text
     assert "<example_output>" in prompt_text
 
 
@@ -96,9 +96,9 @@ def test_cnb_funder_identity_prompt_matches_runtime_contract() -> None:
 
     assert config.models.funder_identity.name == "openai/gpt-5.4-mini"
     assert config.models.funder_identity.reasoning_effort == "low"
-    assert "`funded_projects`" in prompt_text
+    assert "`funding_records`" in prompt_text
     assert "`canonical_funders`" in prompt_text
-    assert "`funded_project_ref`" in prompt_text
+    assert "`funding_record_ref`" in prompt_text
     assert "`funder_id`" in prompt_text
     assert "human reviewer" in prompt_text
 

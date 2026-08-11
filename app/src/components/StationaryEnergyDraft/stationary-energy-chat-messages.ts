@@ -1,5 +1,3 @@
-import type { DraftDecisionState } from "@/components/StationaryEnergyDraft/types";
-
 export type ChatTextMessage = {
   id: string;
   kind: "text";

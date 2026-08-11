@@ -14,7 +14,7 @@ export interface CustomSelectProps {
   placeholder?: string;
   width?: string;
   height?: string;
-  t: Function;
+  t: (key: string) => string;
   label: string;
 }
 

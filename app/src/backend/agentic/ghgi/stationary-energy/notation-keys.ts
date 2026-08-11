@@ -387,8 +387,8 @@ async function upsertNotationKey(params: {
       : subSector?.subsectorName || gpcReferenceNumber;
     const error = new createHttpError.BadRequest(
       `Cannot set notation key for "${itemName}" because it already has emissions data. Please remove the emissions data first.`,
-    );
-    (error as any).data = {
+    ) as createHttpError.HttpError & { data?: Record<string, unknown> };
+    error.data = {
       translationKey: "error-cannot-set-notation-key-emissions-data",
       itemName,
     };

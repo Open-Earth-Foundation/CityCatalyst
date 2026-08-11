@@ -48,7 +48,7 @@ export const AccordionItemTrigger = React.forwardRef<
   );
 });
 
-interface AccordionItemContentProps extends Accordion.ItemContentProps {}
+type AccordionItemContentProps = Accordion.ItemContentProps;
 
 export const AccordionItemContent = React.forwardRef<
   HTMLDivElement,

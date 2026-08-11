@@ -5,6 +5,7 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import UserService from "@/backend/UserService";
 import PopulationService from "@/backend/PopulationService";
 import { db } from "@/models";
+import { QueryTypes } from "sequelize";
 
 export const getCityProfileTool: Tool = {
   name: "get_city_profile",
@@ -22,12 +23,66 @@ export const getCityProfileTool: Tool = {
   },
 };
 
+interface CityProfile {
+  cityId: string;
+  name?: string;
+  country?: string;
+  region?: string;
+  locode?: string;
+  area?: number;
+  project: {
+    id?: string;
+    name?: string;
+    description?: string;
+  };
+  organization: {
+    id?: string;
+    name?: string;
+  };
+  demographics: {
+    latestPopulation: { year?: number | null; count: number } | null;
+  };
+  inventoryStatistics: {
+    totalInventories: number;
+    publicInventories: number;
+    privateInventories: number;
+    yearRange: {
+      earliest: number | null;
+      latest: number | null;
+    };
+    totalEmissionsAllYears: number;
+  };
+  recentInventories: {
+    inventoryId: string;
+    inventoryName?: string;
+    year?: number;
+    totalEmissions?: number | null;
+    isPublic?: boolean;
+    created?: Date;
+    lastUpdated?: Date | null;
+  }[];
+  collaborators: {
+    userId?: string;
+    name?: string;
+    email?: string;
+    title?: string;
+  }[];
+  metadata: {
+    created?: Date;
+    lastUpdated?: Date;
+    hasGeometry: boolean;
+  };
+}
+
 export async function execute(
   params: {
     cityId: string;
   },
   session: AppSession,
-): Promise<any> {
+): Promise<
+  | { success: true; data: CityProfile }
+  | { success: false; error: string; data: null }
+> {
   try {
     const { cityId } = params;
     const userId = session.user.id;
@@ -55,22 +110,30 @@ export async function execute(
     const latestPopulation = await PopulationService.getMostRecentPopulationDataForCity(cityId);
 
     // Get inventory statistics
-    const inventoryStats = await db.sequelize?.query(
+    interface InventoryStatsRow {
+      total_inventories: string;
+      public_inventories: string;
+      earliest_year: number | null;
+      latest_year: number | null;
+      total_emissions_all_years: string | null;
+    }
+
+    const inventoryStats = await db.sequelize?.query<InventoryStatsRow>(
       `
-      SELECT 
+      SELECT
         COUNT(*) as total_inventories,
         COUNT(CASE WHEN is_public = true THEN 1 END) as public_inventories,
         MIN(year) as earliest_year,
         MAX(year) as latest_year,
         SUM(total_emissions) as total_emissions_all_years
-      FROM "Inventory" 
+      FROM "Inventory"
       WHERE city_id = :cityId
     `,
       {
         replacements: { cityId },
-        type: 'SELECT' as any,
+        type: QueryTypes.SELECT,
       },
-    ) as any[];
+    );
 
     const stats = inventoryStats?.[0] || {
       total_inventories: "0",
@@ -111,7 +174,7 @@ export async function execute(
       ],
     });
 
-    const cityProfile = {
+    const cityProfile: CityProfile = {
       cityId: detailedCity.cityId,
       name: detailedCity.name,
       country: detailedCity.country,

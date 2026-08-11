@@ -33,10 +33,9 @@
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { passwordRegex } from "@/util/validation";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/services/logger";
@@ -138,7 +137,7 @@ export const POST = apiHandler(async (req: Request) => {
     body.token,
     process.env.VERIFICATION_TOKEN_SECRET,
   );
-  const email = (verificationTokenData as any).email;
+  const email = (verificationTokenData as JwtPayload).email;
   const user = await db.models.User.findOne({ where: { email } });
 
   if (!user) {

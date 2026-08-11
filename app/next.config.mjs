@@ -15,6 +15,26 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
   },
+  // Org logos / branding and other S3 objects used with next/image
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.s3.us-east-1.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.eu-north-1.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.amazonaws.com",
+        pathname: "/**",
+      },
+    ],
+  },
   env: {
     APP_VERSION: packageInfo.version,
     NEXT_AWS_REGION: process.env.NEXT_AWS_REGION,

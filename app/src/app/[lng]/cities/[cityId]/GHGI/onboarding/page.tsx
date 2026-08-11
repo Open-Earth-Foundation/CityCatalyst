@@ -35,7 +35,7 @@ export default function Onboarding(props: {
 
   return (
     <>
-      <Box w="1090px" maxW="full" mx="auto" pt="48px">
+      <Box w="1090px" maxW="full" mx="auto" pt="48px" pb="137px">
         <VStack alignItems="flex-start">
           <Button
             variant="ghost"

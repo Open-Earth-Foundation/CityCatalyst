@@ -125,9 +125,14 @@ export class CityCatalystMCPServer {
     };
   }
 
-  private async getToolHandler(toolName: string) {
+  private async getToolHandler(toolName: string): Promise<{
+    execute: (
+      params: Record<string, unknown>,
+      session: AppSession,
+    ) => Promise<unknown>;
+  }> {
     // Map tool names to their handler modules
-    const handlers: Record<string, () => Promise<any>> = {
+    const handlers: Record<string, () => Promise<unknown>> = {
       get_user_inventories: () => import("./tools/inventories"),
       get_inventory_emissions: () => import("./tools/emissions"),
       get_user_cities: () => import("./tools/cities"),
@@ -144,7 +149,12 @@ export class CityCatalystMCPServer {
       );
     }
 
-    return handler();
+    return (await handler()) as {
+      execute: (
+        params: Record<string, unknown>,
+        session: AppSession,
+      ) => Promise<unknown>;
+    };
   }
 
   async connect(transport?: StdioServerTransport) {

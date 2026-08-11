@@ -22,6 +22,7 @@ import type {
   FieldErrors,
   SubmitHandler,
   UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
@@ -35,10 +36,11 @@ import InviteCollaboratorsStep, {
 } from "@/components/steps/GHGI/invite-collaborators-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
-import { UseErrorToast, UseWarningToast } from "@/hooks/Toasts";
+import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import ProjectLimitModal from "@/components/project-limit";
 
 type Inputs = { city: string } & GHGIFormInputs;
@@ -171,13 +173,8 @@ export default function OnboardingSetup(props: {
     }
   }, [yearAlreadyExists, selectedYear]);
 
-  const makeWarningToast = (title: string, description?: string) => {
-    const { showWarningToast } = UseWarningToast({ description, title });
-    showWarningToast();
-  };
-
   const { data: cityArea } = api.useGetCityBoundaryQuery(
-    ocCityData?.actor_id!,
+    ocCityData?.actor_id ?? "",
     { skip: !ocCityData?.actor_id },
   );
 
@@ -229,11 +226,14 @@ export default function OnboardingSetup(props: {
         countryPopulation: countryPopulation!,
         countryPopulationYear: countryPopulationYear!,
       }).unwrap();
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to add population");
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
       makeErrorToast(
         t("failed-to-add-city"),
-        t(err.data?.error?.message ?? ""),
+        t(errorData?.error?.message ?? ""),
       );
       setConfirming(false);
       return;
@@ -276,9 +276,12 @@ export default function OnboardingSetup(props: {
           `/${lng}/cities/${createdCityId}/GHGI/${inventory.inventoryId}`,
         );
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       logger.error({ err }, "Onboarding - Failed to create inventory");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
+      const errorData = isFetchBaseQueryError(err)
+        ? (err.data as { error?: { message?: string } })
+        : undefined;
+      makeErrorToast("failed-to-create-inventory", errorData?.error?.message);
       setConfirming(false);
     }
   };
@@ -287,6 +290,9 @@ export default function OnboardingSetup(props: {
   // Steps 1, 2: merge form data and advance.
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
     if (activeStep === 0) {
+      // Guaranteed by the disabled state of the submit button, which requires ocCityData.
+      if (!ocCityData) return;
+
       const selectedProjectId =
         selectedProject.length > 0 ? selectedProject[0] : undefined;
       if (EnterpriseMode && selectedProjectId) {
@@ -310,8 +316,8 @@ export default function OnboardingSetup(props: {
       const nextData: OnboardingData = {
         ...data,
         ...formData,
-        locode: ocCityData?.actor_id!,
-        name: ocCityData?.name!,
+        locode: ocCityData.actor_id,
+        name: ocCityData.name,
       };
       setData(nextData);
 
@@ -320,10 +326,10 @@ export default function OnboardingSetup(props: {
         setIsCreatingCity(true);
         const area = cityArea?.area ?? ocCityData?.area ?? undefined;
         const region = ocCityData?.root_path_geo.filter(
-          (item: any) => item.type === "adm1",
+          (item) => item.type === "adm1",
         )[0];
         const country = ocCityData?.root_path_geo.filter(
-          (item: any) => item.type === "country",
+          (item) => item.type === "country",
         )[0];
 
         try {
@@ -338,11 +344,14 @@ export default function OnboardingSetup(props: {
             projectId: EnterpriseMode ? selectedProjectId : undefined,
           }).unwrap();
           setCreatedCityId(city?.cityId ?? null);
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err }, "Onboarding - Failed to add city");
+          const errorData = isFetchBaseQueryError(err)
+            ? (err.data as { error?: { message?: string } })
+            : undefined;
           makeErrorToast(
             t("failed-to-add-city"),
-            t(err.data?.error?.message ?? ""),
+            t(errorData?.error?.message ?? ""),
           );
           setIsCreatingCity(false);
           return;
@@ -379,7 +388,11 @@ export default function OnboardingSetup(props: {
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              router.back();
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"
@@ -420,7 +433,7 @@ export default function OnboardingSetup(props: {
               register={register as unknown as UseFormRegister<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
-              setValue={setValue}
+              setValue={setValue as unknown as UseFormSetValue<GHGIFormInputs>}
               years={years}
               selectedYearArray={selectedYearArray}
               setSelectedYearArray={setSelectedYearArray}
@@ -437,13 +450,12 @@ export default function OnboardingSetup(props: {
           {activeStep === 2 && (
             <SetPopulationDataStep
               t={t}
-              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               years={years}
               numberOfYearsDisplayed={numberOfYearsDisplayed}
               setData={setData}
-              setValue={setValue}
+              setValue={setValue as unknown as UseFormSetValue<GHGIFormInputs>}
               watch={watch}
               ocCityData={ocCityData}
               numberFormat={userInfo?.numberFormat}

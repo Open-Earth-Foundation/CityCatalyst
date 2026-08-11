@@ -60,11 +60,6 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
   const [emailsArray, setEmailsArray] = useState<string[]>([]);
 
   // When a user updates one of the fields, also update the react-hook-form value:
-  const handleCitiesChange = (values: string[]) => {
-    setCitiesArray(values);
-    setValue("cities", values);
-  };
-
   const handleYearsChange = (values: string[]) => {
     const numericYears = values.map((year) => +year);
     setYearsArray(numericYears);
@@ -97,8 +92,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
 
   // fetch projects api
 
-  const { data: projectsList, isLoading: isProjectListLoading } =
-    api.useGetUserProjectsQuery({});
+  const { data: projectsList } = api.useGetUserProjectsQuery({});
 
   const [
     connectBulkSources,
@@ -149,12 +143,12 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
             description: t("bulk-inventory-creation-loading"),
           });
         } else {
-          if (isConnectSourcesData?.errors.length > 0) {
+          if ((isConnectSourcesData?.errors.length ?? 0) > 0) {
             toaster.create({
               type: "error",
               description: t("bulk-inventory-connection-error"),
             });
-            logger.error(isConnectSourcesData.errors);
+            logger.error(isConnectSourcesData?.errors);
           } else {
             toaster.create({
               type: "success",
@@ -250,7 +244,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
               rules={{
                 required: t("cities-input-required"),
               }}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <CommaSeperatedInput
                   onChange={handleYearsChange}
                   field="years"
@@ -284,7 +278,7 @@ const BulkInventoryCreationTabContent: FC<BulkActionsTabContentProps> = ({
               rules={{
                 required: t("cities-input-required"),
               }}
-              render={({ field, fieldState: { error } }) => (
+              render={({ fieldState: { error } }) => (
                 <CommaSeperatedInput
                   onChange={handleEmailsChange}
                   field="emails"

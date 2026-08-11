@@ -1,83 +1,9 @@
-import { APIRequestContext, expect, Page, test } from "@playwright/test";
+import { expect, Page, test } from "@playwright/test";
 import { indexPageRegex, regexForPath } from "./utils";
 import { navigateToGHGIModule } from "./helpers";
 
 // inventory creation data
 // call the endpoint to create an inventory
-
-const TEST_CITY_DETAILS = {
-  name: "New York",
-  locode: "US NYC",
-  area: 1219,
-  region: "New York",
-  country: "United States of America",
-  countryLocode: "US",
-  regionLocode: "US-NY",
-};
-
-const TEST_POPULATION_DATA = {
-  cityId: null,
-  cityPopulation: 8804190,
-  cityPopulationYear: 2020,
-  countryPopulation: 338289857,
-  countryPopulationYear: 2022,
-  locode: "US NYC",
-  regionPopulation: 20201249,
-  regionPopulationYear: 2020,
-};
-
-const TEST_INVENTORY_DATA = {
-  cityId: null,
-  inventoryName: "TEST New York - 2024",
-  year: 2024,
-};
-
-const createInventory = async (request: APIRequestContext): Promise<string> => {
-  const cityResult = await request.post("/api/v1/city", {
-    data: TEST_CITY_DETAILS,
-  });
-  expect(cityResult.ok()).toBeTruthy();
-  const cityData = await cityResult.json();
-  const cityId = cityData.data.cityId;
-
-  // add population data
-  const populationResult = await request.post(
-    `/api/v1/city/${cityId}/population`,
-    {
-      data: {
-        ...TEST_POPULATION_DATA,
-        cityId: cityId,
-      },
-    },
-  );
-  expect(populationResult.ok()).toBeTruthy();
-
-  // add inventory data
-  const inventoryResult = await request.post(
-    `/api/v1/city/${cityId}/inventory`,
-    {
-      data: {
-        ...TEST_INVENTORY_DATA,
-        cityId: cityId,
-      },
-    },
-  );
-
-  expect(inventoryResult.ok()).toBeTruthy();
-  const inventoryData = await inventoryResult.json();
-  const inventoryID = inventoryData.data.inventoryId;
-
-  // make default inventory for user
-
-  await request.patch("/api/v1/user", {
-    data: {
-      cityId: cityData.id,
-      defaultInventoryId: inventoryID,
-    },
-  });
-
-  return inventoryID;
-};
 
 const testIds = {
   addDataToInventoryNavButton: "add-data-to-inventory-card",
@@ -131,7 +57,7 @@ test.describe.serial("Manual Input", () => {
   test.skip();
   let page: Page;
 
-  test.beforeAll(async ({ browser, request }) => {
+  test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     await navigateToGHGIModule(page);
     await expect(page).toHaveURL(indexPageRegex);

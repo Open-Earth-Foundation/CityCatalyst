@@ -1,5 +1,10 @@
 import { Box, Icon, Text } from "@chakra-ui/react";
-import { FieldError } from "react-hook-form";
+import {
+  FieldError,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
@@ -7,7 +12,9 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import LabelLarge from "@/components/package/Texts/Label";
 import { isPasswordPatternValid } from "@/util/validation";
 
-export default function PasswordInput({
+export default function PasswordInput<
+  TFieldValues extends FieldValues = FieldValues,
+>({
   children,
   error,
   register,
@@ -22,7 +29,7 @@ export default function PasswordInput({
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
-  register: Function;
+  register: UseFormRegister<TFieldValues>;
   t: TFunction;
   name?: string;
   id?: string;
@@ -66,7 +73,7 @@ export default function PasswordInput({
             <Icon as={IoMdEye} color="content.tertiary" boxSize={6} mr={2} />
           ),
         }}
-        {...register(id, {
+        {...register(id as Path<TFieldValues>, {
           required: t("please-enter-password"),
           validate,
         })}

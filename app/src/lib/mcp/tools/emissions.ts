@@ -32,6 +32,49 @@ export const getInventoryEmissionsTool: Tool = {
   },
 };
 
+interface InventoryEmissionsResult {
+  inventoryId: string;
+  inventoryName?: string;
+  year?: number;
+  totalEmissions: string | number | null | undefined;
+  city: {
+    id?: string;
+    name?: string;
+    country?: string;
+    region?: string;
+  };
+  project: {
+    id?: string;
+    name?: string;
+  };
+  organization: {
+    id?: string;
+    name?: string;
+  };
+  bySector?: {
+    sectorName: string;
+    emissions: string;
+    percentage: number;
+  }[];
+  bySubsector?: {
+    subsectorName?: string;
+    sectorName?: string;
+    emissions: string;
+    percentage: number | string;
+  }[];
+  topEmissions?: {
+    sectorName: string;
+    subsectorName: string;
+    scopeName: string;
+    emissions: string;
+    percentage: number;
+  }[];
+  statistics: {
+    sectorsWithData: number;
+    totalSectors: number;
+  };
+}
+
 export async function execute(
   params: {
     inventoryId: string;
@@ -40,13 +83,15 @@ export async function execute(
     bySubsector?: boolean;
   },
   session: AppSession
-): Promise<any> {
+): Promise<
+  | { success: true; data: InventoryEmissionsResult }
+  | { success: false; error: string; data: null }
+> {
   try {
-    const { 
-      inventoryId, 
-      bySector = true, 
-      byScope = false, 
-      bySubsector = false 
+    const {
+      inventoryId,
+      bySector = true,
+      bySubsector = false
     } = params;
     
     logger.debug({ inventoryId, userId: session.user.id }, "MCP: Fetching inventory emissions");
@@ -63,7 +108,7 @@ export async function execute(
     // Use existing ResultsService to get emissions data
     const emissionsData = await getEmissionResults(inventoryId);
 
-    const result: any = {
+    const result: InventoryEmissionsResult = {
       inventoryId: inventory.inventoryId,
       inventoryName: inventory.inventoryName,
       year: inventory.year,
@@ -82,11 +127,12 @@ export async function execute(
         id: inventory.city?.project?.organization?.organizationId,
         name: inventory.city?.project?.organization?.name,
       },
+      statistics: { sectorsWithData: 0, totalSectors: 0 },
     };
 
     // Add sector breakdown if requested
     if (bySector && emissionsData.totalEmissionsBySector) {
-      result.bySector = emissionsData.totalEmissionsBySector.map((sector: any) => ({
+      result.bySector = emissionsData.totalEmissionsBySector.map((sector) => ({
         sectorName: sector.sectorName,
         emissions: sector.co2eq?.toString() || "0",
         percentage: sector.percentage || 0,
@@ -96,19 +142,26 @@ export async function execute(
     // Add subsector breakdown if requested  
     if (bySubsector) {
       const subsectorData = await getTotalEmissionsBySectorAndSubsector(inventoryId);
-      result.bySubsector = subsectorData.map((item: any) => ({
-        subsectorName: item.subsector_name,
-        sectorName: item.sector_name,
-        emissions: item.co2eq?.toString() || "0",
-        percentage: emissionsData.totalEmissions 
-          ? ((parseFloat(item.co2eq) / parseFloat(emissionsData.totalEmissions.toString())) * 100).toFixed(2)
-          : 0,
-      }));
+      result.bySubsector = subsectorData.map((item) => {
+        const record = item as typeof item & { sector_name?: string };
+        return {
+          subsectorName: record.subsector_name,
+          sectorName: record.sector_name,
+          emissions: record.co2eq?.toString() || "0",
+          percentage: emissionsData.totalEmissions
+            ? (
+                (parseFloat(record.co2eq.toString()) /
+                  parseFloat(emissionsData.totalEmissions.toString())) *
+                100
+              ).toFixed(2)
+            : 0,
+        };
+      });
     }
 
     // Add top emissions by subsector
     if (emissionsData.topEmissionsBySubSector) {
-      result.topEmissions = emissionsData.topEmissionsBySubSector.slice(0, 10).map((item: any) => ({
+      result.topEmissions = emissionsData.topEmissionsBySubSector.slice(0, 10).map((item) => ({
         sectorName: item.sectorName,
         subsectorName: item.subsectorName, 
         scopeName: item.scopeName,
@@ -119,7 +172,7 @@ export async function execute(
 
     // Add summary statistics
     result.statistics = {
-      sectorsWithData: emissionsData.totalEmissionsBySector?.filter((s: any) => s.co2eq > 0).length || 0,
+      sectorsWithData: emissionsData.totalEmissionsBySector?.filter((s) => s.co2eq.greaterThan(0)).length || 0,
       totalSectors: emissionsData.totalEmissionsBySector?.length || 0,
     };
 

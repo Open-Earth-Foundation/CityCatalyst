@@ -2,6 +2,7 @@ import { db } from "@/models";
 import createHttpError from "http-errors";
 
 import {
+  CityResponse,
   InviteStatus,
   OrganizationRole,
   ProjectWithCitiesResponse,
@@ -572,7 +573,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode", "country"],
+          attributes: ["cityId", "name", "countryLocode", "country", "region"],
           include: [
             {
               model: db.models.Inventory,
@@ -599,7 +600,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode", "country"],
+            attributes: ["cityId", "name", "countryLocode", "country", "region"],
             include: [
               {
                 model: db.models.Inventory,
@@ -620,7 +621,14 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode", "country", "locode"],
+        attributes: [
+          "cityId",
+          "name",
+          "countryLocode",
+          "country",
+          "locode",
+          "region",
+        ],
         include: [
           {
             model: db.models.Project,
@@ -685,10 +693,11 @@ export default class UserService {
         cities: (project.cities ?? []).map((city) => ({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as any,
+          inventories: city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
+          region: city.region as string,
         })),
       };
     }
@@ -717,10 +726,11 @@ export default class UserService {
         projectsById[projectId].cities.push({
           name: city.name as string,
           cityId: city.cityId as string,
-          inventories: city.inventories as any,
+          inventories: city.inventories as unknown as CityResponse["inventories"],
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
+          region: city.region as string,
         });
       }
     }
@@ -1115,8 +1125,6 @@ export default class UserService {
     }
     return responseObject;
   }
-
-  public async fetchUserProjects(userId: string) {}
 
   public static ensureIsAdmin(session: AppSession | null) {
     // Ensure user is signed in

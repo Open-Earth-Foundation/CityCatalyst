@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, HStack, Input, Text } from "@chakra-ui/react";
+import { Box, HStack, Input } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";

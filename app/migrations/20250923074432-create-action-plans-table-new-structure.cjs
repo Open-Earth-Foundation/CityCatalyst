@@ -159,7 +159,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Drop the ActionPlan table
     await queryInterface.dropTable("ActionPlan");
   },

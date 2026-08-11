@@ -7,7 +7,6 @@ import {
   Stack,
   Text,
   Textarea,
-  useRadioGroup,
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC, useEffect } from "react";
@@ -54,7 +53,7 @@ const ScopeUnavailable: FC<ScopeUnavailableProps> = ({
   const [markAsUnavailable, { isLoading }] =
     api.useUpdateOrCreateInventoryValueMutation();
 
-  const { field } = useController({
+  useController({
     name: "reason",
     control,
     defaultValue: reason,

@@ -365,16 +365,16 @@ export const conceptNoteStartRequest = z
     city_id: z.string().uuid(),
     project_id: z.string().trim().min(1).max(255).nullable().optional(),
     funder_id: z.string().uuid().nullable().optional(),
-    selected_funding_record_id: z.string().uuid().nullable().optional(),
+    selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
     thread_id: z.string().uuid().nullable().optional(),
     idempotency_key: z.string().uuid(),
   })
   .superRefine((request, context) => {
-    if (request.selected_funding_record_id && !request.funder_id) {
+    if (request.selected_funding_opportunity_id && !request.funder_id) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "funder_id is required when selected_funding_record_id is provided",
+          "funder_id is required when selected_funding_opportunity_id is provided",
         path: ["funder_id"],
       });
     }

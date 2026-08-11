@@ -28,8 +28,8 @@ Input is a JSON object with:
 - `selection_limit` (integer): maximum number of candidates that may have
   `decision = selected`.
 - `candidates` (array): the deterministic shortlist. Every item contains
-  `funding_record_id`, `funder_id`, optional `funder_name`, `is_opportunity`,
-  `is_funded_award`, optional `award_status`, `award_amount`, `currency`, and
+  `funded_project_id`, `funder_id`, optional `funder_name`, `is_funded_award`,
+  optional `award_status`, `award_amount`, `currency`, and
   `award_year`; `name`; optional `applicant_name`, `applicant_type`, `city`,
   `state_region`, `country`, `category`, `sector`, `finance_route`,
   `instrument_type`, `region_scope`, and `summary`; arrays of `hazards`,
@@ -51,7 +51,7 @@ The object has one required field:
 
 Every decision must contain:
 
-- `funding_record_id` (UUID): copy one supplied candidate ID exactly once
+- `funded_project_id` (UUID): copy one supplied candidate ID exactly once
 - `decision` (`selected` or `rejected`)
 - `fit_rationale` (string): a concise comparison based only on supplied fields
 - `matched_tags` (array of strings): only normalized tags present in both
@@ -72,7 +72,7 @@ and the number of selected decisions must not exceed `selection_limit`.
 {
   "decisions": [
     {
-      "funding_record_id": "11111111-1111-4111-8111-111111111111",
+      "funded_project_id": "11111111-1111-4111-8111-111111111111",
       "decision": "selected",
       "fit_rationale": "Both projects address city-led flood resilience with green infrastructure.",
       "matched_tags": ["city-led", "flood", "green-infrastructure"],
@@ -80,7 +80,7 @@ and the number of selected decisions must not exceed `selection_limit`.
       "caveats": ["The candidate does not state its applicant type."]
     },
     {
-      "funding_record_id": "22222222-2222-4222-8222-222222222222",
+      "funded_project_id": "22222222-2222-4222-8222-222222222222",
       "decision": "rejected",
       "fit_rationale": "The supplied fields do not establish a useful intervention or hazard comparison.",
       "matched_tags": [],

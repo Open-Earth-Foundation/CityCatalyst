@@ -112,7 +112,7 @@ flowchart TB
     subgraph CNBDB["externally operated CNB database"]
         WorkspaceDB[("Chapters + revisions<br/>gaps + matches + exports")]
         FunderDB[("Funders<br/>criteria + templates")]
-        ProjectKB[("Funding records<br/>opportunities + funded projects<br/>source evidence")]
+        ProjectKB[("Funding opportunities<br/>funded projects + source evidence")]
     end
 
     ContextBundle["Context bundle<br/>CC context + funder criteria<br/>funded projects + uploads"]
@@ -210,7 +210,7 @@ flowchart LR
 | Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst                        | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
 | Document chapters and revisions                                    | `CNB_DATABASE_URL`                  | Draft document state before export; `run_id` is an external CA identifier.                      |
 | Funder profiles and criteria                                       | `CNB_DATABASE_URL`                  | Shared curated corpus, reusable across cities and agents.                                        |
-| Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Shared funding records distinguished by `is_opportunity`.                                        |
+| Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Separate programme and awarded-project tables with explicit foreign keys.                         |
 | Exported DOCX/PDF file references                                  | `CNB_DATABASE_URL`                  | Workflow output artifacts.                                                                       |
 | PDF-to-Markdown conversion                                         | CityCatalyst                        | Owns Mistral OCR, queueing, retries, validation, authoritative storage, and result pointers.     |
 | Pointer-only Markdown handoff                                      | CityCatalyst to Climate Advisor     | CC sends a stable result key and immutable metadata; CA reads content only through authenticated CC. |
@@ -227,7 +227,7 @@ The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
 
 - typed read/write clients or repositories for CA run state and CNB document state
-- typed reference-data clients for funders, funding records, templates,
+- typed reference-data clients for funders, funding opportunities, funded projects, templates,
   criteria, and evidence
 - stable CC-created upload IDs and CNB export file references
 - source labels/locations and evidence link records for workspace review and
@@ -276,7 +276,7 @@ flowchart LR
 
     subgraph CNBDB["CNB_DATABASE_URL"]
         Workspace["chapters + revisions<br/>gaps + matches + exports"]
-        References["funders + funding records<br/>templates + criteria + evidence"]
+        References["funders + opportunities + funded projects<br/>templates + criteria + evidence"]
     end
 
     Inventory -.->|"inventory_import + id"| OCR
@@ -740,8 +740,8 @@ important planning rules are:
 
 - Keep the four discovered input groups separate: finance landscape, funder
   profiles, comparable awards, and CityCatalyst city context/GHGI.
-- Store opportunities and funded projects in one `funding_records` table.
-  `is_opportunity` distinguishes opportunity rows from funded-project rows.
+- Store application programmes in `funding_opportunities` and awarded examples
+  in `funded_projects`; do not use a type flag to distinguish them.
 - Keep each funded project and its award information in one complete row; do
   not introduce a separate funding-link table.
 - Treat the finance route as document-shaping data. A competitive grant,
@@ -792,7 +792,7 @@ erDiagram
         string city_id
         string project_id
         uuid funder_id
-        uuid selected_funding_record_id
+        uuid selected_funding_opportunity_id
         string status
         string workflow_step
         jsonb context_summary
@@ -875,7 +875,7 @@ erDiagram
     concept_note_matched_projects {
         uuid match_id
         uuid run_id
-        uuid funding_record_id
+        uuid funded_project_id
         string decision
         text fit_rationale
         jsonb matched_tags
@@ -895,12 +895,13 @@ erDiagram
 Across the two databases, integration identifiers use the same UUID type as
 their source records:
 
-- `concept_note_runs.funder_id` and `selected_funding_record_id` are external
+- `concept_note_runs.funder_id` and `selected_funding_opportunity_id` are external
   identifiers into `CNB_DATABASE_URL` and receive no database foreign keys.
+  The latter identifies a `funding_opportunities.funding_opportunity_id`.
 - Every CNB workspace `run_id` is an external identifier into
   `CA_DATABASE_URL` and receives no database foreign key.
-- `concept_note_matched_projects.funding_record_id` is internal to
-  `CNB_DATABASE_URL` and references `funding_records.funding_record_id` with
+- `concept_note_matched_projects.funded_project_id` is internal to
+  `CNB_DATABASE_URL` and references `funded_projects.funded_project_id` with
   restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
@@ -955,19 +956,20 @@ evidence-backed content.
 ### CNB Funding Reference Tables
 
 These tables live under `CNB_DATABASE_URL` beside the document workspace. They
-store reusable funders and funding records and are accessed through typed
-contracts. The repository owns their schema and migrations; infrastructure and
-curated data remain externally managed. There are no cross-database foreign keys
-to the CA-owned run foundation. A funding record is either an opportunity or a
-funded project.
+store reusable funders, funding opportunities, and funded-project examples and
+are accessed through typed contracts. The repository owns their schema and
+migrations; infrastructure and curated data remain externally managed. There
+are no cross-database foreign keys to the CA-owned run foundation.
 
 ```mermaid
 erDiagram
-    funders ||--o{ funding_records : "owns"
-    funding_records ||--o{ funder_templates : "uses when opportunity"
-    funding_records ||--o{ funder_criteria : "defines when opportunity"
-    funding_records ||--o{ funding_record_evidence : "cites"
-    source_documents ||--o{ funding_record_evidence : "supports"
+    funders ||--o{ funding_opportunities : "offers"
+    funders ||--o{ funded_projects : "funds"
+    funding_opportunities ||--o{ funder_templates : "uses"
+    funding_opportunities ||--o{ funder_criteria : "defines"
+    funding_opportunities o|--o{ funding_evidence : "cites"
+    funded_projects o|--o{ funding_evidence : "cites"
+    source_documents ||--o{ funding_evidence : "supports"
     source_documents ||--o{ funder_criteria : "supports"
 
     funders {
@@ -979,12 +981,33 @@ erDiagram
         jsonb profile
     }
 
-    funding_records {
-        uuid funding_record_id
+    funding_opportunities {
+        uuid funding_opportunity_id
         string source_run_id
         string source_record_ref
         uuid funder_id
-        bool is_opportunity
+        string name
+        string applicant_type
+        string category
+        string sector
+        jsonb hazards
+        jsonb interventions
+        string finance_route
+        string instrument_type
+        string region_scope
+        numeric min_award
+        numeric max_award
+        string currency
+        string status
+        text summary
+        jsonb known_gaps
+    }
+
+    funded_projects {
+        uuid funded_project_id
+        string source_run_id
+        string source_record_ref
+        uuid funder_id
         string name
         string applicant_name
         string applicant_type
@@ -998,8 +1021,6 @@ erDiagram
         string finance_route
         string instrument_type
         string region_scope
-        numeric min_award
-        numeric max_award
         numeric award_amount
         string currency
         int award_year
@@ -1011,7 +1032,7 @@ erDiagram
 
     funder_templates {
         uuid template_id
-        uuid funding_record_id
+        uuid funding_opportunity_id
         string template_name
         string output_format
         jsonb chapter_schema
@@ -1020,7 +1041,7 @@ erDiagram
 
     funder_criteria {
         uuid criterion_id
-        uuid funding_record_id
+        uuid funding_opportunity_id
         uuid source_document_id
         string criterion_type
         string label
@@ -1040,9 +1061,10 @@ erDiagram
         timestamp fetched_at
     }
 
-    funding_record_evidence {
+    funding_evidence {
         uuid evidence_id
-        uuid funding_record_id
+        uuid funding_opportunity_id
+        uuid funded_project_id
         uuid source_document_id
         text claim
         text quote_or_summary
@@ -1050,10 +1072,11 @@ erDiagram
     }
 ```
 
-Rows with `is_opportunity = true` hold the application programme, template, and
-criteria. Rows with `is_opportunity = false` hold one complete funded-project
-example and its award information. Templates and criteria may reference only an
-opportunity record.
+Each `funding_opportunities` row holds one application programme and its award
+range. Each `funded_projects` row holds one complete awarded-project example and
+its award information. Templates and criteria reference only a funding
+opportunity. Each `funding_evidence` row references exactly one opportunity or
+funded project; a check constraint rejects rows with both or neither parent.
 
 Every funded-project row must reference one canonical existing `funder_id`.
 Local research may discover a project whose reported funder has not yet been
@@ -1067,15 +1090,16 @@ an opportunity-record relationship for this matching flow.
 Imported funded projects retain the local research identity as
 `source_run_id` plus `source_record_ref`. The CNB database enforces a
 unique constraint on that pair. Replaying an approved import returns the
-existing `funding_record_id` and does not insert duplicate evidence; revised
+existing `funded_project_id` and does not insert duplicate evidence; revised
 reference data requires a new research run.
 
 The physical schema also enforces unique `(content_hash, url)` source documents,
 unique `(chapter_id, revision_number)` revisions, unique
-`(run_id, funding_record_id)` matches, and unique active chapter positions per
+`(run_id, funded_project_id)` matches, and unique active chapter positions per
 run through a partial index that excludes deleted chapters. Reference children
-cascade from funding records; chapter revisions and evidence links cascade from
-chapters; deleting a referenced funder or matched funding record is restricted.
+cascade from opportunities or funded projects; chapter revisions and evidence
+links cascade from chapters; deleting a referenced funder or matched funded
+project is restricted.
 All UUIDv4 primary keys are generated by application code, so the migration does
 not require a PostgreSQL UUID extension. `funder_criteria.source_document_id` is
 nullable and links a criterion to retained provenance when one exists.
@@ -1116,13 +1140,14 @@ rejects mismatched IDs. A SHA check is not required for this pairing.
 Required ingest outputs:
 
 - Source document record with URL, title, date, license status, and hash.
-- Funder record and funding records for opportunities and funded projects.
+- Funder record, funding-opportunity record, and funded-project records.
 - A reviewer-selected canonical `funder_id` for every funded project.
 - Reviewer-curated `project_tags` for funded projects used in matching.
 - Template chapter schema.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
-- Opportunity and funded-project details in the shared funding records.
+- Opportunity details in `funding_opportunities` and awarded examples in
+  `funded_projects`.
 - Evidence links for each important claim.
 
 ## Similar Project Matching
@@ -1423,7 +1448,7 @@ Input:
   "city_id": "string",
   "project_id": "string|null",
   "funder_id": "uuid|null",
-  "selected_funding_record_id": "uuid|null",
+  "selected_funding_opportunity_id": "uuid|null",
   "thread_id": "uuid|null",
   "idempotency_key": "uuid"
 }
@@ -1588,7 +1613,7 @@ Output:
 {
   "matches": [
     {
-      "funding_record_id": "uuid",
+      "funded_project_id": "uuid",
       "decision": "selected",
       "fit_rationale": "Why the LLM agent considers this example useful.",
       "matched_tags": ["stormwater", "flood", "city-led"],
@@ -1601,7 +1626,7 @@ Output:
 
 Rules:
 
-- Retrieve candidate funding records where `is_opportunity = false`.
+- Retrieve candidates directly from `funded_projects`.
 - Require `funder_id` for `same_funder`; an explicit `cross_funder` request may
   omit the current project's funder while every reviewed candidate retains its
   own canonical funder identity.

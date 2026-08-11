@@ -207,8 +207,6 @@ class ProjectMatchingService:
                 and candidate.funder_id != request.funder_id
             ):
                 continue
-            if candidate.is_opportunity:
-                continue
             if not candidate.is_funded_award:
                 continue
             if not candidate.evidence:
@@ -303,7 +301,7 @@ class ProjectMatchingService:
             -intervention_overlap,
             -len(overlap_tags),
             candidate.name.casefold(),
-            str(candidate.funding_record_id),
+            str(candidate.funded_project_id),
         )
 
     def _select_candidates_with_llm(
@@ -372,10 +370,10 @@ class ProjectMatchingService:
     ) -> None:
         """Reject invented IDs, unsupported tags, or foreign evidence references."""
         shortlist_map = {
-            item.candidate.funding_record_id: item
+            item.candidate.funded_project_id: item
             for item in shortlist
         }
-        returned_ids = {item.funding_record_id for item in decision_set.decisions}
+        returned_ids = {item.funded_project_id for item in decision_set.decisions}
         expected_ids = set(shortlist_map)
         if returned_ids != expected_ids:
             missing_ids = expected_ids - returned_ids
@@ -403,7 +401,7 @@ class ProjectMatchingService:
             )
 
         for decision in decision_set.decisions:
-            shortlisted_candidate = shortlist_map[decision.funding_record_id]
+            shortlisted_candidate = shortlist_map[decision.funded_project_id]
             self._validate_decision_tags(
                 decision=decision,
                 shortlisted_candidate=shortlisted_candidate,
@@ -459,7 +457,7 @@ class ProjectMatchingService:
     ) -> list[CnbSimilarProjectMatch]:
         """Persist only selected decisions and retain referenced evidence rows."""
         shortlist_map = {
-            item.candidate.funding_record_id: item
+            item.candidate.funded_project_id: item
             for item in shortlist
         }
         matches: list[CnbSimilarProjectMatch] = []
@@ -467,14 +465,14 @@ class ProjectMatchingService:
         for decision in decision_set.decisions:
             if decision.decision != "selected":
                 continue
-            shortlisted_candidate = shortlist_map[decision.funding_record_id]
+            shortlisted_candidate = shortlist_map[decision.funded_project_id]
             selected_evidence = self._selected_evidence(
                 candidate=shortlisted_candidate.candidate,
                 evidence_refs=decision.evidence_refs,
             )
             matches.append(
                 CnbSimilarProjectMatch(
-                    funding_record_id=decision.funding_record_id,
+                    funded_project_id=decision.funded_project_id,
                     fit_rationale=decision.fit_rationale,
                     matched_tags=decision.matched_tags,
                     evidence=selected_evidence,
@@ -485,7 +483,7 @@ class ProjectMatchingService:
                 )
             )
 
-        matches.sort(key=lambda item: str(item.funding_record_id))
+        matches.sort(key=lambda item: str(item.funded_project_id))
         return matches
 
     def _selected_evidence(

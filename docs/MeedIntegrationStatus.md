@@ -10,11 +10,11 @@ Companions: [`MeedReferenceDataContractDiff.md`](./MeedReferenceDataContractDiff
 
 The backend contract is **functionally complete**. [PR #2982](https://github.com/Open-Earth-Foundation/CityCatalyst/pull/2982) is approved and merge-clean, and 6 of the 7 gaps we raised were closed in full; the seventh was declined with sound reasoning. Every field the module renders now has a source.
 
-**The critical path is now the frontend.** Three things block a dev test, none of them large:
+What remains splits cleanly into two piles that do **not** block each other.
 
-1. `HIAP_MEED_API_URL` does not exist anywhere in the repo
-2. `MEED_MODULE` is not in dev's `NEXT_PUBLIC_FEATURE_FLAGS`
-3. PR #2956 is still a draft — dev deploys from `develop`, so none of our code reaches dev until it merges
+**Deploy plumbing — reviewable now, independent of us.** Two values are missing from the deploy workflows: `HIAP_MEED_API_URL` and `MEED_MODULE` in dev's `NEXT_PUBLIC_FEATURE_FLAGS`. Both are plain repo edits, not cluster operations and not secrets. Critically, **both are inert until our code lands** — on `develop` today the module has zero files and `MEED_MODULE` is not even a defined flag, so adding them changes nothing and risks nothing. They can go in whenever it suits.
+
+**Module delivery — our sequencing choice.** PR #2956 is held in draft **deliberately**, so that what reaches dev does something real rather than being a flag-gated shell. That is a product decision, not a blocker awaiting anyone.
 
 ---
 
@@ -89,19 +89,30 @@ Plus mechanical migration work: snake_case renames, `meta.total` → `meta.total
 
 ---
 
-## Wiring needed to test on dev
+## Deploy plumbing (Mirco / Piotr)
+
+Both are plain repo edits with no secrets. All three hiap-meed service names are confirmed from `hiap-meed/k8s/service-*.yml`, so the exact values are known — what is needed is review and agreement, not investigation.
 
 **1. `HIAP_MEED_API_URL` does not exist.** `HIAP_API_URL` is not in `k8s/cc-web-deploy.yml` — it is set at deploy time by `kubectl set env`:
 
-- `.github/workflows/web-develop.yml:479` → add `"HIAP_MEED_API_URL=http://hiap-meed-service-dev" \`
-- `web-test.yml:259` and `web-tag.yml:242` → same, with the test/prod service names
-- `app/env.example` beside line 65 → `HIAP_MEED_API_URL="http://localhost:8000"`
+| File | Line | Value |
+|---|---|---|
+| `.github/workflows/web-develop.yml` | 479 | `"HIAP_MEED_API_URL=http://hiap-meed-service-dev" \` |
+| `.github/workflows/web-test.yml` | 259 | `"HIAP_MEED_API_URL=http://hiap-meed-service-test" \` |
+| `.github/workflows/web-tag.yml` | 242 | `"HIAP_MEED_API_URL=http://hiap-meed-service-prod" \` |
+| `app/env.example` | ~65 | `HIAP_MEED_API_URL="http://localhost:8000"` |
+
+Service names verified from `hiap-meed/k8s/service-{dev,test,prod}.yml` — all `ClusterIP` on port 80 → container 8000, no ingress, so they resolve only from inside the cluster.
 
 **2. `MEED_MODULE` is not in dev's flags.** `NEXT_PUBLIC_FEATURE_FLAGS` appears three times in `web-develop.yml` (lines 41, 88, 483) — build-time and runtime. All three need it.
 
-**3. No client, no routes.** Nothing calls hiap-meed. Needs `MeedApiService.ts`, modelled on `backend/hiap/HiapApiService.ts`.
+**Both are safe to land ahead of us.** On `develop` today the module has zero files and `MEED_MODULE` is not a defined flag, so the flag string is inert and the env var unused. There is no ordering dependency in either direction.
 
-**4. PR #2956 is a draft.** Safe to merge — everything sits behind `MEED_MODULE`, which is off in dev's flag list — but nothing of ours reaches dev until it does.
+## Module delivery (ours)
+
+**3. No client, no routes.** Nothing calls hiap-meed. Needs `MeedApiService.ts`, modelled on `backend/hiap/HiapApiService.ts`. This is the half of item 1 that is ours — the workflow supplies the value, our code has to read it.
+
+**4. PR #2956 is held in draft deliberately**, so that what reaches dev does something real rather than being a flag-gated shell. Not a blocker awaiting review — a sequencing choice.
 
 ### Making connectivity verifiable
 
@@ -132,7 +143,7 @@ Note: **prioritize does not depend on #2982.** The hiap-meed pod fetches its own
 ## Sequencing
 
 1. **Wiring PR** — env var (4 files), `MEED_MODULE` in dev flags, `MeedApiService` skeleton, health route. Nothing user-facing, independent of #2982, mergeable immediately. Proves the pod reaches hiap-meed before any real integration exists.
-2. **Get #2956 reviewed and merged.** 109 files; review lead time likely exceeds any of the code above, and everything queues behind it.
+2. **#2956 merges when the integration is real** — deliberately held so that dev gets a working module, not a shell. Worth noting the cost of holding: 109 files diverging from `develop`, and the reference-data migration adds more. The wiring PR above is the hedge — it puts something concrete and provable on dev without merging the module.
 3. **Prioritize POST** — kills the mock and lights up regulations, processing and results.
 4. **Reference-data migration** — 5 incremental PRs once #2982 is deployed. Carries frontend bugs 1–8.
 5. **Reports** — measure, then decide.

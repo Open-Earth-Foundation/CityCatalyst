@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 import {
   Box,
   Flex,
@@ -25,19 +23,20 @@ import {
   LuLandmark,
   LuRefreshCw,
 } from "react-icons/lu";
-import type { IconType } from "react-icons";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type { ConceptNoteRun } from "@/util/types";
 
+import { ContextTile } from "./context-tile";
+import { RunCard } from "./run-card";
+import { RunCardSkeleton } from "./run-card-skeleton";
+import { StatusBadge } from "./status-badge";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
   getRunStatusPresentation,
   humanizeLifecycleValue,
-  type RunStatusTone,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -45,247 +44,11 @@ interface ConceptNoteDashboardProps {
   lng: string;
 }
 
-interface ContextTileProps {
-  detail: ReactNode;
-  icon: IconType;
-  label: string;
-  status?: string;
-  statusTone?: RunStatusTone;
-  value: ReactNode;
-}
-
-interface RunCardProps {
-  activityLabel: string;
-  reducedMotion: boolean;
-  resumeHref: string;
-  resumeLabel: string;
-  run: ConceptNoteRun;
-  scopeLabel: string;
-  statusLabel: string;
-  statusTone: RunStatusTone;
-}
-
-const statusStyles: Record<
-  RunStatusTone,
-  { border?: string; color: string; surface: string }
-> = {
-  positive: {
-    color: "sentiment.positiveDefault",
-    surface: "sentiment.positiveOverlay",
-  },
-  warning: {
-    color: "sentiment.warningDefault",
-    surface: "sentiment.warningOverlay",
-  },
-  info: {
-    color: "content.link",
-    surface: "background.alternativeLight",
-  },
-  negative: {
-    color: "sentiment.negativeDefault",
-    surface: "sentiment.negativeOverlay",
-  },
-  neutral: {
-    border: "border.neutral",
-    color: "content.tertiary",
-    surface: "background.backgroundLight",
-  },
-};
-
 const runGridColumns = {
   base: "1fr",
   md: "repeat(2, minmax(0, 1fr))",
   xl: "repeat(3, minmax(0, 1fr))",
 };
-
-function StatusBadge({ label, tone }: { label: string; tone: RunStatusTone }) {
-  const colors = statusStyles[tone];
-
-  return (
-    <HStack
-      gap={1.5}
-      border="1px solid"
-      borderColor={colors.border ?? colors.color}
-      borderRadius="pill"
-      bg={colors.surface}
-      px={2.5}
-      py={1}
-      width="fit-content"
-    >
-      <Box boxSize="6px" borderRadius="full" bg={colors.color} />
-      <Text
-        fontFamily="body"
-        fontSize="label.sm"
-        fontWeight="medium"
-        lineHeight="16"
-        color="content.secondary"
-        whiteSpace="nowrap"
-      >
-        {label}
-      </Text>
-    </HStack>
-  );
-}
-
-function ContextTile({
-  detail,
-  icon,
-  label,
-  status,
-  statusTone = "neutral",
-  value,
-}: ContextTileProps) {
-  return (
-    <VStack
-      align="stretch"
-      gap={2.5}
-      minH="178px"
-      border="1px solid"
-      borderColor="border.neutral"
-      borderRadius="rounded"
-      bg="base.light"
-      p={3}
-      boxShadow="1dp"
-    >
-      <Flex align="center" justify="space-between" gap={2}>
-        <Text
-          fontFamily="heading"
-          fontSize="overline"
-          fontWeight="semibold"
-          letterSpacing="widest"
-          color="content.tertiary"
-          textTransform="uppercase"
-        >
-          {label}
-        </Text>
-        <Icon as={icon} boxSize={3.5} color="content.link" />
-      </Flex>
-      {status && <StatusBadge label={status} tone={statusTone} />}
-      <Box
-        fontFamily="heading"
-        fontSize="title.sm"
-        fontWeight="semibold"
-        lineHeight="20"
-        color="content.primary"
-      >
-        {value}
-      </Box>
-      <Box
-        mt="auto"
-        fontFamily="body"
-        fontSize="label.sm"
-        lineHeight="16"
-        color="content.tertiary"
-      >
-        {detail}
-      </Box>
-    </VStack>
-  );
-}
-
-function RunCard({
-  activityLabel,
-  reducedMotion,
-  resumeHref,
-  resumeLabel,
-  run,
-  scopeLabel,
-  statusLabel,
-  statusTone,
-}: RunCardProps) {
-  return (
-    <motion.div
-      initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={reducedMotion ? undefined : { y: -3 }}
-      transition={{ duration: 0.22, ease: "easeOut" }}
-      style={{ height: "100%" }}
-    >
-      <VStack
-        as="article"
-        data-testid={`concept-note-run-${run.run_id}`}
-        align="stretch"
-        gap={2.5}
-        h="full"
-        minH="178px"
-        border="1px solid"
-        borderColor="border.neutral"
-        borderRadius="rounded"
-        bg="base.light"
-        p={4}
-        boxShadow="1dp"
-        transition="border-color 160ms ease, box-shadow 160ms ease"
-        _hover={{ borderColor: "background.overlay", boxShadow: "2dp" }}
-        _motionReduce={{ transition: "none" }}
-      >
-        <Flex align="start" justify="space-between" gap={3}>
-          <Heading
-            as="h2"
-            minW={0}
-            fontFamily="heading"
-            fontSize="title.sm"
-            fontWeight="semibold"
-            lineHeight="20"
-            color="content.primary"
-          >
-            {run.name}
-          </Heading>
-          <StatusBadge label={statusLabel} tone={statusTone} />
-        </Flex>
-
-        <Text
-          fontFamily="body"
-          fontSize="body.sm"
-          lineHeight="16"
-          color="content.tertiary"
-        >
-          {scopeLabel}
-        </Text>
-
-        <Box h="4px" borderRadius="pill" bg="background.neutral" />
-
-        <Text
-          fontFamily="body"
-          fontSize="label.sm"
-          lineHeight="16"
-          color="content.tertiary"
-        >
-          {activityLabel}
-        </Text>
-
-        <HStack mt="auto">
-          <Button asChild size="sm" variant="solid">
-            <NextLink href={resumeHref}>{resumeLabel}</NextLink>
-          </Button>
-        </HStack>
-      </VStack>
-    </motion.div>
-  );
-}
-
-function RunCardSkeleton() {
-  return (
-    <VStack
-      align="stretch"
-      gap={3}
-      minH="178px"
-      border="1px solid"
-      borderColor="border.neutral"
-      borderRadius="rounded"
-      bg="base.light"
-      p={4}
-    >
-      <Flex justify="space-between" gap={4}>
-        <Skeleton h="20px" w="58%" />
-        <Skeleton h="24px" w="88px" borderRadius="pill" />
-      </Flex>
-      <Skeleton h="16px" w="76%" />
-      <Skeleton h="4px" w="full" borderRadius="pill" />
-      <Skeleton h="16px" w="52%" />
-      <Skeleton mt="auto" h="32px" w="90px" borderRadius="pill" />
-    </VStack>
-  );
-}
 
 export function ConceptNoteDashboard({
   cityId,

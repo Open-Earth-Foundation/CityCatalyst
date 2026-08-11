@@ -43,11 +43,10 @@ export default function PasswordInput<
 
   const passwordValid = isPasswordPatternValid(watchPassword);
 
-  // Show hint until the password fully satisfies the pattern, only after a submit attempt
-  const showHint = shouldValidate && isSubmitted && !passwordValid;
-
-  // Same condition as showHint — whenever the hint is visible post-submit, it's invalid
-  const passwordInvalid = showHint;
+  // Hint is always visible as guidance; it's only styled as an error once
+  // the user has attempted to submit and the password still doesn't match.
+  const showHint = shouldValidate && !passwordValid;
+  const passwordInvalid = shouldValidate && isSubmitted && !passwordValid;
 
   return (
     <Field
@@ -84,6 +83,7 @@ export default function PasswordInput<
       {/* Password pattern hint — hidden once the password is valid */}
       {showHint && (
         <Text
+          mt="s"
           fontFamily="body"
           fontSize="body.sm"
           fontWeight="regular"

@@ -146,19 +146,26 @@ Note: **prioritize does not depend on #2982.** The hiap-meed pod fetches its own
 
 `HIAP_MEED_API_URL` cannot be verified from a laptop. `hiap-meed-service-dev` is `ClusterIP` with no ingress, so it resolves only from inside the cluster — meaning the first genuine test of the connection can only happen on dev, after something is merged.
 
-#2956 is held in draft so that what reaches dev is a working module rather than a flag-gated shell. That leaves an ordering question:
+#2956 is held in draft so that what reaches dev is a working module rather than a flag-gated shell. That leaves an ordering question — and the answer is not constrained to all-or-nothing.
 
-**Option A — connectivity first.** Merge a small, non-UI change that adds `MeedApiService` and a diagnostic route, so the connection can be confirmed on dev before the module lands. The module PR follows once the wiring is proven.
+**#2956 is not a monolith.** It is 14 commits along deliberate seams, several of which stand alone:
 
-- Confirms `HIAP_MEED_API_URL` resolves and the pod reaches the service, independently of whether any payload is correct
-- Two merges instead of one; adds code to `develop` that no user-facing feature consumes yet
+| Commit | Scope | Independently mergeable? |
+|---|---|---|
+| `803b5da6a` fix(theme): `radii.full` as a stadium radius | **Root-level, unrelated to MEED.** Fixes progress bars, slider tracks and pill chips rendering as ellipses app-wide | Yes — benefits GHGI and others regardless of MEED |
+| `290f3eb2c` scaffold — routes, registration, feature flag | Module registration + `MEED_MODULE` definition | Yes — makes the flag real without shipping screens |
+| `596eb4596` wizard shell + contract types | `util/types/meed.ts`, the hiap-meed contract | Yes — types only, no runtime surface |
+| `142ebb737` … `29549dd3d` | The 11 screens, primitives, hub, results | Sequential; these build on each other |
+| `64f8fa975` docs | Implementation notes | Yes |
 
-**Option B — single merge.** Add the deploy values and merge #2956 together, and verify the connection at that point.
+So the range of options is wider than one merge or two. Some combinations worth knowing exist:
 
-- One merge, one review cycle
-- If `HIAP_MEED_API_URL` is wrong or the service is unreachable, that surfaces at the same moment as everything else, against a 109-file change
+- The theme fix can go on its own at any time — it is a defect on `develop` today, independent of this work.
+- Registration and contract types can land before any screen does, which makes `MEED_MODULE` and `HIAP_MEED_API_URL` meaningful without exposing UI.
+- A connectivity-only change (`MeedApiService` plus a diagnostic route) can confirm the pod reaches the service before any of the above.
+- Or the whole thing lands together once the prioritizer is wired.
 
-The trade-off is diagnostic isolation versus merge count. Either works; the choice belongs to whoever owns the deploy pipeline.
+The trade-off across all of these is the same: how much is in flight at the moment the wiring is first exercised, versus how many review cycles it costs. We have no constraint that forces any particular split — the commits are already clean enough to slice wherever suits review and deployment.
 
 ## Sequencing after that
 

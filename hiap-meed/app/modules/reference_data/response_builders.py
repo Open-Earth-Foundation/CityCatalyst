@@ -57,6 +57,12 @@ from app.modules.reference_data.models import (
 )
 
 _POLICY_SIGNAL_STRENGTH = {"high": 0.7, "medium": 0.4, "low": 0.2}
+_POLICY_SCOPE_BY_DOCUMENT_TYPE = {
+    "framework": "national",
+    "sector_plan": "national",
+    "parcc": "regional",
+    "paccc": "municipal",
+}
 
 
 def _generated_at_utc() -> str:
@@ -64,7 +70,12 @@ def _generated_at_utc() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
-def _meta(*, endpoint: str, total_records: int, **scope: str) -> ReferenceDataMeta:
+def _meta(
+    *,
+    endpoint: str,
+    total_records: int,
+    **scope: str | int,
+) -> ReferenceDataMeta:
     """Build the common metadata envelope without exposing upstream diagnostics."""
     return ReferenceDataMeta(
         generated_at_utc=_generated_at_utc(),
@@ -73,9 +84,9 @@ def _meta(*, endpoint: str, total_records: int, **scope: str) -> ReferenceDataMe
     )
 
 
-def _warnings(warning: str | None) -> list[str]:
-    """Convert an internal optional warning to the stable public list shape."""
-    return [warning] if warning else []
+def _warnings(*warnings: str | None) -> list[str]:
+    """Return the supplied non-empty warnings in the stable public list shape."""
+    return [warning for warning in warnings if warning]
 
 
 def _city_indicators(city: CityData) -> list[CityIndicatorResponse]:
@@ -147,12 +158,15 @@ def build_action_pathways_response(
     result: ActionPathwaysFetchResult,
     *,
     requested_languages: list[str],
+    missing_action_type_count: int,
 ) -> ActionPathwaysResponse:
     """
     Return the canonical action catalogue in the requested languages.
 
     Language selection only changes the two localization maps. Catalogue
     fetching, validation, action membership, and ordering remain backend-owned.
+    Metadata and warnings identify malformed upstream actions excluded because
+    their action type was missing.
     """
     actions = [
         ActionPathwayResponse(
@@ -177,18 +191,26 @@ def build_action_pathways_response(
         meta=_meta(
             endpoint="GET /v1/action-pathways",
             total_records=len(actions),
+            missing_action_type_count=missing_action_type_count,
         ),
-        warnings=_warnings(result.warning),
+        warnings=_warnings(
+            result.warning,
+            (
+                f"{missing_action_type_count} upstream action pathway(s) were "
+                "excluded because action_type was missing."
+                if missing_action_type_count
+                else None
+            ),
+        ),
     )
 
 
-def _policy_scope(document_type: object) -> str:
-    """Classify a policy document as national, regional, or municipal."""
-    if document_type == "parcc":
-        return "regional"
-    if document_type == "paccc":
-        return "municipal"
-    return "national"
+def _policy_scope(document_type: object) -> str | None:
+    """Return scope only for document types whose geography is defined."""
+    if not isinstance(document_type, str):
+        return None
+    normalized_document_type = document_type.strip().lower()
+    return _POLICY_SCOPE_BY_DOCUMENT_TYPE.get(normalized_document_type)
 
 
 def _policy_evidence_strength(evidence: dict[str, Any]) -> float:
@@ -268,6 +290,7 @@ def build_action_policy_scores_response(
             document_count=record.n_docs,
             policy_evidence=[
                 PolicyEvidenceResponse(
+                    document_type=evidence.get("document_type"),
                     scope=_policy_scope(evidence.get("document_type")),
                     document_name=evidence.get("document_name"),
                     signal_type=evidence.get("signal_type"),

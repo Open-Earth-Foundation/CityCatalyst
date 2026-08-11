@@ -356,6 +356,10 @@ def test_action_pathways_route_projects_repeated_languages(client: TestClient) -
         "Cleaner urban air"
     )
     assert action["emissions"]["gpc_reference_number"] == ["I.1.1"]
+    assert response.json()["meta"]["api_context"]["missing_action_type_count"] == 1
+    assert response.json()["warnings"] == [
+        "1 upstream action pathway(s) were excluded because action_type was missing."
+    ]
 
 
 @pytest.mark.integration
@@ -373,7 +377,7 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
                 n_docs=2,
                 policy_evidence=[
                     {
-                        "document_type": "parcc",
+                        "document_type": " PARCC ",
                         "document_name": "Regional plan",
                         "signal_relation": "commits",
                         "signal_type": "action",
@@ -382,12 +386,30 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
                         "evidence_strength": 0.6,
                     },
                     {
-                        "document_type": "paccc",
+                        "document_type": "Paccc",
                         "document_name": "Municipal plan",
                         "signal_relation": "funds",
                         "doc_relevance": "medium",
                         "signal_type": "funding",
                         "signal_strength": "high",
+                    },
+                    {
+                        "document_type": "future_policy_type",
+                        "document_name": "Future policy",
+                        "signal_type": "governance",
+                        "signal_relation": "supports",
+                        "signal_strength": "high",
+                        "doc_relevance": "high",
+                        "evidence_strength": 0.9,
+                    },
+                    {
+                        "document_type": None,
+                        "document_name": "Unclassified policy",
+                        "signal_type": "action",
+                        "signal_relation": "mentions",
+                        "signal_strength": "low",
+                        "doc_relevance": "low",
+                        "evidence_strength": 0.2,
                     },
                 ],
             )
@@ -403,6 +425,7 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
     payload = response.json()
     assert payload["scores"][0]["policy_evidence"] == [
         {
+            "document_type": " PARCC ",
             "scope": "regional",
             "document_name": "Regional plan",
             "signal_type": "action",
@@ -412,6 +435,7 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
             "evidence_strength": 0.6,
         },
         {
+            "document_type": "Paccc",
             "scope": "municipal",
             "document_name": "Municipal plan",
             "signal_type": "funding",
@@ -419,6 +443,26 @@ def test_policy_route_returns_all_evidence_and_backend_aggregates(
             "signal_strength": "high",
             "doc_relevance": "medium",
             "evidence_strength": None,
+        },
+        {
+            "document_type": "future_policy_type",
+            "scope": None,
+            "document_name": "Future policy",
+            "signal_type": "governance",
+            "signal_relation": "supports",
+            "signal_strength": "high",
+            "doc_relevance": "high",
+            "evidence_strength": 0.9,
+        },
+        {
+            "document_type": None,
+            "scope": None,
+            "document_name": "Unclassified policy",
+            "signal_type": "action",
+            "signal_relation": "mentions",
+            "signal_strength": "low",
+            "doc_relevance": "low",
+            "evidence_strength": 0.2,
         },
     ]
     assert payload["aggregates"] == {

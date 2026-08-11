@@ -159,10 +159,13 @@ def list_action_pathways(
         result = client.list_actions()
     except UpstreamApiError as error:
         _raise_upstream_error(error)
-    actions, _, _ = select_prioritizable_actions(result.actions)
+    actions, _, missing_action_type_actions = select_prioritizable_actions(
+        result.actions
+    )
     return build_action_pathways_response(
         result.model_copy(update={"actions": actions}),
         requested_languages=query.language,
+        missing_action_type_count=len(missing_action_type_actions),
     )
 
 

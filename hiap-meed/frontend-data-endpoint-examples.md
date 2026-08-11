@@ -97,13 +97,19 @@ With no `language` query, the response includes all available localizations. Rep
     "backend_consumer": "hiap-meed",
     "upstream_provider": "global-api",
     "api_context": {
-      "endpoint": "GET /v1/action-pathways"
+      "endpoint": "GET /v1/action-pathways",
+      "missing_action_type_count": 0
     },
     "total_records": 1
   },
   "warnings": []
 }
 ```
+
+`missing_action_type_count` is normally `0`. If Global API returns an action
+without `action_type`, HIAP-MEED excludes that malformed row and returns both a
+non-zero count and a warning. Valid non-mitigation actions are intentionally
+excluded without a warning.
 
 ## 3. Action policy scores
 
@@ -125,6 +131,7 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
       "document_count": 2,
       "policy_evidence": [
         {
+          "document_type": "framework",
           "scope": "national",
           "document_name": "National Energy Efficiency Plan",
           "signal_type": "funding",
@@ -155,7 +162,7 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
 }
 ```
 
-`signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` are passed through from Global API without combining or relabelling their values. `scope` is the existing HIAP-MEED projection of the upstream document type into national, regional, or municipal evidence.
+`document_type`, `signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` are passed through from Global API without combining or relabelling their values. `scope` is derived only for recognized document types: `framework` and `sector_plan` are national, `parcc` is regional, and `paccc` is municipal. Matching ignores case and surrounding whitespace. Evidence with a missing or unknown document type remains in the response with `scope: null` and does not contribute to regional or municipal aggregates.
 
 ## 4. Action mitigation-feasibility scores
 

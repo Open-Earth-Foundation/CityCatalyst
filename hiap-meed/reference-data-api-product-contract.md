@@ -150,7 +150,8 @@ No `language` returns all available localizations. Repeating it, for example `?l
     "backend_consumer": "hiap-meed",
     "upstream_provider": "global-api",
     "api_context": {
-      "endpoint": "GET /v1/action-pathways"
+      "endpoint": "GET /v1/action-pathways",
+      "missing_action_type_count": 0
     },
     "total_records": 1
   },
@@ -159,6 +160,7 @@ No `language` returns all available localizations. Repeating it, for example `?l
 ```
 
 - **Backend logic:** fetch the canonical catalogue with all languages, then apply the same prioritizable-action rule used by exclusion preview, prioritization, and output-plan generation. Only actions whose normalized `action_type` is `mitigation` are included. The language parameter only changes which localizations are returned. Production uses Global API; configured mocks remain test/local behavior only.
+- **Data-quality signal:** `meta.api_context.missing_action_type_count` reports malformed upstream rows excluded because `action_type` was missing. A non-zero count also adds a warning. Valid non-mitigation actions are intentionally excluded and do not produce this warning.
 
 ## 3. Action policy scores
 
@@ -188,6 +190,7 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
       "document_count": 2,
       "policy_evidence": [
         {
+          "document_type": "framework",
           "scope": "national",
           "document_name": "National Energy Efficiency Plan",
           "signal_type": "funding",
@@ -218,7 +221,7 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
 }
 ```
 
-- **Backend logic:** use the current HIAP-MEED evidence query and calculate the agreed evidence-scope aggregates from the same normalized result. Pass through `signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` using the Global API field names and values; do not combine them into a separate relevance classification.
+- **Backend logic:** use the current HIAP-MEED evidence query and calculate the agreed evidence-scope aggregates from the same normalized result. Pass through `document_type`, `signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` using the Global API field names and values; do not combine them into a separate relevance classification. Derive `scope` only for recognized document types (`framework` and `sector_plan` as national, `parcc` as regional, and `paccc` as municipal), using case-insensitive matching. Keep evidence with a missing or unknown type, return its `scope` as `null`, and exclude it only from regional and municipal aggregates.
 - **Not a caller knob:** `top_evidence_limit`; HIAP-MEED does not add the prototype's value of five.
 
 ## 4. Action mitigation-feasibility scores

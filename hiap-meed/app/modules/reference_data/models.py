@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.modules.prioritizer.localization import supported_languages
@@ -111,7 +113,7 @@ class ReferenceDataMeta(ReferenceDataContract):
     generated_at_utc: str
     backend_consumer: str = "hiap-meed"
     upstream_provider: str = "global-api"
-    api_context: dict[str, str]
+    api_context: dict[str, str | int]
     total_records: int = Field(ge=0)
 
 
@@ -192,7 +194,15 @@ class ActionPathwaysResponse(ReferenceDataContract):
 class PolicyEvidenceResponse(ReferenceDataContract):
     """Policy evidence with Global API signal values passed through unchanged."""
 
-    scope: str
+    document_type: str | None = Field(
+        description="Unchanged Global API document_type value."
+    )
+    scope: Literal["national", "regional", "municipal"] | None = Field(
+        description=(
+            "Derived geographic scope for a recognized document type; null when "
+            "the source type is missing or unknown."
+        )
+    )
     document_name: str | None
     signal_type: str | None
     signal_relation: str | None = Field(

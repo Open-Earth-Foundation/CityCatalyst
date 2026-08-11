@@ -60,6 +60,10 @@ import ECRFImportService, {
 } from "@/backend/ECRFImportService";
 import InventoryImportService from "@/backend/InventoryImportService";
 import {
+  syncGHGIImportedInventorySource,
+  syncGHGIInventory,
+} from "@/backend/GHGINativeInputCatalogService";
+import {
   resolveGpcRefNo,
   splitSectorSubsectorLabels,
 } from "@/util/GHGI/gpc-ref-resolver";
@@ -200,11 +204,19 @@ async function persistMappingFeedback(args: {
     }
 
     logger.info(
-      { cityId, headerKey, adapterType, columnCount: Object.keys(columnMapping).length },
+      {
+        cityId,
+        headerKey,
+        adapterType,
+        columnCount: Object.keys(columnMapping).length,
+      },
       "ImportMappingFeedback upserted",
     );
   } catch (err) {
-    logger.warn({ err, cityId, headerKey }, "Failed to persist mapping feedback (non-fatal)");
+    logger.warn(
+      { err, cityId, headerKey },
+      "Failed to persist mapping feedback (non-fatal)",
+    );
   }
 }
 
@@ -233,6 +245,8 @@ async function runApproveImportInBackground(args: {
     return;
   }
 
+  await syncGHGIImportedInventorySource(importedFile);
+
   try {
     const mappingConfiguration = (importedFile.mappingConfiguration || {}) as {
       // For xlsx/csv: columnName -> internal key (string). For PDF imports:
@@ -250,7 +264,9 @@ async function runApproveImportInBackground(args: {
 
     // Pre-extracted rows: PDF, Path B key-value, or Adapter D (near-ecrf) — no file re-parse.
     // mappingOverrides: per-row field overrides keyed by row index (e.g. { "0": { sector: "X", subsector: "Y" } }).
-    const extractedRows = mappingConfiguration.rows as ExtractedRow[] | undefined;
+    const extractedRows = mappingConfiguration.rows as
+      | ExtractedRow[]
+      | undefined;
     const keyValueShaped = mappingConfiguration.keyValueShaped === true;
     const useExtractedRows =
       Array.isArray(extractedRows) &&
@@ -303,7 +319,11 @@ async function runApproveImportInBackground(args: {
             ? (mappingOverrides[String(i)] as Record<string, unknown>)
             : null;
         const row: ExtractedRow = rowOverrides
-          ? applyPdfFieldOverrides(baseRow, rowOverrides, allowedPdfOverrideKeys)
+          ? applyPdfFieldOverrides(
+              baseRow,
+              rowOverrides,
+              allowedPdfOverrideKeys,
+            )
           : baseRow;
 
         const { sector, subsector } = splitSectorSubsectorLabels(
@@ -311,9 +331,7 @@ async function runApproveImportInBackground(args: {
           row.subsector?.trim() ?? "",
         );
         const activityHint =
-          row.activityType?.trim() ||
-          row.category?.trim() ||
-          undefined;
+          row.activityType?.trim() || row.category?.trim() || undefined;
         let gpcRefNo =
           row.gpcRefNo?.trim() ||
           resolveGpcRefNo(sector, subsector, activityHint) ||
@@ -360,7 +378,9 @@ async function runApproveImportInBackground(args: {
 
         const gpcMapping = await ECRFImportService.lookupGPCReference(gpcRefNo);
         if (!gpcMapping) {
-          errors.push(`Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`);
+          errors.push(
+            `Row ${i + 1}: GPC reference "${gpcRefNo}" not in taxonomy`,
+          );
           rows.push({
             gpcRefNo,
             sectorId: "",
@@ -382,7 +402,8 @@ async function runApproveImportInBackground(args: {
         const num = (v: number | null | undefined): number | undefined =>
           v != null && Number.isFinite(v) ? Number(v) : undefined;
         if (row.year != null && Number.isFinite(row.year)) {
-          inferredYear = inferredYear != null ? inferredYear : (row.year as number);
+          inferredYear =
+            inferredYear != null ? inferredYear : (row.year as number);
         }
 
         rows.push({
@@ -395,7 +416,10 @@ async function runApproveImportInBackground(args: {
           ch4: num(row.ch4),
           n2o: num(row.n2o),
           totalCO2e: num(row.totalCO2e),
-          year: row.year != null && Number.isFinite(row.year) ? row.year : undefined,
+          year:
+            row.year != null && Number.isFinite(row.year)
+              ? row.year
+              : undefined,
           rowIndex: i,
           methodology: row.methodology?.trim() || undefined,
           activityAmount:
@@ -403,7 +427,8 @@ async function runApproveImportInBackground(args: {
               ? row.activityAmount
               : undefined,
           activityUnit: row.activityUnit?.trim() || undefined,
-          activityType: row.category?.trim() || row.activityType?.trim() || undefined,
+          activityType:
+            row.category?.trim() || row.activityType?.trim() || undefined,
           activityDataSource: row.activityDataSource?.trim() || undefined,
           activityDataQuality: row.activityDataQuality?.trim() || undefined,
         });
@@ -446,7 +471,9 @@ async function runApproveImportInBackground(args: {
     } else {
       // xlsx/csv (column-mapped, not key-value shaped): parse file and process with ECRF pipeline
       const fileBuffer =
-        await InventoryFileStorageService.resolveImportedFileBuffer(importedFile);
+        await InventoryFileStorageService.resolveImportedFileBuffer(
+          importedFile,
+        );
       if (!fileBuffer) {
         throw new Error("File data not found");
       }
@@ -487,7 +514,9 @@ async function runApproveImportInBackground(args: {
     const defaultActivityDataSource =
       (importedFile.originalFileName as string) ||
       (importedFile.fileName as string) ||
-      (importedFile.fileType === "pdf" ? "Imported from PDF" : "Imported from file");
+      (importedFile.fileType === "pdf"
+        ? "Imported from PDF"
+        : "Imported from file");
 
     const importSummary = await InventoryImportService.importECRFData(
       inventoryId,
@@ -505,6 +534,7 @@ async function runApproveImportInBackground(args: {
         importSummary,
       },
     });
+    await syncGHGIInventory(importedFile);
 
     // Persist mapping feedback for Path B (AI-shaped) files so future uploads
     // with the same header structure get a warm-start prompt hint.

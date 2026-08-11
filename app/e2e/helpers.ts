@@ -217,7 +217,9 @@ async function walkCitiesOnboardingWizard(
     await page
       .locator('select[name="cityPopulationYear"]')
       .selectOption(inventoryYear);
-    await page.getByPlaceholder("Region population number").fill("5000000");
+    await page
+      .getByPlaceholder("Region or province population number")
+      .fill("5000000");
     await page
       .locator('select[name="regionPopulationYear"]')
       .selectOption(inventoryYear);
@@ -371,7 +373,7 @@ export async function createInventoryThroughOnboarding(
     // Fill region and country data if available
     try {
       const regionPopulationInput = page.getByPlaceholder(
-        "Region population number",
+        "Region or province population number",
       );
       await regionPopulationInput.fill("5000000");
 

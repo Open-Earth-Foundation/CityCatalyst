@@ -326,8 +326,6 @@ export interface UsersInvitesRequest {
 
 export interface UsersInvitesResponse {
   success: boolean;
-  /** email -> invitation URL (returned so admins can copy if email delivery fails) */
-  inviteUrls: Record<string, string>;
 }
 
 export interface OrganizationInviteResponse {

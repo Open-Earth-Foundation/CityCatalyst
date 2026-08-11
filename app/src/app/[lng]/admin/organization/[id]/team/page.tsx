@@ -11,22 +11,14 @@ import {
   Tabs,
   Text,
 } from "@chakra-ui/react";
-import {
-  MdAdd,
-  MdLink,
-  MdMoreVert,
-  MdOutlineGroup,
-  MdSearch,
-} from "react-icons/md";
+import { MdAdd, MdMoreVert, MdOutlineGroup, MdSearch } from "react-icons/md";
 import React, { useEffect, useMemo, useState, use } from "react";
 import { useTranslation } from "@/i18n/client";
 import { useFuzzySearch } from "@/hooks/useFuzzySearch";
 import {
-  useCreateOrganizationInviteMutation,
   useGetOrganizationQuery,
   useGetProjectsQuery,
   useGetProjectUsersQuery,
-  useInviteUsersMutation,
   useUpdateUserRoleInOrganizationMutation,
 } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -40,7 +32,6 @@ import { InputGroup } from "@/components/ui/input-group";
 import { LuChevronDown } from "react-icons/lu";
 import DataTable from "@/components/ui/data-table";
 import {
-  InviteStatus,
   OrganizationRole,
   ProjectUserResponse,
   ProjectWithCities,
@@ -59,7 +50,6 @@ import RemoveUserModal from "@/app/[lng]/admin/organization/[id]/team/RemoveUser
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { toaster } from "@/components/ui/toaster";
 import { TitleMedium } from "@/components/package/Texts";
-import { copyInviteUrlsToClipboard } from "@/util/copy-invite-urls";
 
 const AdminOrganizationTeamPage = (props: {
   params: Promise<{ lng: string; id: string }>;
@@ -98,8 +88,6 @@ const AdminOrganizationTeamPage = (props: {
     useGetOrganizationQuery(id);
 
   const [updateUserRole] = useUpdateUserRoleInOrganizationMutation();
-  const [inviteUsers] = useInviteUsersMutation();
-  const [createOrganizationInvite] = useCreateOrganizationInviteMutation();
 
   const { data: projectsData, isLoading } = useGetProjectsQuery(
     {
@@ -141,56 +129,6 @@ const AdminOrganizationTeamPage = (props: {
       setSelectedProject([projectsData[0].projectId]);
     }
   }, [projectsData]);
-
-  const copyInviteLink = async (item: ProjectUserResponse) => {
-    toaster.create({
-      title: t("sending-invite"),
-      type: "info",
-    });
-    try {
-      if (item.role === OrganizationRole.ORG_ADMIN) {
-        const inviteResponse = await createOrganizationInvite({
-          organizationId: id,
-          inviteeEmails: [item.email],
-          role: OrganizationRole.ORG_ADMIN,
-        }).unwrap();
-        await copyInviteUrlsToClipboard(inviteResponse.inviteUrls);
-      } else {
-        const cityIds = [
-          ...new Set(
-            (projectUsers ?? [])
-              .filter((user) => user.email === item.email && user.cityId)
-              .map((user) => user.cityId as string),
-          ),
-        ];
-        if (!selectedProject[0] || cityIds.length === 0) {
-          throw new Error("Missing project or city for invite");
-        }
-        const inviteResponse = await inviteUsers({
-          projectId: selectedProject[0],
-          cityIds,
-          invites: [
-            {
-              email: item.email,
-              role:
-                item.role === OrganizationRole.ADMIN ? "admin" : "collaborator",
-            },
-          ],
-        }).unwrap();
-        await copyInviteUrlsToClipboard(inviteResponse.inviteUrls);
-      }
-      toaster.dismiss();
-      toaster.create({
-        title: t("invite-sent-success"),
-        description: t("invite-link-copied-to-clipboard"),
-        type: "success",
-        duration: 3000,
-      });
-    } catch {
-      toaster.dismiss();
-      showErrorToast();
-    }
-  };
 
   const upgradeRole = async ({ contactEmail }: { contactEmail: string }) => {
     toaster.loading({
@@ -546,40 +484,6 @@ const AdminOrganizationTeamPage = (props: {
                         shadow="2dp"
                         px="0"
                       >
-                        {item.status !== InviteStatus.ACCEPTED && (
-                          <MenuItem
-                            value={t("copy-invite-link")}
-                            valueText={t("copy-invite-link")}
-                            p="16px"
-                            display="flex"
-                            alignItems="center"
-                            gap="16px"
-                            _hover={{
-                              bg: "content.link",
-                              cursor: "pointer",
-                            }}
-                            className="group"
-                            onClick={() => copyInviteLink(item)}
-                          >
-                            <Icon
-                              _groupHover={{
-                                color: "white",
-                              }}
-                              color="interactive.control"
-                              as={MdLink}
-                              h="24px"
-                              w="24px"
-                            />
-                            <Text
-                              _groupHover={{
-                                color: "white",
-                              }}
-                              color="content.primary"
-                            >
-                              {t("copy-invite-link")}
-                            </Text>
-                          </MenuItem>
-                        )}
                         {item.role === OrganizationRole.COLLABORATOR && (
                           <MenuItem
                             value={t("change-to-admin")}

@@ -190,10 +190,11 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
         {
           "scope": "national",
           "document_name": "National Energy Efficiency Plan",
-          "relevance": "supporting",
-          "evidence_strength": 0.8,
+          "signal_type": "funding",
+          "signal_relation": "funds",
           "signal_strength": "high",
-          "signal_type": "explicit_target"
+          "doc_relevance": "medium",
+          "evidence_strength": 0.8
         }
       ]
     }
@@ -217,7 +218,7 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
 }
 ```
 
-- **Backend logic:** use the current HIAP-MEED evidence query and calculate the agreed evidence-scope aggregates from the same normalized result.
+- **Backend logic:** use the current HIAP-MEED evidence query and calculate the agreed evidence-scope aggregates from the same normalized result. Pass through `signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` using the Global API field names and values; do not combine them into a separate relevance classification.
 - **Not a caller knob:** `top_evidence_limit`; HIAP-MEED does not add the prototype's value of five.
 
 ## 4. Action mitigation-feasibility scores

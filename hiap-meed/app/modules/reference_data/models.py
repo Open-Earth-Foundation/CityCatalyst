@@ -190,14 +190,19 @@ class ActionPathwaysResponse(ReferenceDataContract):
 
 
 class PolicyEvidenceResponse(ReferenceDataContract):
-    """Policy evidence details supplied for one action and government level."""
+    """Policy evidence with Global API signal values passed through unchanged."""
 
     scope: str
     document_name: str | None
-    relevance: str | None
-    evidence_strength: float | None
-    signal_strength: str | None
     signal_type: str | None
+    signal_relation: str | None = Field(
+        description="Unchanged Global API signal_relation value."
+    )
+    signal_strength: str | None
+    doc_relevance: str | None = Field(
+        description="Unchanged Global API doc_relevance value."
+    )
+    evidence_strength: float | None
 
 
 class ActionPolicyScoreResponse(ReferenceDataContract):

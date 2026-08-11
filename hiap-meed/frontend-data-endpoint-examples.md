@@ -127,10 +127,11 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
         {
           "scope": "national",
           "document_name": "National Energy Efficiency Plan",
-          "relevance": "supporting",
-          "evidence_strength": 0.8,
+          "signal_type": "funding",
+          "signal_relation": "funds",
           "signal_strength": "high",
-          "signal_type": "explicit_target"
+          "doc_relevance": "medium",
+          "evidence_strength": 0.8
         }
       ]
     }
@@ -153,6 +154,8 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
   "warnings": []
 }
 ```
+
+`signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` are passed through from Global API without combining or relabelling their values. `scope` is the existing HIAP-MEED projection of the upstream document type into national, regional, or municipal evidence.
 
 ## 4. Action mitigation-feasibility scores
 

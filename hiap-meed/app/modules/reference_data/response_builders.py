@@ -270,13 +270,11 @@ def build_action_policy_scores_response(
                 PolicyEvidenceResponse(
                     scope=_policy_scope(evidence.get("document_type")),
                     document_name=evidence.get("document_name"),
-                    relevance=(
-                        evidence.get("signal_relation")
-                        or evidence.get("doc_relevance")
-                    ),
-                    evidence_strength=evidence.get("evidence_strength"),
-                    signal_strength=evidence.get("signal_strength"),
                     signal_type=evidence.get("signal_type"),
+                    signal_relation=evidence.get("signal_relation"),
+                    signal_strength=evidence.get("signal_strength"),
+                    doc_relevance=evidence.get("doc_relevance"),
+                    evidence_strength=evidence.get("evidence_strength"),
                 )
                 for evidence in record.policy_evidence
             ],

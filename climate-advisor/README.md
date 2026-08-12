@@ -637,9 +637,8 @@ assembly, CityCatalyst's real GHGI/HIAP capability routes, and the persisted
 `concept_note_context_bundles.context_bundle` row. Its run ID is
 `27d72565-7cc4-4704-9454-d029f8532c47` and its build ID is
 `a9645a19-6237-4e4a-9efb-8cfebd8d646f`. The CityCatalyst database was an
-isolated clone of the local demo database with
-[`../app/seed-data/cc513-full-context.sql`](../app/seed-data/cc513-full-context.sql)
-applied. The export intentionally keeps the actual partial GHGI completeness,
+isolated clone of the local demo database. The export intentionally keeps the
+actual partial GHGI completeness,
 actual HIAP output, and actual one-page PDF analysis; it is not a hand-combined
 golden fixture. The focused test validates that the exported value still
 matches the typed bundle contract:

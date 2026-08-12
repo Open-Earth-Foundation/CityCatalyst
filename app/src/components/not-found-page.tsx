@@ -49,16 +49,6 @@ export function NotFoundPage({ lng }: NotFoundPageProps) {
         >
           404
         </Text>
-        <Text
-          mb="48px"
-          w="0px"
-          width="400px"
-          textAlign="center"
-          lineHeight="32px"
-          letterSpacing="wide"
-        >
-          {t("not-found-description")}
-        </Text>
         <Button
           onClick={() => router.push("/")}
           gap="8px"
@@ -66,7 +56,7 @@ export function NotFoundPage({ lng }: NotFoundPageProps) {
           px="24px"
           fontSize="body.md"
         >
-          {t("goto-dashboard")}
+          {t("back-to-tools")}
           <Icon as={MdArrowForward} />
         </Button>
       </Box>

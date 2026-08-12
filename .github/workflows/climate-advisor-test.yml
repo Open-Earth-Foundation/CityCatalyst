@@ -181,7 +181,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
       EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
       MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'Clima' }}
-      CNB_DATABASE_URL: ${{ secrets.CNB_DATABASE_URL_DEV }}
 
     steps:
       - name: Checkout repository
@@ -196,10 +195,6 @@ jobs:
       - name: Deploy test service
         run: |
           kubectl apply -f climate-advisor/k8s/db-configmap-test.yml -n default
-          : "${CNB_DATABASE_URL:?CNB_DATABASE_URL GitHub secret is required}"
-          kubectl create secret generic climate-advisor-cnb-db-secret-test \
-            --from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}" \
-            --dry-run=client --output yaml | kubectl apply -f - -n default
           kubectl create -f climate-advisor/k8s/migrate-test.yml -n default
           cnb_migration_job="$(
             kubectl create -f climate-advisor/k8s/cnb-migrate-test.yml \

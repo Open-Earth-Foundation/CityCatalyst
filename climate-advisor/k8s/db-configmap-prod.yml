@@ -11,3 +11,4 @@ data:
   DB_NAME: "climateadvisor"
   DB_URL: "postgresql://climateadvisor:climateadvisor@oef-prod-db.cluster-ck89kopkx0x4.us-east-1.rds.amazonaws.com/climateadvisor"
   CA_DATABASE_URL: "postgresql://climateadvisor:climateadvisor@oef-prod-db.cluster-ck89kopkx0x4.us-east-1.rds.amazonaws.com/climateadvisor"
+  CNB_DATABASE_URL: "postgresql://cnb:conceptnotebuilder@oef-prod-db.cluster-ck89kopkx0x4.us-east-1.rds.amazonaws.com/cnb"

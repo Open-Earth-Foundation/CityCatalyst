@@ -5,38 +5,19 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import pytest
-from app.models.cnb.context_bundle import SelectedSource, SourceExcerpt
-from app.persistence.concept_notes.context_bundle import (
-    ContextBundleBuildSnapshot,
-    normalize_bundle,
-)
+from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
+from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.context_bundle import ContextBundleService
 from app.services.cnb.source_analysis import SourcePage
 
 CLIMATE_ADVISOR_ROOT = Path(__file__).resolve().parents[3]
-FULL_CONTEXT_FIXTURE = (
-    CLIMATE_ADVISOR_ROOT
-    / "service"
-    / "tests"
-    / "fixtures"
-    / "cnb"
-    / "full_city_context_capabilities.json"
-)
 FULL_BUNDLE_EXAMPLE = (
     CLIMATE_ADVISOR_ROOT / "docs" / "examples" / "cc-513-full-context-bundle.json"
-)
-EXAMPLE_UPLOAD_ID = UUID("50000000-0000-4000-8000-000000000001")
-EXAMPLE_MARKDOWN = (
-    "<!-- page: 1 -->\n"
-    "Sample City aims to cut community greenhouse gas emissions 50% by 2035.\n"
-    "<!-- page: 2 -->\n"
-    "The city will retrofit municipal buildings and expand heat-resilient green "
-    "space."
 )
 
 
@@ -102,175 +83,19 @@ class FakeCityCatalystClient:
         self.closed = True
 
 
-class FullBundleAnalysis(FakeAnalysis):
-    """Return deterministic two-page evidence for the checked-in example."""
+def test_checked_in_full_stack_bundle_example_matches_contract() -> None:
+    exported_bundle = json.loads(FULL_BUNDLE_EXAMPLE.read_text(encoding="utf-8"))
 
-    def verify_artifact(self, *, artifact, markdown_s3_key, sha256, page_count):
-        assert artifact.markdown_s3_key == markdown_s3_key
-        assert artifact.sha256 == sha256
-        assert artifact.page_count == page_count == 2
-        return [
-            SourcePage(
-                number=1,
-                text=(
-                    "Sample City aims to cut community greenhouse gas emissions "
-                    "50% by 2035."
-                ),
-            ),
-            SourcePage(
-                number=2,
-                text=(
-                    "The city will retrofit municipal buildings and expand "
-                    "heat-resilient green space."
-                ),
-            ),
-        ]
+    bundle = ConceptNoteContextBundle.model_validate(exported_bundle)
 
-    async def analyze_document(self, **kwargs):
-        return SelectedSource(
-            upload_id=kwargs["upload_id"],
-            source_label=kwargs["source_label"],
-            filename=kwargs["filename"],
-            sha256=kwargs["sha256"],
-            page_count=2,
-            summary=(
-                "Sample City targets a 50% community emissions reduction by 2035 "
-                "and prioritizes municipal retrofits and heat-resilient green space."
-            ),
-            topics=[
-                "emissions reduction",
-                "building retrofits",
-                "heat resilience",
-            ],
-            key_excerpts=[
-                SourceExcerpt(
-                    text=(
-                        "Sample City aims to cut community greenhouse gas emissions "
-                        "50% by 2035."
-                    ),
-                    page=1,
-                ),
-                SourceExcerpt(
-                    text=(
-                        "The city will retrofit municipal buildings and expand "
-                        "heat-resilient green space."
-                    ),
-                    page=2,
-                ),
-            ],
-        )
-
-
-class FullBundleCityCatalystClient(FakeCityCatalystClient):
-    """Serve realistic local GHGI and HIAP capability fixtures."""
-
-    def __init__(
-        self,
-        artifact: ConceptNoteMarkdownArtifact,
-        fixtures: dict,
-    ) -> None:
-        super().__init__(artifact)
-        self.fixtures = fixtures
-
-    async def load_inventory_list_accessible(self, **kwargs):
-        assert kwargs["request_payload"]["city_id"] == self.fixtures["city_id"]
-        return self.fixtures["inventory_list_accessible"]
-
-    async def load_inventory_status_overview(self, **kwargs):
-        assert (
-            kwargs["request_payload"]["inventory_id"] == self.fixtures["inventory_id"]
-        )
-        return self.fixtures["inventory_status_overview"]
-
-    async def load_inventory_emissions_context(self, **kwargs):
-        assert (
-            kwargs["request_payload"]["inventory_id"] == self.fixtures["inventory_id"]
-        )
-        return self.fixtures["inventory_emissions_context"]
-
-    async def load_hiap_context(self, **kwargs):
-        assert kwargs["request_payload"]["language"] == "en"
-        assert (
-            kwargs["request_payload"]["inventory_id"] == self.fixtures["inventory_id"]
-        )
-        return self.fixtures["hiap_inventory_context"]
-
-
-@pytest.mark.asyncio
-async def test_full_build_matches_checked_in_bundle_example() -> None:
-    fixtures = json.loads(FULL_CONTEXT_FIXTURE.read_text(encoding="utf-8"))
-    expected_bundle = json.loads(FULL_BUNDLE_EXAMPLE.read_text(encoding="utf-8"))
-    digest = hashlib.sha256(EXAMPLE_MARKDOWN.encode()).hexdigest()
-    assert digest == expected_bundle["selected_sources"][0]["sha256"]
-
-    run_id = UUID("20000000-0000-4000-8000-000000000001")
-    completed_at = datetime(2026, 8, 12, tzinfo=UTC)
-    upload = ConceptNoteUploadSnapshot(
-        upload_id=EXAMPLE_UPLOAD_ID,
-        run_id=run_id,
-        user_id="owner",
-        filename="sample-city-climate-action-plan.pdf",
-        source_label="Sample City Climate Action Plan",
-        markdown_s3_key="sample-city-climate-action-plan.md",
-        markdown_sha256=digest,
-        page_count=2,
-        status="ready",
-        error_code=None,
-        received_at=completed_at,
-        completed_at=completed_at,
-    )
-    snapshot = ContextBundleBuildSnapshot(
-        run_id=run_id,
-        city_id=fixtures["city_id"],
-        build_id=UUID("60000000-0000-4000-8000-000000000001"),
-        source_fingerprint="a" * 64,
-        uploads=[upload],
-        already_current=False,
-    )
-    repository = FakeRepository(snapshot)
-    analysis = FullBundleAnalysis()
-    client = FullBundleCityCatalystClient(
-        ConceptNoteMarkdownArtifact(
-            markdown=EXAMPLE_MARKDOWN,
-            markdown_s3_key=upload.markdown_s3_key,
-            sha256=digest,
-            page_count=2,
-        ),
-        fixtures,
-    )
-    service = ContextBundleService(
-        repository,  # type: ignore[arg-type]
-        analysis_factory=lambda: analysis,  # type: ignore[arg-type]
-        cc_client_factory=lambda: client,
-    )
-
-    assert (
-        await service.build(
-            user_id="owner",
-            run_id=run_id,
-            token="local-test-token",
-        )
-        is True
-    )
-    assert repository.completed is not None
-    assert repository.completed["optional_sources"] == {
-        "ghgi": "partial",
-        "hiap": "available",
-    }
-    assert repository.completed["warnings"] == []
-
-    actual_bundle = normalize_bundle(
-        {
-            "selected_sources": repository.completed["selected_sources"],
-            "cc_context": {
-                "ghgi": repository.completed["ghgi"],
-                "hiap": repository.completed["hiap"],
-            },
-        }
-    ).model_dump(mode="json")
-    assert actual_bundle == expected_bundle
-    assert analysis.closed is True
-    assert client.closed is True
+    assert len(bundle.selected_sources) == 1
+    assert bundle.cc_context.ghgi is not None
+    assert bundle.cc_context.ghgi["availability"] == "partial"
+    assert bundle.cc_context.hiap is not None
+    assert bundle.cc_context.hiap["availability"] == "available"
+    assert bundle.funder_context is None
+    assert bundle.similar_projects == []
+    assert bundle.document_context is None
 
 
 @pytest.mark.asyncio

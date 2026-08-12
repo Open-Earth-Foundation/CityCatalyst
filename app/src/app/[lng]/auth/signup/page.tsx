@@ -271,7 +271,7 @@ export default function Signup() {
       >
         {t("have-account")}{" "}
         <Link
-          href={`/auth/login?callbackUrl=${encodeURIComponent(`${callbackUrl ?? ""}&from=signup`)}`}
+          href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl ?? "")}`}
           textDecoration="underline"
         >
           {t("log-in")}

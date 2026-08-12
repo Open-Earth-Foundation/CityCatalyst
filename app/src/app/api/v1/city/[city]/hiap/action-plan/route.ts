@@ -3,10 +3,7 @@ import { apiHandler } from "@/util/api";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import { z } from "zod";
 import createHttpError from "http-errors";
-import { db } from "@/models";
 import { PermissionService } from "@/backend/permissions/PermissionService";
-import type { Inventory } from "@/models/Inventory";
-import { HighImpactActionRankingStatus } from "@/util/types";
 
 const getActionPlansSchema = z.object({
   cityId: z.string().optional(), // Optional since we get it from path params
@@ -160,52 +157,10 @@ export const POST = apiHandler(
 
     const validatedData = createActionPlanSchema.parse(body);
 
-    const { resource } = await PermissionService.canAccessInventory(
+    await PermissionService.canAccessInventory(
       session,
       validatedData.inventoryId,
     );
-    const inventory = resource as Inventory | undefined;
-
-    if (!inventory || inventory.cityId !== params.city) {
-      throw new createHttpError.BadRequest(
-        "Inventory does not belong to the requested city",
-      );
-    }
-
-    if (
-      inventory.city?.locode &&
-      inventory.city.locode !== validatedData.cityLocode
-    ) {
-      throw new createHttpError.BadRequest(
-        "City locode does not match the requested inventory",
-      );
-    }
-
-    const rankedAction = await db.models.HighImpactActionRanked.findByPk(
-      validatedData.hiActionRankingId,
-    );
-    if (!rankedAction) {
-      throw new createHttpError.NotFound("Ranked HIAP action not found");
-    }
-
-    if (rankedAction.actionId !== validatedData.actionId) {
-      throw new createHttpError.BadRequest(
-        "Action does not match the ranked HIAP action",
-      );
-    }
-
-    const ranking = await db.models.HighImpactActionRanking.findByPk(
-      rankedAction.hiaRankingId,
-    );
-    if (
-      !ranking ||
-      ranking.inventoryId !== validatedData.inventoryId ||
-      ranking.status !== HighImpactActionRankingStatus.SUCCESS
-    ) {
-      throw new createHttpError.BadRequest(
-        "Ranked HIAP action does not belong to a successful ranking for the requested inventory",
-      );
-    }
 
     const { actionPlan } = await ActionPlanService.upsertActionPlan({
       cityId: params.city,

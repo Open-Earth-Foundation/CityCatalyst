@@ -9,10 +9,11 @@ import pytest
 from app.models.cnb.research import (
     FieldEvidence,
     FunderDraft,
+    FundedProjectDraft,
     FunderIdentityCandidate,
     FunderProfileDraft,
     FundingOpportunityResearchBundle,
-    FundingRecordDraft,
+    FundingOpportunityDraft,
     ResearchRunMetadata,
     ReviewState,
     SourceDocumentDraft,
@@ -42,10 +43,9 @@ def _build_pair(
         name="Example Funder",
         profile=FunderProfileDraft(),
     )
-    opportunity = FundingRecordDraft(
-        funding_record_ref="opportunity-001",
+    opportunity = FundingOpportunityDraft(
+        funding_opportunity_ref="opportunity-001",
         funder_ref=funder.funder_ref,
-        is_opportunity=True,
         name="Example Program",
     )
     candidate = FunderIdentityCandidate(
@@ -53,25 +53,24 @@ def _build_pair(
         name=funder.name,
         match_reason="The reported and canonical funder names match.",
     )
-    researched_project = FundingRecordDraft(
-        funding_record_ref="project-001",
+    researched_project = FundedProjectDraft(
+        funded_project_ref="project-001",
         funder_ref=funder.funder_ref,
-        is_opportunity=False,
         name="Evidence-backed name",
         candidate_funders=[candidate],
     )
     evidence = FieldEvidence(
         evidence_ref="evidence-project-name",
-        funding_record_ref=researched_project.funding_record_ref,
-        target_path="funding_records[project-001].name",
+        funded_project_ref=researched_project.funded_project_ref,
+        target_path="funded_projects[project-001].name",
         source_ref="source-project",
         quote_or_summary="Example Funder supported Evidence-backed name.",
     )
     research = FundingOpportunityResearchBundle(
-        schema_version="2.0",
+        schema_version="3.0",
         run_id="run-001",
         run_metadata=ResearchRunMetadata(
-            pipeline_version="2.0",
+            pipeline_version="3.0",
             model_name="test-model",
             reasoning_effort="medium",
             prompt_sha256="prompt-hash",
@@ -84,7 +83,8 @@ def _build_pair(
         ),
         request=build_request(max_turns=1),
         funder=funder,
-        funding_records=[opportunity, researched_project],
+        funding_opportunities=[opportunity],
+        funded_projects=[researched_project],
         sources=[
             SourceDocumentDraft(
                 source_ref="source-project",
@@ -109,27 +109,27 @@ def _build_pair(
         }
     )
     review = ReviewedReferenceDataArtifact(
-        schema_version="2.0",
+        schema_version="3.0",
         update_type="cnb_reference_data_review",
         run_id=research.run_id,
         saved_at=NOW,
         review=ReviewState(status="approved"),
         decisions=[
             ReviewFieldDecision(
-                target_path="funding_records[project-001].name",
+                target_path="funded_projects[project-001].name",
                 selected=True,
                 original_value=researched_project.name,
                 reviewed_value=researched_project.name,
                 evidence_refs=[evidence.evidence_ref],
             ),
             ReviewFieldDecision(
-                target_path="funding_records[project-001].selected_funder_id",
+                target_path="funded_projects[project-001].selected_funder_id",
                 selected=True,
                 original_value=None,
                 reviewed_value=str(FUNDER_ID),
             ),
             ReviewFieldDecision(
-                target_path="funding_records[project-001].summary",
+                target_path="funded_projects[project-001].summary",
                 selected=False,
                 original_value=None,
                 reviewed_value=None,
@@ -137,7 +137,8 @@ def _build_pair(
         ],
         reviewed_reference_data=ReviewedReferenceData(
             funder=funder,
-            funding_records=[opportunity, reviewed_project],
+            funding_opportunities=[opportunity],
+            funded_projects=[reviewed_project],
         ),
     )
     return research, review
@@ -219,7 +220,6 @@ def test_postgres_writer_reuses_project_and_evidence_on_retry(
     cursor = connection.cursor.return_value.__enter__.return_value
     cursor.fetchone.side_effect = [
         (record_id,),
-        None,
         (source_id,),
         None,
         (record_id,),
@@ -234,25 +234,29 @@ def test_postgres_writer_reuses_project_and_evidence_on_retry(
     statements = [
         " ".join(call.args[0].split()) for call in cursor.execute.call_args_list
     ]
-    funding_insert_calls = [
+    project_insert_calls = [
         call
         for call in cursor.execute.call_args_list
-        if call.args[0].startswith("INSERT INTO funding_records")
+        if call.args[0].startswith("INSERT INTO funded_projects")
     ]
-    assert len(funding_insert_calls) == 2
+    assert len(project_insert_calls) == 2
     assert all(
         "ON CONFLICT (source_run_id, source_record_ref) DO NOTHING" in call.args[0]
-        for call in funding_insert_calls
+        for call in project_insert_calls
     )
     assert all(
         call.args[0].count("%s") == len(call.args[1])
-        for call in funding_insert_calls
+        for call in project_insert_calls
     )
     assert sum(
         statement.startswith("INSERT INTO source_documents")
         for statement in statements
     ) == 1
+    assert any(
+        "ON CONFLICT (content_hash, url) DO UPDATE" in statement
+        for statement in statements
+    )
     assert sum(
-        statement.startswith("INSERT INTO funding_record_evidence")
+        statement.startswith("INSERT INTO funding_evidence")
         for statement in statements
     ) == 1

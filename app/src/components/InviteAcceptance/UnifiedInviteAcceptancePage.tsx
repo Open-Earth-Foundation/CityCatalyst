@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState, use } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { api, useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
@@ -39,7 +40,9 @@ type ValidatedInviteRequest =
 const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAcceptancePageProps) => {
   const { lng } = use(params);
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
+  const { status } = useSession();
   const { t } = useTranslation(lng, "auth");
 
   const queryParams = Object.fromEntries(searchParams.entries());
@@ -158,6 +161,16 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
 
   useEffect(() => {
     if (!validatedRequest || calledOnce.current) return;
+
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      calledOnce.current = true;
+      const callbackUrl = `${pathname}?${searchParams.toString()}`;
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
+    }
+
     calledOnce.current = true;
 
     (async () => {
@@ -260,6 +273,10 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
     acceptOrgInvite,
     getCities,
     showSuccessToast,
+    status,
+    pathname,
+    router,
+    searchParams,
   ]);
 
   const handleSuccessClose = () => {

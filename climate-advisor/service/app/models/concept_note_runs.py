@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -17,7 +17,7 @@ class ConceptNoteStartRequest(BaseModel):
     city_id: UUID
     project_id: str | None = Field(default=None, min_length=1, max_length=255)
     funder_id: UUID | None = None
-    selected_funding_record_id: UUID | None = None
+    selected_funding_opportunity_id: UUID | None = None
     thread_id: UUID | None = None
     idempotency_key: UUID
 
@@ -44,28 +44,40 @@ class ConceptNoteStartRequest(BaseModel):
     @model_validator(mode="after")
     def validate_scope_references(self) -> "ConceptNoteStartRequest":
         """Require a funder whenever a funding opportunity is supplied."""
-        if self.selected_funding_record_id is not None and self.funder_id is None:
+        if self.selected_funding_opportunity_id is not None and self.funder_id is None:
             raise ValueError(
-                "funder_id is required when selected_funding_record_id is provided"
+                "funder_id is required when selected_funding_opportunity_id is provided"
             )
         return self
 
 
-class ConceptNoteRunResponse(BaseModel):
-    """Persisted concept-note run returned by start and detail endpoints."""
+class ConceptNoteRunListItemResponse(BaseModel):
+    """Stable display and resume fields for one concept-note run."""
 
     run_id: UUID
     thread_id: UUID | None = None
-    user_id: str
-    name: str
-    city_id: str
+    name: str = Field(min_length=1)
+    city_id: UUID
     project_id: str | None = None
     funder_id: UUID | None = None
-    selected_funding_record_id: UUID | None = None
-    status: Literal["active"]
-    workflow_step: Literal["assembling_context"]
+    selected_funding_opportunity_id: UUID | None = None
+    status: str = Field(min_length=1)
+    workflow_step: str = Field(min_length=1)
+    progress_summary: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
+    updated_at: datetime
+
+
+class ConceptNoteRunListResponse(BaseModel):
+    """Authorized concept-note runs for one user and city."""
+
+    runs: list[ConceptNoteRunListItemResponse] = Field(default_factory=list)
+
+
+class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
+    """Persisted concept-note run returned by start and detail endpoints."""
+
+    user_id: str
     next_action: Literal["load_context"] = "load_context"
     created: bool
     trace_id: str | None = None
-    created_at: datetime
-    updated_at: datetime

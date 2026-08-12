@@ -122,7 +122,7 @@ valid proposed funder for every funded project.
 The local importer pairs the files only when their `run_id` values match. It
 requires an approved review, an existing reviewer-selected `funder_id`, and
 retained evidence for every imported project. Set `CNB_DATABASE_URL` to the
-externally managed CNB PostgreSQL database and validate before writing:
+dedicated CNB PostgreSQL database and validate before writing:
 
 ```powershell
 uv run python -m scripts.cnb.import_reviewed_reference_data `
@@ -132,33 +132,39 @@ uv run python -m scripts.cnb.import_reviewed_reference_data `
 ```
 
 Remove `--dry-run` only after validation. This importer is the sole database
-writer in the research/review workflow; Climate Advisor does not create or
-migrate the managed CNB tables. The managed `funding_records` contract must
-persist `source_run_id` and `source_record_ref` and enforce uniqueness on that
-pair. Retrying the same run returns the existing project IDs without inserting
-duplicate evidence. Pairing deliberately does not use a file hash. Use a new
-research run for a revised import. If no proposed canonical funder is valid,
-research and import that funder before retrying the funded-project import.
+writer in the research/review workflow and remains limited to reviewed funded
+projects, retained evidence, and their source documents. The repository owns
+the CNB schema through `cnb-alembic.ini`; it does not seed production funders or
+projects. `funded_projects` persists `source_run_id` and `source_record_ref` and
+enforces uniqueness on that pair. Retrying the same run returns the existing
+project IDs without inserting duplicate evidence. Pairing deliberately does not
+use a file hash. Use a new research run for a revised import. If no proposed
+canonical funder is valid, research and import that funder before retrying the
+funded-project import.
 
 The tracked reference output is
 `output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.
 
-Research bundles use schema version `2.0`. They mirror the CNB architecture with
-one funder, one shared `funding_records` collection distinguished by
-`is_opportunity`, and linked template and criteria collections. Each funded
-project keeps its interventions, award amount, currency, `award_year`, status,
-summary, and reviewed `project_tags` in one record.
+Research bundles use schema version `3.0`. Research and review artifacts keep
+programmes in `funding_opportunities` and awarded examples in
+`funded_projects`, matching the CNB database boundary. Templates and criteria
+attach only to opportunities. Each
+funded project keeps its interventions, award amount, currency, `award_year`,
+status, summary, and reviewed `project_tags` in one record.
+Similar-project review artifacts use schema version `2.0` and identify every
+candidate and match with `funded_project_id`.
 
 Runtime similar-project matching is internal workflow logic, not an agent tool.
 It waits for an ingested project upload and reads reviewed awards through the
 typed CNB reference-data contract. `same_funder` is the default retrieval scope;
 an explicit `cross_funder` request may compare reviewed awards from multiple
 canonical funders while retaining each candidate's real funder identity. It
-uses a first-version deterministic shortlist based on exact normalized fields
-and reviewed tag overlap. Its explicit V1 policy is:
+retrieves the complete scoped corpus before building a bounded, first-version
+deterministic shortlist based on exact normalized fields and reviewed tag
+overlap. Its explicit V1 policy is:
 
-- **hard eligibility:** requested same-funder scope, a funded non-opportunity
-  record, and retained evidence
+- **hard eligibility:** requested same-funder scope, a funded-project record,
+  and retained evidence
 - **preferred ordering only:** category, sector, geography, finance route,
   instrument type, applicant type, hazards, interventions, and reviewed tags
 - **unknown preferred fields:** retain the candidate and surface a caveat
@@ -407,6 +413,9 @@ OPENROUTER_API_KEY=your-openrouter-api-key
 # CityCatalyst Postgres on localhost:5432)
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 
+# Optional unless CNB schema, importer, or matching access is needed.
+CNB_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cnb
+
 # Optional
 CA_PORT=8080
 CA_LOG_LEVEL=info
@@ -459,6 +468,9 @@ docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTE
 cd climate-advisor
 uv sync --locked --group dev
 uv run python scripts/setup_database.py
+
+# Independently migrate the CNB workspace/reference database.
+uv run --directory service alembic -c cnb-alembic.ini upgrade head
 ```
 
 ### 5. Run The Service
@@ -528,9 +540,11 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
-- `CNB_DATABASE_URL` - Externally managed CNB PostgreSQL database used to
-  validate supplied `funder_id` and `selected_funding_record_id` values before
-  starting a run; requests without funding references do not require it
+- `CNB_DATABASE_URL` - separate PostgreSQL connection string for the CNB
+  workspace and funding-reference tables; the repository migrates it through
+  the independent CNB Alembic chain, never the CA chain. The reviewed-reference
+  importer, similar-project reader, and runtime funding-reference validation
+  use it; requests without funding references do not require a runtime lookup
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
@@ -594,20 +608,32 @@ empty `concept_note_context_bundles` row in one transaction. The run starts as
 Creation is idempotent per `(user_id, idempotency_key)`. Replaying the same
 normalized request returns the original run with HTTP `200` and
 `created: false`; using that key with different input returns HTTP `409`.
+
+`GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
+and live city access, then returns only that user's runs for the selected city.
+Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
+the result is stable and most-recently-updated first. Upload registration and
+failed, retry, or ready lifecycle transitions refresh the parent run's
+`updated_at`. Each item includes the durable `run_id`, optional chat `thread_id`,
+stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
+copied from the persisted `context_summary`.
+
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
-revalidates current city access before responding. The Alembic revision
-`20260729_120000` provisions `concept_note_runs`,
-`concept_note_context_bundles`, and `concept_note_uploads` in
-`CA_DATABASE_URL`. When `thread_id` is supplied, the start operation also
-requires that durable chat thread to belong to the authenticated user; it
-remains an integration identifier rather than a run-table foreign key.
+revalidates current city access before responding. It exposes the same persisted
+status, workflow step, and progress summary as the list contract. The Alembic
+revision `20260729_120000` provisions `concept_note_runs`,
+`concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
+When `thread_id` is supplied, the start operation also requires that durable
+chat thread to belong to the authenticated user; it remains an integration
+identifier rather than a run-table foreign key.
 
 CityCatalyst exposes authenticated proxy routes at
-`POST /api/v1/concept-notes/start` and
-`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the
-session, checks city access, issues the scoped CA token server-side, and
-preserves Climate Advisor response statuses. No frontend screens are part of
-this baseline.
+`POST /api/v1/concept-notes/start`,
+`GET /api/v1/concept-notes?city_id=...`, and
+`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the session,
+checks city access, issues the scoped CA token server-side, and preserves Climate
+Advisor response statuses. The CityCatalyst dashboard consumes the collection
+route; its implementation details live in the repository architecture guide.
 
 ### Concept Note city-context baseline
 
@@ -973,6 +999,27 @@ Notes:
 - The compose service runs Alembic migrations automatically on startup before
   launching Uvicorn
 
+## Kubernetes CNB Database Deployment
+
+GitHub Actions is the credential source of truth. Configure
+`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
+test deployment intentionally reuses the development value until a distinct
+test database is available. Rotate any credential shared in chat or ticket text
+before saving it, and URL-encode reserved password characters in the DSN.
+
+Each deployment workflow reconciles an environment-specific Kubernetes Secret
+containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
+migration Job consume that Secret with `secretRef`; CNB credentials do not
+belong in the existing database ConfigMaps or in checked-in Secret manifests.
+
+Each deployment workflow launches the existing CA migration Job, then the CNB
+Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB
+Job to complete and stops before the application rollout if that migration
+fails; the existing CA Job behavior is unchanged. For production, take an RDS
+snapshot or schema backup first; roll back the application image independently
+and do not automatically downgrade a schema after application data has been
+written.
+
 ## Observability
 
 ### MLflow Integration
@@ -1103,7 +1150,14 @@ uv run --directory service python -c "from app.db.session import get_session_fac
 
 # Check migrations
 uv run --directory service python -m alembic current
+
+# Check the independent CNB migration chain
+uv run --directory service alembic -c cnb-alembic.ini current
 ```
+
+`CA_DATABASE_URL` and `CNB_DATABASE_URL` have separate Alembic version tables and
+must be migrated independently. Do not run the default Climate Advisor Alembic
+chain against the CNB database.
 
 ### Vector Search Not Working
 

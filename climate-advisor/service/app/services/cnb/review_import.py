@@ -7,17 +7,18 @@ from decimal import Decimal, InvalidOperation
 import logging
 import re
 from typing import Literal, Protocol
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field, JsonValue, model_validator
 
 from app.models.cnb.research import (
     FieldEvidence,
+    FundedProjectDraft,
     FunderCriterionDraft,
     FunderDraft,
     FunderTemplateDraft,
+    FundingOpportunityDraft,
     FundingOpportunityResearchBundle,
-    FundingRecordDraft,
     ResearchModel,
     ReviewState,
     SourceDocumentDraft,
@@ -27,15 +28,15 @@ from app.services.cnb.project_tag_normalizer import normalize_project_tags
 logger = logging.getLogger(__name__)
 _PATH_TOKEN_PATTERN = re.compile(r"[^.\[\]]+|\[[^\]]*\]")
 _STABLE_ID_FIELDS = (
-    "funding_record_ref",
+    "funding_opportunity_ref",
+    "funded_project_ref",
     "template_ref",
     "criterion_ref",
     "chapter_ref",
 )
 _RESEARCH_OWNED_PROJECT_FIELDS = {
-    "funding_record_ref",
+    "funded_project_ref",
     "funder_ref",
-    "is_opportunity",
     "candidate_funders",
 }
 
@@ -54,22 +55,42 @@ class ReviewedReferenceData(ResearchModel):
     """Reference-table fields selected and edited in the static review page."""
 
     funder: FunderDraft
-    funding_records: list[FundingRecordDraft]
+    funding_opportunities: list[FundingOpportunityDraft]
+    funded_projects: list[FundedProjectDraft]
     funder_templates: list[FunderTemplateDraft] = Field(default_factory=list)
     funder_criteria: list[FunderCriterionDraft] = Field(default_factory=list)
 
     @model_validator(mode="after")
-    def validate_one_opportunity(self) -> "ReviewedReferenceData":
-        """Keep reviewed funding-record identities aligned with schema 2.0."""
-        record_refs = [record.funding_record_ref for record in self.funding_records]
-        if len(set(record_refs)) != len(record_refs):
-            raise ValueError("reviewed funding_record_ref values must be unique")
-        opportunities = [
-            record for record in self.funding_records if record.is_opportunity
+    def validate_reference_identities(self) -> "ReviewedReferenceData":
+        """Keep reviewed reference identities aligned with schema 3.0."""
+        opportunity_refs = [
+            item.funding_opportunity_ref for item in self.funding_opportunities
         ]
-        if len(opportunities) != 1:
+        project_refs = [item.funded_project_ref for item in self.funded_projects]
+        if len(set(opportunity_refs)) != len(opportunity_refs):
             raise ValueError(
-                "reviewed funding_records must contain exactly one opportunity"
+                "reviewed funding_opportunity_ref values must be unique"
+            )
+        if len(set(project_refs)) != len(project_refs):
+            raise ValueError("reviewed funded_project_ref values must be unique")
+        if len(opportunity_refs) != 1:
+            raise ValueError(
+                "reviewed funding_opportunities must contain exactly one opportunity"
+            )
+        if any(
+            item.funder_ref != self.funder.funder_ref
+            for item in [*self.funding_opportunities, *self.funded_projects]
+        ):
+            raise ValueError(
+                "reviewed funding references must use the dossier funder_ref"
+            )
+        opportunity_ref_set = set(opportunity_refs)
+        if any(
+            item.funding_opportunity_ref not in opportunity_ref_set
+            for item in [*self.funder_templates, *self.funder_criteria]
+        ):
+            raise ValueError(
+                "reviewed templates and criteria must reference the opportunity"
             )
         return self
 
@@ -77,7 +98,7 @@ class ReviewedReferenceData(ResearchModel):
 class ReviewedReferenceDataArtifact(ResearchModel):
     """Human-reviewed partner for one ``<run_id>.research.json`` artifact."""
 
-    schema_version: Literal["2.0"]
+    schema_version: Literal["3.0"]
     update_type: Literal["cnb_reference_data_review"]
     run_id: str
     saved_at: datetime
@@ -104,7 +125,7 @@ class ReviewedProjectEvidence(ResearchModel):
 class ReviewedFundedProjectImport(ResearchModel):
     """One approved funded project ready for database-assigned UUID persistence."""
 
-    record: FundingRecordDraft
+    record: FundedProjectDraft
     evidence: list[ReviewedProjectEvidence]
 
 
@@ -128,9 +149,9 @@ class ReviewedReferenceDataWriter(Protocol):
 def selected_funder_ids(review: ReviewedReferenceDataArtifact) -> set[UUID]:
     """Return all non-null reviewer selections on funded-project records."""
     return {
-        record.selected_funder_id
-        for record in review.reviewed_reference_data.funding_records
-        if not record.is_opportunity and record.selected_funder_id is not None
+        project.selected_funder_id
+        for project in review.reviewed_reference_data.funded_projects
+        if project.selected_funder_id is not None
     }
 
 
@@ -275,14 +296,12 @@ def _validate_review_decision_values(review: ReviewedReferenceDataArtifact) -> N
     selected_paths = {
         decision.target_path for decision in review.decisions if decision.selected
     }
-    for record in review.reviewed_reference_data.funding_records:
-        if record.is_opportunity:
-            continue
-        row_path = f"funding_records[{record.funding_record_ref}]"
-        for field_name in type(record).model_fields:
+    for project in review.reviewed_reference_data.funded_projects:
+        row_path = f"funded_projects[{project.funded_project_ref}]"
+        for field_name in type(project).model_fields:
             if field_name in _RESEARCH_OWNED_PROJECT_FIELDS:
                 continue
-            value = getattr(record, field_name)
+            value = getattr(project, field_name)
             if _review_value_is_empty(value):
                 continue
             field_path = f"{row_path}.{field_name}"
@@ -305,20 +324,14 @@ def prepare_reviewed_reference_import(
     _validate_review_decision_values(review)
 
     # Step 2: retain research-owned identities, funder proposals, and provenance.
-    research_records = {
-        record.funding_record_ref: record for record in research.funding_records
+    research_projects = {
+        project.funded_project_ref: project for project in research.funded_projects
     }
-    research_project_refs = {
-        record.funding_record_ref
-        for record in research.funding_records
-        if not record.is_opportunity
+    research_project_refs = set(research_projects)
+    reviewed_projects = review.reviewed_reference_data.funded_projects
+    reviewed_project_refs = {
+        project.funded_project_ref for project in reviewed_projects
     }
-    reviewed_projects = [
-        record
-        for record in review.reviewed_reference_data.funding_records
-        if not record.is_opportunity
-    ]
-    reviewed_project_refs = {record.funding_record_ref for record in reviewed_projects}
     if reviewed_project_refs != research_project_refs:
         raise ValueError("review must retain exactly the researched funded projects")
 
@@ -346,9 +359,9 @@ def prepare_reviewed_reference_import(
             + ", ".join(sorted(unknown_evidence_refs))
         )
 
-    evidence_by_record: dict[str, list[ReviewedProjectEvidence]] = {}
+    evidence_by_project: dict[str, list[ReviewedProjectEvidence]] = {}
     for evidence in research.evidence:
-        if evidence.funding_record_ref not in research_project_refs:
+        if evidence.funded_project_ref not in research_project_refs:
             continue
         if evidence.evidence_ref not in selected_evidence_refs:
             continue
@@ -357,48 +370,49 @@ def prepare_reviewed_reference_import(
             raise ValueError(
                 f"evidence {evidence.evidence_ref} references an unknown source"
             )
-        evidence_by_record.setdefault(evidence.funding_record_ref, []).append(
+        assert evidence.funded_project_ref is not None
+        evidence_by_project.setdefault(evidence.funded_project_ref, []).append(
             ReviewedProjectEvidence(evidence=evidence, source=source)
         )
 
     # Step 3: validate the human funder choice and normalize only reviewed tags.
     projects: list[ReviewedFundedProjectImport] = []
-    for reviewed_record in reviewed_projects:
-        research_record = research_records[reviewed_record.funding_record_ref]
-        selected_id = reviewed_record.selected_funder_id
+    for reviewed_project in reviewed_projects:
+        research_project = research_projects[reviewed_project.funded_project_ref]
+        selected_id = reviewed_project.selected_funder_id
         if selected_id is None:
             raise ValueError(
-                f"funded project {reviewed_record.funding_record_ref} requires "
+                f"funded project {reviewed_project.funded_project_ref} requires "
                 "selected_funder_id"
             )
         proposed_ids = {
-            candidate.funder_id for candidate in research_record.candidate_funders
+            candidate.funder_id for candidate in research_project.candidate_funders
         }
         if selected_id not in proposed_ids:
             raise ValueError(
-                f"selected_funder_id for {reviewed_record.funding_record_ref} "
+                f"selected_funder_id for {reviewed_project.funded_project_ref} "
                 "was not proposed by the funder scan"
             )
         if selected_id not in known_funder_ids:
             raise ValueError(f"selected funder does not exist: {selected_id}")
 
-        retained_evidence = evidence_by_record.get(
-            reviewed_record.funding_record_ref, []
+        retained_evidence = evidence_by_project.get(
+            reviewed_project.funded_project_ref, []
         )
         if not retained_evidence:
             raise ValueError(
-                f"funded project {reviewed_record.funding_record_ref} requires "
+                f"funded project {reviewed_project.funded_project_ref} requires "
                 "retained evidence"
             )
-        normalized_record = reviewed_record.model_copy(
+        normalized_project = reviewed_project.model_copy(
             update={
-                "candidate_funders": research_record.candidate_funders,
-                "project_tags": normalize_project_tags(reviewed_record.project_tags),
+                "candidate_funders": research_project.candidate_funders,
+                "project_tags": normalize_project_tags(reviewed_project.project_tags),
             }
         )
         projects.append(
             ReviewedFundedProjectImport(
-                record=normalized_record,
+                record=normalized_project,
                 evidence=retained_evidence,
             )
         )
@@ -460,60 +474,64 @@ class PostgresReviewedReferenceDataWriter:
             # Insert each stable run/record identity once and reuse it on retries.
             for project in payload.projects:
                 record = project.record
+                new_funded_project_id = uuid4()
                 cursor.execute(
-                    "INSERT INTO funding_records "
-                    "(source_run_id, source_record_ref, funder_id, is_opportunity, "
-                    "name, applicant_name, city, state_region, country, category, "
-                    "hazards, interventions, finance_route, instrument_type, "
-                    "region_scope, min_award, max_award, award_amount, currency, "
-                    "award_year, status, summary, project_tags) "
-                    "VALUES (%s, %s, %s, FALSE, %s, %s, %s, %s, %s, %s, %s, "
-                    "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
+                    "INSERT INTO funded_projects "
+                    "(funded_project_id, source_run_id, source_record_ref, funder_id, "
+                    "name, applicant_name, applicant_type, city, state_region, "
+                    "country, category, sector, hazards, interventions, finance_route, "
+                    "instrument_type, region_scope, award_amount, currency, "
+                    "award_year, status, summary, "
+                    "project_tags, known_gaps) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, "
+                    "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) "
                     "ON CONFLICT (source_run_id, source_record_ref) DO NOTHING "
-                    "RETURNING funding_record_id",
+                    "RETURNING funded_project_id",
                     (
+                        str(new_funded_project_id),
                         payload.run_id,
-                        record.funding_record_ref,
+                        record.funded_project_ref,
                         str(record.selected_funder_id),
                         record.name,
                         record.applicant_name,
+                        record.applicant_type,
                         record.city,
                         record.state_region,
                         record.country,
                         record.category,
+                        record.sector,
                         Json(record.hazards),
                         Json(record.interventions),
                         record.finance_route,
                         record.instrument_type,
                         record.region_scope,
-                        record.min_award,
-                        record.max_award,
                         record.award_amount,
                         record.currency,
                         record.award_year,
                         record.status,
                         record.summary,
                         Json(record.project_tags),
+                        Json(record.known_gaps),
                     ),
                 )
                 row = cursor.fetchone()
                 if row is None:
                     cursor.execute(
-                        "SELECT funding_record_id FROM funding_records "
+                        "SELECT funded_project_id FROM funded_projects "
                         "WHERE source_run_id = %s AND source_record_ref = %s",
-                        (payload.run_id, record.funding_record_ref),
+                        (payload.run_id, record.funded_project_ref),
                     )
                     row = cursor.fetchone()
                     if row is None:
                         raise RuntimeError(
-                            "funding-record conflict did not resolve to an existing ID"
+                            "funded-project conflict did not resolve to an existing ID"
                         )
                     imported_ids.append(UUID(str(row[0])))
                     reused_count += 1
                     continue
 
-                funding_record_id = UUID(str(row[0]))
-                imported_ids.append(funding_record_id)
+                funded_project_id = UUID(str(row[0]))
+                imported_ids.append(funded_project_id)
                 inserted_count += 1
 
                 # Persist evidence only for a newly inserted project record.
@@ -521,39 +539,39 @@ class PostgresReviewedReferenceDataWriter:
                     evidence = retained.evidence
                     source = retained.source
                     if source.source_ref not in source_ids:
+                        new_source_document_id = uuid4()
                         cursor.execute(
-                            "SELECT source_document_id FROM source_documents "
-                            "WHERE content_hash = %s AND url = %s LIMIT 1",
-                            (source.content_hash, str(source.url)),
+                            "INSERT INTO source_documents "
+                            "(source_document_id, source_type, url, title, "
+                            "license_status, content_hash, fetched_at) "
+                            "VALUES (%s, %s, %s, %s, %s, %s, %s) "
+                            "ON CONFLICT (content_hash, url) DO UPDATE "
+                            "SET content_hash = EXCLUDED.content_hash "
+                            "RETURNING source_document_id",
+                            (
+                                str(new_source_document_id),
+                                source.source_type,
+                                str(source.url),
+                                source.title,
+                                source.license_status,
+                                source.content_hash,
+                                source.fetched_at,
+                            ),
                         )
                         source_row = cursor.fetchone()
                         if source_row is None:
-                            cursor.execute(
-                                "INSERT INTO source_documents "
-                                "(source_type, url, title, license_status, "
-                                "content_hash, fetched_at) "
-                                "VALUES (%s, %s, %s, %s, %s, %s) "
-                                "RETURNING source_document_id",
-                                (
-                                    source.source_type,
-                                    str(source.url),
-                                    source.title,
-                                    source.license_status,
-                                    source.content_hash,
-                                    source.fetched_at,
-                                ),
-                            )
-                            source_row = cursor.fetchone()
-                        if source_row is None:
-                            raise RuntimeError("source insert did not return an ID")
+                            raise RuntimeError("source upsert did not return an ID")
                         source_ids[source.source_ref] = UUID(str(source_row[0]))
 
+                    evidence_id = uuid4()
                     cursor.execute(
-                        "INSERT INTO funding_record_evidence "
-                        "(funding_record_id, source_document_id, claim, "
-                        "quote_or_summary, source_map) VALUES (%s, %s, %s, %s, %s)",
+                        "INSERT INTO funding_evidence "
+                        "(evidence_id, funded_project_id, source_document_id, claim, "
+                        "quote_or_summary, source_map) "
+                        "VALUES (%s, %s, %s, %s, %s, %s)",
                         (
-                            str(funding_record_id),
+                            str(evidence_id),
+                            str(funded_project_id),
                             str(source_ids[evidence.source_ref]),
                             evidence.quote_or_summary,
                             evidence.quote_or_summary,

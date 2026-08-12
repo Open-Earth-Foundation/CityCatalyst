@@ -414,6 +414,15 @@ export async function createInventoryThroughOnboarding(
     waitForInventoryUrl: true,
   });
 
+  // completeThirdPartyDataOnboardingStep's own waitForURL uses a loose
+  // pattern that already matches the current .../GHGI/onboarding/setup/
+  // URL, so it can resolve before the click's navigation actually lands.
+  // Wait again here with an end-anchored pattern to make sure we've truly
+  // reached the final .../GHGI/{inventoryId}/ page.
+  await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/?$/, {
+    timeout: 60000,
+  });
+
   // Extract inventoryId from the final URL
   const finalUrl = page.url();
   const inventoryIdMatch = finalUrl.match(/\/cities\/[^\/]+\/GHGI\/([^\/]+)/);

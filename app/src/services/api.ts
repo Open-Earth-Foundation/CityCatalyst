@@ -832,8 +832,7 @@ export const api = createApi({
               body: data,
             };
           },
-          transformResponse: (response: { data: AcceptInviteResponse }) =>
-            response.data,
+          transformResponse: (response: AcceptInviteResponse) => response,
           invalidatesTags: [
             "Invites",
             "UserData",

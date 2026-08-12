@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import { z } from "zod";
+import createHttpError from "http-errors";
+import { db } from "@/models";
+import { PermissionService } from "@/backend/permissions/PermissionService";
+import type { Inventory } from "@/models/Inventory";
+import { HighImpactActionRankingStatus } from "@/util/types";
 
 const getActionPlansSchema = z.object({
   cityId: z.string().optional(), // Optional since we get it from path params
@@ -88,7 +93,7 @@ export const GET = apiHandler(
  *       - hiap
  *     operationId: postCityHiapActionPlan
  *     summary: Create or update an action plan for a city
- *     description: Upsert an action plan with the provided data. The cityId is extracted from the route parameter.
+ *     description: Upsert an action plan with the provided data. Requires authentication and inventory access. The inventory, city, ranking, and ranked action must belong together.
  *     parameters:
  *       - in: path
  *         name: city
@@ -147,9 +152,60 @@ export const GET = apiHandler(
  */
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
+    if (!session?.user?.id) {
+      throw new createHttpError.Unauthorized("Authentication required");
+    }
+
     const body = await req.json();
 
     const validatedData = createActionPlanSchema.parse(body);
+
+    const { resource } = await PermissionService.canAccessInventory(
+      session,
+      validatedData.inventoryId,
+    );
+    const inventory = resource as Inventory | undefined;
+
+    if (!inventory || inventory.cityId !== params.city) {
+      throw new createHttpError.BadRequest(
+        "Inventory does not belong to the requested city",
+      );
+    }
+
+    if (
+      inventory.city?.locode &&
+      inventory.city.locode !== validatedData.cityLocode
+    ) {
+      throw new createHttpError.BadRequest(
+        "City locode does not match the requested inventory",
+      );
+    }
+
+    const rankedAction = await db.models.HighImpactActionRanked.findByPk(
+      validatedData.hiActionRankingId,
+    );
+    if (!rankedAction) {
+      throw new createHttpError.NotFound("Ranked HIAP action not found");
+    }
+
+    if (rankedAction.actionId !== validatedData.actionId) {
+      throw new createHttpError.BadRequest(
+        "Action does not match the ranked HIAP action",
+      );
+    }
+
+    const ranking = await db.models.HighImpactActionRanking.findByPk(
+      rankedAction.hiaRankingId,
+    );
+    if (
+      !ranking ||
+      ranking.inventoryId !== validatedData.inventoryId ||
+      ranking.status !== HighImpactActionRankingStatus.SUCCESS
+    ) {
+      throw new createHttpError.BadRequest(
+        "Ranked HIAP action does not belong to a successful ranking for the requested inventory",
+      );
+    }
 
     const { actionPlan } = await ActionPlanService.upsertActionPlan({
       cityId: params.city,

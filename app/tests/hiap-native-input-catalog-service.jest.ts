@@ -10,9 +10,11 @@ import {
 
 const catalogModel = {
   findAll: jest.fn(),
+  findOne: jest.fn(),
   update: jest.fn(),
 };
 const rankingModel = {
+  findAll: jest.fn(),
   findOne: jest.fn(),
 };
 const rankedModel = {
@@ -61,6 +63,7 @@ jest.unstable_mockModule("@/services/logger", () => ({
 }));
 
 let registerHIAPRanking: typeof import("@/backend/hiap/HiapNativeInputCatalogService").registerHIAPRanking;
+let backfillMissingHIAPRankings: typeof import("@/backend/hiap/HiapNativeInputCatalogService").backfillMissingHIAPRankings;
 let registerHIAPSelections: typeof import("@/backend/hiap/HiapNativeInputCatalogService").registerHIAPSelections;
 let registerHIAPActionPlan: typeof import("@/backend/hiap/HiapNativeInputCatalogService").registerHIAPActionPlan;
 let withdrawHIAPActionPlanCatalog: typeof import("@/backend/hiap/HiapNativeInputCatalogService").withdrawHIAPActionPlanCatalog;
@@ -69,6 +72,7 @@ let withdrawHIAPCatalogForCity: typeof import("@/backend/hiap/HiapNativeInputCat
 beforeAll(async () => {
   ({
     registerHIAPRanking,
+    backfillMissingHIAPRankings,
     registerHIAPSelections,
     registerHIAPActionPlan,
     withdrawHIAPActionPlanCatalog,
@@ -92,6 +96,8 @@ beforeEach(() => {
   });
   cityModel.findByPk.mockResolvedValue(null);
   catalogModel.findAll.mockResolvedValue([]);
+  catalogModel.findOne.mockResolvedValue(null);
+  rankingModel.findAll.mockResolvedValue([]);
   registerNativeInput.mockResolvedValue({
     catalog: { id: "catalog-new" },
     created: true,
@@ -157,6 +163,52 @@ describe("HiapNativeInputCatalogService", () => {
       "Only persisted HIAP rankings",
     );
     expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("backfills successful rankings that are missing an active catalog entry", async () => {
+    rankingModel.findAll.mockResolvedValue([ranking]);
+    catalogModel.findOne.mockResolvedValue(null);
+    rankedModel.findAll.mockResolvedValue([
+      {
+        actionId: "action-1",
+        rank: 1,
+        lang: "en",
+        type: "mitigation",
+        isSelected: false,
+      },
+    ]);
+
+    await expect(backfillMissingHIAPRankings()).resolves.toBe(1);
+    expect(registerNativeInput).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "hiap_ranking",
+        sourceType: "hiap_ranking",
+      }),
+    );
+  });
+
+  it("retries a failed backfill on a later run", async () => {
+    rankingModel.findAll.mockResolvedValue([ranking]);
+    catalogModel.findOne.mockResolvedValue(null);
+    rankedModel.findAll.mockResolvedValue([
+      {
+        actionId: "action-1",
+        rank: 1,
+        lang: "en",
+        type: "mitigation",
+        isSelected: false,
+      },
+    ]);
+    registerNativeInput.mockRejectedValueOnce(new Error("temporary failure"));
+
+    await expect(backfillMissingHIAPRankings()).resolves.toBe(0);
+
+    registerNativeInput.mockResolvedValue({
+      catalog: { id: "catalog-recovered" },
+      created: true,
+    });
+    await expect(backfillMissingHIAPRankings()).resolves.toBe(1);
+    expect(registerNativeInput).toHaveBeenCalledTimes(2);
   });
 
   it("creates separate ranked and unranked selection artifacts and withdraws stale rows", async () => {

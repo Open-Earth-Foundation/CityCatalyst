@@ -34,8 +34,7 @@ type SelectionRegistration = {
 };
 
 type SelectionSourceType =
-  | typeof RANKED_SELECTION_SOURCE_TYPE
-  | typeof UNRANKED_SELECTION_SOURCE_TYPE;
+  typeof RANKED_SELECTION_SOURCE_TYPE | typeof UNRANKED_SELECTION_SOURCE_TYPE;
 
 function digest(value: unknown): string {
   return createHash("sha256")
@@ -209,6 +208,52 @@ export async function registerHIAPRanking(ranking: HighImpactActionRanking) {
     registration.catalog.id,
   );
   return registration;
+}
+
+export async function backfillMissingHIAPRankings(): Promise<number> {
+  const successfulRankings = await db.models.HighImpactActionRanking.findAll({
+    where: { status: HighImpactActionRankingStatus.SUCCESS },
+    include: [
+      {
+        model: db.models.Inventory,
+        as: "inventory",
+        required: true,
+      },
+      {
+        model: db.models.HighImpactActionRanked,
+        as: "highImpactActionRanked",
+        attributes: ["id"],
+        required: true,
+      },
+    ],
+    order: [["created", "ASC"]],
+  });
+
+  let backfilledCount = 0;
+
+  for (const ranking of successfulRankings) {
+    const existingCatalogEntry = await db.models.NativeInputCatalog.findOne({
+      where: {
+        owningModule: HIAP_MODULE,
+        sourceType: RANKING_SOURCE_TYPE,
+        sourceId: { [Op.like]: `${ranking.id}:%` },
+        availability: "active",
+      },
+    });
+
+    if (existingCatalogEntry) continue;
+
+    const registration = await syncHIAPRanking(ranking);
+    if (registration) {
+      backfilledCount++;
+      logger.info(
+        { rankingId: ranking.id, inventoryId: ranking.inventoryId },
+        "Backfilled missing HIAP ranking catalog entry",
+      );
+    }
+  }
+
+  return backfilledCount;
 }
 
 function planContent(plan: ActionPlan): Record<string, unknown> {

@@ -22,6 +22,7 @@ This cron job endpoint checks the status of pending HIAP prioritization jobs and
 **Purpose:** 
 - Check PENDING jobs for completion
 - Save results when jobs finish
+- Backfill successful rankings that are missing their NativeInputCatalog entry
 - Start the next batch when no PENDING jobs exist
 
 **Critical Constraint:** HIAP API can only handle **1 bulk job at a time, system-wide**. This cron enforces that limit.
@@ -47,13 +48,24 @@ For each unique jobId:
 the cron job marks all PENDING rankings with that jobId as FAILURE. This prevents 
 stuck jobs from blocking the entire queue indefinitely.
 
-### Step 2: Start Next Batch (if idle)
+### Step 2: Backfill Missing HIAP Catalog Entries
+
+```
+Query successful rankings with an inventory
+For each ranking without an active hiap_ranking catalog entry:
+  → Retry NativeInputCatalog registration
+  → Keep the ranking SUCCESS even if this attempt fails
+```
+
+This makes catalog registration recoverable after a transient database or service failure. The next cron execution retries any ranking that is still missing an active catalog entry.
+
+### Step 3: Start Next Batch (if idle)
 ```
 If NO PENDING jobs exist anywhere:
   → Find ONE project with TO_DO rankings (oldest first, FIFO)
   → Start ONE batch (100 cities: TO_DO → PENDING)
   → Send to HIAP API
-  
+
 If ANY PENDING jobs exist:
   → Skip this step (wait for completion)
   → Ensures only 1 batch runs at a time
@@ -64,6 +76,7 @@ If ANY PENDING jobs exist:
 {
   "checkedJobs": 2,
   "completedJobs": 1,
+  "catalogBackfilled": 1,
   "startedBatches": 1,
   "durationMs": 1250
 }

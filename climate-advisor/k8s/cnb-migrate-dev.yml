@@ -15,6 +15,6 @@ spec:
           image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:dev
           imagePullPolicy: Always
           envFrom:
-            - secretRef:
-                name: climate-advisor-cnb-db-secret-dev
+            - configMapRef:
+                name: climate-advisor-db-configmap-dev
           command: ["alembic", "-c", "cnb-alembic.ini", "upgrade", "head"]

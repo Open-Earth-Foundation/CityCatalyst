@@ -115,9 +115,9 @@ Plus mechanical migration work: snake_case renames, `meta.total` → `meta.total
 
 ---
 
-## Deploy plumbing (Mirco / Piotr)
+## Deploy plumbing
 
-Both are plain repo edits with no secrets. All three hiap-meed service names are confirmed from `hiap-meed/k8s/service-*.yml`, so the exact values are known — what is needed is review and agreement, not investigation.
+Both are plain repo edits with no secrets, set in the GitHub workflows so a dev redeploy picks them up. The three hiap-meed service names below are **confirmed by the hiap-meed author** and match `hiap-meed/k8s/service-*.yml`.
 
 **1. `HIAP_MEED_API_URL` does not exist.** `HIAP_API_URL` is not in `k8s/cc-web-deploy.yml` — it is set at deploy time by `kubectl set env`:
 
@@ -131,6 +131,8 @@ Both are plain repo edits with no secrets. All three hiap-meed service names are
 Service names verified from `hiap-meed/k8s/service-{dev,test,prod}.yml` — all `ClusterIP` on port 80 → container 8000, no ingress, so they resolve only from inside the cluster.
 
 **2. `MEED_MODULE` is not in dev's flags.** `NEXT_PUBLIC_FEATURE_FLAGS` appears three times in `web-develop.yml` (lines 41, 88, 483) — build-time and runtime. All three need it.
+
+Whether the module should be flag-gated at all is a product decision, not a technical constraint. What is factual: the module *is* gated today. `HomePage.tsx:293` filters `Modules.MEED.id` out of the tool accordion unless `MEED_MODULE` is present, so without the flag the module is invisible on dev — reachable only by typing the URL, and then only if the project has been granted the module. Removing the gate instead of setting the flag is equally valid; it just has to be a decision rather than an oversight.
 
 **Both are safe to land ahead of us.** On `develop` today the module has zero files and `MEED_MODULE` is not a defined flag, so the flag string is inert and the env var unused. There is no ordering dependency in either direction.
 

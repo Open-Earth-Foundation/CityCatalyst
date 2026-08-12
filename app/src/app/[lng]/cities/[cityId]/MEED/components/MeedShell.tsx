@@ -12,6 +12,7 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MEED_WIZARD_STEPS, getMeedPath } from "../steps";
 import { useMeedSectionStates } from "../meedStatus";
+import { setMeedStepState } from "../meedLocalState";
 import { useMeedInventories } from "../useMeedInventories";
 import {
   returnHref,
@@ -123,6 +124,25 @@ export function MeedShell({
         }
       : undefined;
 
+  /**
+   * Moving forward confirms the step you are leaving.
+   *
+   * The prototype called `confirmStep()` from every screen's own footer button;
+   * the port centralised the footer here but never carried the confirmation
+   * across, so `confirmed` was only ever written by preferences and pre-flight.
+   * That left `statusOf` unable to return "complete" for the other five steps —
+   * no green checks in the stepper, and a readiness roll-up permanently stuck
+   * at "0 complete" however much real data had loaded.
+   *
+   * Confirming here means "the user saw this step and chose to move on", which
+   * is exactly the needs-review → complete transition. It is idempotent, and
+   * `setMeedStepState` never lets `confirmed` go back to false.
+   */
+  const goForward = (href: string) => {
+    if (step) setMeedStepState(inventoryId, step.key, { confirmed: true });
+    router.push(href);
+  };
+
   return (
     <Box
       h="full"
@@ -218,7 +238,7 @@ export function MeedShell({
                 minW="auto"
                 px="l"
                 rightIcon={<Icon as={LuArrowRight} boxSize="16px" />}
-                onClick={() => router.push(forwardAction.href)}
+                onClick={() => goForward(forwardAction.href)}
               >
                 {forwardAction.label}
               </CCTerraButton>

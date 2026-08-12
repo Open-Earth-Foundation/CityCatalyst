@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Box, Card, HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import {
   LuCircleCheck,
@@ -9,7 +9,7 @@ import {
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
-import type { MeedPrioritizeCityResult } from "@/util/types/meed";
+import { useGetMeedActionsQuery } from "@/services/api";
 import {
   BodyLarge,
   BodyMedium,
@@ -22,18 +22,10 @@ import { LabelMedium } from "@/components/package/Texts/Label";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MeedStatusTag, type MeedTone } from "../../components/MeedStatusTag";
 import { setMeedStepState } from "../../meedLocalState";
-
-/**
- * One action from the legal screening output of the prioritization run.
- * Local view type until the hiap-meed service layer exposes the screening
- * result alongside `MeedPrioritizeCityResult`.
- */
-interface LegalScreenedAction {
-  actionId: string;
-  actionName: string;
-  sector?: string | null;
-  reasons?: string[];
-}
+import { useMeedSectionStates } from "../../meedStatus";
+import { useMeedRanking } from "../../useMeedRanking";
+import { buildActionIndex } from "../results/components/actionCatalog";
+import { deriveLegalScreening, type LegalScreenedAction } from "./legalScreening";
 
 /** Screening verdict for an action that did not pass cleanly. */
 type ScreenedStatus = "blocked" | "flagged";
@@ -135,32 +127,50 @@ function ScreenedActionCard({
 
 function RegulationsContent({
   lng,
+  cityId,
   inventoryId,
 }: {
   lng: string;
+  cityId: string;
   inventoryId: string;
 }) {
   const { t } = useTranslation(lng, "meed-regulations");
 
-  // TODO(meed backend): replace with the stored prioritization result and its
-  // legal screening output once the hiap-meed service layer lands (contract
-  // types in @/util/types/meed). Until then the precondition card renders and
-  // the user can continue to the next step.
-  const [ranking] = useState<MeedPrioritizeCityResult | null>(null);
-  const blocked: LegalScreenedAction[] = [];
-  const flagged: LegalScreenedAction[] = [];
-  const includedCount =
-    ranking?.ranked_actions?.length ?? ranking?.ranked_action_ids?.length ?? 0;
+  // Legal screening is produced by the prioritizer, so it lives on the stored
+  // ranking. `useMeedRanking` is the module's single read point for that.
+  const { states } = useMeedSectionStates(inventoryId);
+  const { ranking, isReady } = useMeedRanking(inventoryId, states);
+  const { data: catalog } = useGetMeedActionsQuery({ cityId });
 
-  // Nothing to fill in here — reviewing the screen is the whole step.
-  const stepSub = t("step-sub");
+  const screening = useMemo(
+    () => deriveLegalScreening(ranking?.result, buildActionIndex(catalog)),
+    [ranking, catalog],
+  );
+  const { blocked, flagged, includedCount, isEmpty } = screening;
+  const hasScreening = Boolean(ranking) && !isEmpty;
+
+  // Report progress only once there is something to report.
+  //
+  // This previously wrote `progress: 100` unconditionally on mount, with no
+  // data behind it — which meant merely opening the URL satisfied one of the
+  // three sections `computeMeedGate` requires before the ranking can be
+  // generated. Visiting a screen is not the same as having screened anything.
+  const stepSub = hasScreening
+    ? t("step-sub-counts", {
+        excluded: blocked.length,
+        included: includedCount,
+      })
+    : t("step-sub");
   useEffect(() => {
-    if (!inventoryId) return;
-    setMeedStepState(inventoryId, "regulations", {
-      progress: 100,
-      sub: stepSub,
-    });
-  }, [inventoryId, stepSub]);
+    if (!inventoryId || !isReady) return;
+    setMeedStepState(
+      inventoryId,
+      "regulations",
+      hasScreening
+        ? { visited: true, progress: 100, sub: stepSub }
+        : { visited: true },
+    );
+  }, [inventoryId, isReady, hasScreening, stepSub]);
 
   return (
     <VStack alignItems="stretch" gap="l">
@@ -179,7 +189,7 @@ function RegulationsContent({
         </HStack>
       </VStack>
 
-      {!ranking ? (
+      {!hasScreening ? (
         <Card.Root borderColor="border.neutral">
           <Card.Body>
             <VStack gap="m" py="xxl" px="l" textAlign="center">
@@ -292,10 +302,10 @@ function RegulationsContent({
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
 }) {
-  const { lng, inventory: inventoryId } = React.use(props.params);
+  const { lng, cityId, inventory: inventoryId } = React.use(props.params);
   return (
     <MeedWizardPage params={props.params} stepKey="regulations">
-      <RegulationsContent lng={lng} inventoryId={inventoryId} />
+      <RegulationsContent lng={lng} cityId={cityId} inventoryId={inventoryId} />
     </MeedWizardPage>
   );
 }

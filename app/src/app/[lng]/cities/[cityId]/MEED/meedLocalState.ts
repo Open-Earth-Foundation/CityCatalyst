@@ -7,6 +7,7 @@
  * mutations then; the call sites should not need to change shape.
  */
 
+import { PILLAR_WEIGHTS } from "./scoringWeights";
 import type {
   MeedPrioritizeCityResult,
   MeedTimeframePreference,
@@ -22,10 +23,14 @@ export interface MeedStrategicPreferences {
   excludeText: string;
 }
 
+/**
+ * Slider defaults, as whole-number percentages. Derived from the prioritizer's
+ * own pillar weights so this cannot drift from `scoringWeights.ts`.
+ */
 export const DEFAULT_MEED_WEIGHTS = {
-  impact: 55,
-  alignment: 22,
-  feasibility: 23,
+  impact: Math.round(PILLAR_WEIGHTS.impact * 100),
+  alignment: Math.round(PILLAR_WEIGHTS.alignment * 100),
+  feasibility: Math.round(PILLAR_WEIGHTS.feasibility * 100),
 };
 
 export interface MeedStepState {

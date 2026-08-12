@@ -37,6 +37,8 @@
   "emissions-error-body": "We couldn't reach the inventory results for this city. Check your connection and try again.",
   "breakdown-error": "Sub-sectors couldn't be loaded.",
   "retry": "Try again",
+  "inventories-error-title": "We couldn't load this city's inventories",
+  "inventories-error-body": "The request failed, so we can't tell which inventory to open. This is usually temporary.",
   "total-ghg-emissions": "Total GHG emissions",
   "inventory-year": "Inventory year",
   "sectors-with-data": "Sectors with data",
@@ -87,6 +89,7 @@
   "ranking-view": "View recommendations",
   "ranking-rerun": "Re-run ranking",
   "ranking-current-tag": "Up to date",
+  "sample-data": "Sample data",
   "ranking-stale-tag": "Inputs changed",
   "ranking-stale-body": "Your answers have changed since this ranking was generated, so it no longer reflects them. Re-run it to bring the recommendations back in line.",
   "ranking-generated-at": "Generated {{when}}"

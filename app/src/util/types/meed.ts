@@ -89,11 +89,90 @@ export interface MeedRankedActionResult {
   explanations?: Record<string, string>;
 }
 
+/**
+ * Legal evidence attached to an action removed by the legal hard filter.
+ *
+ * Note the deliberate asymmetry in which field carries which language:
+ * `legal_justification` is the *native* text (Spanish for Chilean sources) with
+ * `legal_justification_en` as the translation, while `ownership_description` and
+ * `restrictions_description` are English with `_es` variants. Read them through
+ * a helper rather than assuming a consistent convention.
+ */
+export interface MeedRemovedActionLegalEvidence {
+  verdict_category?: string | null;
+  verdict_score?: number | null;
+  ownership_category?: string | null;
+  ownership_score?: number | null;
+  ownership_description?: string | null;
+  ownership_description_es?: string | null;
+  restrictions_category?: string | null;
+  restrictions_score?: number | null;
+  restrictions_description?: string | null;
+  restrictions_description_es?: string | null;
+  legal_justification?: string | null;
+  legal_justification_en?: string | null;
+  legal_references?: string[];
+}
+
+/** One action dropped before ranking. Shaped by the backend for display. */
+export interface MeedRemovedActionSummary {
+  action_id: string;
+  action_name: string;
+  removal_reason?: string | null;
+  /** e.g. "legal_hard_filter" | "user_exclusion" | "hard_filter". */
+  removal_source: string;
+  legal?: MeedRemovedActionLegalEvidence | null;
+}
+
+/**
+ * Per-action hard-filter evidence. Present for *every* action, not just the
+ * discarded ones — actions that were kept but lack a legal assessment are only
+ * discoverable here, since they never appear in `removed_actions`.
+ */
+export interface MeedHardFilterEvidence {
+  discard_reason?: string | null;
+  legal_assessment_present?: boolean | null;
+  legal_verdict_category?: string | null;
+  legal_assessment_summary?: Record<string, unknown> | null;
+}
+
+/** The pillar weights the backend actually scored with. */
+export interface MeedPrioritizationWeights {
+  impact: number;
+  alignment: number;
+  feasibility: number;
+}
+
+export interface MeedPrioritizationCounts {
+  total_actions: number;
+  valid_actions: number;
+  discarded_excluded: number;
+  discarded_legal: number;
+  ranked_actions: number;
+}
+
+/**
+ * Prioritization metadata. Typed for the fields the UI reads; the index
+ * signature keeps the rest, since the backend model allows extras.
+ */
+export interface MeedPrioritizationMetadata {
+  locode?: string;
+  internal_request_id?: string;
+  frontend_request_id?: string | null;
+  counts?: MeedPrioritizationCounts;
+  weights?: MeedPrioritizationWeights;
+  timings?: Record<string, number>;
+  hard_filter_evidence_by_action_id?: Record<string, MeedHardFilterEvidence>;
+  [key: string]: unknown;
+}
+
 export interface MeedPrioritizeCityResult {
   locode: string;
   ranked_action_ids?: string[];
   ranked_actions?: MeedRankedActionResult[];
-  metadata?: Record<string, unknown>;
+  /** Actions dropped before ranking — the source for legal screening. */
+  removed_actions?: MeedRemovedActionSummary[];
+  metadata?: MeedPrioritizationMetadata;
   warnings?: string[];
 }
 

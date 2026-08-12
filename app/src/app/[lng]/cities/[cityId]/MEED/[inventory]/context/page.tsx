@@ -11,7 +11,6 @@ import {
 } from "@chakra-ui/react";
 import {
   LuMoveRight,
-  LuRotateCw,
   LuTrendingUp,
   LuTriangleAlert,
   LuUsers,
@@ -23,9 +22,9 @@ import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MeedStatusTag } from "../../components/MeedStatusTag";
+import { MeedErrorCard } from "../../components/MeedErrorCard";
 import {
   MeedStatStripSkeleton,
   MeedTableSkeleton,
@@ -42,13 +41,6 @@ import {
   type IndicatorConcern,
   type MeedIndicator,
 } from "./indicators";
-
-/** Applied to every focusable control on this screen. */
-const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
 
 /** Column widths, summing to 100%, so the header and rows line up. */
 const COLUMN_WIDTHS = {
@@ -263,46 +255,6 @@ function NoIndicatorsCard({ t }: { t: TFunction }) {
   );
 }
 
-/** Shown when the city-attributes request itself failed. */
-function IndicatorsErrorCard({
-  t,
-  onRetry,
-}: {
-  t: TFunction;
-  onRetry: () => void;
-}) {
-  return (
-    <Card.Root borderColor="border.neutral">
-      <Card.Body>
-        <VStack gap="m" py="xxl" px="l" textAlign="center">
-          <Icon
-            as={LuTriangleAlert}
-            boxSize="32px"
-            color="sentiment.negativeDefault"
-          />
-          <TitleMedium color="content.primary">
-            {t("indicators-error-title")}
-          </TitleMedium>
-          <BodyMedium color="content.secondary" maxW="480px">
-            {t("indicators-error-body")}
-          </BodyMedium>
-          <CCTerraButton
-            variant="outlined"
-            minW="auto"
-            px="l"
-            mt="s"
-            onClick={onRetry}
-            leftIcon={<Icon as={LuRotateCw} boxSize="16px" />}
-            _focusVisible={FOCUS_RING}
-          >
-            {t("retry")}
-          </CCTerraButton>
-        </VStack>
-      </Card.Body>
-    </Card.Root>
-  );
-}
-
 function SocioeconomicContextContent(props: {
   lng: string;
   cityId: string;
@@ -353,7 +305,13 @@ function SocioeconomicContextContent(props: {
       </VStack>
 
       {isError ? (
-        <IndicatorsErrorCard t={t} onRetry={() => refetch()} />
+        <MeedErrorCard
+          variant="panel"
+          title={t("indicators-error-title")}
+          body={t("indicators-error-body")}
+          retryLabel={t("retry")}
+          onRetry={() => refetch()}
+        />
       ) : isLoading ? (
         <>
           <MeedStatStripSkeleton items={4} />

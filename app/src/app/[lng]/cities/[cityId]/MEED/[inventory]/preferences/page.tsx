@@ -342,21 +342,16 @@ function StrategicPreferencesContent(props: {
     [t],
   );
 
-  const canSave =
-    sectors.length > 0 || priorities.length > 0 || timelines.length > 0;
   const hasAnyExclusion =
     excludedSectors.length > 0 ||
     excludedCoBenefits.length > 0 ||
     excludeText.trim().length > 0;
 
-  function saveAndContinue() {
-    setMeedStepState(inventoryId, "preferences", {
-      visited: true,
-      confirmed: true,
-      sub: summary,
-    });
-    router.push(getMeedPath(lng, cityId, inventoryId, "policy"));
-  }
+  // No in-page save button: this screen writes every change straight to storage
+  // (the effect above), and MeedShell's footer owns forward navigation and the
+  // step confirmation. The previous "Save & continue" duplicated that button
+  // exactly — same destination, same effect — which is the pattern MeedShell's
+  // own docblock rules out ("exactly two actions, never the same one twice").
 
   return (
     <VStack alignItems="stretch" gap="l">
@@ -566,18 +561,6 @@ function StrategicPreferencesContent(props: {
         )}
       </Section>
 
-      <HStack justifyContent="flex-end">
-        <CCTerraButton
-          variant="filled"
-          minW="auto"
-          px="l"
-          disabled={!canSave}
-          onClick={saveAndContinue}
-          _focusVisible={FOCUS_RING}
-        >
-          {t("save-and-continue")}
-        </CCTerraButton>
-      </HStack>
     </VStack>
   );
 }

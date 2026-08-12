@@ -22,9 +22,10 @@ export const FullRanking = React.forwardRef<
     onSelect: (action: MeedRankedActionResult) => void;
     selectedIds: string[];
     onToggleSelect: (actionId: string) => void;
+    onExport?: () => void;
   }
 >(function FullRanking(
-  { actions, index, t, onSelect, selectedIds, onToggleSelect },
+  { actions, index, t, onSelect, selectedIds, onToggleSelect, onExport },
   ref,
 ) {
   return (
@@ -45,6 +46,7 @@ export const FullRanking = React.forwardRef<
           onSelect={onSelect}
           selectedIds={selectedIds}
           onToggleSelect={onToggleSelect}
+          onExport={onExport}
         />
       </VStack>
     </Box>

@@ -8,7 +8,7 @@ import {
   Table,
   VStack,
 } from "@chakra-ui/react";
-import { LuClipboardList, LuTriangleAlert } from "react-icons/lu";
+import { LuClipboardList } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetMeedActionsQuery,
@@ -18,6 +18,7 @@ import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { pillarPercent } from "../../scoringWeights";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS } from "../../steps";
 import { setMeedStepState } from "../../meedLocalState";
@@ -26,6 +27,7 @@ import {
   MeedCardSkeleton,
   MeedTableSkeleton,
 } from "../../components/MeedSkeletons";
+import { MeedErrorCard } from "../../components/MeedErrorCard";
 import { EmptyState } from "../results/components/EmptyState";
 import { buildActionIndex } from "../results/components/actionCatalog";
 import { computePolicyAggregates } from "./policyAggregates";
@@ -44,53 +46,13 @@ import {
 const INITIAL_ROWS = 15;
 
 const POLICY_RANKING_WEIGHT =
-  MEED_WIZARD_STEPS.find((s) => s.key === "policy")?.rankingWeight ?? 22;
+  pillarPercent("alignment");
 
 const FOCUS_RING = {
   outline: "2px solid",
   outlineColor: "content.link",
   outlineOffset: "2px",
 } as const;
-
-/** Failed fetch, with the only useful next step: try again. */
-function PolicyErrorCard({
-  title,
-  body,
-  retryLabel,
-  onRetry,
-}: {
-  title: string;
-  body: string;
-  retryLabel: string;
-  onRetry: () => void;
-}) {
-  return (
-    <Card.Root borderColor="sentiment.negativeDefault">
-      <Card.Body>
-        <VStack alignItems="flex-start" gap="m">
-          <HStack gap="s">
-            <Icon
-              as={LuTriangleAlert}
-              boxSize="18px"
-              color="sentiment.negativeDefault"
-            />
-            <TitleMedium color="content.primary">{title}</TitleMedium>
-          </HStack>
-          <BodyMedium color="content.secondary">{body}</BodyMedium>
-          <CCTerraButton
-            variant="outlined"
-            minW="auto"
-            px="l"
-            onClick={onRetry}
-            _focusVisible={FOCUS_RING}
-          >
-            {retryLabel}
-          </CCTerraButton>
-        </VStack>
-      </Card.Body>
-    </Card.Root>
-  );
-}
 
 function PolicyAlignmentContent(props: {
   lng: string;
@@ -183,7 +145,7 @@ function PolicyAlignmentContent(props: {
     return (
       <VStack alignItems="stretch" gap="l">
         {intro}
-        <PolicyErrorCard
+        <MeedErrorCard
           title={t("policy-error-title")}
           body={t("policy-error-body")}
           retryLabel={t("retry")}

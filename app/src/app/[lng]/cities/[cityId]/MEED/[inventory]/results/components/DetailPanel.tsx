@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { Box, Icon, HStack, VStack } from "@chakra-ui/react";
-import { LuArrowLeft } from "react-icons/lu";
+import { LuArrowLeft, LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
@@ -14,11 +14,53 @@ import {
 } from "@/components/package/Texts/Body";
 import { ScoreBar } from "./ScoreBar";
 import { actionName, sectorLabel, type MeedActionIndex } from "./actionCatalog";
+import {
+  actionCoBenefits,
+  actionTradeOffs,
+  coBenefitLabel,
+} from "./coBenefits";
 
 export interface ScoreWeights {
   impact: number;
   alignment: number;
   feasibility: number;
+}
+
+/**
+ * One list of co-benefit keys under a heading. Renders nothing when empty, so
+ * an action with no trade-offs shows no trade-offs section rather than an
+ * empty one.
+ */
+function CoBenefitSection({
+  title,
+  keys,
+  icon,
+  color,
+  t,
+}: {
+  title: string;
+  keys: string[];
+  icon: React.ElementType;
+  color: string;
+  t: TFunction;
+}) {
+  if (keys.length === 0) return null;
+
+  return (
+    <VStack alignItems="stretch" gap="s">
+      <LabelLarge color="content.primary">{title}</LabelLarge>
+      <VStack alignItems="stretch" gap="xs">
+        {keys.map((key) => (
+          <HStack key={key} gap="s" alignItems="center">
+            <Icon as={icon} boxSize="16px" color={color} flexShrink={0} />
+            <BodyMedium color="content.secondary">
+              {coBenefitLabel(key, t)}
+            </BodyMedium>
+          </HStack>
+        ))}
+      </VStack>
+    </VStack>
+  );
 }
 
 /**
@@ -42,6 +84,8 @@ export function DetailPanel({
   const description = index.get(action.action_id)?.description;
   const explanation =
     action.explanations?.en ?? Object.values(action.explanations ?? {})[0];
+  const coBenefits = actionCoBenefits(action, index);
+  const tradeOffs = actionTradeOffs(action, index);
 
   return (
     <>
@@ -171,6 +215,22 @@ export function DetailPanel({
                 </BodyLarge>
               </HStack>
             </VStack>
+
+            <CoBenefitSection
+              title={t("detail-cobenefits")}
+              keys={coBenefits}
+              icon={LuCircleCheck}
+              color="sentiment.positiveDefault"
+              t={t}
+            />
+
+            <CoBenefitSection
+              title={t("detail-tradeoffs")}
+              keys={tradeOffs}
+              icon={LuTriangleAlert}
+              color="sentiment.warningDefault"
+              t={t}
+            />
           </VStack>
         </Box>
       </Box>

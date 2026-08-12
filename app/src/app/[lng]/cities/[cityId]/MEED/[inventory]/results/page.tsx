@@ -22,20 +22,17 @@ import { ContextCardGrid } from "./components/ContextCardGrid";
 import { ContextBreakdown } from "./components/ContextBreakdown";
 import { NextStepsBanner } from "./components/NextStepsBanner";
 import { buildActionIndex } from "./components/actionCatalog";
+import { buildRankingCsv } from "./components/rankingCsv";
+import { downloadCsv } from "@/util/csv";
 import { useMeedRanking } from "../../useMeedRanking";
 import { tallyCoBenefits } from "./components/coBenefits";
-import { excludedActionCount, policyBacking } from "./components/rankingFacts";
-
-/**
- * Default final-score weights from the prototype scoring pipeline.
- * TODO(meed backend): read the actual weights from the prioritization
- * response metadata once the ranking is wired in.
- */
-const SCORE_WEIGHTS: ScoreWeights = {
-  impact: 0.55,
-  alignment: 0.22,
-  feasibility: 0.23,
-};
+import {
+  excludedActionCount,
+  policyBacking,
+  readRankingWeights,
+} from "./components/rankingFacts";
+import { PILLAR_WEIGHTS } from "../../scoringWeights";
+import { MeedCardSkeleton } from "../../components/MeedSkeletons";
 
 const TAB_RESULTS = "results";
 const TAB_CONTEXT = "context";
@@ -67,9 +64,26 @@ export default function Page(props: {
 
   // Read through the shared hook so this screen and the landing screen can
   // never disagree about whether a ranking exists.
-  const { states } = useMeedSectionStates(inventoryId);
-  const { ranking: stored } = useMeedRanking(inventoryId, states);
+  const { states, isReady: statesReady } = useMeedSectionStates(inventoryId);
+  const {
+    ranking: stored,
+    isReady: rankingReady,
+    isStale,
+  } = useMeedRanking(inventoryId, states);
   const ranking: MeedPrioritizeCityResult | null = stored?.result ?? null;
+
+  // Both stores are read in effects, so on the first client render they are
+  // still empty. Without this the screen renders "no ranking generated yet" for
+  // a frame on every visit to a populated results page — and `isStale` compares
+  // against an empty state, so the stale banner flashes too.
+  const isReady = rankingReady && statesReady;
+
+  // The weights the backend actually scored with, so the printed formula in the
+  // detail drawer matches the final score beside it.
+  const scoreWeights: ScoreWeights = useMemo(
+    () => readRankingWeights(ranking, PILLAR_WEIGHTS),
+    [ranking],
+  );
   const [selected, setSelected] = useState<MeedRankedActionResult | null>(null);
 
   // One selection, shared by the top-pick cards and the ranking rows, feeding
@@ -121,6 +135,28 @@ export default function Page(props: {
     ? `${emissions.value} ${emissions.unit}CO2e`.trim()
     : undefined;
 
+  // The city and inventory year live on this screen, not in the table, so the
+  // file is named here and the table stays presentational. Either part may be
+  // missing while the inventory query is still in flight — the name simply
+  // drops it rather than writing "undefined" into the filename.
+  const exportRanking = useCallback(() => {
+    if (ranked.length === 0) return;
+    const { headers, rows } = buildRankingCsv(ranked, index, t);
+    const parts = [
+      inventory?.city?.name,
+      inventory?.year,
+      "meed_ranked_actions",
+    ].filter(
+      (part): part is string | number =>
+        part !== null && part !== undefined && part !== "",
+    );
+    downloadCsv({
+      filename: `${parts.join("_").replace(/\s+/g, "_")}.csv`,
+      headers,
+      rows,
+    });
+  }, [ranked, index, t, inventory]);
+
   const facts = {
     emissionsText,
     inventoryYear: inventory?.year ?? undefined,
@@ -144,7 +180,9 @@ export default function Page(props: {
       currentLabel={t("page-title")}
     >
       <>
-        {ranked.length === 0 ? (
+        {!isReady ? (
+          <MeedCardSkeleton lines={6} />
+        ) : ranked.length === 0 ? (
           <EmptyState
             title={t("empty-title")}
             body={t("empty-body")}
@@ -229,6 +267,7 @@ export default function Page(props: {
               onSelect={setSelected}
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
+              onExport={exportRanking}
             />
           </VStack>
         )}
@@ -237,7 +276,7 @@ export default function Page(props: {
           <DetailPanel
             action={selected}
             index={index}
-            weights={SCORE_WEIGHTS}
+            weights={scoreWeights}
             t={t}
             onClose={() => setSelected(null)}
           />

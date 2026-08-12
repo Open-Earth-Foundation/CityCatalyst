@@ -8,6 +8,7 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import type { MeedStep } from "../steps";
 import type { MeedSectionState } from "../meedStatus";
+import { STEP_CONTRIBUTION, formatShare } from "../scoringWeights";
 import { MeedStatusTag, STATUS_LABEL_KEY, STATUS_TONE } from "./MeedStatusTag";
 import { MeedMeter } from "./MeedMeter";
 
@@ -47,6 +48,7 @@ export function MeedSectionCard({
   t,
 }: MeedSectionCardProps) {
   const status = state?.status ?? "not-started";
+  const contribution = STEP_CONTRIBUTION[step.key];
   const progress = state?.progress;
 
   return (
@@ -66,9 +68,11 @@ export function MeedSectionCard({
       <NextLink href={href}>
         <Card.Body display="flex" flexDirection="column" gap="s" h="full">
           <HStack justifyContent="space-between" alignItems="center" gap="s">
-            {step.rankingWeight ? (
+            {contribution ? (
               <MeedStatusTag tone="info">
-                {t("shapes-percent", { weight: step.rankingWeight })}
+                {t("shapes-percent", {
+                  weight: formatShare(contribution.rankingShare),
+                })}
               </MeedStatusTag>
             ) : step.optional ? (
               <MeedStatusTag tone="neutral">{t("optional")}</MeedStatusTag>

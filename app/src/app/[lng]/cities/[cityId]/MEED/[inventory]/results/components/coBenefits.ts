@@ -3,74 +3,45 @@
  *
  * The prioritizer may report the co-benefits it scored an action on inside
  * `evidence_summary`; the action-pathways catalog carries the canonical
- * `coBenefits` map. Both are read here, evidence first, and only *positive*
- * relationships count — a negative relationship is a trade-off, not a benefit.
+ * `coBenefits` map. Both are read here, evidence first — and an explicitly
+ * negative relationship is a trade-off, not a benefit, so the two lists are
+ * split apart rather than lumped together.
  *
  * When neither source carries co-benefit data the strip renders nothing at all:
  * this section must never invent benefits an action was not scored on.
  */
 import type { IconType } from "react-icons";
 import {
-  LuBatteryCharging,
   LuBike,
-  LuBird,
-  LuBrain,
-  LuBuilding2,
   LuCircleCheck,
   LuDroplet,
-  LuGlobe,
-  LuGraduationCap,
   LuHandshake,
-  LuHardHat,
-  LuHeartHandshake,
-  LuHeartPulse,
   LuHouse,
   LuLeaf,
-  LuLightbulb,
-  LuMountain,
-  LuRecycle,
-  LuSun,
-  LuTrees,
-  LuTrendingUp,
-  LuUsers,
-  LuVolumeX,
   LuWallet,
-  LuWaves,
-  LuWheat,
   LuWind,
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
 import type { MeedActionIndex } from "./actionCatalog";
 
-/** Canonical (snake_case) co-benefit key → icon. */
+/**
+ * Canonical (snake_case) co-benefit key → icon.
+ *
+ * These seven are the whole vocabulary the live catalog uses across all 102
+ * actions. Anything else falls through to `humanizeKey` + `LuCircleCheck`, so a
+ * new key from upstream still renders — but do not pre-populate this map with
+ * guesses: an icon here without its `cobenefit-*` label in meed-results.json
+ * (or the reverse) is how the two lists drift apart.
+ */
 const CO_BENEFIT_ICONS: Record<string, IconType> = {
   air_quality: LuWind,
-  public_health: LuHeartPulse,
-  biodiversity: LuBird,
-  habitat: LuLeaf,
-  employment: LuHardHat,
-  economic_development: LuTrendingUp,
-  social_equity: LuHeartHandshake,
-  energy_security: LuBatteryCharging,
-  water_management: LuWaves,
-  water_quality: LuDroplet,
-  noise_reduction: LuVolumeX,
-  urban_heat: LuSun,
-  food_security: LuWheat,
-  resilience: LuMountain,
-  climate_resilience: LuGlobe,
-  gender_equity: LuUsers,
-  education: LuGraduationCap,
-  innovation: LuLightbulb,
-  community_wellbeing: LuBuilding2,
-  housing: LuHouse,
   cost_of_living: LuWallet,
-  stakeholder_engagement: LuHandshake,
+  habitat: LuLeaf,
+  housing: LuHouse,
   mobility: LuBike,
-  green_spaces: LuTrees,
-  mental_health: LuBrain,
-  waste_reduction: LuRecycle,
+  stakeholder_engagement: LuHandshake,
+  water_quality: LuDroplet,
 };
 
 export function coBenefitIcon(key: string): IconType {
@@ -115,48 +86,120 @@ export function coBenefitLabel(key: string, t: TFunction): string {
   });
 }
 
-function isPositive(relationship: unknown): boolean {
-  return (
-    typeof relationship !== "string" ||
-    relationship.trim().toLowerCase() === "positive"
+type CoBenefitRelationship = "positive" | "negative" | "unknown";
+
+/**
+ * How a co-benefit entry relates to the action.
+ *
+ * Only an explicit "negative" is a trade-off; only an explicit "positive" is a
+ * confirmed benefit. Everything else — a missing field, a null, a value the
+ * upstream catalog has not standardised — is `unknown`, and callers decide what
+ * to do with it. The earlier `isPositive` asserted an absent field *as* a
+ * delivered benefit, which is a claim the data never made.
+ */
+function relationshipOf(value: unknown): CoBenefitRelationship {
+  if (typeof value !== "string") return "unknown";
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "negative") return "negative";
+  if (normalized === "positive") return "positive";
+  return "unknown";
+}
+
+interface CoBenefitEntry {
+  key: string;
+  relationship: CoBenefitRelationship;
+}
+
+function entryRelationship(value: unknown): CoBenefitRelationship {
+  if (!value || typeof value !== "object") return "unknown";
+  return relationshipOf(
+    (value as { impact_relationship?: unknown }).impact_relationship,
   );
 }
 
-/** Positive co-benefit keys reported in the ranking's evidence, if any. */
-function fromEvidence(action: MeedRankedActionResult): string[] {
+/**
+ * Co-benefit entries reported in the ranking's evidence, or null when it
+ * carries none — null is the signal to fall through to the catalog, so an
+ * action whose evidence lists only trade-offs is not quietly topped up with
+ * catalog benefits.
+ */
+function evidenceEntries(
+  action: MeedRankedActionResult,
+): CoBenefitEntry[] | null {
   const evidence = action.evidence_summary as Record<string, unknown> | null;
   const raw =
     evidence?.co_benefits ?? evidence?.coBenefits ?? evidence?.cobenefits;
 
+  // A bare array names keys with no relationship to read: all unknown.
   if (Array.isArray(raw)) {
-    return raw.filter((entry): entry is string => typeof entry === "string");
+    const entries = raw
+      .filter((entry): entry is string => typeof entry === "string")
+      .map((key) => ({
+        key: normalizeKey(key),
+        relationship: "unknown" as const,
+      }));
+    return entries.length > 0 ? entries : null;
   }
   if (raw && typeof raw === "object") {
-    return Object.entries(raw as Record<string, unknown>)
-      .filter(([, value]) => {
-        if (!value || typeof value !== "object") return true;
-        return isPositive(
-          (value as { impact_relationship?: unknown }).impact_relationship,
-        );
-      })
-      .map(([key]) => key);
+    const entries = Object.entries(raw as Record<string, unknown>).map(
+      ([key, value]) => ({
+        key: normalizeKey(key),
+        relationship: entryRelationship(value),
+      }),
+    );
+    return entries.length > 0 ? entries : null;
   }
-  return [];
+  return null;
 }
 
-/** Positive co-benefit keys for one action, evidence first, catalog second. */
+function catalogEntries(
+  action: MeedRankedActionResult,
+  index: MeedActionIndex,
+): CoBenefitEntry[] {
+  const catalog = index.get(action.action_id)?.coBenefits;
+  if (!catalog) return [];
+  return Object.entries(catalog).map(([key, value]) => ({
+    key: normalizeKey(key),
+    relationship: relationshipOf(value?.impact_relationship),
+  }));
+}
+
+/** Every co-benefit entry for one action, evidence first, catalog second. */
+function coBenefitEntries(
+  action: MeedRankedActionResult,
+  index: MeedActionIndex,
+): CoBenefitEntry[] {
+  return evidenceEntries(action) ?? catalogEntries(action, index);
+}
+
+/**
+ * Co-benefit keys the action delivers.
+ *
+ * `unknown` counts as a benefit on purpose: the live catalog carries no
+ * negative relationships at all, so this shows exactly what it showed before
+ * relationships were read at all. Only an explicit `negative` is withheld.
+ */
 export function actionCoBenefits(
   action: MeedRankedActionResult,
   index: MeedActionIndex,
 ): string[] {
-  const evidence = fromEvidence(action);
-  if (evidence.length > 0) return evidence.map(normalizeKey);
+  return coBenefitEntries(action, index)
+    .filter((entry) => entry.relationship !== "negative")
+    .map((entry) => entry.key);
+}
 
-  const catalog = index.get(action.action_id)?.coBenefits;
-  if (!catalog) return [];
-  return Object.entries(catalog)
-    .filter(([, value]) => isPositive(value?.impact_relationship))
-    .map(([key]) => normalizeKey(key));
+/**
+ * Co-benefit keys the action explicitly scores *negatively* on — its trade-offs.
+ * Empty for every action in the live catalog today; the section that renders it
+ * hides itself when so.
+ */
+export function actionTradeOffs(
+  action: MeedRankedActionResult,
+  index: MeedActionIndex,
+): string[] {
+  return coBenefitEntries(action, index)
+    .filter((entry) => entry.relationship === "negative")
+    .map((entry) => entry.key);
 }
 
 export interface MeedCoBenefitTally {

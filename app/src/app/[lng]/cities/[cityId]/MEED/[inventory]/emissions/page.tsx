@@ -14,7 +14,6 @@ import {
   LuChartPie,
   LuChevronDown,
   LuChevronRight,
-  LuRotateCw,
   LuTriangleAlert,
 } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
@@ -31,6 +30,7 @@ import { TitleMedium } from "@/components/package/Texts/Title";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MeedStatusTag } from "../../components/MeedStatusTag";
+import { MeedErrorCard } from "../../components/MeedErrorCard";
 import {
   MeedStatStripSkeleton,
   MeedTableSkeleton,
@@ -51,48 +51,6 @@ const COLUMN_WIDTHS = {
   share: "14%",
   status: "20%",
 } as const;
-
-/** Failure state for a query that came back with an error. */
-function EmissionsErrorCard({
-  title,
-  body,
-  retryLabel,
-  onRetry,
-}: {
-  title: string;
-  body: string;
-  retryLabel: string;
-  onRetry: () => void;
-}) {
-  return (
-    <Card.Root borderColor="border.neutral">
-      <Card.Body>
-        <VStack gap="m" py="xxl" px="l" textAlign="center">
-          <Icon
-            as={LuTriangleAlert}
-            boxSize="32px"
-            color="sentiment.negativeDefault"
-          />
-          <TitleMedium color="content.primary">{title}</TitleMedium>
-          <BodyMedium color="content.secondary" maxW="480px">
-            {body}
-          </BodyMedium>
-          <CCTerraButton
-            variant="outlined"
-            minW="auto"
-            px="l"
-            mt="s"
-            onClick={onRetry}
-            leftIcon={<Icon as={LuRotateCw} boxSize="16px" />}
-            _focusVisible={FOCUS_RING}
-          >
-            {retryLabel}
-          </CCTerraButton>
-        </VStack>
-      </Card.Body>
-    </Card.Root>
-  );
-}
 
 /** One GPC sector row with a lazily-loaded sub-sector breakdown. */
 function SectorRow({
@@ -317,7 +275,8 @@ function EmissionsReviewContent(props: { lng: string; inventoryId: string }) {
       </VStack>
 
       {isError ? (
-        <EmissionsErrorCard
+        <MeedErrorCard
+          variant="panel"
           title={t("emissions-error-title")}
           body={t("emissions-error-body")}
           retryLabel={t("retry")}

@@ -97,15 +97,17 @@ export function countByStatus(states: MeedSectionStates) {
  * ranking so the overview can tell whether the user's answers have moved on
  * since — a ranking that no longer matches its inputs should say so rather than
  * quietly look current.
+ *
+ * Deliberately keyed on `progress` and `sub` only, NOT on `status`.
+ * `status` is derived, and `confirmed` is one of its inputs — so including it
+ * would mean simply walking back through the wizard (which confirms each step)
+ * changed the fingerprint and made every ranking report itself stale, without a
+ * single input having changed. `progress` and `sub` are what actually move when
+ * the data does.
  */
 export function inputsFingerprint(states: MeedSectionStates): string {
   return MEED_WIZARD_STEPS.map((step) => {
     const state = states[step.key];
-    return [
-      step.key,
-      state?.status ?? "not-started",
-      state?.progress ?? 0,
-      state?.sub ?? "",
-    ].join(":");
+    return [step.key, state?.progress ?? 0, state?.sub ?? ""].join(":");
   }).join("|");
 }

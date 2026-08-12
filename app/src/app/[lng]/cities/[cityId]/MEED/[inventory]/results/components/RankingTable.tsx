@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import { Box, Card, HStack, Icon, IconButton, Table } from "@chakra-ui/react";
-import { LuSquareArrowOutUpRight } from "react-icons/lu";
+import { LuDownload, LuSquareArrowOutUpRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
+import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { ReductionBar } from "./ReductionBar";
@@ -25,6 +26,9 @@ import {
  * The leading checkbox column shares its state with the top-pick cards, so an
  * action ticked here is ticked there too and both feed the one report button in
  * the page header.
+ *
+ * This component stays presentational: the export button only calls back, and
+ * the caller — which knows the city and inventory year — builds the file.
  */
 export function RankingTable({
   actions,
@@ -33,6 +37,7 @@ export function RankingTable({
   onSelect,
   selectedIds,
   onToggleSelect,
+  onExport,
 }: {
   actions: MeedRankedActionResult[];
   index: MeedActionIndex;
@@ -40,15 +45,41 @@ export function RankingTable({
   onSelect: (action: MeedRankedActionResult) => void;
   selectedIds: string[];
   onToggleSelect: (actionId: string) => void;
+  onExport?: () => void;
 }) {
   return (
     <Card.Root overflow="hidden">
-      <Box px="l" py="m" borderBottomWidth="1px" borderColor="border.overlay">
-        <TitleMedium color="content.primary">{t("table-title")}</TitleMedium>
-        <BodySmall color="content.secondary" mt="xs">
-          {t("table-description", { count: actions.length })}
-        </BodySmall>
-      </Box>
+      <HStack
+        px="l"
+        py="m"
+        gap="m"
+        alignItems="flex-start"
+        justifyContent="space-between"
+        borderBottomWidth="1px"
+        borderColor="border.overlay"
+      >
+        <Box>
+          <TitleMedium color="content.primary">{t("table-title")}</TitleMedium>
+          <BodySmall color="content.secondary" mt="xs">
+            {t("table-description", { count: actions.length })}
+          </BodySmall>
+        </Box>
+        {onExport && (
+          <CCTerraButton
+            variant="outlined"
+            flexShrink={0}
+            leftIcon={<Icon as={LuDownload} boxSize="16px" />}
+            onClick={onExport}
+            _focusVisible={{
+              outline: "2px solid",
+              outlineColor: "content.link",
+              outlineOffset: "2px",
+            }}
+          >
+            {t("export-csv")}
+          </CCTerraButton>
+        )}
+      </HStack>
       <Table.Root size="md">
         <Table.Header>
           <Table.Row>

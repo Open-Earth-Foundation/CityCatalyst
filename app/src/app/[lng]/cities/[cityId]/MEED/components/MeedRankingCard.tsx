@@ -66,9 +66,17 @@ export function MeedRankingCard({
                 {t("ranking-title", { count: totalRanked })}
               </TitleMedium>
             </VStack>
-            <MeedStatusTag tone={isStale ? "warning" : "positive"}>
-              {isStale ? t("ranking-stale-tag") : t("ranking-current-tag")}
-            </MeedStatusTag>
+            <HStack gap="s" flexShrink={0}>
+              {/* Sample data has to announce itself. The flag that produces it
+                  is off by default, but when it is on nothing else tells a
+                  synthetic ranking apart from a real one. */}
+              {ranking.isMock && (
+                <MeedStatusTag tone="warning">{t("sample-data")}</MeedStatusTag>
+              )}
+              <MeedStatusTag tone={isStale ? "warning" : "positive"}>
+                {isStale ? t("ranking-stale-tag") : t("ranking-current-tag")}
+              </MeedStatusTag>
+            </HStack>
           </HStack>
 
           {topActions.length > 0 && (

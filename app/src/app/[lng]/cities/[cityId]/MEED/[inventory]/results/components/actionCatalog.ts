@@ -14,7 +14,12 @@ export interface MeedCatalogAction {
   actionId?: string;
   actionName?: string;
   description?: string;
-  sector?: string[] | string | null;
+  /**
+   * GPC sector tag, derived from `emissions` at index-build time — the catalog
+   * has no sector field of its own. Never read a raw `sector` here: doing so is
+   * what made every action render as "Cross-sector".
+   */
+  sectorTag?: string | null;
   /** Raw catalog value, e.g. "<5 years". */
   timelineForImplementation?: string | null;
   /** Keyed by co-benefit key, e.g. `air_quality`. */
@@ -22,10 +27,41 @@ export interface MeedCatalogAction {
   emissions?: {
     impact_text?: string | null;
     impact_numeric?: number | null;
+    /** GPC roman numeral, e.g. "IV". */
+    sector_number?: string | null;
+    subsector_number?: number[] | null;
+    /** e.g. ["IV.1"]. */
+    gpc_reference_number?: string[] | null;
   } | null;
 }
 
 export type MeedActionIndex = Map<string, MeedCatalogAction>;
+
+/**
+ * Normalise the `emissions` block to snake_case.
+ *
+ * The Global API returns it camelCase (`impactNumeric`, `sectorNumber`); the
+ * hiap-meed reference-data contract returns the same fields snake_case. Reading
+ * only one casing is what left `reductionLevel` returning 0 ("Unknown") for
+ * every action — the same defect class as the sector bug. Accept both so this
+ * survives the migration to hiap-meed without a second fix.
+ */
+function normalizeEmissions(raw: unknown): MeedCatalogAction["emissions"] {
+  if (!raw || typeof raw !== "object") return null;
+  const e = raw as Record<string, unknown>;
+  const pick = <T>(snake: string, camel: string): T | null =>
+    (e[snake] ?? e[camel] ?? null) as T | null;
+  return {
+    impact_text: pick<string>("impact_text", "impactText"),
+    impact_numeric: pick<number>("impact_numeric", "impactNumeric"),
+    sector_number: pick<string>("sector_number", "sectorNumber"),
+    subsector_number: pick<number[]>("subsector_number", "subsectorNumber"),
+    gpc_reference_number: pick<string[]>(
+      "gpc_reference_number",
+      "gpcReferenceNumber",
+    ),
+  };
+}
 
 /**
  * Build an action_id → catalog record index from the raw (unknown) catalog
@@ -60,10 +96,7 @@ export function buildActionIndex(data: unknown): MeedActionIndex {
         (typeof record.description === "string" && record.description) ||
         (typeof record.Description === "string" && record.Description) ||
         undefined,
-      sector: (record.sector ?? record.Sector ?? null) as
-        | string[]
-        | string
-        | null,
+      sectorTag: sectorTagOf(normalizeEmissions(record.emissions)),
       timelineForImplementation:
         (typeof record.timelineForImplementation === "string" &&
           record.timelineForImplementation) ||
@@ -73,7 +106,7 @@ export function buildActionIndex(data: unknown): MeedActionIndex {
       coBenefits: (record.coBenefits ??
         record.CoBenefits ??
         null) as MeedCatalogAction["coBenefits"],
-      emissions: (record.emissions ?? null) as MeedCatalogAction["emissions"],
+      emissions: normalizeEmissions(record.emissions),
     });
   }
   return index;
@@ -126,25 +159,53 @@ export function timelineLabel(
 
 // ─── Sector display ──────────────────────────────────────────────────────────
 
+// The catalog has no top-level sector field — verified across all 102 live
+// actions. It carries the GPC sector under `emissions`, so the tag is derived
+// from the roman numeral, mirroring SECTOR_NUMBER_TO_TAG in
+// hiap-meed/app/modules/prioritizer/utils/sector_mapping.py. That is the same
+// map the prioritizer matches `cityStrategicPreferenceSectors` through, so the
+// chip on screen and the filter the ranking applied are the same fact.
+
+const SECTOR_NUMBER_TO_TAG: Record<string, string> = {
+  I: "stationary_energy",
+  II: "transportation",
+  III: "waste",
+  IV: "ippu",
+  V: "afolu",
+};
+
 const SECTOR_KEYS: Record<string, string> = {
   stationary_energy: "sector-stationary-energy",
   transportation: "sector-transportation",
   waste: "sector-waste",
   ippu: "sector-ippu",
   afolu: "sector-afolu",
-  cross_sector: "sector-cross-sector",
 };
+
+/**
+ * GPC sector tag for a catalog action, or null when the catalog says nothing.
+ * Primary source is `emissions.sector_number`; the first GPC reference number
+ * is the fallback, since both encode the same roman numeral.
+ */
+export function sectorTagOf(
+  emissions: MeedCatalogAction["emissions"],
+): string | null {
+  if (!emissions) return null;
+  const direct = emissions.sector_number?.trim().toUpperCase();
+  if (direct && SECTOR_NUMBER_TO_TAG[direct]) return SECTOR_NUMBER_TO_TAG[direct];
+  const ref = emissions.gpc_reference_number?.[0];
+  const prefix = ref?.split(".")[0]?.trim().toUpperCase();
+  return (prefix && SECTOR_NUMBER_TO_TAG[prefix]) || null;
+}
 
 export function sectorLabel(
   index: MeedActionIndex,
   actionId: string,
   t: TFunction,
 ): string {
-  const raw = index.get(actionId)?.sector;
-  const tag = Array.isArray(raw) ? raw[0] : raw;
-  if (!tag) return t("sector-cross-sector");
-  const key = SECTOR_KEYS[tag.toLowerCase().replace(/-/g, "_")];
-  return key ? t(key) : tag.replace(/_/g, " ");
+  const tag = index.get(actionId)?.sectorTag;
+  if (!tag) return t("sector-unknown");
+  return t(SECTOR_KEYS[tag] ?? "sector-unknown");
 }
 
 // ─── Reduction-potential scale (5 levels) ─────────────────────────────────────

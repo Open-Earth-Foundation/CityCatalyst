@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, HStack, Icon, Table, VStack } from "@chakra-ui/react";
-import { LuCoins, LuTriangleAlert } from "react-icons/lu";
+import { LuCoins } from "react-icons/lu";
 import { useTranslation } from "@/i18n/client";
 import {
   useGetCityQuery,
@@ -11,6 +11,7 @@ import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { pillarPercent } from "../../scoringWeights";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS } from "../../steps";
 import { setMeedStepState } from "../../meedLocalState";
@@ -18,6 +19,7 @@ import {
   MeedCardSkeleton,
   MeedTableSkeleton,
 } from "../../components/MeedSkeletons";
+import { MeedErrorCard } from "../../components/MeedErrorCard";
 import { EmptyState } from "../results/components/EmptyState";
 import { CityProfileCard } from "./components/CityProfileCard";
 import { FeasibilityRow } from "./components/FeasibilityRow";
@@ -39,47 +41,7 @@ const INITIAL_ROWS = 15;
 const TABLE_ID = "meed-finance-table";
 
 const FINANCE_RANKING_WEIGHT =
-  MEED_WIZARD_STEPS.find((s) => s.key === "finance")?.rankingWeight ?? 23;
-
-/** Failed fetch, with the only useful next step: try again. */
-function FinanceErrorCard({
-  title,
-  body,
-  retryLabel,
-  onRetry,
-}: {
-  title: string;
-  body: string;
-  retryLabel: string;
-  onRetry: () => void;
-}) {
-  return (
-    <Card.Root borderColor="sentiment.negativeDefault">
-      <Card.Body>
-        <VStack alignItems="flex-start" gap="m">
-          <HStack gap="s">
-            <Icon
-              as={LuTriangleAlert}
-              boxSize="18px"
-              color="sentiment.negativeDefault"
-            />
-            <TitleMedium color="content.primary">{title}</TitleMedium>
-          </HStack>
-          <BodyMedium color="content.secondary">{body}</BodyMedium>
-          <CCTerraButton
-            variant="outlined"
-            minW="auto"
-            px="l"
-            onClick={onRetry}
-            _focusVisible={FOCUS_RING}
-          >
-            {retryLabel}
-          </CCTerraButton>
-        </VStack>
-      </Card.Body>
-    </Card.Root>
-  );
-}
+  pillarPercent("feasibility");
 
 function FinancialFeasibilityContent(props: {
   lng: string;
@@ -158,7 +120,7 @@ function FinancialFeasibilityContent(props: {
     return (
       <VStack alignItems="stretch" gap="l">
         {intro}
-        <FinanceErrorCard
+        <MeedErrorCard
           title={t("finance-error-title")}
           body={t("finance-error-body")}
           retryLabel={t("retry")}

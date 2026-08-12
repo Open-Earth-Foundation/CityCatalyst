@@ -269,8 +269,6 @@ export function sortByFeasibility(
   );
 }
 
-export const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
+// Moved to the module root — shared components need it too. Re-exported here
+// so the existing import sites keep working.
+export { FOCUS_RING } from "../../focusRing";

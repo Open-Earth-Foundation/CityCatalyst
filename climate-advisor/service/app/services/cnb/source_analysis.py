@@ -7,9 +7,10 @@ import hashlib
 import json
 import logging
 import re
-from collections.abc import Awaitable
+from collections.abc import Awaitable, Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence, TypeVar, cast
+from typing import Any, TypeVar, cast
+from urllib.parse import urlparse
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
 from app.config import Settings, get_settings
@@ -146,9 +147,7 @@ class SourceAnalysisService:
     ) -> SelectedSource:
         """Map every source segment and synthesize one compact selected source."""
         label = source_label or filename
-        prompt = self.settings.llm.prompts.get_prompt(
-            "cnb_source_document_mapping"
-        )
+        prompt = self.settings.llm.prompts.get_prompt("cnb_source_document_mapping")
         partitions = partition_source_pages(
             pages,
             prompt=prompt,
@@ -232,9 +231,7 @@ class SourceAnalysisService:
                 "Question exceeds the configured source-query limit",
             )
 
-        prompt = self.settings.llm.prompts.get_prompt(
-            "cnb_source_question_reading"
-        )
+        prompt = self.settings.llm.prompts.get_prompt("cnb_source_question_reading")
         partitions = partition_source_pages(
             pages,
             prompt=prompt,
@@ -271,7 +268,9 @@ class SourceAnalysisService:
                 {
                     "question": normalized_question,
                     "source_label": source_label,
-                    "pages_processed": len({segment.page for part in partitions for segment in part}),
+                    "pages_processed": len(
+                        {segment.page for part in partitions for segment in part}
+                    ),
                     "pages_total": len(pages),
                     "segments_processed": sum(len(part) for part in partitions),
                     "validated_excerpts": [
@@ -294,7 +293,9 @@ class SourceAnalysisService:
             source_label=source_label,
             answer=synthesis.answer,
             excerpts=final_excerpts,
-            pages_processed=len({segment.page for part in partitions for segment in part}),
+            pages_processed=len(
+                {segment.page for part in partitions for segment in part}
+            ),
             pages_total=len(pages),
             segments_processed=sum(len(partition) for partition in partitions),
             segments_total=sum(len(partition) for partition in partitions),
@@ -455,12 +456,15 @@ def partition_source_pages(
             source_label=source_label,
             question=question,
         )
-        if prompt_token_count(
-            prompt,
-            input_text,
-            model=model,
-            fallback_encoding=fallback_encoding,
-        ) <= max_tokens:
+        if (
+            prompt_token_count(
+                prompt,
+                input_text,
+                model=model,
+                fallback_encoding=fallback_encoding,
+            )
+            <= max_tokens
+        ):
             current = candidate
             continue
         if not current:
@@ -491,17 +495,22 @@ def split_page(
     source_label: str | None = None,
 ) -> list[SourceSegment]:
     """Split one oversized page at paragraph boundaries, then exact text offsets."""
-    whole = SourceSegment(segment_id=f"p{page.number}-s1", page=page.number, text=page.text)
-    if prompt_token_count(
-        prompt,
-        render_partition(
-            [whole],
-            source_label=source_label,
-            question=question,
-        ),
-        model=model,
-        fallback_encoding=fallback_encoding,
-    ) <= max_tokens:
+    whole = SourceSegment(
+        segment_id=f"p{page.number}-s1", page=page.number, text=page.text
+    )
+    if (
+        prompt_token_count(
+            prompt,
+            render_partition(
+                [whole],
+                source_label=source_label,
+                question=question,
+            ),
+            model=model,
+            fallback_encoding=fallback_encoding,
+        )
+        <= max_tokens
+    ):
         return [whole]
 
     paragraphs = [match.group(0) for match in PARAGRAPH_BOUNDARY.finditer(page.text)]
@@ -510,16 +519,19 @@ def split_page(
     for paragraph in paragraphs:
         candidate = pending + paragraph
         probe = SourceSegment("probe", page.number, candidate)
-        if prompt_token_count(
-            prompt,
-            render_partition(
-                [probe],
-                source_label=source_label,
-                question=question,
-            ),
-            model=model,
-            fallback_encoding=fallback_encoding,
-        ) <= max_tokens:
+        if (
+            prompt_token_count(
+                prompt,
+                render_partition(
+                    [probe],
+                    source_label=source_label,
+                    question=question,
+                ),
+                model=model,
+                fallback_encoding=fallback_encoding,
+            )
+            <= max_tokens
+        ):
             pending = candidate
             continue
         if pending:
@@ -688,6 +700,7 @@ async def gather_all_or_raise(*awaitables: Awaitable[OutputModel]) -> list[Outpu
 def resolve_model_name(model_name: str, client: AsyncOpenAI) -> str:
     """Strip the OpenRouter provider prefix only for the OpenAI endpoint."""
     base_url = str(client.base_url or "")
-    if "api.openai.com" in base_url and model_name.startswith("openai/"):
+    hostname = (urlparse(base_url).hostname or "").lower()
+    if hostname == "api.openai.com" and model_name.startswith("openai/"):
         return model_name.split("/", 1)[1]
     return model_name

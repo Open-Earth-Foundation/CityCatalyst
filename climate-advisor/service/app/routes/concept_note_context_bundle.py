@@ -19,6 +19,12 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
+REPOSITORY_ERROR_MESSAGES = {
+    "concept_note_run_not_found": "Concept Note run was not found",
+    "concept_note_run_forbidden": "Concept Note run belongs to another user",
+    "cnb_storage_unavailable": "Concept Note context storage is unavailable",
+}
+
 
 async def get_citycatalyst_client() -> AsyncIterator[CityCatalystClient]:
     """Provide and close the CityCatalyst identity client."""
@@ -80,7 +86,14 @@ async def retry_context_bundle(
             force=True,
         )
     except ContextBundleRepositoryError as exc:
-        return problem(exc.status_code, exc.code, str(exc))
+        return problem(
+            exc.status_code,
+            exc.code,
+            REPOSITORY_ERROR_MESSAGES.get(
+                exc.code,
+                "Concept Note context request could not be completed",
+            ),
+        )
     schedule_context_bundle_build(
         service=service,
         user_id=user_id,

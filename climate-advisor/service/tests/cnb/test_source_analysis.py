@@ -24,6 +24,7 @@ from app.services.cnb.source_analysis import (
     gather_all_or_raise,
     parse_source_pages,
     partition_source_pages,
+    resolve_model_name,
 )
 from openai import AsyncOpenAI
 
@@ -127,6 +128,28 @@ def analysis_service(runner: FakeRunner) -> SourceAnalysisService:
     )
 
 
+def test_model_prefix_is_stripped_only_for_exact_openai_hostname() -> None:
+    direct_client = SimpleNamespace(base_url="https://api.openai.com/v1")
+    deceptive_client = SimpleNamespace(
+        base_url="https://api.openai.com.attacker.example/v1"
+    )
+
+    assert (
+        resolve_model_name(
+            "openai/gpt-5.4-mini",
+            direct_client,  # type: ignore[arg-type]
+        )
+        == "gpt-5.4-mini"
+    )
+    assert (
+        resolve_model_name(
+            "openai/gpt-5.4-mini",
+            deceptive_client,  # type: ignore[arg-type]
+        )
+        == "openai/gpt-5.4-mini"
+    )
+
+
 @pytest.mark.asyncio
 async def test_analysis_and_query_cover_every_page_with_exact_citations() -> None:
     runner = FakeRunner()
@@ -163,9 +186,9 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations() -> Non
     assert result.found is True
     assert result.pages_processed == result.pages_total == 6
     assert result.segments_processed == result.segments_total
-    assert {int(identifier.split("-")[0][1:]) for identifier in runner.covered_ids} == set(
-        range(1, 7)
-    )
+    assert {
+        int(identifier.split("-")[0][1:]) for identifier in runner.covered_ids
+    } == set(range(1, 7))
     assert runner.max_active <= 4
     assert all(tools == [] for tools in runner.reader_tools)
 

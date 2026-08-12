@@ -14,8 +14,6 @@ What remains splits cleanly into two piles that do **not** block each other.
 
 **Deploy plumbing — reviewable now, independent of us.** Two values are missing from the deploy workflows: `HIAP_MEED_API_URL` and `MEED_MODULE` in dev's `NEXT_PUBLIC_FEATURE_FLAGS`. Both are plain repo edits, not cluster operations and not secrets. Critically, **both are inert until our code lands** — on `develop` today the module has zero files and `MEED_MODULE` is not even a defined flag, so adding them changes nothing and risks nothing. They can go in whenever it suits.
 
-**One functional gap remains on the backend side:** legal screening data is not exposed as a reference-data endpoint, so the Regulations step cannot render until a ranking has run. Detail under *Owed by the backend*, ask 4.
-
 **Module delivery — our sequencing choice.** PR #2956 is held in draft **deliberately**, so that what reaches dev does something real rather than being a flag-gated shell. That is a product decision, not a blocker awaiting anyone.
 
 **One open question**, set out at the end of this document. `hiap-meed-service-dev` is `ClusterIP` with no ingress, so `HIAP_MEED_API_URL` can only be exercised from inside the cluster — the first genuine test of the connection therefore has to happen on dev, after something is merged. Whether that is a small connectivity-only change first or a single merge of the whole module is a deploy-pipeline decision, not a frontend one.
@@ -53,7 +51,7 @@ MEED/
 | **CityCatalyst data** | emissions (GHGI cross-read), hub | Working |
 | **Input / derived — no upstream data by design** | preferences (a form), pre-flight (a summary of stored answers), processing (a transition) | Working as intended |
 | **Requires the prioritizer** | results | Inherent — a ranking must exist first |
-| **Blocked on missing data** | **regulations** | See backend ask 4 |
+| **Not yet wired** | **regulations** | Needs a prioritize call on the screen — ours to fix, see below |
 
 Counting "screens with live data" is misleading: preferences, pre-flight and processing were never meant to show upstream data. Only **two** screens are unfinished — results, which legitimately needs a ranking, and **regulations, which is the one genuine defect**: it sits at step 3 of 7 but cannot render anything until step 7 has run.
 
@@ -61,34 +59,37 @@ Counting "screens with live data" is misleading: preferences, pre-flight and pro
 
 ## Owed by the backend
 
-One functional, three minor.
+Three, all minor. None blocking.
 
 | # | Ask | Why it matters |
 |---|---|---|
-| **4** | **Expose action legal assessments as a reference-data endpoint** — e.g. `GET /v1/cities/{locode}/action-legal-assessments?country_code=` | **Functional, not polish.** Legal screening currently surfaces only inside the prioritize response, so the Regulations screen — step 3 of 7 — stays empty until the ranking at step 7 has run. See below |
 | 1 | **Structured `warnings`** — `{code, params}` instead of English prose | The module ships in 5 languages and cannot translate the current strings |
 | 2 | **`datasource` / `version_label` on `CityIndicatorResponse`** | `INDICATOR_META` hardcodes citations like `"ENDISC 2015"` that live data contradicts (`cl-ine-censo` / `2024`). Without the field we should drop the Source column rather than show a wrong citation |
 | 3 | **Documented vocabulary for `policy_support_category`** | Until then the field goes unused and we keep our own thresholds |
 
-### Ask 4 in detail — why Regulations cannot render during the flow
+### Why Regulations is empty — and why it is ours to fix, not the backend's
 
-The intended behaviour is that each wizard step shows its own evidence as the user moves through: emissions, socioeconomic context, legal screening, then policy and finance. Regulations is the only step that cannot do this, and the reason is data availability rather than a design choice on our side. Three findings, all verified:
+Regulations sits at step 3 of 7 but renders nothing today: `regulations/page.tsx:149` hard-codes `useState<MeedPrioritizeCityResult | null>(null)` with a `TODO(meed backend)`.
 
-1. **Not among the seven reference-data GETs.** The published route list is attributes, action-pathways, action-policy-scores, action-mitigation-feasibility-scores, climate-finance/feasibility, climate-finance/opportunities, climate-finance/projects. Legal assessments are absent.
-2. **The upstream API returns nothing.** `GET /api/v1/action-legal-assessments?country_code=BR` and `=CL` both return **0 rows** against `ccglobal.openearth.dev`.
-3. **The real source is S3, which CityCatalyst cannot reach.** hiap-meed defaults to `HIAP_MEED_LEGAL_DATA_SOURCE=s3` against the `test-global-api` bucket. Its own API client carries the note *"use HIAP_MEED_LEGAL_DATA_SOURCE=s3"*.
+An earlier draft of this document raised it as a backend ask, on the reasoning that legal screening surfaces only inside the prioritize response and there is no reference-data endpoint for it. That reasoning was wrong about the conclusion. **The prototype solves it without any new endpoint**, and we should do the same.
 
-So legal screening reaches a consumer through exactly one path today: the prioritize response, via `removed_actions[].legal` and `metadata.hard_filter_evidence_by_action_id`. The prioritizer is the only component that reads the bucket.
+`pages/RegulationsLaws.tsx:307-332` in the prototype: on mount it reads its cached pipeline result, and when there is none it calls the prioritizer immediately —
 
-`regulations/page.tsx:149` therefore hard-codes `useState<MeedPrioritizeCityResult | null>(null)` with a `TODO(meed backend)`. That is not a placeholder awaiting frontend work — there is no source to read from.
+```ts
+// No cached result — run the pipeline now so the user sees legal data at step 3.
+// Strategic preferences default gracefully when not yet filled in (steps 4–6).
+runPipelineForCity(locode, { topN: 20, createExplanations: false })
+```
 
-**No partial workaround exists.** `POST /v1/prioritize/exclusions/preview` previews *user-chosen* exclusions (sector tags, co-benefit keys, free text); it does not evaluate legal blocking.
+— then renders `legalExcluded` / `legalFlagged` from the response. It uses `createExplanations: false`, so the call skips LLM generation and is the cheap variant.
 
-What would unblock it: a per-city or per-country endpoint returning each action's legal verdict and reason, using the same S3-backed selection the prioritizer already applies, so Regulations renders at step 3 exactly as policy and finance do at steps 5 and 6.
+This works because **legal screening is preference-independent**. Hard filters are evaluated against the city, its country and the action catalog; they do not consult sectors, co-benefits, timeframes or weights. Running the prioritizer before the user has filled in steps 4–6 therefore yields the same legal verdicts it would yield at the end, and `buildCityInput` supplies defaults for everything not yet answered (weights 55/22/23, empty preference and exclusion lists).
 
-**Declined, and reasonably:** the 5-project / 5+5-opportunity caps mirror the evidence selection plan generation uses. We adapt the copy — `n_reachable_opportunities` reports 30 where we show 5, so the UI must read "5 of 30 shown" rather than silently contradict itself.
+**What our port should do:** call `POST /v1/prioritize` from the Regulations screen when no ranking is cached for the inventory, read `removed_actions[].legal` and `metadata.hard_filter_evidence_by_action_id`, and show a loading state while it runs. The final generate at step 7 re-runs with the user's actual answers.
 
-**Correction we owe:** an earlier version of the contract diff credited the migration with uncapped policy evidence. That was wrong — the upstream default is already 5 per action and hiap-meed does not pass `top_evidence_limit`. The document has been corrected.
+Two costs worth stating: the prioritizer is called twice in a full pass, and the user waits on a mid-wizard screen for a call that is not instant. The prototype accepted both, and shows a spinner plus an error state (`legalLoading` / `legalError`) rather than an empty panel.
+
+**Not a substitute:** `POST /v1/prioritize/exclusions/preview` evaluates user-chosen exclusions (sector tags, co-benefit keys, free text), not legal blocking.
 
 ---
 

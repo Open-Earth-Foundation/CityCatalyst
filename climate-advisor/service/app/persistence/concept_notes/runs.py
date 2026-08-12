@@ -55,7 +55,7 @@ class ConceptNoteRunRepository:
         city_id: str,
         project_id: str | None,
         funder_id: UUID | None,
-        selected_funding_record_id: UUID | None,
+        selected_funding_opportunity_id: UUID | None,
         thread_id: UUID | None,
         idempotency_key: UUID,
         request_fingerprint: str,
@@ -75,7 +75,7 @@ class ConceptNoteRunRepository:
             city_id=city_id,
             project_id=project_id,
             funder_id=funder_id,
-            selected_funding_record_id=selected_funding_record_id,
+            selected_funding_opportunity_id=selected_funding_opportunity_id,
             thread_id=thread_id,
             status="active",
             workflow_step="assembling_context",
@@ -115,3 +115,25 @@ class ConceptNoteRunRepository:
             )
         )
         return result.scalar_one_or_none()
+
+    async def list_for_user_city(
+        self,
+        *,
+        user_id: str,
+        city_id: str,
+    ) -> list[ConceptNoteRun]:
+        """Load a user's runs for one city in deterministic activity order."""
+        query = (
+            select(ConceptNoteRun)
+            .where(
+                ConceptNoteRun.user_id == user_id,
+                ConceptNoteRun.city_id == city_id,
+            )
+            .order_by(
+                ConceptNoteRun.updated_at.desc(),
+                ConceptNoteRun.created_at.desc(),
+                ConceptNoteRun.run_id.desc(),
+            )
+        )
+        result = await self.session.execute(query)
+        return list(result.scalars().all())

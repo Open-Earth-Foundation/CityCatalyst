@@ -54,6 +54,12 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const queryParams = Object.fromEntries(searchParams.entries());
   let callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
 
+  // next-auth's redirect callback throws on anything that isn't a relative
+  // path or same-origin absolute URL, so discard anything else here
+  if (callbackUrl && !callbackUrl.startsWith("/")) {
+    callbackUrl = "";
+  }
+
   // only redirect to user invite page as a fallback if there is a token present in the search params
   if (!callbackUrl) {
     if (!("token" in queryParams)) {

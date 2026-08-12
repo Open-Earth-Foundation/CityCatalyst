@@ -114,6 +114,7 @@
   "geographical-boundaries": "Limites géographiques",
   "done-heading": "Votre inventaire d'émissions de GES est prêt à démarrer !",
   "done-description": "Excellent travail ! Vous pouvez revoir, ajouter et mettre à jour vos données d'inventaire à tout moment. Commencez à compléter votre inventaire d'émissions de GES dès maintenant !",
+  "add-new-city": "Ajouter une nouvelle ville",
   "add-new-inventory": "Ajouter un nouvel inventaire",
   "inventory-title": "Inventaire Basique des Émissions GPC - Année {{year}}",
   "done-details": "Vous avez créé votre profil de ville pour commencer votre inventaire de GES de base GPC.",

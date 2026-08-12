@@ -1,0 +1,20 @@
+# CNB migration job for the test deployment (currently using the development CNB database).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: climate-advisor-cnb-migrate-test-
+  namespace: default
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: climate-advisor-cnb-migrate
+          image: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor:test
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: climate-advisor-db-configmap-test
+          command: ["alembic", "-c", "cnb-alembic.ini", "upgrade", "head"]

@@ -104,6 +104,8 @@ export default function OnboardingSetup(props: {
   const [createdCityId, setCreatedCityId] = useState<string | null>(null);
   const [isSubmittingStep, setIsSubmittingStep] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
+  // Continue on the invite step requires project + email(s) + city (CC-652).
+  const [canSubmitInvite, setCanSubmitInvite] = useState(false);
 
   const inviteStepRef = useRef<InviteCollaboratorsStepRef>(null);
 
@@ -326,7 +328,11 @@ export default function OnboardingSetup(props: {
             />
           )}
           {activeStep === inviteCollaboratorsStepIndex && (
-            <InviteCollaboratorsStep ref={inviteStepRef} lng={lng} />
+            <InviteCollaboratorsStep
+              ref={inviteStepRef}
+              lng={lng}
+              onValidityChange={setCanSubmitInvite}
+            />
           )}
         </Box>
         <Box
@@ -399,6 +405,7 @@ export default function OnboardingSetup(props: {
                     px="24px"
                     h="64px"
                     loading={isFinishing}
+                    disabled={!canSubmitInvite || isFinishing}
                     onClick={async () => {
                       try {
                         await inviteStepRef.current?.sendInvites();

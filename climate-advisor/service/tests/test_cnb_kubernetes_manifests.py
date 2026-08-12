@@ -10,11 +10,11 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 K8S_ROOT = REPOSITORY_ROOT / "climate-advisor" / "k8s"
 WORKFLOW_ROOT = REPOSITORY_ROOT / ".github" / "workflows"
 DEV_CNB_DATABASE_URL = (
-    "postgresql://cnb:cnb@"
+    "postgresql://cnb:conceptnotebuilder@"
     "dev-db-aurora.cluster-c5ipsfxjhb0m.us-east-1.rds.amazonaws.com/cnb"
 )
 PROD_CNB_DATABASE_URL = (
-    "postgresql://cnb:cnb@"
+    "postgresql://cnb:conceptnotebuilder@"
     "oef-prod-db.cluster-ck89kopkx0x4.us-east-1.rds.amazonaws.com/cnb"
 )
 

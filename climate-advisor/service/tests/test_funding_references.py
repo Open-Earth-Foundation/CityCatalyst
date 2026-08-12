@@ -30,8 +30,8 @@ async def reference_session_factory() -> AsyncIterator[
         )
         await connection.execute(
             text(
-                "CREATE TABLE funding_records ("
-                "funding_record_id TEXT PRIMARY KEY, funder_id TEXT NOT NULL)"
+                "CREATE TABLE funding_opportunities ("
+                "funding_opportunity_id TEXT PRIMARY KEY, funder_id TEXT NOT NULL)"
             )
         )
 
@@ -45,9 +45,9 @@ async def _insert_references(
     session_factory: async_sessionmaker[AsyncSession],
     *,
     funder_id: UUID,
-    funding_record_id: UUID | None = None,
+    funding_opportunity_id: UUID | None = None,
 ) -> None:
-    """Insert one funder and an optional owned funding record."""
+    """Insert one funder and an optional owned funding opportunity."""
     async with session_factory() as session:
         await session.execute(
             text("INSERT INTO funders (funder_id) VALUES (:funder_id)").bindparams(
@@ -55,38 +55,39 @@ async def _insert_references(
             ),
             {"funder_id": funder_id},
         )
-        if funding_record_id is not None:
+        if funding_opportunity_id is not None:
             await session.execute(
                 text(
-                    "INSERT INTO funding_records (funding_record_id, funder_id) "
-                    "VALUES (:funding_record_id, :funder_id)"
+                    "INSERT INTO funding_opportunities "
+                    "(funding_opportunity_id, funder_id) "
+                    "VALUES (:funding_opportunity_id, :funder_id)"
                 ).bindparams(
-                    bindparam("funding_record_id", type_=Uuid(as_uuid=True)),
+                    bindparam("funding_opportunity_id", type_=Uuid(as_uuid=True)),
                     bindparam("funder_id", type_=Uuid(as_uuid=True)),
                 ),
                 {
-                    "funding_record_id": funding_record_id,
+                    "funding_opportunity_id": funding_opportunity_id,
                     "funder_id": funder_id,
                 },
             )
         await session.commit()
 
 
-async def test_validator_accepts_known_funder_and_owned_record(
+async def test_validator_accepts_known_funder_and_owned_opportunity(
     reference_session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
     funder_id = uuid4()
-    funding_record_id = uuid4()
+    funding_opportunity_id = uuid4()
     await _insert_references(
         reference_session_factory,
         funder_id=funder_id,
-        funding_record_id=funding_record_id,
+        funding_opportunity_id=funding_opportunity_id,
     )
 
     validator = PostgresFundingReferenceValidator(reference_session_factory)
     await validator.validate(
         funder_id=funder_id,
-        selected_funding_record_id=funding_record_id,
+        selected_funding_opportunity_id=funding_opportunity_id,
     )
 
 
@@ -98,14 +99,14 @@ async def test_validator_rejects_unknown_funder(
     with pytest.raises(HTTPException) as exc_info:
         await validator.validate(
             funder_id=uuid4(),
-            selected_funding_record_id=None,
+            selected_funding_opportunity_id=None,
         )
 
     assert exc_info.value.status_code == 422
     assert exc_info.value.detail == "Unknown funder_id"
 
 
-async def test_validator_rejects_unknown_funding_record(
+async def test_validator_rejects_unknown_funding_opportunity(
     reference_session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
     funder_id = uuid4()
@@ -118,38 +119,38 @@ async def test_validator_rejects_unknown_funding_record(
     with pytest.raises(HTTPException) as exc_info:
         await validator.validate(
             funder_id=funder_id,
-            selected_funding_record_id=uuid4(),
+            selected_funding_opportunity_id=uuid4(),
         )
 
     assert exc_info.value.status_code == 422
-    assert exc_info.value.detail == "Unknown selected_funding_record_id"
+    assert exc_info.value.detail == "Unknown selected_funding_opportunity_id"
 
 
-async def test_validator_rejects_record_owned_by_another_funder(
+async def test_validator_rejects_opportunity_owned_by_another_funder(
     reference_session_factory: async_sessionmaker[AsyncSession],
 ) -> None:
     requested_funder_id = uuid4()
-    record_funder_id = uuid4()
-    funding_record_id = uuid4()
+    opportunity_funder_id = uuid4()
+    funding_opportunity_id = uuid4()
     await _insert_references(
         reference_session_factory,
         funder_id=requested_funder_id,
     )
     await _insert_references(
         reference_session_factory,
-        funder_id=record_funder_id,
-        funding_record_id=funding_record_id,
+        funder_id=opportunity_funder_id,
+        funding_opportunity_id=funding_opportunity_id,
     )
     validator = PostgresFundingReferenceValidator(reference_session_factory)
 
     with pytest.raises(HTTPException) as exc_info:
         await validator.validate(
             funder_id=requested_funder_id,
-            selected_funding_record_id=funding_record_id,
+            selected_funding_opportunity_id=funding_opportunity_id,
         )
 
     assert exc_info.value.status_code == 422
     assert (
         exc_info.value.detail
-        == "selected_funding_record_id does not belong to funder_id"
+        == "selected_funding_opportunity_id does not belong to funder_id"
     )

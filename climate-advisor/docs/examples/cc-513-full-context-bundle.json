@@ -1,0 +1,263 @@
+{
+  "selected_sources": [
+    {
+      "upload_id": "50000000-0000-4000-8000-000000000001",
+      "source_label": "Sample City Climate Action Plan",
+      "filename": "sample-city-climate-action-plan.pdf",
+      "sha256": "032e856f29225d5c818dabeb3836b51eab802958ca7955e93867567cfb10b8c7",
+      "page_count": 2,
+      "summary": "Sample City targets a 50% community emissions reduction by 2035 and prioritizes municipal retrofits and heat-resilient green space.",
+      "topics": [
+        "emissions reduction",
+        "building retrofits",
+        "heat resilience"
+      ],
+      "key_excerpts": [
+        {
+          "text": "Sample City aims to cut community greenhouse gas emissions 50% by 2035.",
+          "page": 1
+        },
+        {
+          "text": "The city will retrofit municipal buildings and expand heat-resilient green space.",
+          "page": 2
+        }
+      ]
+    }
+  ],
+  "cc_context": {
+    "city": null,
+    "project": null,
+    "ghgi": {
+      "availability": "partial",
+      "inventory": {
+        "id": "30000000-0000-4000-8000-000000000001",
+        "year": 2024,
+        "type": "gpc_basic",
+        "gwp": "ar6"
+      },
+      "emissions": {
+        "total_kgco2e": 1000000000.0,
+        "sectors": [
+          {
+            "gpc": "I",
+            "name": "Stationary Energy",
+            "emissions_kgco2e": 400000000.0,
+            "share_pct": 40.0,
+            "completion_pct": 90,
+            "required": 20,
+            "filled": 18,
+            "missing": 2,
+            "data_state": {
+              "third_party": 2,
+              "manual_or_uploaded": 15,
+              "not_estimated": 1,
+              "not_occurring": 0
+            }
+          },
+          {
+            "gpc": "II",
+            "name": "Transportation",
+            "emissions_kgco2e": 350000000.0,
+            "share_pct": 35.0,
+            "completion_pct": 92,
+            "required": 12,
+            "filled": 11,
+            "missing": 1,
+            "data_state": {
+              "third_party": 1,
+              "manual_or_uploaded": 9,
+              "not_estimated": 1,
+              "not_occurring": 0
+            }
+          },
+          {
+            "gpc": "III",
+            "name": "Waste",
+            "emissions_kgco2e": 150000000.0,
+            "share_pct": 15.0,
+            "completion_pct": 100,
+            "required": 8,
+            "filled": 8,
+            "missing": 0,
+            "data_state": {
+              "third_party": 0,
+              "manual_or_uploaded": 8,
+              "not_estimated": 0,
+              "not_occurring": 0
+            }
+          },
+          {
+            "gpc": "IV",
+            "name": "IPPU",
+            "emissions_kgco2e": 80000000.0,
+            "share_pct": 8.0,
+            "completion_pct": 100,
+            "required": 5,
+            "filled": 5,
+            "missing": 0,
+            "data_state": {
+              "third_party": 0,
+              "manual_or_uploaded": 5,
+              "not_estimated": 0,
+              "not_occurring": 0
+            }
+          },
+          {
+            "gpc": "V",
+            "name": "AFOLU",
+            "emissions_kgco2e": 20000000.0,
+            "share_pct": 2.0,
+            "completion_pct": 100,
+            "required": 5,
+            "filled": 5,
+            "missing": 0,
+            "data_state": {
+              "third_party": 1,
+              "manual_or_uploaded": 4,
+              "not_estimated": 0,
+              "not_occurring": 0
+            }
+          }
+        ],
+        "top_sources": [
+          {
+            "sector": "Stationary Energy",
+            "subsector": "Commercial and institutional buildings",
+            "scope": "Scope 1",
+            "emissions_kgco2e": 260000000.0,
+            "share_pct": 26.0
+          },
+          {
+            "sector": "Transportation",
+            "subsector": "On-road transportation",
+            "scope": "Scope 1",
+            "emissions_kgco2e": 240000000.0,
+            "share_pct": 24.0
+          },
+          {
+            "sector": "Stationary Energy",
+            "subsector": "Residential buildings",
+            "scope": "Scope 2",
+            "emissions_kgco2e": 140000000.0,
+            "share_pct": 14.0
+          },
+          {
+            "sector": "Waste",
+            "subsector": "Solid waste disposal",
+            "scope": "Scope 1",
+            "emissions_kgco2e": 100000000.0,
+            "share_pct": 10.0
+          },
+          {
+            "sector": "IPPU",
+            "subsector": "Industrial processes",
+            "scope": "Scope 1",
+            "emissions_kgco2e": 80000000.0,
+            "share_pct": 8.0
+          }
+        ]
+      }
+    },
+    "ccra": null,
+    "hiap": {
+      "availability": "available",
+      "inventory_id": "30000000-0000-4000-8000-000000000001",
+      "requested_language": "en",
+      "mitigation": {
+        "status": "available",
+        "ranking_id": "40000000-0000-4000-8000-000000000001",
+        "updated_at": "2026-08-01T10:00:00Z",
+        "language": "en",
+        "selection_mode": "city_selected",
+        "counts": {
+          "ranked": 3,
+          "selected": 2,
+          "returned": 2
+        },
+        "actions": [
+          {
+            "action_id": "retrofit-municipal-buildings",
+            "name": "Retrofit municipal buildings",
+            "type": "mitigation",
+            "rank": 1,
+            "selected": true,
+            "source": "ranked",
+            "language": "en",
+            "description": "Improve efficiency and electrify heating in municipal facilities.",
+            "sectors": ["Stationary Energy"],
+            "hazards": [],
+            "primary_purposes": ["Mitigation"],
+            "timeline": "<5 years",
+            "investment_cost": "medium",
+            "explanation": "Targets the inventory's largest emitting sector."
+          },
+          {
+            "action_id": "electrify-bus-fleet",
+            "name": "Electrify the municipal bus fleet",
+            "type": "mitigation",
+            "rank": 2,
+            "selected": true,
+            "source": "ranked",
+            "language": "en",
+            "description": "Replace diesel buses and add depot charging infrastructure.",
+            "sectors": ["Transportation"],
+            "hazards": [],
+            "primary_purposes": ["Mitigation", "Air quality"],
+            "timeline": "5-10 years",
+            "investment_cost": "high",
+            "explanation": "Addresses the second-largest emitting sector and local air pollution."
+          }
+        ]
+      },
+      "adaptation": {
+        "status": "available",
+        "ranking_id": "40000000-0000-4000-8000-000000000002",
+        "updated_at": "2026-08-01T10:00:00Z",
+        "language": "en",
+        "selection_mode": "ranked_fallback",
+        "counts": {
+          "ranked": 2,
+          "selected": 0,
+          "returned": 2
+        },
+        "actions": [
+          {
+            "action_id": "expand-urban-tree-canopy",
+            "name": "Expand the urban tree canopy",
+            "type": "adaptation",
+            "rank": 1,
+            "selected": false,
+            "source": "ranked",
+            "language": "en",
+            "description": "Prioritize shade and cooling in heat-vulnerable neighborhoods.",
+            "sectors": [],
+            "hazards": ["Extreme heat"],
+            "primary_purposes": ["Adaptation", "Public health"],
+            "timeline": "5-10 years",
+            "investment_cost": "medium",
+            "explanation": "Provides cooling, health, and stormwater co-benefits."
+          },
+          {
+            "action_id": "upgrade-stormwater-infrastructure",
+            "name": "Upgrade stormwater infrastructure",
+            "type": "adaptation",
+            "rank": 2,
+            "selected": false,
+            "source": "ranked",
+            "language": "en",
+            "description": "Increase drainage capacity and introduce distributed green infrastructure.",
+            "sectors": [],
+            "hazards": ["Flooding", "Heavy precipitation"],
+            "primary_purposes": ["Adaptation"],
+            "timeline": ">10 years",
+            "investment_cost": "high",
+            "explanation": "Reduces flood exposure across vulnerable neighborhoods."
+          }
+        ]
+      }
+    }
+  },
+  "funder_context": null,
+  "similar_projects": [],
+  "document_context": null
+}

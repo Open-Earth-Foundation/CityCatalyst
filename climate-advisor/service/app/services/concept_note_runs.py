@@ -82,6 +82,12 @@ class ConceptNoteRunService:
             trace_id=get_request_id() or None,
         )
         _require_matching_fingerprint(run, fingerprint)
+        if payload.thread_id is not None:
+            await self.repository.bind_thread_context(
+                thread_id=payload.thread_id,
+                user_id=payload.user_id,
+                run_id=run.run_id,
+            )
         return _to_response(run, created=created)
 
     async def get_run(

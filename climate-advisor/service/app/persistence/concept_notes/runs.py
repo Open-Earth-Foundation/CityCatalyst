@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from app.models.cnb.context_bundle import ConceptNoteContextBundle
+from app.models.db.concept_note import (
+    ConceptNoteContextBundle as ConceptNoteContextBundleRow,
+)
+from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.thread import Thread
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
-from app.models.db.thread import Thread
 
 
 class ConceptNoteRunRepository:
@@ -85,7 +88,10 @@ class ConceptNoteRunRepository:
             idempotency_key=idempotency_key,
             request_fingerprint=request_fingerprint,
         )
-        bundle = ConceptNoteContextBundle(run=run, context_bundle={})
+        bundle = ConceptNoteContextBundleRow(
+            run=run,
+            context_bundle=ConceptNoteContextBundle().model_dump(mode="json"),
+        )
 
         try:
             async with self.session.begin_nested():
@@ -137,3 +143,24 @@ class ConceptNoteRunRepository:
         )
         result = await self.session.execute(query)
         return list(result.scalars().all())
+
+    async def bind_thread_context(
+        self,
+        *,
+        thread_id: UUID,
+        user_id: str,
+        run_id: UUID,
+    ) -> None:
+        """Persist the authorized Concept Note run on its owning chat thread."""
+        result = await self.session.execute(
+            select(Thread).where(
+                Thread.thread_id == thread_id,
+                Thread.user_id == user_id,
+            )
+        )
+        thread = result.scalar_one_or_none()
+        if thread is None:
+            return
+        context = dict(thread.context or {})
+        context["concept_note_run_id"] = str(run_id)
+        thread.context = context

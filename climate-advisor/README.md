@@ -494,7 +494,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 
 All non-secret LLM settings are centralized in `llm_config.yaml`, including the
 orchestrator and agentic-flow model settings, provider base URLs, retry and
-timeout settings, and Stationary Energy review chat-context prompt budgets.
+timeout settings, Stationary Energy review chat-context prompt budgets, and the
+CNB source reader/synthesizer roles and partition limits.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -505,11 +506,15 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.chat` is the workflow prompt for general Climate Advisor chat
 - `prompts.stationary_energy_review` is the workflow prompt for active
   Stationary Energy draft review chat
+- `prompts.concept_note` is the interactive Concept Note workflow prompt
+- the four `prompts.cnb_source_*` entries map documents, read a focused
+  question, and synthesize grounded summaries/answers
 
 At runtime, CA composes the final system instructions as:
 
 - general chat: `prompts.core + prompts.chat`
 - Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
+- Concept Note chat: `prompts.core + prompts.concept_note`
 
 Workflow prompt `<tools>` sections load shared tool-policy fragments with
 `{{ include: ... }}` directives. Exact tool argument contracts come from the
@@ -597,6 +602,69 @@ Rejected service-key requests emit a `WARNING` audit log with the upload ID but
 never the supplied credential. Deployments should alert on repeated warnings or
 `401 invalid_service_key` responses for this route.
 
+### PDF-first Concept Note context bundles
+
+After a Markdown pointer reaches `ready`, Climate Advisor automatically rebuilds
+the run bundle from every ready upload. At least one ready city PDF is required;
+queued and failed uploads are excluded. Each ready pointer, digest, page count,
+and page sequence is revalidated through CityCatalyst before configured
+GPT-5.4 mini readers process every page in partitions capped at 12,000 input
+tokens. Reader concurrency is limited to four. GPT-5.4 then produces one short
+summary, topic list, and bounded set of exact page-cited excerpts per document.
+
+The persisted skeleton always contains:
+
+```json
+{
+  "cc_context": {
+    "city": null,
+    "project": null,
+    "ghgi": null,
+    "ccra": null,
+    "hiap": null
+  },
+  "selected_sources": [],
+  "funder_context": null,
+  "similar_projects": [],
+  "document_context": null
+}
+```
+
+A populated, sanitized example is checked in at
+[`docs/examples/cc-513-full-context-bundle.json`](docs/examples/cc-513-full-context-bundle.json).
+The focused bundle-service test loads local GHGI and HIAP capability data from
+`service/tests/fixtures/cnb/full_city_context_capabilities.json`, passes it
+through the production normalization path, and asserts that the resulting
+bundle exactly matches this example:
+
+```bash
+uv run pytest service/tests/cnb/test_context_bundle_service.py -q
+```
+
+Automatic assembly attempts GHGI and persisted HIAP, but missing, pending,
+failed, malformed, or unavailable optional data remains `null` and does not
+block PDF readiness. A partial GHGI snapshot or HIAP snapshot with usable
+actions is retained. Rebuilds replace only `selected_sources`, GHGI, and HIAP;
+later funder, similar-project, document, or extension sections are preserved.
+`concept_note_runs.context_summary.context_bundle` records the build ID, ready
+source fingerprint, status/counts, optional-source statuses, warnings, and
+retryability. Stale build IDs cannot commit over a newer upload set.
+
+`POST /v1/concept-notes/{run_id}/context-bundle/retry` queues only the
+downstream bundle work; its CityCatalyst proxy is
+`POST /api/v1/concept-notes/{runId}/context-bundle/retry`. Neither route reruns
+OCR. No raw Markdown, PDF, S3 key, credential, or derived chunk is stored in the
+bundle or a new table.
+
+When an authorized run is ready and its step is `interviewing`,
+`drafting_document`, or `editing_document`, the main agent receives compact
+per-document summaries and the read-only `concept_note_sources_query` tool
+(`concept_note.sources.query` capability). One call selects one `upload_id` and
+one bounded question, re-fetches and verifies that document, reads every page
+with tool-free mini readers, and returns a grounded answer or explicit
+`found: false` result with exact excerpts and coverage counts. PDF text is
+treated as untrusted evidence and embedded instructions are ignored.
+
 ### Concept Note run foundation
 
 `POST /v1/concept-notes/start` validates a CC-issued bearer token, verifies that
@@ -625,7 +693,9 @@ revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable
 chat thread to belong to the authenticated user; it remains an integration
-identifier rather than a run-table foreign key.
+identifier rather than a run-table foreign key. The authorized `run_id` is also
+persisted as `concept_note_run_id` in thread context so later chat turns can
+scope their prompt and source capability without trusting an LLM-provided run.
 
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,

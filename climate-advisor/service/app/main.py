@@ -7,6 +7,9 @@ from app.middleware.request_context import RequestContextMiddleware, get_request
 from app.routes.concept_note_city_context import (
     router as concept_note_city_context_router,
 )
+from app.routes.concept_note_context_bundle import (
+    router as concept_note_context_bundle_router,
+)
 from app.routes.concept_note_markdown import router as concept_note_markdown_router
 from app.routes.concept_note_runs import router as concept_note_runs_router
 from app.routes.dev_inventory import router as dev_inventory_router
@@ -91,6 +94,7 @@ def get_app() -> FastAPI:
     app.include_router(stationary_energy_drafts_router, prefix="/v1")
     app.include_router(concept_note_markdown_router, prefix="/v1")
     app.include_router(concept_note_city_context_router, prefix="/v1")
+    app.include_router(concept_note_context_bundle_router, prefix="/v1")
     app.include_router(concept_note_runs_router, prefix="/v1")
 
     # Static playground for manual testing

@@ -465,5 +465,17 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
                 thread_id=uuid4(),
                 user_id="owner-1",
             )
+            concept_note_run_id = uuid4()
+            await repository.bind_thread_context(
+                thread_id=owned_thread_id,
+                user_id="owner-1",
+                run_id=concept_note_run_id,
+            )
+            await session.commit()
+            stored_thread = await session.get(Thread, owned_thread_id)
+            assert stored_thread is not None
+            assert stored_thread.context["concept_note_run_id"] == str(
+                concept_note_run_id
+            )
     finally:
         await engine.dispose()

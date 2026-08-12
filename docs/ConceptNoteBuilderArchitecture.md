@@ -239,12 +239,14 @@ The existing Climate Advisor chain provisions `concept_note_runs`,
 never creates those CA workflow tables. The existing Climate Advisor chain must
 likewise never create CNB workspace or reference tables.
 
-Deployment configuration follows the repository's explicit environment
-ConfigMap pattern. Development and the current test deployment use their
-respective ConfigMaps with the development CNB connection, while production
-uses the production ConfigMap. Workflows apply the ConfigMap before migrations;
-Deployments and CNB migration Jobs consume `CNB_DATABASE_URL` with
-`configMapRef`.
+Deployment credentials follow the repository's GitHub Actions boundary:
+`CNB_DATABASE_URL_DEV` supplies dev and the current test deployment, while
+`CNB_DATABASE_URL_PROD` supplies production. Workflows reconcile Kubernetes
+Secrets containing only `CNB_DATABASE_URL`; Deployments and CNB migration Jobs
+use `secretRef`. No real or base64-encoded CNB credential belongs in Git,
+ConfigMaps, logs, or migration commands. Credentials exposed through chat or
+tickets must be rotated before use, with reserved password characters
+URL-encoded in the final DSN.
 
 ## Tables and Data Placement
 

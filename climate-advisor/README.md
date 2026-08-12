@@ -1001,15 +1001,16 @@ Notes:
 
 ## Kubernetes CNB Database Deployment
 
-The environment database ConfigMaps are the deployment source of truth. The
-development, test, and production ConfigMaps define `CNB_DATABASE_URL`
-alongside `CA_DATABASE_URL`; the test deployment intentionally reuses the
-development CNB database until a distinct test database is available.
+GitHub Actions is the credential source of truth. Configure
+`CNB_DATABASE_URL_DEV` and `CNB_DATABASE_URL_PROD` as repository Secrets; the
+test deployment intentionally reuses the development value until a distinct
+test database is available. Rotate any credential shared in chat or ticket text
+before saving it, and URL-encode reserved password characters in the DSN.
 
-Each deployment workflow applies its environment ConfigMap before creating the
-database migration Jobs. The Climate Advisor Deployment and CNB migration Job
-consume the same ConfigMap with `configMapRef`, matching the existing CA and CC
-database configuration pattern.
+Each deployment workflow reconciles an environment-specific Kubernetes Secret
+containing only `CNB_DATABASE_URL`. The Climate Advisor Deployment and CNB
+migration Job consume that Secret with `secretRef`; CNB credentials do not
+belong in the existing database ConfigMaps or in checked-in Secret manifests.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
 Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB

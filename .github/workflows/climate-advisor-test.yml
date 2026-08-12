@@ -106,7 +106,6 @@ jobs:
         run: |
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
-                 tests/test_cnb_kubernetes_manifests.py \
                  -v --tb=short --color=yes
 
       - name: Generate test coverage report

@@ -12,7 +12,7 @@ import { BlueSubtitle } from "@/components/package/Texts/BlueSubtitle";
 import { PopulationAttributes } from "@/models/Population";
 import type { TFunction } from "i18next";
 import { isEmptyObject, toKebabCase } from "@/util/helpers";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   api,
   useGetCityYearsQuery,
@@ -55,9 +55,7 @@ function SectorTabs({
 }) {
   const { t: tData } = useTranslation(lng, "data");
   const [selectedTab, setSelectedTab] = useState(SECTORS[0].name);
-  const [selectedTableView, setSelectedTableView] = useState<TableView>(
-    TableView.BY_ACTIVITY,
-  );
+  const [selectedTableView] = useState<TableView>(TableView.BY_ACTIVITY);
   const [isLoadingNewData, setIsLoadingNewData] = useState(false);
   const getDataForSector = (sectorName: string) =>
     results?.totalEmissions.bySector.find(
@@ -95,10 +93,6 @@ function SectorTabs({
     setIsLoadingNewData(true);
     refetch().finally(() => setIsLoadingNewData(false));
   }, [selectedTab, refetch]);
-
-  const handleViewChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedTableView(event.target.value as TableView);
-  };
 
   const isEmptyInventory =
     Object.entries(sectorBreakdown?.byActivity || {}).length === 0 &&
@@ -294,13 +288,13 @@ export function EmissionPerSectors({
   const [selectedView, setSelectedView] = useState("table");
 
   const { data: yearlyGhgResult, isLoading: isLoadingYearlgyGhg } =
-    useGetYearOverYearResultsQuery(inventory?.cityId!, {
-      skip: !inventory?.cityId,
+    useGetYearOverYearResultsQuery(inventory.cityId ?? "", {
+      skip: !inventory.cityId,
     });
 
   const { data: cityYears, isLoading } = useGetCityYearsQuery(
-    inventory?.cityId!,
-    { skip: !inventory?.cityId },
+    inventory.cityId ?? "",
+    { skip: !inventory.cityId },
   );
 
   const loadingState = isLoading || isLoadingYearlgyGhg;
@@ -314,7 +308,7 @@ export function EmissionPerSectors({
           acc[curr.inventoryId] = curr;
           return acc;
         },
-        {} as Record<string, any>,
+        {} as Record<string, CityYearData>,
       ) ?? {}
     );
   }, [cityYears]);

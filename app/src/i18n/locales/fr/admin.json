@@ -37,6 +37,7 @@
   "project-deleted": "Projet supprimé avec succès",
   "account-details": "Détails du compte",
   "resend-invite": "Renvoyer l'invitation",
+  "copy-invite-link": "Renvoyer et copier le lien d'invitation",
   "not-authorized": "Vous n'êtes pas autorisé",
   "accepted": "Accepté",
   "invite-sent": "Invitation envoyée",

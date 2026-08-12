@@ -1,8 +1,10 @@
 import { Box, Grid, HStack, Icon } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import React from "react";
 import {
   Control,
   Controller,
+  FieldErrors,
   FieldValues,
   UseFormSetValue,
 } from "react-hook-form";
@@ -14,13 +16,14 @@ import {
   NativeSelectField,
   NativeSelectRoot,
 } from "@/components/ui/native-select";
+import { Inputs } from "../activity-modal-body";
 
 interface DirectMeasureSectionProps {
   t: TFunction;
-  control: Control<FieldValues, any>;
-  errors: Record<string, any>;
+  control: Control<FieldValues>;
+  errors: FieldErrors<FieldValues>;
   isDirectMeasure: boolean;
-  setValue: UseFormSetValue<any>;
+  setValue: UseFormSetValue<Inputs>;
 }
 
 export const DirectMeasureSection = ({
@@ -30,6 +33,10 @@ export const DirectMeasureSection = ({
   isDirectMeasure,
   setValue,
 }: DirectMeasureSectionProps) => {
+  const activityErrors = errors?.activity as
+    | Record<string, { message?: string } | undefined>
+    | undefined;
+
   if (!isDirectMeasure) {
     return null;
   }
@@ -56,18 +63,18 @@ export const DirectMeasureSection = ({
                 {...field}
                 borderRadius="4px"
                 borderWidth={
-                  errors?.activity?.["co2EmissionFactorUnit"] ? "1px" : 0
+                  activityErrors?.["co2EmissionFactorUnit"] ? "1px" : 0
                 }
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.["co2EmissionFactorUnit"]
+                  activityErrors?.["co2EmissionFactorUnit"]
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.["co2EmissionFactorUnit"]
+                  activityErrors?.["co2EmissionFactorUnit"]
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -77,9 +84,10 @@ export const DirectMeasureSection = ({
                   borderColor: "content.link",
                 }}
                 bgColor="base.light"
-                onChange={(e: any) => {
-                  field.onChange(e.target.value);
-                  setValue("activity.co2EmissionFactorUnit", e.target.value);
+                onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
+                  const value = (e.target as unknown as HTMLSelectElement).value;
+                  field.onChange(value);
+                  setValue("activity.co2EmissionFactorUnit", value);
                 }}
               >
                 <NativeSelectField
@@ -95,20 +103,20 @@ export const DirectMeasureSection = ({
             )}
           />
         </HStack>
-        {errors?.activity?.["CO2EmissionFactor"] && (
+        {activityErrors?.["CO2EmissionFactor"] && (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
             <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <BodyMedium>
-              {t(errors?.activity?.["CO2EmissionFactor"]?.message as string)}
+              {t(activityErrors?.["CO2EmissionFactor"]?.message as string)}
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.["co2EmissionFactorUnit"] &&
-          !errors?.activity?.["CO2EmissionFactor"] && (
+        {activityErrors?.["co2EmissionFactorUnit"] &&
+          !activityErrors?.["CO2EmissionFactor"] && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["co2EmissionFactorUnit"]?.message}
+                {activityErrors?.["co2EmissionFactorUnit"]?.message}
               </BodyMedium>
             </Box>
           )}
@@ -133,18 +141,18 @@ export const DirectMeasureSection = ({
                 {...field}
                 borderRadius="4px"
                 borderWidth={
-                  errors?.activity?.["n2oEmissionFactorUnit"] ? "1px" : 0
+                  activityErrors?.["n2oEmissionFactorUnit"] ? "1px" : 0
                 }
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.["n2oEmissionFactorUnit"]
+                  activityErrors?.["n2oEmissionFactorUnit"]
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.["n2oEmissionFactorUnit"]
+                  activityErrors?.["n2oEmissionFactorUnit"]
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -154,9 +162,10 @@ export const DirectMeasureSection = ({
                   borderColor: "content.link",
                 }}
                 bgColor="base.light"
-                onChange={(e: any) => {
-                  field.onChange(e.target.value);
-                  setValue("activity.n2oEmissionFactorUnit", e.target.value);
+                onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
+                  const value = (e.target as unknown as HTMLSelectElement).value;
+                  field.onChange(value);
+                  setValue("activity.n2oEmissionFactorUnit", value);
                 }}
               >
                 <NativeSelectField
@@ -172,20 +181,20 @@ export const DirectMeasureSection = ({
             )}
           />
         </HStack>
-        {errors?.activity?.["N2OEmissionFactor"] && (
+        {activityErrors?.["N2OEmissionFactor"] && (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
             <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <BodyMedium>
-              {errors?.activity?.["N2OEmissionFactor"]?.message}
+              {activityErrors?.["N2OEmissionFactor"]?.message}
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.["n2oEmissionFactorUnit"] &&
-          !errors?.activity?.["N2OEmissionFactor"] && (
+        {activityErrors?.["n2oEmissionFactorUnit"] &&
+          !activityErrors?.["N2OEmissionFactor"] && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["n2oEmissionFactorUnit"]?.message}
+                {activityErrors?.["n2oEmissionFactorUnit"]?.message}
               </BodyMedium>
             </Box>
           )}
@@ -210,18 +219,18 @@ export const DirectMeasureSection = ({
                 {...field}
                 borderRadius="4px"
                 borderWidth={
-                  errors?.activity?.["ch4EmissionFactorUnit"] ? "1px" : 0
+                  activityErrors?.["ch4EmissionFactorUnit"] ? "1px" : 0
                 }
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.["ch4EmissionFactorUnit"]
+                  activityErrors?.["ch4EmissionFactorUnit"]
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.["ch4EmissionFactorUnit"]
+                  activityErrors?.["ch4EmissionFactorUnit"]
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -231,9 +240,10 @@ export const DirectMeasureSection = ({
                   borderColor: "content.link",
                 }}
                 bgColor="base.light"
-                onChange={(e: any) => {
-                  field.onChange(e.target.value);
-                  setValue("activity.ch4EmissionFactorUnit", e.target.value);
+                onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
+                  const value = (e.target as unknown as HTMLSelectElement).value;
+                  field.onChange(value);
+                  setValue("activity.ch4EmissionFactorUnit", value);
                 }}
               >
                 <NativeSelectField
@@ -249,20 +259,20 @@ export const DirectMeasureSection = ({
             )}
           />
         </HStack>
-        {errors?.activity?.["CH4EmissionFactor"] && (
+        {activityErrors?.["CH4EmissionFactor"] && (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
             <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <BodyMedium>
-              {errors?.activity?.["CH4EmissionFactor"]?.message}
+              {activityErrors?.["CH4EmissionFactor"]?.message}
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.["ch4EmissionFactorUnit"] &&
-          !errors?.activity?.["CH4EmissionFactor"] && (
+        {activityErrors?.["ch4EmissionFactorUnit"] &&
+          !activityErrors?.["CH4EmissionFactor"] && (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["ch4EmissionFactorUnit"]?.message}
+                {activityErrors?.["ch4EmissionFactorUnit"]?.message}
               </BodyMedium>
             </Box>
           )}

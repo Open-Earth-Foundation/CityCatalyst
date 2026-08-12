@@ -65,8 +65,14 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteRun,
+  ConceptNoteRunListResponse,
+  ConceptNoteUploadRequest,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatusRequest,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  StartConceptNoteRunRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -80,6 +86,9 @@ import type {
   ImportStatusResponse,
   VersionHistoryResponse,
   UserOrganizationsResponse,
+  OCCityAttributes,
+  OCCityDataResponse,
+  ProjectBoundary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -128,6 +137,8 @@ export const api = createApi({
     "VersionHistory",
     "PersonalAccessToken",
     "AdminModules",
+    "ConceptNoteRuns",
+    "ConceptNoteUpload",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -666,7 +677,7 @@ export const api = createApi({
       }),
 
       requestVerification: builder.mutation<
-        string,
+        { comparePassword: boolean },
         { password: string; token: string }
       >({
         query: ({ password, token }) => ({
@@ -717,14 +728,13 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["FileData"],
       }),
-      getUserFiles: builder.query({
+      getUserFiles: builder.query<UserFileResponse[], string>({
         query: (cityId: string) => ({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse[] }) => {
-          return response.data;
-        },
+        transformResponse: (response: { data: UserFileResponse[] }) =>
+          response.data,
 
         providesTags: ["FileData"],
       }),
@@ -1034,7 +1044,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { result: Record<string, unknown[]> }) =>
+          response,
       }),
       // Add notation keys to subsectors with missing data missing
       updateOrCreateNotationKeys: builder.mutation({
@@ -1050,7 +1061,7 @@ export const api = createApi({
           method: "POST",
           body: { notationKeys: data.notationKeys },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
       }),
       createOrganization: builder.mutation({
         query: (data: {
@@ -1216,7 +1227,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -1228,7 +1239,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { errors: unknown[] }) => response,
       }),
       markCitiesPublic: builder.mutation({
         query: (data: { projectId: string }) => ({
@@ -1355,7 +1366,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/projects/${data.projectId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteCityUser: builder.mutation({
@@ -1363,7 +1374,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${data.cityId}/user?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteOrganizationAdminUser: builder.mutation({
@@ -1371,7 +1382,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/organizations/${data.organizationId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       getUserAccessStatus: builder.query({
@@ -1407,15 +1418,16 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["Cities", "Organizations"],
       }),
-      getProjectBoundaries: builder.query({
+      getProjectBoundaries: builder.query<Array<ProjectBoundary>, string>({
         query: (projectId: string) => ({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
-        transformResponse: (response: any) => response.result,
+        transformResponse: (response: { result: Array<ProjectBoundary> }) =>
+          response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({
@@ -1655,7 +1667,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${cityId}`,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: [
           "CityData",
           "Projects",
@@ -1678,7 +1690,7 @@ export const api = createApi({
             active: activeStatus,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: ["Organizations", "Organization"],
       }),
       updateUserRoleInOrganization: builder.mutation({
@@ -1796,7 +1808,8 @@ export const api = createApi({
             csrfToken,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data.code,
+        transformResponse: (response: { data: { code: string } }) =>
+          response.data.code,
       }),
       getBulkCityLocations: builder.query<
         CityLocationResponse[],
@@ -1988,7 +2001,7 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
-          mappingOverrides?: Record<string, any>;
+          mappingOverrides?: Record<string, unknown>;
         }
       >({
         query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
@@ -2141,6 +2154,70 @@ export const api = createApi({
           response.data,
         providesTags: ["Organizations"],
       }),
+      getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
+        query: (cityId) => ({
+          url: "concept-notes",
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, cityId) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
+        query: (runId) => `concept-notes/${runId}`,
+      }),
+      startConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        StartConceptNoteRunRequest
+      >({
+        query: ({ cityId, idempotencyKey, name }) => ({
+          url: "concept-notes/start",
+          method: "POST",
+          body: {
+            city_id: cityId,
+            idempotency_key: idempotencyKey,
+            name,
+          },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      uploadConceptNotePdf: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadRequest
+      >({
+        query: ({ formData, runId }) => ({
+          url: `concept-notes/${runId}/uploads`,
+          method: "POST",
+          body: formData,
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteUploadStatus: builder.query<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) =>
+          `concept-notes/${runId}/uploads/${uploadId}`,
+        providesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteUpload: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) => ({
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
     };
   },
 });
@@ -2153,15 +2230,17 @@ export const openclimateAPI = createApi({
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
-    getOCCity: builder.query<any, string>({
+    getOCCity: builder.query<OCCityAttributes[], string>({
       query: (q) => `/api/v1/search/city?q=${q}`,
-      transformResponse: (response: any) => {
-        return response.data.filter((item: any) => item.type === "city");
+      transformResponse: (response: {
+        data: Array<OCCityAttributes & { type: string }>;
+      }) => {
+        return response.data.filter((item) => item.type === "city");
       },
     }),
-    getOCCityData: builder.query<any, string>({
+    getOCCityData: builder.query<OCCityDataResponse, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
-      transformResponse: (response: any) => {
+      transformResponse: (response: { data: OCCityDataResponse }) => {
         return response.data;
       },
     }),
@@ -2287,5 +2366,11 @@ export const {
   useCreateModuleMutation,
   useUpdateModuleMutation,
   useDeleteModuleMutation,
+  useGetConceptNoteRunsQuery,
+  useGetConceptNoteRunQuery,
+  useStartConceptNoteRunMutation,
+  useUploadConceptNotePdfMutation,
+  useGetConceptNoteUploadStatusQuery,
+  useRetryConceptNoteUploadMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

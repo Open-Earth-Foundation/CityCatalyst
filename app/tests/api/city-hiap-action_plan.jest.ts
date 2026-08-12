@@ -83,8 +83,8 @@ describe("City HIAP Prioritization API", () => {
     jest
       .spyOn(HiapApiService.hiapApiWrapper, "translateActionPlan")
       .mockResolvedValue({
-        metadata: { title: "Translated Plan" },
-      } as any);
+        metadata: { actionName: "Translated Plan" },
+      });
 
     jest
       .spyOn(HiapApiService.hiapApiWrapper, "startActionPlanJob")
@@ -105,7 +105,7 @@ describe("City HIAP Prioritization API", () => {
         await db.models.ActionPlan.destroy({
           where: { cityLocode: "XX-APT" },
         });
-      } catch (_e) {
+      } catch {
         // Table might not exist, that's okay
       }
       await db.models.Inventory.destroy({ where: { inventoryId } });
@@ -219,8 +219,7 @@ describe("City HIAP Prioritization API", () => {
       });
       const res = await createActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId }),
-        session: mockSession,
-      } as any);
+      });
 
       await expectStatusCode(res, 400);
       const body = await res.json();
@@ -266,8 +265,7 @@ describe("City HIAP Prioritization API", () => {
       const req = mockRequest(actionPlanData);
       const res = await createActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId }),
-        session: mockSession,
-      } as any);
+      });
 
       await expectStatusCode(res, 201);
       const body = await res.json();
@@ -309,8 +307,7 @@ describe("City HIAP Prioritization API", () => {
       });
       const res = await createActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId }),
-        session: mockSession,
-      } as any);
+      });
 
       await expectStatusCode(res, 400);
       const body = await res.json();
@@ -574,8 +571,7 @@ describe("City HIAP Prioritization API", () => {
           city: testData.cityId,
           rankingId: ranking.id,
         }),
-        session: mockSession,
-      } as any);
+      });
 
       await expectStatusCode(res, 200);
       const body = await res.json();
@@ -609,8 +605,7 @@ describe("City HIAP Prioritization API", () => {
           city: testData.cityId,
           rankingId: randomUUID(),
         }),
-        session: mockSession,
-      } as any);
+      });
 
       await expectStatusCode(res, 400);
     });

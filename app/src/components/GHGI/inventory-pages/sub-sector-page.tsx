@@ -8,13 +8,14 @@ import { api, useGetInventoryValuesBySubsectorQuery } from "@/services/api";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import {
   Box,
-  BreadcrumbItem,
+  BoxProps,
   BreadcrumbLink,
   Button,
   Icon,
   Spinner,
   Tabs,
   TabsList,
+  TabsListProps,
   Text,
 } from "@chakra-ui/react";
 
@@ -25,6 +26,7 @@ import {
   AnimatePresence,
   easeInOut,
   motion,
+  MotionProps,
   useMotionValueEvent,
   useScroll,
   useTransform,
@@ -42,7 +44,9 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 const MotionBox = motion.create(
   // the display name is added below, but the linter isn't picking it up
   // eslint-disable-next-line react/display-name
-  forwardRef<HTMLDivElement, any>((props, ref) => <Box ref={ref} {...props} />),
+  forwardRef<HTMLDivElement, BoxProps & MotionProps>((props, ref) => (
+    <Box ref={ref} {...props} />
+  )),
 );
 MotionBox.displayName = "MotionBox";
 
@@ -141,9 +145,10 @@ function SubSectorPage(props: {
   };
 
   const getFilteredSubsectorScopes = () => {
-    if (!inventoryData) return [];
+    if (!inventoryData || !subSectorData?.referenceNumber) return [];
+    const subSectorReferenceNumber = subSectorData.referenceNumber;
     return Object.entries(MANUAL_INPUT_HIERARCHY)
-      .filter(([key]) => key.startsWith(subSectorData?.referenceNumber!))
+      .filter(([key]) => key.startsWith(subSectorReferenceNumber))
       .map(([k, v]) => ({ ...v, referenceNumber: k }))
       .filter((scope) => {
         return getScopesForInventoryAndSector(
@@ -157,7 +162,7 @@ function SubSectorPage(props: {
   const MotionTabList = motion.create(
     // the display name is added below, but the linter isn't picking it up
     // eslint-disable-next-line react/display-name
-    forwardRef<HTMLDivElement, any>((props, ref) => (
+    forwardRef<HTMLDivElement, TabsListProps & MotionProps>((props, ref) => (
       <TabsList ref={ref} {...props} />
     )),
   );
@@ -204,9 +209,9 @@ function SubSectorPage(props: {
         zIndex={10}
         top={0}
         w="full"
-        transition="all 50ms linear"
         style={{
           paddingTop: paddingTop,
+          transition: "all 50ms linear",
         }}
         borderColor="border.neutral"
         borderBottomWidth="1px"

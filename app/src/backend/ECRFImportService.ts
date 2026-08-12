@@ -1,6 +1,6 @@
 import { db } from "@/models";
 import { resolveGpcRefNo } from "@/util/GHGI/gpc-ref-resolver";
-import FileParserService, { type ParsedFileData } from "./FileParserService";
+import { type ParsedFileData } from "./FileParserService";
 
 export interface ECRFRowData {
   gpcRefNo: string;
@@ -210,24 +210,9 @@ export default class ECRFImportService {
       }
 
       // Extract gas values
-      const co2 = this.extractGasValue(
-        row,
-        headers,
-        detectedColumns.co2,
-        "CO2",
-      );
-      const ch4 = this.extractGasValue(
-        row,
-        headers,
-        detectedColumns.ch4,
-        "CH4",
-      );
-      const n2o = this.extractGasValue(
-        row,
-        headers,
-        detectedColumns.n2o,
-        "N2O",
-      );
+      const co2 = this.extractGasValue(row, headers, detectedColumns.co2);
+      const ch4 = this.extractGasValue(row, headers, detectedColumns.ch4);
+      const n2o = this.extractGasValue(row, headers, detectedColumns.n2o);
       // Try to find the correct total CO2e column if the detected one is wrong
       let totalCO2eColumnIndex: number | undefined = detectedColumns.totalCO2e;
       let totalCO2eHeader: string | undefined =
@@ -262,12 +247,7 @@ export default class ECRFImportService {
 
       const totalCO2e =
         totalCO2eColumnIndex !== undefined
-          ? this.extractGasValue(
-              row,
-              headers,
-              totalCO2eColumnIndex,
-              "Total CO2e",
-            )
+          ? this.extractGasValue(row, headers, totalCO2eColumnIndex)
           : undefined;
 
       // Debug: Log totalCO2e extraction
@@ -460,12 +440,7 @@ export default class ECRFImportService {
         })();
       const emissionFactorCO2 =
         emissionFactorCO2Idx !== undefined
-          ? this.extractGasValue(
-              row,
-              headers,
-              emissionFactorCO2Idx,
-              "Emission Factor CO2",
-            )
+          ? this.extractGasValue(row, headers, emissionFactorCO2Idx)
           : undefined;
 
       const emissionFactorCH4Idx =
@@ -481,12 +456,7 @@ export default class ECRFImportService {
         })();
       const emissionFactorCH4 =
         emissionFactorCH4Idx !== undefined
-          ? this.extractGasValue(
-              row,
-              headers,
-              emissionFactorCH4Idx,
-              "Emission Factor CH4",
-            )
+          ? this.extractGasValue(row, headers, emissionFactorCH4Idx)
           : undefined;
 
       const emissionFactorN2OIdx =
@@ -502,12 +472,7 @@ export default class ECRFImportService {
         })();
       const emissionFactorN2O =
         emissionFactorN2OIdx !== undefined
-          ? this.extractGasValue(
-              row,
-              headers,
-              emissionFactorN2OIdx,
-              "Emission Factor N2O",
-            )
+          ? this.extractGasValue(row, headers, emissionFactorN2OIdx)
           : undefined;
 
       const emissionFactorTotalCO2eIdx =
@@ -523,12 +488,7 @@ export default class ECRFImportService {
         })();
       const emissionFactorTotalCO2e =
         emissionFactorTotalCO2eIdx !== undefined
-          ? this.extractGasValue(
-              row,
-              headers,
-              emissionFactorTotalCO2eIdx,
-              "Emission Factor Total CO2e",
-            )
+          ? this.extractGasValue(row, headers, emissionFactorTotalCO2eIdx)
           : undefined;
 
       // Validate that at least one gas value is present
@@ -615,7 +575,7 @@ export default class ECRFImportService {
     });
 
     if (subcategory) {
-      const subsector = (subcategory as any).subsector;
+      const subsector = subcategory.subsector;
       if (!subsector) {
         return null;
       }
@@ -656,7 +616,7 @@ export default class ECRFImportService {
       return null;
     }
 
-    const sector = (subsector as any).sector;
+    const sector = subsector.sector;
     if (!sector) {
       return null;
     }
@@ -679,10 +639,9 @@ export default class ECRFImportService {
    * Extract gas value from row
    */
   private static extractGasValue(
-    row: Record<string, any>,
+    row: Record<string, unknown>,
     headers: string[],
     columnIndex: number | undefined,
-    gasName: string,
   ): number | undefined {
     if (columnIndex === undefined) {
       return undefined;

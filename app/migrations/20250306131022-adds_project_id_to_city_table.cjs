@@ -26,7 +26,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeConstraint("City", "FK_city_project_id");
     await queryInterface.removeColumn("City", "project_id");
   },

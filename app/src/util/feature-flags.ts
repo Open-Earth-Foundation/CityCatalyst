@@ -9,6 +9,7 @@ export enum FeatureFlags {
   ANALYTICS_ENABLED = "ANALYTICS_ENABLED",
   CCRA_MODULE = "CCRA_MODULE",
   CA_SERVICE_INTEGRATION = "CA_SERVICE_INTEGRATION",
+  CONCEPT_NOTE_BUILDER = "CONCEPT_NOTE_BUILDER",
   STATIONARY_ENERGY_AGENTIC = "STATIONARY_ENERGY_AGENTIC",
   HIGHLIGHT_ENABLED = "HIGHLIGHT_ENABLED",
   NUMERICAL_FORMATS = "NUMERICAL_FORMATS",
@@ -261,9 +262,22 @@ export function debugFeatureFlags(): void {
   console.groupEnd();
 }
 
+declare global {
+  interface Window {
+    qaFlags?: {
+      set: typeof setQAFeatureFlag;
+      clear: typeof clearQAFeatureFlag;
+      clearAll: typeof clearAllQAFeatureFlags;
+      list: typeof listQAFeatureFlags;
+      debug: typeof debugFeatureFlags;
+      FeatureFlags: typeof FeatureFlags;
+    };
+  }
+}
+
 // Make QA functions globally available in browser console for easy testing
 if (typeof window !== "undefined") {
-  (window as any).qaFlags = {
+  window.qaFlags = {
     set: setQAFeatureFlag,
     clear: clearQAFeatureFlag,
     clearAll: clearAllQAFeatureFlags,

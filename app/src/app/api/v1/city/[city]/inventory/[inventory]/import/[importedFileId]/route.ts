@@ -179,6 +179,10 @@ import ImportMappingService from "@/backend/ImportMappingService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import FileParserService from "@/backend/FileParserService";
 import FileValidatorService from "@/backend/FileValidatorService";
+import {
+  syncGHGIImportedInventorySource,
+  syncGHGIInventory,
+} from "@/backend/GHGINativeInputCatalogService";
 import { getInventoryPdfOcrStatus } from "@/backend/PdfOcrService";
 import { logger } from "@/services/logger";
 import { db } from "@/models";
@@ -269,6 +273,11 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
     throw new createHttpError.NotFound(
       "Imported file not found or access denied",
     );
+  }
+
+  await syncGHGIImportedInventorySource(importedFile);
+  if (importedFile.importStatus === "completed") {
+    await syncGHGIInventory(importedFile);
   }
 
   // Get the inventory to determine required GPC rows
@@ -573,7 +582,10 @@ export const GET = apiHandler(async (req: NextRequest, { session, params }) => {
         const mappingPreview = await ImportMappingService.createMappingPreview(
           inventory,
           parsedData,
-          importedFile.validationResults.detectedColumns,
+          importedFile.validationResults?.detectedColumns as Record<
+            string,
+            number
+          >,
         );
 
         const fieldMappings: Array<{

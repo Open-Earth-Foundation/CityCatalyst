@@ -85,6 +85,14 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
+  if (session.user.email?.toLowerCase() !== email.toLowerCase()) {
+    logger.error({
+      sessionEmail: session.user.email,
+      inviteEmail: email,
+    }, "[UserInviteAccept] Logged-in user does not match invited email");
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
   const invites = await db.models.CityInvite.findAll({
     where: {
       cityId: { [Op.in]: cityIds },
@@ -111,7 +119,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const failedInvites: { cityId: string }[] = [];
 
   if (tokenContent.role === "admin" && tokenContent.projectId) {
-    const [projectAdmin, created] = await ProjectAdmin.findOrCreate({
+    const [, created] = await ProjectAdmin.findOrCreate({
       where: { projectId: tokenContent.projectId, userId: session.user.id },
       defaults: {
         projectAdminId: randomUUID(),

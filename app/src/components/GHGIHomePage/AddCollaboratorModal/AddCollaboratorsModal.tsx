@@ -12,13 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HStack, Text } from "@chakra-ui/react";
-import { MdPersonAdd } from "react-icons/md";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import InviteCollaboratorsStep, {
   type InviteCollaboratorsStepRef,
 } from "@/components/steps/GHGI/invite-collaborators-step";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { TitleLarge } from "@/components/package";
+import { toaster } from "@/components/ui/toaster";
 
 const AddCollaboratorsDialog = ({
   lng,
@@ -36,11 +35,6 @@ const AddCollaboratorsDialog = ({
   const stepRef = useRef<InviteCollaboratorsStepRef>(null);
   const [canSubmit, setCanSubmit] = useState(false);
 
-  const { showSuccessToast } = UseSuccessToast({
-    title: t("invite-success-toast-title"),
-    description: t("invite-success-toast-description"),
-  });
-
   const { showErrorToast } = UseErrorToast({
     title: t("invite-error-toast-title"),
     description: t("invite-error-toast-description"),
@@ -49,7 +43,12 @@ const AddCollaboratorsDialog = ({
   const handleSend = async () => {
     try {
       await stepRef.current?.sendInvites();
-      showSuccessToast();
+      toaster.create({
+        title: t("invite-success-toast-title"),
+        description: t("invite-link-copied-to-clipboard"),
+        type: "success",
+        duration: 3000,
+      });
       onClose();
     } catch {
       showErrorToast();

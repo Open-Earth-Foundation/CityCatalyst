@@ -560,11 +560,11 @@ export type ThemeResponse = {
 };
 
 export enum LANGUAGES {
-  "en" = "en",
-  "es" = "es",
-  "pt" = "pt",
-  "de" = "de",
-  "fr" = "fr",
+  en = "en",
+  es = "es",
+  pt = "pt",
+  de = "de",
+  fr = "fr",
 }
 
 export type OrganizationWithThemeResponse = {
@@ -1015,4 +1015,51 @@ export interface ProjectBoundary {
   };
   boundingBox: BoundingBox;
   data: GeoJSON;
+}
+
+export interface ConceptNoteRun {
+  run_id: string;
+  thread_id: string | null;
+  name: string;
+  city_id: string;
+  project_id: string | null;
+  funder_id: string | null;
+  selected_funding_record_id: string | null;
+  status: string;
+  workflow_step: string;
+  progress_summary: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConceptNoteRunListResponse {
+  runs: ConceptNoteRun[];
+}
+
+export interface StartConceptNoteRunRequest {
+  cityId: string;
+  idempotencyKey: string;
+  name: string;
+}
+
+export type ConceptNoteUploadStatus =
+  "queued" | "processing" | "ready" | "failed";
+
+export interface ConceptNoteUploadResponse {
+  uploadId: string;
+  runId?: string;
+  status: ConceptNoteUploadStatus;
+  pageCount?: number | null;
+  errorCode?: string;
+}
+
+export interface ConceptNoteUploadRequest {
+  cityId: string;
+  formData: FormData;
+  runId: string;
+}
+
+export interface ConceptNoteUploadStatusRequest {
+  runId: string;
+  uploadId: string;
 }

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -51,21 +51,33 @@ class ConceptNoteStartRequest(BaseModel):
         return self
 
 
-class ConceptNoteRunResponse(BaseModel):
-    """Persisted concept-note run returned by start and detail endpoints."""
+class ConceptNoteRunListItemResponse(BaseModel):
+    """Stable display and resume fields for one concept-note run."""
 
     run_id: UUID
     thread_id: UUID | None = None
-    user_id: str
-    name: str
-    city_id: str
+    name: str = Field(min_length=1)
+    city_id: UUID
     project_id: str | None = None
     funder_id: UUID | None = None
     selected_funding_record_id: UUID | None = None
-    status: Literal["active"]
-    workflow_step: Literal["assembling_context"]
+    status: str = Field(min_length=1)
+    workflow_step: str = Field(min_length=1)
+    progress_summary: dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
+    updated_at: datetime
+
+
+class ConceptNoteRunListResponse(BaseModel):
+    """Authorized concept-note runs for one user and city."""
+
+    runs: list[ConceptNoteRunListItemResponse] = Field(default_factory=list)
+
+
+class ConceptNoteRunResponse(ConceptNoteRunListItemResponse):
+    """Persisted concept-note run returned by start and detail endpoints."""
+
+    user_id: str
     next_action: Literal["load_context"] = "load_context"
     created: bool
     trace_id: str | None = None
-    created_at: datetime
-    updated_at: datetime

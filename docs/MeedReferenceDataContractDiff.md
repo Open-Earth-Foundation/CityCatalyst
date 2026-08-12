@@ -34,9 +34,10 @@ That check also caught a live defect: `actionCatalog.ts:63` reads a `sector` key
 
 ### Outstanding, all minor and non-blocking
 
-1. **Structured `warnings`** (`{code, params}` instead of English prose) — the module ships in 5 languages and cannot translate the current strings. The only one with user-visible impact.
-2. **`datasource` / `version_label` on `CityIndicatorResponse`** — `INDICATOR_META` hardcodes citations like `"ENDISC 2015"` that live data contradicts (`cl-ine-censo` / `2024`). Without the field we should drop the Source column rather than display a wrong citation.
-3. **Documented vocabulary for `policy_support_category`** — until then we keep our own thresholds and the field goes unused.
+1. **Expose action legal assessments as an eighth reference-data endpoint.** The only *functional* gap: legal screening surfaces solely inside the prioritize response, so the Regulations step cannot render until a ranking exists. Detail in the open-asks table below.
+2. **Structured `warnings`** (`{code, params}` instead of English prose) — the module ships in 5 languages and cannot translate the current strings.
+3. **`datasource` / `version_label` on `CityIndicatorResponse`** — `INDICATOR_META` hardcodes citations like `"ENDISC 2015"` that live data contradicts (`cl-ine-censo` / `2024`). Without the field we should drop the Source column rather than display a wrong citation.
+4. **Documented vocabulary for `policy_support_category`** — until then we keep our own thresholds and the field goes unused.
 
 ---
 
@@ -251,9 +252,10 @@ Real simplification, worth stating alongside the asks:
 
 | # | Ask | Impact |
 |---|---|---|
-| 8 | Structured `warnings` (`{code, params}`, not English prose) | Untranslatable in a 5-language module — the only outstanding item with user-visible impact |
-| 9 | `datasource` / `version_label` on `CityIndicatorResponse` | We display hardcoded citations that live data contradicts; without it, drop the Source column |
-| 10 | Documented vocabulary for `policy_support_category` | Field goes unused; we keep our own thresholds |
+| **8** | **Expose action legal assessments as a reference-data endpoint** (an eighth GET) | **Functional.** Legal screening reaches consumers only via the prioritize response, so the Regulations screen — step 3 of 7 — cannot render until step 7 has run. The upstream `action-legal-assessments` API returns 0 rows for BR and CL; the real source is the S3 bucket hiap-meed reads with `HIAP_MEED_LEGAL_DATA_SOURCE=s3`, which CityCatalyst cannot reach. `POST /v1/prioritize/exclusions/preview` is not a substitute — it evaluates user-chosen exclusions, not legal blocking |
+| 9 | Structured `warnings` (`{code, params}`, not English prose) | Untranslatable in a 5-language module |
+| 10 | `datasource` / `version_label` on `CityIndicatorResponse` | We display hardcoded citations that live data contradicts; without it, drop the Source column |
+| 11 | Documented vocabulary for `policy_support_category` | Field goes unused; we keep our own thresholds |
 
 ## Changes we must make regardless
 

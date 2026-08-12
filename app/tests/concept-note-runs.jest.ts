@@ -41,7 +41,7 @@ function runPayload(runId: string, runCityId: string = cityId) {
     city_id: runCityId,
     project_id: null,
     funder_id: null,
-    selected_funding_record_id: null,
+    selected_funding_opportunity_id: null,
     status: "active",
     workflow_step: "assembling_context",
     progress_summary: {},

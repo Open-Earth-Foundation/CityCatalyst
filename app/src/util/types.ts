@@ -1019,7 +1019,7 @@ export interface ConceptNoteRun {
   city_id: string;
   project_id: string | null;
   funder_id: string | null;
-  selected_funding_record_id: string | null;
+  selected_funding_opportunity_id: string | null;
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;

@@ -65,7 +65,7 @@ class ConceptNoteRunService:
             raise HTTPException(status_code=404, detail="Chat thread not found")
         await self.funding_reference_validator.validate(
             funder_id=payload.funder_id,
-            selected_funding_record_id=payload.selected_funding_record_id,
+            selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
         )
 
         fingerprint = _request_fingerprint(payload)
@@ -75,7 +75,7 @@ class ConceptNoteRunService:
             city_id=str(payload.city_id),
             project_id=payload.project_id,
             funder_id=payload.funder_id,
-            selected_funding_record_id=payload.selected_funding_record_id,
+            selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
             thread_id=payload.thread_id,
             idempotency_key=payload.idempotency_key,
             request_fingerprint=fingerprint,
@@ -280,7 +280,7 @@ def _to_list_item(run: ConceptNoteRun) -> ConceptNoteRunListItemResponse:
         city_id=run.city_id,
         project_id=run.project_id,
         funder_id=run.funder_id,
-        selected_funding_record_id=run.selected_funding_record_id,
+        selected_funding_opportunity_id=run.selected_funding_opportunity_id,
         status=run.status,
         workflow_step=run.workflow_step,
         progress_summary=run.context_summary or {},

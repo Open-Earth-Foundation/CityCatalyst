@@ -28,11 +28,12 @@
   } = support;
 
   const IDENTITY_KEYS = [
-    "funding_record_ref", "criterion_ref", "template_ref", "chapter_ref",
-    "funder_ref",
+    "funding_opportunity_ref", "funded_project_ref", "criterion_ref",
+    "template_ref", "chapter_ref", "funder_ref",
   ];
   const COLLECTION_IDENTITY_KEYS = {
-    funding_records: "funding_record_ref",
+    funding_opportunities: "funding_opportunity_ref",
+    funded_projects: "funded_project_ref",
     funder_criteria: "criterion_ref",
     funder_templates: "template_ref",
     chapter_schema: "chapter_ref",
@@ -42,8 +43,8 @@
   ]);
   const REFERENCE_DATA_SECTIONS = [
     ["funder", "Funder", "Institutional identity, scope, and profile.", ["funder"]],
-    ["records", "Funding records", "The opportunity and complete funded-project examples.", [
-      "funding_records",
+    ["records", "Funding references", "The opportunity and complete funded-project examples.", [
+      "funding_opportunities", "funded_projects",
     ]],
     ["template", "Application template", "Form structure and required content.", [
       "funder_templates",
@@ -99,7 +100,7 @@
 
   function renderReferenceDataWorkspace() {
     const { bundle } = state;
-    const opportunity = bundle.funding_records.find((record) => record.is_opportunity);
+    const opportunity = bundle.funding_opportunities[0];
     view.programName.textContent = opportunity?.name || "Unnamed program";
     view.runMeta.textContent = [
       bundle.funder?.name || null,
@@ -203,7 +204,7 @@
 
   function createMatchCard(match, index) {
     const candidate = candidateForMatch(match);
-    const path = `result.matches[${match.funding_record_id}]`;
+    const path = `result.matches[${match.funded_project_id}]`;
     state.decisions.set(path, {
       target_path: path,
       selected: true,
@@ -279,13 +280,13 @@
 
   function createSimilarFieldRow(match, key, label, note) {
     const value = match[key] ?? (key === "fit_rationale" ? "" : []);
-    const path = `result.matches[${match.funding_record_id}].${key}`;
+    const path = `result.matches[${match.funded_project_id}].${key}`;
     const row = createEditableRow({
       key,
       label,
       value,
       path,
-      segments: ["result", "matches", String(match.funding_record_id), key],
+      segments: ["result", "matches", String(match.funded_project_id), key],
       note,
       badges: [
         [(match.evidence || []).length, "evidence", "evidence"],
@@ -293,7 +294,7 @@
       ],
       evidenceRefs: (match.evidence || []).map((item) => item.evidence_ref),
     });
-    row.dataset.parentMatch = `result.matches[${match.funding_record_id}]`;
+    row.dataset.parentMatch = `result.matches[${match.funded_project_id}]`;
     return row;
   }
 
@@ -302,9 +303,9 @@
   }
 
   function candidateForMatch(match) {
-    const targetId = String(match?.funding_record_id);
+    const targetId = String(match?.funded_project_id);
     return state.bundle.candidates.find(
-      (candidate) => String(candidate.funding_record_id) === targetId,
+      (candidate) => String(candidate.funded_project_id) === targetId,
     ) || null;
   }
 
@@ -420,7 +421,7 @@
         recordTitle(key, record, index),
       );
 
-      if (key === "funding_records" && !record.is_opportunity) {
+      if (key === "funded_projects") {
         renderFundedProjectReview(content, record, recordPath, [...segments, index]);
       }
 
@@ -439,9 +440,8 @@
   }
 
   function shouldSkipRecordField(collectionKey, record, childKey) {
-    if (collectionKey !== "funding_records") return false;
-    if (record.is_opportunity && childKey === "project_tags") return true;
-    return REVIEW_ONLY_RECORD_KEYS.has(childKey);
+    return collectionKey === "funded_projects"
+      && REVIEW_ONLY_RECORD_KEYS.has(childKey);
   }
 
   function renderFundedProjectReview(parent, record, recordPath, segments) {
@@ -741,7 +741,7 @@
     const decisions = visibleDecisions();
     if (state.mode === SIMILAR_PROJECT_MODE) {
       const includedMatches = (state.bundle?.result?.matches || []).filter((match) => {
-        const decision = state.decisions.get(`result.matches[${match.funding_record_id}]`);
+        const decision = state.decisions.get(`result.matches[${match.funded_project_id}]`);
         return decision?.selected !== false;
       }).length;
       view.selectionSummary.textContent = (

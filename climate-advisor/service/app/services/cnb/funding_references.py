@@ -17,13 +17,13 @@ logger = logging.getLogger(__name__)
 
 
 class FundingReferenceValidator(Protocol):
-    """Validate external funder and funding-record identifiers."""
+    """Validate external funder and selected-opportunity identifiers."""
 
     async def validate(
         self,
         *,
         funder_id: UUID | None,
-        selected_funding_record_id: UUID | None,
+        selected_funding_opportunity_id: UUID | None,
     ) -> None:
         """Raise when supplied identifiers are unavailable or inconsistent."""
 
@@ -42,9 +42,9 @@ class PostgresFundingReferenceValidator:
         self,
         *,
         funder_id: UUID | None,
-        selected_funding_record_id: UUID | None,
+        selected_funding_opportunity_id: UUID | None,
     ) -> None:
-        """Require supplied records to exist and share the requested funder."""
+        """Require supplied references to exist and share the requested funder."""
         if funder_id is None:
             return
 
@@ -54,11 +54,11 @@ class PostgresFundingReferenceValidator:
             )
             async with session_factory() as session:
                 await self._require_funder(session, funder_id)
-                if selected_funding_record_id is not None:
-                    await self._require_funding_record(
+                if selected_funding_opportunity_id is not None:
+                    await self._require_funding_opportunity(
                         session,
                         funder_id=funder_id,
-                        funding_record_id=selected_funding_record_id,
+                        funding_opportunity_id=selected_funding_opportunity_id,
                     )
         except HTTPException:
             raise
@@ -80,29 +80,31 @@ class PostgresFundingReferenceValidator:
         if result.scalar_one_or_none() is None:
             raise HTTPException(status_code=422, detail="Unknown funder_id")
 
-    async def _require_funding_record(
+    async def _require_funding_opportunity(
         self,
         session: AsyncSession,
         *,
         funder_id: UUID,
-        funding_record_id: UUID,
+        funding_opportunity_id: UUID,
     ) -> None:
-        """Require one funding record owned by the supplied funder."""
+        """Require one funding opportunity owned by the supplied funder."""
         result = await session.execute(
             text(
-                "SELECT funder_id FROM funding_records "
-                "WHERE funding_record_id = :funding_record_id"
-            ).bindparams(bindparam("funding_record_id", type_=Uuid(as_uuid=True))),
-            {"funding_record_id": funding_record_id},
+                "SELECT funder_id FROM funding_opportunities "
+                "WHERE funding_opportunity_id = :funding_opportunity_id"
+            ).bindparams(
+                bindparam("funding_opportunity_id", type_=Uuid(as_uuid=True))
+            ),
+            {"funding_opportunity_id": funding_opportunity_id},
         )
-        record_funder_id = result.scalar_one_or_none()
-        if record_funder_id is None:
+        opportunity_funder_id = result.scalar_one_or_none()
+        if opportunity_funder_id is None:
             raise HTTPException(
                 status_code=422,
-                detail="Unknown selected_funding_record_id",
+                detail="Unknown selected_funding_opportunity_id",
             )
-        if UUID(str(record_funder_id)) != funder_id:
+        if UUID(str(opportunity_funder_id)) != funder_id:
             raise HTTPException(
                 status_code=422,
-                detail="selected_funding_record_id does not belong to funder_id",
+                detail="selected_funding_opportunity_id does not belong to funder_id",
             )

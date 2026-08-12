@@ -26,13 +26,16 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-07-30): CC accepts authorized run-scoped CNB PDF
-uploads and reuses the shared `PdfOcrJob` worker. CA creates the authoritative
-`concept_note_uploads` row before CC stores or queues the PDF. CC stores source
-and result objects under deterministic keys, delivers only the result pointer
-and immutable metadata, and exposes the Markdown to CA through an authenticated
-internal read boundary. The consolidated CNB frontend and downstream context
-selection remain deferred.
+Implementation baseline (2026-08-05): the repository owns an independent CNB
+schema migration chain and connects the reviewed-reference importer and
+similar-project reader to it. The initial migration provisions the planned
+workspace/reference schema but does not add workspace HTTP services or seed
+curated data. On the existing Climate Advisor chain, CA owns run,
+context-bundle, and pointer-only upload persistence. CC accepts authorized
+run-scoped PDF uploads, reuses the shared `PdfOcrJob` worker, stores source and
+result objects under deterministic keys, and exposes verified Markdown to CA
+through an authenticated internal read boundary. The consolidated CNB frontend
+and downstream context selection remain deferred.
 
 In scope:
 
@@ -40,7 +43,7 @@ In scope:
 - A document workspace that supports structured chapters, evidence review,
   revisions, gaps, and export.
 - Funding reference tables for funders, funder criteria, templates, and similar
-  funded projects in the datateam managed CNB database.
+  funded projects in the externally operated CNB database.
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
@@ -63,14 +66,17 @@ workflow, following the same direction as the Stationary Energy workflow:
 1. CityCatalyst owns product data, user permissions, durable chat threads and
    messages, and committed module state.
 2. Climate Advisor orchestrates the conversation and pre-commit agentic
-   workflow. It owns the run/context-bundle foundation in `CA_DATABASE_URL`,
-   but not durable chat.
-3. The datateam managed CNB reference database stores reusable funder and
-   funded-project tables behind typed integration contracts.
-4. PDF ingestion uses the shared CC converter. CC owns Mistral OCR and storage,
+   workflow and owns the schema integration code, but not durable chat or the
+   externally operated database infrastructure.
+3. `CA_DATABASE_URL` stores run, context-bundle, and upload persistence on the
+   existing Climate Advisor Alembic chain.
+4. `CNB_DATABASE_URL` stores the document workspace and reusable funding
+   reference corpus on an independent `cnb_alembic_version` chain owned by this
+   repository. Infrastructure and curated data remain externally managed.
+5. PDF ingestion uses the shared CC converter. CC owns Mistral OCR and storage,
    hands CA the stable result pointer, and serves verified Markdown through the
    authenticated internal read route.
-5. The agent gets a scoped tool pack for the active workflow step, not a flat
+6. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
 
 ```mermaid
@@ -101,9 +107,12 @@ flowchart TB
         MatchService["ProjectMatchingService"]
     end
 
-    subgraph CNBDB["datateam managed CNB database"]
+    CADB[("CA database<br/>runs + context bundles + uploads")]
+
+    subgraph CNBDB["externally operated CNB database"]
+        WorkspaceDB[("Chapters + revisions<br/>gaps + matches + exports")]
         FunderDB[("Funders<br/>criteria + templates")]
-        ProjectKB[("Funding records<br/>opportunities + funded projects<br/>source evidence")]
+        ProjectKB[("Funding opportunities<br/>funded projects + source evidence")]
     end
 
     ContextBundle["Context bundle<br/>CC context + funder criteria<br/>funded projects + uploads"]
@@ -127,6 +136,8 @@ flowchart TB
     CNBService --> ContextService
     CNBService --> DocService
     CNBService --> MatchService
+    CNBService --> CADB
+    DocService --> WorkspaceDB
     CCData --> CCCaps
     CCCaps --> ContextService
     FunderDB --> ContextService
@@ -195,46 +206,54 @@ flowchart LR
 | Chat threads and messages                                          | CityCatalyst                        | Keeps durable user conversation state with the product permission boundary.                      |
 | Concept-note run state                                             | Climate Advisor (`CA_DATABASE_URL`) | Pre-commit workflow state provisioned by the CA Alembic chain.                                   |
 | Context bundle snapshot                                            | Climate Advisor (`CA_DATABASE_URL`) | Reusable run input/output initialized transactionally with each run.                             |
-| CN upload/run associations and Markdown S3 pointers                | Climate Advisor (`CA_DATABASE_URL`) | Owns the run binding, lifecycle, label, and immutable result identity.                           |
-| Selected source context                                            | datateam managed CNB database       | Keeps excerpts selected for review and export.                                                   |
+| CN upload/run associations and Markdown result identity            | Climate Advisor (`CA_DATABASE_URL`) | Owns the run binding, lifecycle, label, and immutable result identity.                           |
 | Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst                        | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog. |
-| Document chapters and revisions                                    | datateam managed CNB database       | Draft document state before export.                                                              |
-| Funder profiles and criteria                                       | datateam managed CNB database       | Shared curated corpus, reusable across cities and agents.                                        |
-| Funding opportunities and funded projects                          | datateam managed CNB database       | Shared funding records distinguished by `is_opportunity`.                                        |
-| Exported DOCX/PDF file references                                  | datateam managed CNB database       | Workflow output artifacts.                                                                       |
+| Document chapters and revisions                                    | `CNB_DATABASE_URL`                  | Draft document state before export; `run_id` is an external CA identifier.                      |
+| Funder profiles and criteria                                       | `CNB_DATABASE_URL`                  | Shared curated corpus, reusable across cities and agents.                                        |
+| Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Separate programme and awarded-project tables with explicit foreign keys.                         |
+| Exported DOCX/PDF file references                                  | `CNB_DATABASE_URL`                  | Workflow output artifacts.                                                                       |
 | PDF-to-Markdown conversion                                         | CityCatalyst                        | Owns Mistral OCR, queueing, retries, validation, authoritative storage, and result pointers.     |
-| Markdown pointer delivery                                          | CityCatalyst → Climate Advisor      | CC sends a stable object key and metadata; CA verifies bytes through authenticated CC.           |
+| Pointer-only Markdown handoff                                      | CityCatalyst to Climate Advisor     | CC sends a stable result key and immutable metadata; CA reads content only through authenticated CC. |
 
 ## Data Infrastructure Boundary
 
-Climate Advisor provisions the durable run, context-bundle, and received
-Markdown foundation in `CA_DATABASE_URL`. Document chapters, revisions, gaps,
-evidence links, funder profiles, and funded-project corpora remain separate
-integration contracts and are not provisioned by this foundation.
+The repository owns the schema contracts and migration code but not the RDS
+clusters, database users, credentials, backups, or curated production records.
+The boundary is deliberately two-database: `CA_DATABASE_URL` holds runs,
+context bundles, and uploads; `CNB_DATABASE_URL` holds workspace and reference
+tables. Each URL has an independent Alembic chain and version table.
 
 The application and Climate Advisor work should consume that infrastructure
 through stable contracts:
 
-- typed read/write clients or repositories for CNB run and document state
-- typed reference-data clients for funders, funding records, templates,
+- typed read/write clients or repositories for CA run state and CNB document state
+- typed reference-data clients for funders, funding opportunities, funded projects, templates,
   criteria, and evidence
 - stable CC-created upload IDs and CNB export file references
 - source labels/locations and evidence link records for workspace review and
   audit trails
 
-The diagrams below describe the logical storage shape the workflow needs.
-CC-608 provisions the initial `concept_note_runs` and
-`concept_note_context_bundles` tables through Climate Advisor's Alembic chain in
-the database configured by `CA_DATABASE_URL`. The remaining workflow and
-reference tables stay logical integration contracts until their owning
-implementation is delivered.
+The existing Climate Advisor chain provisions `concept_note_runs`,
+`concept_note_context_bundles`, and `concept_note_uploads` through
+`CA_DATABASE_URL`. The CNB migration chain requires only `CNB_DATABASE_URL` and
+never creates those CA workflow tables. The existing Climate Advisor chain must
+likewise never create CNB workspace or reference tables.
+
+Deployment credentials follow the repository's GitHub Actions boundary:
+`CNB_DATABASE_URL_DEV` supplies dev and the current test deployment, while
+`CNB_DATABASE_URL_PROD` supplies production. Workflows reconcile Kubernetes
+Secrets containing only `CNB_DATABASE_URL`; Deployments and CNB migration Jobs
+use `secretRef`. No real or base64-encoded CNB credential belongs in Git,
+ConfigMaps, logs, or migration commands. Credentials exposed through chat or
+tickets must be rotated before use, with reserved password characters
+URL-encoded in the final DSN.
 
 ## Tables and Data Placement
 
-PDF ingestion spans two PostgreSQL databases and the existing CC S3 bucket. The
-same `upload_id` identifies a Concept Note source across the boundary, but there
-is no database foreign key between CC PostgreSQL and the datateam managed CNB
-database.
+PDF ingestion and document authoring span CityCatalyst PostgreSQL, the Climate
+Advisor database, the CNB database, and the existing CC S3 bucket. Identifiers
+cross these boundaries through authenticated application contracts; databases
+do not create cross-database foreign keys.
 
 ```mermaid
 flowchart LR
@@ -249,9 +268,15 @@ flowchart LR
         Markdown["Authoritative combined Markdown"]
     end
 
-    subgraph CNBDB["CNB workflow storage (CA_DATABASE_URL)"]
+    subgraph CADB["CA_DATABASE_URL"]
         Run["concept_note_runs"]
         Upload["concept_note_uploads<br/>(authoritative upload record)"]
+        Bundle["concept_note_context_bundles"]
+    end
+
+    subgraph CNBDB["CNB_DATABASE_URL"]
+        Workspace["chapters + revisions<br/>gaps + matches + exports"]
+        References["funders + opportunities + funded projects<br/>templates + criteria + evidence"]
     end
 
     Inventory -.->|"inventory_import + id"| OCR
@@ -260,6 +285,9 @@ flowchart LR
     OCR --> Markdown
     Chat -.->|"thread_id integration identifier"| Run
     Run --> Upload
+    Run --> Bundle
+    Run -.->|"external run_id; no FK"| Workspace
+    References --> Workspace
     Markdown -.->|"pointer + immutable metadata"| Upload
 ```
 
@@ -336,15 +364,15 @@ The combined Markdown key follows
 
 ### Climate Advisor Workflow Database
 
-The `concept_note_uploads` table is provisioned by the Climate Advisor Alembic
-chain. CA creates the row before CC stores or queues the source. The row stores
-filename, label, lifecycle state, immutable digest/page metadata, and a nullable
-stable CC S3 key after conversion. It stores no Markdown bytes, presigned URL,
-Mistral configuration, OCR attempt, or lease.
+The `concept_note_uploads` table belongs to the existing Climate Advisor Alembic
+chain under `CA_DATABASE_URL`. CA creates the row before CC stores or queues the
+source. It stores filename, label, lifecycle state, immutable digest/page
+metadata, and a nullable stable CC S3 key after conversion. It stores no
+Markdown bytes, presigned URL, Mistral configuration, OCR attempt, or lease.
 
 `concept_note_uploads.upload_id` is reused as `PdfOcrJob.source_id`. The upload
 identity is checked through API and repository contracts without a
-cross-database foreign key to CC. Within the CA workflow database,
+cross-database foreign key to CC. Within the CA database,
 `concept_note_uploads.run_id` references `concept_note_runs.run_id` with
 cascading deletion.
 
@@ -712,8 +740,8 @@ important planning rules are:
 
 - Keep the four discovered input groups separate: finance landscape, funder
   profiles, comparable awards, and CityCatalyst city context/GHGI.
-- Store opportunities and funded projects in one `funding_records` table.
-  `is_opportunity` distinguishes opportunity rows from funded-project rows.
+- Store application programmes in `funding_opportunities` and awarded examples
+  in `funded_projects`; do not use a type flag to distinguish them.
 - Keep each funded project and its award information in one complete row; do
   not introduce a separate funding-link table.
 - Treat the finance route as document-shaping data. A competitive grant,
@@ -733,14 +761,17 @@ important planning rules are:
 ### CNB Workflow Tables
 
 These are the logical workflow/document tables the CNB backend needs to use.
-The run, context-bundle, and received-Markdown upload tables are migrated and
-accessed by Climate Advisor through `CA_DATABASE_URL`; later workflow/document
-tables remain typed contracts until their persistence work is implemented.
+`concept_note_chapters`, `concept_note_chapter_revisions`,
+`concept_note_evidence_links`, `concept_note_gaps`,
+`concept_note_matched_projects`, and `concept_note_exports` live under
+`CNB_DATABASE_URL`. Climate Advisor consumes them through typed
+service/repository contracts.
 
-The workflow tables below and the funding reference tables in the next diagram
-are separate persistence boundaries connected through typed identifiers rather
-than database foreign keys. They are split into two diagrams so workflow state
-and curated funding/reference data are easier to read.
+The run, context-bundle, and upload tables shown for logical context live under
+`CA_DATABASE_URL` and are not created by the CNB migration. Relationships from
+the CNB workspace to a run are application-level joins by `run_id`, not physical
+foreign keys. Funding references in the next diagram share the CNB database with
+the workspace and can use internal foreign keys.
 
 ```mermaid
 erDiagram
@@ -761,7 +792,7 @@ erDiagram
         string city_id
         string project_id
         uuid funder_id
-        uuid selected_funding_record_id
+        uuid selected_funding_opportunity_id
         string status
         string workflow_step
         jsonb context_summary
@@ -844,7 +875,7 @@ erDiagram
     concept_note_matched_projects {
         uuid match_id
         uuid run_id
-        uuid funding_record_id
+        uuid funded_project_id
         string decision
         text fit_rationale
         jsonb matched_tags
@@ -861,17 +892,20 @@ erDiagram
     }
 ```
 
-Within the CNB database, funding references use the same UUID type as their
-source records:
+Across the two databases, integration identifiers use the same UUID type as
+their source records:
 
-- `concept_note_runs.funder_id` references `funders.funder_id`.
-- `concept_note_runs.selected_funding_record_id` references
-  `funding_records.funding_record_id`.
-- `concept_note_matched_projects.funding_record_id` references
-  `funding_records.funding_record_id`.
+- `concept_note_runs.funder_id` and `selected_funding_opportunity_id` are external
+  identifiers into `CNB_DATABASE_URL` and receive no database foreign keys.
+  The latter identifies a `funding_opportunities.funding_opportunity_id`.
+- Every CNB workspace `run_id` is an external identifier into
+  `CA_DATABASE_URL` and receives no database foreign key.
+- `concept_note_matched_projects.funded_project_id` is internal to
+  `CNB_DATABASE_URL` and references `funded_projects.funded_project_id` with
+  restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-CityCatalyst-owned chat thread. The CNB database must not create a foreign key to
+CityCatalyst-owned chat thread. The CA database must not create a foreign key to
 a local `threads` table. CityCatalyst validates thread ownership before passing
 the identifier into the Climate Advisor workflow.
 
@@ -891,8 +925,9 @@ After conversion, CA verifies the artifact through CC's authenticated internal
 Markdown read endpoint, then stores `markdown_s3_key`, the verified
 `markdown_sha256`, page count, source label, and `ingest_status`. These values
 are immutable for an `upload_id`; replacement creates a new upload. The stored
-key is stable and never a presigned URL. Later context assembly reads the CNB
-row and asks CC for Markdown by `upload_id`; CA receives no bucket credentials.
+key is stable and never a presigned URL. Later context assembly reads the CA
+upload row and asks CC for Markdown by `upload_id`; CA receives no bucket
+credentials or Markdown storage authority.
 
 ### Evidence Links
 
@@ -920,18 +955,21 @@ evidence-backed content.
 
 ### CNB Funding Reference Tables
 
-These tables remain in the datateam managed CNB reference database. They store
-reusable funders and funding records and are accessed through typed contracts;
-there are no cross-database foreign keys to the CA-owned run foundation. A
-funding record is either an opportunity or a funded project.
+These tables live under `CNB_DATABASE_URL` beside the document workspace. They
+store reusable funders, funding opportunities, and funded-project examples and
+are accessed through typed contracts. The repository owns their schema and
+migrations; infrastructure and curated data remain externally managed. There
+are no cross-database foreign keys to the CA-owned run foundation.
 
 ```mermaid
 erDiagram
-    funders ||--o{ funding_records : "owns"
-    funding_records ||--o{ funder_templates : "uses when opportunity"
-    funding_records ||--o{ funder_criteria : "defines when opportunity"
-    funding_records ||--o{ funding_record_evidence : "cites"
-    source_documents ||--o{ funding_record_evidence : "supports"
+    funders ||--o{ funding_opportunities : "offers"
+    funders ||--o{ funded_projects : "funds"
+    funding_opportunities ||--o{ funder_templates : "uses"
+    funding_opportunities ||--o{ funder_criteria : "defines"
+    funding_opportunities o|--o{ funding_evidence : "cites"
+    funded_projects o|--o{ funding_evidence : "cites"
+    source_documents ||--o{ funding_evidence : "supports"
     source_documents ||--o{ funder_criteria : "supports"
 
     funders {
@@ -943,18 +981,15 @@ erDiagram
         jsonb profile
     }
 
-    funding_records {
-        uuid funding_record_id
+    funding_opportunities {
+        uuid funding_opportunity_id
         string source_run_id
         string source_record_ref
         uuid funder_id
-        bool is_opportunity
         string name
-        string applicant_name
-        string city
-        string state_region
-        string country
+        string applicant_type
         string category
+        string sector
         jsonb hazards
         jsonb interventions
         string finance_route
@@ -962,17 +997,42 @@ erDiagram
         string region_scope
         numeric min_award
         numeric max_award
+        string currency
+        string status
+        text summary
+        jsonb known_gaps
+    }
+
+    funded_projects {
+        uuid funded_project_id
+        string source_run_id
+        string source_record_ref
+        uuid funder_id
+        string name
+        string applicant_name
+        string applicant_type
+        string city
+        string state_region
+        string country
+        string category
+        string sector
+        jsonb hazards
+        jsonb interventions
+        string finance_route
+        string instrument_type
+        string region_scope
         numeric award_amount
         string currency
         int award_year
         string status
         text summary
         jsonb project_tags
+        jsonb known_gaps
     }
 
     funder_templates {
         uuid template_id
-        uuid funding_record_id
+        uuid funding_opportunity_id
         string template_name
         string output_format
         jsonb chapter_schema
@@ -981,7 +1041,8 @@ erDiagram
 
     funder_criteria {
         uuid criterion_id
-        uuid funding_record_id
+        uuid funding_opportunity_id
+        uuid source_document_id
         string criterion_type
         string label
         text requirement_text
@@ -1000,9 +1061,10 @@ erDiagram
         timestamp fetched_at
     }
 
-    funding_record_evidence {
+    funding_evidence {
         uuid evidence_id
-        uuid funding_record_id
+        uuid funding_opportunity_id
+        uuid funded_project_id
         uuid source_document_id
         text claim
         text quote_or_summary
@@ -1010,10 +1072,11 @@ erDiagram
     }
 ```
 
-Rows with `is_opportunity = true` hold the application programme, template, and
-criteria. Rows with `is_opportunity = false` hold one complete funded-project
-example and its award information. Templates and criteria may reference only an
-opportunity record.
+Each `funding_opportunities` row holds one application programme and its award
+range. Each `funded_projects` row holds one complete awarded-project example and
+its award information. Templates and criteria reference only a funding
+opportunity. Each `funding_evidence` row references exactly one opportunity or
+funded project; a check constraint rejects rows with both or neither parent.
 
 Every funded-project row must reference one canonical existing `funder_id`.
 Local research may discover a project whose reported funder has not yet been
@@ -1025,10 +1088,21 @@ The importer rejects missing or unknown funder IDs. Funded projects do not need
 an opportunity-record relationship for this matching flow.
 
 Imported funded projects retain the local research identity as
-`source_run_id` plus `source_record_ref`. The managed database must enforce a
+`source_run_id` plus `source_record_ref`. The CNB database enforces a
 unique constraint on that pair. Replaying an approved import returns the
-existing `funding_record_id` and does not insert duplicate evidence; revised
+existing `funded_project_id` and does not insert duplicate evidence; revised
 reference data requires a new research run.
+
+The physical schema also enforces unique `(content_hash, url)` source documents,
+unique `(chapter_id, revision_number)` revisions, unique
+`(run_id, funded_project_id)` matches, and unique active chapter positions per
+run through a partial index that excludes deleted chapters. Reference children
+cascade from opportunities or funded projects; chapter revisions and evidence
+links cascade from chapters; deleting a referenced funder or matched funded
+project is restricted.
+All UUIDv4 primary keys are generated by application code, so the migration does
+not require a PostgreSQL UUID extension. `funder_criteria.source_document_id` is
+nullable and links a criterion to retained provenance when one exists.
 
 Funded-project discovery itself is project-first: its CLI requires a substantive
 current-project profile and uses that profile to guide queries and candidate
@@ -1066,13 +1140,14 @@ rejects mismatched IDs. A SHA check is not required for this pairing.
 Required ingest outputs:
 
 - Source document record with URL, title, date, license status, and hash.
-- Funder record and funding records for opportunities and funded projects.
+- Funder record, funding-opportunity record, and funded-project records.
 - A reviewer-selected canonical `funder_id` for every funded project.
 - Reviewer-curated `project_tags` for funded projects used in matching.
 - Template chapter schema.
 - Stated eligibility criteria from program documents.
 - Derived matching signals, marked as derived.
-- Opportunity and funded-project details in the shared funding records.
+- Opportunity details in `funding_opportunities` and awarded examples in
+  `funded_projects`.
 - Evidence links for each important claim.
 
 ## Similar Project Matching
@@ -1160,7 +1235,7 @@ example only when the active interview or document context makes it relevant.
 
 The tag vocabulary should be curated data, not invented at runtime by the model.
 The LLM can reason over tags already assigned to projects, but new tags or tag
-weights should be added through the datateam managed CNB database process.
+weights should be added through the externally managed curated-data process.
 
 The later curated scoring system should be treated as a concept, not current v1
 behavior. It can add hard filters and weighted scoring once NLC approves the
@@ -1373,7 +1448,7 @@ Input:
   "city_id": "string",
   "project_id": "string|null",
   "funder_id": "uuid|null",
-  "selected_funding_record_id": "uuid|null",
+  "selected_funding_opportunity_id": "uuid|null",
   "thread_id": "uuid|null",
   "idempotency_key": "uuid"
 }
@@ -1479,7 +1554,7 @@ Rules:
 
 - Uses current CC-CA capability architecture.
 - Returns summarized payloads, not raw route dumps.
-- Stores the context bundle snapshot in the CA workflow database for
+- Stores the context bundle snapshot under `CA_DATABASE_URL` for
   reproducibility.
 - Edits the bundle through workflow orchestration by rebuilding affected sections
   from changed underlying inputs such as uploads, funder profile changes,
@@ -1569,7 +1644,7 @@ Output:
 {
   "matches": [
     {
-      "funding_record_id": "uuid",
+      "funded_project_id": "uuid",
       "decision": "selected",
       "fit_rationale": "Why the LLM agent considers this example useful.",
       "matched_tags": ["stormwater", "flood", "city-led"],
@@ -1582,7 +1657,7 @@ Output:
 
 Rules:
 
-- Retrieve candidate funding records where `is_opportunity = false`.
+- Retrieve candidates directly from `funded_projects`.
 - Require `funder_id` for `same_funder`; an explicit `cross_funder` request may
   omit the current project's funder while every reviewed candidate retains its
   own canonical funder identity.
@@ -2134,9 +2209,9 @@ file layout.
 | ----------------------------- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                                                                                    |
 | Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                                                                                    |
-| CNB workflow foundation       | Climate Advisor                  | Its Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                                           |
-| Extended CNB storage access   | datateam managed CNB database    | Climate Advisor uses typed contracts for later chapters, revisions, gaps, evidence, and exports; CC-608 does not provision those tables.                                                                                                                       |
-| Funding reference access      | datateam managed CNB database    | Climate Advisor reads funders, funding records, templates, criteria, and evidence from CNB reference tables.                                                                                                                                                   |
+| CA workflow foundation        | Climate Advisor                  | The existing Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                                  |
+| CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                                                                                |
+| Funding reference access      | Climate Advisor repository       | The CNB chain owns the funder/reference schema; the importer writes reviewed projects/evidence and runtime matching reads the complete requested funder scope before bounded shortlist ranking. Curated data remains externally managed.                         |
 | Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                            |
 | Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result objects. CA receives only the stable Markdown key and immutable metadata, never bucket credentials, a source-PDF key, or a presigned URL.           |
 | PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and pointer delivery.                                                                                                   |
@@ -2177,6 +2252,10 @@ file layout.
 
 Minimum test surface:
 
+- Independent CNB migration upgrade, downgrade, re-upgrade, constraint/index,
+  and cross-chain isolation tests against ephemeral PostgreSQL.
+- Kubernetes contract tests proving CNB credentials come only from Secrets and
+  both migration Jobs are launched before application rollout.
 - Pydantic contracts for all CNB route payloads.
 - CNB storage client and contract tests for run, chapter, revision, gap, and
   evidence behavior.
@@ -2192,6 +2271,15 @@ Minimum test surface:
 - CC OCR tests covering upload authorization, durable job claims, lease recovery,
   three-attempt transient retries, ordered page merge, result persistence, and
   the 20 MB source-PDF upload limit.
+- CC-to-CA pointer handoff contract tests covering authentication, digest
+  verification, `202` durable registration, same-digest idempotency, and
+  different-digest `409` conflicts.
+- CNB city-context contract tests covering deterministic inventory selection,
+  GPC I-V ordering, sector-local source states, five-source capping, missing and
+  partial GHGI, immutable run/city binding, targeted bundle merging, cached
+  reuse after live city-access revalidation, omission of HIAP by default,
+  mitigation/adaptation grouping, selected-action preference, uncapped ranked
+  fallback, and targeted GHGI/HIAP bundle merging.
 - Failure tests distinguishing `cc_ocr_failed` from
   `ca_markdown_ingest_failed` and proving a delivery or downstream retry does not
   repeat successful OCR.

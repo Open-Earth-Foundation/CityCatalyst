@@ -24,6 +24,7 @@ import { randomUUID } from "node:crypto";
 
 import { GET, PATCH } from "@/app/api/v1/inventory/[inventory]/hiap/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
+import GlobalAPIService from "@/backend/GlobalAPIService";
 
 describe("Inventory HIAP API", () => {
   let inventoryId: string;
@@ -96,6 +97,10 @@ describe("Inventory HIAP API", () => {
         ],
         rankedActionsAdaptation: [],
       });
+
+    // Mock the climate-actions catalog API — GET always fetches it to build
+    // unrankedActions, so without this it hits the real external service.
+    jest.spyOn(GlobalAPIService, "fetchAllClimateActions").mockResolvedValue([]);
   });
 
   afterAll(async () => {

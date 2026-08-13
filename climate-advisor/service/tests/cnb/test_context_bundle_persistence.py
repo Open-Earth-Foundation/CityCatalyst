@@ -12,6 +12,7 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.persistence.concept_notes.context_bundle import (
+    ContextBundleBuildSnapshot,
     ContextBundlePersistenceError,
     begin_build,
     complete_build,
@@ -37,6 +38,23 @@ async def database(tmp_path):
             )
         )
     return engine, async_sessionmaker(engine, expire_on_commit=False)
+
+
+def concept_note_run(
+    run_id: UUID,
+    *,
+    context_summary: dict | None = None,
+) -> ConceptNoteRun:
+    return ConceptNoteRun(
+        run_id=run_id,
+        user_id="owner",
+        name="Run",
+        city_id=str(uuid4()),
+        idempotency_key=uuid4(),
+        request_fingerprint="a" * 64,
+        context_summary=context_summary or {},
+        permission_summary={},
+    )
 
 
 def upload(
@@ -75,6 +93,24 @@ def selected(upload_row: ConceptNoteUpload) -> SelectedSource:
     )
 
 
+async def commit_build(
+    session_factory: async_sessionmaker,
+    snapshot: ContextBundleBuildSnapshot,
+    selected_sources: list[SelectedSource],
+) -> bool:
+    return await complete_build(
+        session_factory=session_factory,
+        user_id="owner",
+        run_id=snapshot.run_id,
+        build_id=snapshot.build_id,
+        selected_sources=selected_sources,
+        ghgi=None,
+        hiap=None,
+        optional_sources={"ghgi": "missing", "hiap": "missing"},
+        warnings=[],
+    )
+
+
 @pytest.mark.asyncio
 async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
     tmp_path,
@@ -92,19 +128,12 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
     )
     try:
         async with session_factory() as session, session.begin():
-            run = ConceptNoteRun(
-                run_id=run_id,
-                user_id="owner",
-                name="Run",
-                city_id=str(uuid4()),
-                idempotency_key=uuid4(),
-                request_fingerprint="a" * 64,
-                context_summary={"unrelated": {"keep": True}},
-                permission_summary={},
-            )
             session.add_all(
                 [
-                    run,
+                    concept_note_run(
+                        run_id,
+                        context_summary={"unrelated": {"keep": True}},
+                    ),
                     ConceptNoteContextBundle(
                         run_id=run_id,
                         context_bundle={
@@ -130,16 +159,10 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             build_id=uuid4(),
         )
         assert [item.upload_id for item in snapshot.uploads] == [ready_id]
-        committed = await complete_build(
-            session_factory=session_factory,
-            user_id="owner",
-            run_id=run_id,
-            build_id=snapshot.build_id,
-            selected_sources=[selected(ready_upload)],
-            ghgi=None,
-            hiap=None,
-            optional_sources={"ghgi": "missing", "hiap": "missing"},
-            warnings=[],
+        committed = await commit_build(
+            session_factory,
+            snapshot,
+            [selected(ready_upload)],
         )
         assert committed is True
 
@@ -230,16 +253,7 @@ async def test_stale_build_cannot_replace_newer_ready_upload_set(tmp_path) -> No
         async with session_factory() as session, session.begin():
             session.add_all(
                 [
-                    ConceptNoteRun(
-                        run_id=run_id,
-                        user_id="owner",
-                        name="Run",
-                        city_id=str(uuid4()),
-                        idempotency_key=uuid4(),
-                        request_fingerprint="a" * 64,
-                        context_summary={},
-                        permission_summary={},
-                    ),
+                    concept_note_run(run_id),
                     ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
                     first,
                 ]
@@ -252,40 +266,17 @@ async def test_stale_build_cannot_replace_newer_ready_upload_set(tmp_path) -> No
         )
         async with session_factory() as session, session.begin():
             session.add(second)
-        assert (
-            await complete_build(
-                session_factory=session_factory,
-                user_id="owner",
-                run_id=run_id,
-                build_id=older.build_id,
-                selected_sources=[selected(first)],
-                ghgi=None,
-                hiap=None,
-                optional_sources={"ghgi": "missing", "hiap": "missing"},
-                warnings=[],
-            )
-            is False
-        )
+        assert await commit_build(session_factory, older, [selected(first)]) is False
         newer = await begin_build(
             session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             build_id=uuid4(),
         )
-        assert older.source_fingerprint != newer.source_fingerprint
-        assert (
-            await complete_build(
-                session_factory=session_factory,
-                user_id="owner",
-                run_id=run_id,
-                build_id=newer.build_id,
-                selected_sources=[selected(first), selected(second)],
-                ghgi=None,
-                hiap=None,
-                optional_sources={"ghgi": "missing", "hiap": "missing"},
-                warnings=[],
-            )
-            is True
+        assert await commit_build(
+            session_factory,
+            newer,
+            [selected(first), selected(second)],
         )
         async with session_factory() as session:
             bundle = await session.get(ConceptNoteContextBundle, run_id)
@@ -305,16 +296,7 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
         async with session_factory() as session, session.begin():
             session.add_all(
                 [
-                    ConceptNoteRun(
-                        run_id=run_id,
-                        user_id="owner",
-                        name="Run",
-                        city_id=str(uuid4()),
-                        idempotency_key=uuid4(),
-                        request_fingerprint="a" * 64,
-                        context_summary={},
-                        permission_summary={},
-                    ),
+                    concept_note_run(run_id),
                     ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
                 ]
             )

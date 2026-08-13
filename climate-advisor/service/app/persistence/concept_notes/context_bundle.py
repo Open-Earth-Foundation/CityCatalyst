@@ -457,6 +457,7 @@ async def _require_owned_run(
 
 def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
     """Hash the deterministic ready-upload set without including storage keys."""
+    # Skip unchanged bundles and reject stale build writes when ready sources change.
     payload = [
         {
             "upload_id": str(upload.upload_id),

@@ -10,7 +10,6 @@ import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import LabelLarge from "@/components/package/Texts/Label";
-import { BiInfoCircle } from "react-icons/bi";
 import { isPasswordPatternValid } from "@/util/validation";
 
 export default function PasswordInput<
@@ -25,7 +24,8 @@ export default function PasswordInput<
   w,
   shouldValidate = false,
   watchPassword = "",
-  mismatch = false,
+  isSubmitted = true,
+  validate,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
@@ -36,19 +36,17 @@ export default function PasswordInput<
   w?: string;
   shouldValidate?: boolean;
   watchPassword?: string;
-  mismatch?: boolean;
+  isSubmitted?: boolean;
+  validate?: (value: string) => string | boolean;
 }) {
   const labelName = name || t("password");
 
-  const passwordInvalid =
-    shouldValidate &&
-    watchPassword.length > 0 &&
-    !isPasswordPatternValid(watchPassword);
+  const passwordValid = isPasswordPatternValid(watchPassword);
 
-  const passwordValid = shouldValidate && isPasswordPatternValid(watchPassword);
-
-  // Show hint until the password fully satisfies the pattern
+  // Hint is always visible as guidance; it's only styled as an error once
+  // the user has attempted to submit and the password still doesn't match.
   const showHint = shouldValidate && !passwordValid;
+  const passwordInvalid = shouldValidate && isSubmitted && !passwordValid;
 
   return (
     <Field
@@ -64,7 +62,7 @@ export default function PasswordInput<
         placeholder={t("password")}
         background={error ? "sentiment.negativeOverlay" : "background.default"}
         borderColor={
-          passwordInvalid || mismatch ? "sentiment.negativeDefault" : undefined
+          passwordInvalid ? "sentiment.negativeDefault" : undefined
         }
         visibilityIcon={{
           on: (
@@ -76,7 +74,7 @@ export default function PasswordInput<
         }}
         {...register(id as Path<TFieldValues>, {
           required: t("please-enter-password"),
-          minLength: { value: 4, message: t("min-length", { length: 4 }) },
+          validate,
         })}
       />
 
@@ -84,33 +82,15 @@ export default function PasswordInput<
 
       {/* Password pattern hint — hidden once the password is valid */}
       {showHint && (
-        <Box display="flex" alignItems="flex-start" gap={2} mt={2}>
-          <Icon
-            as={BiInfoCircle}
-            color={passwordInvalid ? "sentiment.negativeDefault" : "content.tertiary"}
-            boxSize={4}
-            mt="2px"
-          />
-          <Text
-            fontSize="body.md"
-            color={passwordInvalid ? "sentiment.negativeDefault" : "content.tertiary"}
-            letterSpacing="wide"
-            fontFamily="body"
-          >
-            {t("password-hint")}
-          </Text>
-        </Box>
-      )}
-
-      {/* Passwords mismatch error — hidden when Field already shows a form error */}
-      {mismatch && !error && (
         <Text
-          fontSize="body.md"
-          color="sentiment.negativeDefault"
-          letterSpacing="wide"
-          mt={2}
+          mt="s"
+          fontFamily="body"
+          fontSize="body.sm"
+          fontWeight="regular"
+          lineHeight="16px"
+          color={passwordInvalid ? "fg.error" : "content.tertiary"}
         >
-          {t("passwords-dont-match")}
+          {t("password-hint")}
         </Text>
       )}
     </Field>

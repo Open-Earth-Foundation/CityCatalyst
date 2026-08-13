@@ -4,14 +4,13 @@ import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 
-import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
+import { Heading, Input, Link, Text } from "@chakra-ui/react";
 import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
-import { MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,7 +18,6 @@ import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
-import { isPasswordPatternValid } from "@/util/validation";
 import { getHomePath } from "@/util/routes";
 import { getApiErrorMessage } from "@/util/helpers";
 
@@ -58,10 +56,9 @@ export default function Signup() {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isValid },
+    formState: { errors, isSubmitting, isSubmitted },
     watch,
   } = useForm<Inputs>({
-    mode: "onChange",
     defaultValues: {
       preferredLanguage: lng,
       email: prefilledEmail,
@@ -69,13 +66,6 @@ export default function Signup() {
   });
 
   const watchPassword = watch("password", "");
-  const watchConfirmPassword = watch("confirmPassword", "");
-  const passwordsMismatch =
-    watchConfirmPassword.length > 0 && watchPassword !== watchConfirmPassword;
-  const passwordPatternValid = isPasswordPatternValid(watchPassword);
-
-  const isSubmitDisabled =
-    !isValid || passwordsMismatch || !passwordPatternValid;
 
   const [error, setError] = useState("");
 
@@ -148,7 +138,15 @@ export default function Signup() {
 
   return (
     <>
-      <Heading size="xl">{t("signup-heading")}</Heading>
+      <Heading
+        fontFamily="Poppins"
+        fontSize="display.sm"
+        fontWeight={600}
+        lineHeight="44px"
+        color="content.secondary"
+      >
+        {t("signup-heading")}
+      </Heading>
       <Text mt={4} mb={8} color="content.tertiary">
         {t("signup-details")}
       </Text>
@@ -160,19 +158,7 @@ export default function Signup() {
         <Field
           label={<LabelLarge>{t("full-name")}</LabelLarge>}
           invalid={!!errors.name}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.name?.message}
-              </Text>
-            </Box>
-          }
+          errorText={errors.name?.message}
         >
           <Input
             type="text"
@@ -188,20 +174,13 @@ export default function Signup() {
             })}
           />
         </Field>
-        <EmailInput
-          register={register}
-          error={errors.email}
-          t={t}
-          disabled={Boolean(prefilledEmail)}
-          defaultValue={prefilledEmail}
-        />
         <PasswordInput
           register={register}
           error={errors.password}
           shouldValidate={true}
           t={t}
           watchPassword={watchPassword}
-          mismatch={passwordsMismatch}
+          isSubmitted={isSubmitted}
         />
         <PasswordInput
           register={register}
@@ -210,24 +189,21 @@ export default function Signup() {
           name={t("confirm-password")}
           id="confirmPassword"
           shouldValidate={false}
-          mismatch={passwordsMismatch}
+          isSubmitted={isSubmitted}
+          validate={(value) => value === watchPassword || t("passwords-dont-match")}
+        />
+        <EmailInput
+          register={register}
+          error={errors.email}
+          t={t}
+          disabled={Boolean(prefilledEmail)}
+          defaultValue={prefilledEmail}
         />
         <input type="hidden" {...register("preferredLanguage")} />
         <Field
+          mt="s"
           invalid={!!errors.acceptTerms}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.acceptTerms?.message}
-              </Text>
-            </Box>
-          }
+          errorText={errors.acceptTerms?.message}
         >
           <Checkbox
             color="content.tertiary"
@@ -254,10 +230,13 @@ export default function Signup() {
           type="submit"
           formNoValidate
           loading={isSubmitting}
-          disabled={isSubmitDisabled}
+          disabled={isSubmitting}
+          mt="s"
           h={16}
           width="full"
           bgColor="interactive.secondary"
+          color="white"
+          _disabled={{ color: "white" }}
         >
           {t("create-account")}
         </Button>

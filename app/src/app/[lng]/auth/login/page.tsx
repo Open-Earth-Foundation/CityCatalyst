@@ -114,7 +114,14 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Box display="flex" flexDirection="column" gap="16px">
           <EmailInput register={register} error={errors.email} t={t} />
-          <PasswordInput register={register} error={errors.password} t={t} />
+          <PasswordInput
+            register={register}
+            error={errors.password}
+            t={t}
+            validate={(value) =>
+              value.length >= 4 || t("min-length", { length: 4 })
+            }
+          />
           <Text color="semantic.danger">{t(error)}</Text>
           <Box w="full" textAlign="right">
             <Link href="/auth/forgot-password" textDecoration="underline">

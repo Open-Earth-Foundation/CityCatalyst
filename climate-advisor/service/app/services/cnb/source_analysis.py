@@ -10,7 +10,6 @@ import re
 from collections.abc import Awaitable, Sequence
 from dataclasses import dataclass
 from typing import Any, TypeVar, cast
-from urllib.parse import urlparse
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
 from app.config import Settings, get_settings
@@ -419,7 +418,7 @@ async def _run_agent(
         name=name,
         instructions=prompt,
         model=OpenAIChatCompletionsModel(
-            model=resolve_model_name(model_name, client),
+            model=model_name,
             openai_client=client,
         ),
         model_settings=ModelSettings(
@@ -774,12 +773,3 @@ async def gather_all_or_raise(*awaitables: Awaitable[OutputModel]) -> list[Outpu
         if isinstance(result, BaseException):
             raise result
     return cast(list[OutputModel], results)
-
-
-def resolve_model_name(model_name: str, client: AsyncOpenAI) -> str:
-    """Strip the OpenRouter provider prefix only for the OpenAI endpoint."""
-    base_url = str(client.base_url or "")
-    hostname = (urlparse(base_url).hostname or "").lower()
-    if hostname == "api.openai.com" and model_name.startswith("openai/"):
-        return model_name.split("/", 1)[1]
-    return model_name

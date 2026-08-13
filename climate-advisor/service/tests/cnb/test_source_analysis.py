@@ -27,7 +27,6 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
-    resolve_model_name,
     verify_source_artifact,
 )
 from openai import AsyncOpenAI
@@ -128,28 +127,6 @@ def analysis_dependencies() -> tuple[Settings, AsyncOpenAI]:
             api_key="test",
             base_url="https://openrouter.ai/api/v1",
         ),
-    )
-
-
-def test_model_prefix_is_stripped_only_for_exact_openai_hostname() -> None:
-    direct_client = SimpleNamespace(base_url="https://api.openai.com/v1")
-    deceptive_client = SimpleNamespace(
-        base_url="https://api.openai.com.attacker.example/v1"
-    )
-
-    assert (
-        resolve_model_name(
-            "openai/gpt-5.4-mini",
-            direct_client,  # type: ignore[arg-type]
-        )
-        == "gpt-5.4-mini"
-    )
-    assert (
-        resolve_model_name(
-            "openai/gpt-5.4-mini",
-            deceptive_client,  # type: ignore[arg-type]
-        )
-        == "openai/gpt-5.4-mini"
     )
 
 

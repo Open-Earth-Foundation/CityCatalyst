@@ -62,12 +62,10 @@ prompts:
   # Internal Concept Note Builder funded-project selection
   cnb_similar_project_matching: "prompts/cnb/similar_project_matching.md"
 
-  # Interactive Concept Note Builder and its internal source-analysis agents
-  concept_note: "prompts/concept_note.md"
+  # Internal Concept Note Builder source-analysis agents
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
-  cnb_source_grounded_synthesis: "prompts/cnb/source_grounded_synthesis.md"
 
 # API Configuration
 api:

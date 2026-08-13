@@ -91,37 +91,18 @@ class SourceQuestionReading(ContextBundleContract):
         return self
 
 
-class SourceQuestionSynthesis(ContextBundleContract):
-    """Grounded answer or explicit not-found result for one document."""
-
-    found: bool
-    answer: str | None = Field(default=None, max_length=8000)
-    excerpts: list[SourceExcerpt] = Field(default_factory=list, max_length=20)
-    caveats: list[str] = Field(default_factory=list, max_length=10)
-
-    @model_validator(mode="after")
-    def validate_answer(self) -> SourceQuestionSynthesis:
-        """Keep found and not-found variants unambiguous."""
-        if self.found and (not self.answer or not self.excerpts):
-            raise ValueError("A found answer requires text and cited excerpts")
-        if not self.found and (self.answer is not None or self.excerpts):
-            raise ValueError("A not-found answer must not contain answer evidence")
-        return self
-
-
 class SourceQueryResult(ContextBundleContract):
-    """Stable data payload returned by concept_note.sources.query."""
+    """Verified evidence payload returned by concept_note.sources.query."""
 
     found: bool
     upload_id: UUID
     source_label: str
-    answer: str | None = None
-    excerpts: list[SourceExcerpt] = Field(default_factory=list)
+    excerpts: list[SourceExcerpt] = Field(default_factory=list, max_length=20)
     pages_processed: int = Field(ge=1)
     pages_total: int = Field(ge=1)
     segments_processed: int = Field(ge=1)
     segments_total: int = Field(ge=1)
-    caveats: list[str] = Field(default_factory=list)
+    caveats: list[str] = Field(default_factory=list, max_length=10)
 
 
 class ContextBundleRetryResponse(ContextBundleContract):

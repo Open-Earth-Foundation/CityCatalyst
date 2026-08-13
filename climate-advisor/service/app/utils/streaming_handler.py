@@ -1265,7 +1265,7 @@ class StreamingHandler:
             context_mode = "stationary_energy_draft"
         if has_concept_note_context:
             workflow = "concept_note_context_chat"
-            prompt_name = "concept_note"
+            prompt_name = "chat"
             context_mode = "concept_note_run"
         return {
             "workflow": workflow,

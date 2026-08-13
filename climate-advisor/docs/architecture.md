@@ -212,8 +212,8 @@ workflow state in PostgreSQL.
   - Composes `prompts.core` with `prompts.chat` for general chat.
   - Composes `prompts.core` with `prompts.stationary_energy_review` for active
     Stationary Energy review chat.
-  - Composes `prompts.core` with `prompts.concept_note` for an authorized CNB
-    run and registers the source query only when its bundle and step permit it.
+  - Keeps the general chat prompt for an authorized CNB run and registers the
+    source query only when its bundle and step permit it.
   - Registers the pre-draft `stationary_energy_start_draft` tool only when the
     Stationary Energy surface is active and no draft run is loaded.
   - Keeps general inventory and vector-search tools out of active review chat.
@@ -246,7 +246,8 @@ workflow state in PostgreSQL.
 - `services/cnb/source_analysis.py`
   - Revalidates CC-owned Markdown identity, partitions every page under the
     configured token limit, runs at most four tool-free GPT-5.4 mini readers,
-    verifies exact citations, and uses GPT-5.4 synthesis.
+    verifies exact citations, and uses GPT-5.4 only for document-summary
+    reduction.
 - `persistence/concept_notes/context_bundle.py`
   - Stores typed-empty bundles and progress in the existing run/bundle tables,
     preserves unrelated sections, and authorizes selected-source queries.
@@ -327,22 +328,19 @@ settings.
   - Workflow prompt for general Climate Advisor chat.
 - `prompts.stationary_energy_review`
   - Workflow prompt for active Stationary Energy draft review chat.
-- `prompts.concept_note`
-  - Workflow prompt for interactive Concept Note interviewing, drafting, and
-    editing with selected-document queries.
 - `prompts.cnb_source_document_mapping` and
   `prompts.cnb_source_question_reading`
   - Tool-free GPT-5.4 mini reader roles that treat PDF text as untrusted evidence.
-- `prompts.cnb_source_summary_synthesis` and
-  `prompts.cnb_source_grounded_synthesis`
-  - GPT-5.4 synthesis roles for compact summaries and grounded answers.
+- `prompts.cnb_source_summary_synthesis`
+  - GPT-5.4 reduction from partition maps to one compact document summary.
 
 At runtime, Climate Advisor composes final instructions as:
 
 - `prompts.core + prompts.chat` for general chat
 - `prompts.core + prompts.stationary_energy_review` for active Stationary
   Energy draft review chat
-- `prompts.core + prompts.concept_note` for an authorized Concept Note run
+- `prompts.core + prompts.chat` for an authorized Concept Note run; a dedicated
+  writing/editing prompt is not part of this source-analysis implementation
 
 Workflow prompt `<tools>` sections include shared tool-policy fragments. Exact
 tool argument contracts remain source-of-truth in the registered runtime tool

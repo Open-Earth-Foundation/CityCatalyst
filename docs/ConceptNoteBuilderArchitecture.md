@@ -1615,10 +1615,10 @@ The main CNB agent selects one `upload_id` from the always-on summaries and asks
 one bounded natural-language question. Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
 tool-free GPT-5.4 mini readers over every page-preserving partition using
-deterministic code-controlled `Runner.run` calls, and invokes GPT-5.4 synthesis
-only after every partition succeeds. Its result contains the grounded answer,
-source label, exact page-cited excerpts, page/segment coverage counts, and
-caveats. If no passage supports the question it returns an explicit
+deterministic code-controlled `Runner.run` calls, and returns only after every
+partition succeeds. Its result contains the source label, verified page-cited
+excerpts, page/segment coverage counts, and reader caveats for the calling agent
+to combine. If no passage supports the question it returns an explicit
 `found: false` result. PDF text is untrusted evidence; embedded instructions are
 ignored and reader agents receive no external tools.
 
@@ -2151,20 +2151,19 @@ models:
   cnb_source_synthesizer:
     name: openai/gpt-5.4
 prompts:
-  concept_note: "prompts/concept_note.md"
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
-  cnb_source_grounded_synthesis: "prompts/cnb/source_grounded_synthesis.md"
 ```
 
 Prompt composition should follow the current CA pattern:
 
 - General chat keeps using the default prompt.
-- Active CNB runs use `concept_note_builder` as the workflow prompt.
+- Active CNB runs currently keep the default prompt; the dedicated Concept Note
+  prompt belongs with the future writing and editing workflow.
 - Runtime context injection is separate from prompt-file composition.
-- The prompt should describe chapter editing rules, evidence-review rules, and
-  no-fabrication guardrails.
+- That future prompt should describe chapter editing rules, evidence-review
+  rules, and no-fabrication guardrails.
 
 CNB context should be injected as a bounded JSON block:
 

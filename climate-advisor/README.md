@@ -506,15 +506,15 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.chat` is the workflow prompt for general Climate Advisor chat
 - `prompts.stationary_energy_review` is the workflow prompt for active
   Stationary Energy draft review chat
-- `prompts.concept_note` is the interactive Concept Note workflow prompt
-- the four `prompts.cnb_source_*` entries map documents, read a focused
-  question, and synthesize grounded summaries/answers
+- the three `prompts.cnb_source_*` entries map document partitions, reduce them
+  to compact document summaries, and read focused questions for exact evidence
 
 At runtime, CA composes the final system instructions as:
 
 - general chat: `prompts.core + prompts.chat`
 - Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
-- Concept Note chat: `prompts.core + prompts.concept_note`
+- Concept Note context chat currently keeps `prompts.core + prompts.chat`; a
+  dedicated writing/editing prompt is outside this source-analysis scope
 
 Workflow prompt `<tools>` sections load shared tool-policy fragments with
 `{{ include: ... }}` directives. Exact tool argument contracts come from the
@@ -667,9 +667,10 @@ When an authorized run is ready and its step is `interviewing`,
 per-document summaries and the read-only `concept_note_sources_query` tool
 (`concept_note.sources.query` capability). One call selects one `upload_id` and
 one bounded question, re-fetches and verifies that document, reads every page
-with tool-free mini readers, and returns a grounded answer or explicit
-`found: false` result with exact excerpts and coverage counts. PDF text is
-treated as untrusted evidence and embedded instructions are ignored.
+with tool-free mini readers, and returns verified exact excerpts, reader
+caveats, and coverage counts for the calling agent to combine. If no passage
+supports the question it returns `found: false`. PDF text is treated as
+untrusted evidence and embedded instructions are ignored.
 
 ### Concept Note run foundation
 

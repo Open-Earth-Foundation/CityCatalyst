@@ -107,7 +107,7 @@ class AgentService:
             and self.session_factory
             and self.cc_user_id
         )
-        self._uses_concept_note_prompt = bool(
+        self._has_concept_note_context = bool(
             self.concept_note_run_id and self.session_factory and self.cc_user_id
         )
 
@@ -118,15 +118,9 @@ class AgentService:
             if self.settings.llm.prompts.stationary_energy_review
             else None
         )
-        self.concept_note_system_prompt = (
-            self.settings.llm.prompts.compose_prompt("concept_note")
-            if self._uses_concept_note_prompt
-            else None
-        )
         self.system_prompt = (
             None
             if self._uses_stationary_energy_review_prompt
-            or self._uses_concept_note_prompt
             else self.chat_system_prompt
         )
 
@@ -257,11 +251,6 @@ class AgentService:
         )
         if instructions:
             agent_instructions = instructions
-        elif self._uses_concept_note_prompt:
-            agent_instructions = (
-                self.concept_note_system_prompt
-                or self.settings.llm.prompts.compose_prompt("concept_note")
-            )
         elif self._uses_stationary_energy_review_prompt:
             agent_instructions = (
                 self.stationary_energy_system_prompt
@@ -281,7 +270,7 @@ class AgentService:
         # scoped review tools instead.
         if (
             not self._uses_stationary_energy_review_prompt
-            and not self._uses_concept_note_prompt
+            and not self._has_concept_note_context
             and self.cc_access_token
             and self.cc_user_id
             and self.cc_thread_id
@@ -345,7 +334,7 @@ class AgentService:
             )
 
         # The CNB source capability is captured to one persisted run and user.
-        if self._uses_concept_note_prompt:
+        if self._has_concept_note_context:
             assert self.session_factory is not None
             assert self.concept_note_run_id is not None
             assert self.cc_user_id is not None
@@ -389,7 +378,7 @@ class AgentService:
         # Keep vector search available for general climate-advice fallback context.
         if (
             not self._uses_stationary_energy_review_prompt
-            and not self._uses_concept_note_prompt
+            and not self._has_concept_note_context
         ):
             tools.append(climate_vector_search)
 

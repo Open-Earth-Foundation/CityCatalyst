@@ -182,11 +182,9 @@ class PromptsConfig(BaseModel):
     cnb_funding_opportunity_research: str
     cnb_funder_identity_matching: str
     cnb_similar_project_matching: str
-    concept_note: str = "prompts/concept_note.md"
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
-    cnb_source_grounded_synthesis: str = "prompts/cnb/source_grounded_synthesis.md"
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

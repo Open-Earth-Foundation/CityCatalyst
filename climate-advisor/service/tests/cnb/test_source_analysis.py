@@ -14,7 +14,6 @@ from app.models.cnb.context_bundle import (
     SourceExcerpt,
     SourcePartitionMap,
     SourceQuestionReading,
-    SourceQuestionSynthesis,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import (
@@ -91,15 +90,6 @@ class FakeRunner:
                 topics=["drainage", "Drainage"],
                 key_excerpts=excerpts,
             )
-        elif output_type is SourceQuestionSynthesis:
-            payload = json.loads(input_text)
-            excerpts = payload["validated_excerpts"]
-            output = SourceQuestionSynthesis(
-                found=bool(excerpts),
-                answer="The plan prioritizes drainage." if excerpts else None,
-                excerpts=excerpts,
-                caveats=[] if excerpts else ["No supporting passage was found."],
-            )
         else:
             raise AssertionError(f"Unexpected output type: {output_type}")
         return SimpleNamespace(final_output=output)
@@ -170,6 +160,8 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations() -> Non
     assert source.topics == ["drainage"]
     assert source.key_excerpts[0].text == "Drainage upgrades"
     assert result.found is True
+    assert result.excerpts[0].text == "Drainage upgrades"
+    assert "answer" not in result.model_dump()
     assert result.pages_processed == result.pages_total == 6
     assert result.segments_processed == result.segments_total
     assert {
@@ -197,7 +189,6 @@ async def test_query_returns_explicit_not_found_after_full_coverage() -> None:
     finally:
         await client.close()
     assert result.found is False
-    assert result.answer is None
     assert result.excerpts == []
     assert result.pages_processed == 1
 

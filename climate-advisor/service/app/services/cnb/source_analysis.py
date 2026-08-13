@@ -20,7 +20,6 @@ from app.models.cnb.context_bundle import (
     SourcePartitionMap,
     SourceQueryResult,
     SourceQuestionReading,
-    SourceQuestionSynthesis,
 )
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
@@ -34,6 +33,8 @@ logger = logging.getLogger(__name__)
 PAGE_MARKER = re.compile(r"<!-- page: (\d+) -->")
 PARAGRAPH_BOUNDARY = re.compile(r".*?(?:\n\s*\n|\Z)", re.DOTALL)
 _GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(4)
+MAX_QUERY_EXCERPTS = 20
+MAX_QUERY_CAVEATS = 10
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
 
 
@@ -203,7 +204,7 @@ async def query_document(
     runner: Any = Runner,
     reader_limit: asyncio.Semaphore | None = None,
 ) -> SourceQueryResult:
-    """Read every page for one question and synthesize after full coverage."""
+    """Read every page and return verified evidence for one question."""
     settings = settings or get_settings()
     budget = settings.llm.generation.prompt_budget.cnb_sources
     normalized_question = question.strip()
@@ -218,7 +219,6 @@ async def query_document(
     client, owns_client = _resolve_analysis_client(settings, client)
     tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
     reader_model = settings.llm.models.cnb_source_reader
-    synthesizer_model = settings.llm.models.cnb_source_synthesizer
     reader_limit = reader_limit or asyncio.Semaphore(budget.max_concurrency)
 
     try:
@@ -247,7 +247,7 @@ async def query_document(
             )
         )
 
-        # Validate all evidence before synthesizing the final answer.
+        # Validate and bound all evidence before returning it to the caller.
         page_text = {page.number: page.text for page in pages}
         evidence: list[SourceExcerpt] = []
         caveats: list[str] = []
@@ -258,48 +258,21 @@ async def query_document(
             {segment.page for partition in partitions for segment in partition}
         )
         segments_processed = sum(len(partition) for partition in partitions)
-        synthesis = await _run_agent(
-            name="Concept Note grounded source answer synthesizer",
-            prompt=settings.llm.prompts.get_prompt("cnb_source_grounded_synthesis"),
-            model_name=synthesizer_model.name,
-            output_type=SourceQuestionSynthesis,
-            input_text=json.dumps(
-                {
-                    "question": normalized_question,
-                    "source_label": source_label,
-                    "pages_processed": pages_processed,
-                    "pages_total": len(pages),
-                    "segments_processed": segments_processed,
-                    "validated_excerpts": [
-                        item.model_dump(mode="json") for item in evidence
-                    ],
-                    "reader_caveats": deduplicate_strings(caveats),
-                },
-                ensure_ascii=False,
-            ),
-            settings=settings,
-            client=client,
-            runner=runner,
-        )
-        final_excerpts = verified_excerpts(synthesis.excerpts, page_text)
-        if synthesis.found and not final_excerpts:
-            raise SourceAnalysisError(
-                "unverifiable_source_answer",
-                "Source answer did not retain verifiable evidence",
-            )
+        final_excerpts = verified_excerpts(evidence, page_text)[:MAX_QUERY_EXCERPTS]
+        final_caveats = deduplicate_strings(caveats)[:MAX_QUERY_CAVEATS]
 
-        # Preserve coverage counts so callers can distinguish absence from omission.
+        # Preserve coverage counts so the main agent can distinguish
+        # absence from omission.
         return SourceQueryResult(
-            found=synthesis.found,
+            found=bool(final_excerpts),
             upload_id=upload_id,
             source_label=source_label,
-            answer=synthesis.answer,
             excerpts=final_excerpts,
             pages_processed=pages_processed,
             pages_total=len(pages),
             segments_processed=segments_processed,
             segments_total=segments_processed,
-            caveats=synthesis.caveats,
+            caveats=final_caveats,
         )
     finally:
         if owns_client:

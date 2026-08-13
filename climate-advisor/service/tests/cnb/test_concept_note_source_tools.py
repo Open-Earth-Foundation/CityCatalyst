@@ -50,14 +50,13 @@ def fake_verify_source_artifact(**kwargs) -> list[SourcePage]:
 
 
 async def fake_query_document(**kwargs) -> SourceQueryResult:
-    """Return a deterministic no-support answer for the selected source."""
+    """Return deterministic no-support evidence for the selected source."""
     assert kwargs["pages"] == fake_verify_source_artifact()
     assert kwargs["question"] == "What evidence is stated?"
     return SourceQueryResult(
         found=False,
         upload_id=kwargs["upload_id"],
         source_label=kwargs["source_label"],
-        answer=None,
         excerpts=[],
         pages_processed=1,
         pages_total=1,

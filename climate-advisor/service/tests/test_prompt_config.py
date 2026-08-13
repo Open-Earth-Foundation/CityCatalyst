@@ -176,7 +176,7 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
 
     assert config.models.cnb_source_reader.name == "openai/gpt-5.4-mini"
     assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.4"
-    assert budget.max_partition_tokens == 12000
+    assert budget.max_partition_tokens == 50000
     assert budget.max_concurrency == 4
     for prompt_name in (
         "cnb_source_document_mapping",

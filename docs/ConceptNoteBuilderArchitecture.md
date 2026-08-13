@@ -1585,7 +1585,7 @@ Rules:
 - Stores the context bundle snapshot under `CA_DATABASE_URL` for
   reproducibility.
 - Parses existing page markers and creates page-preserving partitions capped at
-  12,000 input tokens. An oversized page is split by headings/paragraphs and
+  50,000 input tokens. An oversized page is split by headings/paragraphs and
   then exact character spans without dropping content.
 - Uses configured GPT-5.4 mini readers with process-wide concurrency no greater
   than four, then GPT-5.4 for final document synthesis.

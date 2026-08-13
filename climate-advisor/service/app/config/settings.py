@@ -150,7 +150,7 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
 class CnbSourcePromptBudgetConfig(BaseModel):
     """Limits for page-preserving Concept Note source analysis."""
 
-    max_partition_tokens: int = Field(default=12000, ge=1000)
+    max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=4, ge=1, le=4)
     max_key_excerpts: int = Field(default=8, ge=1, le=20)
     max_topics: int = Field(default=12, ge=1, le=30)

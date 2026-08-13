@@ -608,9 +608,10 @@ After a Markdown pointer reaches `ready`, Climate Advisor automatically rebuilds
 the run bundle from every ready upload. At least one ready city PDF is required;
 queued and failed uploads are excluded. Each ready pointer, digest, page count,
 and page sequence is revalidated through CityCatalyst before configured
-GPT-5.4 mini readers process every page in partitions capped at 12,000 input
-tokens. Reader concurrency is limited to four. GPT-5.4 then produces one short
-summary, topic list, and bounded set of exact page-cited excerpts per document.
+GPT-5.4 mini readers process every page in partitions capped at 50,000 input
+tokens. Up to four partitions are processed concurrently. GPT-5.4 then produces
+one short summary, topic list, and bounded set of exact page-cited excerpts per
+document.
 
 The persisted skeleton always contains:
 

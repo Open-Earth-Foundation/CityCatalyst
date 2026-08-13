@@ -360,7 +360,7 @@ Stationary Energy chat also has a dedicated prompt budget:
 - The final runner input is trimmed to the configured `chat_context` budget.
 
 CNB source analysis has a separate `generation.prompt_budget.cnb_sources`
-contract: 12,000 maximum input tokens per page-preserving partition, four
+contract: 50,000 maximum input tokens per page-preserving partition, four
 concurrent readers process-wide, bounded topics/excerpts, and a bounded source
 question. One or more ready PDFs are mandatory. GHGI, HIAP, and every later
 bundle section remain optional and use explicit null or empty-list values.

@@ -36,7 +36,7 @@ generation:
         max_normalized_rows_per_candidate: 3
         include_source_data: false
     cnb_sources:
-      max_partition_tokens: 12000
+      max_partition_tokens: 50000
       max_concurrency: 4
       max_key_excerpts: 8
       max_topics: 12

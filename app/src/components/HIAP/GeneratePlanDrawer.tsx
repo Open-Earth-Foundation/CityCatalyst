@@ -71,7 +71,6 @@ export const GeneratePlanDrawer = ({
         inventoryId: inventoryId || "",
         cityLocode: cityLocode,
         lng: action.lang,
-        rankingId: action.hiaRankingId,
       });
 
       // Show immediate toast notification that generation has started

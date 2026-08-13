@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ContextBundleContract(BaseModel):
@@ -78,17 +78,9 @@ class SourceDocumentSynthesis(ContextBundleContract):
 class SourceQuestionReading(ContextBundleContract):
     """Question-focused evidence returned for one partition."""
 
-    has_support: bool
     excerpts: list[SourceExcerpt] = Field(max_length=20)
     caveats: list[str] = Field(default_factory=list, max_length=10)
     covered_segment_ids: list[str] = Field(min_length=1)
-
-    @model_validator(mode="after")
-    def validate_support(self) -> SourceQuestionReading:
-        """Require evidence whenever a partition claims support."""
-        if self.has_support and not self.excerpts:
-            raise ValueError("A supporting partition requires at least one excerpt")
-        return self
 
 
 class SourceQueryResult(ContextBundleContract):

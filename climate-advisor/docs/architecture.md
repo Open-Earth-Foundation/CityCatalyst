@@ -3,16 +3,16 @@
 ## Overview
 
 Climate Advisor is the FastAPI service behind CityCatalyst chat. The same
-`/v1/messages` endpoint supports two runtime modes:
+`/v1/messages` endpoint supports three runtime modes:
 
 - General climate and inventory chat.
 - Stationary Energy draft review chat scoped to a persisted
   `stationary_energy_draft_run_id`.
+- Concept Note context chat scoped to an authorized `concept_note_run_id`.
 
-Both modes share thread persistence, token handling, SSE streaming, and the
-Agents SDK runtime. The Stationary Energy review flow adds CA-owned draft state,
-a workflow-specific prompt layer, and scoped review tools that return
-UI-oriented `tool_result` payloads.
+All modes share thread persistence, token handling, SSE streaming, and the
+Agents SDK runtime. Workflow-specific context and tools are resolved before the
+single shared stream starts.
 
 ## Current Architecture (As-Implemented)
 
@@ -31,7 +31,7 @@ flowchart TB
         Review["StationaryEnergyAgentReviewService"]
     end
 
-    DB[("PostgreSQL<br/>threads, messages,<br/>embeddings, SE draft state")]
+    DB[("PostgreSQL<br/>threads, messages,<br/>workflow state")]
     LLM["Chat provider<br/>OpenRouter or OpenAI"]
     CC["CityCatalyst APIs<br/>token, inventory, draft save"]
 
@@ -74,6 +74,9 @@ sequenceDiagram
     opt Stationary Energy draft run is present
         Stream->>DB: Load persisted draft snapshot and staged review state
         Stream-->>Stream: Build STATIONARY_ENERGY_DRAFT_CONTEXT_JSON + ui_context
+    end
+    opt Concept Note run is present
+        Stream->>DB: Load compact ready bundle context
     end
 
     Stream->>Agent: Create scoped agent
@@ -185,16 +188,16 @@ The review tools operate on CA-owned persisted draft state:
 Climate Advisor persists both normal chat history and Stationary Energy draft
 workflow state in PostgreSQL.
 
-| Store | Purpose |
-| --- | --- |
-| `threads` | Chat thread ownership, context, and refreshed tokens |
-| `messages` | User and assistant chat history, including tool invocation metadata |
-| `document_embeddings` | pgvector-backed climate knowledge retrieval |
-| `stationary_energy_draft_runs` | One persisted Stationary Energy draft workflow, optionally linked to a thread |
-| `stationary_energy_draft_source_candidates` | Candidate datasources and normalized source rows for the draft |
-| `stationary_energy_draft_proposals` | Proposed Stationary Energy row changes with recommended and alternate candidates |
-| `stationary_energy_review_decisions` | Durable saved review decisions with versioning, commit status, and optional notation-key metadata |
-| `stationary_energy_staged_review_selections` | Active temporary chat-staged source or notation-key choices awaiting save, change, or rollback |
+| Store                                        | Purpose                                                                                           |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `threads`                                    | Chat thread ownership, context, and refreshed tokens                                              |
+| `messages`                                   | User and assistant chat history, including tool invocation metadata                               |
+| `document_embeddings`                        | pgvector-backed climate knowledge retrieval                                                       |
+| `stationary_energy_draft_runs`               | One persisted Stationary Energy draft workflow, optionally linked to a thread                     |
+| `stationary_energy_draft_source_candidates`  | Candidate datasources and normalized source rows for the draft                                    |
+| `stationary_energy_draft_proposals`          | Proposed Stationary Energy row changes with recommended and alternate candidates                  |
+| `stationary_energy_review_decisions`         | Durable saved review decisions with versioning, commit status, and optional notation-key metadata |
+| `stationary_energy_staged_review_selections` | Active temporary chat-staged source or notation-key choices awaiting save, change, or rollback    |
 
 ## Service And Utility Layers
 
@@ -212,8 +215,6 @@ workflow state in PostgreSQL.
   - Composes `prompts.core` with `prompts.chat` for general chat.
   - Composes `prompts.core` with `prompts.stationary_energy_review` for active
     Stationary Energy review chat.
-  - Keeps the general chat prompt for an authorized CNB run and registers the
-    source query only when its bundle and step permit it.
   - Registers the pre-draft `stationary_energy_start_draft` tool only when the
     Stationary Energy surface is active and no draft run is loaded.
   - Keeps general inventory and vector-search tools out of active review chat.
@@ -239,18 +240,6 @@ workflow state in PostgreSQL.
     Stationary Energy chat grounding.
 - `services/stationary_energy/stationary_energy_tool_events.py`
   - Builds Stationary Energy `tool_result` SSE payloads for UI event cards.
-- `services/cnb/context_bundle.py`
-  - Starts retained background builds after a PDF reaches ready, analyzes every
-    ready upload, attempts optional GHGI/HIAP, and commits through a guarded
-    build ID.
-- `services/cnb/source_analysis.py`
-  - Revalidates CC-owned Markdown identity, partitions every page under the
-    configured token limit, runs at most four tool-free GPT-5.4 mini readers,
-    verifies exact citations, and uses GPT-5.4 only for document-summary
-    reduction.
-- `persistence/concept_notes/context_bundle.py`
-  - Stores typed-empty bundles and progress in the existing run/bundle tables,
-    preserves unrelated sections, and authorizes selected-source queries.
 
 ### Tool Layer
 
@@ -269,9 +258,6 @@ workflow state in PostgreSQL.
 - `tools/stationary_energy_start_draft_tools.py`
   - The scoped chat tool that starts Stationary Energy draft generation before
     a draft run is active and review proposals exist.
-- `tools/concept_note_source_tools.py`
-  - Implements the read-only `concept_note.sources.query` capability captured
-    to one authorized run and one selected upload per call.
 
 ### Utility Layer
 
@@ -282,12 +268,21 @@ workflow state in PostgreSQL.
   - Enforces the Stationary Energy chat prompt budget.
   - Emits `tool_result` SSE payloads for normal tools and Stationary Energy UI
     events via `services/stationary_energy/stationary_energy_tool_events.py`.
-  - Loads `concept_note_run_id` from request or persisted thread context and
-    injects the ready bundle's per-document summaries without raw PDF text.
 - `utils/history_manager.py`
   - Prunes older tool metadata for LLM context while keeping full DB audit data.
 - `utils/token_handler.py`
   - Refreshes and persists CityCatalyst tokens.
+
+### Concept Note PDF Context
+
+The detailed bundle schema, persistence guards, source-analysis rules, and
+capability contract live in
+[`ConceptNoteBuilderArchitecture.md`](../../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
+Operationally, a ready PDF triggers guarded background assembly, optional
+GHGI/HIAP failures do not block readiness, and eligible Concept Note turns use
+the existing stream with compact summaries plus one step-scoped read-only
+selected-document query. `llm_config.yaml` remains the source of truth for the
+reader models, prompts, partition budget, and concurrency limit.
 
 ## SSE Contract
 
@@ -328,19 +323,12 @@ settings.
   - Workflow prompt for general Climate Advisor chat.
 - `prompts.stationary_energy_review`
   - Workflow prompt for active Stationary Energy draft review chat.
-- `prompts.cnb_source_document_mapping` and
-  `prompts.cnb_source_question_reading`
-  - Tool-free GPT-5.4 mini reader roles that treat PDF text as untrusted evidence.
-- `prompts.cnb_source_summary_synthesis`
-  - GPT-5.4 reduction from partition maps to one compact document summary.
 
 At runtime, Climate Advisor composes final instructions as:
 
 - `prompts.core + prompts.chat` for general chat
 - `prompts.core + prompts.stationary_energy_review` for active Stationary
   Energy draft review chat
-- `prompts.core + prompts.chat` for an authorized Concept Note run; a dedicated
-  writing/editing prompt is not part of this source-analysis implementation
 
 Workflow prompt `<tools>` sections include shared tool-policy fragments. Exact
 tool argument contracts remain source-of-truth in the registered runtime tool
@@ -358,12 +346,6 @@ Stationary Energy chat also has a dedicated prompt budget:
 - `StreamingHandler` prepends `STATIONARY_ENERGY_DRAFT_CONTEXT_JSON`.
 - If needed, the draft snapshot is compacted before the run.
 - The final runner input is trimmed to the configured `chat_context` budget.
-
-CNB source analysis has a separate `generation.prompt_budget.cnb_sources`
-contract: 50,000 maximum input tokens per page-preserving partition, four
-concurrent readers process-wide, bounded topics/excerpts, and a bounded source
-question. One or more ready PDFs are mandatory. GHGI, HIAP, and every later
-bundle section remain optional and use explicit null or empty-list values.
 
 ## External Integrations
 

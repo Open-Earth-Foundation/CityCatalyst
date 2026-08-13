@@ -73,7 +73,6 @@ class FakeRunner:
                 )
             else:
                 output = SourceQuestionReading(
-                    has_support=excerpt is not None,
                     excerpts=[excerpt] if excerpt else [],
                     caveats=[],
                     covered_segment_ids=ids,

@@ -118,7 +118,6 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         run_id=run_id,
         city_id=str(uuid4()),
         build_id=uuid4(),
-        source_fingerprint="a" * 64,
         uploads=[upload],
         already_current=False,
     )

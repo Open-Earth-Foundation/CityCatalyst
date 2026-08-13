@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import hashlib
 import json
 import logging
@@ -44,7 +43,6 @@ class ContextBundleBuildSnapshot:
     run_id: UUID
     city_id: str
     build_id: UUID
-    source_fingerprint: str
     uploads: list[ConceptNoteUploadSnapshot]
     already_current: bool
 
@@ -53,8 +51,6 @@ class ContextBundleBuildSnapshot:
 class ContextBundleQuerySource:
     """Authorized selected source and immutable upload identity."""
 
-    run_id: UUID
-    workflow_step: str
     source: SelectedSource
     upload: ConceptNoteUploadSnapshot
 
@@ -133,7 +129,6 @@ async def begin_build(
                 run_id=run_id,
                 city_id=run.city_id,
                 build_id=build_id,
-                source_fingerprint=fingerprint,
                 uploads=ready_uploads,
                 already_current=already_current,
             )
@@ -208,23 +203,20 @@ async def complete_build(
                 session.add(bundle_row)
             bundle = normalize_bundle(bundle_row.context_bundle)
             bundle.selected_sources = selected_sources
-            bundle.cc_context.ghgi = copy.deepcopy(ghgi)
-            bundle.cc_context.hiap = copy.deepcopy(hiap)
+            bundle.cc_context.ghgi = ghgi
+            bundle.cc_context.hiap = hiap
             bundle_row.context_bundle = bundle.model_dump(mode="json")
 
-            completed_progress = copy.deepcopy(progress)
-            completed_progress.update(
+            run.context_summary = _replace_bundle_progress(
+                run.context_summary,
                 {
+                    **progress,
                     "status": "ready",
                     "optional_sources": optional_sources,
                     "warnings": warnings,
                     "retryable": False,
                     "completion_event": "concept_note_context_bundle_ready",
-                }
-            )
-            run.context_summary = _replace_bundle_progress(
-                run.context_summary,
-                completed_progress,
+                },
             )
             if run.workflow_step == "assembling_context":
                 run.workflow_step = "interviewing"
@@ -268,19 +260,16 @@ async def fail_build(
                 progress=progress,
             ):
                 return False
-            failed_progress = copy.deepcopy(progress)
-            failed_progress.update(
+            run.context_summary = _replace_bundle_progress(
+                run.context_summary,
                 {
+                    **progress,
                     "status": "failed",
                     "error_code": error_code,
                     "warnings": [warning],
                     "retryable": True,
                     "completion_event": None,
-                }
-            )
-            run.context_summary = _replace_bundle_progress(
-                run.context_summary,
-                failed_progress,
+                },
             )
             # The run remains active while its persisted bundle status records
             # the retryable failure. This avoids inventing a new run-level
@@ -359,8 +348,6 @@ async def load_query_source(
                     "Selected Concept Note source is no longer available",
                 )
             return ContextBundleQuerySource(
-                run_id=run_id,
-                workflow_step=run.workflow_step,
                 source=source,
                 upload=_upload_snapshot(upload),
             )
@@ -498,24 +485,12 @@ async def _matches_current_source_fingerprint(
 
 
 def normalize_bundle(value: Any) -> ConceptNoteContextBundle:
-    """Add explicit typed empties while preserving later workflow sections."""
+    """Validate a bundle while letting its typed defaults fill missing sections."""
     if value is None:
-        data: dict[str, Any] = {}
-    elif isinstance(value, dict):
-        data = copy.deepcopy(value)
-    else:
+        return ConceptNoteContextBundle()
+    if not isinstance(value, dict):
         raise ValueError("Concept Note context bundle must be a JSON object")
-
-    data.setdefault("selected_sources", [])
-    data.setdefault("funder_context", None)
-    data.setdefault("similar_projects", [])
-    data.setdefault("document_context", None)
-    cc_context = data.setdefault("cc_context", {})
-    if not isinstance(cc_context, dict):
-        raise ValueError("Concept Note cc_context must be a JSON object")
-    for key in ("city", "project", "ghgi", "ccra", "hiap"):
-        cc_context.setdefault(key, None)
-    return ConceptNoteContextBundle.model_validate(data)
+    return ConceptNoteContextBundle.model_validate(value)
 
 
 def _bundle_progress(summary: Any) -> dict[str, Any]:
@@ -523,14 +498,15 @@ def _bundle_progress(summary: Any) -> dict[str, Any]:
     if not isinstance(summary, dict):
         return {}
     progress = summary.get("context_bundle")
-    return copy.deepcopy(progress) if isinstance(progress, dict) else {}
+    return progress if isinstance(progress, dict) else {}
 
 
 def _replace_bundle_progress(summary: Any, progress: dict[str, Any]) -> dict[str, Any]:
     """Replace only context-bundle progress and preserve unrelated run metadata."""
-    result = copy.deepcopy(summary) if isinstance(summary, dict) else {}
-    result["context_bundle"] = progress
-    return result
+    return {
+        **(summary if isinstance(summary, dict) else {}),
+        "context_bundle": progress,
+    }
 
 
 def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:

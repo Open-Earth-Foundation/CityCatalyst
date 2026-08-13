@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import inspect
 import json
 import logging
 from collections.abc import Awaitable, Callable, Sequence
@@ -10,12 +9,10 @@ from typing import Optional
 from uuid import UUID
 
 from agents import function_tool
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.models.cnb.context_bundle import SourceQueryResult
 from app.persistence.concept_notes.context_bundle import (
-    ContextBundleQuerySource,
     ContextBundlePersistenceError,
+    ContextBundleQuerySource,
     load_query_source,
 )
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
@@ -25,6 +22,7 @@ from app.services.cnb.source_analysis import (
     query_document,
     verify_source_artifact,
 )
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY = "concept_note.sources.query"
@@ -104,7 +102,7 @@ def build_concept_note_source_tools(
                     pages=pages,
                 )
             finally:
-                await close_client(client)
+                await client.close()
             return json.dumps(
                 {
                     "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
@@ -145,16 +143,6 @@ def build_concept_note_source_tools(
             )
 
     return [concept_note_sources_query]
-
-
-async def close_client(client: object) -> None:
-    """Close production and test-double clients without assuming async close."""
-    close = getattr(client, "close", None)
-    if not callable(close):
-        return
-    result = close()
-    if inspect.isawaitable(result):
-        await result
 
 
 def error_payload(code: str, message: str) -> str:

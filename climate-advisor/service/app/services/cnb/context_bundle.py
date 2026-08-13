@@ -8,8 +8,6 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID, uuid4
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.config import Settings, get_settings
 from app.db.session import get_session_factory
 from app.models.cnb.context_bundle import SelectedSource
@@ -34,17 +32,10 @@ from app.services.concept_note_city_context import (
     load_ghgi_context,
     load_hiap_context,
 )
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
-_BACKGROUND_BUILDS: set[asyncio.Task[None]] = set()
-
-
-class ContextBundleBuildError(Exception):
-    """Retryable context-bundle assembly failure."""
-
-    def __init__(self, code: str, message: str) -> None:
-        super().__init__(message)
-        self.code = code
+_BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
 
 
 class ContextBundleService:
@@ -144,7 +135,7 @@ class ContextBundleService:
                 optional_sources=optional_statuses,
                 warnings=warnings,
             )
-        except (SourceAnalysisError, ContextBundleBuildError) as exc:
+        except SourceAnalysisError as exc:
             await self._record_failure(
                 user_id=user_id,
                 snapshot=active,
@@ -184,7 +175,7 @@ class ContextBundleService:
             or upload.markdown_sha256 is None
             or upload.page_count is None
         ):
-            raise ContextBundleBuildError(
+            raise SourceAnalysisError(
                 "incomplete_source_pointer",
                 "Ready upload is missing immutable source metadata",
             )
@@ -194,7 +185,7 @@ class ContextBundleService:
                 token=token,
             )
         except CityCatalystClientError as exc:
-            raise ContextBundleBuildError(
+            raise SourceAnalysisError(
                 "source_fetch_failed",
                 "Ready upload could not be fetched from CityCatalyst",
             ) from exc
@@ -358,19 +349,18 @@ def schedule_context_bundle_build(
 ) -> None:
     """Retain an in-process background build until terminal completion."""
 
-    async def run_build() -> None:
-        await service.build(
+    task = asyncio.create_task(
+        service.build(
             user_id=user_id,
             run_id=run_id,
             token=token,
             force=force,
             snapshot=snapshot,
         )
-
-    task = asyncio.create_task(run_build())
+    )
     _BACKGROUND_BUILDS.add(task)
 
-    def release(completed: asyncio.Task[None]) -> None:
+    def release(completed: asyncio.Task[bool]) -> None:
         _BACKGROUND_BUILDS.discard(completed)
         try:
             completed.result()

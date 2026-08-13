@@ -85,8 +85,6 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
     )
     repository = FakeRepository(
         ContextBundleQuerySource(
-            run_id=run_id,
-            workflow_step="interviewing",
             source=source,
             upload=ConceptNoteUploadSnapshot(
                 upload_id=upload_id,

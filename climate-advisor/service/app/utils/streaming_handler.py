@@ -11,8 +11,6 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
 from agents import RunConfig, Runner, gen_trace_id
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
@@ -31,18 +29,15 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.services.thread_service import ThreadService
-from app.utils.sse import format_sse
+from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.concept_note_context import extract_concept_note_run_id
-from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
-from app.utils.tool_handler import persist_assistant_message
-from app.utils.token_handler import TokenHandler
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
     log_json_artifact,
     log_metrics,
-    log_text_artifact,
     log_tags,
+    log_text_artifact,
     start_run,
     update_current_trace_context,
 )
@@ -52,6 +47,11 @@ from app.utils.prompt_budget import (
     get_stationary_energy_prompt_budget,
     trim_messages_to_budget,
 )
+from app.utils.sse import format_sse
+from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
+from app.utils.token_handler import TokenHandler
+from app.utils.tool_handler import persist_assistant_message
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +78,7 @@ class StreamingHandler:
         self.request_context = request_context
         self.request_options = request_options
         self.thread_identifier = str(thread_id)
-        self.stationary_energy_draft_run_id: Optional[str] = None
-        self.concept_note_run_id: Optional[str] = None
+        self.workflow_context = ChatWorkflowContext()
         self.agent_model: Optional[str] = None
         self.request_identifier: Optional[str] = None
 
@@ -109,10 +108,10 @@ class StreamingHandler:
         req_id = self._request_id()
         settings = get_settings()
         started_at = time.perf_counter()
-        await self._prime_mlflow_workflow_context(payload)
+        await self._resolve_workflow_context(payload)
 
         with start_run(
-            run_name=self._mlflow_run_name(payload),
+            run_name=self.workflow_context.mlflow_run_name,
             experiment_name=self._mlflow_experiment_name(payload),
             tags=self._mlflow_tags(payload),
             params=self._mlflow_params(payload),
@@ -158,45 +157,14 @@ class StreamingHandler:
         )
 
         try:
-            # Resolve scoped workflow context before creating the agent so
-            # AgentService can attach the correct tool pack.
-            if not self.stationary_energy_draft_run_id:
-                self.stationary_energy_draft_run_id = (
-                    extract_stationary_energy_draft_run_id(
-                        payload.context,
-                        payload.options,
-                        self.request_context,
-                        self.request_options,
-                    )
-                    or await self._load_thread_stationary_energy_draft_run_id()
-                )
-            if not self.concept_note_run_id:
-                self.concept_note_run_id = (
-                    extract_concept_note_run_id(
-                        payload.context,
-                        payload.options,
-                        self.request_context,
-                        self.request_options,
-                    )
-                    or await self._load_thread_concept_note_run_id()
-                )
-            if self.concept_note_run_id:
-                try:
-                    self.concept_note_run_id = str(
-                        UUID(str(self.concept_note_run_id))
-                    )
-                except ValueError:
-                    logger.warning(
-                        "Ignoring invalid Concept Note run id in chat context: %s",
-                        self.concept_note_run_id,
-                    )
-                    self.concept_note_run_id = None
+            draft_run_id = self.workflow_context.stationary_energy_draft_run_id
+            concept_note_run_id = self.workflow_context.concept_note_run_id
 
             # Resolve the Stationary Energy draft surface scope (city + an explicit
             # interaction-mode marker) so the agent can offer the start-draft tool
             # even before any draft run exists. Only the SE draft page sends these.
             stationary_energy_city_id: Optional[str] = None
-            stationary_energy_surface = bool(self.stationary_energy_draft_run_id)
+            stationary_energy_surface = bool(draft_run_id)
             for source in (
                 payload.context,
                 payload.options,
@@ -218,9 +186,9 @@ class StreamingHandler:
                 inventory_id=self.inventory_id,
                 city_id=stationary_energy_city_id,
                 session_factory=self.session_factory,
-                stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
+                stationary_energy_draft_run_id=draft_run_id,
                 stationary_energy_surface=stationary_energy_surface,
-                concept_note_run_id=self.concept_note_run_id,
+                concept_note_run_id=concept_note_run_id,
             )
 
             # Get model override from options
@@ -230,26 +198,26 @@ class StreamingHandler:
             self.agent_model = (
                 model_override
                 or self.agent_service.preferred_model_for_context(
-                    stationary_energy_draft_run_id=self.stationary_energy_draft_run_id,
-                    concept_note_run_id=self.concept_note_run_id,
+                    stationary_energy_draft_run_id=draft_run_id,
+                    concept_note_run_id=concept_note_run_id,
                 )
             )
             logger.info(
                 "Selected chat model=%s stationary_energy_context=%s concept_note_context=%s thread_id=%s",
                 self.agent_model,
-                bool(self.stationary_energy_draft_run_id),
-                bool(self.concept_note_run_id),
+                bool(draft_run_id),
+                bool(concept_note_run_id),
                 self.thread_id,
             )
-            workflow_context = self._mlflow_workflow_context(payload)
+            workflow_metadata = self.workflow_context.telemetry()
             log_tags(
                 {
                     "model": self.agent_model,
-                    "ca_agentic_flow": workflow_context["ca_agentic_flow"],
-                    "workflow": workflow_context["workflow"],
-                    "prompt_name": workflow_context["prompt_name"],
-                    "stationary_energy_draft_run_id": self.stationary_energy_draft_run_id,
-                    "concept_note_run_id": self.concept_note_run_id,
+                    "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
+                    "workflow": workflow_metadata["workflow"],
+                    "prompt_name": workflow_metadata["prompt_name"],
+                    "stationary_energy_draft_run_id": draft_run_id,
+                    "concept_note_run_id": concept_note_run_id,
                 }
             )
 
@@ -360,27 +328,16 @@ class StreamingHandler:
             user_id=self.user_id,
             session_factory=self.session_factory,
         )
-        stationary_energy_context = await self._load_stationary_energy_context_message(
-            payload
-        )
-        concept_note_context = await self._load_concept_note_context_message(payload)
-        # Prepend the CA-owned draft snapshot so short replies stay grounded.
-        if stationary_energy_context:
-            conversation_history = [
-                self._stationary_energy_system_context_message(
-                    stationary_energy_context
-                ),
-                *conversation_history,
-            ]
-            if not self._history_contains_current_user_message(
-                conversation_history,
-                payload.content,
-            ):
-                conversation_history.append(
-                    {"role": "user", "content": payload.content}
-                )
-        elif concept_note_context:
-            conversation_history = [concept_note_context, *conversation_history]
+        context_message = await self._load_stationary_energy_context_message(payload)
+        if context_message:
+            context_message = self._stationary_energy_system_context_message(
+                context_message
+            )
+        else:
+            context_message = await self._load_concept_note_context_message()
+
+        if context_message:
+            conversation_history = [context_message, *conversation_history]
             if not self._history_contains_current_user_message(
                 conversation_history,
                 payload.content,
@@ -409,33 +366,10 @@ class StreamingHandler:
         payload: MessageCreateRequest,
     ) -> Optional[Dict[str, str]]:
         """Load the persisted Stationary Energy draft snapshot for chat grounding."""
-        # Resolve the draft id from request context first, then fall back to thread state.
-        draft_run_id_text = extract_stationary_energy_draft_run_id(
-            payload.context,
-            payload.options,
-            self.request_context,
-            self.request_options,
-        )
-        if not draft_run_id_text:
-            draft_run_id_text = self.stationary_energy_draft_run_id
-        if not draft_run_id_text:
-            draft_run_id_text = await self._load_thread_stationary_energy_draft_run_id()
-
+        draft_run_id_text = self.workflow_context.stationary_energy_draft_run_id
         if not draft_run_id_text:
             return None
-
-        # Reject malformed context ids without failing the whole chat request.
-        try:
-            draft_run_id = UUID(str(draft_run_id_text))
-        except ValueError:
-            logger.warning(
-                "Ignoring invalid Stationary Energy draft_run_id in chat context: %s",
-                draft_run_id_text,
-            )
-            return None
-
-        # Keep the resolved id on the handler so tool registration uses the same draft.
-        self.stationary_energy_draft_run_id = str(draft_run_id)
+        draft_run_id = UUID(draft_run_id_text)
 
         if not self.session_factory:
             logger.debug(
@@ -478,47 +412,12 @@ class StreamingHandler:
             context_payload["ui_context"] = ui_context
         return self._stationary_energy_context_message(context_payload)
 
-    async def _load_thread_stationary_energy_draft_run_id(self) -> Optional[str]:
-        """Load the draft run id persisted on the current chat thread."""
-        if not self.session_factory:
-            return None
-
-        try:
-            async with self.session_factory() as session:
-                thread_service = ThreadService(session)
-                thread = await thread_service.get_thread(self.thread_id)
-                if thread is None or thread.user_id != self.user_id:
-                    return None
-                return extract_stationary_energy_draft_run_id(thread.context)
-        except Exception as exc:
-            logger.warning(
-                "Failed to load thread Stationary Energy context thread_id=%s: %s",
-                self.thread_id,
-                exc,
-            )
-            return None
-
-    async def _load_concept_note_context_message(
-        self,
-        payload: MessageCreateRequest,
-    ) -> Optional[Dict[str, str]]:
+    async def _load_concept_note_context_message(self) -> Optional[Dict[str, str]]:
         """Load compact bundle summaries for the authorized Concept Note run."""
-        run_id_text = extract_concept_note_run_id(
-            payload.context,
-            payload.options,
-            self.request_context,
-            self.request_options,
-        ) or self.concept_note_run_id
-        if not run_id_text:
-            run_id_text = await self._load_thread_concept_note_run_id()
+        run_id_text = self.workflow_context.concept_note_run_id
         if not run_id_text or not self.session_factory:
             return None
-        try:
-            run_id = UUID(str(run_id_text))
-        except ValueError:
-            logger.warning("Ignoring invalid Concept Note run id: %s", run_id_text)
-            return None
-        self.concept_note_run_id = str(run_id)
+        run_id = UUID(run_id_text)
         try:
             context = await load_agent_context(
                 session_factory=self.session_factory,
@@ -548,23 +447,28 @@ class StreamingHandler:
             ),
         }
 
-    async def _load_thread_concept_note_run_id(self) -> Optional[str]:
-        """Load the Concept Note run id persisted on the current chat thread."""
+    async def _load_thread_workflow_context(self) -> ChatWorkflowContext:
+        """Load scoped workflow identifiers persisted on the current chat thread."""
         if not self.session_factory:
-            return None
+            return ChatWorkflowContext()
         try:
             async with self.session_factory() as session:
                 thread = await ThreadService(session).get_thread(self.thread_id)
                 if thread is None or thread.user_id != self.user_id:
-                    return None
-                return extract_concept_note_run_id(thread.context)
+                    return ChatWorkflowContext()
+                return ChatWorkflowContext(
+                    stationary_energy_draft_run_id=(
+                        extract_stationary_energy_draft_run_id(thread.context)
+                    ),
+                    concept_note_run_id=extract_concept_note_run_id(thread.context),
+                )
         except Exception as exc:
             logger.warning(
-                "Failed to load thread Concept Note context thread_id=%s: %s",
+                "Failed to load thread workflow context thread_id=%s: %s",
                 self.thread_id,
                 exc,
             )
-            return None
+            return ChatWorkflowContext()
 
     @staticmethod
     def _history_contains_current_user_message(
@@ -684,7 +588,10 @@ class StreamingHandler:
     def _stationary_energy_review_instruction_text(self) -> str:
         """Return the active Stationary Energy review prompt text."""
         instruction_text = self._agent_instruction_text().strip()
-        if instruction_text or not self.stationary_energy_draft_run_id:
+        if (
+            instruction_text
+            or not self.workflow_context.stationary_energy_draft_run_id
+        ):
             return instruction_text
         try:
             return get_settings().llm.prompts.compose_prompt(
@@ -758,7 +665,10 @@ class StreamingHandler:
         restore_agent_instructions = False
         original_agent_instructions: Any = None
         # Stationary Energy chats carry more context, so enforce the configured budget.
-        if self.stationary_energy_draft_run_id and isinstance(runner_input, list):
+        if (
+            self.workflow_context.stationary_energy_draft_run_id
+            and isinstance(runner_input, list)
+        ):
             if self._has_embedded_stationary_energy_system_context(runner_input):
                 if hasattr(agent, "instructions"):
                     original_agent_instructions = getattr(agent, "instructions", None)
@@ -833,26 +743,20 @@ class StreamingHandler:
 
     def _run_config(self, payload: MessageCreateRequest) -> RunConfig:
         """Build trace metadata and execution options for one streamed run."""
-        # Resolve workflow context for trace naming and metadata classification.
         settings = get_settings()
         req_id = self._request_id()
-        workflow_context = self._mlflow_workflow_context(payload)
-        draft_run_id = workflow_context["stationary_energy_draft_run_id"]
-        concept_note_run_id = workflow_context["concept_note_run_id"]
+        workflow_metadata = self.workflow_context.telemetry()
+        draft_run_id = workflow_metadata["stationary_energy_draft_run_id"]
+        concept_note_run_id = workflow_metadata["concept_note_run_id"]
         has_stationary_energy_context = bool(draft_run_id)
-        workflow_name = "Climate Advisor Conversation"
-        if has_stationary_energy_context:
-            workflow_name = "Climate Advisor Stationary Energy Context Chat"
-        if concept_note_run_id:
-            workflow_name = "Climate Advisor Concept Note Context Chat"
         # Keep trace metadata low-cardinality except for scoped request ids.
         trace_metadata: dict[str, Any] = {
             "service": "climate-advisor",
-            "workflow": workflow_context["workflow"],
-            "trace_category": workflow_context["trace_category"],
-            "ca_agentic_flow": workflow_context["ca_agentic_flow"],
-            "context_mode": workflow_context["context_mode"],
-            "prompt_name": workflow_context["prompt_name"],
+            "workflow": workflow_metadata["workflow"],
+            "trace_category": workflow_metadata["trace_category"],
+            "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
+            "context_mode": workflow_metadata["context_mode"],
+            "prompt_name": workflow_metadata["prompt_name"],
             "request_id": req_id,
             "thread_id": self.thread_identifier,
             "inventory_id": self.inventory_id,
@@ -866,7 +770,7 @@ class StreamingHandler:
 
         # Disable tracing from central settings without changing stream behavior.
         return RunConfig(
-            workflow_name=workflow_name,
+            workflow_name=self.workflow_context.trace_workflow_name,
             trace_id=gen_trace_id(),
             group_id=self.thread_identifier,
             trace_metadata=trace_metadata,
@@ -1169,33 +1073,25 @@ class StreamingHandler:
         """Return the MLflow experiment for the current chat workflow."""
         return climate_advisor_experiment_name()
 
-    def _mlflow_run_name(self, payload: MessageCreateRequest) -> str:
-        """Return the MLflow run name for the current chat workflow."""
-        if self._concept_note_run_id_from_payload(payload):
-            return "concept_note_context_chat_request"
-        if self._has_agentic_context(payload):
-            return "stationary_energy_context_chat_request"
-        return "climate_advisor_message_request"
-
     def _mlflow_tags(self, payload: MessageCreateRequest) -> dict[str, object]:
         """Return low-cardinality MLflow tags for one chat request."""
-        workflow_context = self._mlflow_workflow_context(payload)
+        workflow_metadata = self.workflow_context.telemetry()
         return {
             "request_kind": "message_stream",
             "endpoint": "/v1/messages",
-            "workflow": workflow_context["workflow"],
-            "trace_category": workflow_context["trace_category"],
-            "ca_agentic_flow": workflow_context["ca_agentic_flow"],
-            "context_mode": workflow_context["context_mode"],
-            "prompt_name": workflow_context["prompt_name"],
+            "workflow": workflow_metadata["workflow"],
+            "trace_category": workflow_metadata["trace_category"],
+            "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
+            "context_mode": workflow_metadata["context_mode"],
+            "prompt_name": workflow_metadata["prompt_name"],
             "request_id": self._request_id(),
             "thread_id": self.thread_identifier,
             "user_id": self.user_id,
             "inventory_id": payload.inventory_id or self.inventory_id,
-            "stationary_energy_draft_run_id": workflow_context[
+            "stationary_energy_draft_run_id": workflow_metadata[
                 "stationary_energy_draft_run_id"
             ],
-            "concept_note_run_id": workflow_context["concept_note_run_id"],
+            "concept_note_run_id": workflow_metadata["concept_note_run_id"],
         }
 
     def _mlflow_params(self, payload: MessageCreateRequest) -> dict[str, object]:
@@ -1212,30 +1108,6 @@ class StreamingHandler:
             "option_keys": sorted(options.keys()),
         }
 
-    def _draft_run_id_from_payload(self, payload: MessageCreateRequest) -> str | None:
-        """Return a Stationary Energy draft id from handler state or request payload."""
-        return (
-            self.stationary_energy_draft_run_id
-            or extract_stationary_energy_draft_run_id(
-                payload.context,
-                payload.options,
-                self.request_context,
-                self.request_options,
-            )
-        )
-
-    def _concept_note_run_id_from_payload(
-        self,
-        payload: MessageCreateRequest,
-    ) -> str | None:
-        """Return a Concept Note run id from handler state or request payload."""
-        return self.concept_note_run_id or extract_concept_note_run_id(
-            payload.context,
-            payload.options,
-            self.request_context,
-            self.request_options,
-        )
-
     def _request_id(self) -> str:
         """Return the current request id or a stable per-handler fallback."""
         request_id = get_request_id().strip()
@@ -1245,74 +1117,39 @@ class StreamingHandler:
             self.request_identifier = gen_trace_id()
         return self.request_identifier
 
-    def _mlflow_workflow_context(
-        self,
-        payload: MessageCreateRequest,
-    ) -> dict[str, object]:
-        """Return shared workflow values for MLflow run and trace context."""
-        draft_run_id = self._draft_run_id_from_payload(payload)
-        concept_note_run_id = self._concept_note_run_id_from_payload(payload)
-        has_stationary_energy_context = bool(draft_run_id)
-        has_concept_note_context = bool(concept_note_run_id)
-        has_agentic_context = has_stationary_energy_context or has_concept_note_context
-        workflow = "climate_advisor_conversation"
-        prompt_name = "chat"
-        context_mode = "general"
-        if has_stationary_energy_context:
-            workflow = "stationary_energy_context_chat"
-            prompt_name = "stationary_energy_review"
-            context_mode = "stationary_energy_draft"
-        if has_concept_note_context:
-            workflow = "concept_note_context_chat"
-            prompt_name = "chat"
-            context_mode = "concept_note_run"
-        return {
-            "workflow": workflow,
-            "trace_category": (
-                "ca_agentic_context_chat"
-                if has_agentic_context
-                else "normal_conversation"
-            ),
-            "prompt_name": prompt_name,
-            "ca_agentic_flow": has_agentic_context,
-            "context_mode": context_mode,
-            "stationary_energy_draft_run_id": draft_run_id,
-            "concept_note_run_id": concept_note_run_id,
-        }
-
     def _update_mlflow_trace_context(
         self,
         payload: MessageCreateRequest,
     ) -> bool:
         """Attach the CA thread id as the MLflow trace session id."""
-        workflow_context = self._mlflow_workflow_context(payload)
+        workflow_metadata = self.workflow_context.telemetry()
         request_id = self._request_id()
         inventory_id = payload.inventory_id or self.inventory_id
         metadata: dict[str, object] = {
             "service": "climate-advisor",
-            "workflow": workflow_context["workflow"],
-            "trace_category": workflow_context["trace_category"],
-            "context_mode": workflow_context["context_mode"],
-            "prompt_name": workflow_context["prompt_name"],
+            "workflow": workflow_metadata["workflow"],
+            "trace_category": workflow_metadata["trace_category"],
+            "context_mode": workflow_metadata["context_mode"],
+            "prompt_name": workflow_metadata["prompt_name"],
             "request_id": request_id,
             "thread_id": self.thread_identifier,
             "inventory_id": inventory_id,
         }
         tags: dict[str, object] = {
-            "workflow": workflow_context["workflow"],
-            "trace_category": workflow_context["trace_category"],
-            "ca_agentic_flow": workflow_context["ca_agentic_flow"],
-            "context_mode": workflow_context["context_mode"],
-            "prompt_name": workflow_context["prompt_name"],
+            "workflow": workflow_metadata["workflow"],
+            "trace_category": workflow_metadata["trace_category"],
+            "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
+            "context_mode": workflow_metadata["context_mode"],
+            "prompt_name": workflow_metadata["prompt_name"],
             "thread_id": self.thread_identifier,
             "inventory_id": inventory_id,
         }
-        draft_run_id = workflow_context["stationary_energy_draft_run_id"]
+        draft_run_id = workflow_metadata["stationary_energy_draft_run_id"]
         if draft_run_id:
             metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
             metadata["stationary_energy_draft_run_id"] = draft_run_id
             tags["stationary_energy_draft_run_id"] = draft_run_id
-        concept_note_run_id = workflow_context["concept_note_run_id"]
+        concept_note_run_id = workflow_metadata["concept_note_run_id"]
         if concept_note_run_id:
             metadata["feature_flag"] = "CONCEPT_NOTE_BUILDER"
             metadata["concept_note_run_id"] = concept_note_run_id
@@ -1326,41 +1163,58 @@ class StreamingHandler:
             metadata=metadata,
         )
 
-    async def _prime_mlflow_workflow_context(
+    async def _resolve_workflow_context(
         self,
         payload: MessageCreateRequest,
     ) -> None:
-        """Resolve thread-stored workflow context before opening the MLflow run."""
-        draft_run_id_text = self._draft_run_id_from_payload(payload)
-        if not draft_run_id_text:
-            draft_run_id_text = await self._load_thread_stationary_energy_draft_run_id()
-        if draft_run_id_text:
-            try:
-                self.stationary_energy_draft_run_id = str(UUID(str(draft_run_id_text)))
-            except ValueError:
-                logger.warning(
-                    "Ignoring invalid Stationary Energy draft_run_id before MLflow run: %s",
-                    draft_run_id_text,
-                )
-
-        concept_note_run_id_text = self._concept_note_run_id_from_payload(payload)
-        if not concept_note_run_id_text:
-            concept_note_run_id_text = await self._load_thread_concept_note_run_id()
-        if concept_note_run_id_text:
-            try:
-                self.concept_note_run_id = str(UUID(str(concept_note_run_id_text)))
-            except ValueError:
-                logger.warning(
-                    "Ignoring invalid Concept Note run id before MLflow run: %s",
-                    concept_note_run_id_text,
-                )
-
-    def _has_agentic_context(self, payload: MessageCreateRequest) -> bool:
-        """Return whether this chat request belongs to the agentic workflow."""
-        return bool(
-            self._draft_run_id_from_payload(payload)
-            or self._concept_note_run_id_from_payload(payload)
+        """Resolve request or thread workflow IDs once for the shared stream."""
+        draft_run_id = (
+            self.workflow_context.stationary_energy_draft_run_id
+            or extract_stationary_energy_draft_run_id(
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            )
         )
+        concept_note_run_id = (
+            self.workflow_context.concept_note_run_id
+            or extract_concept_note_run_id(
+                payload.context,
+                payload.options,
+                self.request_context,
+                self.request_options,
+            )
+        )
+        thread_context = ChatWorkflowContext()
+        if not draft_run_id or not concept_note_run_id:
+            thread_context = await self._load_thread_workflow_context()
+
+        self.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=self._normalize_workflow_run_id(
+                draft_run_id or thread_context.stationary_energy_draft_run_id,
+                "Stationary Energy draft_run_id",
+            ),
+            concept_note_run_id=self._normalize_workflow_run_id(
+                concept_note_run_id or thread_context.concept_note_run_id,
+                "Concept Note run id",
+            ),
+        )
+
+    @staticmethod
+    def _normalize_workflow_run_id(value: object, label: str) -> str | None:
+        """Return a canonical UUID string, ignoring malformed workflow IDs."""
+        if not value:
+            return None
+        try:
+            return str(UUID(str(value)))
+        except ValueError:
+            logger.warning(
+                "Ignoring invalid %s before MLflow run: %s",
+                label,
+                value,
+            )
+            return None
 
     def _log_mlflow_stream_summary(
         self,

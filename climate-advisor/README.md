@@ -28,7 +28,7 @@ conversational experience for CityCatalyst (CC). The service lives under
 
 ## Current Architecture
 
-Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
+Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
 
 1. General chat
    - Composes `prompts.core` with `prompts.chat`
@@ -45,18 +45,24 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.stationary_energy_review`
    - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices, including notation-key choices
+3. Concept Note context chat
+   - Activates for an authorized `concept_note_run_id`
+   - Keeps the general chat prompt, injects compact ready-source summaries, and
+     exposes the step-scoped read-only source query
+   - Uses the detailed contract in
+     [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
 At runtime:
 
 - `ThreadService` and `ThreadResolver` own chat-thread lifecycle.
 - `TokenHandler` loads and refreshes CityCatalyst tokens.
-- `StreamingHandler` loads pruned history, optionally injects Stationary Energy
-  draft context and `ui_context`, runs the agent, emits SSE events, and
-  persists assistant messages.
+- `StreamingHandler` resolves scoped Stationary Energy or Concept Note context,
+  loads pruned history, runs the agent, emits SSE events, and persists assistant
+  messages.
 - `AgentService` chooses the model and builds the tool pack for the current
   request.
-- PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
-  workflow state.
+- PostgreSQL stores threads, messages, embeddings, Stationary Energy draft
+  state, and Concept Note run/bundle state.
 
 ## Offline CNB Funding Research
 
@@ -604,74 +610,27 @@ never the supplied credential. Deployments should alert on repeated warnings or
 
 ### PDF-first Concept Note context bundles
 
-After a Markdown pointer reaches `ready`, Climate Advisor automatically rebuilds
-the run bundle from every ready upload. At least one ready city PDF is required;
-queued and failed uploads are excluded. Each ready pointer, digest, page count,
-and page sequence is revalidated through CityCatalyst before configured
-GPT-5.4 mini readers process every page in partitions capped at 50,000 input
-tokens. Up to four partitions are processed concurrently. GPT-5.4 then produces
-one short summary, topic list, and bounded set of exact page-cited excerpts per
-document.
+The full persistence, security, source-analysis, and selected-document query
+contract lives in
+[`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
+Operationally:
 
-The persisted skeleton always contains:
+- A ready Markdown pointer automatically rebuilds the bundle from every ready
+  PDF. At least one ready PDF is required; optional GHGI and HIAP failures do
+  not block readiness, and stale builds cannot overwrite a newer upload set.
+- `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
+  proxy rerun bundle assembly without rerunning OCR.
+- Eligible Concept Note chat turns receive compact summaries and the read-only,
+  single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
+  storage keys, credentials, and derived chunks are not persisted in the bundle.
+- A real full-stack contract example is retained at
+  [`docs/examples/cc-513-full-context-bundle.json`](docs/examples/cc-513-full-context-bundle.json).
 
-```json
-{
-  "cc_context": {
-    "city": null,
-    "project": null,
-    "ghgi": null,
-    "ccra": null,
-    "hiap": null
-  },
-  "selected_sources": [],
-  "funder_context": null,
-  "similar_projects": [],
-  "document_context": null
-}
-```
-
-An exact value export from a real local full-stack run is checked in at
-[`docs/examples/cc-513-full-context-bundle.json`](docs/examples/cc-513-full-context-bundle.json).
-The run used the CityCatalyst UI and API, PDF OCR, Climate Advisor background
-assembly, CityCatalyst's real GHGI/HIAP capability routes, and the persisted
-`concept_note_context_bundles.context_bundle` row. Its run ID is
-`27d72565-7cc4-4704-9454-d029f8532c47` and its build ID is
-`a9645a19-6237-4e4a-9efb-8cfebd8d646f`. The CityCatalyst database was an
-isolated clone of the local demo database. The export intentionally keeps the
-actual partial GHGI completeness,
-actual HIAP output, and actual one-page PDF analysis; it is not a hand-combined
-golden fixture. The focused test validates that the exported value still
-matches the typed bundle contract:
+Run the focused contract test with:
 
 ```bash
 uv run pytest service/tests/cnb/test_context_bundle_service.py -q
 ```
-
-Automatic assembly attempts GHGI and persisted HIAP, but missing, pending,
-failed, malformed, or unavailable optional data remains `null` and does not
-block PDF readiness. A partial GHGI snapshot or HIAP snapshot with usable
-actions is retained. Rebuilds replace only `selected_sources`, GHGI, and HIAP;
-later funder, similar-project, document, or extension sections are preserved.
-`concept_note_runs.context_summary.context_bundle` records the build ID, ready
-source fingerprint, status/counts, optional-source statuses, warnings, and
-retryability. Stale build IDs cannot commit over a newer upload set.
-
-`POST /v1/concept-notes/{run_id}/context-bundle/retry` queues only the
-downstream bundle work; its CityCatalyst proxy is
-`POST /api/v1/concept-notes/{runId}/context-bundle/retry`. Neither route reruns
-OCR. No raw Markdown, PDF, S3 key, credential, or derived chunk is stored in the
-bundle or a new table.
-
-When an authorized run is ready and its step is `interviewing`,
-`drafting_document`, or `editing_document`, the main agent receives compact
-per-document summaries and the read-only `concept_note_sources_query` tool
-(`concept_note.sources.query` capability). One call selects one `upload_id` and
-one bounded question, re-fetches and verifies that document, reads every page
-with tool-free mini readers, and returns verified exact excerpts, reader
-caveats, and coverage counts for the calling agent to combine. If no passage
-supports the question it returns `found: false`. PDF text is treated as
-untrusted evidence and embedded instructions are ignored.
 
 ### Concept Note run foundation
 

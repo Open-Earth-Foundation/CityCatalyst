@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from uuid import uuid4
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
+from uuid import UUID, uuid4
 
 from app.main import get_app
 from app.persistence.concept_notes.context_bundle import (
@@ -10,11 +12,7 @@ from app.persistence.concept_notes.context_bundle import (
 from app.routes.concept_note_context_bundle import get_citycatalyst_client
 from app.services.cnb.context_bundle import get_context_bundle_service
 from fastapi.testclient import TestClient
-
-
-class FakeClient:
-    async def validate_user_identity(self, token: str) -> str:
-        return "owner"
+from httpx import Response
 
 
 class FakeService:
@@ -28,40 +26,37 @@ class FakeService:
             run_id=self.run_id,
             city_id=str(uuid4()),
             build_id=uuid4(),
-            source_fingerprint="a" * 64,
             uploads=[],
             already_current=False,
         )
 
 
-class FailingService:
-    async def begin(self, **kwargs):
-        raise ContextBundlePersistenceError(
-            "cnb_storage_unavailable",
-            503,
-            "database password and internal stack trace",
-        )
+def post_retry(run_id: UUID, service: object) -> Response:
+    app = get_app()
+    client = SimpleNamespace(
+        validate_user_identity=AsyncMock(return_value="owner"),
+    )
+    app.dependency_overrides[get_citycatalyst_client] = lambda: client
+    app.dependency_overrides[get_context_bundle_service] = lambda: service
+    try:
+        with TestClient(app) as test_client:
+            return test_client.post(
+                f"/v1/concept-notes/{run_id}/context-bundle/retry",
+                headers={"Authorization": "Bearer token"},
+            )
+    finally:
+        app.dependency_overrides.clear()
 
 
 def test_retry_route_authorizes_and_queues_guarded_build(monkeypatch) -> None:
     run_id = uuid4()
     service = FakeService(run_id)
     scheduled: list[dict] = []
-    app = get_app()
-    app.dependency_overrides[get_citycatalyst_client] = lambda: FakeClient()
-    app.dependency_overrides[get_context_bundle_service] = lambda: service
     monkeypatch.setattr(
         "app.routes.concept_note_context_bundle.schedule_context_bundle_build",
         lambda **kwargs: scheduled.append(kwargs),
     )
-    try:
-        with TestClient(app) as client:
-            response = client.post(
-                f"/v1/concept-notes/{run_id}/context-bundle/retry",
-                headers={"Authorization": "Bearer token"},
-            )
-    finally:
-        app.dependency_overrides.clear()
+    response = post_retry(run_id, service)
 
     assert response.status_code == 202
     assert response.json() == {"run_id": str(run_id), "status": "queued"}
@@ -72,17 +67,16 @@ def test_retry_route_authorizes_and_queues_guarded_build(monkeypatch) -> None:
 
 def test_retry_route_does_not_expose_repository_exception_details() -> None:
     run_id = uuid4()
-    app = get_app()
-    app.dependency_overrides[get_citycatalyst_client] = lambda: FakeClient()
-    app.dependency_overrides[get_context_bundle_service] = lambda: FailingService()
-    try:
-        with TestClient(app) as client:
-            response = client.post(
-                f"/v1/concept-notes/{run_id}/context-bundle/retry",
-                headers={"Authorization": "Bearer token"},
+    service = SimpleNamespace(
+        begin=AsyncMock(
+            side_effect=ContextBundlePersistenceError(
+                "cnb_storage_unavailable",
+                503,
+                "database password and internal stack trace",
             )
-    finally:
-        app.dependency_overrides.clear()
+        )
+    )
+    response = post_retry(run_id, service)
 
     assert response.status_code == 503
     assert response.json() == {

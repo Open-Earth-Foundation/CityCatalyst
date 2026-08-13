@@ -41,7 +41,16 @@ class ClimateFinanceOpportunitiesApiService:
         route: str | None = None,
         limit: int = REPORT_FINANCE_ROWS_LIMIT,
     ) -> ClimateFinanceOpportunitiesFetchResult:
-        """Fetch, validate, and screen one opportunities-catalogue response."""
+        """
+        Fetch and select finance opportunities for a country and action sector.
+
+        The caller chooses ``country_code``, ``sector``, and optional ``route``.
+        If sector is missing, no network request is made and an empty result with
+        a warning is returned. HIAP-MEED always requests municipal opportunities,
+        fetches at most 50 candidates, and then applies the current/monitor rules
+        in ``_screen_report_opportunities``. ``limit`` is backend-owned and caps
+        each returned category; the public endpoint does not expose it.
+        """
         normalized_sector = (sector or "").strip()
         if not normalized_sector:
             return ClimateFinanceOpportunitiesFetchResult(
@@ -126,7 +135,7 @@ class ClimateFinanceOpportunitiesApiService:
         )
 
     def _build_url(self, *, country_code: str, sector: str) -> str:
-        """Build the municipality-relevant opportunities URL."""
+        """Build a country/sector URL with fixed municipal eligibility and limit 50."""
         query = {
             "country_code": country_code.strip().upper(),
             "sector": sector.strip(),
@@ -145,7 +154,15 @@ def _screen_report_opportunities(
     route: str | None,
     limit: int,
 ) -> list[ClimateFinanceOpportunityRecord]:
-    """Select current candidates and recurring closed programmes to monitor."""
+    """
+    Select up to ``limit`` current and ``limit`` monitoring opportunities.
+
+    Open or otherwise active programmes are current. Closed programmes are kept
+    only when marked annual, periodic, recurring, or sporadic; cancelled and
+    expired programmes are excluded. A technical-assistance route narrows the
+    current list when matching rows exist. Within each list, explicit climate
+    relevance, direct city application, and technical assistance are preferred.
+    """
     inactive_statuses = {"closed", "cancelled", "expired"}
     active = [
         opportunity

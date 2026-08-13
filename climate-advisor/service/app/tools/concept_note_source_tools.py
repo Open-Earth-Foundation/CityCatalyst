@@ -10,10 +10,13 @@ from typing import Optional
 from uuid import UUID
 
 from agents import function_tool
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.models.cnb.context_bundle import SourceQueryResult
 from app.persistence.concept_notes.context_bundle import (
-    ContextBundleRepository,
-    ContextBundleRepositoryError,
+    ContextBundleQuerySource,
+    ContextBundlePersistenceError,
+    load_query_source,
 )
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.cnb.source_analysis import (
@@ -29,11 +32,14 @@ CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY = "concept_note.sources.query"
 
 def build_concept_note_source_tools(
     *,
-    repository: ContextBundleRepository,
+    session_factory: async_sessionmaker[AsyncSession],
     run_id: str | UUID,
     user_id: str,
     token_ref: dict[str, Optional[str]],
     client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
+    load_query_source_fn: Callable[..., Awaitable[ContextBundleQuerySource]] = (
+        load_query_source
+    ),
     query_document_fn: Callable[..., Awaitable[SourceQueryResult]] = query_document,
     verify_source_artifact_fn: Callable[..., list[SourcePage]] = verify_source_artifact,
 ) -> Sequence[object]:
@@ -62,7 +68,8 @@ def build_concept_note_source_tools(
             return error_payload("invalid_arguments", "upload_id must be a UUID")
 
         try:
-            selected = await repository.load_query_source(
+            selected = await load_query_source_fn(
+                session_factory=session_factory,
                 user_id=user_id,
                 run_id=run_uuid,
                 upload_id=upload_uuid,
@@ -106,7 +113,7 @@ def build_concept_note_source_tools(
                 },
                 ensure_ascii=False,
             )
-        except ContextBundleRepositoryError as exc:
+        except ContextBundlePersistenceError as exc:
             logger.info(
                 "Concept Note source query rejected run_id=%s code=%s",
                 run_uuid,

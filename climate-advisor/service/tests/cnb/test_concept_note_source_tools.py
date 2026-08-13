@@ -23,6 +23,7 @@ class FakeRepository:
         self.calls: list[dict] = []
 
     async def load_query_source(self, **kwargs):
+        kwargs.pop("session_factory", None)
         self.calls.append(kwargs)
         return self.result
 
@@ -112,11 +113,12 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
         )
     )
     tools = build_concept_note_source_tools(
-        repository=repository,  # type: ignore[arg-type]
+        session_factory=None,  # type: ignore[arg-type]
         run_id=run_id,
         user_id="owner",
         token_ref={"value": "token"},
         client_factory=lambda: client,
+        load_query_source_fn=repository.load_query_source,
         query_document_fn=fake_query_document,
         verify_source_artifact_fn=fake_verify_source_artifact,
     )
@@ -150,10 +152,11 @@ async def test_source_tool_rejects_missing_token_before_loading_run() -> None:
     run_id = uuid4()
     repository = FakeRepository(None)  # type: ignore[arg-type]
     tool = build_concept_note_source_tools(
-        repository=repository,  # type: ignore[arg-type]
+        session_factory=None,  # type: ignore[arg-type]
         run_id=run_id,
         user_id="owner",
         token_ref={"value": None},
+        load_query_source_fn=repository.load_query_source,
     )[0]
     output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
         ToolContext(

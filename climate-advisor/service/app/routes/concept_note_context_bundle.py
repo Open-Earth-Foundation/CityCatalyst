@@ -7,7 +7,7 @@ from typing import Annotated
 from uuid import UUID
 
 from app.models.cnb.context_bundle import ContextBundleRetryResponse
-from app.persistence.concept_notes.context_bundle import ContextBundleRepositoryError
+from app.persistence.concept_notes.context_bundle import ContextBundlePersistenceError
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.cnb.context_bundle import (
     ContextBundleService,
@@ -85,7 +85,7 @@ async def retry_context_bundle(
             run_id=run_id,
             force=True,
         )
-    except ContextBundleRepositoryError as exc:
+    except ContextBundlePersistenceError as exc:
         return problem(
             exc.status_code,
             exc.code,

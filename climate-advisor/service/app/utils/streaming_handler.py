@@ -16,7 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
-from app.persistence.concept_notes.context_bundle import ContextBundleRepository
+from app.persistence.concept_notes.context_bundle import load_agent_context
 from app.services.agent_service import AgentService
 from app.services.stationary_energy.stationary_energy_chat_context import (
     build_minimal_stationary_energy_context_payload,
@@ -520,9 +520,8 @@ class StreamingHandler:
             return None
         self.concept_note_run_id = str(run_id)
         try:
-            context = await ContextBundleRepository(
-                self.session_factory
-            ).load_agent_context(
+            context = await load_agent_context(
+                session_factory=self.session_factory,
                 user_id=self.user_id,
                 run_id=run_id,
             )

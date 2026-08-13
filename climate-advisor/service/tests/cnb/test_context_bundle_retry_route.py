@@ -5,7 +5,7 @@ from uuid import uuid4
 from app.main import get_app
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
-    ContextBundleRepositoryError,
+    ContextBundlePersistenceError,
 )
 from app.routes.concept_note_context_bundle import get_citycatalyst_client
 from app.services.cnb.context_bundle import get_context_bundle_service
@@ -36,7 +36,7 @@ class FakeService:
 
 class FailingService:
     async def begin(self, **kwargs):
-        raise ContextBundleRepositoryError(
+        raise ContextBundlePersistenceError(
             "cnb_storage_unavailable",
             503,
             "database password and internal stack trace",

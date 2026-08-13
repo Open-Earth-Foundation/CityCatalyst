@@ -21,8 +21,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.config import get_settings
 from app.persistence.concept_notes.context_bundle import (
     ALLOWED_SOURCE_QUERY_STEPS,
-    ContextBundleRepository,
-    ContextBundleRepositoryError,
+    ContextBundlePersistenceError,
+    load_agent_context,
 )
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.cc_inventory_tool import CCInventoryTool
@@ -338,13 +338,13 @@ class AgentService:
             assert self.session_factory is not None
             assert self.concept_note_run_id is not None
             assert self.cc_user_id is not None
-            context_repository = ContextBundleRepository(self.session_factory)
             try:
-                concept_note_context = await context_repository.load_agent_context(
+                concept_note_context = await load_agent_context(
+                    session_factory=self.session_factory,
                     user_id=str(self.cc_user_id),
                     run_id=UUID(self.concept_note_run_id),
                 )
-            except (ContextBundleRepositoryError, ValueError):
+            except (ContextBundlePersistenceError, ValueError):
                 logger.warning(
                     "Concept Note context was unavailable during tool registration run_id=%s",
                     self.concept_note_run_id,
@@ -357,7 +357,7 @@ class AgentService:
             ):
                 tools.extend(
                     build_concept_note_source_tools(
-                        repository=context_repository,
+                        session_factory=self.session_factory,
                         run_id=self.concept_note_run_id,
                         user_id=str(self.cc_user_id),
                         token_ref=self._token_ref,

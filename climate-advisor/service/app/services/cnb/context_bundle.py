@@ -8,12 +8,16 @@ from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID, uuid4
 
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
 from app.config import Settings, get_settings
 from app.db.session import get_session_factory
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleBuildSnapshot,
-    ContextBundleRepository,
+    begin_build,
+    complete_build,
+    fail_build,
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
@@ -48,7 +52,7 @@ class ContextBundleService:
 
     def __init__(
         self,
-        repository: ContextBundleRepository,
+        session_factory: async_sessionmaker[AsyncSession],
         *,
         analyze_document_fn: Callable[..., Awaitable[SelectedSource]] = analyze_document,
         verify_source_artifact_fn: Callable[..., list[SourcePage]] = (
@@ -57,7 +61,7 @@ class ContextBundleService:
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
     ) -> None:
         """Store dependencies so background resources are created inside the task."""
-        self.repository = repository
+        self.session_factory = session_factory
         self.analyze_document_fn = analyze_document_fn
         self.verify_source_artifact_fn = verify_source_artifact_fn
         self.cc_client_factory = cc_client_factory
@@ -70,7 +74,8 @@ class ContextBundleService:
         force: bool = False,
     ) -> ContextBundleBuildSnapshot:
         """Persist a new active build and snapshot the ready source set."""
-        return await self.repository.begin_build(
+        return await begin_build(
+            session_factory=self.session_factory,
             user_id=user_id,
             run_id=run_id,
             build_id=uuid4(),
@@ -128,7 +133,8 @@ class ContextBundleService:
                 token=token,
                 cc_client=cc_client,
             )
-            return await self.repository.complete_build(
+            return await complete_build(
+                session_factory=self.session_factory,
                 user_id=user_id,
                 run_id=run_id,
                 build_id=active.build_id,
@@ -331,7 +337,8 @@ class ContextBundleService:
         warning: str,
     ) -> None:
         """Persist one guarded retryable failure without masking its cause."""
-        await self.repository.fail_build(
+        await fail_build(
+            session_factory=self.session_factory,
             user_id=user_id,
             run_id=snapshot.run_id,
             build_id=snapshot.build_id,
@@ -377,7 +384,7 @@ def get_context_bundle_service() -> ContextBundleService | None:
     """Provide a build service, or a safe unavailable marker without a database."""
     try:
         return ContextBundleService(
-            ContextBundleRepository(get_session_factory()),
+            get_session_factory(),
         )
     except Exception:
         logger.exception("Concept Note context-bundle storage is unavailable")

@@ -12,8 +12,11 @@ from app.models.db.concept_note import (
     ConceptNoteUpload,
 )
 from app.persistence.concept_notes.context_bundle import (
-    ContextBundleRepository,
-    ContextBundleRepositoryError,
+    ContextBundlePersistenceError,
+    begin_build,
+    complete_build,
+    fail_build,
+    load_query_source,
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -120,14 +123,15 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 ]
             )
 
-        repository = ContextBundleRepository(session_factory)
-        snapshot = await repository.begin_build(
+        snapshot = await begin_build(
+            session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             build_id=uuid4(),
         )
         assert [item.upload_id for item in snapshot.uploads] == [ready_id]
-        committed = await repository.complete_build(
+        committed = await complete_build(
+            session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             build_id=snapshot.build_id,
@@ -150,9 +154,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             "ccra": None,
             "hiap": None,
         }
-        assert bundle.context_bundle["funder_context"] == {
-            "name": "Existing funder"
-        }
+        assert bundle.context_bundle["funder_context"] == {"name": "Existing funder"}
         assert bundle.context_bundle["similar_projects"] == []
         assert bundle.context_bundle["document_context"] is None
         assert bundle.context_bundle["future_section"] == {"keep": True}
@@ -168,21 +170,24 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
         }
         assert progress["completion_event"] == "concept_note_context_bundle_ready"
 
-        query_source = await repository.load_query_source(
+        query_source = await load_query_source(
+            session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             upload_id=ready_id,
         )
         assert query_source.source.upload_id == ready_id
-        with pytest.raises(ContextBundleRepositoryError) as forbidden:
-            await repository.load_query_source(
+        with pytest.raises(ContextBundlePersistenceError) as forbidden:
+            await load_query_source(
+                session_factory=session_factory,
                 user_id="other-user",
                 run_id=run_id,
                 upload_id=ready_id,
             )
         assert forbidden.value.code == "concept_note_run_forbidden"
-        with pytest.raises(ContextBundleRepositoryError) as unavailable:
-            await repository.load_query_source(
+        with pytest.raises(ContextBundlePersistenceError) as unavailable:
+            await load_query_source(
+                session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
                 upload_id=queued_id,
@@ -193,8 +198,9 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             stored_run = await session.get(ConceptNoteRun, run_id)
             assert stored_run is not None
             stored_run.workflow_step = "assembling_context"
-        with pytest.raises(ContextBundleRepositoryError) as wrong_step:
-            await repository.load_query_source(
+        with pytest.raises(ContextBundlePersistenceError) as wrong_step:
+            await load_query_source(
+                session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
                 upload_id=ready_id,
@@ -238,40 +244,49 @@ async def test_stale_build_cannot_replace_newer_ready_upload_set(tmp_path) -> No
                     first,
                 ]
             )
-        repository = ContextBundleRepository(session_factory)
-        older = await repository.begin_build(
+        older = await begin_build(
+            session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             build_id=uuid4(),
         )
         async with session_factory() as session, session.begin():
             session.add(second)
-        assert await repository.complete_build(
-            user_id="owner",
-            run_id=run_id,
-            build_id=older.build_id,
-            selected_sources=[selected(first)],
-            ghgi=None,
-            hiap=None,
-            optional_sources={"ghgi": "missing", "hiap": "missing"},
-            warnings=[],
-        ) is False
-        newer = await repository.begin_build(
+        assert (
+            await complete_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=older.build_id,
+                selected_sources=[selected(first)],
+                ghgi=None,
+                hiap=None,
+                optional_sources={"ghgi": "missing", "hiap": "missing"},
+                warnings=[],
+            )
+            is False
+        )
+        newer = await begin_build(
+            session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             build_id=uuid4(),
         )
         assert older.source_fingerprint != newer.source_fingerprint
-        assert await repository.complete_build(
-            user_id="owner",
-            run_id=run_id,
-            build_id=newer.build_id,
-            selected_sources=[selected(first), selected(second)],
-            ghgi=None,
-            hiap=None,
-            optional_sources={"ghgi": "missing", "hiap": "missing"},
-            warnings=[],
-        ) is True
+        assert (
+            await complete_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=newer.build_id,
+                selected_sources=[selected(first), selected(second)],
+                ghgi=None,
+                hiap=None,
+                optional_sources={"ghgi": "missing", "hiap": "missing"},
+                warnings=[],
+            )
+            is True
+        )
         async with session_factory() as session:
             bundle = await session.get(ConceptNoteContextBundle, run_id)
         assert bundle is not None
@@ -303,20 +318,24 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
                     ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
                 ]
             )
-        repository = ContextBundleRepository(session_factory)
-        snapshot = await repository.begin_build(
+        snapshot = await begin_build(
+            session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
             build_id=uuid4(),
         )
         assert snapshot.uploads == []
-        assert await repository.fail_build(
-            user_id="owner",
-            run_id=run_id,
-            build_id=snapshot.build_id,
-            error_code="no_ready_city_pdf",
-            warning="A ready PDF is required.",
-        ) is True
+        assert (
+            await fail_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=snapshot.build_id,
+                error_code="no_ready_city_pdf",
+                warning="A ready PDF is required.",
+            )
+            is True
+        )
         async with session_factory() as session:
             run = await session.get(ConceptNoteRun, run_id)
         assert run is not None

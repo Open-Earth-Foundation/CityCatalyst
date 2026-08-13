@@ -21,8 +21,8 @@ FULL_BUNDLE_EXAMPLE = (
 )
 
 
-class FakeRepository:
-    """Capture service completion and failure writes."""
+class PersistenceRecorder:
+    """Capture context-bundle persistence calls made by the service."""
 
     def __init__(self, snapshot: ContextBundleBuildSnapshot) -> None:
         self.snapshot = snapshot
@@ -122,7 +122,7 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         uploads=[upload],
         already_current=False,
     )
-    repository = FakeRepository(snapshot)
+    persistence = PersistenceRecorder(snapshot)
     client = FakeCityCatalystClient(
         ConceptNoteMarkdownArtifact(
             markdown=markdown,
@@ -139,8 +139,20 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         "app.services.cnb.context_bundle.load_accessible_inventory",
         no_inventory,
     )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.begin_build",
+        persistence.begin_build,
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.complete_build",
+        persistence.complete_build,
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.fail_build",
+        persistence.fail_build,
+    )
     service = ContextBundleService(
-        repository,  # type: ignore[arg-type]
+        None,  # type: ignore[arg-type]
         analyze_document_fn=fake_analyze_document,
         verify_source_artifact_fn=fake_verify_source_artifact,
         cc_client_factory=lambda: client,
@@ -153,15 +165,15 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         )
         is True
     )
-    assert repository.failed is None
-    assert repository.completed is not None
-    assert repository.completed["ghgi"] is None
-    assert repository.completed["hiap"] is None
-    assert repository.completed["optional_sources"] == {
+    assert persistence.failed is None
+    assert persistence.completed is not None
+    assert persistence.completed["ghgi"] is None
+    assert persistence.completed["hiap"] is None
+    assert persistence.completed["optional_sources"] == {
         "ghgi": "missing",
         "hiap": "missing",
     }
-    assert [item.upload_id for item in repository.completed["selected_sources"]] == [
+    assert [item.upload_id for item in persistence.completed["selected_sources"]] == [
         upload_id
     ]
     assert client.closed is True
@@ -169,15 +181,7 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
 
 @pytest.mark.asyncio
 async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
-    snapshot = ContextBundleBuildSnapshot(
-        run_id=uuid4(),
-        city_id=str(uuid4()),
-        build_id=uuid4(),
-        source_fingerprint="a" * 64,
-        uploads=[],
-        already_current=False,
-    )
-    service = ContextBundleService(FakeRepository(snapshot))  # type: ignore[arg-type]
+    service = ContextBundleService(None)  # type: ignore[arg-type]
     inventory = {"inventory_id": str(uuid4())}
 
     async def inventory_loader(**kwargs):
@@ -225,15 +229,7 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
 
 @pytest.mark.asyncio
 async def test_optional_source_errors_do_not_fail_pdf_readiness(monkeypatch) -> None:
-    snapshot = ContextBundleBuildSnapshot(
-        run_id=uuid4(),
-        city_id=str(uuid4()),
-        build_id=uuid4(),
-        source_fingerprint="a" * 64,
-        uploads=[],
-        already_current=False,
-    )
-    service = ContextBundleService(FakeRepository(snapshot))  # type: ignore[arg-type]
+    service = ContextBundleService(None)  # type: ignore[arg-type]
 
     async def unavailable(**kwargs):
         raise RuntimeError("optional service unavailable")

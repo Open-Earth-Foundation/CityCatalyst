@@ -35,7 +35,7 @@ import {
   PATCH as updateActionPlan,
   DELETE as deleteActionPlan,
 } from "@/app/api/v1/city/[city]/hiap/action-plan/[id]/route";
-import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
+import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/route";
 
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
@@ -569,7 +569,6 @@ describe("City HIAP Prioritization API", () => {
       const res = await generateActionPlan(req, {
         params: Promise.resolve({
           city: testData.cityId,
-          rankingId: ranking.id,
         }),
       });
 
@@ -603,7 +602,6 @@ describe("City HIAP Prioritization API", () => {
       const res = await generateActionPlan(req, {
         params: Promise.resolve({
           city: testData.cityId,
-          rankingId: randomUUID(),
         }),
       });
 

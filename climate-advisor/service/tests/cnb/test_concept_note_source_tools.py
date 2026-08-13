@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
+from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
@@ -14,30 +16,12 @@ from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import SourcePage
 from app.tools.concept_note_source_tools import build_concept_note_source_tools
 
-
-class FakeRepository:
-    """Return one source while recording the captured authorization scope."""
-
-    def __init__(self, result: ContextBundleQuerySource) -> None:
-        self.result = result
-        self.calls: list[dict] = []
-
-    async def load_query_source(self, **kwargs):
-        kwargs.pop("session_factory", None)
-        self.calls.append(kwargs)
-        return self.result
-
-
-class FakeClient:
-    def __init__(self, artifact: ConceptNoteMarkdownArtifact) -> None:
-        self.artifact = artifact
-        self.closed = False
-
-    async def get_concept_note_markdown(self, **kwargs):
-        return self.artifact
-
-    async def close(self):
-        self.closed = True
+TOOL_CONTEXT = ToolContext(
+    context=None,
+    tool_call_id="call-1",
+    tool_name="concept_note_sources_query",
+    tool_arguments={},
+)
 
 
 def fake_verify_source_artifact(**kwargs) -> list[SourcePage]:
@@ -83,8 +67,8 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
         topics=["planning"],
         key_excerpts=[],
     )
-    repository = FakeRepository(
-        ContextBundleQuerySource(
+    load_query_source = AsyncMock(
+        return_value=ContextBundleQuerySource(
             source=source,
             upload=ConceptNoteUploadSnapshot(
                 upload_id=upload_id,
@@ -102,13 +86,16 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
             ),
         )
     )
-    client = FakeClient(
-        ConceptNoteMarkdownArtifact(
-            markdown=markdown,
-            markdown_s3_key="result.md",
-            sha256=digest,
-            page_count=1,
-        )
+    client = SimpleNamespace(
+        get_concept_note_markdown=AsyncMock(
+            return_value=ConceptNoteMarkdownArtifact(
+                markdown=markdown,
+                markdown_s3_key="result.md",
+                sha256=digest,
+                page_count=1,
+            )
+        ),
+        close=AsyncMock(),
     )
     tools = build_concept_note_source_tools(
         session_factory=None,  # type: ignore[arg-type]
@@ -116,18 +103,13 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
         user_id="owner",
         token_ref={"value": "token"},
         client_factory=lambda: client,
-        load_query_source_fn=repository.load_query_source,
+        load_query_source_fn=load_query_source,
         query_document_fn=fake_query_document,
         verify_source_artifact_fn=fake_verify_source_artifact,
     )
     tool = tools[0]
     output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
-        ToolContext(
-            context=None,
-            tool_call_id="call-1",
-            tool_name="concept_note_sources_query",
-            tool_arguments={},
-        ),
+        TOOL_CONTEXT,
         json.dumps(
             {
                 "upload_id": str(upload_id),
@@ -139,31 +121,29 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
     assert payload["action"] == "concept_note.sources.query"
     assert payload["success"] is True
     assert payload["data"]["found"] is False
-    assert repository.calls == [
-        {"user_id": "owner", "run_id": run_id, "upload_id": upload_id}
-    ]
-    assert client.closed is True
+    load_query_source.assert_awaited_once_with(
+        session_factory=None,
+        user_id="owner",
+        run_id=run_id,
+        upload_id=upload_id,
+    )
+    client.close.assert_awaited_once_with()
 
 
 @pytest.mark.asyncio
 async def test_source_tool_rejects_missing_token_before_loading_run() -> None:
     run_id = uuid4()
-    repository = FakeRepository(None)  # type: ignore[arg-type]
+    load_query_source = AsyncMock()
     tool = build_concept_note_source_tools(
         session_factory=None,  # type: ignore[arg-type]
         run_id=run_id,
         user_id="owner",
         token_ref={"value": None},
-        load_query_source_fn=repository.load_query_source,
+        load_query_source_fn=load_query_source,
     )[0]
     output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
-        ToolContext(
-            context=None,
-            tool_call_id="call-1",
-            tool_name="concept_note_sources_query",
-            tool_arguments={},
-        ),
+        TOOL_CONTEXT,
         json.dumps({"upload_id": str(uuid4()), "question": "Question"}),
     )
     assert json.loads(output)["error_code"] == "missing_token"
-    assert repository.calls == []
+    load_query_source.assert_not_awaited()

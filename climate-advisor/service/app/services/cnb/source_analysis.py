@@ -36,6 +36,7 @@ _GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(4)
 MAX_QUERY_EXCERPTS = 20
 MAX_QUERY_CAVEATS = 10
 OutputModel = TypeVar("OutputModel", bound=BaseModel)
+PartitionOutput = TypeVar("PartitionOutput", SourcePartitionMap, SourceQuestionReading)
 
 
 class SourceAnalysisError(Exception):
@@ -130,10 +131,12 @@ async def analyze_document(
         )
         readings = await gather_all_or_raise(
             *(
-                _map_partition(
-                    label=label,
+                _read_partition(
+                    name="Concept Note source partition reader",
                     partition=partition,
                     prompt=prompt,
+                    output_type=SourcePartitionMap,
+                    input_text=render_partition(partition, source_label=label),
                     settings=settings,
                     client=client,
                     runner=runner,
@@ -234,10 +237,15 @@ async def query_document(
         )
         readings = await gather_all_or_raise(
             *(
-                _read_partition_for_question(
-                    question=normalized_question,
+                _read_partition(
+                    name="Concept Note question-focused source reader",
                     partition=partition,
                     prompt=prompt,
+                    output_type=SourceQuestionReading,
+                    input_text=render_partition(
+                        partition,
+                        question=normalized_question,
+                    ),
                     settings=settings,
                     client=client,
                     runner=runner,
@@ -252,7 +260,7 @@ async def query_document(
         evidence: list[SourceExcerpt] = []
         caveats: list[str] = []
         for reading in readings:
-            evidence.extend(verified_excerpts(reading.excerpts, page_text))
+            evidence.extend(reading.excerpts)
             caveats.extend(reading.caveats)
         pages_processed = len(
             {segment.page for partition in partitions for segment in partition}
@@ -261,8 +269,7 @@ async def query_document(
         final_excerpts = verified_excerpts(evidence, page_text)[:MAX_QUERY_EXCERPTS]
         final_caveats = deduplicate_strings(caveats)[:MAX_QUERY_CAVEATS]
 
-        # Preserve coverage counts so the main agent can distinguish
-        # absence from omission.
+        # Preserve coverage counts so the main agent can distinguish absence from omission.
         return SourceQueryResult(
             found=bool(final_excerpts),
             upload_id=upload_id,
@@ -298,70 +305,21 @@ def _resolve_analysis_client(
     return AsyncOpenAI(**options.kwargs), True
 
 
-async def _map_partition(
-    *,
-    label: str,
-    partition: Sequence[SourceSegment],
-    prompt: str,
-    settings: Settings,
-    client: AsyncOpenAI,
-    runner: Any,
-    reader_limit: asyncio.Semaphore,
-) -> SourcePartitionMap:
-    """Map one partition and require exact segment coverage acknowledgement."""
-    result = await _run_reader(
-        name="Concept Note source partition reader",
-        prompt=prompt,
-        output_type=SourcePartitionMap,
-        input_text=render_partition(partition, source_label=label),
-        settings=settings,
-        client=client,
-        runner=runner,
-        reader_limit=reader_limit,
-    )
-    require_partition_coverage(partition, result.covered_segment_ids)
-    return result
-
-
-async def _read_partition_for_question(
-    *,
-    question: str,
-    partition: Sequence[SourceSegment],
-    prompt: str,
-    settings: Settings,
-    client: AsyncOpenAI,
-    runner: Any,
-    reader_limit: asyncio.Semaphore,
-) -> SourceQuestionReading:
-    """Read one complete partition for question-focused evidence."""
-    result = await _run_reader(
-        name="Concept Note question-focused source reader",
-        prompt=prompt,
-        output_type=SourceQuestionReading,
-        input_text=render_partition(partition, question=question),
-        settings=settings,
-        client=client,
-        runner=runner,
-        reader_limit=reader_limit,
-    )
-    require_partition_coverage(partition, result.covered_segment_ids)
-    return result
-
-
-async def _run_reader(
+async def _read_partition(
     *,
     name: str,
+    partition: Sequence[SourceSegment],
     prompt: str,
-    output_type: type[OutputModel],
+    output_type: type[PartitionOutput],
     input_text: str,
     settings: Settings,
     client: AsyncOpenAI,
     runner: Any,
     reader_limit: asyncio.Semaphore,
-) -> OutputModel:
-    """Run one tool-free mini reader under local and process-wide limits."""
+) -> PartitionOutput:
+    """Run one bounded partition reader and require exact segment coverage."""
     async with reader_limit, _GLOBAL_READER_SEMAPHORE:
-        return await _run_agent(
+        result = await _run_agent(
             name=name,
             prompt=prompt,
             model_name=settings.llm.models.cnb_source_reader.name,
@@ -371,6 +329,8 @@ async def _run_reader(
             client=client,
             runner=runner,
         )
+    require_partition_coverage(partition, result.covered_segment_ids)
+    return result
 
 
 async def _run_agent(
@@ -385,8 +345,11 @@ async def _run_agent(
     runner: Any,
 ) -> OutputModel:
     """Run one deterministic, tool-free Agents SDK worker."""
-    reader_model = settings.llm.models.cnb_source_reader
-    synthesizer_model = settings.llm.models.cnb_source_synthesizer
+    model_config = (
+        settings.llm.models.cnb_source_reader
+        if model_name == settings.llm.models.cnb_source_reader.name
+        else settings.llm.models.cnb_source_synthesizer
+    )
     agent = Agent(
         name=name,
         instructions=prompt,
@@ -397,13 +360,7 @@ async def _run_agent(
         model_settings=ModelSettings(
             temperature=0.0,
             include_usage=True,
-            reasoning={
-                "effort": (
-                    reader_model.reasoning_effort
-                    if model_name == reader_model.name
-                    else synthesizer_model.reasoning_effort
-                )
-            },
+            reasoning={"effort": model_config.reasoning_effort},
         ),
         output_type=output_type,
         tools=[],
@@ -515,35 +472,12 @@ def split_page(
     source_label: str | None = None,
 ) -> list[SourceSegment]:
     """Split one oversized page at paragraph boundaries, then exact text offsets."""
-    whole = SourceSegment(
-        segment_id=f"p{page.number}-s1", page=page.number, text=page.text
-    )
-    if (
-        prompt_token_count(
-            prompt,
-            render_partition(
-                [whole],
-                source_label=source_label,
-                question=question,
-            ),
-            model=model,
-            fallback_encoding=fallback_encoding,
-        )
-        <= max_tokens
-    ):
-        return [whole]
-
-    paragraphs = [match.group(0) for match in PARAGRAPH_BOUNDARY.finditer(page.text)]
-    chunks: list[str] = []
-    pending = ""
-    for paragraph in paragraphs:
-        candidate = pending + paragraph
-        probe = SourceSegment("probe", page.number, candidate)
-        if (
+    def fits_budget(segment: SourceSegment) -> bool:
+        return (
             prompt_token_count(
                 prompt,
                 render_partition(
-                    [probe],
+                    [segment],
                     source_label=source_label,
                     question=question,
                 ),
@@ -551,7 +485,21 @@ def split_page(
                 fallback_encoding=fallback_encoding,
             )
             <= max_tokens
-        ):
+        )
+
+    whole = SourceSegment(
+        segment_id=f"p{page.number}-s1", page=page.number, text=page.text
+    )
+    if fits_budget(whole):
+        return [whole]
+
+    chunks: list[str] = []
+    pending = ""
+    for match in PARAGRAPH_BOUNDARY.finditer(page.text):
+        paragraph = match.group(0)
+        candidate = pending + paragraph
+        probe = SourceSegment("probe", page.number, candidate)
+        if fits_budget(probe):
             pending = candidate
             continue
         if pending:

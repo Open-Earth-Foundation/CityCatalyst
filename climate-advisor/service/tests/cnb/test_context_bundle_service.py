@@ -5,6 +5,7 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
@@ -19,26 +20,6 @@ CLIMATE_ADVISOR_ROOT = Path(__file__).resolve().parents[3]
 FULL_BUNDLE_EXAMPLE = (
     CLIMATE_ADVISOR_ROOT / "docs" / "examples" / "cc-513-full-context-bundle.json"
 )
-
-
-class PersistenceRecorder:
-    """Capture context-bundle persistence calls made by the service."""
-
-    def __init__(self, snapshot: ContextBundleBuildSnapshot) -> None:
-        self.snapshot = snapshot
-        self.completed: dict | None = None
-        self.failed: dict | None = None
-
-    async def begin_build(self, **kwargs):
-        return self.snapshot
-
-    async def complete_build(self, **kwargs):
-        self.completed = kwargs
-        return True
-
-    async def fail_build(self, **kwargs):
-        self.failed = kwargs
-        return True
 
 
 def fake_verify_source_artifact(
@@ -63,20 +44,6 @@ async def fake_analyze_document(**kwargs) -> SelectedSource:
         topics=["city"],
         key_excerpts=[],
     )
-
-
-class FakeCityCatalystClient:
-    """Serve one source artifact without providing optional city data."""
-
-    def __init__(self, artifact: ConceptNoteMarkdownArtifact) -> None:
-        self.artifact = artifact
-        self.closed = False
-
-    async def get_concept_note_markdown(self, **kwargs):
-        return self.artifact
-
-    async def close(self):
-        self.closed = True
 
 
 def test_checked_in_full_stack_bundle_example_matches_contract() -> None:
@@ -121,34 +88,36 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         uploads=[upload],
         already_current=False,
     )
-    persistence = PersistenceRecorder(snapshot)
-    client = FakeCityCatalystClient(
-        ConceptNoteMarkdownArtifact(
-            markdown=markdown,
-            markdown_s3_key="result.md",
-            sha256=digest,
-            page_count=1,
-        )
+    begin_build = AsyncMock(return_value=snapshot)
+    complete_build = AsyncMock(return_value=True)
+    fail_build = AsyncMock(return_value=True)
+    client = SimpleNamespace(
+        get_concept_note_markdown=AsyncMock(
+            return_value=ConceptNoteMarkdownArtifact(
+                markdown=markdown,
+                markdown_s3_key="result.md",
+                sha256=digest,
+                page_count=1,
+            )
+        ),
+        close=AsyncMock(),
     )
-
-    async def no_inventory(**kwargs):
-        return None
 
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.load_accessible_inventory",
-        no_inventory,
+        AsyncMock(return_value=None),
     )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.begin_build",
-        persistence.begin_build,
+        begin_build,
     )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.complete_build",
-        persistence.complete_build,
+        complete_build,
     )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.fail_build",
-        persistence.fail_build,
+        fail_build,
     )
     service = ContextBundleService(
         None,  # type: ignore[arg-type]
@@ -164,55 +133,55 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         )
         is True
     )
-    assert persistence.failed is None
-    assert persistence.completed is not None
-    assert persistence.completed["ghgi"] is None
-    assert persistence.completed["hiap"] is None
-    assert persistence.completed["optional_sources"] == {
+    fail_build.assert_not_awaited()
+    completed = complete_build.await_args.kwargs
+    assert completed["ghgi"] is None
+    assert completed["hiap"] is None
+    assert completed["optional_sources"] == {
         "ghgi": "missing",
         "hiap": "missing",
     }
-    assert [item.upload_id for item in persistence.completed["selected_sources"]] == [
+    assert [item.upload_id for item in completed["selected_sources"]] == [
         upload_id
     ]
-    assert client.closed is True
+    client.close.assert_awaited_once_with()
 
 
 @pytest.mark.asyncio
 async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
     service = ContextBundleService(None)  # type: ignore[arg-type]
     inventory = {"inventory_id": str(uuid4())}
-
-    async def inventory_loader(**kwargs):
-        return inventory
-
-    async def ghgi_loader(**kwargs):
-        return SimpleNamespace(
-            availability="partial",
-            model_dump=lambda **_: {"availability": "partial", "emissions": {}},
-        )
-
     actions = [SimpleNamespace(action_id="action-1")]
-
-    async def hiap_loader(**kwargs):
-        return SimpleNamespace(
-            availability="available",
-            mitigation=SimpleNamespace(actions=actions),
-            adaptation=SimpleNamespace(actions=[]),
-            model_dump=lambda **_: {"availability": "available", "actions": [1]},
-        )
 
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.load_accessible_inventory",
-        inventory_loader,
+        AsyncMock(return_value=inventory),
     )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.load_ghgi_context",
-        ghgi_loader,
+        AsyncMock(
+            return_value=SimpleNamespace(
+                availability="partial",
+                model_dump=lambda **_: {
+                    "availability": "partial",
+                    "emissions": {},
+                },
+            )
+        ),
     )
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.load_hiap_context",
-        hiap_loader,
+        AsyncMock(
+            return_value=SimpleNamespace(
+                availability="available",
+                mitigation=SimpleNamespace(actions=actions),
+                adaptation=SimpleNamespace(actions=[]),
+                model_dump=lambda **_: {
+                    "availability": "available",
+                    "actions": [1],
+                },
+            )
+        ),
     )
     ghgi, hiap, statuses, warnings = await service._load_optional_context(
         user_id="owner",
@@ -230,12 +199,9 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
 async def test_optional_source_errors_do_not_fail_pdf_readiness(monkeypatch) -> None:
     service = ContextBundleService(None)  # type: ignore[arg-type]
 
-    async def unavailable(**kwargs):
-        raise RuntimeError("optional service unavailable")
-
     monkeypatch.setattr(
         "app.services.cnb.context_bundle.load_accessible_inventory",
-        unavailable,
+        AsyncMock(side_effect=RuntimeError("optional service unavailable")),
     )
     ghgi, hiap, statuses, warnings = await service._load_optional_context(
         user_id="owner",

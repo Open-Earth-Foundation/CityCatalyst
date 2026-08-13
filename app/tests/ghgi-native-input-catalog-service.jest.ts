@@ -27,11 +27,20 @@ const mockDb = {
 };
 
 jest.unstable_mockModule("@/models", () => ({ db: mockDb }));
+jest.mock("@/models", () => ({ db: mockDb }));
 const resolveImportedFileBuffer = jest.fn();
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
+  __esModule: true,
+  default: { resolveImportedFileBuffer },
+}));
+jest.mock("@/backend/InventoryFileStorageService", () => ({
+  __esModule: true,
   default: { resolveImportedFileBuffer },
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
+  logger: { error: jest.fn(), info: jest.fn() },
+}));
+jest.mock("@/services/logger", () => ({
   logger: { error: jest.fn(), info: jest.fn() },
 }));
 
@@ -83,7 +92,19 @@ function makeImportedFile(overrides: Record<string, unknown> = {}) {
 
 describe("GHGI NativeInputCatalog adapter", () => {
   beforeEach(() => {
+    catalogModel.create.mockReset();
+    catalogModel.findAll.mockReset();
+    catalogModel.findOne.mockReset();
+    catalogModel.update.mockReset();
+    importedFileModel.findByPk.mockReset();
+    pdfOcrJobModel.findAll.mockReset();
     resolveImportedFileBuffer.mockResolvedValue(null);
+    catalogModel.create.mockResolvedValue({ id: "catalog-default" });
+    catalogModel.findAll.mockResolvedValue([]);
+    catalogModel.findOne.mockResolvedValue(null);
+    catalogModel.update.mockResolvedValue([0]);
+    importedFileModel.findByPk.mockResolvedValue(null);
+    pdfOcrJobModel.findAll.mockResolvedValue([]);
   });
 
   it("registers the uploaded source as a separate immutable pointer", async () => {

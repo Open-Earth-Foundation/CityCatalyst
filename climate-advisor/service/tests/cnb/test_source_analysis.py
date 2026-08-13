@@ -24,6 +24,8 @@ from app.services.cnb.source_analysis import (
     gather_all_or_raise,
     parse_source_pages,
     partition_source_pages,
+    prompt_token_count,
+    render_partition,
     resolve_model_name,
 )
 from openai import AsyncOpenAI
@@ -213,11 +215,11 @@ async def test_query_returns_explicit_not_found_after_full_coverage() -> None:
     assert result.pages_processed == 1
 
 
-def test_oversized_page_partition_preserves_every_character() -> None:
+def test_oversized_page_partition_preserves_text_within_token_budget() -> None:
     settings = get_settings()
     page = SourcePage(
         number=1,
-        text="# Heading\n\n" + ("A long paragraph with evidence. " * 1200),
+        text="# Heading\n\n" + ("Evidence: Zażółć gęślą jaźń 🧠. " * 1200),
     )
     prompt = settings.llm.prompts.get_prompt("cnb_source_document_mapping")
     partitions = partition_source_pages(
@@ -231,6 +233,16 @@ def test_oversized_page_partition_preserves_every_character() -> None:
     assert len(segments) > 1
     assert "".join(segment.text for segment in segments) == page.text
     assert all(segment.page == 1 for segment in segments)
+    assert all(
+        prompt_token_count(
+            prompt,
+            render_partition(partition),
+            model=settings.llm.models.cnb_source_reader.name,
+            fallback_encoding="o200k_base",
+        )
+        <= 1000
+        for partition in partitions
+    )
 
 
 def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:

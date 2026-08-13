@@ -26,6 +26,7 @@ from app.models.cnb.context_bundle import (
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
 from pydantic import BaseModel
 
@@ -547,6 +548,7 @@ def split_page(
                 fallback_encoding=fallback_encoding,
                 question=question,
                 source_label=source_label,
+                segment_offset=len(chunks),
             )
         )
     if pending or not chunks:
@@ -567,40 +569,70 @@ def split_exact_text(
     fallback_encoding: str,
     question: str | None,
     source_label: str | None = None,
+    segment_offset: int = 0,
 ) -> list[str]:
-    """Split a large paragraph by maximal exact character spans."""
-    chunks: list[str] = []
-    offset = 0
-    while offset < len(text):
-        low = offset + 1
-        high = len(text)
-        best = offset
-        while low <= high:
-            midpoint = (low + high) // 2
-            probe = SourceSegment("probe", page, text[offset:midpoint])
-            tokens = prompt_token_count(
+    """Split a large paragraph with a token-aware text-splitting library."""
+    empty_probe = SourceSegment("probe", page, "")
+    framing = count_prompt_tokens(
+        [
+            prompt,
+            render_partition(
+                [empty_probe],
+                source_label=source_label,
+                question=question,
+            ),
+        ],
+        model=model,
+        fallback_encoding=fallback_encoding,
+    )
+    content_token_limit = max_tokens - framing.tokens
+    if content_token_limit < 1:
+        raise SourceAnalysisError(
+            "source_partition_limit_too_small",
+            "Configured partition limit cannot fit source framing",
+        )
+
+    while content_token_limit > 0:
+        splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            encoding_name=framing.tokenizer,
+            chunk_size=content_token_limit,
+            chunk_overlap=0,
+            keep_separator=True,
+            strip_whitespace=False,
+        )
+        chunks = splitter.split_text(text)
+        if "".join(chunks) != text:
+            raise SourceAnalysisError(
+                "incomplete_source_coverage",
+                f"Page {page} could not be tokenized without loss",
+            )
+
+        overflow = 0
+        for index, chunk in enumerate(chunks, start=1):
+            segment = SourceSegment(
+                f"p{page}-s{segment_offset + index}",
+                page,
+                chunk,
+            )
+            segment_tokens = prompt_token_count(
                 prompt,
                 render_partition(
-                    [probe],
+                    [segment],
                     source_label=source_label,
                     question=question,
                 ),
                 model=model,
                 fallback_encoding=fallback_encoding,
             )
-            if tokens <= max_tokens:
-                best = midpoint
-                low = midpoint + 1
-            else:
-                high = midpoint - 1
-        if best == offset:
-            raise SourceAnalysisError(
-                "source_partition_limit_too_small",
-                "Configured partition limit cannot fit source framing",
-            )
-        chunks.append(text[offset:best])
-        offset = best
-    return chunks
+            overflow = max(overflow, segment_tokens - max_tokens)
+        if overflow <= 0:
+            return chunks
+        content_token_limit -= overflow
+
+    raise SourceAnalysisError(
+        "source_partition_limit_too_small",
+        "Configured partition limit cannot fit source framing",
+    )
 
 
 def render_partition(

@@ -32,7 +32,6 @@ function VerifiedNotification({ t }: { t: TFunction }) {
     if (isVerified) {
       showSuccessToast();
     }
-     
   }, [isVerified, showSuccessToast]);
 
   return null;
@@ -119,7 +118,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
             error={errors.password}
             t={t}
             validate={(value) =>
-              value.length >= 4 || t("min-length", { length: 4 })
+              value.length >= 8 || t("min-length", { length: 8 })
             }
           />
           <Text color="semantic.danger">{t(error)}</Text>

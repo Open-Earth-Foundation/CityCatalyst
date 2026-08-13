@@ -12,6 +12,7 @@ import { api } from "@/services/api";
 import { Toaster } from "@/components/ui/toaster";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { getApiErrorMessage } from "@/util/helpers";
+import { isPasswordPatternValid } from "@/util/validation";
 
 interface ManagePasswordProps {
   t: TFunction;
@@ -53,6 +54,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   const { showSuccessToast } = UseSuccessToast({
     title: t("password-updated"),
     description: t("password-updated-success"),
+    duration: 20000,
   });
 
   const watchPassword = watch("newPassword", "");
@@ -83,6 +85,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
   };
 
   const newPasswordStrength = computePasswordStrength(watchPassword);
+  const passwordValid = isPasswordPatternValid(watchPassword);
 
   return (
     <Box backgroundColor="white" p={6} borderRadius="8px" boxShadow="shadow-lg">
@@ -122,7 +125,7 @@ const ManagePasswordTab: FC<ManagePasswordProps> = ({ t }) => {
               type="submit"
               loading={isSubmitting}
               h={16}
-              disabled={!isValid}
+              disabled={!isValid || !passwordValid}
             >
               {t("reset-button")}
             </Button>

@@ -32,14 +32,27 @@ class ResearchModel(BaseModel):
 
 
 class FieldEvidence(ResearchModel):
-    """Source-grounded support for one funding-record field or related row."""
+    """Source-grounded support for one opportunity or funded-project field."""
 
     evidence_ref: str
-    funding_record_ref: str
+    funding_opportunity_ref: str | None = None
+    funded_project_ref: str | None = None
     target_path: str
     source_ref: str
     source_location: str | None = None
     quote_or_summary: str
+
+    @model_validator(mode="after")
+    def validate_exactly_one_parent(self) -> "FieldEvidence":
+        """Require evidence to identify exactly one funding parent."""
+        has_opportunity = self.funding_opportunity_ref is not None
+        has_project = self.funded_project_ref is not None
+        if has_opportunity == has_project:
+            raise ValueError(
+                "evidence must reference exactly one funding opportunity or "
+                "funded project"
+            )
+        return self
 
 
 class ResearchGap(ResearchModel):
@@ -109,19 +122,15 @@ class FunderIdentityCandidate(ResearchModel):
     match_reason: str
 
 
-class FundingRecordDraft(ResearchModel):
-    """One review-facing opportunity or funded-project row."""
+class FundingOpportunityDraft(ResearchModel):
+    """One review-facing funding-opportunity row."""
 
-    funding_record_ref: str
+    funding_opportunity_ref: str
     funder_ref: str
-    is_opportunity: bool
     name: str
-    applicant_name: str | None = None
-    reported_funder_name: str | None = None
-    city: str | None = None
-    state_region: str | None = None
-    country: str | None = None
+    applicant_type: str | None = None
     category: str | None = None
+    sector: str | None = None
     hazards: list[str] = Field(default_factory=list)
     interventions: list[str] = Field(default_factory=list)
     finance_route: str | None = None
@@ -129,12 +138,38 @@ class FundingRecordDraft(ResearchModel):
     region_scope: str | None = None
     min_award: Decimal | None = None
     max_award: Decimal | None = None
+    currency: str | None = None
+    status: str | None = None
+    summary: str | None = None
+    known_gaps: list[str] = Field(default_factory=list)
+
+
+class FundedProjectDraft(ResearchModel):
+    """One review-facing funded-project row."""
+
+    funded_project_ref: str
+    funder_ref: str
+    name: str
+    applicant_name: str | None = None
+    applicant_type: str | None = None
+    reported_funder_name: str | None = None
+    city: str | None = None
+    state_region: str | None = None
+    country: str | None = None
+    category: str | None = None
+    sector: str | None = None
+    hazards: list[str] = Field(default_factory=list)
+    interventions: list[str] = Field(default_factory=list)
+    finance_route: str | None = None
+    instrument_type: str | None = None
+    region_scope: str | None = None
     award_amount: Decimal | None = None
     currency: str | None = None
     award_year: int | None = None
     status: str | None = None
     summary: str | None = None
     project_tags: list[str] = Field(default_factory=list)
+    known_gaps: list[str] = Field(default_factory=list)
     candidate_funders: list[FunderIdentityCandidate] = Field(default_factory=list)
     selected_funder_id: UUID | None = None
 
@@ -149,10 +184,10 @@ class TemplateChapterDraft(ResearchModel):
 
 
 class FunderTemplateDraft(ResearchModel):
-    """One application-template row linked to the opportunity funding record."""
+    """One application-template row linked to a funding opportunity."""
 
     template_ref: str
-    funding_record_ref: str
+    funding_opportunity_ref: str
     template_name: str
     output_format: str | None = None
     chapter_schema: list[TemplateChapterDraft] = Field(default_factory=list)
@@ -160,10 +195,10 @@ class FunderTemplateDraft(ResearchModel):
 
 
 class FunderCriterionDraft(ResearchModel):
-    """One criterion row linked to the opportunity funding record."""
+    """One criterion row linked to a funding opportunity."""
 
     criterion_ref: str
-    funding_record_ref: str
+    funding_opportunity_ref: str
     criterion_type: str
     label: str
     requirement_text: str
@@ -227,19 +262,15 @@ class FunderResearchResult(ResearchModel):
     profile: FunderProfileResearchResult
 
 
-class FundingRecordResearchResult(ResearchModel):
-    """Structured-output-safe opportunity or funded-project row."""
+class FundingOpportunityResearchResultRow(ResearchModel):
+    """Structured-output-safe funding-opportunity row."""
 
-    funding_record_ref: str
+    funding_opportunity_ref: str
     funder_ref: str
-    is_opportunity: bool
     name: str
-    applicant_name: str | None = None
-    reported_funder_name: str | None = None
-    city: str | None = None
-    state_region: str | None = None
-    country: str | None = None
+    applicant_type: str | None = None
     category: str | None = None
+    sector: str | None = None
     hazards: list[str] = Field(default_factory=list)
     interventions: list[str] = Field(default_factory=list)
     finance_route: str | None = None
@@ -247,6 +278,30 @@ class FundingRecordResearchResult(ResearchModel):
     region_scope: str | None = None
     min_award: float | None = None
     max_award: float | None = None
+    currency: str | None = None
+    status: str | None = None
+    summary: str | None = None
+
+
+class FundedProjectResearchResult(ResearchModel):
+    """Structured-output-safe funded-project row."""
+
+    funded_project_ref: str
+    funder_ref: str
+    name: str
+    applicant_name: str | None = None
+    applicant_type: str | None = None
+    reported_funder_name: str | None = None
+    city: str | None = None
+    state_region: str | None = None
+    country: str | None = None
+    category: str | None = None
+    sector: str | None = None
+    hazards: list[str] = Field(default_factory=list)
+    interventions: list[str] = Field(default_factory=list)
+    finance_route: str | None = None
+    instrument_type: str | None = None
+    region_scope: str | None = None
     award_amount: float | None = None
     currency: str | None = None
     award_year: int | None = None
@@ -258,7 +313,7 @@ class FunderTemplateResearchResult(ResearchModel):
     """Structured-output-safe template row produced by the model."""
 
     template_ref: str
-    funding_record_ref: str
+    funding_opportunity_ref: str
     template_name: str
     output_format: str | None = None
     chapter_schema: list[TemplateChapterDraft] = Field(default_factory=list)
@@ -278,7 +333,7 @@ class FunderCriterionResearchResult(ResearchModel):
     """Structured-output-safe criterion row with a textual normalized rule."""
 
     criterion_ref: str
-    funding_record_ref: str
+    funding_opportunity_ref: str
     criterion_type: str
     label: str
     requirement_text: str
@@ -300,7 +355,8 @@ class FundingOpportunityResearchResult(ResearchModel):
     """Exact architecture-shaped structured output produced by the research model."""
 
     funder: FunderResearchResult
-    funding_records: list[FundingRecordResearchResult]
+    funding_opportunities: list[FundingOpportunityResearchResultRow]
+    funded_projects: list[FundedProjectResearchResult]
     funder_templates: list[FunderTemplateResearchResult] = Field(default_factory=list)
     funder_criteria: list[FunderCriterionResearchResult] = Field(default_factory=list)
     source_assessments: list[SourceDocumentAssessment] = Field(default_factory=list)
@@ -310,11 +366,18 @@ class FundingOpportunityResearchResult(ResearchModel):
 
     @model_validator(mode="after")
     def validate_result_references(self) -> "FundingOpportunityResearchResult":
-        """Require one opportunity and valid record, evidence, and conflict links."""
+        """Require one opportunity and valid project, evidence, and conflict links."""
         reference_lists = (
             (
-                "funding_records.funding_record_ref",
-                [item.funding_record_ref for item in self.funding_records],
+                "funding_opportunities.funding_opportunity_ref",
+                [
+                    item.funding_opportunity_ref
+                    for item in self.funding_opportunities
+                ],
+            ),
+            (
+                "funded_projects.funded_project_ref",
+                [item.funded_project_ref for item in self.funded_projects],
             ),
             (
                 "funder_templates.template_ref",
@@ -334,29 +397,39 @@ class FundingOpportunityResearchResult(ResearchModel):
             _ensure_unique(values, field_name)
 
         opportunity_refs = {
-            item.funding_record_ref
-            for item in self.funding_records
-            if item.is_opportunity
+            item.funding_opportunity_ref for item in self.funding_opportunities
         }
         if len(opportunity_refs) != 1:
-            raise ValueError("funding_records must contain exactly one opportunity")
+            raise ValueError(
+                "funding_opportunities must contain exactly one opportunity"
+            )
 
-        record_refs = {item.funding_record_ref for item in self.funding_records}
-        for record in self.funding_records:
-            if record.funder_ref != self.funder.funder_ref:
+        project_refs = {item.funded_project_ref for item in self.funded_projects}
+        for item in [*self.funding_opportunities, *self.funded_projects]:
+            if item.funder_ref != self.funder.funder_ref:
                 raise ValueError(
-                    "funding_records.funder_ref must reference the dossier funder"
+                    "funding references must use the dossier funder_ref"
                 )
         for item in [*self.funder_templates, *self.funder_criteria]:
-            if item.funding_record_ref not in opportunity_refs:
+            if item.funding_opportunity_ref not in opportunity_refs:
                 raise ValueError(
-                    f"{type(item).__name__}.funding_record_ref must reference "
-                    "the opportunity record"
+                    f"{type(item).__name__}.funding_opportunity_ref must reference "
+                    "a funding opportunity"
                 )
         for item in self.evidence:
-            if item.funding_record_ref not in record_refs:
+            if (
+                item.funding_opportunity_ref is not None
+                and item.funding_opportunity_ref not in opportunity_refs
+            ):
                 raise ValueError(
-                    "evidence.funding_record_ref must reference a funding record"
+                    "evidence.funding_opportunity_ref must reference an opportunity"
+                )
+            if (
+                item.funded_project_ref is not None
+                and item.funded_project_ref not in project_refs
+            ):
+                raise ValueError(
+                    "evidence.funded_project_ref must reference a funded project"
                 )
 
         evidence_refs = {item.evidence_ref for item in self.evidence}
@@ -388,7 +461,7 @@ class FundingOpportunityResearchRequest(ResearchModel):
 class ResearchRunMetadata(ResearchModel):
     """Code-owned reproducibility and execution metadata for one research run."""
 
-    pipeline_version: Literal["2.0"]
+    pipeline_version: Literal["3.0"]
     model_name: str
     reasoning_effort: str
     prompt_sha256: str
@@ -407,12 +480,13 @@ class ResearchRunMetadata(ResearchModel):
 class FundingOpportunityResearchBundle(ResearchModel):
     """Canonical locally reviewable envelope emitted by the pipeline."""
 
-    schema_version: Literal["2.0"]
+    schema_version: Literal["3.0"]
     run_id: str
     run_metadata: ResearchRunMetadata
     request: FundingOpportunityResearchRequest
     funder: FunderDraft
-    funding_records: list[FundingRecordDraft]
+    funding_opportunities: list[FundingOpportunityDraft]
+    funded_projects: list[FundedProjectDraft]
     funder_templates: list[FunderTemplateDraft] = Field(default_factory=list)
     funder_criteria: list[FunderCriterionDraft] = Field(default_factory=list)
     sources: list[SourceDocumentDraft] = Field(default_factory=list)

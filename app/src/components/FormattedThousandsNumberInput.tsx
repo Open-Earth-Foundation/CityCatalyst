@@ -56,8 +56,9 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
   };
 }
 
-interface FormattedNumberInputProps<TFieldValues extends FieldValues>
-  extends Omit<InputProps, "name"> {
+interface FormattedNumberInputProps<
+  TFieldValues extends FieldValues,
+> extends Omit<InputProps, "name"> {
   control: Control<TFieldValues>;
   name: Path<TFieldValues>;
   rules?: Omit<
@@ -99,7 +100,7 @@ function FormattedThousandsNumberInput<TFieldValues extends FieldValues>({
         value={value}
         ref={ref}
         type="text"
-        bg={errorBgStyle}
+        bg={error ? errorBgStyle : "base.light"}
         _hover={{
           bg: errorBgStyle,
         }}

@@ -16,6 +16,7 @@ on:
       - climate-advisor/prompts/**
       - climate-advisor/k8s/deployment-prod.yml
       - climate-advisor/k8s/migrate-prod.yml
+      - climate-advisor/k8s/cnb-migrate-prod.yml
       - climate-advisor/k8s/service-prod.yml
       - climate-advisor/k8s/db-configmap-prod.yml
       - k8s/prod/cc-prod-ca-smoke-fixture.yml
@@ -32,6 +33,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.ref, '-') }}
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: cnb_test
+          POSTGRES_USER: cnb_test
+          POSTGRES_PASSWORD: cnb_test
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U cnb_test -d cnb_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
@@ -39,6 +54,7 @@ jobs:
       CA_CORS_ORIGINS: "*"
       CC_BASE_URL: http://localhost:3000
       CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
+      CNB_TEST_DATABASE_URL: "postgresql://cnb_test:cnb_test@localhost:55432/cnb_test"
 
     steps:
       - name: Checkout repository
@@ -84,6 +100,13 @@ jobs:
                  tests/test_agent_service.py \
                  tests/test_e2e_conversation.py \
                  --junit-xml=test-results-tier1.xml \
+                 -v --tb=short --color=yes
+
+      - name: Run CNB database and runtime tests
+        working-directory: climate-advisor
+        run: |
+          uv run --directory service pytest tests/cnb \
+                 tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes
 
       - name: Generate test coverage report
@@ -186,6 +209,20 @@ jobs:
           export VERSION=${REF#refs/tags/v}
           kubectl apply -f climate-advisor/k8s/db-configmap-prod.yml -n default
           kubectl create -f climate-advisor/k8s/migrate-prod.yml -n default
+          cnb_migration_job="$(
+            kubectl create -f climate-advisor/k8s/cnb-migrate-prod.yml \
+              -n default \
+              -o name
+          )"
+          if ! kubectl wait \
+            --for=condition=complete \
+            --timeout=300s \
+            "${cnb_migration_job}" \
+            -n default; then
+            kubectl logs "${cnb_migration_job}" --all-containers -n default
+            kubectl describe "${cnb_migration_job}" -n default
+            exit 1
+          fi
           kubectl apply -f climate-advisor/k8s/service-prod.yml -n default
           kubectl apply -f climate-advisor/k8s/deployment-prod.yml -n default
           kubectl set image deployment/climate-advisor-prod climate-advisor-prod=$IMAGE:$VERSION -n default

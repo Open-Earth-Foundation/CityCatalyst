@@ -12,7 +12,7 @@
   const MONEY_KEYS = new Set([
     "min_award", "max_award", "award_amount",
   ]);
-  const BOOLEAN_KEYS = new Set(["hard_gate", "required", "is_opportunity"]);
+  const BOOLEAN_KEYS = new Set(["hard_gate", "required"]);
 
   function detectReviewMode(bundle) {
     return bundle?.artifact_type === "cnb_similar_project_search"
@@ -50,12 +50,17 @@
   }
 
   function validateReferenceDataBundle(bundle) {
-    if (!bundle.funder || !Array.isArray(bundle.funding_records)) {
-      throw new Error("funder and funding_records are required");
+    if (
+      !bundle.funder
+      || !Array.isArray(bundle.funding_opportunities)
+      || !Array.isArray(bundle.funded_projects)
+    ) {
+      throw new Error(
+        "funder, funding_opportunities, and funded_projects are required",
+      );
     }
-    const opportunities = bundle.funding_records.filter((record) => record.is_opportunity);
-    if (opportunities.length !== 1) {
-      throw new Error("funding_records must contain exactly one opportunity");
+    if (bundle.funding_opportunities.length !== 1) {
+      throw new Error("funding_opportunities must contain exactly one opportunity");
     }
   }
 
@@ -139,7 +144,7 @@
   function buildReviewedSimilarProjects(bundle, decisions) {
     const matches = (bundle.result.matches || [])
       .map((match) => {
-        const matchPath = `result.matches[${match.funding_record_id}]`;
+        const matchPath = `result.matches[${match.funded_project_id}]`;
         if (decisions.get(matchPath)?.selected === false) return null;
         return buildReviewedSimilarMatch(match, decisions);
       })
@@ -155,13 +160,13 @@
   function collectSimilarProjectReviewErrors(bundle, decisions) {
     const errors = [];
     (bundle?.result?.matches || []).forEach((match) => {
-      const matchPath = `result.matches[${match.funding_record_id}]`;
+      const matchPath = `result.matches[${match.funded_project_id}]`;
       if (decisions.get(matchPath)?.selected === false) return;
       const reviewed = buildReviewedSimilarMatch(match, decisions);
       const candidate = (bundle.candidates || []).find(
-        (item) => String(item.funding_record_id) === String(match.funding_record_id),
+        (item) => String(item.funded_project_id) === String(match.funded_project_id),
       );
-      const label = candidate?.name || String(match.funding_record_id);
+      const label = candidate?.name || String(match.funded_project_id);
       if (!String(reviewed.fit_rationale || "").trim()) {
         errors.push(`Enter a fit rationale for "${label}".`);
       }
@@ -177,9 +182,9 @@
   }
 
   function buildReviewedSimilarMatch(match, decisions) {
-    const matchId = String(match.funding_record_id);
+    const matchId = String(match.funded_project_id);
     return {
-      funding_record_id: clone(match.funding_record_id),
+      funded_project_id: clone(match.funded_project_id),
       decision: "selected",
       fit_rationale: clone(
         decisions.get(`result.matches[${matchId}].fit_rationale`)?.reviewed_value
@@ -199,9 +204,8 @@
 
   function collectFunderSelectionErrors(bundle, decisions) {
     const errors = [];
-    (bundle?.funding_records || []).forEach((record) => {
-      if (record.is_opportunity) return;
-      const path = `funding_records[${record.funding_record_ref}].selected_funder_id`;
+    (bundle?.funded_projects || []).forEach((record) => {
+      const path = `funded_projects[${record.funded_project_ref}].selected_funder_id`;
       const decision = decisions.get(path);
       const selectedFunderId = decision?.reviewed_value
         ? String(decision.reviewed_value)
@@ -291,7 +295,9 @@
   function isRequiredReviewField(segments) {
     const [collection, second, third, fourth, fifth] = segments;
     if (collection === "funder") return second === "name";
-    if (collection === "funding_records") return third === "name";
+    if (["funding_opportunities", "funded_projects"].includes(collection)) {
+      return third === "name";
+    }
     if (collection === "funder_criteria") {
       return ["criterion_type", "label", "requirement_text"].includes(third);
     }
@@ -321,9 +327,7 @@
   }
 
   function isReferenceKey(key) {
-    return key.endsWith("_ref")
-      || key.endsWith("_reference")
-      || key === "is_opportunity";
+    return key.endsWith("_ref") || key.endsWith("_reference");
   }
 
   function displayPath(path) {

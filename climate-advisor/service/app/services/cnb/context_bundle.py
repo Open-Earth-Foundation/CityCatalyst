@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID, uuid4
 
+from app.config import Settings, get_settings
 from app.db.session import get_session_factory
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import (
@@ -18,8 +19,10 @@ from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
-    SourceAnalysisService,
+    SourcePage,
+    analyze_document,
     gather_all_or_raise,
+    verify_source_artifact,
 )
 from app.services.concept_note_city_context import (
     ConceptNoteCityContextDataError,
@@ -47,12 +50,16 @@ class ContextBundleService:
         self,
         repository: ContextBundleRepository,
         *,
-        analysis_factory: Callable[[], SourceAnalysisService] = SourceAnalysisService,
+        analyze_document_fn: Callable[..., Awaitable[SelectedSource]] = analyze_document,
+        verify_source_artifact_fn: Callable[..., list[SourcePage]] = (
+            verify_source_artifact
+        ),
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
     ) -> None:
-        """Store factories so background resources are created inside the task."""
+        """Store dependencies so background resources are created inside the task."""
         self.repository = repository
-        self.analysis_factory = analysis_factory
+        self.analyze_document_fn = analyze_document_fn
+        self.verify_source_artifact_fn = verify_source_artifact_fn
         self.cc_client_factory = cc_client_factory
 
     async def begin(
@@ -96,18 +103,21 @@ class ContextBundleService:
             )
             return False
 
-        analysis: SourceAnalysisService | None = None
         cc_client: CityCatalystClient | None = None
         try:
-            analysis = self.analysis_factory()
             cc_client = self.cc_client_factory()
+            analysis_settings = get_settings()
+            reader_limit = asyncio.Semaphore(
+                analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
+            )
             selected_sources = await gather_all_or_raise(
                 *(
                     self._analyze_upload(
                         upload=upload,
                         token=token,
                         cc_client=cc_client,
-                        analysis=analysis,
+                        analysis_settings=analysis_settings,
+                        reader_limit=reader_limit,
                     )
                     for upload in active.uploads
                 )
@@ -150,8 +160,6 @@ class ContextBundleService:
             )
             return False
         finally:
-            if analysis is not None:
-                await analysis.close()
             if cc_client is not None:
                 await cc_client.close()
 
@@ -161,7 +169,8 @@ class ContextBundleService:
         upload: ConceptNoteUploadSnapshot,
         token: str,
         cc_client: CityCatalystClient,
-        analysis: SourceAnalysisService,
+        analysis_settings: Settings,
+        reader_limit: asyncio.Semaphore,
     ) -> SelectedSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
         if (
@@ -183,18 +192,20 @@ class ContextBundleService:
                 "source_fetch_failed",
                 "Ready upload could not be fetched from CityCatalyst",
             ) from exc
-        pages = analysis.verify_artifact(
+        pages = self.verify_source_artifact_fn(
             artifact=artifact,
             markdown_s3_key=upload.markdown_s3_key,
             sha256=upload.markdown_sha256,
             page_count=upload.page_count,
         )
-        return await analysis.analyze_document(
+        return await self.analyze_document_fn(
             upload_id=upload.upload_id,
             filename=upload.filename,
             source_label=upload.source_label,
             sha256=upload.markdown_sha256,
             pages=pages,
+            settings=analysis_settings,
+            reader_limit=reader_limit,
         )
 
     async def _load_optional_context(

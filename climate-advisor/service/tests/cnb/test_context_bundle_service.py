@@ -41,32 +41,28 @@ class FakeRepository:
         return True
 
 
-class FakeAnalysis:
-    """Return a compact source after asserting immutable artifact checks."""
+def fake_verify_source_artifact(
+    *, artifact, markdown_s3_key, sha256, page_count
+) -> list[SourcePage]:
+    """Return one page after asserting immutable artifact checks."""
+    assert artifact.markdown_s3_key == markdown_s3_key
+    assert artifact.sha256 == sha256
+    assert artifact.page_count == page_count
+    return [SourcePage(number=1, text="\nCity evidence")]
 
-    def __init__(self) -> None:
-        self.closed = False
 
-    def verify_artifact(self, *, artifact, markdown_s3_key, sha256, page_count):
-        assert artifact.markdown_s3_key == markdown_s3_key
-        assert artifact.sha256 == sha256
-        assert artifact.page_count == page_count
-        return [SourcePage(number=1, text="\nCity evidence")]
-
-    async def analyze_document(self, **kwargs):
-        return SelectedSource(
-            upload_id=kwargs["upload_id"],
-            source_label=kwargs["source_label"] or kwargs["filename"],
-            filename=kwargs["filename"],
-            sha256=kwargs["sha256"],
-            page_count=1,
-            summary="City evidence summary.",
-            topics=["city"],
-            key_excerpts=[],
-        )
-
-    async def close(self):
-        self.closed = True
+async def fake_analyze_document(**kwargs) -> SelectedSource:
+    """Return compact source context without running an LLM."""
+    return SelectedSource(
+        upload_id=kwargs["upload_id"],
+        source_label=kwargs["source_label"] or kwargs["filename"],
+        filename=kwargs["filename"],
+        sha256=kwargs["sha256"],
+        page_count=1,
+        summary="City evidence summary.",
+        topics=["city"],
+        key_excerpts=[],
+    )
 
 
 class FakeCityCatalystClient:
@@ -127,7 +123,6 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         already_current=False,
     )
     repository = FakeRepository(snapshot)
-    analysis = FakeAnalysis()
     client = FakeCityCatalystClient(
         ConceptNoteMarkdownArtifact(
             markdown=markdown,
@@ -146,7 +141,8 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
     )
     service = ContextBundleService(
         repository,  # type: ignore[arg-type]
-        analysis_factory=lambda: analysis,  # type: ignore[arg-type]
+        analyze_document_fn=fake_analyze_document,
+        verify_source_artifact_fn=fake_verify_source_artifact,
         cc_client_factory=lambda: client,
     )
     assert (
@@ -168,7 +164,6 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
     assert [item.upload_id for item in repository.completed["selected_sources"]] == [
         upload_id
     ]
-    assert analysis.closed is True
     assert client.closed is True
 
 

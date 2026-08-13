@@ -63,127 +63,98 @@ class SourceSegment:
     text: str
 
 
-class SourceAnalysisService:
-    """Run bounded reader fan-out and grounded document synthesis."""
-
-    def __init__(
-        self,
-        *,
-        settings: Settings | None = None,
-        client: AsyncOpenAI | None = None,
-        runner: Any = Runner,
-    ) -> None:
-        """Initialize configured source reader and synthesizer roles."""
-        self.settings = settings or get_settings()
-        self.runner = runner
-        self._owns_client = client is None
-        if client is None:
-            try:
-                options = build_openrouter_client_options(
-                    self.settings,
-                    missing_api_key_message=(
-                        "OpenRouter API key is required for Concept Note source analysis"
-                    ),
-                )
-            except ValueError as exc:
-                raise SourceAnalysisError(
-                    "source_analysis_unavailable",
-                    str(exc),
-                ) from exc
-            client = AsyncOpenAI(**options.kwargs)
-        self.client = client
-        self.budget = self.settings.llm.generation.prompt_budget.cnb_sources
-        self.tokenizer_encoding = (
-            self.settings.llm.generation.prompt_budget.tokenizer_encoding
+def verify_source_artifact(
+    *,
+    artifact: ConceptNoteMarkdownArtifact,
+    markdown_s3_key: str,
+    sha256: str,
+    page_count: int,
+) -> list[SourcePage]:
+    """Revalidate the immutable pointer, digest, and complete page sequence."""
+    if (
+        artifact.markdown_s3_key != markdown_s3_key
+        or artifact.sha256 != sha256
+        or artifact.page_count != page_count
+    ):
+        raise SourceAnalysisError(
+            "source_identity_mismatch",
+            "CityCatalyst returned a different source identity",
         )
-        self.reader_model = self.settings.llm.models.cnb_source_reader
-        self.synthesizer_model = self.settings.llm.models.cnb_source_synthesizer
-        self._reader_limit = asyncio.Semaphore(self.budget.max_concurrency)
+    actual_digest = hashlib.sha256(artifact.markdown.encode("utf-8")).hexdigest()
+    if actual_digest != sha256:
+        raise SourceAnalysisError(
+            "source_digest_mismatch",
+            "CityCatalyst source digest did not match the immutable pointer",
+        )
+    pages = parse_source_pages(artifact.markdown)
+    if len(pages) != page_count:
+        raise SourceAnalysisError(
+            "source_page_count_mismatch",
+            "CityCatalyst source page count did not match the immutable pointer",
+        )
+    return pages
 
-    async def close(self) -> None:
-        """Close the analysis client when this service created it."""
-        if self._owns_client:
-            await self.client.close()
 
-    def verify_artifact(
-        self,
-        *,
-        artifact: ConceptNoteMarkdownArtifact,
-        markdown_s3_key: str,
-        sha256: str,
-        page_count: int,
-    ) -> list[SourcePage]:
-        """Revalidate the immutable pointer, digest, and complete page sequence."""
-        if (
-            artifact.markdown_s3_key != markdown_s3_key
-            or artifact.sha256 != sha256
-            or artifact.page_count != page_count
-        ):
-            raise SourceAnalysisError(
-                "source_identity_mismatch",
-                "CityCatalyst returned a different source identity",
-            )
-        actual_digest = hashlib.sha256(artifact.markdown.encode("utf-8")).hexdigest()
-        if actual_digest != sha256:
-            raise SourceAnalysisError(
-                "source_digest_mismatch",
-                "CityCatalyst source digest did not match the immutable pointer",
-            )
-        pages = parse_source_pages(artifact.markdown)
-        if len(pages) != page_count:
-            raise SourceAnalysisError(
-                "source_page_count_mismatch",
-                "CityCatalyst source page count did not match the immutable pointer",
-            )
-        return pages
+async def analyze_document(
+    *,
+    upload_id: Any,
+    filename: str,
+    source_label: str | None,
+    sha256: str,
+    pages: Sequence[SourcePage],
+    settings: Settings | None = None,
+    client: AsyncOpenAI | None = None,
+    runner: Any = Runner,
+    reader_limit: asyncio.Semaphore | None = None,
+) -> SelectedSource:
+    """Map every source segment and synthesize one compact selected source."""
+    settings = settings or get_settings()
+    client, owns_client = _resolve_analysis_client(settings, client)
+    budget = settings.llm.generation.prompt_budget.cnb_sources
+    tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
+    reader_model = settings.llm.models.cnb_source_reader
+    synthesizer_model = settings.llm.models.cnb_source_synthesizer
+    reader_limit = reader_limit or asyncio.Semaphore(budget.max_concurrency)
+    label = source_label or filename
 
-    async def analyze_document(
-        self,
-        *,
-        upload_id: Any,
-        filename: str,
-        source_label: str | None,
-        sha256: str,
-        pages: Sequence[SourcePage],
-    ) -> SelectedSource:
-        """Map every source segment and synthesize one compact selected source."""
-        label = source_label or filename
-        prompt = self.settings.llm.prompts.get_prompt("cnb_source_document_mapping")
+    try:
+        # Partition and map the complete source under the configured reader limit.
+        prompt = settings.llm.prompts.get_prompt("cnb_source_document_mapping")
         partitions = partition_source_pages(
             pages,
             prompt=prompt,
-            model=self.reader_model.name,
-            max_tokens=self.budget.max_partition_tokens,
-            fallback_encoding=self.tokenizer_encoding,
+            model=reader_model.name,
+            max_tokens=budget.max_partition_tokens,
+            fallback_encoding=tokenizer_encoding,
             source_label=label,
         )
         readings = await gather_all_or_raise(
             *(
-                self._map_partition(
+                _map_partition(
                     label=label,
                     partition=partition,
                     prompt=prompt,
+                    settings=settings,
+                    client=client,
+                    runner=runner,
+                    reader_limit=reader_limit,
                 )
                 for partition in partitions
             )
         )
+
+        # Revalidate excerpts against page text before document-level synthesis.
         page_text = {page.number: page.text for page in pages}
         verified_readings = [
             reading.model_copy(
-                update={
-                    "excerpts": verified_excerpts(reading.excerpts, page_text),
-                }
+                update={"excerpts": verified_excerpts(reading.excerpts, page_text)}
             )
             for reading in readings
         ]
-
-        synthesis_prompt = self.settings.llm.prompts.get_prompt(
-            "cnb_source_summary_synthesis"
-        )
-        synthesis = await self._run_agent(
+        synthesis = await _run_agent(
             name="Concept Note source summary synthesizer",
-            prompt=synthesis_prompt,
-            model_name=self.synthesizer_model.name,
+            prompt=settings.llm.prompts.get_prompt("cnb_source_summary_synthesis"),
+            model_name=synthesizer_model.name,
             output_type=SourceDocumentSynthesis,
             input_text=json.dumps(
                 {
@@ -193,13 +164,18 @@ class SourceAnalysisService:
                         item.model_dump(mode="json") for item in verified_readings
                     ],
                     "limits": {
-                        "max_topics": self.budget.max_topics,
-                        "max_key_excerpts": self.budget.max_key_excerpts,
+                        "max_topics": budget.max_topics,
+                        "max_key_excerpts": budget.max_key_excerpts,
                     },
                 },
                 ensure_ascii=False,
             ),
+            settings=settings,
+            client=client,
+            runner=runner,
         )
+
+        # Return only bounded, source-verified document context.
         return SelectedSource(
             upload_id=upload_id,
             source_label=label,
@@ -207,73 +183,94 @@ class SourceAnalysisService:
             sha256=sha256,
             page_count=len(pages),
             summary=synthesis.summary,
-            topics=deduplicate_strings(synthesis.topics)[: self.budget.max_topics],
-            key_excerpts=verified_excerpts(
-                synthesis.key_excerpts,
-                page_text,
-            )[: self.budget.max_key_excerpts],
+            topics=deduplicate_strings(synthesis.topics)[: budget.max_topics],
+            key_excerpts=verified_excerpts(synthesis.key_excerpts, page_text)[
+                : budget.max_key_excerpts
+            ],
+        )
+    finally:
+        if owns_client:
+            await client.close()
+
+
+async def query_document(
+    *,
+    upload_id: Any,
+    source_label: str,
+    question: str,
+    pages: Sequence[SourcePage],
+    settings: Settings | None = None,
+    client: AsyncOpenAI | None = None,
+    runner: Any = Runner,
+    reader_limit: asyncio.Semaphore | None = None,
+) -> SourceQueryResult:
+    """Read every page for one question and synthesize after full coverage."""
+    settings = settings or get_settings()
+    budget = settings.llm.generation.prompt_budget.cnb_sources
+    normalized_question = question.strip()
+    if not normalized_question:
+        raise SourceAnalysisError("invalid_source_question", "Question is required")
+    if len(normalized_question) > budget.max_question_chars:
+        raise SourceAnalysisError(
+            "source_question_too_long",
+            "Question exceeds the configured source-query limit",
         )
 
-    async def query_document(
-        self,
-        *,
-        upload_id: Any,
-        source_label: str,
-        question: str,
-        pages: Sequence[SourcePage],
-    ) -> SourceQueryResult:
-        """Read every page for one question and synthesize only after full coverage."""
-        normalized_question = question.strip()
-        if not normalized_question:
-            raise SourceAnalysisError("invalid_source_question", "Question is required")
-        if len(normalized_question) > self.budget.max_question_chars:
-            raise SourceAnalysisError(
-                "source_question_too_long",
-                "Question exceeds the configured source-query limit",
-            )
+    client, owns_client = _resolve_analysis_client(settings, client)
+    tokenizer_encoding = settings.llm.generation.prompt_budget.tokenizer_encoding
+    reader_model = settings.llm.models.cnb_source_reader
+    synthesizer_model = settings.llm.models.cnb_source_synthesizer
+    reader_limit = reader_limit or asyncio.Semaphore(budget.max_concurrency)
 
-        prompt = self.settings.llm.prompts.get_prompt("cnb_source_question_reading")
+    try:
+        # Partition and search the entire source for the bounded question.
+        prompt = settings.llm.prompts.get_prompt("cnb_source_question_reading")
         partitions = partition_source_pages(
             pages,
             prompt=prompt,
-            model=self.reader_model.name,
-            max_tokens=self.budget.max_partition_tokens,
-            fallback_encoding=self.tokenizer_encoding,
+            model=reader_model.name,
+            max_tokens=budget.max_partition_tokens,
+            fallback_encoding=tokenizer_encoding,
             question=normalized_question,
         )
         readings = await gather_all_or_raise(
             *(
-                self._read_partition_for_question(
+                _read_partition_for_question(
                     question=normalized_question,
                     partition=partition,
                     prompt=prompt,
+                    settings=settings,
+                    client=client,
+                    runner=runner,
+                    reader_limit=reader_limit,
                 )
                 for partition in partitions
             )
         )
+
+        # Validate all evidence before synthesizing the final answer.
         page_text = {page.number: page.text for page in pages}
         evidence: list[SourceExcerpt] = []
         caveats: list[str] = []
         for reading in readings:
             evidence.extend(verified_excerpts(reading.excerpts, page_text))
             caveats.extend(reading.caveats)
-
-        synthesis = await self._run_agent(
+        pages_processed = len(
+            {segment.page for partition in partitions for segment in partition}
+        )
+        segments_processed = sum(len(partition) for partition in partitions)
+        synthesis = await _run_agent(
             name="Concept Note grounded source answer synthesizer",
-            prompt=self.settings.llm.prompts.get_prompt(
-                "cnb_source_grounded_synthesis"
-            ),
-            model_name=self.synthesizer_model.name,
+            prompt=settings.llm.prompts.get_prompt("cnb_source_grounded_synthesis"),
+            model_name=synthesizer_model.name,
             output_type=SourceQuestionSynthesis,
             input_text=json.dumps(
                 {
                     "question": normalized_question,
                     "source_label": source_label,
-                    "pages_processed": len(
-                        {segment.page for part in partitions for segment in part}
-                    ),
+                    "pages_processed": pages_processed,
                     "pages_total": len(pages),
-                    "segments_processed": sum(len(part) for part in partitions),
+                    "segments_processed": segments_processed,
                     "validated_excerpts": [
                         item.model_dump(mode="json") for item in evidence
                     ],
@@ -281,6 +278,9 @@ class SourceAnalysisService:
                 },
                 ensure_ascii=False,
             ),
+            settings=settings,
+            client=client,
+            runner=runner,
         )
         final_excerpts = verified_excerpts(synthesis.excerpts, page_text)
         if synthesis.found and not final_excerpts:
@@ -288,115 +288,162 @@ class SourceAnalysisService:
                 "unverifiable_source_answer",
                 "Source answer did not retain verifiable evidence",
             )
+
+        # Preserve coverage counts so callers can distinguish absence from omission.
         return SourceQueryResult(
             found=synthesis.found,
             upload_id=upload_id,
             source_label=source_label,
             answer=synthesis.answer,
             excerpts=final_excerpts,
-            pages_processed=len(
-                {segment.page for part in partitions for segment in part}
-            ),
+            pages_processed=pages_processed,
             pages_total=len(pages),
-            segments_processed=sum(len(partition) for partition in partitions),
-            segments_total=sum(len(partition) for partition in partitions),
+            segments_processed=segments_processed,
+            segments_total=segments_processed,
             caveats=synthesis.caveats,
         )
+    finally:
+        if owns_client:
+            await client.close()
 
-    async def _map_partition(
-        self,
-        *,
-        label: str,
-        partition: Sequence[SourceSegment],
-        prompt: str,
-    ) -> SourcePartitionMap:
-        """Map one partition and require exact segment coverage acknowledgement."""
-        result = await self._run_reader(
-            name="Concept Note source partition reader",
-            prompt=prompt,
-            output_type=SourcePartitionMap,
-            input_text=render_partition(partition, source_label=label),
+
+def _resolve_analysis_client(
+    settings: Settings,
+    client: AsyncOpenAI | None,
+) -> tuple[AsyncOpenAI, bool]:
+    """Return an injected client or create one that the caller must close."""
+    if client is not None:
+        return client, False
+    try:
+        options = build_openrouter_client_options(
+            settings,
+            missing_api_key_message=(
+                "OpenRouter API key is required for Concept Note source analysis"
+            ),
         )
-        require_partition_coverage(partition, result.covered_segment_ids)
-        return result
+    except ValueError as exc:
+        raise SourceAnalysisError("source_analysis_unavailable", str(exc)) from exc
+    return AsyncOpenAI(**options.kwargs), True
 
-    async def _read_partition_for_question(
-        self,
-        *,
-        question: str,
-        partition: Sequence[SourceSegment],
-        prompt: str,
-    ) -> SourceQuestionReading:
-        """Read one complete partition for question-focused evidence."""
-        result = await self._run_reader(
-            name="Concept Note question-focused source reader",
-            prompt=prompt,
-            output_type=SourceQuestionReading,
-            input_text=render_partition(partition, question=question),
-        )
-        require_partition_coverage(partition, result.covered_segment_ids)
-        return result
 
-    async def _run_reader(
-        self,
-        *,
-        name: str,
-        prompt: str,
-        output_type: type[OutputModel],
-        input_text: str,
-    ) -> OutputModel:
-        """Run one tool-free mini reader under local and process-wide limits."""
-        async with self._reader_limit, _GLOBAL_READER_SEMAPHORE:
-            return await self._run_agent(
-                name=name,
-                prompt=prompt,
-                model_name=self.reader_model.name,
-                output_type=output_type,
-                input_text=input_text,
-            )
+async def _map_partition(
+    *,
+    label: str,
+    partition: Sequence[SourceSegment],
+    prompt: str,
+    settings: Settings,
+    client: AsyncOpenAI,
+    runner: Any,
+    reader_limit: asyncio.Semaphore,
+) -> SourcePartitionMap:
+    """Map one partition and require exact segment coverage acknowledgement."""
+    result = await _run_reader(
+        name="Concept Note source partition reader",
+        prompt=prompt,
+        output_type=SourcePartitionMap,
+        input_text=render_partition(partition, source_label=label),
+        settings=settings,
+        client=client,
+        runner=runner,
+        reader_limit=reader_limit,
+    )
+    require_partition_coverage(partition, result.covered_segment_ids)
+    return result
 
-    async def _run_agent(
-        self,
-        *,
-        name: str,
-        prompt: str,
-        model_name: str,
-        output_type: type[OutputModel],
-        input_text: str,
-    ) -> OutputModel:
-        """Run one deterministic, tool-free Agents SDK worker."""
-        agent = Agent(
+
+async def _read_partition_for_question(
+    *,
+    question: str,
+    partition: Sequence[SourceSegment],
+    prompt: str,
+    settings: Settings,
+    client: AsyncOpenAI,
+    runner: Any,
+    reader_limit: asyncio.Semaphore,
+) -> SourceQuestionReading:
+    """Read one complete partition for question-focused evidence."""
+    result = await _run_reader(
+        name="Concept Note question-focused source reader",
+        prompt=prompt,
+        output_type=SourceQuestionReading,
+        input_text=render_partition(partition, question=question),
+        settings=settings,
+        client=client,
+        runner=runner,
+        reader_limit=reader_limit,
+    )
+    require_partition_coverage(partition, result.covered_segment_ids)
+    return result
+
+
+async def _run_reader(
+    *,
+    name: str,
+    prompt: str,
+    output_type: type[OutputModel],
+    input_text: str,
+    settings: Settings,
+    client: AsyncOpenAI,
+    runner: Any,
+    reader_limit: asyncio.Semaphore,
+) -> OutputModel:
+    """Run one tool-free mini reader under local and process-wide limits."""
+    async with reader_limit, _GLOBAL_READER_SEMAPHORE:
+        return await _run_agent(
             name=name,
-            instructions=prompt,
-            model=OpenAIChatCompletionsModel(
-                model=resolve_model_name(model_name, self.client),
-                openai_client=self.client,
-            ),
-            model_settings=ModelSettings(
-                temperature=0.0,
-                include_usage=True,
-                reasoning={
-                    "effort": (
-                        self.reader_model.reasoning_effort
-                        if model_name == self.reader_model.name
-                        else self.synthesizer_model.reasoning_effort
-                    )
-                },
-            ),
+            prompt=prompt,
+            model_name=settings.llm.models.cnb_source_reader.name,
             output_type=output_type,
-            tools=[],
+            input_text=input_text,
+            settings=settings,
+            client=client,
+            runner=runner,
         )
-        try:
-            run_result = await self.runner.run(agent, input_text)
-            return output_type.model_validate(run_result.final_output)
-        except SourceAnalysisError:
-            raise
-        except Exception as exc:
-            logger.exception("Concept Note source agent failed: %s", name)
-            raise SourceAnalysisError(
-                "source_analysis_failed",
-                f"{name} failed",
-            ) from exc
+
+
+async def _run_agent(
+    *,
+    name: str,
+    prompt: str,
+    model_name: str,
+    output_type: type[OutputModel],
+    input_text: str,
+    settings: Settings,
+    client: AsyncOpenAI,
+    runner: Any,
+) -> OutputModel:
+    """Run one deterministic, tool-free Agents SDK worker."""
+    reader_model = settings.llm.models.cnb_source_reader
+    synthesizer_model = settings.llm.models.cnb_source_synthesizer
+    agent = Agent(
+        name=name,
+        instructions=prompt,
+        model=OpenAIChatCompletionsModel(
+            model=resolve_model_name(model_name, client),
+            openai_client=client,
+        ),
+        model_settings=ModelSettings(
+            temperature=0.0,
+            include_usage=True,
+            reasoning={
+                "effort": (
+                    reader_model.reasoning_effort
+                    if model_name == reader_model.name
+                    else synthesizer_model.reasoning_effort
+                )
+            },
+        ),
+        output_type=output_type,
+        tools=[],
+    )
+    try:
+        run_result = await runner.run(agent, input_text)
+        return output_type.model_validate(run_result.final_output)
+    except SourceAnalysisError:
+        raise
+    except Exception as exc:
+        logger.exception("Concept Note source agent failed: %s", name)
+        raise SourceAnalysisError("source_analysis_failed", f"{name} failed") from exc
 
 
 def parse_source_pages(markdown: str) -> list[SourcePage]:

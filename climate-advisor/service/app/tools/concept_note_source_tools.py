@@ -5,17 +5,23 @@ from __future__ import annotations
 import inspect
 import json
 import logging
-from collections.abc import Callable, Sequence
+from collections.abc import Awaitable, Callable, Sequence
 from typing import Optional
 from uuid import UUID
 
 from agents import function_tool
+from app.models.cnb.context_bundle import SourceQueryResult
 from app.persistence.concept_notes.context_bundle import (
     ContextBundleRepository,
     ContextBundleRepositoryError,
 )
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
-from app.services.cnb.source_analysis import SourceAnalysisError, SourceAnalysisService
+from app.services.cnb.source_analysis import (
+    SourceAnalysisError,
+    SourcePage,
+    query_document,
+    verify_source_artifact,
+)
 
 logger = logging.getLogger(__name__)
 CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY = "concept_note.sources.query"
@@ -28,7 +34,8 @@ def build_concept_note_source_tools(
     user_id: str,
     token_ref: dict[str, Optional[str]],
     client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
-    analysis_factory: Callable[[], SourceAnalysisService] = SourceAnalysisService,
+    query_document_fn: Callable[..., Awaitable[SourceQueryResult]] = query_document,
+    verify_source_artifact_fn: Callable[..., list[SourcePage]] = verify_source_artifact,
 ) -> Sequence[object]:
     """Create the selected-document query tool for one authorized run."""
     run_uuid = UUID(str(run_id))
@@ -71,28 +78,24 @@ def build_concept_note_source_tools(
                 )
 
             client = client_factory()
-            analysis: SourceAnalysisService | None = None
             try:
                 artifact = await client.get_concept_note_markdown(
                     upload_id=str(upload_uuid),
                     token=token,
                 )
-                analysis = analysis_factory()
-                pages = analysis.verify_artifact(
+                pages = verify_source_artifact_fn(
                     artifact=artifact,
                     markdown_s3_key=upload.markdown_s3_key,
                     sha256=upload.markdown_sha256,
                     page_count=upload.page_count,
                 )
-                result = await analysis.query_document(
+                result = await query_document_fn(
                     upload_id=upload_uuid,
                     source_label=selected.source.source_label,
                     question=question,
                     pages=pages,
                 )
             finally:
-                if analysis is not None:
-                    await analysis.close()
                 await close_client(client)
             return json.dumps(
                 {

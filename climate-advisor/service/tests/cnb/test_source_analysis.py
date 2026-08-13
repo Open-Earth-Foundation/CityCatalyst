@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.models.cnb.context_bundle import (
     SourceDocumentSynthesis,
     SourceExcerpt,
@@ -19,14 +19,16 @@ from app.models.cnb.context_bundle import (
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
-    SourceAnalysisService,
     SourcePage,
+    analyze_document,
     gather_all_or_raise,
     parse_source_pages,
     partition_source_pages,
     prompt_token_count,
+    query_document,
     render_partition,
     resolve_model_name,
+    verify_source_artifact,
 )
 from openai import AsyncOpenAI
 
@@ -116,17 +118,16 @@ class IncompleteCoverageRunner(FakeRunner):
         return result
 
 
-def analysis_service(runner: FakeRunner) -> SourceAnalysisService:
+def analysis_dependencies() -> tuple[Settings, AsyncOpenAI]:
     settings = get_settings().model_copy(deep=True)
     settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens = 1000
     settings.llm.generation.prompt_budget.cnb_sources.max_concurrency = 4
-    return SourceAnalysisService(
-        settings=settings,
-        client=AsyncOpenAI(
+    return (
+        settings,
+        AsyncOpenAI(
             api_key="test",
             base_url="https://openrouter.ai/api/v1",
         ),
-        runner=runner,
     )
 
 
@@ -155,7 +156,7 @@ def test_model_prefix_is_stripped_only_for_exact_openai_hostname() -> None:
 @pytest.mark.asyncio
 async def test_analysis_and_query_cover_every_page_with_exact_citations() -> None:
     runner = FakeRunner()
-    service = analysis_service(runner)
+    settings, client = analysis_dependencies()
     pages = [
         SourcePage(
             number=page,
@@ -167,21 +168,27 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations() -> Non
         for page in range(1, 7)
     ]
     try:
-        source = await service.analyze_document(
+        source = await analyze_document(
             upload_id=uuid4(),
             filename="plan.pdf",
             source_label="City plan",
             sha256="a" * 64,
             pages=pages,
+            settings=settings,
+            client=client,
+            runner=runner,
         )
-        result = await service.query_document(
+        result = await query_document(
             upload_id=source.upload_id,
             source_label=source.source_label,
             question="What drainage upgrades are proposed?",
             pages=pages,
+            settings=settings,
+            client=client,
+            runner=runner,
         )
     finally:
-        await service.close()
+        await client.close()
 
     assert source.topics == ["drainage"]
     assert source.key_excerpts[0].text == "Drainage upgrades"
@@ -198,17 +205,20 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations() -> Non
 @pytest.mark.asyncio
 async def test_query_returns_explicit_not_found_after_full_coverage() -> None:
     runner = FakeRunner()
-    service = analysis_service(runner)
+    settings, client = analysis_dependencies()
     pages = [SourcePage(number=1, text="\nNo financial figures are stated.")]
     try:
-        result = await service.query_document(
+        result = await query_document(
             upload_id=uuid4(),
             source_label="Plan",
             question="What drainage upgrades are proposed?",
             pages=pages,
+            settings=settings,
+            client=client,
+            runner=runner,
         )
     finally:
-        await service.close()
+        await client.close()
     assert result.found is False
     assert result.answer is None
     assert result.excerpts == []
@@ -246,8 +256,6 @@ def test_oversized_page_partition_preserves_text_within_token_budget() -> None:
 
 
 def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:
-    runner = FakeRunner()
-    service = analysis_service(runner)
     markdown = "<!-- page: 1 -->\nOne\n<!-- page: 2 -->\nTwo"
     digest = hashlib.sha256(markdown.encode()).hexdigest()
     artifact = ConceptNoteMarkdownArtifact(
@@ -256,7 +264,7 @@ def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:
         sha256=digest,
         page_count=2,
     )
-    pages = service.verify_artifact(
+    pages = verify_source_artifact(
         artifact=artifact,
         markdown_s3_key="result.md",
         sha256=digest,
@@ -265,7 +273,7 @@ def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:
     assert [page.number for page in pages] == [1, 2]
     assert parse_source_pages(markdown)[1].text == "\nTwo"
     with pytest.raises(SourceAnalysisError) as mismatch:
-        service.verify_artifact(
+        verify_source_artifact(
             artifact=artifact,
             markdown_s3_key="result.md",
             sha256="0" * 64,
@@ -276,35 +284,41 @@ def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:
 
 @pytest.mark.asyncio
 async def test_incomplete_reader_coverage_fails_the_document() -> None:
-    service = analysis_service(IncompleteCoverageRunner())
+    settings, client = analysis_dependencies()
     try:
         with pytest.raises(SourceAnalysisError) as failure:
-            await service.analyze_document(
+            await analyze_document(
                 upload_id=uuid4(),
                 filename="plan.pdf",
                 source_label=None,
                 sha256="a" * 64,
                 pages=[SourcePage(number=1, text="\nDrainage upgrades")],
+                settings=settings,
+                client=client,
+                runner=IncompleteCoverageRunner(),
             )
     finally:
-        await service.close()
+        await client.close()
     assert failure.value.code == "incomplete_source_coverage"
 
 
 @pytest.mark.asyncio
 async def test_query_question_is_bounded_before_reader_fan_out() -> None:
     runner = FakeRunner()
-    service = analysis_service(runner)
+    settings, client = analysis_dependencies()
     try:
         with pytest.raises(SourceAnalysisError) as failure:
-            await service.query_document(
+            await query_document(
                 upload_id=uuid4(),
                 source_label="Plan",
                 question="q" * 2001,
                 pages=[SourcePage(number=1, text="Evidence")],
+                settings=settings,
+                client=client,
+                runner=runner,
             )
     finally:
-        await service.close()
+        await client.close()
     assert failure.value.code == "source_question_too_long"
     assert runner.covered_ids == []
 

@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum, OrganizationPlanType } from "./enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+  OrganizationPlanType,
+} from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
@@ -194,10 +198,12 @@ export const AcceptOrganizationInvite = z.object({
 export const CreateUsersInvite = z.object({
   projectId: z.string().uuid(),
   cityIds: z.array(z.string()).min(1),
-  invites: z.array(z.object({
-    email: z.string().email(),
-    role: z.enum(["admin", "collaborator"]),
-  })),
+  invites: z.array(
+    z.object({
+      email: z.string().email(),
+      role: z.enum(["admin", "collaborator"]),
+    }),
+  ),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
@@ -260,8 +266,8 @@ export const fetchEmissionsFactorRequest = z.object({
 });
 
 export const updatePasswordRequest = z.object({
-  currentPassword: z.string().min(4).max(64),
-  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
+  currentPassword: z.string().min(8).max(64),
+  confirmPassword: z.string().min(8).max(64).regex(passwordRegex),
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;

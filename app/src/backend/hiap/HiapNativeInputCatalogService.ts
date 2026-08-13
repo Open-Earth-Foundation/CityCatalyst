@@ -282,6 +282,10 @@ function planContent(plan: ActionPlan): Record<string, unknown> {
   };
 }
 
+function actionPlanSourceId(plan: ActionPlan): string {
+  return `${plan.id}:${digest(planContent(plan))}`;
+}
+
 export async function registerHIAPActionPlan(plan: ActionPlan) {
   if (!plan.id)
     throw new Error("Only persisted HIAP action plans can enter the catalog");
@@ -298,7 +302,7 @@ export async function registerHIAPActionPlan(plan: ActionPlan) {
     kind: "hiap_action_plan",
     owningModule: HIAP_MODULE,
     sourceType: ACTION_PLAN_SOURCE_TYPE,
-    sourceId: `${plan.id}:${contentDigest}`,
+    sourceId: actionPlanSourceId(plan),
     ...scope,
     contentDigest,
     markdownReady: false,
@@ -317,6 +321,42 @@ export async function registerHIAPActionPlan(plan: ActionPlan) {
     registration.catalog.id,
   );
   return registration;
+}
+
+export async function backfillMissingHIAPActionPlans(): Promise<number> {
+  const actionPlans = await db.models.ActionPlan.findAll({
+    where: {
+      inventoryId: { [Op.ne]: null },
+      highImpactActionRankedId: { [Op.ne]: null },
+    },
+    order: [["created", "ASC"]],
+  });
+
+  let backfilledCount = 0;
+
+  for (const actionPlan of actionPlans) {
+    const existingCatalogEntry = await db.models.NativeInputCatalog.findOne({
+      where: {
+        owningModule: HIAP_MODULE,
+        sourceType: ACTION_PLAN_SOURCE_TYPE,
+        sourceId: actionPlanSourceId(actionPlan),
+        availability: "active",
+      },
+    });
+
+    if (existingCatalogEntry) continue;
+
+    const registration = await syncHIAPActionPlan(actionPlan);
+    if (registration) {
+      backfilledCount++;
+      logger.info(
+        { actionPlanId: actionPlan.id, inventoryId: actionPlan.inventoryId },
+        "Backfilled missing HIAP action-plan catalog entry",
+      );
+    }
+  }
+
+  return backfilledCount;
 }
 
 function selectionSourceId(

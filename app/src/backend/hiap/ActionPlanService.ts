@@ -48,6 +48,7 @@ export interface CreateActionPlanInput {
 
 export interface UpdateActionPlanInput {
   id: string;
+  cityId: string;
   actionName?: string;
   language?: string;
 
@@ -144,6 +145,40 @@ export default class ActionPlanService {
         "Ranked HIAP action does not belong to a successful ranking for the requested inventory",
       );
     }
+  }
+
+  private static async getValidatedActionPlanForMutation(
+    id: string,
+    cityId: string,
+  ): Promise<ActionPlan> {
+    const actionPlan = await db.models.ActionPlan.findByPk(id);
+    if (!actionPlan) {
+      throw new createHttpError.NotFound(`Action plan with id ${id} not found`);
+    }
+
+    if (actionPlan.cityId !== cityId) {
+      throw new createHttpError.BadRequest(
+        "Action plan does not belong to the requested city",
+      );
+    }
+
+    await this.validateHIAPActionPlanContext({
+      actionId: actionPlan.actionId,
+      highImpactActionRankedId:
+        actionPlan.highImpactActionRankedId ?? undefined,
+      cityId,
+      cityLocode: actionPlan.cityLocode,
+      inventoryId: actionPlan.inventoryId ?? undefined,
+    });
+
+    return actionPlan;
+  }
+
+  public static async getActionPlanForMutation(
+    id: string,
+    cityId: string,
+  ): Promise<ActionPlan> {
+    return this.getValidatedActionPlanForMutation(id, cityId);
   }
 
   /**
@@ -345,6 +380,8 @@ export default class ActionPlanService {
     input: UpdateActionPlanInput,
   ): Promise<ActionPlan | null> {
     try {
+      await this.getValidatedActionPlanForMutation(input.id, input.cityId);
+
       const [updatedRowsCount] = await db.models.ActionPlan.update(
         {
           actionName: input.actionName,
@@ -379,6 +416,10 @@ export default class ActionPlanService {
       if (actionPlan) await syncHIAPActionPlan(actionPlan);
       return actionPlan;
     } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to update action plan");
       throw createHttpError.InternalServerError("Failed to update action plan");
     }
@@ -387,8 +428,12 @@ export default class ActionPlanService {
   /**
    * Delete an action plan
    */
-  public static async deleteActionPlan(id: string): Promise<boolean> {
+  public static async deleteActionPlan(
+    id: string,
+    cityId: string,
+  ): Promise<boolean> {
     try {
+      await this.getValidatedActionPlanForMutation(id, cityId);
       await withdrawHIAPActionPlanCatalog(id);
       const deletedRowsCount = await db.models.ActionPlan.destroy({
         where: { id },
@@ -396,6 +441,10 @@ export default class ActionPlanService {
 
       return deletedRowsCount > 0;
     } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to delete action plan");
       throw createHttpError.InternalServerError("Failed to delete action plan");
     }
@@ -431,6 +480,7 @@ export default class ActionPlanService {
         // Update existing plan
         const updatedPlan = await this.updateActionPlan({
           id: existingPlan.id,
+          cityId: input.cityId,
           actionName: input.actionName,
           language: input.language,
           ...transformedData,

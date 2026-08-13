@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import { z } from "zod";
 import createHttpError from "http-errors";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 const updateActionPlanSchema = z.object({
   planData: z.any().optional(),
@@ -110,23 +111,39 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
  *       404:
  *         description: Action plan not found
  */
-export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
-  const { id } = params;
+export const PATCH = apiHandler(
+  async (req: NextRequest, { params, session }) => {
+    if (!session?.user?.id) {
+      throw new createHttpError.Unauthorized("Authentication required");
+    }
 
-  if (!id || typeof id !== "string") {
-    throw createHttpError.BadRequest("Invalid action plan ID");
-  }
+    const { id } = params;
 
-  const body = await req.json();
-  const validatedData = updateActionPlanSchema.parse(body);
+    if (!id || typeof id !== "string") {
+      throw createHttpError.BadRequest("Invalid action plan ID");
+    }
 
-  const actionPlan = await ActionPlanService.updateActionPlan({
-    id,
-    ...validatedData,
-  });
+    const body = await req.json();
+    const validatedData = updateActionPlanSchema.parse(body);
+    const actionPlan = await ActionPlanService.getActionPlanForMutation(
+      id,
+      params.city,
+    );
 
-  return NextResponse.json({ data: actionPlan });
-});
+    await PermissionService.canAccessInventory(
+      session,
+      actionPlan.inventoryId!,
+    );
+
+    const updatedActionPlan = await ActionPlanService.updateActionPlan({
+      id,
+      cityId: params.city,
+      ...validatedData,
+    });
+
+    return NextResponse.json({ data: updatedActionPlan });
+  },
+);
 
 /**
  * @swagger
@@ -165,14 +182,29 @@ export const PATCH = apiHandler(async (req: NextRequest, { params }) => {
  *       404:
  *         description: Action plan not found
  */
-export const DELETE = apiHandler(async (req: NextRequest, { params }) => {
-  const { id } = params;
+export const DELETE = apiHandler(
+  async (_req: NextRequest, { params, session }) => {
+    if (!session?.user?.id) {
+      throw new createHttpError.Unauthorized("Authentication required");
+    }
 
-  if (!id || typeof id !== "string") {
-    throw createHttpError.BadRequest("Invalid action plan ID");
-  }
+    const { id } = params;
 
-  await ActionPlanService.deleteActionPlan(id);
+    if (!id || typeof id !== "string") {
+      throw createHttpError.BadRequest("Invalid action plan ID");
+    }
 
-  return NextResponse.json({ success: true });
-});
+    const actionPlan = await ActionPlanService.getActionPlanForMutation(
+      id,
+      params.city,
+    );
+
+    await PermissionService.canAccessInventory(
+      session,
+      actionPlan.inventoryId!,
+    );
+    await ActionPlanService.deleteActionPlan(id, params.city);
+
+    return NextResponse.json({ success: true });
+  },
+);

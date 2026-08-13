@@ -472,6 +472,17 @@ describe("City HIAP Prioritization API", () => {
   });
 
   describe("PATCH /api/v0/city/[city]/hiap/action-plan/[id]", () => {
+    it("requires authentication", async () => {
+      jest.spyOn(Auth, "getServerSession").mockResolvedValueOnce(null);
+
+      const req = mockRequest({ planData: {} });
+      const res = await updateActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId, id: randomUUID() }),
+      });
+
+      await expectStatusCode(res, 401);
+    });
+
     it("updates action plan successfully", async () => {
       // Create ranking, ranked action, and action plan
       const ranking = await db.models.HighImpactActionRanking.create({
@@ -501,6 +512,8 @@ describe("City HIAP Prioritization API", () => {
         actionId: rankedAction.actionId,
         highImpactActionRankedId: rankedAction.id,
         cityLocode: "XX-APT",
+        cityId: testData.cityId,
+        inventoryId,
         actionName: "Patch Action",
         language: "en",
         subactions: [{ name: "Original subaction" }],
@@ -513,6 +526,11 @@ describe("City HIAP Prioritization API", () => {
       };
 
       const req = mockRequest(updateData);
+      const wrongCityRes = await updateActionPlan(req, {
+        params: Promise.resolve({ city: randomUUID(), id: actionPlan.id }),
+      });
+      await expectStatusCode(wrongCityRes, 400);
+
       const res = await updateActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });
@@ -548,6 +566,17 @@ describe("City HIAP Prioritization API", () => {
   });
 
   describe("DELETE /api/v0/city/[city]/hiap/action-plan/[id]", () => {
+    it("requires authentication", async () => {
+      jest.spyOn(Auth, "getServerSession").mockResolvedValueOnce(null);
+
+      const req = mockRequest();
+      const res = await deleteActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId, id: randomUUID() }),
+      });
+
+      await expectStatusCode(res, 401);
+    });
+
     it("deletes action plan successfully", async () => {
       // Create ranking, ranked action, and action plan
       const ranking = await db.models.HighImpactActionRanking.create({
@@ -577,6 +606,8 @@ describe("City HIAP Prioritization API", () => {
         actionId: rankedAction.actionId,
         highImpactActionRankedId: rankedAction.id,
         cityLocode: "XX-APT",
+        cityId: testData.cityId,
+        inventoryId,
         actionName: "Delete Action",
         language: "en",
         subactions: [{ name: "Test subaction" }],
@@ -584,6 +615,11 @@ describe("City HIAP Prioritization API", () => {
       });
 
       const req = mockRequest();
+      const wrongCityRes = await deleteActionPlan(req, {
+        params: Promise.resolve({ city: randomUUID(), id: actionPlan.id }),
+      });
+      await expectStatusCode(wrongCityRes, 400);
+
       const res = await deleteActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });

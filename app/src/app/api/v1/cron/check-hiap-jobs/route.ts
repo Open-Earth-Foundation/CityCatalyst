@@ -8,7 +8,10 @@ import {
 } from "@/util/types";
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
-import { backfillMissingHIAPRankings } from "@/backend/hiap/HiapNativeInputCatalogService";
+import {
+  backfillMissingHIAPActionPlans,
+  backfillMissingHIAPRankings,
+} from "@/backend/hiap/HiapNativeInputCatalogService";
 import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 import type { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
@@ -230,10 +233,17 @@ export async function GET(req: NextRequest) {
     }
 
     const catalogBackfilled = await backfillMissingHIAPRankings();
+    const actionPlansBackfilled = await backfillMissingHIAPActionPlans();
     if (catalogBackfilled > 0) {
       logger.info(
         { catalogBackfilled },
         "Backfilled missing HIAP catalog entries",
+      );
+    }
+    if (actionPlansBackfilled > 0) {
+      logger.info(
+        { actionPlansBackfilled },
+        "Backfilled missing HIAP action-plan catalog entries",
       );
     }
 
@@ -319,6 +329,7 @@ export async function GET(req: NextRequest) {
         checkedJobs: pendingJobs.length,
         completedJobs,
         catalogBackfilled,
+        actionPlansBackfilled,
         startedBatches,
         durationMs: duration,
       },
@@ -329,6 +340,7 @@ export async function GET(req: NextRequest) {
       checkedJobs: pendingJobs.length,
       completedJobs,
       catalogBackfilled,
+      actionPlansBackfilled,
       startedBatches,
       durationMs: duration,
     });

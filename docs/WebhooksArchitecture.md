@@ -1,7 +1,7 @@
 # Webhooks / Eventing Backbone Architecture
 
-> Draft for [CC-669](https://linear.app/openearth/issue/CC-669/webhooks-eventing-backbone-subscriptions-signed-delivery) · 2026-08-10  
-> Status: **draft for stakeholder review**
+> Approved architecture for [CC-669](https://linear.app/openearth/issue/CC-669/webhooks-eventing-backbone-subscriptions-signed-delivery) · 2026-08-10  
+> Status: **approved — implemented in CC Core**
 
 ## One-line intent
 
@@ -17,9 +17,9 @@ There is no product way for an external system to learn that something happened 
 | CC posts a signed envelope when the domain mutation succeeds | Latency and load scale with poll interval |
 | Delivery is async (outbox + worker); user requests never wait on partners | Hard to build reliable “react when X happens” integrations |
 
-### What this draft is (and is not)
+### What this document is (and is not)
 
-| This draft **is** | This draft **is not** |
+| This document **is** | This document **is not** |
 | --- | --- |
 | End-to-end design for **outbound** webhooks: taxonomy, subscriptions, signed delivery, outbox, API, ops | A general microservice event bus (Kafka / Redis Streams) |
 | Org-scoped subscription + delivery contracts for CC Core | Inbound webhooks *from* partners into CC |
@@ -105,7 +105,7 @@ sequenceDiagram
 | `WebhookDeliveryService` | Claim, sign, POST, backoff, disable-on-failure |
 | Cron route + k8s CronJob | Periodically drain the outbox (same auth model as PDF OCR cron) |
 
-**Intended code layout (implementation follow-up):**
+**Intended code layout:**
 
 | Layer | Path |
 | --- | --- |
@@ -438,3 +438,4 @@ Testable outcomes for CC-669 implementation against this design:
 | 2026-08-10 | Postgres outbox + CronJob (PdfOcr pattern); no Redis/Bull |
 | 2026-08-10 | AES-GCM encrypted secrets; plaintext returned once on create/rotate |
 | 2026-08-10 | HMAC-SHA256 over `${timestamp}.${rawBody}`; headers `X-CityCatalyst-*` |
+| 2026-08-14 | Stakeholder go-ahead; implement on `feature/CC-669-webhooks-eventing-backbone` |

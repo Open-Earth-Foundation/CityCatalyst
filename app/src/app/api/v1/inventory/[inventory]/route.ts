@@ -82,6 +82,7 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Inventory } from "@/models/Inventory";
 import { withdrawGHGICatalogForInventory } from "@/backend/GHGINativeInputCatalogService";
 import { withdrawHIAPCatalogForInventory } from "@/backend/hiap/HiapNativeInputCatalogService";
+import WebhookService from "@/backend/webhooks/WebhookService";
 
 function hasIsPublicProperty(
   inventory:
@@ -333,6 +334,7 @@ export const PATCH = apiHandler(async (req, context) => {
   );
 
   const inventory = resource as Inventory;
+  const wasPublic = Boolean(inventory.isPublic);
 
   let updatedInventory = inventory;
 
@@ -348,5 +350,21 @@ export const PATCH = apiHandler(async (req, context) => {
     await inventory.update(publishBody);
   }
   updatedInventory = await inventory.update(body);
+
+  if (hasIsPublicProperty(body) && body.isPublic && !wasPublic) {
+    await WebhookService.emitForCity(
+      updatedInventory.cityId,
+      "inventory.published",
+      {
+        inventoryId: updatedInventory.inventoryId,
+        cityId: updatedInventory.cityId,
+        year: updatedInventory.year,
+        publishedAt: (
+          updatedInventory.publishedAt ?? new Date()
+        ).toISOString(),
+      },
+    );
+  }
+
   return NextResponse.json({ data: updatedInventory });
 });

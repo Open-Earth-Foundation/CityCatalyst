@@ -21,6 +21,7 @@ import { PopulationAttributes } from "@/models/Population";
 import { maxPopulationYearDifference } from "@/util/constants";
 import { Op, Transaction } from "sequelize";
 import VersionHistoryService from "./VersionHistoryService";
+import WebhookService from "@/backend/webhooks/WebhookService";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -353,6 +354,19 @@ export default class DataSourceService {
       );
       result.issue = message;
       result.success = false;
+    }
+
+    if (result.success) {
+      await WebhookService.emitForCity(
+        inventory.cityId,
+        "datasource.connected",
+        {
+          datasourceId: source.datasourceId,
+          inventoryId: inventory.inventoryId,
+          cityId: inventory.cityId,
+          datasourceName: source.datasourceName,
+        },
+      );
     }
 
     return result;

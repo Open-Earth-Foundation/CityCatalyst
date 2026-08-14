@@ -5,6 +5,43 @@ import createHttpError from "http-errors";
 
 const MEED_API_URL = process.env.HIAP_MEED_BACKEND_URL + "/v1/";
 
+type RunRankingFullRequest = {
+  requestedLanguages: string[];
+  topN?: number;
+  createExplanations: boolean;
+  cityDataList: {
+    excludedActionIds: string[];
+    weightsOverride: Record<string, number>;
+    cityStrategicPreferencesSectors: string[];
+    cityStrategicPreferenceTimeframes: string[];
+    cityStrategicPreferenceCoBenefitKeys: string[];
+
+    // properties below are added from inventory data in database
+    locode: string;
+    countryCode: string;
+    populationSize: number;
+    cityEmissionsData: {
+      inventoryYear: number;
+      gpcData: Record<string, GpcDataEntry>;
+    };
+  }[];
+};
+
+type GpcDataEntry = {
+  notationKey?: string;
+  activities: GpcActivity[];
+};
+
+type GpcActivity = {
+  activityType?: string;
+  totalEmissions?: number;
+  totalEmissionsUnit?: string;
+  activityValue?: number;
+  activityUnit?: string;
+  dataSource?: string;
+  notationKey?: string;
+};
+
 export default class MeedApiService {
   public static async runRanking(
     inventoryId: string,
@@ -46,20 +83,22 @@ export default class MeedApiService {
       ],
     });
 
-    requestBody.cityDataList = requestBody.cityDataList.map((cityData) => {
+    // enrich frontend request with inventory data from database
+    const fullRequest = requestBody as RunRankingFullRequest;
+    fullRequest.cityDataList = requestBody.cityDataList.map((cityData) => {
       return {
         ...cityData,
         locode: inventory.city.locode ?? "",
         countryCode: inventory.city.countryLocode ?? "",
         populationSize: population ?? 0,
         cityEmissionsData: {
-          year: inventory.year,
+          inventoryYear: inventory.year ?? 0,
           gpcData: inventoryValues.reduce(
             (acc, inventoryValue) => {
               return {
                 ...acc,
                 [inventoryValue.gpcReferenceNumber ?? ""]: {
-                  notationKey: inventoryValue.unavailableReason,
+                  notationKey: inventoryValue.unavailableReason ?? undefined,
                   activities: inventoryValue.activityValues.map((activity) => {
                     return {
                       activityType: activity.activityData?.activityType, // TODO?
@@ -68,13 +107,13 @@ export default class MeedApiService {
                       activityValue: activity.activityData?.activityValue, // TODO?
                       activityUnit: activity.activityData?.activityUnit, // TODO?
                       dataSource: activity.dataSource.datasourceName, // TODO is this what we need here
-                      notationKey: null, // not tracked at this level, it's on the InventoryValue level
-                    };
+                      notationKey: undefined, // not tracked at this level, it's on the InventoryValue level
+                    } as GpcActivity;
                   }),
                 },
               };
             },
-            {} as Record<string, unknown>,
+            {} as Record<string, GpcDataEntry>,
           ),
         },
       };
@@ -82,7 +121,7 @@ export default class MeedApiService {
 
     const result = await fetch(MEED_API_URL + "prioritize", {
       method: "POST",
-      body: JSON.stringify(requestBody),
+      body: JSON.stringify(fullRequest),
       headers: {
         "Content-Type": "application/json",
       },

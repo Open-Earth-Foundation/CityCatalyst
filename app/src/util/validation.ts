@@ -406,3 +406,33 @@ export const nativeInputCatalogRegisterRequest = z.object({
 export type NativeInputCatalogRegisterRequest = z.infer<
   typeof nativeInputCatalogRegisterRequest
 >;
+
+const httpsUrl = z
+  .string()
+  .url()
+  .refine((value) => value.toLowerCase().startsWith("https://"), {
+    message: "webhook-url-must-be-https",
+  });
+
+const webhookEventTypes = z.array(z.string().min(1)).min(1);
+
+export const createWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255),
+  url: httpsUrl,
+  events: webhookEventTypes,
+});
+
+export type CreateWebhookSubscriptionRequest = z.infer<
+  typeof createWebhookSubscriptionRequest
+>;
+
+export const updateWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255).optional(),
+  url: httpsUrl.optional(),
+  events: webhookEventTypes.optional(),
+  enabled: z.boolean().optional(),
+});
+
+export type UpdateWebhookSubscriptionRequest = z.infer<
+  typeof updateWebhookSubscriptionRequest
+>;

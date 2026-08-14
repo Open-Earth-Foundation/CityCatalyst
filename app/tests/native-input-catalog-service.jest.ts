@@ -18,14 +18,14 @@ const mockDb = {
   models: { NativeInputCatalog: catalogModel },
   sequelize: {
     transaction: jest.fn(
-      async (
-        callback: (transaction: typeof mockTransaction) => unknown,
-      ) => callback(mockTransaction),
+      async (callback: (transaction: typeof mockTransaction) => unknown) =>
+        callback(mockTransaction),
     ),
   },
 };
 
 jest.unstable_mockModule("@/models", () => ({ db: mockDb }));
+jest.mock("@/models", () => ({ db: mockDb }));
 
 let registerNativeInput: typeof import("@/backend/NativeInputCatalogService").registerNativeInput;
 let supersedeNativeInput: typeof import("@/backend/NativeInputCatalogService").supersedeNativeInput;
@@ -82,6 +82,21 @@ describe("NativeInputCatalogService", () => {
 
     expect(result).toEqual({ catalog: existing, created: false });
     expect(catalogModel.create).not.toHaveBeenCalled();
+  });
+
+  it("repairs a missing digest when an idempotent retry supplies one", async () => {
+    const existing = makeCatalog({ contentDigest: null });
+    catalogModel.findOne.mockResolvedValue(existing);
+
+    await registerNativeInput({
+      ...registration,
+      contentDigest: "source-sha256",
+    });
+
+    expect(existing.update).toHaveBeenCalledWith(
+      { contentDigest: "source-sha256" },
+      { transaction: undefined },
+    );
   });
 
   it("creates a new active registration", async () => {

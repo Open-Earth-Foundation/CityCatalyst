@@ -32,7 +32,6 @@ function VerifiedNotification({ t }: { t: TFunction }) {
     if (isVerified) {
       showSuccessToast();
     }
-     
   }, [isVerified, showSuccessToast]);
 
   return null;
@@ -53,6 +52,12 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
   let callbackUrl = decodeURIComponent(queryParams.callbackUrl || "");
+
+  // next-auth's redirect callback throws on anything that isn't a relative
+  // path or same-origin absolute URL, so discard anything else here
+  if (callbackUrl && !callbackUrl.startsWith("/")) {
+    callbackUrl = "";
+  }
 
   // only redirect to user invite page as a fallback if there is a token present in the search params
   if (!callbackUrl) {
@@ -108,7 +113,14 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <form noValidate onSubmit={handleSubmit(onSubmit)}>
         <Box display="flex" flexDirection="column" gap="16px">
           <EmailInput register={register} error={errors.email} t={t} />
-          <PasswordInput register={register} error={errors.password} t={t} />
+          <PasswordInput
+            register={register}
+            error={errors.password}
+            t={t}
+            validate={(value) =>
+              value.length >= 8 || t("min-length", { length: 8 })
+            }
+          />
           <Text color="semantic.danger">{t(error)}</Text>
           <Box w="full" textAlign="right">
             <Link href="/auth/forgot-password" textDecoration="underline">

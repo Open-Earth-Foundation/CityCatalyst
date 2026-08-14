@@ -65,8 +65,14 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteRun,
+  ConceptNoteRunListResponse,
+  ConceptNoteUploadRequest,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatusRequest,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  StartConceptNoteRunRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -131,6 +137,8 @@ export const api = createApi({
     "VersionHistory",
     "PersonalAccessToken",
     "AdminModules",
+    "ConceptNoteRuns",
+    "ConceptNoteUpload",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -720,14 +728,13 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["FileData"],
       }),
-      getUserFiles: builder.query({
+      getUserFiles: builder.query<UserFileResponse[], string>({
         query: (cityId: string) => ({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse[] }) => {
-          return response.data;
-        },
+        transformResponse: (response: { data: UserFileResponse[] }) =>
+          response.data,
 
         providesTags: ["FileData"],
       }),
@@ -825,8 +832,7 @@ export const api = createApi({
               body: data,
             };
           },
-          transformResponse: (response: { data: AcceptInviteResponse }) =>
-            response.data,
+          transformResponse: (response: AcceptInviteResponse) => response,
           invalidatesTags: [
             "Invites",
             "UserData",
@@ -1494,7 +1500,6 @@ export const api = createApi({
           cityLocode: string;
           lng?: string;
           cityId: string;
-          rankingId: string;
         }
       >({
         query: ({
@@ -1503,16 +1508,14 @@ export const api = createApi({
           cityId,
           lng,
           cityLocode,
-          rankingId,
         }: {
           action: HIAction;
           inventoryId: string;
           cityId: string;
           cityLocode?: string;
           lng?: string;
-          rankingId: string;
         }) => ({
-          url: `city/${cityId}/hiap/action-plan/generate/${rankingId}`,
+          url: `city/${cityId}/hiap/action-plan/generate`,
           method: "POST",
           body: { action, inventoryId, cityLocode, lng },
         }),
@@ -2147,6 +2150,70 @@ export const api = createApi({
           response.data,
         providesTags: ["Organizations"],
       }),
+      getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
+        query: (cityId) => ({
+          url: "concept-notes",
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, cityId) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
+        query: (runId) => `concept-notes/${runId}`,
+      }),
+      startConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        StartConceptNoteRunRequest
+      >({
+        query: ({ cityId, idempotencyKey, name }) => ({
+          url: "concept-notes/start",
+          method: "POST",
+          body: {
+            city_id: cityId,
+            idempotency_key: idempotencyKey,
+            name,
+          },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      uploadConceptNotePdf: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadRequest
+      >({
+        query: ({ formData, runId }) => ({
+          url: `concept-notes/${runId}/uploads`,
+          method: "POST",
+          body: formData,
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteUploadStatus: builder.query<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) =>
+          `concept-notes/${runId}/uploads/${uploadId}`,
+        providesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteUpload: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) => ({
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
     };
   },
 });
@@ -2295,5 +2362,11 @@ export const {
   useCreateModuleMutation,
   useUpdateModuleMutation,
   useDeleteModuleMutation,
+  useGetConceptNoteRunsQuery,
+  useGetConceptNoteRunQuery,
+  useStartConceptNoteRunMutation,
+  useUploadConceptNotePdfMutation,
+  useGetConceptNoteUploadStatusQuery,
+  useRetryConceptNoteUploadMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

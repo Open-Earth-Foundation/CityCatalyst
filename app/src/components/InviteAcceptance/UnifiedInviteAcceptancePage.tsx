@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useRef, useState, use } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { api, useAcceptInviteMutation } from "@/services/api";
 import { logger } from "@/services/logger";
 import { emailPattern, tokenRegex, uuidRegex } from "@/util/validation";
+import { AcceptInviteResponse } from "@/util/types";
 import { UseSuccessToast } from "@/hooks/Toasts";
 import { useTranslation } from "@/i18n/client";
 import ProgressLoader from "@/components/ProgressLoader";
@@ -39,7 +41,9 @@ type ValidatedInviteRequest =
 const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAcceptancePageProps) => {
   const { lng } = use(params);
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
+  const { status } = useSession();
   const { t } = useTranslation(lng, "auth");
 
   const queryParams = Object.fromEntries(searchParams.entries());
@@ -64,7 +68,6 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
   // API hooks
   const [acceptCityInvite] = useAcceptInviteMutation();
   const [acceptOrgInvite] = api.useAcceptOrganizationAdminInviteMutation();
-  const [getCities] = api.useLazyGetCitiesQuery();
 
   // Toast notification
   const { showSuccessToast } = UseSuccessToast({
@@ -158,6 +161,16 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
 
   useEffect(() => {
     if (!validatedRequest || calledOnce.current) return;
+
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      calledOnce.current = true;
+      const callbackUrl = `${pathname}?${searchParams.toString()}`;
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
+    }
+
     calledOnce.current = true;
 
     (async () => {
@@ -216,32 +229,23 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
           cities: [],
         };
 
-        // For city invites, fetch city data to show names and flags
-        if (validatedRequest.type === InviteType.CITY) {
-          try {
-            const citiesResult = await getCities({});
-            if (citiesResult.data) {
-              const allCities = citiesResult.data;
-              const invitedCityIds = validatedRequest.cityIds.split(",");
-              const invitedCities = invitedCityIds.map((cityId) => {
-                const city = allCities.find((c) => c.cityId === cityId);
-                return {
-                  cityId,
-                  cityName: city?.name || "Unknown City",
-                  countryCode: city?.countryLocode
-                    ?.substring(0, 2)
-                    .toLowerCase(),
-                };
-              });
-
-              finalInviteData = {
-                ...finalInviteData,
-                cities: invitedCities,
-              };
-            }
-          } catch (citiesError) {
-            logger.error(citiesError, "Failed to fetch city data for invite");
-          }
+        // For city invites, resolve city names/flags from the accept
+        // response directly -- GET /city is scoped to CityUser membership,
+        // which admin invites don't create, so it can't be used here.
+        const acceptedCities = (
+          result.data as { cities?: AcceptInviteResponse["cities"] }
+        )?.cities;
+        if (validatedRequest.type === InviteType.CITY && acceptedCities) {
+          finalInviteData = {
+            ...finalInviteData,
+            cities: acceptedCities.map((city) => ({
+              cityId: city.cityId,
+              cityName: city.name || "Unknown City",
+              countryCode: city.countryLocode
+                ?.substring(0, 2)
+                .toLowerCase(),
+            })),
+          };
         }
 
         setInviteData(finalInviteData);
@@ -258,8 +262,11 @@ const UnifiedInviteAcceptancePage = ({ params, inviteType }: UnifiedInviteAccept
     validatedRequest,
     acceptCityInvite,
     acceptOrgInvite,
-    getCities,
     showSuccessToast,
+    status,
+    pathname,
+    router,
+    searchParams,
   ]);
 
   const handleSuccessClose = () => {

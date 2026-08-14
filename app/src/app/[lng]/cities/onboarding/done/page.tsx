@@ -8,11 +8,12 @@ import NextLink from "next/link";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { useSearchParams } from "next/navigation";
 
-export default function OnboardingDone(props: { params: Promise<{ lng: string; cityId: string; }> }) {
-  const { lng, cityId } = use(props.params);
+export default function OnboardingDone(props: { params: Promise<{ lng: string }> }) {
+  const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const searchParams = useSearchParams();
   const projectId = searchParams.get("project");
+  const cityId = searchParams.get("cityId");
 
   return (
     <Box

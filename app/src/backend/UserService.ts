@@ -573,7 +573,7 @@ export default class UserService {
         {
           model: db.models.City,
           as: "cities",
-          attributes: ["cityId", "name", "countryLocode", "country"],
+          attributes: ["cityId", "name", "countryLocode", "country", "region"],
           include: [
             {
               model: db.models.Inventory,
@@ -600,7 +600,7 @@ export default class UserService {
           {
             model: db.models.City,
             as: "cities",
-            attributes: ["cityId", "name", "countryLocode", "country"],
+            attributes: ["cityId", "name", "countryLocode", "country", "region"],
             include: [
               {
                 model: db.models.Inventory,
@@ -621,7 +621,14 @@ export default class UserService {
       include: {
         model: db.models.City,
         as: "city",
-        attributes: ["cityId", "name", "countryLocode", "country", "locode"],
+        attributes: [
+          "cityId",
+          "name",
+          "countryLocode",
+          "country",
+          "locode",
+          "region",
+        ],
         include: [
           {
             model: db.models.Project,
@@ -690,6 +697,7 @@ export default class UserService {
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
+          region: city.region as string,
         })),
       };
     }
@@ -722,6 +730,7 @@ export default class UserService {
           country: city.country as string,
           countryLocode: city.countryLocode as string,
           locode: city.locode as string,
+          region: city.region as string,
         });
       }
     }

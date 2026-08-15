@@ -36,13 +36,20 @@ export const GET = apiHandler(async (_req, { session }) => {
       },
     ],
   });
-  const organizations = organizationAdmins.map((orgAdmin) => {
-    return {
-      organizationId: orgAdmin.organizationId,
-      name: orgAdmin.organization.name,
-      role: OrganizationRole.ORG_ADMIN,
-    };
-  });
+  const seenOrganizationIds = new Set<string>();
+  const organizations = organizationAdmins
+    .filter((orgAdmin) => {
+      if (seenOrganizationIds.has(orgAdmin.organizationId)) return false;
+      seenOrganizationIds.add(orgAdmin.organizationId);
+      return true;
+    })
+    .map((orgAdmin) => {
+      return {
+        organizationId: orgAdmin.organizationId,
+        name: orgAdmin.organization.name,
+        role: OrganizationRole.ORG_ADMIN,
+      };
+    });
 
   return NextResponse.json({ data: organizations });
 });

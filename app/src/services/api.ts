@@ -70,6 +70,7 @@ import {
   ConceptNoteUploadRequest,
   ConceptNoteUploadResponse,
   ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
@@ -2166,13 +2167,26 @@ export const api = createApi({
         ConceptNoteRun,
         StartConceptNoteRunRequest
       >({
-        query: ({ cityId, idempotencyKey, name }) => ({
+        query: ({
+          cityId,
+          idempotencyKey,
+          name,
+          projectId,
+          funderId,
+          selectedFundingOpportunityId,
+          threadId,
+        }) => ({
           url: "concept-notes/start",
           method: "POST",
           body: {
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,
+            project_id: projectId ?? null,
+            funder_id: funderId ?? null,
+            selected_funding_opportunity_id:
+              selectedFundingOpportunityId ?? null,
+            thread_id: threadId ?? null,
           },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
@@ -2213,6 +2227,16 @@ export const api = createApi({
         invalidatesTags: (_result, _error, { uploadId }) => [
           { type: "ConceptNoteUpload", id: uploadId },
         ],
+      }),
+      retryConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
       }),
     };
   },
@@ -2368,5 +2392,6 @@ export const {
   useUploadConceptNotePdfMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,
+  useRetryConceptNoteContextBundleMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

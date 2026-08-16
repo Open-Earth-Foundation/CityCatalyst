@@ -3,6 +3,8 @@ import { describe, expect, it } from "@jest/globals";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
+  getConceptNoteBundleProgress,
+  getRunProgressPercent,
   getRunStatusPresentation,
   humanizeLifecycleValue,
 } from "@/components/ConceptNoteDashboard/utils";
@@ -36,7 +38,47 @@ describe("Concept Note dashboard presentation helpers", () => {
 
   it("uses the durable run ID in resume navigation", () => {
     expect(conceptNoteResumeHref("en", "city-1", "run-1")).toBe(
-      "/en/cities/city-1/concept-notes/wiring?runId=run-1",
+      "/en/cities/city-1/concept-notes/run-1",
     );
+  });
+
+  it("normalizes persisted context-bundle progress defensively", () => {
+    expect(
+      getConceptNoteBundleProgress({
+        unrelated: "preserved",
+        context_bundle: {
+          status: "ready",
+          source_counts: { ready: 2, queued: 1, failed: -1 },
+          optional_sources: { ghgi: "included", hiap: "unavailable" },
+          retryable: false,
+          warnings: ["One optional source was unavailable", 12],
+        },
+      }),
+    ).toEqual({
+      status: "ready",
+      readySources: 2,
+      queuedSources: 1,
+      processingSources: 0,
+      failedSources: 0,
+      ghgiStatus: "included",
+      hiapStatus: "unavailable",
+      retryable: false,
+      warnings: ["One optional source was unavailable"],
+    });
+  });
+
+  it("derives conservative run progress without inventing document work", () => {
+    expect(getRunProgressPercent("active", "assembling_context", {})).toBe(4);
+    expect(
+      getRunProgressPercent("active", "assembling_context", {
+        context_bundle: { status: "building" },
+      }),
+    ).toBe(28);
+    expect(
+      getRunProgressPercent("active", "interviewing", {
+        context_bundle: { status: "ready" },
+      }),
+    ).toBe(40);
+    expect(getRunProgressPercent("exported", "exported", {})).toBe(100);
   });
 });

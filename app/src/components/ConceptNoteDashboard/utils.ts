@@ -42,8 +42,85 @@ export function conceptNoteResumeHref(
   cityId: string,
   runId: string,
 ): string {
-  const query = new URLSearchParams({ runId });
-  return `/${lng}/cities/${cityId}/concept-notes/wiring?${query}`;
+  return `/${lng}/cities/${cityId}/concept-notes/${runId}`;
+}
+
+export interface ConceptNoteBundleProgress {
+  status: string | null;
+  readySources: number;
+  queuedSources: number;
+  processingSources: number;
+  failedSources: number;
+  ghgiStatus: string | null;
+  hiapStatus: string | null;
+  retryable: boolean;
+  warnings: string[];
+}
+
+function recordValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function countValue(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(0, value)
+    : 0;
+}
+
+function stringValue(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+export function getConceptNoteBundleProgress(
+  summary: Record<string, unknown>,
+): ConceptNoteBundleProgress {
+  const bundle = recordValue(summary.context_bundle);
+  const sourceCounts = recordValue(bundle.source_counts);
+  const optionalSources = recordValue(bundle.optional_sources);
+
+  return {
+    status: stringValue(bundle.status),
+    readySources: countValue(sourceCounts.ready),
+    queuedSources: countValue(sourceCounts.queued),
+    processingSources: countValue(sourceCounts.processing),
+    failedSources: countValue(sourceCounts.failed),
+    ghgiStatus: stringValue(optionalSources.ghgi),
+    hiapStatus: stringValue(optionalSources.hiap),
+    retryable: bundle.retryable === true,
+    warnings: Array.isArray(bundle.warnings)
+      ? bundle.warnings.filter(
+          (warning): warning is string => typeof warning === "string",
+        )
+      : [],
+  };
+}
+
+export function getRunProgressPercent(
+  status: string,
+  workflowStep: string,
+  summary: Record<string, unknown>,
+): number {
+  const normalizedStatus = status.trim().toLowerCase();
+  if (["completed", "exported", "succeeded"].includes(normalizedStatus)) {
+    return 100;
+  }
+
+  const bundle = getConceptNoteBundleProgress(summary);
+  if (workflowStep === "interviewing" || bundle.status === "ready") {
+    return 40;
+  }
+  if (bundle.status === "building") {
+    return 28;
+  }
+  if (bundle.readySources > 0) {
+    return 18;
+  }
+  if (bundle.processingSources > 0 || bundle.queuedSources > 0) {
+    return 10;
+  }
+  return 4;
 }
 
 export function formatRelativeTime(

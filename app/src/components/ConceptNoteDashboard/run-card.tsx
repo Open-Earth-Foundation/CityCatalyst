@@ -10,6 +10,8 @@ import type { RunStatusTone } from "./utils";
 
 interface RunCardProps {
   activityLabel: string;
+  progress: number;
+  progressLabel: string;
   reducedMotion: boolean;
   resumeHref: string;
   resumeLabel: string;
@@ -21,6 +23,8 @@ interface RunCardProps {
 
 export function RunCard({
   activityLabel,
+  progress,
+  progressLabel,
   reducedMotion,
   resumeHref,
   resumeLabel,
@@ -78,7 +82,35 @@ export function RunCard({
           {scopeLabel}
         </Text>
 
-        <Box h="4px" borderRadius="pill" bg="background.neutral" />
+        <Box>
+          <Flex justify="space-between" gap={3} mb={1}>
+            <Text fontSize="label.sm" color="content.tertiary">
+              {progressLabel}
+            </Text>
+            <Text
+              fontSize="label.sm"
+              fontWeight="semibold"
+              color="content.secondary"
+            >
+              {progress}%
+            </Text>
+          </Flex>
+          <Box
+            h="4px"
+            overflow="hidden"
+            borderRadius="pill"
+            bg="background.neutral"
+          >
+            <Box
+              h="full"
+              w={`${progress}%`}
+              borderRadius="pill"
+              bg="content.link"
+              transition="width 180ms ease"
+              _motionReduce={{ transition: "none" }}
+            />
+          </Box>
+        </Box>
 
         <Text
           fontFamily="body"

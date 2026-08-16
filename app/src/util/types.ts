@@ -1040,6 +1040,10 @@ export interface StartConceptNoteRunRequest {
   cityId: string;
   idempotencyKey: string;
   name: string;
+  projectId?: string | null;
+  funderId?: string | null;
+  selectedFundingOpportunityId?: string | null;
+  threadId?: string | null;
 }
 
 export type ConceptNoteUploadStatus =
@@ -1051,6 +1055,13 @@ export interface ConceptNoteUploadResponse {
   status: ConceptNoteUploadStatus;
   pageCount?: number | null;
   errorCode?: string;
+  stage?: string;
+  canRetry?: boolean;
+  retryKind?: string | null;
+  filename?: string;
+  sourceLabel?: string | null;
+  receivedAt?: string;
+  completedAt?: string | null;
 }
 
 export interface ConceptNoteUploadRequest {
@@ -1062,4 +1073,9 @@ export interface ConceptNoteUploadRequest {
 export interface ConceptNoteUploadStatusRequest {
   runId: string;
   uploadId: string;
+}
+
+export interface ConceptNoteContextBundleRetryResponse {
+  run_id: string;
+  status: "queued";
 }

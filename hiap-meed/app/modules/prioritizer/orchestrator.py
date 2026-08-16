@@ -21,6 +21,10 @@ from app.modules.prioritizer.models import (
 )
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
+from app.services.action_pathways_api import (
+    PRIORITIZABLE_ACTION_TYPE,
+    select_prioritizable_actions,
+)
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -43,35 +47,12 @@ from app.utils.timing import time_block
 
 
 logger = logging.getLogger(__name__)
-SUPPORTED_ACTION_TYPE = "mitigation"
 
 
 def _sorted_action_ids(actions: list[Action]) -> list[str]:
     """Return all action IDs in deterministic sorted order."""
     action_ids = [action.action_id for action in actions]
     return sorted(action_ids)
-
-
-def _filter_supported_action_type(
-    actions: list[Action],
-    *,
-    action_type: str,
-) -> tuple[list[Action], list[Action], list[Action]]:
-    """Split fetched actions into supported, filtered-out, and missing-type groups."""
-    normalized_action_type = action_type.strip().lower()
-    kept_actions: list[Action] = []
-    filtered_actions: list[Action] = []
-    missing_action_type_actions: list[Action] = []
-    for action in actions:
-        if action.action_type is None or not action.action_type.strip():
-            missing_action_type_actions.append(action)
-            kept_actions.append(action)
-            continue
-        if action.action_type.strip().lower() == normalized_action_type:
-            kept_actions.append(action)
-            continue
-        filtered_actions.append(action)
-    return kept_actions, filtered_actions, missing_action_type_actions
 
 
 def _score_stats(score_by_action_id: dict[str, float]) -> dict[str, float | int | bool]:
@@ -583,16 +564,13 @@ def run_prioritization(
             actions,
             filtered_out_action_type_actions,
             missing_action_type_actions,
-        ) = _filter_supported_action_type(
-            fetched_actions,
-            action_type=SUPPORTED_ACTION_TYPE,
-        )
+        ) = select_prioritizable_actions(fetched_actions)
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
     fetch_actions_payload = {
         "total_fetched_actions": len(fetched_actions),
         "total_actions": len(actions),
-        "supported_action_type": SUPPORTED_ACTION_TYPE,
+        "supported_action_type": PRIORITIZABLE_ACTION_TYPE,
         "filtered_out_action_type_actions_count": len(filtered_out_action_type_actions),
         "missing_action_type_actions_count": len(missing_action_type_actions),
         "source": (
@@ -613,7 +591,7 @@ def run_prioritization(
         {
             "total_fetched_actions": len(fetched_actions),
             "total_actions": len(actions),
-            "supported_action_type": SUPPORTED_ACTION_TYPE,
+            "supported_action_type": PRIORITIZABLE_ACTION_TYPE,
             "filtered_out_action_type_actions_count": len(
                 filtered_out_action_type_actions
             ),
@@ -642,7 +620,7 @@ def run_prioritization(
         len(actions),
         len(filtered_out_action_type_actions),
         len(missing_action_type_actions),
-        SUPPORTED_ACTION_TYPE,
+        PRIORITIZABLE_ACTION_TYPE,
         block.elapsed_seconds,
     )
 

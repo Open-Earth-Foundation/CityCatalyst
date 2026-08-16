@@ -39,7 +39,14 @@ class ClimateFinanceProjectsApiService:
         country_code: str,
         limit: int = REPORT_FINANCE_PROJECTS_LIMIT,
     ) -> ClimateFinanceProjectsFetchResult:
-        """Fetch and validate one action-filtered projects-catalogue response."""
+        """
+        Fetch comparable projects for a caller-selected country and action.
+
+        HIAP-MEED sends both values to Global API and preserves the returned
+        order. ``limit`` is backend-owned and defaults to the same five projects
+        used by output-plan generation; the public endpoint does not expose it.
+        Network or schema failures raise ``UpstreamApiError``.
+        """
         projects_url = self._build_url(
             action_id=action_id,
             country_code=country_code,

@@ -240,6 +240,7 @@ jobs:
             "NEXT_PUBLIC_API_URL=https://api.citycatalyst.io" \
             "GLOBAL_API_URL=https://api.citycatalyst.io" \
             "HIAP_API_URL=http://hiap-service-prod" \
+            "HIAP_MEED_API_URL=http://hiap-meed-service-prod" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \

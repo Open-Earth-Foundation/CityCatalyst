@@ -17,6 +17,7 @@ import uvicorn
 from fastapi import FastAPI
 
 from app.modules.prioritizer.api import router as prioritization_router
+from app.modules.reference_data.api import router as reference_data_router
 from app.utils.logging_config import setup_logger
 from app.utils.mlflow_logging import initialize_mlflow
 
@@ -43,6 +44,13 @@ app = FastAPI(
             "description": (
                 "Rank city climate actions, preview exclusions, generate City Action "
                 "Reports, and translate completed explanations."
+            ),
+        },
+        {
+            "name": "reference data",
+            "description": (
+                "Read normalized city, action, policy, feasibility, and finance "
+                "reference data through the same operations used by HIAP-MEED workflows."
             ),
         },
     ],
@@ -73,6 +81,7 @@ async def health() -> dict[str, str]:
 
 
 app.include_router(prioritization_router)
+app.include_router(reference_data_router)
 
 
 if __name__ == "__main__":

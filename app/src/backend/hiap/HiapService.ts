@@ -26,6 +26,10 @@ import { AppSession } from "@/lib/auth";
 import { Op } from "sequelize";
 import VersionHistoryService from "../VersionHistoryService";
 import { getTranslationFromDictionary } from "@/util/helpers";
+import {
+  syncHIAPRanking,
+  syncHIAPSelections,
+} from "./HiapNativeInputCatalogService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info(`Using HIAP API at ${HIAP_API_URL}`);
@@ -463,6 +467,7 @@ async function processBulkJobResults(
 
       // Update ranking status to success
       await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+      await syncHIAPRanking(ranking);
 
       logger.info(
         {
@@ -887,6 +892,7 @@ export const checkActionRankingJob = async (
     await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
 
     await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+    await syncHIAPRanking(ranking);
 
     // Send email notification when job completes successfully
     if (user && mergedRanked.length > 0) {
@@ -1600,6 +1606,8 @@ export async function updateHiapActionSelections({
     await db.models.UnrankedActionSelection.bulkCreate(unrankedSelections);
     updatedCount += unrankedActionIds.length;
   }
+
+  await syncHIAPSelections({ inventoryId, actionType, authorId });
 
   return updatedCount;
 }

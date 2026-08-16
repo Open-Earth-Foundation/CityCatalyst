@@ -93,7 +93,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.NotFound("project-not-found");
   }
 
-  const errors: { locode?: string; error: any }[] = [];
+  const errors: { locode?: string; error: string }[] = [];
   const cityResults = await Promise.all(
     project.cities
       .filter((city) => !!city.locode)
@@ -101,7 +101,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         let boundary: CityBoundary | null = null;
         try {
           boundary = await CityBoundaryService.getCityBoundary(city.locode!);
-        } catch (error: any) {
+        } catch (error: unknown) {
           const message =
             error instanceof Error ? error.message : "unknown-error";
           logger.error(

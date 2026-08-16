@@ -4,7 +4,6 @@ import {
   Box,
   Flex,
   HStack,
-  Text,
   Textarea,
   VStack,
   chakra,
@@ -37,12 +36,10 @@ import {
   MultiSourceProposalCard,
   SingleSourceProposalCard,
 } from "@/components/StationaryEnergyDraft/stationary-energy-review-cards";
-import type { ChatMessage } from "@/components/StationaryEnergyDraft/stationary-energy-chat-messages";
 import type {
   DecisionReviewContext,
   DraftStage,
 } from "@/components/StationaryEnergyDraft/flow";
-import type { DraftStatusResponse } from "@/components/StationaryEnergyDraft/types";
 import type {
   StationaryEnergyChatArtifactControllerActions,
   StationaryEnergyChatArtifactControllerState,

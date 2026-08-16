@@ -11,7 +11,7 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
+} from "react-email";
 import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
 

@@ -1,9 +1,7 @@
 import { TFunction } from "i18next";
-import { Link, VStack, Text, Card, Icon } from "@chakra-ui/react";
-import { MdArrowForward } from "react-icons/md";
+import { Link, VStack, Card } from "@chakra-ui/react";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { ButtonMedium } from "@/components/package/Texts/Button";
 import { env } from "@/lib/runtime-env";
 
 export const NoModulesCard = ({ t }: { t: TFunction }) => {

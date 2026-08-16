@@ -23,7 +23,6 @@ class CnbReferenceDataClient(Protocol):
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
         """Return reviewed candidates, optionally restricted to one funder."""
 
@@ -43,23 +42,18 @@ class PostgresCnbReferenceDataClient:
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
         """Return deterministic funded-project candidates with valid evidence."""
-        if limit <= 0:
-            raise ValueError("limit must be positive")
-
         # Step 1: resolve configuration without opening a connection at import time.
         database_url = self._database_url or get_settings().cnb_database_url
         if not database_url:
             raise CnbReferenceDataUnavailable("CNB reference data is not configured")
 
-        # Step 2: fetch bounded records and their evidence in two queries.
+        # Step 2: fetch all scoped records and their evidence in two queries.
         try:
             rows, evidence_rows = self._fetch_rows(
                 database_url=database_url,
                 funder_id=funder_id,
-                limit=min(limit, 100),
             )
         except Exception as exc:
             logger.error(
@@ -71,7 +65,7 @@ class PostgresCnbReferenceDataClient:
             ) from None
 
         # Step 3: validate stored source maps before building typed candidates.
-        evidence_by_record: dict[UUID, list[CnbSimilarProjectEvidence]] = defaultdict(
+        evidence_by_project: dict[UUID, list[CnbSimilarProjectEvidence]] = defaultdict(
             list
         )
         skipped_evidence = 0
@@ -88,7 +82,7 @@ class PostgresCnbReferenceDataClient:
             if not all(isinstance(value, str) and value for value in required):
                 skipped_evidence += 1
                 continue
-            evidence_by_record[UUID(str(row["funding_record_id"]))].append(
+            evidence_by_project[UUID(str(row["funded_project_id"]))].append(
                 CnbSimilarProjectEvidence(
                     evidence_ref=required[0],
                     source_ref=required[1],
@@ -107,7 +101,7 @@ class PostgresCnbReferenceDataClient:
         return [
             self._build_candidate(
                 row=row,
-                evidence=evidence_by_record[UUID(str(row["funding_record_id"]))],
+                evidence=evidence_by_project[UUID(str(row["funded_project_id"]))],
             )
             for row in rows
         ]
@@ -117,9 +111,8 @@ class PostgresCnbReferenceDataClient:
         *,
         database_url: str,
         funder_id: UUID | None,
-        limit: int,
     ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-        """Execute bounded record and evidence queries in one read transaction."""
+        """Read all scoped funded projects and their evidence in one transaction."""
         import psycopg2
         from psycopg2.extras import RealDictCursor
 
@@ -128,68 +121,70 @@ class PostgresCnbReferenceDataClient:
                 cursor.execute(
                     """
                     SELECT
-                        fr.funding_record_id,
-                        fr.funder_id,
+                        fp.funded_project_id,
+                        fp.funder_id,
                         f.name AS funder_name,
-                        fr.name,
-                        fr.applicant_name,
-                        fr.applicant_type,
-                        fr.city,
-                        fr.state_region,
-                        fr.country,
-                        fr.category,
-                        fr.sector,
-                        fr.hazards,
-                        fr.interventions,
-                        fr.finance_route,
-                        fr.instrument_type,
-                        fr.region_scope,
-                        fr.award_amount,
-                        fr.currency,
-                        fr.award_year,
-                        fr.status,
-                        fr.summary,
-                        fr.project_tags,
-                        fr.known_gaps
-                    FROM funding_records AS fr
-                    JOIN funders AS f ON f.funder_id = fr.funder_id
-                    WHERE fr.is_opportunity = FALSE
-                      AND (%(funder_id)s::uuid IS NULL OR fr.funder_id = %(funder_id)s::uuid)
-                    ORDER BY f.name, fr.name, fr.funding_record_id
-                    LIMIT %(limit)s
+                        fp.name,
+                        fp.applicant_name,
+                        fp.applicant_type,
+                        fp.city,
+                        fp.state_region,
+                        fp.country,
+                        fp.category,
+                        fp.sector,
+                        fp.hazards,
+                        fp.interventions,
+                        fp.finance_route,
+                        fp.instrument_type,
+                        fp.region_scope,
+                        fp.award_amount,
+                        fp.currency,
+                        fp.award_year,
+                        fp.status,
+                        fp.summary,
+                        fp.project_tags,
+                        fp.known_gaps
+                    FROM funded_projects AS fp
+                    JOIN funders AS f ON f.funder_id = fp.funder_id
+                    WHERE (
+                        %(funder_id)s::uuid IS NULL
+                        OR fp.funder_id = %(funder_id)s::uuid
+                    )
+                    ORDER BY f.name, fp.name, fp.funded_project_id
                     """,
                     {
                         "funder_id": str(funder_id) if funder_id else None,
-                        "limit": limit,
                     },
                 )
                 records = [dict(row) for row in cursor.fetchall()]
                 if not records:
                     return [], []
 
-                funding_record_ids = [
-                    str(row["funding_record_id"]) for row in records
+                funded_project_ids = [
+                    str(row["funded_project_id"]) for row in records
                 ]
                 cursor.execute(
                     """
                     SELECT
-                        evidence.funding_record_id,
+                        evidence.funded_project_id,
                         evidence.evidence_id,
                         evidence.quote_or_summary,
                         evidence.source_map,
                         source.source_document_id,
                         source.url AS source_url,
                         source.title AS source_title
-                    FROM funding_record_evidence AS evidence
+                    FROM funding_evidence AS evidence
                     JOIN source_documents AS source
                       ON source.source_document_id = evidence.source_document_id
-                    WHERE evidence.funding_record_id = ANY(%(funding_record_ids)s::uuid[])
+                    WHERE evidence.funded_project_id = ANY(
+                        %(funded_project_ids)s::uuid[]
+                    )
                     ORDER BY
-                        evidence.funding_record_id,
+                        evidence.funded_project_id,
                         evidence.source_map ->> 'evidence_ref',
                         evidence.evidence_id
                     """,
-                    {"funding_record_ids": funding_record_ids},
+                    {"funded_project_ids": funded_project_ids},
                 )
                 evidence = [dict(row) for row in cursor.fetchall()]
         return records, evidence
@@ -202,10 +197,9 @@ class PostgresCnbReferenceDataClient:
     ) -> CnbSimilarProjectCandidate:
         """Map one managed database row to the matching service contract."""
         return CnbSimilarProjectCandidate(
-            funding_record_id=row["funding_record_id"],
+            funded_project_id=row["funded_project_id"],
             funder_id=row["funder_id"],
             funder_name=row["funder_name"],
-            is_opportunity=False,
             is_funded_award=True,
             award_status=row["status"],
             award_amount=row["award_amount"],
@@ -238,11 +232,12 @@ class UnavailableCnbReferenceDataClient:
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[CnbSimilarProjectCandidate]:
         """Return no candidates when reference data is not available yet."""
         scope = str(funder_id) if funder_id is not None else "all funders"
-        logger.warning("CNB similar-project reference data is unavailable for %s.", scope)
+        logger.warning(
+            "CNB similar-project reference data is unavailable for %s.", scope
+        )
         return []
 
 

@@ -8,8 +8,6 @@ import { OpenChangeDetails } from "@zag-js/popover";
 import { Box, Icon, Input, Link, Text, VStack } from "@chakra-ui/react";
 import {
   MdAdd,
-  MdArrowDropDown,
-  MdArrowDropUp,
   MdCardTravel,
   MdCheck,
   MdInsertChart,
@@ -18,10 +16,8 @@ import {
 } from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuLayoutGrid } from "react-icons/lu";
-import type {
-  ProjectWithCities,
-  ProjectWithCitiesResponse,
-} from "@/util/types";
+import { BiCaretDown } from "react-icons/bi";
+import type { ProjectWithCitiesResponse } from "@/util/types";
 import {
   api,
   useGetUserProjectsQuery,
@@ -40,10 +36,11 @@ import {
 } from "@/components/ui/menu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
+import type { TFunction } from "i18next";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { CustomSelect } from "../ui/custom-select";
-import { Modules, StageNames } from "@/util/constants";
+import { Modules } from "@/util/constants";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
@@ -57,7 +54,7 @@ const ProjectFilterSection = ({
   currentCityId,
   organizationId,
 }: {
-  t: Function;
+  t: TFunction;
   projectsData: ProjectWithCitiesResponse;
   lng: string;
   currentCityId?: string;
@@ -197,7 +194,7 @@ const ProjectFilterSection = ({
   const searchResults = getSearchResults();
 
   // Handle city selection and navigation
-  const handleCitySelection = (cityId: string, projectId: string) => {
+  const handleCitySelection = (cityId: string) => {
     router.push(`/${lng}/cities/${cityId}`);
   };
 
@@ -208,13 +205,15 @@ const ProjectFilterSection = ({
       display="flex"
       flexDirection="column"
       gap={"24px"}
-      py="24px"
+      pb="6"
     >
       {/* Filter Section */}
-      <Box display="flex" flexDirection="column" gap={"24px"} w="full">
+      <Box display="flex" flexDirection="column" gap="6" w="full">
         {/* Search Input */}
         <InputGroup startElement={<Icon as={MdSearch} size="md" />}>
           <Input
+            h="12"
+            fontSize="md"
             placeholder={t("search-by-city-or-project")}
             borderRadius="4px"
             borderWidth="1px"
@@ -267,7 +266,7 @@ const ProjectFilterSection = ({
                       setSelectedProject(result.projectId);
                       setSelectedCity(result.value);
                       // Navigate to the city's inventory
-                      handleCitySelection(result.value, result.projectId);
+                      handleCitySelection(result.value);
                     }
                   }
                   setSearchTerm("");
@@ -297,7 +296,7 @@ const ProjectFilterSection = ({
           </Box>
         )}
         {/* Project dropdown */}
-        <Box display="flex" flexDirection="column" gap="24px">
+        <Box display="flex" flexDirection="column" gap="6">
           {/* Project Dropdown */}
           <CustomSelect
             options={filteredProjectOptions}
@@ -326,7 +325,7 @@ const ProjectFilterSection = ({
               rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
-              h="48px"
+              h="12"
               px={6}
               gap={2}
               _hover={{ bg: "background.neutral" }}
@@ -335,7 +334,6 @@ const ProjectFilterSection = ({
               <Text
                 fontSize="button.md"
                 fontWeight="bold"
-                textTransform="uppercase"
                 color="interactive.secondary"
               >
                 {t("all-projects")}
@@ -351,7 +349,7 @@ const ProjectFilterSection = ({
               setSearchTerm(""); // Clear search when city is selected
               // Navigate to the city's inventory
               if (selectedProject && value) {
-                handleCitySelection(value, selectedProject);
+                handleCitySelection(value);
               }
             }}
             placeholder={t("select-city")}
@@ -373,18 +371,29 @@ const ProjectFilterSection = ({
                 rounded="pill"
                 borderColor="interactive.secondary"
                 border="sm"
-                h="48px"
-                px={6}
+                minH="12"
+                h="auto"
+                py={2}
+                px={5}
                 gap={2}
                 flex={1}
+                minW={0}
                 _hover={{ bg: "background.neutral" }}
               >
-                <Icon as={MdAdd} color="interactive.secondary" boxSize={5} />
-                <Text
-                  fontSize="button.md"
-                  fontWeight="bold"
-                  textTransform="uppercase"
+                <Icon
+                  as={MdAdd}
                   color="interactive.secondary"
+                  boxSize={5}
+                  flexShrink={0}
+                />
+                <Text
+                  fontSize="body.sm"
+                  lineHeight="1.2"
+                  fontWeight="bold"
+                  color="interactive.secondary"
+                  whiteSpace="normal"
+                  textAlign="center"
+                  lineClamp={2}
                 >
                   {t("add-new-city")}
                 </Text>
@@ -398,22 +407,29 @@ const ProjectFilterSection = ({
               rounded="pill"
               borderColor="interactive.secondary"
               border="sm"
-              h="48px"
-              px={6}
+              minH="12"
+              h="auto"
+              py={2}
+              px={5}
               gap={2}
               flex={1}
+              minW={0}
               _hover={{ bg: "background.neutral" }}
             >
               <Icon
                 as={MdInsertChart}
                 color="interactive.secondary"
                 boxSize={5}
+                flexShrink={0}
               />
               <Text
-                fontSize="button.md"
+                fontSize="body.sm"
+                lineHeight="1.2"
                 fontWeight="bold"
-                textTransform="uppercase"
                 color="interactive.secondary"
+                whiteSpace="normal"
+                textAlign="center"
+                lineClamp={2}
               >
                 {t("dashboard")}
               </Text>
@@ -484,10 +500,11 @@ const JNDrawer = ({
   }
 
   // Module data fetching
-  const { data: allModules, isLoading: isAllModulesLoading } =
-    useGetModulesQuery();
-  const { data: projectModules, isLoading: isProjectModulesLoading } =
-    useGetProjectModulesQuery(selectedProject!, { skip: !selectedProject });
+  const { data: allModules } = useGetModulesQuery();
+  const { data: projectModules } = useGetProjectModulesQuery(
+    selectedProject!,
+    { skip: !selectedProject },
+  );
 
   // Initialize with current project and city based on currentCityId
   useEffect(() => {
@@ -518,15 +535,6 @@ const JNDrawer = ({
     );
   }, [allModules]);
 
-  const selectedProjectData = useMemo<ProjectWithCities | null>(() => {
-    if (!selectedProject) return null;
-
-    return (
-      projectsData?.find((project) => project.projectId === selectedProject) ||
-      null
-    );
-  }, [projectsData, selectedProject]);
-
   return (
     <DrawerRoot
       open={isOpen}
@@ -548,7 +556,7 @@ const JNDrawer = ({
           justifyContent="space-between"
           bg="background.neutral"
           px={6}
-          py={4}
+          py={5}
           borderTopRightRadius="8px"
         >
           {hasMultipleOrganizations ? (
@@ -557,31 +565,51 @@ const JNDrawer = ({
               onOpenChange={(details) => setOrgMenuOpen(details.open)}
               variant="solid"
             >
-              <MenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  p={0}
-                  minW="0"
-                  h="auto"
-                  _hover={{ bg: "transparent", opacity: 0.8 }}
+              <Box display="flex" alignItems="center" gap={3}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  boxSize="40px"
+                  borderRadius="full"
+                  bg="content.alternative"
+                  color="base.light"
+                  flexShrink={0}
                 >
-                  <Box display="flex" alignItems="center" gap={3}>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      boxSize="40px"
-                      borderRadius="full"
-                      bg="content.alternative"
-                      color="base.light"
-                      flexShrink={0}
-                    >
-                      <Icon as={MdCardTravel} boxSize={5} />
-                    </Box>
+                  <Icon as={MdCardTravel} boxSize={5} />
+                </Box>
+                <MenuTrigger asChild>
+                  <Box
+                    as="button"
+                    appearance="none"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    gap="8px"
+                    minW="160px"
+                    h="12"
+                    px="16px"
+                    bg="base.light"
+                    fontFamily="heading"
+                    border="1px solid"
+                    borderColor="border.neutral"
+                    borderRadius="4px"
+                    shadow="sm"
+                    outline="none"
+                    cursor="pointer"
+                    _hover={{ borderColor: "content.link" }}
+                    _focus={{
+                      outline: "none",
+                      borderColor: "content.link",
+                      boxShadow: "0 0 0 1px content.link",
+                    }}
+                  >
                     <Text
-                      fontSize="title.md"
-                      fontWeight="bold"
-                      color="content.alternative"
+                      fontFamily="body"
+                      fontSize="md"
+                      fontWeight="normal"
+                      lineHeight="24"
+                      color="content.primary"
                       maxW="160px"
                       overflow="hidden"
                       textOverflow="ellipsis"
@@ -590,13 +618,17 @@ const JNDrawer = ({
                       {currentOrganizationName}
                     </Text>
                     <Icon
-                      as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
-                      boxSize={6}
-                      color="content.alternative"
+                      as={BiCaretDown}
+                      color="interactive.control"
+                      boxSize={5}
+                      transition="transform 0.2s"
+                      transform={
+                        isOrgMenuOpen ? "rotate(180deg)" : "rotate(0deg)"
+                      }
                     />
                   </Box>
-                </Button>
-              </MenuTrigger>
+                </MenuTrigger>
+              </Box>
               <MenuContent minW="220px" zIndex={2000}>
                 {organizations!.map((org) => (
                   <MenuItem
@@ -646,8 +678,10 @@ const JNDrawer = ({
               </Box>
               <Text
                 fontSize="title.md"
-                fontWeight="bold"
-                color="content.alternative"
+                fontFamily="body"
+                fontWeight="regular"
+                lineHeight="24"
+                color="content.primary"
                 maxW="160px"
                 overflow="hidden"
                 textOverflow="ellipsis"
@@ -707,7 +741,7 @@ const JNDrawer = ({
               {modulesByStage && projectModules && selectedProject && (
                 <Box display="flex" flexDirection="column" flexShrink={0}>
                   <Text
-                    fontSize="label.md"
+                    fontSize="label.lg"
                     color="content.tertiary"
                     fontFamily="heading"
                     fontWeight="semibold"
@@ -736,14 +770,24 @@ const JNDrawer = ({
                           key={stage}
                           title={t("journey." + stage)}
                           icon={stageIcons[stage]}
-                          items={modules.map((mod) => ({
-                            label:
-                              mod.name[lng] ||
-                              mod.name.en ||
-                              mod.name[Object.keys(mod.name)[0]] ||
-                              mod.id,
-                            href: `/${lng}/cities/${selectedCity}${mod.url}`,
-                          }))}
+                          items={modules.map((mod) => {
+                            // External tool URLs (e.g. Replit apps) must not be
+                            // prefixed with the city path — that produced
+                            // .../cities/{id}https://... (CC-651).
+                            const isExternal =
+                              mod.url.startsWith("http://") ||
+                              mod.url.startsWith("https://");
+                            return {
+                              label:
+                                mod.name[lng] ||
+                                mod.name.en ||
+                                mod.name[Object.keys(mod.name)[0]] ||
+                                mod.id,
+                              href: isExternal
+                                ? mod.url
+                                : `/${lng}/cities/${selectedCity}${mod.url}`,
+                            };
+                          })}
                           t={t}
                         />
                       );
@@ -770,7 +814,7 @@ const JNDrawer = ({
             flexShrink={0}
           >
             <Text
-              fontSize="label.md"
+              fontSize="label.lg"
               color="content.tertiary"
               fontFamily="heading"
               fontWeight="semibold"

@@ -34,12 +34,69 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("funder_id", name="pk_funders"),
     )
     op.create_table(
-        "funding_records",
-        sa.Column("funding_record_id", postgresql.UUID(as_uuid=True), nullable=False),
+        "funding_opportunities",
+        sa.Column(
+            "funding_opportunity_id", postgresql.UUID(as_uuid=True), nullable=False
+        ),
         sa.Column("source_run_id", sa.String(length=255), nullable=False),
         sa.Column("source_record_ref", sa.String(length=255), nullable=False),
         sa.Column("funder_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("is_opportunity", sa.Boolean(), nullable=False),
+        sa.Column("name", sa.String(length=255), nullable=False),
+        sa.Column("applicant_type", sa.String(length=255), nullable=True),
+        sa.Column("category", sa.String(length=255), nullable=True),
+        sa.Column("sector", sa.String(length=255), nullable=True),
+        sa.Column(
+            "hazards",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+            server_default=sa.text("'[]'::jsonb"),
+        ),
+        sa.Column(
+            "interventions",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+            server_default=sa.text("'[]'::jsonb"),
+        ),
+        sa.Column("finance_route", sa.String(length=255), nullable=True),
+        sa.Column("instrument_type", sa.String(length=255), nullable=True),
+        sa.Column("region_scope", sa.String(length=255), nullable=True),
+        sa.Column("min_award", sa.Numeric(precision=18, scale=2), nullable=True),
+        sa.Column("max_award", sa.Numeric(precision=18, scale=2), nullable=True),
+        sa.Column("currency", sa.String(length=16), nullable=True),
+        sa.Column("status", sa.String(length=64), nullable=True),
+        sa.Column("summary", sa.Text(), nullable=True),
+        sa.Column(
+            "known_gaps",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+            server_default=sa.text("'[]'::jsonb"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["funder_id"],
+            ["funders.funder_id"],
+            name="fk_funding_opportunities_funder_id_funders",
+            ondelete="RESTRICT",
+        ),
+        sa.PrimaryKeyConstraint(
+            "funding_opportunity_id", name="pk_funding_opportunities"
+        ),
+        sa.UniqueConstraint(
+            "source_run_id",
+            "source_record_ref",
+            name="uq_funding_opportunities_source_identity",
+        ),
+    )
+    op.create_index(
+        "ix_funding_opportunities_funder_name",
+        "funding_opportunities",
+        ["funder_id", "name"],
+    )
+    op.create_table(
+        "funded_projects",
+        sa.Column("funded_project_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("source_run_id", sa.String(length=255), nullable=False),
+        sa.Column("source_record_ref", sa.String(length=255), nullable=False),
+        sa.Column("funder_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("name", sa.String(length=255), nullable=False),
         sa.Column("applicant_name", sa.String(length=255), nullable=True),
         sa.Column("applicant_type", sa.String(length=255), nullable=True),
@@ -63,8 +120,6 @@ def upgrade() -> None:
         sa.Column("finance_route", sa.String(length=255), nullable=True),
         sa.Column("instrument_type", sa.String(length=255), nullable=True),
         sa.Column("region_scope", sa.String(length=255), nullable=True),
-        sa.Column("min_award", sa.Numeric(precision=18, scale=2), nullable=True),
-        sa.Column("max_award", sa.Numeric(precision=18, scale=2), nullable=True),
         sa.Column("award_amount", sa.Numeric(precision=18, scale=2), nullable=True),
         sa.Column("currency", sa.String(length=16), nullable=True),
         sa.Column("award_year", sa.Integer(), nullable=True),
@@ -85,20 +140,20 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ["funder_id"],
             ["funders.funder_id"],
-            name="fk_funding_records_funder_id_funders",
+            name="fk_funded_projects_funder_id_funders",
             ondelete="RESTRICT",
         ),
-        sa.PrimaryKeyConstraint("funding_record_id", name="pk_funding_records"),
+        sa.PrimaryKeyConstraint("funded_project_id", name="pk_funded_projects"),
         sa.UniqueConstraint(
             "source_run_id",
             "source_record_ref",
-            name="uq_funding_records_source_identity",
+            name="uq_funded_projects_source_identity",
         ),
     )
     op.create_index(
-        "ix_funding_records_funder_opportunity_name",
-        "funding_records",
-        ["funder_id", "is_opportunity", "name"],
+        "ix_funded_projects_funder_name",
+        "funded_projects",
+        ["funder_id", "name"],
     )
     op.create_table(
         "source_documents",
@@ -119,7 +174,9 @@ def upgrade() -> None:
     op.create_table(
         "funder_templates",
         sa.Column("template_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("funding_record_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column(
+            "funding_opportunity_id", postgresql.UUID(as_uuid=True), nullable=False
+        ),
         sa.Column("template_name", sa.String(length=255), nullable=False),
         sa.Column("output_format", sa.String(length=64), nullable=True),
         sa.Column(
@@ -135,22 +192,24 @@ def upgrade() -> None:
             server_default=sa.text("'[]'::jsonb"),
         ),
         sa.ForeignKeyConstraint(
-            ["funding_record_id"],
-            ["funding_records.funding_record_id"],
-            name="fk_funder_templates_funding_record_id_funding_records",
+            ["funding_opportunity_id"],
+            ["funding_opportunities.funding_opportunity_id"],
+            name="fk_funder_templates_opportunity_id_opportunities",
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("template_id", name="pk_funder_templates"),
         sa.UniqueConstraint(
-            "funding_record_id",
+            "funding_opportunity_id",
             "template_name",
-            name="uq_funder_templates_record_name",
+            name="uq_funder_templates_opportunity_name",
         ),
     )
     op.create_table(
         "funder_criteria",
         sa.Column("criterion_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("funding_record_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column(
+            "funding_opportunity_id", postgresql.UUID(as_uuid=True), nullable=False
+        ),
         sa.Column("source_document_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("criterion_type", sa.String(length=100), nullable=False),
         sa.Column("label", sa.String(length=255), nullable=False),
@@ -163,9 +222,9 @@ def upgrade() -> None:
             nullable=True,
         ),
         sa.ForeignKeyConstraint(
-            ["funding_record_id"],
-            ["funding_records.funding_record_id"],
-            name="fk_funder_criteria_funding_record_id_funding_records",
+            ["funding_opportunity_id"],
+            ["funding_opportunities.funding_opportunity_id"],
+            name="fk_funder_criteria_opportunity_id_opportunities",
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
@@ -177,9 +236,12 @@ def upgrade() -> None:
         sa.PrimaryKeyConstraint("criterion_id", name="pk_funder_criteria"),
     )
     op.create_table(
-        "funding_record_evidence",
+        "funding_evidence",
         sa.Column("evidence_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("funding_record_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column(
+            "funding_opportunity_id", postgresql.UUID(as_uuid=True), nullable=True
+        ),
+        sa.Column("funded_project_id", postgresql.UUID(as_uuid=True), nullable=True),
         sa.Column("source_document_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("claim", sa.Text(), nullable=False),
         sa.Column("quote_or_summary", sa.Text(), nullable=False),
@@ -189,19 +251,30 @@ def upgrade() -> None:
             nullable=False,
             server_default=sa.text("'{}'::jsonb"),
         ),
+        sa.CheckConstraint(
+            "(funding_opportunity_id IS NOT NULL AND funded_project_id IS NULL) OR "
+            "(funding_opportunity_id IS NULL AND funded_project_id IS NOT NULL)",
+            name=op.f("ck_funding_evidence_exactly_one_parent"),
+        ),
         sa.ForeignKeyConstraint(
-            ["funding_record_id"],
-            ["funding_records.funding_record_id"],
-            name="fk_funding_record_evidence_record_id_funding_records",
+            ["funded_project_id"],
+            ["funded_projects.funded_project_id"],
+            name="fk_funding_evidence_project_id_funded_projects",
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["funding_opportunity_id"],
+            ["funding_opportunities.funding_opportunity_id"],
+            name="fk_funding_evidence_opportunity_id_opportunities",
             ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["source_document_id"],
             ["source_documents.source_document_id"],
-            name="fk_funding_record_evidence_source_id_source_documents",
+            name="fk_funding_evidence_source_id_source_documents",
             ondelete="RESTRICT",
         ),
-        sa.PrimaryKeyConstraint("evidence_id", name="pk_funding_record_evidence"),
+        sa.PrimaryKeyConstraint("evidence_id", name="pk_funding_evidence"),
     )
 
     # Workspace rows use run_id as an external identifier into CA_DATABASE_URL.
@@ -235,11 +308,12 @@ def upgrade() -> None:
             server_default=sa.func.now(),
         ),
         sa.CheckConstraint(
-            "position >= 0", name="ck_concept_note_chapters_position_nonnegative"
+            "position >= 0",
+            name=op.f("ck_concept_note_chapters_position_nonnegative"),
         ),
         sa.CheckConstraint(
             "status IN ('empty', 'draft', 'needs_review', 'ready', 'deleted')",
-            name="ck_concept_note_chapters_status_valid",
+            name=op.f("ck_concept_note_chapters_status_valid"),
         ),
         sa.PrimaryKeyConstraint("chapter_id", name="pk_concept_note_chapters"),
     )
@@ -277,16 +351,18 @@ def upgrade() -> None:
         ),
         sa.CheckConstraint(
             "revision_number > 0",
-            name="ck_concept_note_chapter_revisions_revision_number_positive",
+            name=op.f(
+                "ck_concept_note_chapter_revisions_revision_number_positive"
+            ),
         ),
         sa.CheckConstraint(
             "author_type IN ('agent', 'user', 'system')",
-            name="ck_concept_note_chapter_revisions_author_type_valid",
+            name=op.f("ck_concept_note_chapter_revisions_author_type_valid"),
         ),
         sa.CheckConstraint(
             "change_type IN ('draft', 'edit_text', 'add_chapter', "
             "'delete_chapter', 'restore_chapter', 'rewrite')",
-            name="ck_concept_note_chapter_revisions_change_type_valid",
+            name=op.f("ck_concept_note_chapter_revisions_change_type_valid"),
         ),
         sa.ForeignKeyConstraint(
             ["chapter_id"],
@@ -361,7 +437,7 @@ def upgrade() -> None:
         "concept_note_matched_projects",
         sa.Column("match_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("run_id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("funding_record_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("funded_project_id", postgresql.UUID(as_uuid=True), nullable=False),
         sa.Column("decision", sa.String(length=64), nullable=False),
         sa.Column("fit_rationale", sa.Text(), nullable=False),
         sa.Column(
@@ -383,16 +459,16 @@ def upgrade() -> None:
             server_default=sa.text("'[]'::jsonb"),
         ),
         sa.ForeignKeyConstraint(
-            ["funding_record_id"],
-            ["funding_records.funding_record_id"],
-            name="fk_concept_note_matched_projects_record_id_funding_records",
+            ["funded_project_id"],
+            ["funded_projects.funded_project_id"],
+            name="fk_concept_note_matched_projects_project_id_funded_projects",
             ondelete="RESTRICT",
         ),
         sa.PrimaryKeyConstraint("match_id", name="pk_concept_note_matched_projects"),
         sa.UniqueConstraint(
             "run_id",
-            "funding_record_id",
-            name="uq_concept_note_matched_projects_run_record",
+            "funded_project_id",
+            name="uq_concept_note_matched_projects_run_project",
         ),
     )
     op.create_index(
@@ -424,9 +500,10 @@ def downgrade() -> None:
     op.drop_table("concept_note_evidence_links")
     op.drop_table("concept_note_chapter_revisions")
     op.drop_table("concept_note_chapters")
-    op.drop_table("funding_record_evidence")
+    op.drop_table("funding_evidence")
     op.drop_table("funder_criteria")
     op.drop_table("funder_templates")
     op.drop_table("source_documents")
-    op.drop_table("funding_records")
+    op.drop_table("funded_projects")
+    op.drop_table("funding_opportunities")
     op.drop_table("funders")

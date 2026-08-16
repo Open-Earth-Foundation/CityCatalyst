@@ -12,7 +12,7 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
+} from "react-email";
 
 export default function AdminInviteAcceptedTemplate({
   url,

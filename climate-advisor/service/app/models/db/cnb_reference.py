@@ -11,6 +11,7 @@ from app.db.cnb import CnbBase
 from app.models.db.types import JSONBCompat
 from sqlalchemy import (
     Boolean,
+    CheckConstraint,
     DateTime,
     ForeignKey,
     Index,
@@ -43,12 +44,12 @@ class CnbFunder(CnbBase):
     )
 
 
-class CnbFundingRecord(CnbBase):
-    """One funding opportunity or one complete funded-project example."""
+class CnbFundingOpportunity(CnbBase):
+    """One application programme offered by a canonical funder."""
 
-    __tablename__ = "funding_records"
+    __tablename__ = "funding_opportunities"
 
-    funding_record_id: Mapped[UUID] = mapped_column(
+    funding_opportunity_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default=uuid4
     )
     source_run_id: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -58,7 +59,57 @@ class CnbFundingRecord(CnbBase):
         ForeignKey("funders.funder_id", ondelete="RESTRICT"),
         nullable=False,
     )
-    is_opportunity: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    applicant_type: Mapped[str | None] = mapped_column(String(255))
+    category: Mapped[str | None] = mapped_column(String(255))
+    sector: Mapped[str | None] = mapped_column(String(255))
+    hazards: Mapped[list[str]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+    interventions: Mapped[list[str]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+    finance_route: Mapped[str | None] = mapped_column(String(255))
+    instrument_type: Mapped[str | None] = mapped_column(String(255))
+    region_scope: Mapped[str | None] = mapped_column(String(255))
+    min_award: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
+    max_award: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
+    currency: Mapped[str | None] = mapped_column(String(16))
+    status: Mapped[str | None] = mapped_column(String(64))
+    summary: Mapped[str | None] = mapped_column(Text)
+    known_gaps: Mapped[list[str]] = mapped_column(
+        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
+    )
+
+    __table_args__ = (
+        UniqueConstraint(
+            "source_run_id",
+            "source_record_ref",
+            name="uq_funding_opportunities_source_identity",
+        ),
+        Index(
+            "ix_funding_opportunities_funder_name",
+            "funder_id",
+            "name",
+        ),
+    )
+
+
+class CnbFundedProject(CnbBase):
+    """One complete awarded-project example owned by a canonical funder."""
+
+    __tablename__ = "funded_projects"
+
+    funded_project_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default=uuid4
+    )
+    source_run_id: Mapped[str] = mapped_column(String(255), nullable=False)
+    source_record_ref: Mapped[str] = mapped_column(String(255), nullable=False)
+    funder_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("funders.funder_id", ondelete="RESTRICT"),
+        nullable=False,
+    )
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     applicant_name: Mapped[str | None] = mapped_column(String(255))
     applicant_type: Mapped[str | None] = mapped_column(String(255))
@@ -76,8 +127,6 @@ class CnbFundingRecord(CnbBase):
     finance_route: Mapped[str | None] = mapped_column(String(255))
     instrument_type: Mapped[str | None] = mapped_column(String(255))
     region_scope: Mapped[str | None] = mapped_column(String(255))
-    min_award: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
-    max_award: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     award_amount: Mapped[Decimal | None] = mapped_column(Numeric(18, 2))
     currency: Mapped[str | None] = mapped_column(String(16))
     award_year: Mapped[int | None] = mapped_column(Integer)
@@ -94,14 +143,9 @@ class CnbFundingRecord(CnbBase):
         UniqueConstraint(
             "source_run_id",
             "source_record_ref",
-            name="uq_funding_records_source_identity",
+            name="uq_funded_projects_source_identity",
         ),
-        Index(
-            "ix_funding_records_funder_opportunity_name",
-            "funder_id",
-            "is_opportunity",
-            "name",
-        ),
+        Index("ix_funded_projects_funder_name", "funder_id", "name"),
     )
 
 
@@ -137,9 +181,11 @@ class CnbFunderTemplate(CnbBase):
     template_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default=uuid4
     )
-    funding_record_id: Mapped[UUID] = mapped_column(
+    funding_opportunity_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
-        ForeignKey("funding_records.funding_record_id", ondelete="CASCADE"),
+        ForeignKey(
+            "funding_opportunities.funding_opportunity_id", ondelete="CASCADE"
+        ),
         nullable=False,
     )
     template_name: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -153,9 +199,9 @@ class CnbFunderTemplate(CnbBase):
 
     __table_args__ = (
         UniqueConstraint(
-            "funding_record_id",
+            "funding_opportunity_id",
             "template_name",
-            name="uq_funder_templates_record_name",
+            name="uq_funder_templates_opportunity_name",
         ),
     )
 
@@ -168,9 +214,11 @@ class CnbFunderCriterion(CnbBase):
     criterion_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default=uuid4
     )
-    funding_record_id: Mapped[UUID] = mapped_column(
+    funding_opportunity_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
-        ForeignKey("funding_records.funding_record_id", ondelete="CASCADE"),
+        ForeignKey(
+            "funding_opportunities.funding_opportunity_id", ondelete="CASCADE"
+        ),
         nullable=False,
     )
     source_document_id: Mapped[UUID | None] = mapped_column(
@@ -189,18 +237,23 @@ class CnbFunderCriterion(CnbBase):
     )
 
 
-class CnbFundingRecordEvidence(CnbBase):
-    """Source-grounded evidence retained for one funding record."""
+class CnbFundingEvidence(CnbBase):
+    """Source-grounded evidence for exactly one opportunity or funded project."""
 
-    __tablename__ = "funding_record_evidence"
+    __tablename__ = "funding_evidence"
 
     evidence_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default=uuid4
     )
-    funding_record_id: Mapped[UUID] = mapped_column(
+    funding_opportunity_id: Mapped[UUID | None] = mapped_column(
         PGUUID(as_uuid=True),
-        ForeignKey("funding_records.funding_record_id", ondelete="CASCADE"),
-        nullable=False,
+        ForeignKey(
+            "funding_opportunities.funding_opportunity_id", ondelete="CASCADE"
+        ),
+    )
+    funded_project_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("funded_projects.funded_project_id", ondelete="CASCADE"),
     )
     source_document_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
@@ -211,4 +264,12 @@ class CnbFundingRecordEvidence(CnbBase):
     quote_or_summary: Mapped[str] = mapped_column(Text, nullable=False)
     source_map: Mapped[dict[str, Any]] = mapped_column(
         JSONBCompat(), nullable=False, default=dict, server_default=text("'{}'::jsonb")
+    )
+
+    __table_args__ = (
+        CheckConstraint(
+            "(funding_opportunity_id IS NOT NULL AND funded_project_id IS NULL) OR "
+            "(funding_opportunity_id IS NULL AND funded_project_id IS NOT NULL)",
+            name="exactly_one_parent",
+        ),
     )

@@ -8,6 +8,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, use } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { logger } from "@/services/logger";
+import { getApiErrorMessage } from "@/util/helpers";
 import { Field } from "@/components/ui/field";
 
 type Inputs = {
@@ -60,8 +61,8 @@ export default function UpdatePassword(props: {
 
       setError("");
       router.push(`/auth/reset-successful`);
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     }
   };
 

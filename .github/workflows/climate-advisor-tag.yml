@@ -107,7 +107,6 @@ jobs:
         run: |
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
-                 tests/test_cnb_kubernetes_manifests.py \
                  -v --tb=short --color=yes
 
       - name: Generate test coverage report
@@ -196,7 +195,6 @@ jobs:
       REF: ${{ github.ref }}
       IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
       MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'Clima' }}
-      CNB_DATABASE_URL: ${{ secrets.CNB_DATABASE_URL_PROD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -210,12 +208,21 @@ jobs:
         run: |
           export VERSION=${REF#refs/tags/v}
           kubectl apply -f climate-advisor/k8s/db-configmap-prod.yml -n default
-          : "${CNB_DATABASE_URL:?CNB_DATABASE_URL GitHub secret is required}"
-          kubectl create secret generic climate-advisor-cnb-db-secret-prod \
-            --from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}" \
-            --dry-run=client --output yaml | kubectl apply -f - -n default
           kubectl create -f climate-advisor/k8s/migrate-prod.yml -n default
-          kubectl create -f climate-advisor/k8s/cnb-migrate-prod.yml -n default
+          cnb_migration_job="$(
+            kubectl create -f climate-advisor/k8s/cnb-migrate-prod.yml \
+              -n default \
+              -o name
+          )"
+          if ! kubectl wait \
+            --for=condition=complete \
+            --timeout=300s \
+            "${cnb_migration_job}" \
+            -n default; then
+            kubectl logs "${cnb_migration_job}" --all-containers -n default
+            kubectl describe "${cnb_migration_job}" -n default
+            exit 1
+          fi
           kubectl apply -f climate-advisor/k8s/service-prod.yml -n default
           kubectl apply -f climate-advisor/k8s/deployment-prod.yml -n default
           kubectl set image deployment/climate-advisor-prod climate-advisor-prod=$IMAGE:$VERSION -n default

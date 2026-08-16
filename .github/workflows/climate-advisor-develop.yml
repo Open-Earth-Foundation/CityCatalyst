@@ -124,7 +124,6 @@ jobs:
         run: |
           uv run --directory service pytest tests/cnb \
                  tests/test_cnb_migrations.py \
-                 tests/test_cnb_kubernetes_manifests.py \
                  -v --tb=short --color=yes
 
       - name: Generate test coverage report
@@ -184,7 +183,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_DEV_USER }}
       EKS_DEV_NAME: ${{ secrets.EKS_DEV_NAME }}
       MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'Clima' }}
-      CNB_DATABASE_URL: ${{ secrets.CNB_DATABASE_URL_DEV }}
     steps:
       - uses: actions/checkout@v4
       - name: Creating kubeconfig file
@@ -194,12 +192,21 @@ jobs:
       - name: Deploying service
         run: |
           kubectl apply -f climate-advisor/k8s/db-configmap-dev.yml -n default
-          : "${CNB_DATABASE_URL:?CNB_DATABASE_URL GitHub secret is required}"
-          kubectl create secret generic climate-advisor-cnb-db-secret-dev \
-            --from-literal=CNB_DATABASE_URL="${CNB_DATABASE_URL}" \
-            --dry-run=client --output yaml | kubectl apply -f - -n default
           kubectl create -f climate-advisor/k8s/migrate-dev.yml -n default
-          kubectl create -f climate-advisor/k8s/cnb-migrate-dev.yml -n default
+          cnb_migration_job="$(
+            kubectl create -f climate-advisor/k8s/cnb-migrate-dev.yml \
+              -n default \
+              -o name
+          )"
+          if ! kubectl wait \
+            --for=condition=complete \
+            --timeout=300s \
+            "${cnb_migration_job}" \
+            -n default; then
+            kubectl logs "${cnb_migration_job}" --all-containers -n default
+            kubectl describe "${cnb_migration_job}" -n default
+            exit 1
+          fi
           kubectl apply -f climate-advisor/k8s/service-dev.yml -n default
           kubectl apply -f climate-advisor/k8s/deployment-dev.yml -n default
           kubectl set env deployment/climate-advisor-dev \

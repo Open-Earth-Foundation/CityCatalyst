@@ -130,8 +130,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
           cityId,
           latestInventory,
           lng,
-          session,
-          false,
         ).catch((err) => {
           logger.error({ error: err }, "Error fetching HIAP dashboard");
           return null;

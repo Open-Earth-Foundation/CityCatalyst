@@ -9,11 +9,12 @@ from logging.config import fileConfig
 from alembic import context
 from app.db.cnb import CnbBase
 from app.models.db.cnb_reference import (  # noqa: F401
+    CnbFundedProject,
     CnbFunder,
     CnbFunderCriterion,
     CnbFunderTemplate,
-    CnbFundingRecord,
-    CnbFundingRecordEvidence,
+    CnbFundingEvidence,
+    CnbFundingOpportunity,
     CnbSourceDocument,
 )
 from app.models.db.cnb_workspace import (  # noqa: F401

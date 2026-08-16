@@ -175,9 +175,9 @@ class ConceptNoteMatchedProject(CnbBase):
         PGUUID(as_uuid=True), primary_key=True, default=uuid4
     )
     run_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), nullable=False)
-    funding_record_id: Mapped[UUID] = mapped_column(
+    funded_project_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True),
-        ForeignKey("funding_records.funding_record_id", ondelete="RESTRICT"),
+        ForeignKey("funded_projects.funded_project_id", ondelete="RESTRICT"),
         nullable=False,
     )
     decision: Mapped[str] = mapped_column(String(64), nullable=False)
@@ -195,8 +195,8 @@ class ConceptNoteMatchedProject(CnbBase):
     __table_args__ = (
         UniqueConstraint(
             "run_id",
-            "funding_record_id",
-            name="uq_concept_note_matched_projects_run_record",
+            "funded_project_id",
+            name="uq_concept_note_matched_projects_run_project",
         ),
         Index("ix_concept_note_matched_projects_run_decision", "run_id", "decision"),
     )

@@ -28,7 +28,7 @@ conversational experience for CityCatalyst (CC). The service lives under
 
 ## Current Architecture
 
-Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
+Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
 
 1. General chat
    - Composes `prompts.core` with `prompts.chat`
@@ -45,18 +45,24 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.stationary_energy_review`
    - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices, including notation-key choices
+3. Concept Note context chat
+   - Activates for an authorized `concept_note_run_id`
+   - Keeps the general chat prompt, injects compact ready-source summaries, and
+     exposes the step-scoped read-only source query
+   - Uses the detailed contract in
+     [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
 At runtime:
 
 - `ThreadService` and `ThreadResolver` own chat-thread lifecycle.
 - `TokenHandler` loads and refreshes CityCatalyst tokens.
-- `StreamingHandler` loads pruned history, optionally injects Stationary Energy
-  draft context and `ui_context`, runs the agent, emits SSE events, and
-  persists assistant messages.
+- `StreamingHandler` resolves scoped Stationary Energy or Concept Note context,
+  loads pruned history, runs the agent, emits SSE events, and persists assistant
+  messages.
 - `AgentService` chooses the model and builds the tool pack for the current
   request.
-- PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
-  workflow state.
+- PostgreSQL stores threads, messages, embeddings, Stationary Energy draft
+  state, and Concept Note run/bundle state.
 
 ## Offline CNB Funding Research
 
@@ -135,7 +141,7 @@ Remove `--dry-run` only after validation. This importer is the sole database
 writer in the research/review workflow and remains limited to reviewed funded
 projects, retained evidence, and their source documents. The repository owns
 the CNB schema through `cnb-alembic.ini`; it does not seed production funders or
-projects. `funding_records` persists `source_run_id` and `source_record_ref` and
+projects. `funded_projects` persists `source_run_id` and `source_record_ref` and
 enforces uniqueness on that pair. Retrying the same run returns the existing
 project IDs without inserting duplicate evidence. Pairing deliberately does not
 use a file hash. Use a new research run for a revised import. If no proposed
@@ -145,22 +151,26 @@ funded-project import.
 The tracked reference output is
 `output/cnb_research/ef602f2c-f47d-4384-b079-5fdfde085ad4/research_bundle.json`.
 
-Research bundles use schema version `2.0`. They mirror the CNB architecture with
-one funder, one shared `funding_records` collection distinguished by
-`is_opportunity`, and linked template and criteria collections. Each funded
-project keeps its interventions, award amount, currency, `award_year`, status,
-summary, and reviewed `project_tags` in one record.
+Research bundles use schema version `3.0`. Research and review artifacts keep
+programmes in `funding_opportunities` and awarded examples in
+`funded_projects`, matching the CNB database boundary. Templates and criteria
+attach only to opportunities. Each
+funded project keeps its interventions, award amount, currency, `award_year`,
+status, summary, and reviewed `project_tags` in one record.
+Similar-project review artifacts use schema version `2.0` and identify every
+candidate and match with `funded_project_id`.
 
 Runtime similar-project matching is internal workflow logic, not an agent tool.
 It waits for an ingested project upload and reads reviewed awards through the
 typed CNB reference-data contract. `same_funder` is the default retrieval scope;
 an explicit `cross_funder` request may compare reviewed awards from multiple
 canonical funders while retaining each candidate's real funder identity. It
-uses a first-version deterministic shortlist based on exact normalized fields
-and reviewed tag overlap. Its explicit V1 policy is:
+retrieves the complete scoped corpus before building a bounded, first-version
+deterministic shortlist based on exact normalized fields and reviewed tag
+overlap. Its explicit V1 policy is:
 
-- **hard eligibility:** requested same-funder scope, a funded non-opportunity
-  record, and retained evidence
+- **hard eligibility:** requested same-funder scope, a funded-project record,
+  and retained evidence
 - **preferred ordering only:** category, sector, geography, finance route,
   instrument type, applicant type, hazards, interventions, and reviewed tags
 - **unknown preferred fields:** retain the candidate and surface a caveat
@@ -481,7 +491,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 - **API Docs**: http://localhost:8080/docs
 - **ReDoc**: http://localhost:8080/redoc
 - **Playground**: http://localhost:8080/playground
-- **Health Check**: http://localhost:8080/health
+- **Liveness Check**: http://localhost:8080/health
+- **Database Readiness Check**: http://localhost:8080/ready
 
 ## Configuration
 
@@ -489,7 +500,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 
 All non-secret LLM settings are centralized in `llm_config.yaml`, including the
 orchestrator and agentic-flow model settings, provider base URLs, retry and
-timeout settings, and Stationary Energy review chat-context prompt budgets.
+timeout settings, Stationary Energy review chat-context prompt budgets, and the
+CNB source reader/synthesizer roles and partition limits.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -500,11 +512,15 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.chat` is the workflow prompt for general Climate Advisor chat
 - `prompts.stationary_energy_review` is the workflow prompt for active
   Stationary Energy draft review chat
+- the three `prompts.cnb_source_*` entries map document partitions, reduce them
+  to compact document summaries, and read focused questions for exact evidence
 
 At runtime, CA composes the final system instructions as:
 
 - general chat: `prompts.core + prompts.chat`
 - Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
+- Concept Note context chat currently keeps `prompts.core + prompts.chat`; a
+  dedicated writing/editing prompt is outside this source-analysis scope
 
 Workflow prompt `<tools>` sections load shared tool-policy fragments with
 `{{ include: ... }}` directives. Exact tool argument contracts come from the
@@ -535,8 +551,11 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
-- `CNB_DATABASE_URL` - separate PostgreSQL connection string for CNB workspace
-  and funding-reference tables; never point the CA Alembic chain at this URL
+- `CNB_DATABASE_URL` - separate PostgreSQL connection string for the CNB
+  workspace and funding-reference tables; the repository migrates it through
+  the independent CNB Alembic chain, never the CA chain. The reviewed-reference
+  importer, similar-project reader, and runtime funding-reference validation
+  use it; requests without funding references do not require a runtime lookup
 - `CA_PORT` - Server port (default: `8080`)
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
@@ -545,9 +564,9 @@ language, or client-side fallback behavior. The boundary is:
 - `CC_BASE_URL` - CityCatalyst base URL for inventory API and token refresh
 - `CC_API_KEY` - Service credential used when CA asks CC to validate the
   CC-issued user bearer token
-- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Complete JSON request-body limit for the
-  optional CC-to-CA Markdown ingest endpoint (default `20971520`; this is an
-  operational body guard, not a source-PDF or page-count acceptance limit)
+- `CNB_MARKDOWN_REQUEST_MAX_BYTES` - Maximum Markdown artifact size CA will
+  accept while verifying a CC-owned result (default `20971520`; independent
+  from the source-PDF and page-count limits)
 - `MLFLOW_ENABLED` - Enables best-effort MLflow logging when set to `true`
 - `MLFLOW_TRACKING_URI` - Shared MLflow backend URL, normally
   `https://mlflow-dev.openearth.dev`
@@ -569,14 +588,91 @@ language, or client-side fallback behavior. The boundary is:
 
 ### CC-produced Concept Note Markdown baseline
 
-`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` validates the
-CC-issued user token through CC before consuming the request, streams the body
-up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`, recomputes SHA-256, verifies contiguous
-page markers and their positive metadata count without imposing a page-count
-limit, and delegates atomic run/upload registration to a repository
-interface. CA owns no OCR queue, Mistral dependency, or S3 permission. Until
-the datateam repository adapter is configured, the production provider returns
-`503 cnb_storage_unavailable`; contract tests inject an in-memory repository.
+`POST /v1/concept-notes/{run_id}/uploads` creates or replays the authoritative
+pre-conversion upload row. After CC OCR completes,
+`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` receives only a
+stable S3 key, SHA-256, page count, filename, and label. CA rejects control JSON
+larger than 16 KiB before parsing, then streams the artifact through CC's
+authenticated internal Markdown route up to `CNB_MARKDOWN_REQUEST_MAX_BYTES`,
+checks the returned identity, recomputes SHA-256, verifies page markers, and
+stores the pointer as ready in `concept_note_uploads` through `CA_DATABASE_URL`.
+Identical create and delivery requests are idempotent; changing upload or
+Markdown identity returns `409`. CA owns no OCR queue, Mistral dependency,
+bucket credential, or presigned URL. An unavailable or unmigrated workflow
+database returns `503 cnb_storage_unavailable`.
+
+CC uses the intentionally separate service-to-service route
+`GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
+`X-CC-Service-Key` to recover the run and user scope for an opaque upload ID.
+Rejected service-key requests emit a `WARNING` audit log with the upload ID but
+never the supplied credential. Deployments should alert on repeated warnings or
+`401 invalid_service_key` responses for this route.
+
+### PDF-first Concept Note context bundles
+
+The full persistence, security, source-analysis, and selected-document query
+contract lives in
+[`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
+Operationally:
+
+- A ready Markdown pointer automatically rebuilds the bundle from every ready
+  PDF. At least one ready PDF is required; optional GHGI and HIAP failures do
+  not block readiness, and stale builds cannot overwrite a newer upload set.
+  A five-minute reconciler marks builds left in `building` for more than one
+  hour as retryable failures after an interrupted process or pod.
+- `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
+  proxy rerun bundle assembly without rerunning OCR.
+- Eligible Concept Note chat turns receive compact summaries and the read-only,
+  single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
+  storage keys, credentials, and derived chunks are not persisted in the bundle.
+
+Run the focused contract test with:
+
+```bash
+uv run pytest service/tests/cnb/test_context_bundle_service.py -q
+```
+
+### Concept Note run foundation
+
+`POST /v1/concept-notes/start` validates a CC-issued bearer token, verifies that
+the supplied `user_id` is the token's canonical user, and rechecks access to
+the selected city. It then creates a durable `concept_note_runs` row and its
+empty `concept_note_context_bundles` row in one transaction. The run starts as
+`active` at `assembling_context` and returns `next_action: load_context`.
+
+Creation is idempotent per `(user_id, idempotency_key)`. Replaying the same
+normalized request returns the original run with HTTP `200` and
+`created: false`; using that key with different input returns HTTP `409`.
+
+`GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
+and live city access, then returns only that user's runs for the selected city.
+Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
+the result is stable and most-recently-updated first. Upload registration and
+failed, retry, or ready lifecycle transitions refresh the parent run's
+`updated_at`. Each item includes the durable `run_id`, optional chat `thread_id`,
+stored scope identifiers, lifecycle fields, timestamps, and `progress_summary`
+copied from the persisted `context_summary`.
+
+`GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
+revalidates current city access before responding. It exposes the same persisted
+status, workflow step, and progress summary as the list contract. The Alembic
+revision `20260729_120000` provisions `concept_note_runs`,
+`concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
+When `thread_id` is supplied, the start operation also requires that durable
+chat thread to belong to the authenticated user; it remains an integration
+identifier rather than a run-table foreign key. The authorized `run_id` is also
+persisted as `concept_note_run_id` in thread context so later chat turns can
+scope their prompt and source capability without trusting an LLM-provided run.
+Binding either Concept Note or Stationary Energy context clears the competing
+workflow identifier while preserving tokens and unrelated thread context.
+
+CityCatalyst exposes authenticated proxy routes at
+`POST /api/v1/concept-notes/start`,
+`GET /api/v1/concept-notes?city_id=...`, and
+`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the session,
+checks city access, issues the scoped CA token server-side, and preserves Climate
+Advisor response statuses. The CityCatalyst dashboard consumes the collection
+route; its implementation details live in the repository architecture guide.
 
 ### Concept Note city-context baseline
 
@@ -595,7 +691,7 @@ explicitly city-selected action, or all persisted ranked actions when there is
 no selection. The route never starts or repairs HIAP prioritization and applies
 no hidden action cap.
 
-The repository adapter reads and updates the documented datateam-managed
+The repository adapter reads and updates the migrated
 `concept_note_runs` and `concept_note_context_bundles` tables. It replaces only
 the GHGI and/or HIAP sections built by the current request, preserving the rest
 of the bundle under the same database lock. Before reusing either cached
@@ -604,8 +700,8 @@ GHGI status and emissions payloads must each contain GPC sectors I-V exactly
 once. Incomplete or noncanonical CityCatalyst capability payloads return
 `503 invalid_cc_context` without being persisted. A valid stored snapshot is
 reused on later interactions after that access check. If the configured
-database does not expose those external CNB tables, the route returns
-`503 cnb_storage_unavailable` without creating CA-owned replacement tables.
+database has not been migrated or is unavailable, the route returns
+`503 cnb_storage_unavailable`.
 
 ## Database Schema
 
@@ -745,6 +841,21 @@ GET /health
 ```json
 {
   "status": "ok"
+}
+```
+
+`GET /health` reports process liveness without contacting PostgreSQL. Deployment
+readiness probes use `GET /ready`, which returns `200` only after the database
+configured by `CA_DATABASE_URL` accepts a query. Missing configuration or a
+failed database query returns `503` without exposing connection details.
+
+```http
+GET /ready
+```
+
+```json
+{
+  "status": "ready"
 }
 ```
 
@@ -941,12 +1052,12 @@ migration Job consume that Secret with `secretRef`; CNB credentials do not
 belong in the existing database ConfigMaps or in checked-in Secret manifests.
 
 Each deployment workflow launches the existing CA migration Job, then the CNB
-Job (`alembic -c cnb-alembic.ini upgrade head`), before applying the application
-rollout. This follows the existing Climate Advisor deployment pattern; the
-workflow does not wait for either Job to finish. Check the Kubernetes Jobs and
-their logs to confirm migration success. For production, take an RDS snapshot
-or schema backup first; roll back the application image independently and do
-not automatically downgrade a schema after application data has been written.
+Job (`alembic -c cnb-alembic.ini upgrade head`). The workflow waits for the CNB
+Job to complete and stops before the application rollout if that migration
+fails; the existing CA Job behavior is unchanged. For production, take an RDS
+snapshot or schema backup first; roll back the application image independently
+and do not automatically downgrade a schema after application data has been
+written.
 
 ## Observability
 

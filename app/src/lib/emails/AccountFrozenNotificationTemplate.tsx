@@ -12,7 +12,7 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
+} from "react-email";
 
 export default function AccountFrozenNotificationTemplate({
   url,
@@ -208,3 +208,4 @@ const footerText = {
   fontWeight: "400",
   color: "#79797A",
 };
+

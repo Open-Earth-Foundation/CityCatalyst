@@ -31,7 +31,7 @@ export const GET = apiHandler(async (_req, { params }) => {
     const boundaryData = await CityBoundaryService.getCityBoundary(params.city);
 
     return NextResponse.json({ ...boundaryData });
-  } catch (error: any) {
+  } catch (error: unknown) {
     logger.error(error);
     throw new createHttpError.InternalServerError(
       "Failed to fetch city boundary",

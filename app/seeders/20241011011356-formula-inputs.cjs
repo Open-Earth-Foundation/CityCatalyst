@@ -50,7 +50,7 @@ async function parseFile(filename, folder) {
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.sequelize.transaction(async (transaction) => {
       for (const folder of folders) {
         console.log("Loading Formula Value  folder " + folder + "...");

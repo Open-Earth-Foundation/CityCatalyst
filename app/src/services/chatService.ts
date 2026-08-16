@@ -4,7 +4,7 @@ import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 
 export interface ChatServiceConfig {
   inventoryId?: string;
-  onError: (error: any, errorMessage: string) => void;
+  onError: (error: unknown, errorMessage: string) => void;
 }
 
 export class ChatService {

@@ -77,7 +77,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeConstraint(
       "OAuthClientI18N",
       "OAuthClientI18N_pkey",

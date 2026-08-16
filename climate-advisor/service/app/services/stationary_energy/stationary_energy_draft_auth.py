@@ -5,12 +5,14 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
+from app.services.thread_service import ThreadService
+from app.utils.chat_workflow_context import STATIONARY_ENERGY_DRAFT_RUN_ID_KEY
 from app.utils.token_manager import (
     create_token_context,
     is_token_expired,
     parse_jwt_claims,
 )
-from app.services.thread_service import ThreadService
+
 
 def extract_bearer_token(authorization: str | None) -> str | None:
     """Parse a Bearer token from an Authorization header value."""
@@ -94,9 +96,11 @@ async def persist_thread_draft_run_id(
     if thread_id is None:
         return
 
-    await persist_thread_context_update(
-        thread_service=thread_service,
-        thread_id=thread_id,
-        user_id=user_id,
-        context_update={"stationary_energy_draft_run_id": str(draft_run_id)},
+    thread = await thread_service.get_thread(thread_id)
+    if thread is None or thread.user_id != user_id:
+        return
+    await thread_service.set_workflow_context(
+        thread,
+        workflow_key=STATIONARY_ENERGY_DRAFT_RUN_ID_KEY,
+        run_id=draft_run_id,
     )

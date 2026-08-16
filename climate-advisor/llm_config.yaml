@@ -37,7 +37,7 @@ generation:
         include_source_data: false
     cnb_sources:
       max_partition_tokens: 50000
-      max_concurrency: 4
+      max_concurrency: 3
       max_key_excerpts: 8
       max_topics: 12
       max_question_chars: 2000

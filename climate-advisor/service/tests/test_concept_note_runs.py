@@ -449,7 +449,16 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
             await connection.run_sync(Thread.__table__.create)
 
         async with session_factory() as session:
-            session.add(Thread(thread_id=owned_thread_id, user_id="owner-1"))
+            session.add(
+                Thread(
+                    thread_id=owned_thread_id,
+                    user_id="owner-1",
+                    context={
+                        "access_token": "preserved-token",
+                        "stationary_energy_draft_run_id": str(uuid4()),
+                    },
+                )
+            )
             await session.commit()
             repository = ConceptNoteRunRepository(session)
 
@@ -477,5 +486,7 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
             assert stored_thread.context["concept_note_run_id"] == str(
                 concept_note_run_id
             )
+            assert "stationary_energy_draft_run_id" not in stored_thread.context
+            assert stored_thread.context["access_token"] == "preserved-token"
     finally:
         await engine.dispose()

@@ -8,6 +8,10 @@ from app.models.db.concept_note import (
 )
 from app.models.db.concept_note import ConceptNoteRun
 from app.models.db.thread import Thread
+from app.utils.chat_workflow_context import (
+    CONCEPT_NOTE_RUN_ID_KEY,
+    bind_workflow_context,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -161,6 +165,8 @@ class ConceptNoteRunRepository:
         thread = result.scalar_one_or_none()
         if thread is None:
             return
-        context = dict(thread.context or {})
-        context["concept_note_run_id"] = str(run_id)
-        thread.context = context
+        thread.context = bind_workflow_context(
+            thread.context,
+            workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
+            run_id=run_id,
+        )

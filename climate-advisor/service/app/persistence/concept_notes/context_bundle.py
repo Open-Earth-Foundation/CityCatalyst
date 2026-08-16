@@ -252,12 +252,14 @@ async def fail_build(
                 run_id=run_id,
             )
             progress = _bundle_progress(run.context_summary)
-            if progress.get("build_id") != str(
-                build_id
-            ) or not await _matches_current_source_fingerprint(
-                session=session,
-                run_id=run_id,
-                progress=progress,
+            if (
+                progress.get("status") != "building"
+                or progress.get("build_id") != str(build_id)
+                or not await _matches_current_source_fingerprint(
+                    session=session,
+                    run_id=run_id,
+                    progress=progress,
+                )
             ):
                 return False
             run.context_summary = _replace_bundle_progress(
@@ -281,6 +283,59 @@ async def fail_build(
         raise
     except (OSError, SQLAlchemyError) as exc:
         logger.exception("Failed to persist Concept Note context-bundle failure")
+        raise ContextBundlePersistenceError(
+            "cnb_storage_unavailable",
+            503,
+            "Concept Note context storage is unavailable",
+        ) from exc
+
+
+async def recover_stale_builds(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    stale_before: datetime,
+) -> int:
+    """Mark interrupted context-bundle builds retryable after their stale cutoff."""
+    try:
+        async with session_factory() as session, session.begin():
+            query = (
+                select(ConceptNoteRun)
+                .where(
+                    ConceptNoteRun.status == "active",
+                    ConceptNoteRun.updated_at < stale_before,
+                    (
+                        ConceptNoteRun.context_summary["context_bundle"]["status"]
+                        .as_string()
+                        == "building"
+                    ),
+                )
+                .with_for_update(skip_locked=True)
+            )
+            runs = list((await session.scalars(query)).all())
+            recovered_at = datetime.now(timezone.utc)
+            recovered = 0
+            for run in runs:
+                progress = _bundle_progress(run.context_summary)
+                if progress.get("status") != "building":
+                    continue
+                run.context_summary = _replace_bundle_progress(
+                    run.context_summary,
+                    {
+                        **progress,
+                        "status": "failed",
+                        "error_code": "context_bundle_build_interrupted",
+                        "warnings": [
+                            "Context bundle assembly was interrupted and can be retried."
+                        ],
+                        "retryable": True,
+                        "completion_event": None,
+                    },
+                )
+                run.updated_at = recovered_at
+                recovered += 1
+            return recovered
+    except (OSError, SQLAlchemyError) as exc:
+        logger.exception("Failed to recover stale Concept Note context-bundle builds")
         raise ContextBundlePersistenceError(
             "cnb_storage_unavailable",
             503,

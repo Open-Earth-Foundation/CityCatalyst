@@ -18,6 +18,7 @@ from app.persistence.concept_notes.context_bundle import (
     complete_build,
     fail_build,
     load_query_source,
+    recover_stale_builds,
 )
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
@@ -192,6 +193,17 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             "failed": 0,
         }
         assert progress["completion_event"] == "concept_note_context_bundle_ready"
+        assert (
+            await fail_build(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                build_id=snapshot.build_id,
+                error_code="late_failure",
+                warning="A late failure must not replace a ready bundle.",
+            )
+            is False
+        )
 
         query_source = await load_query_source(
             session_factory=session_factory,
@@ -326,5 +338,54 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
         assert progress["status"] == "failed"
         assert progress["retryable"] is True
         assert progress["completion_event"] is None
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_recovery_marks_only_stale_building_runs_retryable(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    now = datetime.now(timezone.utc)
+    old_building_id = uuid4()
+    recent_building_id = uuid4()
+    ready_id = uuid4()
+    old_building = concept_note_run(
+        old_building_id,
+        context_summary={"context_bundle": {"status": "building"}},
+    )
+    recent_building = concept_note_run(
+        recent_building_id,
+        context_summary={"context_bundle": {"status": "building"}},
+    )
+    ready = concept_note_run(
+        ready_id,
+        context_summary={"context_bundle": {"status": "ready"}},
+    )
+    old_building.updated_at = now - timedelta(hours=2)
+    recent_building.updated_at = now - timedelta(minutes=10)
+    ready.updated_at = now - timedelta(hours=2)
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all([old_building, recent_building, ready])
+
+        recovered = await recover_stale_builds(
+            session_factory=session_factory,
+            stale_before=now - timedelta(hours=1),
+        )
+
+        async with session_factory() as session:
+            stored_old = await session.get(ConceptNoteRun, old_building_id)
+            stored_recent = await session.get(ConceptNoteRun, recent_building_id)
+            stored_ready = await session.get(ConceptNoteRun, ready_id)
+        assert recovered == 1
+        assert stored_old is not None
+        assert stored_recent is not None
+        assert stored_ready is not None
+        old_progress = stored_old.context_summary["context_bundle"]
+        assert old_progress["status"] == "failed"
+        assert old_progress["error_code"] == "context_bundle_build_interrupted"
+        assert old_progress["retryable"] is True
+        assert stored_recent.context_summary["context_bundle"]["status"] == "building"
+        assert stored_ready.context_summary["context_bundle"]["status"] == "ready"
     finally:
         await engine.dispose()

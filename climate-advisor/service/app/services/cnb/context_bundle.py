@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections.abc import Awaitable, Callable
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -16,6 +17,7 @@ from app.persistence.concept_notes.context_bundle import (
     begin_build,
     complete_build,
     fail_build,
+    recover_stale_builds,
 )
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
@@ -36,6 +38,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 _BACKGROUND_BUILDS: set[asyncio.Task[bool]] = set()
+CONTEXT_BUNDLE_RECONCILE_INTERVAL_SECONDS = 300
+CONTEXT_BUNDLE_STALE_AFTER = timedelta(hours=1)
 
 
 class ContextBundleService:
@@ -368,6 +372,28 @@ def schedule_context_bundle_build(
             logger.exception("Concept Note background context build crashed")
 
     task.add_done_callback(release)
+
+
+async def run_context_bundle_reconciler(
+    *,
+    interval_seconds: float = CONTEXT_BUNDLE_RECONCILE_INTERVAL_SECONDS,
+    stale_after: timedelta = CONTEXT_BUNDLE_STALE_AFTER,
+) -> None:
+    """Periodically make interrupted context-bundle builds retryable."""
+    while True:
+        await asyncio.sleep(interval_seconds)
+        try:
+            recovered = await recover_stale_builds(
+                session_factory=get_session_factory(),
+                stale_before=datetime.now(timezone.utc) - stale_after,
+            )
+            if recovered:
+                logger.warning(
+                    "Recovered %s interrupted Concept Note context-bundle builds",
+                    recovered,
+                )
+        except Exception:
+            logger.exception("Concept Note context-bundle reconciliation failed")
 
 
 def get_context_bundle_service() -> ContextBundleService | None:

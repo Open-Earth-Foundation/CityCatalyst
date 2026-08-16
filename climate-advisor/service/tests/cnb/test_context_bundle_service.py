@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
@@ -13,7 +14,10 @@ from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSour
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
-from app.services.cnb.context_bundle import ContextBundleService
+from app.services.cnb.context_bundle import (
+    ContextBundleService,
+    run_context_bundle_reconciler,
+)
 from app.services.cnb.source_analysis import SourcePage
 
 CLIMATE_ADVISOR_ROOT = Path(__file__).resolve().parents[3]
@@ -59,6 +63,31 @@ def test_checked_in_full_stack_bundle_example_matches_contract() -> None:
     assert bundle.funder_context is None
     assert bundle.similar_projects == []
     assert bundle.document_context is None
+
+
+@pytest.mark.asyncio
+async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None:
+    sleep = AsyncMock(side_effect=[None, asyncio.CancelledError()])
+    recover_stale_builds = AsyncMock(return_value=1)
+    session_factory = object()
+    monkeypatch.setattr("app.services.cnb.context_bundle.asyncio.sleep", sleep)
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.get_session_factory",
+        lambda: session_factory,
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.recover_stale_builds",
+        recover_stale_builds,
+    )
+
+    with pytest.raises(asyncio.CancelledError):
+        await run_context_bundle_reconciler(
+            interval_seconds=1,
+            stale_after=timedelta(hours=1),
+        )
+
+    recover_stale_builds.assert_awaited_once()
+    assert recover_stale_builds.await_args.kwargs["session_factory"] is session_factory
 
 
 @pytest.mark.asyncio

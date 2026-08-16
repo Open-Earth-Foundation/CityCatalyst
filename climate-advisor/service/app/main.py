@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,7 @@ from app.routes.stationary_energy_drafts import (
     router as stationary_energy_drafts_router,
 )
 from app.routes.threads import router as threads_router
+from app.services.cnb.context_bundle import run_context_bundle_reconciler
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -81,9 +83,19 @@ def get_app() -> FastAPI:
     @app.on_event("startup")
     async def _startup() -> None:
         logger.info("Service started", extra={"service": "climate-advisor"})
+        app.state.context_bundle_reconciler = asyncio.create_task(
+            run_context_bundle_reconciler()
+        )
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
+        reconciler = getattr(app.state, "context_bundle_reconciler", None)
+        if reconciler is not None:
+            reconciler.cancel()
+            try:
+                await reconciler
+            except asyncio.CancelledError:
+                pass
         logger.info("Service stopping", extra={"service": "climate-advisor"})
 
     # Routers

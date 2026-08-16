@@ -112,7 +112,7 @@ class IncompleteCoverageRunner(FakeRunner):
 async def analysis_dependencies() -> AsyncIterator[tuple[Settings, AsyncOpenAI]]:
     settings = get_settings().model_copy(deep=True)
     settings.llm.generation.prompt_budget.cnb_sources.max_partition_tokens = 1000
-    settings.llm.generation.prompt_budget.cnb_sources.max_concurrency = 4
+    settings.llm.generation.prompt_budget.cnb_sources.max_concurrency = 3
     client = AsyncOpenAI(
         api_key="test",
         base_url="https://openrouter.ai/api/v1",

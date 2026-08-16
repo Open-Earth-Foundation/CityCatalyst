@@ -1,6 +1,30 @@
 """Resolved workflow context for the shared Climate Advisor chat stream."""
 
 from dataclasses import dataclass
+from uuid import UUID
+
+
+CONCEPT_NOTE_RUN_ID_KEY = "concept_note_run_id"
+STATIONARY_ENERGY_DRAFT_RUN_ID_KEY = "stationary_energy_draft_run_id"
+WORKFLOW_CONTEXT_KEYS = frozenset(
+    {CONCEPT_NOTE_RUN_ID_KEY, STATIONARY_ENERGY_DRAFT_RUN_ID_KEY}
+)
+
+
+def bind_workflow_context(
+    context: dict[str, object] | None,
+    *,
+    workflow_key: str,
+    run_id: str | UUID,
+) -> dict[str, object]:
+    """Return thread context containing exactly one scoped workflow identifier."""
+    if workflow_key not in WORKFLOW_CONTEXT_KEYS:
+        raise ValueError(f"Unsupported workflow context key: {workflow_key}")
+    updated = dict(context or {})
+    for key in WORKFLOW_CONTEXT_KEYS:
+        updated.pop(key, None)
+    updated[workflow_key] = str(run_id)
+    return updated
 
 
 @dataclass(frozen=True)

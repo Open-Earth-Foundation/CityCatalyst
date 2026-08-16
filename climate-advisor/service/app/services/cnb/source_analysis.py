@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 PAGE_MARKER = re.compile(r"<!-- page: (\d+) -->")
 PARAGRAPH_BOUNDARY = re.compile(r".*?(?:\n\s*\n|\Z)", re.DOTALL)
-_GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(4)
+_GLOBAL_READER_SEMAPHORE = asyncio.Semaphore(3)
 MAX_QUERY_EXCERPTS = 20
 MAX_QUERY_CAVEATS = 10
 OutputModel = TypeVar("OutputModel", bound=BaseModel)

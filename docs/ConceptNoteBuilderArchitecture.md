@@ -1593,6 +1593,9 @@ Rules:
   every retained excerpt as an exact substring of its cited source page.
 - Fails retryably when no ready PDF exists, a pointer/digest changes, a reader
   partition fails, or complete coverage cannot be proven.
+- Reconciles every five minutes and marks builds left in `building` for more
+  than one hour as `context_bundle_build_interrupted`, preserving the existing
+  retry route without storing a durable access token in a job queue.
 - Edits the bundle through workflow orchestration by rebuilding affected sections
   from changed underlying inputs such as uploads, funder profile changes,
   refreshed similar projects, or user-confirmed facts.
@@ -2303,6 +2306,7 @@ file layout.
 | No ready city PDF            | Keep the run in context assembly and offer bundle retry after upload.     | Persist `no_ready_city_pdf` as a retryable build failure.                                                                      |
 | PDF coverage/digest failure  | Show that source analysis must be retried or the upload investigated.     | Reject readiness; persist a retryable guarded build failure and never keep partial summaries.                                  |
 | Stale background build       | No user-visible regression.                                               | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                 |
+| Interrupted background build | Offer the existing context-bundle retry.                                  | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
 | Funder profile missing       | Block drafting against a real template.                                   | Mark `profiling_funder` blocked.                                                                                               |
 | `cc_ocr_failed`              | Show that CC could not convert the specific source.                       | CC retains the source and failed OCR state; an explicit retry may enqueue another Mistral attempt. Nothing is delivered to CA. |
 | `ca_markdown_ingest_failed`  | Show that conversion succeeded but CNB could not ingest the Markdown yet. | CC keeps the successful OCR result and retries delivery; CA may retry downstream processing without rerunning Mistral.         |

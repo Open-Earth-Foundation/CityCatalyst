@@ -618,6 +618,8 @@ Operationally:
 - A ready Markdown pointer automatically rebuilds the bundle from every ready
   PDF. At least one ready PDF is required; optional GHGI and HIAP failures do
   not block readiness, and stale builds cannot overwrite a newer upload set.
+  A five-minute reconciler marks builds left in `building` for more than one
+  hour as retryable failures after an interrupted process or pod.
 - `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
   proxy rerun bundle assembly without rerunning OCR.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
@@ -663,6 +665,8 @@ chat thread to belong to the authenticated user; it remains an integration
 identifier rather than a run-table foreign key. The authorized `run_id` is also
 persisted as `concept_note_run_id` in thread context so later chat turns can
 scope their prompt and source capability without trusting an LLM-provided run.
+Binding either Concept Note or Stationary Energy context clears the competing
+workflow identifier while preserving tokens and unrelated thread context.
 
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,

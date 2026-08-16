@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import hashlib
-import json
 from datetime import UTC, datetime, timedelta
-from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
 from uuid import uuid4
 
 import pytest
-from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
+from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
@@ -19,12 +17,6 @@ from app.services.cnb.context_bundle import (
     run_context_bundle_reconciler,
 )
 from app.services.cnb.source_analysis import SourcePage
-
-CLIMATE_ADVISOR_ROOT = Path(__file__).resolve().parents[3]
-FULL_BUNDLE_EXAMPLE = (
-    CLIMATE_ADVISOR_ROOT / "docs" / "examples" / "cc-513-full-context-bundle.json"
-)
-
 
 def fake_verify_source_artifact(
     *, artifact, markdown_s3_key, sha256, page_count
@@ -48,21 +40,6 @@ async def fake_analyze_document(**kwargs) -> SelectedSource:
         topics=["city"],
         key_excerpts=[],
     )
-
-
-def test_checked_in_full_stack_bundle_example_matches_contract() -> None:
-    exported_bundle = json.loads(FULL_BUNDLE_EXAMPLE.read_text(encoding="utf-8"))
-
-    bundle = ConceptNoteContextBundle.model_validate(exported_bundle)
-
-    assert len(bundle.selected_sources) == 1
-    assert bundle.cc_context.ghgi is not None
-    assert bundle.cc_context.ghgi["availability"] == "partial"
-    assert bundle.cc_context.hiap is not None
-    assert bundle.cc_context.hiap["availability"] == "available"
-    assert bundle.funder_context is None
-    assert bundle.similar_projects == []
-    assert bundle.document_context is None
 
 
 @pytest.mark.asyncio

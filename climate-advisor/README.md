@@ -625,8 +625,6 @@ Operationally:
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
   single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
   storage keys, credentials, and derived chunks are not persisted in the bundle.
-- A real full-stack contract example is retained at
-  [`docs/examples/cc-513-full-context-bundle.json`](docs/examples/cc-513-full-context-bundle.json).
 
 Run the focused contract test with:
 

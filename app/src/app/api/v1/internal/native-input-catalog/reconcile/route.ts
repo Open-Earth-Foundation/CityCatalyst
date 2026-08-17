@@ -5,6 +5,13 @@
  *     operationId: reconcileNativeInputCatalog
  *     summary: Reconcile GHGI and legacy HIAP catalog registrations
  *     description: Authenticated internal endpoint. Dry-run is read-only; apply repairs only deterministic missing registrations.
+ *     responses:
+ *       200:
+ *         description: Reconciliation report returned successfully.
+ *       400:
+ *         description: Invalid reconciliation request.
+ *       401:
+ *         description: Missing or invalid internal service credentials.
  *     tags:
  *       - native-input-catalog-internal
  */

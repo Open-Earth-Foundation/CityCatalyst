@@ -85,15 +85,6 @@ const runRankingRequest = z.object({
         .array(z.enum(["short", "medium", "long", "no_preference"]))
         .default(["no_preference"]),
       cityStrategicPreferenceCoBenefitKeys: z.array(z.string()).default([]),
-
-      // TODO this comes from our DB instead
-      locode: z.string().min(1),
-      countryCode: z.string().min(2).max(2),
-      populationSize: z.number().int().optional(),
-      cityEmissionsData: z.object({
-        inventoryYear: z.number().int().optional(),
-        gpcData: z.record(z.object({})),
-      }),
     }),
   ),
 });

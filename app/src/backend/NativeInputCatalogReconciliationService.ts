@@ -26,6 +26,7 @@ import {
 } from "@/backend/NativeInputCatalogService";
 import type { ACTION_TYPES } from "@/util/types";
 import { HighImpactActionRankingStatus } from "@/util/types";
+import { ImportStatusEnum } from "@/util/enums";
 import { logger } from "@/services/logger";
 
 export const RECONCILIATION_MODES = ["dry-run", "apply"] as const;
@@ -89,7 +90,7 @@ type Candidate = {
 
 type CollectionItem = {
   producer: Producer;
-  outcome: "ambiguous" | "dangling" | "failed";
+  outcome: "ambiguous" | "dangling" | "failed" | "skipped";
   sourceType?: string;
   sourceId?: string;
   reason: string;
@@ -112,6 +113,7 @@ type PageCollection = {
   candidates: Candidate[];
   items: CollectionItem[];
   catalogEntries: NativeInputCatalog[];
+  withdrawnCatalogEntries: NativeInputCatalog[];
   streams: StreamPage[];
   recordsScanned: number;
 };
@@ -288,6 +290,17 @@ async function collectGHGIPage(
   const ocrJobs = streams[2].rows as unknown as PdfOcrJob[];
 
   for (const importedFile of importedFiles) {
+    if (importedFile.importStatus === ImportStatusEnum.FAILED) {
+      items.push({
+        producer: "ghgi",
+        outcome: "skipped",
+        sourceType: "imported_inventory_file",
+        sourceId: importedFile.id,
+        reason: "Failed GHGI imports are not eligible for catalog repair",
+      });
+      continue;
+    }
+
     try {
       addCandidate(
         candidates,
@@ -340,6 +353,7 @@ async function collectGHGIPage(
     candidates: [...candidates.values()],
     items,
     catalogEntries: [],
+    withdrawnCatalogEntries: [],
     streams,
     recordsScanned: streams.reduce(
       (sum, stream) => sum + stream.rows.length,
@@ -503,6 +517,7 @@ async function collectHIAPPage(
     candidates: [...candidates.values()],
     items,
     catalogEntries: [],
+    withdrawnCatalogEntries: [],
     streams,
     recordsScanned: streams.reduce(
       (sum, stream) => sum + stream.rows.length,
@@ -520,15 +535,23 @@ async function collectCatalogPage(
     db.models.NativeInputCatalog,
     {
       owningModule: { [Op.in]: PRODUCERS },
-      availability: "active",
+      availability: { [Op.in]: ["active", "withdrawn"] },
     },
     states.catalog,
     pageSize,
   );
+  const catalogEntries = stream.rows.filter(
+    (row) => row.availability === "active",
+  ) as unknown as NativeInputCatalog[];
+  const withdrawnCatalogEntries = stream.rows.filter(
+    (row) => row.availability === "withdrawn",
+  ) as unknown as NativeInputCatalog[];
+
   return {
     candidates: [],
     items: [],
-    catalogEntries: stream.rows as unknown as NativeInputCatalog[],
+    catalogEntries,
+    withdrawnCatalogEntries,
     streams: [stream],
     recordsScanned: stream.rows.length,
   };
@@ -594,6 +617,7 @@ export async function reconcileNativeInputCatalog({
   const states = initialStreamStates();
   const candidates = new Map<string, Candidate>();
   const activeByKey = new Map<string, NativeInputCatalog[]>();
+  const withdrawnByKey = new Map<string, NativeInputCatalog[]>();
   const items: ReconciliationReportItem[] = [];
   const pageSummaries: ReconciliationPageSummary[] = [];
   let pagesProcessed = 0;
@@ -627,6 +651,12 @@ export async function reconcileNativeInputCatalog({
           const entries = activeByKey.get(key) ?? [];
           entries.push(entry);
           activeByKey.set(key, entries);
+        }
+        for (const entry of result.withdrawnCatalogEntries) {
+          const key = sourceKey(entry);
+          const entries = withdrawnByKey.get(key) ?? [];
+          entries.push(entry);
+          withdrawnByKey.set(key, entries);
         }
       }
 
@@ -679,10 +709,15 @@ export async function reconcileNativeInputCatalog({
   for (const candidate of candidates.values()) {
     const key = sourceKey(candidate.input);
     const matchingEntries = activeByKey.get(key) ?? [];
+    const withdrawnEntries = withdrawnByKey.get(key) ?? [];
     let outcome: ReconciliationOutcome = "matched";
     let reason: string | undefined;
 
-    if (matchingEntries.length === 0 && !catalogScanComplete) {
+    if (matchingEntries.length === 0 && withdrawnEntries.length > 0) {
+      outcome = "skipped";
+      reason =
+        "Catalog registration was withdrawn; reconciliation will not recreate it";
+    } else if (matchingEntries.length === 0 && !catalogScanComplete) {
       outcome = "ambiguous";
       reason = "Catalog scan is incomplete; registration cannot be classified";
     } else if (matchingEntries.length === 0) {
@@ -701,7 +736,10 @@ export async function reconcileNativeInputCatalog({
       outcome,
       sourceType: candidate.input.sourceType,
       sourceId: candidate.input.sourceId,
-      catalogIds: matchingEntries.map((entry) => entry.id),
+      catalogIds: (matchingEntries.length > 0
+        ? matchingEntries
+        : withdrawnEntries
+      ).map((entry) => entry.id),
       reason,
     });
   }

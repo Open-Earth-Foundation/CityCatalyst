@@ -186,6 +186,55 @@ describe("NativeInputCatalog reconciliation", () => {
     expect(registerNativeInput).toHaveBeenCalledTimes(1);
   });
 
+  it("does not recreate a registration that was withdrawn", async () => {
+    importedFileModel.findAll.mockImplementation(
+      (options: { where?: Record<string, unknown> }) =>
+        options.where && Object.keys(options.where).length > 0
+          ? []
+          : [
+              {
+                id: "file-1",
+                importStatus: "uploaded",
+                contentDigest: null,
+              },
+            ],
+    );
+    catalogModel.findAll.mockResolvedValue([
+      {
+        id: "catalog-withdrawn",
+        owningModule: "ghgi",
+        sourceType: "imported_inventory_file",
+        sourceId: "file-1",
+        availability: "withdrawn",
+      },
+    ]);
+
+    const report = await reconcileNativeInputCatalog({ mode: "apply" });
+
+    expect(report.counts.skipped).toBe(1);
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("does not repair a failed GHGI import", async () => {
+    importedFileModel.findAll.mockImplementation(
+      (options: { where?: Record<string, unknown> }) =>
+        options.where && Object.keys(options.where).length > 0
+          ? []
+          : [
+              {
+                id: "file-1",
+                importStatus: "failed",
+                contentDigest: null,
+              },
+            ],
+    );
+
+    const report = await reconcileNativeInputCatalog({ mode: "apply" });
+
+    expect(report.counts.skipped).toBe(1);
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
   it("reports duplicates and dangling entries without repairing them", async () => {
     catalogModel.findAll.mockResolvedValue([
       {

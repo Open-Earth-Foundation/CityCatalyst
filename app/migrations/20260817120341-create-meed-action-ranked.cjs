@@ -24,6 +24,14 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
+      rank: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      final_score: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
       lang: {
         type: Sequelize.TEXT,
         allowNull: false,
@@ -46,7 +54,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("MeedActionRanked");
   },
 };

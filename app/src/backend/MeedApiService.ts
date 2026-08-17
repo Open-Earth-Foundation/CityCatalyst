@@ -150,7 +150,7 @@ export default class MeedApiService {
     }
 
     console.log("MEED result", resultString);
-    const actions = result.data.results[0].ranked_action_ids;
+    const actions = result.data.results[0].ranked_actions;
 
     // TODO save result to database
 

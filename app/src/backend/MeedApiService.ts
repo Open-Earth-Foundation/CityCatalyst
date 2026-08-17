@@ -2,6 +2,7 @@ import { RunRankingRequest } from "@/app/api/v1/city/[city]/meed/rank/route";
 import { db } from "@/models";
 import PopulationService from "./PopulationService";
 import createHttpError from "http-errors";
+import { InventoryService } from "./InventoryService";
 
 const MEED_API_URL = process.env.HIAP_MEED_BACKEND_URL + "/v1/";
 
@@ -95,20 +96,22 @@ export default class MeedApiService {
           inventoryYear: inventory.year ?? 0,
           gpcData: inventoryValues.reduce(
             (acc, inventoryValue) => {
+              const notationKey =
+                inventoryValue.unavailableReason &&
+                inventoryValue.unavailableReason.length > 0
+                  ? inventoryValue.unavailableReason
+                  : undefined;
+
               return {
                 ...acc,
                 [inventoryValue.gpcReferenceNumber ?? ""]: {
-                  notationKey: inventoryValue.unavailableReason ?? undefined,
+                  notationKey,
                   activities: inventoryValue.activityValues.map((activity) => {
-                    return {
-                      activityType: activity.activityData?.activityType, // TODO?
-                      totalEmissions: activity.co2eq,
-                      totalEmissionsUnit: "kg",
-                      activityValue: activity.activityData?.activityValue, // TODO?
-                      activityUnit: activity.activityData?.activityUnit, // TODO?
-                      dataSource: activity.dataSource.datasourceName, // TODO is this what we need here
-                      notationKey: undefined, // not tracked at this level, it's on the InventoryValue level
-                    } as GpcActivity;
+                    const fields = InventoryService.extractActivityFields(
+                      activity,
+                      inventoryValue,
+                    );
+                    return fields as GpcActivity;
                   }),
                 },
               };
@@ -119,6 +122,7 @@ export default class MeedApiService {
       };
     });
 
+    /*
     const result = await fetch(MEED_API_URL + "prioritize", {
       method: "POST",
       body: JSON.stringify(fullRequest),
@@ -130,5 +134,8 @@ export default class MeedApiService {
     // TODO save result to database
 
     return result.json();
+    */
+
+    return fullRequest;
   }
 }

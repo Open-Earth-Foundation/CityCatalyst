@@ -94,7 +94,6 @@ export class InventoryService {
   ): ResolvedMethodology | undefined {
     const gpcRefNo = inventoryValue.gpcReferenceNumber;
     const methodologyId = inventoryValue.inputMethodology;
-    console.log("meth id", methodologyId);
     if (!gpcRefNo || !methodologyId) return undefined;
 
     if (methodologyId === "direct-measure") {
@@ -129,7 +128,6 @@ export class InventoryService {
     const methodology = this.resolveMethodology(inventoryValue);
     const data = activity.activityData ?? {};
     const titleKey = this.getActivityTitleKey(activity, methodology);
-    console.log("Methodology", methodology);
     const notationKey =
       inventoryValue.unavailableReason &&
       inventoryValue.unavailableReason.length > 0
@@ -138,11 +136,9 @@ export class InventoryService {
     let activityUnit = (
       data[`${titleKey}-unit`] ?? data["activity-unit"]
     )?.toString();
-    console.log("unit pre", activityUnit);
     if (activityUnit?.startsWith("units-")) {
       activityUnit = activityUnit.slice("units-".length);
     }
-    console.log("unit post", activityUnit);
 
     return {
       //methodology?.id,

@@ -19,10 +19,16 @@ from openai import AsyncOpenAI
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import get_settings
+from app.persistence.concept_notes.context_bundle import (
+    ALLOWED_SOURCE_QUERY_STEPS,
+    ContextBundlePersistenceError,
+    load_agent_context,
+)
 from app.services.openrouter_client import build_openrouter_client_options
 from app.tools.cc_inventory_tool import CCInventoryTool
 from app.tools.cc_inventory_wrappers import build_cc_datasource_tools
 from app.tools.climate_vector_sync import climate_vector_search
+from app.tools.concept_note_source_tools import build_concept_note_source_tools
 from app.tools.inventory_context_tools import build_inventory_capability_tools
 from app.tools.stationary_energy_review_tools import (
     build_stationary_energy_review_tools,
@@ -52,6 +58,7 @@ class AgentService:
         session_factory: Optional[async_sessionmaker[AsyncSession]] = None,
         stationary_energy_draft_run_id: Optional[Union[str, UUID]] = None,
         stationary_energy_surface: bool = False,
+        concept_note_run_id: Optional[Union[str, UUID]] = None,
     ) -> None:
         """Initialize the agent service with settings and OpenRouter client.
 
@@ -77,6 +84,9 @@ class AgentService:
             if stationary_energy_draft_run_id
             else None
         )
+        self.concept_note_run_id = (
+            str(concept_note_run_id) if concept_note_run_id else None
+        )
         self._stationary_energy_surface = bool(
             stationary_energy_surface or self.stationary_energy_draft_run_id
         )
@@ -97,6 +107,9 @@ class AgentService:
             and self.session_factory
             and self.cc_user_id
         )
+        self._has_concept_note_context = bool(
+            self.concept_note_run_id and self.session_factory and self.cc_user_id
+        )
 
         # Compose the shared core prompt with the active workflow prompt.
         self.chat_system_prompt = self.settings.llm.prompts.compose_prompt("chat")
@@ -106,7 +119,9 @@ class AgentService:
             else None
         )
         self.system_prompt = (
-            None if self._uses_stationary_energy_review_prompt else self.chat_system_prompt
+            None
+            if self._uses_stationary_energy_review_prompt
+            else self.chat_system_prompt
         )
 
         orchestrator_model = self.settings.llm.models.orchestrator
@@ -136,9 +151,10 @@ class AgentService:
         self,
         *,
         stationary_energy_draft_run_id: Optional[str] = None,
+        concept_note_run_id: Optional[str] = None,
     ) -> str:
         """Choose the default chat model for the current workflow context."""
-        if stationary_energy_draft_run_id:
+        if stationary_energy_draft_run_id or concept_note_run_id:
             return self.agentic_flow_model
         return self.default_model
 
@@ -254,6 +270,7 @@ class AgentService:
         # scoped review tools instead.
         if (
             not self._uses_stationary_energy_review_prompt
+            and not self._has_concept_note_context
             and self.cc_access_token
             and self.cc_user_id
             and self.cc_thread_id
@@ -316,8 +333,53 @@ class AgentService:
                 self.cc_user_id,
             )
 
+        # The CNB source capability is captured to one persisted run and user.
+        if self._has_concept_note_context:
+            assert self.session_factory is not None
+            assert self.concept_note_run_id is not None
+            assert self.cc_user_id is not None
+            try:
+                concept_note_context = await load_agent_context(
+                    session_factory=self.session_factory,
+                    user_id=str(self.cc_user_id),
+                    run_id=UUID(self.concept_note_run_id),
+                )
+            except (ContextBundlePersistenceError, ValueError):
+                logger.warning(
+                    "Concept Note context was unavailable during tool registration run_id=%s",
+                    self.concept_note_run_id,
+                )
+                concept_note_context = None
+            if (
+                concept_note_context is not None
+                and concept_note_context.get("workflow_step")
+                in ALLOWED_SOURCE_QUERY_STEPS
+            ):
+                tools.extend(
+                    build_concept_note_source_tools(
+                        session_factory=self.session_factory,
+                        run_id=self.concept_note_run_id,
+                        user_id=str(self.cc_user_id),
+                        token_ref=self._token_ref,
+                    )
+                )
+                logger.info(
+                    "Registered Concept Note source query for run_id=%s thread_id=%s user_id=%s",
+                    self.concept_note_run_id,
+                    self.cc_thread_id,
+                    self.cc_user_id,
+                )
+            else:
+                logger.info(
+                    "Skipped Concept Note source query registration run_id=%s: bundle or workflow step is not ready",
+                    self.concept_note_run_id,
+                )
+
         # Keep vector search available for general climate-advice fallback context.
-        if not self._uses_stationary_energy_review_prompt:
+        if (
+            not self._uses_stationary_energy_review_prompt
+            and not self._has_concept_note_context
+        ):
             tools.append(climate_vector_search)
 
         self.active_instructions = agent_instructions

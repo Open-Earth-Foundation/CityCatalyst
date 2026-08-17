@@ -13,7 +13,7 @@ type RunRankingFullRequest = {
   cityDataList: {
     excludedActionIds: string[];
     weightsOverride: Record<string, number>;
-    cityStrategicPreferencesSectors: string[];
+    cityStrategicPreferenceSectors: string[];
     cityStrategicPreferenceTimeframes: string[];
     cityStrategicPreferenceCoBenefitKeys: string[];
 

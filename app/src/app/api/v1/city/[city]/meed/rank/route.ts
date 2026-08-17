@@ -80,7 +80,7 @@ const runRankingRequest = z.object({
     z.object({
       excludedActionIds: z.array(z.string()).default([]),
       weightsOverride: z.record(z.number()),
-      cityStrategicPreferencesSectors: z.array(z.string()),
+      cityStrategicPreferenceSectors: z.array(z.string()),
       cityStrategicPreferenceTimeframes: z
         .array(z.enum(["short", "medium", "long", "no_preference"]))
         .default(["no_preference"]),

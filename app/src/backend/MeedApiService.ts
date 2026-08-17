@@ -3,8 +3,9 @@ import { db } from "@/models";
 import PopulationService from "./PopulationService";
 import createHttpError from "http-errors";
 import { InventoryService } from "./InventoryService";
+import { randomUUID } from "node:crypto";
 
-const MEED_API_URL = process.env.HIAP_MEED_BACKEND_URL + "/v1/";
+const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
 type RunRankingFullRequest = {
   requestedLanguages: string[];
@@ -122,20 +123,29 @@ export default class MeedApiService {
       };
     });
 
-    /*
     const result = await fetch(MEED_API_URL + "prioritize", {
       method: "POST",
-      body: JSON.stringify(fullRequest),
+      body: JSON.stringify({
+        requestData: fullRequest,
+        meta: {
+          requestId: randomUUID(),
+          generatedAtUtc: new Date().toUTCString(),
+          backendConsumer: "CityCatalyst",
+          upstreamProvider: "CityCatalyst",
+          apiContext: { endpoint: "/v1/prioritize" },
+          totalRecords: 1,
+        },
+      }),
       headers: {
         "Content-Type": "application/json",
       },
     });
 
+    const json = await result.json();
+    console.log("MEED result", JSON.stringify(json, null, 2));
+
     // TODO save result to database
 
-    return result.json();
-    */
-
-    return fullRequest;
+    return json; // result.json();
   }
 }

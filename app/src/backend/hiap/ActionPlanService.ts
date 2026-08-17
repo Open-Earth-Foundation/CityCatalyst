@@ -236,11 +236,24 @@ export default class ActionPlanService {
           language,
           actionId,
           cityLocode: city.locode, // Direct filter by city locode
+          cityId,
         },
         include: [
           {
             model: db.models.HighImpactActionRanked,
             as: "highImpactActionRanked",
+            include: [
+              {
+                model: db.models.HighImpactActionRanking,
+                as: "highImpactActionRanking",
+                include: [
+                  {
+                    model: db.models.Inventory,
+                    as: "inventory",
+                  },
+                ],
+              },
+            ],
           },
         ],
         order: [["created", "DESC"]],
@@ -433,6 +446,7 @@ export default class ActionPlanService {
         const basePlans = await db.models.ActionPlan.findAll({
           where: {
             actionId,
+            cityId,
           },
           include: [
             {
@@ -446,7 +460,6 @@ export default class ActionPlanService {
                     {
                       model: db.models.Inventory,
                       as: "inventory",
-                      where: { cityId: cityId },
                     },
                   ],
                 },

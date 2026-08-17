@@ -303,11 +303,18 @@ describe("Bulk HIAP Prioritization API", () => {
   });
 
   afterEach(async () => {
-    // Clean up rankings created during tests to prevent pollution
-    await db.models.HighImpactActionRanked.destroy({
-      where: {},
-      truncate: false,
+    // Clean up only rankings owned by this suite. Other API suites run in
+    // parallel against the same database and may have ranked actions in use.
+    const suiteRankings = await db.models.HighImpactActionRanking.findAll({
+      attributes: ["id"],
+      where: { inventoryId: inventoryIds },
     });
+    const suiteRankingIds = suiteRankings.map((ranking) => ranking.id);
+    if (suiteRankingIds.length > 0) {
+      await db.models.HighImpactActionRanked.destroy({
+        where: { hiaRankingId: suiteRankingIds },
+      });
+    }
     await db.models.HighImpactActionRanking.destroy({
       where: { inventoryId: inventoryIds },
     });

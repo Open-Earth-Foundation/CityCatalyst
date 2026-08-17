@@ -29,12 +29,19 @@ describe("cdpEmissionsRows crosswalk", () => {
     ]);
   });
 
-  it("includes transport scope 3 refs inside Total scope 3", () => {
-    const total = findCdpEmissionsRow("Total scope 3 emissions");
-    expect(total).toBeDefined();
-    for (const ref of ["II.1.3", "II.2.3", "II.3.3", "II.4.3"]) {
-      expect(total!.refNos).toContain(ref);
-    }
+  it("Total scope 3 emissions equals the union of its category rows", () => {
+    const stationary = findCdpEmissionsRow(
+      "Stationary Energy – scope 3",
+    )!.refNos;
+    const transport = findCdpEmissionsRow("Transportation – scope 3")!.refNos;
+    const wasteWithin = findCdpEmissionsRow(
+      "Waste within the city boundary – scope 3",
+    )!.refNos;
+    const total = findCdpEmissionsRow("Total scope 3 emissions")!.refNos;
+
+    expect(new Set(total)).toEqual(
+      new Set([...stationary, ...transport, ...wasteWithin]),
+    );
   });
 
   it("exports every expected category regex", () => {

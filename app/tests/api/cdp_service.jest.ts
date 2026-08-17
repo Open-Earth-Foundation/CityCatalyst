@@ -84,9 +84,11 @@ describe("CDPService", () => {
   it("should submit a response to CDP", async () => {
     fetchMock.mockResolvedValue(jsonResponse({}, 200));
 
-    const response = await CDPService.submitMatrix(TEST_CITY_ID, TEST_QUESTION, [
-      TEST_RESPONSE,
-    ]);
+    const response = await CDPService.submitMatrix(
+      TEST_CITY_ID,
+      TEST_QUESTION,
+      [TEST_RESPONSE],
+    );
 
     expect(response).toBe(true);
     expect(fetchMock).toHaveBeenCalledWith(

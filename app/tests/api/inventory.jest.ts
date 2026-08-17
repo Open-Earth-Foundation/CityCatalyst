@@ -584,37 +584,39 @@ describe("Inventory API", () => {
     const getCityID = jest
       .spyOn(CDPService, "getCityID")
       .mockResolvedValue("mock-cdp-city-id");
-    const getQuestions = jest.spyOn(CDPService, "getQuestions").mockResolvedValue({
-      sections: [
-        { questions: [] },
-        { questions: [] },
-        { questions: [] },
-        {
-          questions: [
-            {
-              id: "emissions-inventory-q",
-              text: "Do you report an emissions inventory?",
-              options: [{ id: "yes-option", name: "Yes" }],
-            },
-            { id: "unused-q", text: "Unused" },
-            {
-              id: "emissions-matrix-q",
-              text: "Emissions by category",
-              columns: [
-                {
-                  id: "emissions-col",
-                  text: "Emissions (metric tonnes CO2e)",
-                },
-              ],
-              rows: matrixRowTitles.map((title, index) => ({
-                id: `matrix-row-${index}`,
-                title,
-              })),
-            },
-          ],
-        },
-      ],
-    });
+    const getQuestions = jest
+      .spyOn(CDPService, "getQuestions")
+      .mockResolvedValue({
+        sections: [
+          { questions: [] },
+          { questions: [] },
+          { questions: [] },
+          {
+            questions: [
+              {
+                id: "emissions-inventory-q",
+                text: "Do you report an emissions inventory?",
+                options: [{ id: "yes-option", name: "Yes" }],
+              },
+              { id: "unused-q", text: "Unused" },
+              {
+                id: "emissions-matrix-q",
+                text: "Emissions by category",
+                columns: [
+                  {
+                    id: "emissions-col",
+                    text: "Emissions (metric tonnes CO2e)",
+                  },
+                ],
+                rows: matrixRowTitles.map((title, index) => ({
+                  id: `matrix-row-${index}`,
+                  title,
+                })),
+              },
+            ],
+          },
+        ],
+      });
     const submitSingleSelect = jest
       .spyOn(CDPService, "submitSingleSelect")
       .mockResolvedValue(true);

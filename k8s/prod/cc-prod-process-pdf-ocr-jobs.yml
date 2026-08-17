@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: citycatalyst-prod-process-pdf-ocr-jobs
+  namespace: default
+spec:
+  schedule: "* * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      activeDeadlineSeconds: 590
+      template:
+        metadata:
+          labels:
+            app: citycatalyst-prod-cron
+            job: process-pdf-ocr-jobs
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: process-pdf-ocr-jobs
+              image: curlimages/curl:latest
+              command:
+                - /bin/sh
+                - -ec
+                - |
+                  test -n "$CC_CRON_JOB_API_KEY"
+                  curl --fail --location --max-time 585 \
+                    --request POST \
+                    --header "Authorization: Bearer $CC_CRON_JOB_API_KEY" \
+                    http://cc-web:3000/api/v1/cron/process-pdf-ocr-jobs

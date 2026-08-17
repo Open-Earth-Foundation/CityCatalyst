@@ -9,10 +9,6 @@ import {
 } from "@chakra-ui/react";
 import React, { useMemo, use } from "react";
 import { useGetOrganizationQuery } from "@/services/api";
-import {
-  ProgressCircleRing,
-  ProgressCircleRoot,
-} from "@/components/ui/progress-circle";
 import { MdChevronRight } from "react-icons/md";
 
 import {

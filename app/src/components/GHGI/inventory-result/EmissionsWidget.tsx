@@ -19,20 +19,17 @@ import {
   ProgressCircleRing,
   ProgressCircleRoot,
 } from "@/components/ui/progress-circle";
-import { FiHeart } from "react-icons/fi";
 import { api } from "@/services/api";
 
 const EmissionsWidgetCard = ({
-  icon,
   value,
   field,
   showProgress,
   isLoading = false,
   numberFormat,
 }: {
-  icon: any;
   value?: number | undefined;
-  field: any;
+  field: React.ReactNode;
   showProgress: boolean;
   isLoading?: boolean;
   numberFormat?: string;
@@ -44,7 +41,7 @@ const EmissionsWidgetCard = ({
     : "N/A";
 
   return (
-    <HStack align="center" marginY={"9px"} justify="space-between" key={field}>
+    <HStack align="center" marginY={"9px"} justify="space-between">
       <Stack w="full" height={"83px"}>
         <HStack align="start">
           {isLoading ? (
@@ -84,7 +81,7 @@ const EmissionsWidget = ({
   population,
   numberFormat,
 }: {
-  t: Function & TFunction<"translation", undefined>;
+  t: TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   population?: PopulationAttributes;
   numberFormat?: string;
@@ -93,8 +90,7 @@ const EmissionsWidget = ({
   const {
     data: countryEmissions,
     isLoading: isLoadingCountryEmissions,
-    error: countryEmissionsError,
-  } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId!, {
+  } = api.useGetInventoryCountryEmissionsQuery(inventory?.inventoryId ?? "", {
     skip: !inventory?.inventoryId,
   });
 
@@ -126,8 +122,7 @@ const EmissionsWidget = ({
           Total GHG Emissions in {{ year: inventory?.year }}
         </Trans>
       ),
-      value: inventory?.totalEmissions,
-      icon: FiHeart,
+      value: inventory?.totalEmissions ?? undefined,
       showProgress: false,
       isLoading: false,
     },
@@ -142,7 +137,6 @@ const EmissionsWidget = ({
         ></Trans>
       ),
       value: emissionsPerCapita,
-      icon: FiHeart,
       showProgress: false,
       isLoading: false,
     },
@@ -163,10 +157,9 @@ const EmissionsWidget = ({
 
         <Card.Body>
           <Stack separator={<StackSeparator />}>
-            {EmissionsData.map(({ id, field, value, icon, showProgress }) => (
+            {EmissionsData.map(({ id, field, value, showProgress }) => (
               <EmissionsWidgetCard
                 key={id}
-                icon={icon}
                 value={value}
                 field={field}
                 showProgress={showProgress}

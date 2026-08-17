@@ -144,7 +144,7 @@ def test_action_pathways_live_payload_matches_expected_contract() -> None:
 
     assert status_code == 200
     assert {"meta", "actions"}.issubset(payload.keys())
-    assert "?" not in url
+    assert url.endswith("/api/v1/action-pathways?lang=all")
     meta = payload["meta"]
     assert EXPECTED_META_KEYS.issubset(meta.keys())
     assert isinstance(meta["generatedAtUtc"], str)

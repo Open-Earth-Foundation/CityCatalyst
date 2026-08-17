@@ -1,6 +1,6 @@
 import { Box, HStack, Heading, Icon, Spinner, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
-import { Control } from "react-hook-form";
+import { Control, FieldValues } from "react-hook-form";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import { Field } from "@/components/ui/field";
 import { MdWarning } from "react-icons/md";
@@ -9,8 +9,8 @@ import LabelLarge from "@/components/package/Texts/Label";
 
 interface EmissionFactorsSectionProps {
   t: TFunction;
-  control: Control<any, any>;
-  errors: Record<string, any>;
+  control: Control<FieldValues>;
+  errors: Record<string, unknown>;
   isDirectMeasure: boolean;
   hideEmissionFactors?: boolean;
   isEmissionFactorInputDisabled: boolean;
@@ -32,6 +32,11 @@ export const EmissionFactorsSection = ({
     return null;
   }
 
+  const getFieldError = (field: string): { message?: string } | undefined =>
+    (errors?.activity as Record<string, { message?: string }> | undefined)?.[
+      field
+    ];
+
   return (
     <>
       <Heading
@@ -46,7 +51,7 @@ export const EmissionFactorsSection = ({
         </LabelLarge>
       </Heading>
       <HStack alignItems="flex-start" gap={4} mb={5}>
-        <Box>
+       
           <Field label={t("co2-emission-factor")}>
             <FormattedNumberInput
               miniAddon
@@ -54,7 +59,6 @@ export const EmissionFactorsSection = ({
               control={control}
               name="activity.CO2EmissionFactor"
               defaultValue="0"
-              w="110px"
               isDisabled={isEmissionFactorInputDisabled}
             >
               {areEmissionFactorsLoading ? (
@@ -65,12 +69,11 @@ export const EmissionFactorsSection = ({
                 </Text>
               )}
             </FormattedNumberInput>
-          </Field>
-          {errors?.activity?.["CO2EmissionFactor"] ? (
+            {getFieldError("CO2EmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["CO2EmissionFactor"]?.message}
+                {getFieldError("CO2EmissionFactor")?.message}
               </BodyMedium>
             </Box>
           ) : (
@@ -82,7 +85,7 @@ export const EmissionFactorsSection = ({
               h="16px"
             />
           )}
-        </Box>
+          </Field>
         <Field label={t("n2o-emission-factor")}>
           <FormattedNumberInput
             miniAddon
@@ -100,11 +103,11 @@ export const EmissionFactorsSection = ({
               </Text>
             )}
           </FormattedNumberInput>
-          {errors?.activity?.["N2OEmissionFactor"] ? (
+          {getFieldError("N2OEmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["N2OEmissionFactor"]?.message}
+                {getFieldError("N2OEmissionFactor")?.message}
               </BodyMedium>
             </Box>
           ) : (
@@ -134,11 +137,11 @@ export const EmissionFactorsSection = ({
               </Text>
             )}
           </FormattedNumberInput>
-          {errors?.activity?.["CH4EmissionFactor"] ? (
+          {getFieldError("CH4EmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["CH4EmissionFactor"]?.message}
+                {getFieldError("CH4EmissionFactor")?.message}
               </BodyMedium>
             </Box>
           ) : (

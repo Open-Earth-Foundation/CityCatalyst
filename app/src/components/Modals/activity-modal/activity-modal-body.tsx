@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import { TFunction } from "i18next";
 import {
   Control,
+  FieldErrors,
+  FieldValues,
+  UseFormClearErrors,
   UseFormGetValues,
   UseFormRegister,
+  UseFormSetError,
   UseFormSetValue,
+  UseFormWatch,
   useWatch,
 } from "react-hook-form";
 import type {
@@ -25,15 +30,15 @@ import { DataQualitySection } from "./sections/DataQualitySection";
 interface AddActivityModalBodyProps {
   t: TFunction;
   register: UseFormRegister<Inputs>;
-  watch: Function;
-  control: Control<any, any>;
+  watch: UseFormWatch<Inputs>;
+  control: Control<FieldValues>;
   submit: () => void;
   fields: ExtraField[];
   hideEmissionFactors?: boolean;
   units?: string[];
-  errors: Record<string, any>;
-  setError: Function;
-  clearErrors: Function;
+  errors: FieldErrors<FieldValues>;
+  setError: UseFormSetError<Inputs>;
+  clearErrors: UseFormClearErrors<Inputs>;
   emissionsFactorTypes: EmissionFactorTypes[];
   methodology: Methodology;
   selectedActivity?: SuggestedActivity;
@@ -62,7 +67,7 @@ export type Inputs = {
     co2EmissionFactorUnit: string;
     n2oEmissionFactorUnit: string;
     ch4EmissionFactorUnit: string;
-    wasteCompositionType?: string;
+    wasteCompositionType?: string | null;
   };
   direct: DirectMeasureData;
   subcategoryData: Record<string, SubcategoryData>;
@@ -82,7 +87,6 @@ const ActivityModalBody = ({
   clearErrors,
   fields,
   units,
-  targetActivityValue,
   selectedActivity,
   title,
   hideEmissionFactors,
@@ -91,11 +95,6 @@ const ActivityModalBody = ({
   areEmissionFactorsLoading,
   inventoryId,
 }: AddActivityModalBodyProps) => {
-  const unitValue = useWatch({
-    control,
-    name: `activity.${title}-unit` as any,
-  });
-
   const emissionsFactorTypeValue = useWatch({
     control,
     name: "activity.emissionFactorType",
@@ -162,19 +161,19 @@ const ActivityModalBody = ({
         setEmissionFactorUnits(defaultUnits);
         setIsEmissionFactorInputDisabled(false);
       } else {
-        let co2Val =
+        const co2Val =
           (emissionFactor?.gasValuesByGas["CO2"]?.gasValues.length as number) >
           0
             ? emissionFactor?.gasValuesByGas["CO2"].gasValues[0]
                 .emissionsPerActivity
             : "";
-        let n2oVal =
+        const n2oVal =
           (emissionFactor?.gasValuesByGas["N2O"]?.gasValues.length as number) >
           0
             ? emissionFactor?.gasValuesByGas["N2O"].gasValues[0]
                 .emissionsPerActivity
             : "";
-        let ch4Val =
+        const ch4Val =
           (emissionFactor?.gasValuesByGas["CH4"]?.gasValues.length as number) >
           0
             ? emissionFactor?.gasValuesByGas["CH4"].gasValues[0]
@@ -228,7 +227,10 @@ const ActivityModalBody = ({
 
   // Validate emission factors in real-time (only when custom factor type is selected)
   useEffect(() => {
-    const validateEmissionFactor = (value: number, fieldName: string) => {
+    const validateEmissionFactor = (
+      value: number,
+      fieldName: "CO2EmissionFactor" | "N2OEmissionFactor" | "CH4EmissionFactor",
+    ) => {
       // Only validate if custom emission factor type is selected
       if (emissionsFactorTypeValue !== "custom") {
         clearErrors(`activity.${fieldName}`);
@@ -282,7 +284,7 @@ const ActivityModalBody = ({
           methodology={methodology}
           selectedActivity={selectedActivity}
         />
-        
+
         <DynamicFieldsSection
           t={t}
           register={register}
@@ -297,7 +299,7 @@ const ActivityModalBody = ({
           inventoryId={inventoryId}
           methodologyId={methodology.id}
         />
-        
+
         <ActivityDataSection
           t={t}
           register={register}
@@ -310,7 +312,7 @@ const ActivityModalBody = ({
           emissionsFactorTypes={emissionsFactorTypes}
           isDirectMeasure={isDirectMeasure}
         />
-        
+
         <DirectMeasureSection
           t={t}
           control={control}
@@ -318,7 +320,7 @@ const ActivityModalBody = ({
           isDirectMeasure={isDirectMeasure}
           setValue={setValue}
         />
-        
+
         <EmissionFactorsSection
           t={t}
           control={control}
@@ -329,7 +331,7 @@ const ActivityModalBody = ({
           emissionFactorUnits={emissionFactorUnits}
           areEmissionFactorsLoading={areEmissionFactorsLoading}
         />
-        
+
         <DataQualitySection
           t={t}
           register={register}

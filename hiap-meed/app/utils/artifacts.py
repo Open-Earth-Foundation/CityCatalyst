@@ -7,7 +7,7 @@ import logging
 import os
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Mapping
+from typing import Any, Mapping
 from uuid import UUID
 
 from app.utils.mlflow_logging import log_json_artifact, log_text_artifact
@@ -139,8 +139,8 @@ class ArtifactWriter:
         except Exception:
             logger.exception("Failed to write step detail `%s`", step_name)
 
-    def write_run_file(self, filename: str, payload: Mapping[str, object]) -> Path | None:
-        """Write one JSON artifact file directly inside the run folder."""
+    def write_run_file(self, filename: str, payload: Any) -> Path | None:
+        """Write one JSON-compatible artifact file directly inside the run folder."""
         log_json_artifact(filename, payload)
         self._register_written_file(filename)
         if not self.local_enabled:
@@ -149,7 +149,7 @@ class ArtifactWriter:
         try:
             output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(
-                json.dumps(dict(payload), ensure_ascii=False, indent=2),
+                json.dumps(payload, ensure_ascii=False, indent=2),
                 encoding="utf-8",
             )
             return output_path

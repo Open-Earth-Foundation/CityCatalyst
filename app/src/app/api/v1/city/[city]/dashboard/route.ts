@@ -130,8 +130,6 @@ export const GET = apiHandler(async (req, { params, session }) => {
           cityId,
           latestInventory,
           lng,
-          session,
-          false,
         ).catch((err) => {
           logger.error({ error: err }, "Error fetching HIAP dashboard");
           return null;
@@ -161,7 +159,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     await Promise.all(widgetPromises);
 
   // Compute totalEmissions for all inventories from InventoryValue.co2eq sums
-  let totalEmissionsByInventory: Record<string, number | null> = {};
+  const totalEmissionsByInventory: Record<string, number | null> = {};
   if (inventories.length > 0) {
     const inventoryIds = inventories.map((inv) => inv.inventoryId);
     const emissionRows = (await db.sequelize!.query(

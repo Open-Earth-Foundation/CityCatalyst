@@ -1,9 +1,9 @@
 import createHttpError from "http-errors";
-import type { User } from "@/models/User";
+import type { User, UserAttributes } from "@/models/User";
 import { Organization } from "@/models/Organization";
-import jwt, { Secret } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import InviteToOrganizationTemplate from "@/lib/emails/InviteToOrganizationTemplate";
 import { logger } from "@/services/logger";
 import ProjectCreatedNotificationTemplate from "@/lib/emails/ProjectCreatedNotificationTemplate";
@@ -12,7 +12,7 @@ import ProjectDeletedNotificationTemplate from "@/lib/emails/ProjectDeletedNotif
 import CitySlotChangedNotificationTemplate from "@/lib/emails/CitySlotChangedNotification";
 import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotificationTemplate";
 import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
-import { City } from "@/models/City";
+import { City, CityAttributes } from "@/models/City";
 import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
 import { ACTION_TYPES, LANGUAGES, OrganizationRole } from "@/util/types";
 import RoleUpdateNotificationTemplate from "@/lib/emails/RoleUpdateNotificationTemplate";
@@ -26,7 +26,6 @@ import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import confirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplate";
 import { UserFileResponse } from "@/util/types";
 import HiapRankingReadyTemplate from "@/lib/emails/HiapRankingReadyTemplate";
-import { AppSession } from "@/lib/auth";
 
 interface EmailTranslation {
   subject: string;
@@ -55,7 +54,9 @@ export default class EmailService {
       typeof translation === "object" &&
       subKey in translation
     ) {
-      return { [subKey]: (translation as any)[subKey] } as EmailTranslation;
+      return {
+        [subKey]: (translation as Record<string, unknown>)[subKey],
+      } as EmailTranslation;
     }
 
     // Otherwise return the full translation object
@@ -70,7 +71,7 @@ export default class EmailService {
     },
     organization: Organization,
     user: User | null,
-  ) {
+  ): Promise<{ success: boolean; inviteUrl: string }> {
     const { email, organizationId, role } = request;
 
     if (!process.env.VERIFICATION_TOKEN_SECRET) {
@@ -100,30 +101,35 @@ export default class EmailService {
     params.set("role", role);
 
     const url = `${host}/cities/onboarding?${params.toString()}`;
-    const html = await render(
-      InviteToOrganizationTemplate({
-        url,
-        organization,
+
+    try {
+      const html = await render(
+        InviteToOrganizationTemplate({
+          url,
+          user,
+          language: user?.preferredLanguage,
+        }),
+      );
+
+      const translatedSubject = this.getTranslation(
         user,
-        language: user?.preferredLanguage,
-      }),
-    );
+        "invite-organization.subject",
+      ).subject;
 
-    const translatedSubject = this.getTranslation(
-      user,
-      "invite-organization.subject",
-    ).subject;
+      await sendEmail({
+        to: email,
+        subject: translatedSubject,
+        html,
+      });
+    } catch (err) {
+      logger.error(
+        { err, email, organizationId },
+        "Failed to send organization invitation email",
+      );
+      return { success: false, inviteUrl: url };
+    }
 
-    const emailResult = await sendEmail({
-      to: email,
-      subject: translatedSubject,
-      html,
-    });
-
-    return {
-      success: emailResult,
-      inviteUrl: url,
-    };
+    return { success: true, inviteUrl: url };
   }
 
   public static async sendProjectCreationNotificationEmail({
@@ -162,7 +168,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -205,7 +211,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -248,7 +254,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -285,7 +291,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -322,7 +328,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -385,8 +391,8 @@ export default class EmailService {
     email: string;
     organizationName: string;
     brandInformation?: {
-      color: string;
-      logoUrl: string;
+      color?: string;
+      logoUrl?: string;
     };
     user: User | null;
   }) {
@@ -472,7 +478,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -482,13 +488,11 @@ export default class EmailService {
   public static async sendInviteToMultipleCities({
     email,
     cities,
-    invitingUser,
     brandInformation,
     user,
   }: {
     email: string;
     cities: City[];
-    invitingUser: { name: string; email: string };
     brandInformation?: {
       color: string;
       logoUrl: string;
@@ -504,7 +508,6 @@ export default class EmailService {
           url,
           email,
           cities,
-          invitingUser,
           brandInformation,
           language: user?.preferredLanguage,
         }),
@@ -520,8 +523,8 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
-      logger.error(`Failed to send email to ${email}`);
+    } catch (error) {
+      logger.error({ error }, `Failed to send email to ${email}`);
     }
   }
 
@@ -562,25 +565,22 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${email}`);
     }
   }
 
   public static async sendInviteToOrganization({
     url,
-    organization,
     user,
   }: {
     url: string;
-    organization: Organization;
     user: User | null;
   }) {
     try {
       const html = await render(
         InviteToOrganizationTemplate({
           url,
-          organization,
           user,
           language: user?.preferredLanguage,
         }),
@@ -596,7 +596,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${user?.email}`);
     }
   }
@@ -696,9 +696,9 @@ export default class EmailService {
   }: {
     url?: string;
     user?: { name: string; email: string; cityId?: string };
-    city?: any;
+    city?: CityAttributes;
     invitingUser?: { name: string; email: string };
-    members: any[];
+    members: UserAttributes[];
     userEmail: string;
     language?: string;
   }) {
@@ -724,7 +724,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${userEmail}`);
     }
   }
@@ -760,7 +760,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error({ email }, "Failed to send confirm registration email");
     }
   }
@@ -811,7 +811,6 @@ export default class EmailService {
         HiapRankingReadyTemplate({
           url,
           user: user,
-          actionType,
           language: user.preferredLanguage,
         }),
       );

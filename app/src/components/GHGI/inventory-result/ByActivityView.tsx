@@ -32,7 +32,7 @@ export const ByActivityView: React.FC<EmissionsBreakdownByActivityProps> = ({
         ([subSector, values]) => {
           const consumptions = Object.entries(
             values.totals?.totalActivityValueByUnit || {},
-          ).filter(([unit, _value]) => unit !== "N/A");
+          ).filter(([unit]) => unit !== "N/A");
 
           const consumptionOrMassOfWasteTitle =
             sectorName !== "waste" ? "consumption" : "mass-of-waste";

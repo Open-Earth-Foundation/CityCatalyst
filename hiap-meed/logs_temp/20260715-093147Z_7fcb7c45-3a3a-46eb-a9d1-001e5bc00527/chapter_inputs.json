@@ -1,0 +1,640 @@
+[
+  {
+    "key": "snapshot",
+    "title": "Snapshot",
+    "language": "en",
+    "facts": {
+      "city": {
+        "locode": "CL IQQ",
+        "name": "Iquique",
+        "region": "Tarapacá",
+        "country_code": "CL",
+        "population_size": 196709
+      },
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+      },
+      "ranking": {
+        "rank": 8,
+        "final_score": 0.4764567293028953,
+        "impact_score": 0.2547734586057905,
+        "alignment_score": 0.5750000000000001,
+        "feasibility_score": 0.88285,
+        "returned_action_count": 20,
+        "explanation_language": "en",
+        "explanation": "Residential buildings account for 97% of the city's inventory, so this action has a strong impact driver. It is backed by the Plan de Mitigación Sector Energía, matches both air quality and mobility, and fits the city's medium timeframe preference, but it does not match the city's selected priority sector. Financial feasibility is a caveat because capacity is the constraint, not money, and technical assistance is needed."
+      }
+    },
+    "source_refs": [
+      "ranking_snapshot",
+      "city",
+      "action_pathways"
+    ],
+    "limitations": [
+      "Comparable project evidence is not available in the supplied context.",
+      "City-level quantified emissions reductions are not available for this action in the supplied context."
+    ],
+    "notion_coverage": [
+      "city and action identity",
+      "ranking position and scores",
+      "one-line qualitative signal summary"
+    ],
+    "notion_deferred": [
+      "track record",
+      "product-approved wording for the ask"
+    ],
+    "unsupported_claims": [
+      "Do not state comparable project counts."
+    ]
+  },
+  {
+    "key": "the_action",
+    "title": "The Action",
+    "language": "en",
+    "facts": {
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods",
+        "type": "mitigation",
+        "description": "The city will install LED-based (or other low emission technologies), solar-powered streetlights in all neighborhoods, including rural and peri-urban areas, to enhance safety, accessibility, and social inclusion while reducing energy costs and environmental impacts. Where feasible, the action prioritizes solar power generation, especially in areas with limited grid coverage or high carbon intensity. In locations where the electricity grid is already clean, the focus will be on maximizing lighting efficiency through LED retrofits and smart controls. Municipal roles include procuring equipment, establishing public–private financing mechanisms, and contracting long-term maintenance services to ensure system reliability. This action delivers strong co-benefits for communities of all sizes but requires careful planning to address maintenance and operational challenges.",
+        "intervention_summary": "The city installs energy-efficient and solar-powered streetlights.",
+        "outcome_summary": "Street lighting shifts to efficient LED and solar-powered fixtures.",
+        "intervention_type": "infrastructure",
+        "action_role": "intervention",
+        "investment_cost": "medium",
+        "implementation_timeline": "5-10 years",
+        "co_benefits": {
+          "air_quality": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          },
+          "cost_of_living": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          },
+          "mobility": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          },
+          "stakeholder_engagement": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          }
+        }
+      }
+    },
+    "source_refs": [
+      "action_pathways"
+    ],
+    "limitations": [
+      "Detailed local implementation scope is not available in the supplied context."
+    ],
+    "notion_coverage": [
+      "name and ID",
+      "type",
+      "description",
+      "investment cost",
+      "implementation timeline"
+    ],
+    "notion_deferred": [
+      "localized action copy when not present in source data"
+    ],
+    "unsupported_claims": [
+      "Do not invent action details absent from live action data."
+    ]
+  },
+  {
+    "key": "action_impact",
+    "title": "Action Impact",
+    "language": "en",
+    "facts": {
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods",
+        "description": "The city will install LED-based (or other low emission technologies), solar-powered streetlights in all neighborhoods, including rural and peri-urban areas, to enhance safety, accessibility, and social inclusion while reducing energy costs and environmental impacts. Where feasible, the action prioritizes solar power generation, especially in areas with limited grid coverage or high carbon intensity. In locations where the electricity grid is already clean, the focus will be on maximizing lighting efficiency through LED retrofits and smart controls. Municipal roles include procuring equipment, establishing public–private financing mechanisms, and contracting long-term maintenance services to ensure system reliability. This action delivers strong co-benefits for communities of all sizes but requires careful planning to address maintenance and operational challenges.",
+        "intervention_summary": "The city installs energy-efficient and solar-powered streetlights.",
+        "outcome_summary": "Street lighting shifts to efficient LED and solar-powered fixtures.",
+        "implementation_timeline": "5-10 years",
+        "emissions": {
+          "sector_number": "I",
+          "subsector_number": [
+            1
+          ],
+          "gpc_reference_number": [
+            "I.1.1",
+            "I.1.2"
+          ],
+          "impact_relationship": "positive",
+          "impact_text": "very low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "co_benefits": {
+          "air_quality": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          },
+          "cost_of_living": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          },
+          "mobility": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          },
+          "stakeholder_engagement": {
+            "impact_relationship": "positive",
+            "impact_text": "low",
+            "impact_numeric": 1,
+            "methodology": "expert review"
+          }
+        }
+      },
+      "ranking": {
+        "rank": 8,
+        "returned_action_count": 20,
+        "impact_score": 0.2547734586057905,
+        "final_score": 0.4764567293028953
+      },
+      "impact_evidence": {
+        "impact_block_score": 0.2547734586057905,
+        "matched_city_subsector_keys_count": 1,
+        "emissions_reduction_component_score": 0.19346682325723805,
+        "timeline_component_score": 0.5
+      }
+    },
+    "source_refs": [
+      "ranking_snapshot",
+      "action_pathways"
+    ],
+    "limitations": [
+      "City-level quantified emissions reductions are not available for this action in the supplied context."
+    ],
+    "notion_coverage": [
+      "qualitative mitigation potential",
+      "co-benefits"
+    ],
+    "notion_deferred": [
+      "city-specific per-action tCO2e estimate"
+    ],
+    "unsupported_claims": [
+      "Do not provide quantified tCO2e unless source facts contain it."
+    ]
+  },
+  {
+    "key": "city_fit",
+    "title": "City Fit",
+    "language": "en",
+    "facts": {
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+      },
+      "ranking": {
+        "rank": 8,
+        "returned_action_count": 20,
+        "feasibility_score": 0.88285
+      },
+      "city_context": [
+        {
+          "attribute_name": "renter_share",
+          "attribute_value": 44.16,
+          "attribute_category": "very high"
+        },
+        {
+          "attribute_name": "electricity_access_rate",
+          "attribute_value": 99.75,
+          "attribute_category": "high"
+        },
+        {
+          "attribute_name": "median_household_income",
+          "attribute_value": 1174475.0,
+          "attribute_category": "very high"
+        },
+        {
+          "attribute_name": "poverty_rate",
+          "attribute_value": 19.72,
+          "attribute_category": "low"
+        },
+        {
+          "attribute_name": "home_ownership",
+          "attribute_value": 42.18,
+          "attribute_category": "very low"
+        }
+      ],
+      "mitigation_feasibility": {
+        "action_id": "icare_0040",
+        "action_mapping_strength": "direct",
+        "action_score": 0.945,
+        "rank_within_city": 35,
+        "dimension_scores": {
+          "economic": 0.938,
+          "technological": 0.979,
+          "institutional": 1.0,
+          "socio_cultural": 0.75,
+          "environmental": 1.0,
+          "geophysical": 1.0
+        },
+        "supporting_local_conditions": [
+          {
+            "dimension": "economic",
+            "global_indicator": "cost-effectiveness",
+            "city_indicator": "median_household_income",
+            "category": "very high",
+            "direction": "positive",
+            "capacity": 1.0,
+            "contribution": 1.0
+          },
+          {
+            "dimension": "technological",
+            "global_indicator": "technical_scalability",
+            "city_indicator": "fixed_internet_household_share",
+            "category": "very high",
+            "direction": "positive",
+            "capacity": 1.0,
+            "contribution": 1.0
+          },
+          {
+            "dimension": "economic",
+            "global_indicator": "cost-effectiveness",
+            "city_indicator": "poverty_rate",
+            "category": "low",
+            "direction": "negative",
+            "capacity": 0.25,
+            "contribution": 0.5
+          },
+          {
+            "dimension": "technological",
+            "global_indicator": "technical_scalability",
+            "city_indicator": "electricity_access_rate",
+            "category": "high",
+            "direction": "positive",
+            "capacity": 0.75,
+            "contribution": 0.5
+          }
+        ],
+        "limiting_local_conditions": [
+          {
+            "dimension": "socio_cultural",
+            "global_indicator": "public_acceptance",
+            "city_indicator": "home_ownership",
+            "category": "very low",
+            "direction": "positive",
+            "capacity": 0.0,
+            "contribution": -1.0
+          },
+          {
+            "dimension": "socio_cultural",
+            "global_indicator": "public_acceptance",
+            "city_indicator": "renter_share",
+            "category": "very high",
+            "direction": "negative",
+            "capacity": 1.0,
+            "contribution": -1.0
+          }
+        ]
+      }
+    },
+    "source_refs": [
+      "ranking_snapshot",
+      "city",
+      "mitigation_feasibility"
+    ],
+    "limitations": [
+      "Local implementation capacity is not available in the supplied context."
+    ],
+    "notion_coverage": [
+      "overall fit",
+      "supporting local conditions",
+      "limiting local conditions"
+    ],
+    "notion_deferred": [
+      "deterministic support/limit taxonomy if upstream rows are sparse"
+    ],
+    "unsupported_claims": [
+      "Do not infer local conditions beyond provided indicators."
+    ]
+  },
+  {
+    "key": "policy_backing",
+    "title": "Policy Backing",
+    "language": "en",
+    "facts": {
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+      },
+      "ranking": {
+        "rank": 8,
+        "returned_action_count": 20,
+        "alignment_score": 0.5750000000000001
+      },
+      "policy_score": {
+        "action_id": "icare_0040",
+        "policy_support_score": 0.65,
+        "policy_support_category": "medium",
+        "best_relevance": "medium",
+        "n_findings": 42,
+        "n_docs": 6,
+        "sum_strength": 7.302,
+        "policy_evidence": [
+          {
+            "evidence_rank": 1,
+            "signal_type": "action",
+            "signal_relation": "commits",
+            "signal_strength": "medium",
+            "document_name": "Plan de Mitigación Sector Energía",
+            "document_type": "sector_plan",
+            "doc_relevance": "medium",
+            "explicitness": "explicit",
+            "page": 91,
+            "evidence_strength": 0.3,
+            "evidence_text": "Impulsar el desarrollo de líneas y modelos de<br>financiamiento para reducir el uso de fuentes fósiles<br>mediante la electrificación de consumos."
+          },
+          {
+            "evidence_rank": 2,
+            "signal_type": "action",
+            "signal_relation": "commits",
+            "signal_strength": "medium",
+            "document_name": "Plan de Mitigación Sector Energía",
+            "document_type": "sector_plan",
+            "doc_relevance": "medium",
+            "explicitness": "explicit",
+            "page": 146,
+            "evidence_strength": 0.3,
+            "evidence_text": "El Plan establece 13 medidas clave que deberán implementarse durante el período 2025-2030, bajo la coordinación del Ministerio de Energía y con el apoyo de los actores colaboradores previamente identificados."
+          },
+          {
+            "evidence_rank": 3,
+            "signal_type": "governance",
+            "signal_relation": "governs",
+            "signal_strength": "medium",
+            "document_name": "Plan de Mitigación Sector Infraestructura",
+            "document_type": "sector_plan",
+            "doc_relevance": "medium",
+            "explicitness": "explicit",
+            "page": 42,
+            "evidence_strength": 0.24,
+            "evidence_text": "el Ministerio es reconocido como habilitante para el desarrollo del sector construcción"
+          },
+          {
+            "evidence_rank": 4,
+            "signal_type": "governance",
+            "signal_relation": "governs",
+            "signal_strength": "medium",
+            "document_name": "Plan de Mitigación Sector Energía",
+            "document_type": "sector_plan",
+            "doc_relevance": "medium",
+            "explicitness": "explicit",
+            "page": 188,
+            "evidence_strength": 0.24,
+            "evidence_text": "Responsable de transversalizar el enfoque de género y de derechos humanos en el diseño, formulación, implementación y seguimiento"
+          },
+          {
+            "evidence_rank": 5,
+            "signal_type": "governance",
+            "signal_relation": "governs",
+            "signal_strength": "medium",
+            "document_name": "Plan de Mitigación Sector Transporte",
+            "document_type": "sector_plan",
+            "doc_relevance": "low",
+            "explicitness": "explicit",
+            "page": 271,
+            "evidence_strength": 0.24,
+            "evidence_text": "los ministerios coadyuvantes corresponden al Ministerio de Obras Públicas, Ministerio de Vivienda y Urbanismo, Ministerio de Energía, Ministerio de Defensa (DIRECTEMAR), Ministerio del Interior y Seguridad Pública (SENAPRED) y Ministerio de Economía, Fomento y Turismo y Ministerio del Trabajo."
+          }
+        ]
+      }
+    },
+    "source_refs": [
+      "ranking_snapshot",
+      "policy_scores"
+    ],
+    "limitations": [],
+    "notion_coverage": [
+      "policy alignment label",
+      "finding and document counts"
+    ],
+    "notion_deferred": [
+      "exact verbatim page citations where upstream evidence lacks them"
+    ],
+    "unsupported_claims": [
+      "Do not quote policy text not present in policy_evidence."
+    ]
+  },
+  {
+    "key": "legal_mandate_delivery",
+    "title": "Legal Mandate & Delivery",
+    "language": "en",
+    "facts": {
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+      },
+      "ranking": {
+        "feasibility_score": 0.88285,
+        "legal_component_score": 1.0,
+        "legal_verdict_category": "enabled",
+        "legal_assessment_present": true
+      },
+      "legal": {
+        "action_id": "icare_0040",
+        "country_code": "CL",
+        "gpc_sector": "stationary_energy",
+        "verdict_category": "enabled",
+        "verdict_score": 1.0,
+        "ownership_category": "enabled",
+        "ownership_score": 1.0,
+        "ownership_description": "Municipality has explicit legal authority to act directly.",
+        "restrictions_category": "enabled",
+        "restrictions_score": 1.0,
+        "restrictions_description": "No legal restrictions; no additional authorization required.",
+        "legal_justification": "La Ley 18.695 art. 3° letra d) establece el alumbrado público como función privativa municipal — es una de las pocas funciones exclusivas del municipio establecidas expresamente en la LOCM. El DL 3.063 (Rentas Municipales) art. 6° y siguientes regulan el financiamiento del alumbrado público. La Ley 21.305 promueve la eficiencia energética en alumbrado público como componente del Plan Nacional de EE. El municipio tiene competencia directa, exclusiva y plena — no requiere autorización de ningún otro nivel de gobierno. La coordinación con la empresa distribuidora es técnica, no decisional. Titularidad 100: función privativa municipal. Restricciones 100: sin restricciones jurídicas — plena autonomía. Alineación 100: plena con Ley 21.305 y Plan Nacional de EE.",
+        "legal_references": [
+          "Ley 18.695 (LOCM) — BCN",
+          "Ley 21.305 Eficiencia Energética — BCN",
+          "DL 3.063 Rentas Municipales — BCN",
+          "Agencia Sostenibilidad Energética",
+          "Potestades Minenergia"
+        ]
+      }
+    },
+    "source_refs": [
+      "legal"
+    ],
+    "limitations": [
+      "Permit and SEIA applicability are not available in the supplied legal context."
+    ],
+    "notion_coverage": [
+      "legal verdict",
+      "ownership",
+      "restrictions",
+      "legal basis"
+    ],
+    "notion_deferred": [
+      "permits",
+      "SEIA applicability",
+      "approved delivery actor taxonomy"
+    ],
+    "unsupported_claims": [
+      "Do not soften a blocked legal verdict."
+    ]
+  },
+  {
+    "key": "financing_precedents_pathway",
+    "title": "Financing, Precedents & Pathway",
+    "language": "en",
+    "facts": {
+      "action": {
+        "action_id": "icare_0040",
+        "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+      },
+      "ranking": {
+        "feasibility_score": 0.88285,
+        "financial_component_score": 0.7,
+        "financial_score_present": true
+      },
+      "financial_feasibility": {
+        "action_id": "icare_0040",
+        "sector": "stationary_energy",
+        "financial_feasibility": 0.7,
+        "route": "needs technical assistance",
+        "reason": "Capacity is the constraint, not money; needs technical assistance. 47 comparable project(s) on record.",
+        "inputs": {
+          "action": {
+            "capital_intensity": 0.5,
+            "preparation_complexity": 0.8
+          },
+          "city": {
+            "profile": "Self-sufficient"
+          },
+          "finance": {
+            "fund_access": "direct",
+            "n_reachable_opportunities": 17
+          },
+          "evidence": {
+            "n_existing_projects": 47
+          }
+        }
+      },
+      "legal": {
+        "verdict_category": "enabled",
+        "ownership_category": "enabled",
+        "restrictions_category": "enabled",
+        "restrictions_description": "No legal restrictions; no additional authorization required."
+      }
+    },
+    "source_refs": [
+      "financial_feasibility",
+      "legal"
+    ],
+    "limitations": [
+      "Comparable project and track-record data are not available in the supplied context.",
+      "Named financing opportunities are not available in the supplied context."
+    ],
+    "notion_coverage": [
+      "funding outlook",
+      "funding route",
+      "suggested pathway"
+    ],
+    "notion_deferred": [
+      "comparable project evidence",
+      "named reachable funds when absent"
+    ],
+    "unsupported_claims": [
+      "Do not invent named funds or precedents."
+    ]
+  },
+  {
+    "key": "sources_assumptions",
+    "title": "Where The Information Comes From",
+    "language": "en",
+    "facts": {
+      "source_summary": {
+        "ranking_snapshot": {
+          "locode": "CL IQQ",
+          "selected_action_id": "icare_0040",
+          "rank": 8,
+          "returned_action_count": 20,
+          "requested_languages": [
+            "en"
+          ]
+        },
+        "live_enrichment_sources": [
+          {
+            "source_ref": "city",
+            "available": true
+          },
+          {
+            "source_ref": "action_pathways",
+            "available": true
+          },
+          {
+            "source_ref": "policy_scores",
+            "available": true
+          },
+          {
+            "source_ref": "legal",
+            "available": true
+          },
+          {
+            "source_ref": "mitigation_feasibility",
+            "available": true
+          },
+          {
+            "source_ref": "financial_feasibility",
+            "available": true
+          }
+        ],
+        "staleness_evaluated": false
+      },
+      "limitations": [
+        "Snapshot-to-live source staleness was not evaluated for this report.",
+        "Comparable project evidence is not available in the supplied context.",
+        "City-level quantified emissions reductions are not available for this action in the supplied context.",
+        "Permit and SEIA applicability are not available in the supplied legal context."
+      ]
+    },
+    "source_refs": [
+      "ranking_snapshot",
+      "city",
+      "action_pathways",
+      "policy_scores",
+      "legal",
+      "mitigation_feasibility",
+      "financial_feasibility"
+    ],
+    "limitations": [
+      "Snapshot-to-live source staleness was not evaluated for this report.",
+      "Comparable project evidence is not available in the supplied context.",
+      "City-level quantified emissions reductions are not available for this action in the supplied context.",
+      "Permit and SEIA applicability are not available in the supplied legal context."
+    ],
+    "notion_coverage": [
+      "source list",
+      "analyst figures",
+      "limitations"
+    ],
+    "notion_deferred": [
+      "final citation formatting"
+    ],
+    "unsupported_claims": [
+      "Do not treat MLflow/local artifacts as user-facing sources."
+    ]
+  }
+]

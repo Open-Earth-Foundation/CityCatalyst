@@ -55,7 +55,7 @@ export const POST = apiHandler(async (req) => {
   const threadId = input.threadId;
 
   // Add a user message on the thread
-  const createdMessage = await openai.beta.threads.messages.create(threadId, {
+  await openai.beta.threads.messages.create(threadId, {
     role: "user",
     content: input.content,
   });

@@ -3,6 +3,8 @@ import DataSourceService, {
 } from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { Inventory } from "@/models/Inventory";
+import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
+import type { GlobalAPISourceResponse } from "@/components/GHGI/data-step/types";
 import inventoryStructure from "@/data/inventory-structure.json";
 import gpcReferenceTable from "@/util/GHGI/data/gpc-reference-table.json";
 import {
@@ -107,8 +109,44 @@ type CurrentValueRecord = {
   }>;
 };
 
-const INVENTORY_STRUCTURE = inventoryStructure as Array<Record<string, any>>;
-const GPC_REFERENCE_TABLE = gpcReferenceTable as Array<Record<string, any>>;
+interface SubCategoryStructureRow {
+  subcategoryId: string;
+  subcategoryName: string | null;
+  activityName: string | null;
+  referenceNumber: string;
+  subsectorId: string;
+  scopeId: string | null;
+  reportinglevelId?: string;
+  scope?: { scopeId: string; scopeName: string } | null;
+}
+
+interface SubSectorStructureRow {
+  subsectorId: string;
+  subsectorName: string;
+  sectorId: string;
+  referenceNumber: string;
+  scopeId: string | null;
+  subCategories: SubCategoryStructureRow[];
+}
+
+interface SectorStructureRow {
+  sectorId: string;
+  sectorName: string;
+  referenceNumber: string;
+  subSectors: SubSectorStructureRow[];
+}
+
+interface GpcReferenceRow {
+  gpcRefNo: string;
+  sector: string;
+  subsector: string;
+  subcategoryName: string;
+  scope: number;
+  fuelTypeOrActivity: string[];
+}
+
+const INVENTORY_STRUCTURE = inventoryStructure as SectorStructureRow[];
+const GPC_REFERENCE_TABLE = gpcReferenceTable as GpcReferenceRow[];
 type CandidateApplicabilityStatus = "applicable" | "removed" | "failed";
 
 export async function buildStationaryEnergyContext(params: {
@@ -219,28 +257,28 @@ function buildTaxonomy(): TaxonomyRow[] {
   const rows: TaxonomyRow[] = [];
   for (const subsector of stationarySector.subSectors ?? []) {
     for (const subcategory of subsector.subCategories ?? []) {
-      const gpcRow = gpcByReference.get(subcategory.referenceNumber) ?? {};
+      const gpcRow = gpcByReference.get(subcategory.referenceNumber);
       rows.push({
         sector_id: stationarySector.sectorId,
         sector_name: "Stationary Energy",
         sector_reference_number: stationarySector.referenceNumber,
         subsector_id: subsector.subsectorId,
         subsector_name: friendlyLabel(
-          gpcRow.subsector ??
+          gpcRow?.subsector ??
             subsector.subsectorName ??
             subsector.referenceNumber,
         ),
         subsector_reference_number: subsector.referenceNumber,
         subcategory_id: subcategory.subcategoryId,
         subcategory_name: friendlyLabel(
-          gpcRow.subcategoryName ??
+          gpcRow?.subcategoryName ??
             subcategory.subcategoryName ??
             subcategory.referenceNumber,
         ),
         subcategory_reference_number: subcategory.referenceNumber,
         scope_id: subcategory.scopeId ?? subsector.scopeId ?? null,
         scope_name: scopeName(
-          subcategory.scope?.scopeName ?? gpcRow.scope ?? null,
+          subcategory.scope?.scopeName ?? gpcRow?.scope ?? null,
         ),
       });
     }
@@ -395,7 +433,11 @@ function hasCommittedCurrentValue(value: Record<string, unknown>): boolean {
   }
 
   const unavailableReason = stringField(value["unavailable_reason"]);
-  return Boolean(unavailableReason && unavailableReason !== "reason-NE");
+  return Boolean(
+    unavailableReason &&
+      unavailableReason !== "reason-NE" &&
+      unavailableReason !== "not-estimated",
+  );
 }
 
 async function buildSourceCandidates(
@@ -412,7 +454,7 @@ async function buildSourceCandidates(
   const allSources = await DataSourceService.findAllSources(
     inventory.inventoryId,
   );
-  const stationarySources = allSources.filter((source: any) => {
+  const stationarySources = allSources.filter((source) => {
     const sectorId =
       source.subSector?.sectorId ?? source.subCategory?.subsector?.sectorId;
     return (
@@ -431,7 +473,7 @@ async function buildSourceCandidates(
     );
 
   const applicableWithData = await Promise.all(
-    applicableSources.map(async (source: any) => {
+    applicableSources.map(async (source) => {
       const result = await DataSourceService.getSourceWithData(
         source,
         inventory,
@@ -481,18 +523,26 @@ async function buildSourceCandidates(
 
 function buildSourceCandidate(params: {
   inventory: Inventory;
-  item: Record<string, any>;
+  item: {
+    error?: string;
+    source: DataSource;
+    data?: GlobalAPISourceResponse;
+  };
   applicabilityStatus: CandidateApplicabilityStatus;
   applicabilityIssues?: string[];
   failureReason?: string | null;
 }): Record<string, unknown> {
-  const source = params.item.source ?? params.item;
+  const source = params.item.source;
   const data = params.item.data;
   const sourceScope = buildSourceScope(source);
   const geographyMatch = resolveGeographyMatch(
     params.inventory,
     source?.geographicalLocation,
   );
+
+  // datasetUrl isn't a real DataSource field; kept as a defensive fallback
+  // in case a differently-shaped source object is ever passed in.
+  const legacySource = source as DataSource & { datasetUrl?: string };
 
   return {
     datasource_id: source.datasourceId,
@@ -501,7 +551,11 @@ function buildSourceCandidate(params: {
     retrieval_method: source.retrievalMethod ?? null,
     dataset_name: source.datasourceName ?? null,
     dataset_year: source.startYear ?? null,
-    url: source.url ?? source.datasetUrl ?? source.publisher?.url ?? null,
+    url:
+      source.url ??
+      legacySource.datasetUrl ??
+      source.publisher?.url ??
+      null,
     geography_match: geographyMatch,
     source_scope: sourceScope,
     source_data: data ?? null,
@@ -537,9 +591,7 @@ function buildRemovedSourceCandidate(params: {
   });
 }
 
-function buildSourceScope(
-  source: Record<string, any>,
-): Record<string, unknown> {
+function buildSourceScope(source: DataSource): Record<string, unknown> {
   const subCategory = source.subCategory ?? null;
   const subSector = subCategory?.subsector ?? source.subSector ?? null;
 
@@ -563,7 +615,7 @@ function buildSourceScope(
 }
 
 function sourceMatchesFilledReference(
-  source: Record<string, any>,
+  source: DataSource,
   filledReferenceNumbers: Set<string>,
 ): boolean {
   if (filledReferenceNumbers.size === 0) {
@@ -671,17 +723,23 @@ function buildGuidanceContext(params: {
   };
 }
 
-function normalizeSourceRows(data: any): Array<Record<string, unknown>> {
+function normalizeSourceRows(
+  data: GlobalAPISourceResponse | undefined,
+): Array<Record<string, unknown>> {
   if (!data) {
     return [];
   }
 
   if (Array.isArray(data.records)) {
-    return data.records.map((row: Record<string, unknown>) => row);
+    return data.records.map((row) => row as unknown as Record<string, unknown>);
   }
 
-  if (Array.isArray(data.rows)) {
-    return data.rows.map((row: Record<string, unknown>) => row);
+  // `rows` isn't part of GlobalAPISourceResponse; kept as a defensive
+  // fallback in case a differently-shaped response is ever passed in.
+  const legacyRows = (data as GlobalAPISourceResponse & { rows?: unknown[] })
+    .rows;
+  if (Array.isArray(legacyRows)) {
+    return legacyRows.map((row) => row as Record<string, unknown>);
   }
 
   if (data.totals?.emissions) {
@@ -695,7 +753,9 @@ function normalizeSourceRows(data: any): Array<Record<string, unknown>> {
     ];
   }
 
-  return typeof data === "object" ? [data] : [];
+  return typeof data === "object"
+    ? [data as unknown as Record<string, unknown>]
+    : [];
 }
 
 function resolveLocale(locale?: string | null): StationaryEnergyLocale {
@@ -792,7 +852,7 @@ function resolveGeographyMatch(
 
 function buildConfidenceNotes(params: {
   geographyMatch: string;
-  source: Record<string, any>;
+  source: DataSource;
   inventory: Inventory;
 }): string {
   const notes = [];

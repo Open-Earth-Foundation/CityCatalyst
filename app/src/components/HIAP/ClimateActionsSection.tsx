@@ -206,7 +206,11 @@ export function ClimateActionsSection({
               >
                 <Icon as={MdOutlineInfo} boxSize="16px" color="content.link" />
                 <BodyLarge fontFamily="body" color="content.secondary">
-                  {t("top-actions-tip")}
+                  {t(
+                    actionType === ACTION_TYPES.Adaptation
+                      ? "top-actions-tip-adaptation"
+                      : "top-actions-tip-mitigation",
+                  )}
                 </BodyLarge>
               </Box>
             )}

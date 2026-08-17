@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "../providers";
 import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
-import { PublicEnvScript } from "next-runtime-env";
+import { RuntimeEnvScript, env } from "@/lib/runtime-env";
 import { Toaster } from "@/components/ui/toaster";
 import ClientRootLayout from "@/components/ClientRootLayout";
 import CookieConsent from "@/components/CookieConsent";
@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 }
 
 const HIGHLIGHT_PROJECT_ID =
-  process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID || "4d7yymxd";
+  env("NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID") || "4d7yymxd";
 const ENVIRONMENT = process.env.NODE_ENV || "development";
 
 export default function RootLayout(props: {
@@ -70,7 +70,7 @@ export default function RootLayout(props: {
         <head>
           <link rel="icon" type="image/svg+xml" href="/assets/icon.svg" />
           <link rel="icon" type="image/png" href="/assets/icon.png" />
-          <PublicEnvScript />
+          <RuntimeEnvScript />
         </head>
         <body>
           <Providers>

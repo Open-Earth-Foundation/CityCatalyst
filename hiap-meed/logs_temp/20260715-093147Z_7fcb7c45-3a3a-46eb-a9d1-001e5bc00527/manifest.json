@@ -1,0 +1,35 @@
+{
+  "counts": {
+    "chapters": 8,
+    "limitations": 4
+  },
+  "artifact_pointers": {
+    "summary_events": "summary.jsonl",
+    "input_snapshot": "input_snapshot.json",
+    "report_context": "report_context.json",
+    "chapter_inputs": "chapter_inputs.json",
+    "output_plan_llm_io": "llm/output_plan_io.json",
+    "output_plan_markdown": "output_plan.md",
+    "response_full": "response_full.json"
+  },
+  "schema_version": "1.2",
+  "request_id": "7fcb7c45-3a3a-46eb-a9d1-001e5bc00527",
+  "request_kind": "city_action_report",
+  "generated_files": [
+    "chapter_inputs.json",
+    "input_snapshot.json",
+    "llm/action_impact_prompt.txt",
+    "llm/city_fit_prompt.txt",
+    "llm/financing_precedents_pathway_prompt.txt",
+    "llm/legal_mandate_delivery_prompt.txt",
+    "llm/output_plan_io.json",
+    "llm/policy_backing_prompt.txt",
+    "llm/snapshot_prompt.txt",
+    "llm/sources_assumptions_prompt.txt",
+    "llm/the_action_prompt.txt",
+    "output_plan.md",
+    "report_context.json",
+    "response_full.json",
+    "summary.jsonl"
+  ]
+}

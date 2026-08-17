@@ -6,7 +6,10 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import { SubSector } from "@/models/SubSector";
-import { DataSourceActivityDataRecord } from "@/components/GHGI/data-step/types";
+import type {
+  DataSourceActivityDataRecord,
+  GlobalAPISourceResponse,
+} from "@/components/GHGI/data-step/types";
 import { InventoryValue } from "@/models/InventoryValue";
 import { Publisher } from "@/models/Publisher";
 import { Scope } from "@/models/Scope";
@@ -175,7 +178,7 @@ export default class DataSourceService {
     });
     if (sector && sector.dataSources) {
       const found = sector.dataSources.find(
-        (ds: any) => ds.datasourceId === datasourceId,
+        (ds: { datasourceId: string }) => ds.datasourceId === datasourceId,
       );
       if (found) return found;
     }
@@ -186,7 +189,7 @@ export default class DataSourceService {
     });
     if (subSector && subSector.dataSources) {
       const found = subSector.dataSources.find(
-        (ds: any) => ds.datasourceId === datasourceId,
+        (ds: { datasourceId: string }) => ds.datasourceId === datasourceId,
       );
       if (found) return found;
     }
@@ -197,7 +200,7 @@ export default class DataSourceService {
     });
     if (subCategory && subCategory.dataSources) {
       const found = subCategory.dataSources.find(
-        (ds: any) => ds.datasourceId === datasourceId,
+        (ds: { datasourceId: string }) => ds.datasourceId === datasourceId,
       );
       if (found) return found;
     }
@@ -287,58 +290,68 @@ export default class DataSourceService {
       populationIssue,
     } = populationScaleFactors;
 
-    if (source.retrievalMethod === "global_api") {
-      const sourceStatus = await DataSourceService.applyGlobalAPISource(
-        source,
-        inventory,
-        userId,
-        1.0,
-        forceReplace,
-      );
-      if (typeof sourceStatus === "string") {
-        result.issue = sourceStatus;
-        result.success = false;
-      }
-    } else if (source.retrievalMethod === "global_api_notation_key") {
-      const sourceStatus =
-        await DataSourceService.applyGlobalAPINotationKeySource(
+    try {
+      if (source.retrievalMethod === "global_api") {
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
           source,
           inventory,
           userId,
+          1.0,
           forceReplace,
         );
-      if (typeof sourceStatus === "string") {
-        result.issue = sourceStatus;
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else if (source.retrievalMethod === "global_api_notation_key") {
+        const sourceStatus =
+          await DataSourceService.applyGlobalAPINotationKeySource(
+            source,
+            inventory,
+            userId,
+            forceReplace,
+          );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else if (
+        populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
+      ) {
+        if (populationIssue) {
+          result.issue = populationIssue;
+          result.success = false;
+          return result;
+        }
+        let scaleFactor = 1.0;
+        if (source.retrievalMethod === downscaledByCountryPopulation) {
+          scaleFactor = countryPopulationScaleFactor;
+        } else if (source.retrievalMethod === downscaledByRegionPopulation) {
+          scaleFactor = regionPopulationScaleFactor;
+        }
+        const sourceStatus = await DataSourceService.applyGlobalAPISource(
+          source,
+          inventory,
+          userId,
+          scaleFactor,
+          forceReplace,
+        );
+        if (typeof sourceStatus === "string") {
+          result.issue = sourceStatus;
+          result.success = false;
+        }
+      } else {
+        result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
+        logger.error(result.issue);
         result.success = false;
       }
-    } else if (
-      populationScalingRetrievalMethods.includes(source.retrievalMethod ?? "")
-    ) {
-      if (populationIssue) {
-        result.issue = populationIssue;
-        result.success = false;
-        return result;
-      }
-      let scaleFactor = 1.0;
-      if (source.retrievalMethod === downscaledByCountryPopulation) {
-        scaleFactor = countryPopulationScaleFactor;
-      } else if (source.retrievalMethod === downscaledByRegionPopulation) {
-        scaleFactor = regionPopulationScaleFactor;
-      }
-      const sourceStatus = await DataSourceService.applyGlobalAPISource(
-        source,
-        inventory,
-        userId,
-        scaleFactor,
-        forceReplace,
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      logger.error(
+        { err, datasourceId: source.datasourceId },
+        `Unexpected error applying source: ${message}`,
       );
-      if (typeof sourceStatus === "string") {
-        result.issue = sourceStatus;
-        result.success = false;
-      }
-    } else {
-      result.issue = `Unsupported retrieval method ${source.retrievalMethod} for data source ${source.datasourceId}`;
-      logger.error(result.issue);
+      result.issue = message;
       result.success = false;
     }
 
@@ -410,7 +423,7 @@ export default class DataSourceService {
   public static async retrieveGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
-  ): Promise<any | string> {
+  ): Promise<GlobalAPISourceResponse | string> {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
     if (
@@ -858,12 +871,16 @@ export default class DataSourceService {
    * Gets a datasource from an inventory and scales it if necessary
    */
   public static async getSourceWithData(
-    source: any,
-    inventory: any,
+    source: DataSource,
+    inventory: Inventory,
     countryPopulationScaleFactor: number,
     regionPopulationScaleFactor: number,
     populationIssue: string | null,
-  ): Promise<{ error?: string; source: any; data?: any }> {
+  ): Promise<{
+    error?: string;
+    source: DataSource;
+    data?: GlobalAPISourceResponse;
+  }> {
     const data = await DataSourceService.retrieveGlobalAPISource(
       source,
       inventory,

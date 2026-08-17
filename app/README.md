@@ -9,8 +9,8 @@ This guide assumes you have installed and access to the following tools:
 
 1. git command line interface. Please follow [this link](https://git-scm.com/downloads) for installation instructions.
 2. Node.js and the node package manager npm. Please follow [this link](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) for installation instructions.
-3. (optional) docker engine. Docker is not strictly necessary but recommended. It makes the setup of the database service much easier. Please follow [this link](https://docs.docker.com/engine/install/) for installation instructions. 
-4. (optional, Windows OS only) Windows Subsystem for Linux WSL2. This step is only needed for running the convenience shell scripts below e.g. for setting up the Postgres database via docker. Different Linux subsystems can be installed. The following link is for Ubuntu. Please follow [this link](https://ubuntu.com/desktop/wsl) for installation instructions. 
+3. (optional) docker engine. Docker is not strictly necessary but recommended. It makes the setup of the database service much easier. Please follow [this link](https://docs.docker.com/engine/install/) for installation instructions.
+4. (optional, Windows OS only) Windows Subsystem for Linux WSL2. This step is only needed for running the convenience shell scripts below e.g. for setting up the Postgres database via docker. Different Linux subsystems can be installed. The following link is for Ubuntu. Please follow [this link](https://ubuntu.com/desktop/wsl) for installation instructions.
 
 ## Installation
 
@@ -92,6 +92,7 @@ npm run db:seed
 If necessary, you can undo individual migrations with `npm run db:migrate:undo` and seeders with `npm run db:seed:undo`.
 
 To download the current set of data sources from the global API, run the following command:
+
 ```bash
 npm run sync-catalogue
 ```
@@ -101,22 +102,29 @@ npm run sync-catalogue
 Copy `env.example` to a file called `.env`.  
 The environment variables `NEXTAUTH_SECRET` and `NEXTAUTH_URL` are required for running unless `NODE_ENV` is set to a value that's different than `production`.
 
+GHGI inventory PDFs use the durable CC-owned Mistral OCR pipeline. PDF uploads
+require `AWS_FILE_UPLOAD_S3_BUCKET_ID`, `AWS_FILE_UPLOAD_REGION`, and AWS
+credentials because Mistral receives a short-lived presigned URL. Set
+`MISTRAL_API_KEY` and `CC_CRON_JOB_API_KEY`; a separately managed scheduler must
+invoke the processor endpoint. CSV/XLSX imports retain the local BYTEA fallback.
+Source PDFs have one fixed 20 MB product limit
+(`20 * 1024 * 1024` bytes) shared by the upload validator and OCR worker. See
+`env.example` for timeout, lease, concurrency, and model configuration.
+
 ## Running
 
 ### Development
-
-
 
 To run the app in development mode, run:
 
 ```bash
 cd CityCatalyst/app
 
-## if you have copied and renamed the env.example file in the step under 'Environment', 
+## if you have copied and renamed the env.example file in the step under 'Environment',
 ## skip the next line otherwise remove the comment in the next line
 #cp env.example .env
 
-## set up your database credentials in .env file 
+## set up your database credentials in .env file
 
 npm run db:migrate
 
@@ -133,6 +141,7 @@ The standard port is 3000 and the application can be opend at http://localhost:3
 Use `johndoe@example.com` and `password` to login.
 
 #### HIAP
+
 To connect to the HIAP prioritizer/plan creator, run
 kubectl port-forward svc/hiap-service-dev 8080:8080
 

@@ -175,7 +175,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                         json_data={
                             "action": "ghgi.inventory.emissions_context",
                             "success": True,
-                            "data": {"total_emissions_tco2e": "12500000"},
+                            "data": {"total_emissions_kgco2e": "12500000"},
                         },
                     )
                 ]
@@ -199,6 +199,52 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
         self.assertEqual(recorded["json"]["city_id"], "city-1")
+
+    async def test_load_hiap_context_posts_read_only_internal_capability(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={
+                            "action": "hiap.inventory.context",
+                            "success": True,
+                            "data": {"availability": "missing"},
+                        },
+                    )
+                ]
+            )
+
+            with patch.object(
+                client,
+                "_get_client",
+                new=AsyncMock(return_value=stub),
+            ):
+                result = await client.load_hiap_context(
+                    request_payload={
+                        "user_id": "user-1",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                        "language": "en",
+                    },
+                    token="jwt-token",
+                )
+
+        self.assertEqual(result["action"], "hiap.inventory.context")
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/hiap/inventory/context",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["language"], "en")
 
     async def test_inventory_capability_retries_with_refreshed_token_on_401(self) -> None:
         with patch(
@@ -347,6 +393,50 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["json"]["rows"][0]["row_type"], "manual_override")
         self.assertEqual(recorded["json"]["rows"][0]["manual_value"], 12.5)
         self.assertEqual(recorded["json"]["rows"][0]["manual_unit"], "tCO2e")
+
+    async def test_commit_stationary_energy_notation_keys_posts_internal_capability(self) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(base_url="https://cc.example", api_key="test-api-key")
+            stub = _StubAsyncClient(
+                [
+                    _response(
+                        200,
+                        json_data={"results": [{"proposal_id": "proposal-3", "status": "committed"}]},
+                    )
+                ]
+            )
+
+            with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+                await client.commit_stationary_energy_notation_keys(
+                    request_payload={
+                        "draft_run_id": "draft-1",
+                        "user_id": "user-1",
+                        "city_id": "city-1",
+                        "inventory_id": "inventory-1",
+                        "rows": [
+                            {
+                                "proposal_id": "proposal-3",
+                                "decision_version": 1,
+                                "target_id": "I.1.2",
+                                "target_ref": {"subcategory_id": "I.1.2"},
+                                "notation_key": "NO",
+                                "unavailable_explanation": "No activity occurs.",
+                            }
+                        ],
+                    },
+                    token="jwt-token",
+                )
+
+        recorded = stub.requests[0]
+        self.assertEqual(
+            recorded["url"],
+            "https://cc.example/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+        )
+        self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
+        self.assertEqual(recorded["json"]["rows"][0]["notation_key"], "NO")
 
     async def test_get_inventory_success(self) -> None:
         with patch(

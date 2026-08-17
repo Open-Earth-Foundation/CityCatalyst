@@ -1,0 +1,1 @@
+{"timestamp": "2026-07-15T09:32:21.799310+00:00", "request_id": "7fcb7c45-3a3a-46eb-a9d1-001e5bc00527", "request_kind": "city_action_report", "event_index": 1, "event_type": "city_action_report.completed", "payload": {"locode": "CL IQQ", "action_id": "icare_0040", "language": "en", "chapters": 8, "debug_context_only": false}}

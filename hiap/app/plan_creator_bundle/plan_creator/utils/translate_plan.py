@@ -1,8 +1,15 @@
+"""
+Translate a PlanResponse from one language into another via OpenAI structured parse.
+
+The OpenAI client is intentionally not wrapped with LangSmith `wrap_openai` to
+avoid Pydantic serializer warnings on the SDK `parsed` field (ON-6039).
+Function-level `@traceable` still records helper inputs/outputs.
+"""
+
 import os
 from typing import Optional
 from plan_creator_bundle.plan_creator.models import PlanResponse
 from openai import OpenAI
-from langsmith.wrappers import wrap_openai
 from langsmith import traceable
 import logging
 from utils.logging_config import setup_logger
@@ -31,8 +38,8 @@ if not LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION:
     raise ValueError("LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION is not set")
 
 
-# Use OpenAI client and wrap it with LangSmith
-openai_client = wrap_openai(OpenAI(api_key=OPENAI_API_KEY))
+# Plain OpenAI client for structured parse — avoid wrap_openai serializing `parsed`
+openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 @traceable(run_type="llm", project_name=LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION)
@@ -41,6 +48,9 @@ def translate_plan(
 ) -> Optional[PlanResponse]:
     """
     Translate a plan from one language into another language.
+
+    Returns:
+        Translated PlanResponse, the original plan if languages match, or None on failure.
     """
 
     # Short-circuit if languages are identical
@@ -67,7 +77,16 @@ def translate_plan(
             temperature=0,
             response_format=PlanResponse,
         )
+        # Extract application-owned data immediately; do not log/serialize `completion`
         plan_response_obj = completion.choices[0].message.parsed
+
+        if plan_response_obj is None:
+            logger.error(
+                "OpenAI response did not contain a parsed plan for action '%s' and city '%s'",
+                input_plan.metadata.actionId,
+                input_plan.metadata.locode,
+            )
+            return None
 
         if not isinstance(plan_response_obj, PlanResponse):
             logger.error(

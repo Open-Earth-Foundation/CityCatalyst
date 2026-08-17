@@ -25,7 +25,7 @@ import {
   groupBy,
   nameToI18NKey,
 } from "@/util/helpers";
-import { bigIntToDecimal } from "@/util/big_int";
+import Decimal from "decimal.js";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
@@ -34,6 +34,7 @@ import {
   Card,
   Center,
   Flex,
+  Grid,
   Heading,
   HStack,
   Icon,
@@ -52,15 +53,14 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter, useParams, usePathname } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { FiRefreshCcw, FiTarget, FiTrash2 } from "react-icons/fi";
+import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
   MdAdd,
   MdArrowBack,
   MdArrowDropDown,
   MdArrowDropUp,
-  MdCheckCircle,
   MdCheckCircleOutline,
   MdChevronRight,
   MdInfoOutline,
@@ -70,7 +70,6 @@ import {
   MdOutlineDelete,
   MdOutlineFactory,
   MdOutlineLocalShipping,
-  MdRefresh,
   MdSearch,
   MdWarning,
 } from "react-icons/md";
@@ -80,11 +79,11 @@ import { SubsectorDatasetFilterSelect } from "@/components/GHGI/inventory-pages/
 import type {
   DataSourceWithRelations,
   DataStep,
+  GlobalAPISourceResponse,
   SubSectorWithRelations,
 } from "@/components/GHGI/data-step/types";
 
 import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 import { Button } from "@/components/ui/button";
@@ -100,12 +99,13 @@ import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { getParamValueRequired } from "@/util/helpers";
+import { getApiErrorMessage, getParamValueRequired } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
+import { env } from "@/lib/runtime-env";
 
 function getMailURI(locode?: string, sector?: string, year?: number): string {
   const emails =
-    process.env.NEXT_PUBLIC_SUPPORT_EMAILS ||
+    env("NEXT_PUBLIC_SUPPORT_EMAILS") ||
     "info@openearth.org,greta@openearth.org";
   return `mailto://${emails}?subject=Missing third party data sources&body=City: ${locode}%0ASector: ${sector}%0AYear: ${year}`;
 }
@@ -297,7 +297,7 @@ export default function AddDataSteps() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventoryProgress]);
 
-  const { value: activeStep, goToNextStep: goToNext } = useSteps({
+  const { value: activeStep } = useSteps({
     defaultStep: Number(step) - 1,
     count: steps.length,
   });
@@ -332,7 +332,7 @@ export default function AddDataSteps() {
   // only display data sources relevant to current sector
   let dataSources: DataSourceResponse[] | undefined;
   if (data) {
-    const { data: successfulSources, failedSources, removedSources } = data;
+    const { data: successfulSources } = data;
     dataSources = successfulSources?.filter(({ source, data }) => {
       const referenceNumber =
         source.subCategory?.referenceNumber ||
@@ -346,13 +346,17 @@ export default function AddDataSteps() {
 
   const [selectedSource, setSelectedSource] =
     useState<DataSourceWithRelations>();
-  const [selectedSourceData, setSelectedSourceData] = useState<any>();
+  const [selectedSourceData, setSelectedSourceData] =
+    useState<GlobalAPISourceResponse>();
   const {
     open: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
+  const onSourceClick = (
+    source: DataSourceWithRelations,
+    data: GlobalAPISourceResponse,
+  ) => {
     setSelectedSource(source);
     setSelectedSourceData(data);
     onSourceDrawerOpen();
@@ -410,12 +414,12 @@ export default function AddDataSteps() {
         );
         onSourceDrawerClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to connect data source",
       );
-      showError("data-source-connect-failed", error.data?.error?.message);
+      showError("data-source-connect-failed", getApiErrorMessage(error));
     } finally {
       setConnectingDataSourceId(null);
       onSearchDataSourcesClicked();
@@ -457,7 +461,7 @@ export default function AddDataSteps() {
   }
 
   async function onSearchDataSourcesClicked() {
-    const { data, removedSources, failedSources } = await loadDataSources({
+    const { removedSources, failedSources } = await loadDataSources({
       inventoryId: inventory,
     }).unwrap();
 
@@ -490,7 +494,7 @@ export default function AddDataSteps() {
 
   const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
 
-  const handleFileSelect = async (file: File) => {
+  const handleFileSelect = async () => {
     setOpenFileUploadDialog((v) => !v);
   };
 
@@ -498,14 +502,14 @@ export default function AddDataSteps() {
     (sector) => sector.sectorName === currentStep.name,
   );
 
-  const [deleteUserFile, { isLoading }] = api.useDeleteUserFileMutation();
+  const [deleteUserFile] = api.useDeleteUserFileMutation();
 
   function removeSectorFile(
     fileId: string,
     sectorName: string,
     cityId: string,
   ) {
-    deleteUserFile({ fileId, cityId }).then((res: any) => {
+    deleteUserFile({ fileId, cityId }).then((res) => {
       if (res.error) {
         showError(
           "file-deletion-error",
@@ -584,15 +588,6 @@ export default function AddDataSteps() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const MotionBox = motion.create(
-    // the display name is added below, but the linter isn't picking it up
-    // eslint-disable-next-line react/display-name
-    forwardRef<HTMLDivElement, any>((props, ref) => (
-      <Box ref={ref} {...props} />
-    )),
-  );
-  MotionBox.displayName = "MotionBox";
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
@@ -712,29 +707,24 @@ export default function AddDataSteps() {
             <Box>
               <BreadcrumbRoot
                 gap="8px"
-                fontFamily="heading"
-                fontWeight="bold"
-                letterSpacing="widest"
-                fontSize="14px"
-                textTransform="uppercase"
+                fontFamily="body"
+                fontWeight="medium"
+                fontSize="body.sm"
+                lineHeight="16"
                 separator={
                   <Icon as={MdChevronRight} color="gray.500" h="24px" />
                 }
               >
                 <BreadcrumbLink
                   href={inventoryDataBasePath}
-                  color="content.tertiary"
-                  textDecoration="none"
-                  _hover={{
-                    textDecoration: "underline",
-                    textUnderlineOffset: "4px",
-                  }}
+                  color="content.link"
+                  textDecoration="underline"
                 >
                   {t("all-sectors")}
                 </BreadcrumbLink>
 
                 <BreadcrumbCurrentLink
-                  color="content.link"
+                  color="content.secondary"
                   textDecoration="none"
                 >
                   {t(kebab(currentStep.name || ""))}
@@ -1088,343 +1078,336 @@ export default function AddDataSteps() {
                             {sourcesForSubsector.length} {t("datasets")}
                           </Text>
                         </HStack>
-                        <VStack align="stretch" gap={6}>
+                        <HStack align="stretch" gap={6} w="full">
                           {groupedByScope.map(([scopeName, scopeSources]) => (
-                            <Box key={`${subSectorId}-${scopeName}`}>
-                              <SimpleGrid
-                                columns={{
-                                  base: 1,
-                                  md: 2,
-                                  lg: 3,
-                                }}
-                                gap="16px"
-                              >
-                                {scopeSources.map(({ source, data }) => {
-                                  const isHovered =
-                                    hoverStates[source.datasourceId];
-                                  return (
-                                    <Card.Root
-                                      key={source.datasourceId}
-                                      data-testid="source-card"
-                                      variant="outline"
-                                      borderWidth="1px"
-                                      borderColor={
-                                        isSourceConnected(source) &&
-                                          source.inventoryValues?.length
-                                          ? "interactive.tertiary"
-                                          : "border.overlay"
-                                      }
-                                      shadow="none"
-                                      _hover={{ shadow: "xl" }}
-                                      transition="all 300ms"
-                                      w="full"
-                                      p="24px"
-                                      gap="4px"
+                            <Grid
+                              templateColumns="repeat(3, 1fr)"
+                              gap="16px"
+                              key={`${subSectorId}-${scopeName}`}
+                            >
+                              {scopeSources.map(({ source, data }) => {
+                                const isHovered =
+                                  hoverStates[source.datasourceId];
+                                return (
+                                  <Card.Root
+                                    key={source.datasourceId}
+                                    data-testid="source-card"
+                                    variant="outline"
+                                    borderWidth="1px"
+                                    borderColor={
+                                      isSourceConnected(source) &&
+                                        source.inventoryValues?.length
+                                        ? "interactive.tertiary"
+                                        : "border.overlay"
+                                    }
+                                    shadow="none"
+                                    _hover={{ shadow: "xl" }}
+                                    transition="all 300ms"
+                                    w="330px"
+                                    p="24px"
+                                    gap="4px"
+                                  >
+                                    <Card.Header
+                                      p="0"
+                                      display="flex"
+                                      flexDirection="column"
+                                      gap="0"
                                     >
-                                      <Card.Header
-                                        p="0"
-                                        display="flex"
-                                        flexDirection="column"
-                                        gap="0"
+                                      <Icon
+                                        as={
+                                          {
+                                            I: MdOutlineHomeWork,
+                                            II: MdOutlineLocalShipping,
+                                            III: MdOutlineDelete,
+                                            IV: MdOutlineFactory,
+                                            V: LuWheat,
+                                          }[
+                                          currentStep.referenceNumber
+                                          ] ?? MdOutlineHomeWork
+                                        }
+                                        boxSize={9}
+                                        color="content.tertiary-light"
+                                        mb="10px"
+                                      />
+                                      <Flex
+                                        direction="row"
+                                        align="center"
+                                        gap="8px"
                                       >
-                                        <Icon
-                                          as={
-                                            {
-                                              I: MdOutlineHomeWork,
-                                              II: MdOutlineLocalShipping,
-                                              III: MdOutlineDelete,
-                                              IV: MdOutlineFactory,
-                                              V: LuWheat,
-                                            }[
-                                            currentStep.referenceNumber
-                                            ] ?? MdOutlineHomeWork
+                                        <Badge
+                                          variant="plain"
+                                          fontSize="label.sm"
+                                          fontWeight="medium"
+                                          fontFamily="heading"
+                                          letterSpacing="widest"
+                                          bg="background.graySubtle"
+                                          color="content.secondary"
+                                          px="8px"
+                                          py="1px"
+                                          borderRadius="md"
+                                          lineHeight="1.2"
+                                          borderWidth="0"
+                                        >
+                                          {source.subCategory
+                                            ?.referenceNumber ||
+                                            source.subSector?.referenceNumber}
+                                        </Badge>
+                                        <Tooltip
+                                          showArrow
+                                          content={
+                                            source.subSector?.subsectorName
                                           }
-                                          boxSize={9}
-                                          color="content.tertiary-light"
-                                          mb="10px"
-                                        />
+                                        >
+                                          <Text
+                                            fontSize="overline"
+                                            fontWeight="bold"
+                                            color="content.primary"
+                                            textTransform="uppercase"
+                                            letterSpacing="widest"
+                                            lineHeight="24"
+                                            fontFamily="heading"
+                                            lineClamp={1}
+                                          >
+                                            {source.subSector?.subsectorName}
+                                          </Text>
+                                        </Tooltip>
+                                      </Flex>
+                                      <Heading
+                                        fontSize="title.md"
+                                        lineClamp={2}
+                                        minHeight={10}
+                                        mt="6px"
+                                        lineHeight={24}
+                                      >
+                                        {getTranslationFromDict(
+                                          source.datasetName,
+                                        )}
+                                      </Heading>
+                                      <Text fontSize="label.md" mt="4px">
+                                        {t("by-data-source")}{" "}
+                                        <Link
+                                          href={source.publisher?.url}
+                                          target="_blank"
+                                          textDecoration="underline"
+                                          color="content.link"
+                                          rel="noreferrer noopener"
+                                        >
+                                          {source.publisher?.name}
+                                        </Link>
+                                      </Text>
+                                    </Card.Header>
+                                    <Card.Body
+                                      justifyContent="space-between"
+                                      p="0"
+                                    >
+                                      <Flex
+                                        direction="row"
+                                        mb={0}
+                                        wrap="wrap"
+                                        gap={2}
+                                      >
+                                        {data?.totals?.emissions?.co2eq_100yr != null &&
+                                          Number(data.totals.emissions.co2eq_100yr) !== 0 && (
+                                            <Text
+                                              fontSize="display.sm"
+                                              fontWeight="semibold"
+                                            >
+                                              {convertKgToTonnes(
+                                                new Decimal(
+                                                  data.totals.emissions.co2eq_100yr,
+                                                ).toNumber(),
+                                              )}
+                                            </Text>
+                                          )}
                                         <Flex
                                           direction="row"
-                                          align="center"
-                                          gap="8px"
+                                          gap="4px"
+                                          flexWrap="wrap"
                                         >
                                           <Badge
-                                            variant="plain"
-                                            fontSize="label.sm"
-                                            fontWeight="medium"
-                                            fontFamily="heading"
-                                            letterSpacing="widest"
-                                            bg="background.graySubtle"
-                                            color="content.secondary"
-                                            px="8px"
-                                            py="1px"
-                                            borderRadius="md"
-                                            lineHeight="1.2"
-                                            borderWidth="0"
+                                            fontSize={12}
+                                            borderColor="border.overlay"
+                                            flex="1"
                                           >
-                                            {source.subCategory
-                                              ?.referenceNumber ||
-                                              source.subSector?.referenceNumber}
-                                          </Badge>
-                                          <Tooltip
-                                            showArrow
-                                            content={
-                                              source.subSector?.subsectorName
-                                            }
-                                          >
-                                            <Text
-                                              fontSize="overline"
-                                              fontWeight="bold"
-                                              color="content.primary"
-                                              textTransform="uppercase"
-                                              letterSpacing="widest"
-                                              lineHeight="24"
-                                              fontFamily="heading"
-                                              lineClamp={1}
-                                            >
-                                              {source.subSector?.subsectorName}
-                                            </Text>
-                                          </Tooltip>
-                                        </Flex>
-                                        <Heading
-                                          fontSize="title.md"
-                                          lineClamp={2}
-                                          minHeight={10}
-                                          mt="6px"
-                                          lineHeight={24}
-                                        >
-                                          {getTranslationFromDict(
-                                            source.datasetName,
-                                          )}
-                                        </Heading>
-                                        <Text fontSize="label.md" mt="4px">
-                                          {t("by-data-source")}{" "}
-                                          <Link
-                                            href={source.publisher?.url}
-                                            target="_blank"
-                                            textDecoration="underline"
-                                            color="content.link"
-                                            rel="noreferrer noopener"
-                                          >
-                                            {source.publisher?.name}
-                                          </Link>
-                                        </Text>
-                                      </Card.Header>
-                                      <Card.Body
-                                        justifyContent="space-between"
-                                        p="0"
-                                      >
-                                        <Flex
-                                          direction="row"
-                                          mb={0}
-                                          wrap="wrap"
-                                          gap={2}
-                                        >
-                                          {!isSourceConnected(source) &&
-                                            !source.inventoryValues
-                                              ?.length && (
-                                              <Text
-                                                fontSize="display.sm"
-                                                fontWeight="semibold"
-                                              >
-                                                {convertKgToTonnes(
-                                                  bigIntToDecimal(
-                                                    data?.totals?.emissions
-                                                      ?.co2eq_100yr ?? 0n,
-                                                  ).toNumber(),
-                                                )}
-                                              </Text>
+                                            <Icon
+                                              as={DataCheckIcon}
+                                              boxSize={5}
+                                              color="content.tertiary"
+                                            />
+                                            {t("data-quality")}:{" "}
+                                            {t(
+                                              "quality-" + source.dataQuality,
                                             )}
-                                          <Flex
-                                            direction="row"
-                                            gap="4px"
-                                            flexWrap="nowrap"
-                                          >
+                                          </Badge>
+                                          {source.subCategory?.scope && (
                                             <Badge
                                               fontSize={12}
                                               borderColor="border.overlay"
-                                              w="fit-content"
+                                              flex="1"
                                             >
                                               <Icon
-                                                as={DataCheckIcon}
-                                                boxSize={5}
+                                                as={FiTarget}
+                                                boxSize={4}
                                                 color="content.tertiary"
                                               />
-                                              {t("data-quality")}:{" "}
-                                              {t(
-                                                "quality-" + source.dataQuality,
-                                              )}
+                                              {t("scope")}:{" "}
+                                              {
+                                                source.subCategory.scope
+                                                  .scopeName
+                                              }
                                             </Badge>
-                                            {source.subCategory?.scope && (
-                                              <Badge
-                                                fontSize={12}
-                                                borderColor="border.overlay"
-                                                w="fit-content"
-                                              >
-                                                <Icon
-                                                  as={FiTarget}
-                                                  boxSize={4}
-                                                  color="content.tertiary"
-                                                />
-                                                {t("scope")}:{" "}
-                                                {
-                                                  source.subCategory.scope
-                                                    .scopeName
-                                                }
-                                              </Badge>
-                                            )}
-                                          </Flex>
+                                          )}
                                         </Flex>
-                                        <Text
-                                          textOverflow="ellipsis"
-                                          whiteSpace="nowrap"
-                                          overflow="hidden"
-                                          color="content.tertiary"
-                                          lineClamp={
-                                            isSourceConnected(source) &&
-                                              source.inventoryValues?.length
-                                              ? 0
-                                              : 4
+                                      </Flex>
+                                      <Text
+                                        textOverflow="ellipsis"
+                                        whiteSpace="nowrap"
+                                        overflow="hidden"
+                                        color="content.tertiary"
+                                        lineClamp={
+                                          isSourceConnected(source) &&
+                                            source.inventoryValues?.length
+                                            ? 0
+                                            : 4
+                                        }
+                                        maxHeight={
+                                          isSourceConnected(source) &&
+                                            source.inventoryValues?.length
+                                            ? "100px"
+                                            : "184px"
+                                        }
+                                        fontFamily="body"
+                                        fontSize="body.md"
+                                        lineHeight="20px"
+                                        fontWeight="regular"
+                                        marginTop="8px"
+                                      >
+                                        {getTranslationFromDict(
+                                          source.datasetDescription,
+                                        ) ||
+                                          getTranslationFromDict(
+                                            source.methodologyDescription,
+                                          )}
+                                      </Text>
+                                      <VStack w="full" mb="16px">
+                                        <Link
+                                          textDecoration="underline"
+                                          mt={4}
+                                          mb={2}
+                                          onClick={() =>
+                                            onSourceClick(source, data)
                                           }
-                                          maxHeight={
-                                            isSourceConnected(source) &&
-                                              source.inventoryValues?.length
-                                              ? "100px"
-                                              : "184px"
-                                          }
-                                          fontFamily="body"
-                                          fontSize="body.md"
-                                          lineHeight="20px"
-                                          fontWeight="regular"
-                                          marginTop="8px"
+                                          alignSelf="flex-start"
+                                          fontSize="label.lg"
+                                          fontWeight="medium"
+                                          letterSpacing="wide"
                                         >
-                                          {getTranslationFromDict(
-                                            source.datasetDescription,
-                                          ) ||
-                                            getTranslationFromDict(
-                                              source.methodologyDescription,
-                                            )}
-                                        </Text>
-                                        <VStack w="full" mb="16px">
-                                          <Link
-                                            textDecoration="underline"
-                                            mt={4}
-                                            mb={2}
-                                            onClick={() =>
-                                              onSourceClick(source, data)
+                                          {t("see-more-details")}
+                                        </Link>
+                                        {isSourceConnected(source) &&
+                                          source.inventoryValues?.length ? (
+                                          <Button
+                                            variant="outline"
+                                            w="full"
+                                            h="50px"
+                                            bg={
+                                              isHovered
+                                                ? "semantic.dangerOverlay"
+                                                : "semantic.successOverlay"
                                             }
-                                            alignSelf="flex-start"
-                                            fontSize="label.lg"
-                                            fontWeight="medium"
-                                            letterSpacing="wide"
+                                            borderColor={
+                                              isHovered
+                                                ? "semantic.danger"
+                                                : "semantic.success"
+                                            }
+                                            borderWidth="1px"
+                                            color={
+                                              isHovered
+                                                ? "semantic.danger"
+                                                : "semantic.success"
+                                            }
+                                            fontWeight="semibold"
+                                            fontSize="14px"
+                                            onClick={() =>
+                                              isFrozenCheck()
+                                                ? null
+                                                : onDisconnectThirdPartyData(
+                                                  source,
+                                                )
+                                            }
+                                            loading={
+                                              isDisconnectLoading &&
+                                              source.datasourceId ===
+                                              disconnectingDataSourceId
+                                            }
+                                            onMouseEnter={() =>
+                                              onButtonHover(source)
+                                            }
+                                            onMouseLeave={() =>
+                                              onMouseLeave(source)
+                                            }
                                           >
-                                            {t("see-more-details")}
-                                          </Link>
-                                          {isSourceConnected(source) &&
-                                            source.inventoryValues?.length ? (
+                                            <Icon as={MdCheckCircleOutline} />
+                                            {isHovered
+                                              ? t("disconnect-data")
+                                              : t("data-connected")}
+                                          </Button>
+                                        ) : isSourceGpcBlocked(source) ? (
+                                          <Tooltip
+                                            showArrow
+                                            content={t(
+                                              "data-already-added-connected",
+                                            )}
+                                          >
                                             <Button
                                               variant="outline"
                                               w="full"
                                               h="50px"
-                                              bg={
-                                                isHovered
-                                                  ? "semantic.dangerOverlay"
-                                                  : "semantic.successOverlay"
-                                              }
-                                              borderColor={
-                                                isHovered
-                                                  ? "semantic.danger"
-                                                  : "semantic.success"
-                                              }
-                                              borderWidth="1px"
-                                              color={
-                                                isHovered
-                                                  ? "semantic.danger"
-                                                  : "semantic.success"
-                                              }
+                                              borderWidth="0"
+                                              bgColor="background.graySubtle"
+                                              disabled
+                                              color="interactive.control"
                                               fontWeight="semibold"
                                               fontSize="14px"
-                                              onClick={() =>
-                                                isFrozenCheck()
-                                                  ? null
-                                                  : onDisconnectThirdPartyData(
-                                                    source,
-                                                  )
-                                              }
-                                              loading={
-                                                isDisconnectLoading &&
-                                                source.datasourceId ===
-                                                disconnectingDataSourceId
-                                              }
-                                              onMouseEnter={() =>
-                                                onButtonHover(source)
-                                              }
-                                              onMouseLeave={() =>
-                                                onMouseLeave(source)
-                                              }
-                                            >
-                                              <Icon as={MdCheckCircleOutline} />
-                                              {isHovered
-                                                ? t("disconnect-data")
-                                                : t("data-connected")}
-                                            </Button>
-                                          ) : isSourceGpcBlocked(source) ? (
-                                            <Tooltip
-                                              showArrow
-                                              content={t(
-                                                "data-already-added-connected",
-                                              )}
-                                            >
-                                              <Button
-                                                variant="outline"
-                                                w="full"
-                                                h="50px"
-                                                borderWidth="0"
-                                                bgColor="background.graySubtle"
-                                                disabled
-                                                color="interactive.control"
-                                                fontWeight="semibold"
-                                                fontSize="14px"
-                                              >
-                                                {t("connect-data")}
-                                                <Icon
-                                                  as={MdInfoOutline}
-                                                  boxSize={4}
-                                                />
-                                              </Button>
-                                            </Tooltip>
-                                          ) : (
-                                            <Button
-                                              variant="outline"
-                                              w="full"
-                                              h="50px"
-                                              borderWidth="1px"
-                                              borderColor="border.overlay"
-                                              bgColor="background.neutral"
-                                              color="interactive.secondary"
-                                              fontWeight="semibold"
-                                              fontSize="14px"
-                                              onClick={() =>
-                                                onConnectClick(source)
-                                              }
-                                              loading={
-                                                isConnectDataSourceLoading &&
-                                                source.datasourceId ===
-                                                connectingDataSourceId
-                                              }
                                             >
                                               {t("connect-data")}
+                                              <Icon
+                                                as={MdInfoOutline}
+                                                boxSize={4}
+                                              />
                                             </Button>
-                                          )}
-                                        </VStack>
-                                      </Card.Body>
-                                    </Card.Root>
-                                  );
-                                })}
-                              </SimpleGrid>
-                            </Box>
+                                          </Tooltip>
+                                        ) : (
+                                          <Button
+                                            variant="outline"
+                                            w="full"
+                                            h="50px"
+                                            borderWidth="1px"
+                                            borderColor="border.overlay"
+                                            bgColor="background.neutral"
+                                            color="interactive.secondary"
+                                            fontWeight="semibold"
+                                            fontSize="14px"
+                                            onClick={() =>
+                                              onConnectClick(source)
+                                            }
+                                            loading={
+                                              isConnectDataSourceLoading &&
+                                              source.datasourceId ===
+                                              connectingDataSourceId
+                                            }
+                                          >
+                                            {t("connect-data")}
+                                          </Button>
+                                        )}
+                                      </VStack>
+                                    </Card.Body>
+                                  </Card.Root>
+                                );
+                              })}
+                            </Grid>
                           ))}
-                        </VStack>
+                        </HStack>
                       </Box>
                     );
                   },
@@ -1491,9 +1474,7 @@ export default function AddDataSteps() {
                       <Box mb="24px">
                         <FileInput
                           onFileSelect={() =>
-                            isFrozenCheck()
-                              ? null
-                              : handleFileSelect(uploadedFile!)
+                            isFrozenCheck() ? null : handleFileSelect()
                           }
                           setUploadedFile={setUploadedFile}
                           t={t}
@@ -1574,7 +1555,7 @@ export default function AddDataSteps() {
                                     <Box w="full" position="relative" pl="63px">
                                       {file.subsectors
                                         ?.split(",")
-                                        .map((item: any) => (
+                                        .map((item) => (
                                           <Tag
                                             key={item}
                                             mt={2}

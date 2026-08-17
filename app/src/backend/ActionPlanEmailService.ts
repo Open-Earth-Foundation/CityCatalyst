@@ -1,4 +1,4 @@
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import ActionPlanReadyTemplate from "@/lib/emails/ActionPlanReadyTemplate";
 import NotificationService from "@/backend/NotificationService";
 import { User } from "@/models/User";
@@ -105,7 +105,7 @@ export default class ActionPlanEmailService {
           "Failed to send action plan ready email",
         );
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Error sending action plan ready email");
       // Don't throw error - email failure shouldn't break the action plan generation
     }

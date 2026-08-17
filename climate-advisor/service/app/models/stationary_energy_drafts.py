@@ -204,10 +204,19 @@ class DraftProposal(FlexibleContract):
 
 class ReviewDecisionInput(BaseModel):
     proposal_id: UUID
-    action: Literal["accept", "override_source", "override_manual", "leave_draft"]
+    action: Literal[
+        "accept",
+        "override_source",
+        "override_manual",
+        "leave_draft",
+        "set_notation_key",
+    ]
     selected_source_id: str | None = None
     manual_value: Decimal | None = None
     manual_unit: str | None = None
+    notation_key: str | None = None
+    unavailable_reason: str | None = None
+    unavailable_explanation: str | None = None
     note: str | None = None
 
 
@@ -222,6 +231,9 @@ class ReviewDecisionResponse(FlexibleContract):
     selected_candidate_id: UUID | None = None
     manual_value: Decimal | None = None
     manual_unit: str | None = None
+    notation_key: str | None = None
+    unavailable_reason: str | None = None
+    unavailable_explanation: str | None = None
     note: str | None = None
     commit_status: str
     commit_response: dict[str, Any] | None = None
@@ -239,6 +251,9 @@ class StagedReviewSelectionResponse(FlexibleContract):
     action: str
     selected_source_id: str | None = None
     selected_candidate_id: UUID | None = None
+    notation_key: str | None = None
+    unavailable_reason: str | None = None
+    unavailable_explanation: str | None = None
     rationale: str | None = None
     tool_call_id: str | None = None
     status: str

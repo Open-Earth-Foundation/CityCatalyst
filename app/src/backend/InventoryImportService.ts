@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import ECRFImportService, { type ECRFImportResult } from "./ECRFImportService";
+import { type ECRFImportResult } from "./ECRFImportService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
@@ -522,7 +522,7 @@ export default class InventoryImportService {
                 // Find the exclusive option for the group-by field
                 if (groupByField && activity["extra-fields"]) {
                   const groupByFieldDef = activity["extra-fields"].find(
-                    (f: any) => f.id === groupByField && f.exclusive,
+                    (f) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
                     groupByDefaultValue = groupByFieldDef.exclusive;
@@ -530,11 +530,11 @@ export default class InventoryImportService {
                 }
               } else if (methodology && "group-by" in methodology) {
                 // DirectMeasure: group-by and extra-fields are at the top level
-                groupByField = (methodology as any)["group-by"];
+                groupByField = methodology["group-by"];
 
                 if (groupByField && methodology["extra-fields"]) {
                   const groupByFieldDef = methodology["extra-fields"].find(
-                    (f: any) => f.id === groupByField && f.exclusive,
+                    (f) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
                     groupByDefaultValue = groupByFieldDef.exclusive;
@@ -543,7 +543,8 @@ export default class InventoryImportService {
               }
 
               // Build activityData JSONB object using schema mapping
-              const activityData: Record<string, any> = {};
+              const activityData: Record<string, string | number | string[]> =
+                {};
 
               // Map activity amount using activityTitle from schema
               if (row.activityAmount !== undefined) {
@@ -582,7 +583,20 @@ export default class InventoryImportService {
                 row.activityDataSource?.trim() ||
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
-                activityData["data-source"] = dataSource;
+                let sourceFieldName = "data-source";
+                if (
+                  methodology &&
+                  "extra-fields" in methodology &&
+                  methodology["extra-fields"]
+                ) {
+                  const methodSourceField = methodology["extra-fields"].find(
+                    (f) => f.id.includes("-source") && f.type === "text",
+                  );
+                  if (methodSourceField) {
+                    sourceFieldName = methodSourceField.id;
+                  }
+                }
+                activityData[sourceFieldName] = dataSource;
               }
 
               // Store gas amounts in activityData for Direct Measure UI (co2_amount, ch4_amount, n2o_amount; units-tonnes)
@@ -599,6 +613,10 @@ export default class InventoryImportService {
                 activityData.n2o_unit = "units-tonnes";
               }
 
+              console.log(
+                `[Import] GPC ${row.gpcRefNo} - activityData gas storage: co2_amount=${activityData.co2_amount ?? "-"}, ch4_amount=${activityData.ch4_amount ?? "-"}, n2o_amount=${activityData.n2o_amount ?? "-"}, hasAnyGas=${hasAnyGas}, totalCO2e=${totalCO2e ?? "-"}`,
+              );
+
               // Set group-by field so the UI can show sector→subsector→activity: use exclusive default when available, else use activityType so the accordion title is not "undefined"
               if (groupByField) {
                 if (groupByDefaultValue) {
@@ -611,7 +629,7 @@ export default class InventoryImportService {
               }
 
               // Build metadata JSONB object
-              const metadata: Record<string, any> = {};
+              const metadata: Record<string, string | number | string[]> = {};
 
               // Set activityId from schema
               if (activityId) {

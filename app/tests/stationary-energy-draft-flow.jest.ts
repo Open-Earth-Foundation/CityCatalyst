@@ -400,6 +400,50 @@ describe("Stationary Energy draft flow", () => {
     ]);
   });
 
+  it("allows inventory save when a staged notation key is the only committable decision", () => {
+    const draft = draftFixture();
+    draft.staged_review_selections = [
+      {
+        selection_id: "selection-notation",
+        draft_run_id: "draft-1",
+        proposal_id: "proposal-gap",
+        user_id: "user-1",
+        action: "set_notation_key",
+        notation_key: "NO",
+        unavailable_reason: "no-occurrance",
+        unavailable_explanation: "No activity occurs in scope.",
+        status: "active",
+      },
+    ];
+    const decisionState = buildInitialDecisionState(draft);
+
+    expect(
+      canSaveToInventory({
+        draftState: draft,
+        resolvedProposalIds: new Set(["proposal-gap"]),
+        decisionState,
+      }),
+    ).toBe(true);
+
+    expect(
+      buildInventorySaveReviewDecisionPayload({
+        draftState: draft,
+        decisionState,
+        resolvedProposalIds: new Set(["proposal-gap"]),
+      }).find((decision) => decision.proposal_id === "proposal-gap"),
+    ).toEqual({
+      proposal_id: "proposal-gap",
+      action: "set_notation_key",
+      selected_source_id: undefined,
+      manual_value: undefined,
+      manual_unit: undefined,
+      notation_key: "NO",
+      unavailable_reason: "no-occurrance",
+      unavailable_explanation: "No activity occurs in scope.",
+      note: undefined,
+    });
+  });
+
   it("preserves persisted review decisions for unresolved rows during partial inventory save", () => {
     const draft = draftFixture();
     draft.status = "reviewed";

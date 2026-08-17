@@ -1,18 +1,17 @@
 import { Tooltip } from "@/components/ui/tooltip";
-import type {
-  CityLocationResponse,
-  OrganizationResponse,
-  ProjectWithCities,
-} from "@/util/types";
+import type { OrganizationResponse, ProjectWithCities } from "@/util/types";
 import { Box, Icon, Spinner, Text, Flex } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import { MdGridView, MdInfoOutline, MdLocationCity } from "react-icons/md";
-import { ModulesIcon } from "../icons";
+import {
+  MdGridView,
+  MdInfoOutline,
+  MdLocationCity,
+  MdPublic,
+} from "react-icons/md";
+import { GlobeLocationPinIcon } from "../icons";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { DisplayMedium } from "@/components/package/Texts/Display";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
-import ProjectMap from "../ProjectMap/ProjectMap";
-import { useState } from "react";
 
 interface OrganizationHeroProps {
   organization?: OrganizationResponse;
@@ -27,21 +26,28 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
   organization,
   projects,
   isLoading = false,
-  projectId,
 }) => {
   // Calculate stats
   const totalProjects = projects?.length ?? 0;
   const totalCities = new Set(
     projects?.flatMap((project) => project.cities.map((city) => city.cityId)),
   ).size;
+  const totalCountries = new Set(
+    projects?.flatMap((project) =>
+      project.cities.map((city) => city.countryLocode),
+    ),
+  ).size;
+  const totalStates = new Set(
+    projects?.flatMap((project) =>
+      project.cities
+        .map((city) => city.regionLocode)
+        .filter((regionLocode): regionLocode is string => !!regionLocode),
+    ),
+  ).size;
   const displayName =
     organization?.name === "cc_organization_default"
       ? t("default-organization")
       : organization?.name;
-
-  const [selectedCity, setSelectedCity] = useState<
-    CityLocationResponse | undefined
-  >(undefined);
 
   return (
     <Box bg="content.alternative" w="full" px="56px" py="56px">
@@ -98,6 +104,54 @@ export const OrganizationHero: React.FC<OrganizationHeroProps> = ({
                 </Flex>
                 <BodyMedium color="background.overlay">
                   {t("active-in-total")}
+                </BodyMedium>
+              </Box>
+            </Flex>
+            <Flex align="baseline" gap={3}>
+              <Icon as={MdPublic} boxSize={6} fill="base.light" />
+              <Box>
+                <Flex gap={1}>
+                  <HeadlineSmall color="base.light">
+                    {totalCountries} {t("countries")}
+                  </HeadlineSmall>
+                  <Tooltip
+                    content={t("country-count-tooltip")}
+                    positioning={{ placement: "bottom-start" }}
+                  >
+                    <Icon
+                      as={MdInfoOutline}
+                      w={3}
+                      h={3}
+                      color="background.overlay"
+                    />
+                  </Tooltip>
+                </Flex>
+                <BodyMedium color="background.overlay">
+                  {t("across-projects")}
+                </BodyMedium>
+              </Box>
+            </Flex>
+            <Flex align="baseline" gap={3}>
+              <GlobeLocationPinIcon boxSize={6} fill="base.light" />
+              <Box>
+                <Flex gap={1}>
+                  <HeadlineSmall color="base.light">
+                    {totalStates} {t("states")}
+                  </HeadlineSmall>
+                  <Tooltip
+                    content={t("state-count-tooltip")}
+                    positioning={{ placement: "bottom-start" }}
+                  >
+                    <Icon
+                      as={MdInfoOutline}
+                      w={3}
+                      h={3}
+                      color="background.overlay"
+                    />
+                  </Tooltip>
+                </Flex>
+                <BodyMedium color="background.overlay">
+                  {t("across-projects")}
                 </BodyMedium>
               </Box>
             </Flex>

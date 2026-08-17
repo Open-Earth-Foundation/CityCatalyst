@@ -6,16 +6,15 @@ import {
   ProjectWithCities,
 } from "@/util/types";
 import {
-  DialogBackdrop,
+  DialogBody,
   DialogCloseTrigger,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogRoot,
 } from "@/components/ui/dialog";
-import React, { useMemo } from "react";
-import { Badge, HStack, Text } from "@chakra-ui/react";
-import { FiTrash2 } from "react-icons/fi";
+import { useMemo } from "react";
+import { Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
 import { api } from "@/services/api";
 import { Trans } from "react-i18next/TransWithoutContext";
@@ -71,7 +70,9 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
     isDeletingProjectUser || isDeletingCityUser || isDeletingOrgAdmin;
 
   const selectedProjectData = useMemo(() => {
-    return projectData.find((project) => project.projectId === selectedProject);
+    return projectData?.find(
+      (project) => project.projectId === selectedProject,
+    );
   }, [projectData, selectedProject]);
 
   const selectedCityData = useMemo(() => {
@@ -89,7 +90,9 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
       return DeleteScenario.PROJECT;
     }
     return DeleteScenario.PROJECT;
-  }, [user, selectedCity, selectedCity, organization]);
+  }, [user, selectedCity, selectedProject]);
+
+  const userName = user?.name?.trim() || user?.email.split("@")[0] || "";
 
   const handleRemoveFunction = async () => {
     let apiPromise;
@@ -118,10 +121,6 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
     onClose();
   };
 
-  const closeFunction = () => {
-    onClose();
-  };
-
   const renderModalText = (scenario: DeleteScenario) => {
     switch (scenario) {
       case DeleteScenario.PROJECT:
@@ -130,11 +129,17 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
             i18nKey="confirm-remove-project-user"
             t={t}
             values={{
-              email: user?.email,
+              userName,
               projectName: selectedProjectData?.name,
             }}
             components={{
-              bold: <strong />,
+              bold: (
+                <Text
+                  as="span"
+                  fontWeight="semibold"
+                  color="content.primary"
+                />
+              ),
             }}
           />
         );
@@ -144,12 +149,18 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
             i18nKey="confirm-remove-city-user"
             t={t}
             values={{
-              email: user?.email,
+              userName,
               cityName: selectedCityData?.name,
               projectName: selectedProjectData?.name,
             }}
             components={{
-              bold: <strong />,
+              bold: (
+                <Text
+                  as="span"
+                  fontWeight="semibold"
+                  color="content.primary"
+                />
+              ),
             }}
           />
         );
@@ -159,11 +170,17 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
             i18nKey="confirm-org-admin-delete"
             t={t}
             values={{
-              email: user?.email,
+              userName,
               orgName: organization?.name,
             }}
             components={{
-              bold: <strong />,
+              bold: (
+                <Text
+                  as="span"
+                  fontWeight="semibold"
+                  color="content.primary"
+                />
+              ),
             }}
           />
         );
@@ -176,68 +193,73 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
+        if (!e.open) {
+          onClose();
+        }
       }}
-      onExitComplete={closeFunction}
+      onExitComplete={onClose}
+      placement="center"
     >
-      <DialogBackdrop />
-      <DialogContent minH="300px" minW="600px" marginTop="2%">
+      <DialogContent minW="568px" borderRadius="6px">
         <DialogHeader
           display="flex"
-          justifyContent="center"
+          justifyContent="start"
           fontWeight="semibold"
-          fontSize="headline.sm"
+          fontSize="title.lg"
           fontFamily="heading"
-          lineHeight="32"
-          color="base.dark"
+          lineHeight="32px"
+          color="content.primary"
           padding="24px"
-          borderBottomWidth="2px"
-          borderStyle="solid"
-          borderColor="background.neutral"
+          paddingBottom="16px"
         >
-          {t("remove-user")}
+          {t("remove-member-title")}
         </DialogHeader>
-        <DialogCloseTrigger mt={"2"} color="interactive.control" mr={"2"} />
-        <HStack flexDirection="column" alignItems="center" padding="24px">
-          <Badge
-            color="sentiment.negativeDefault"
-            h="68px"
-            w="68px"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            borderRadius="full"
-            background="sentiment.negativeOverlay"
-          >
-            <FiTrash2 size={36} />
-          </Badge>
-          <Text
-            w="full"
-            maxW="450px"
-            textAlign="center"
-            mt={6}
-            fontSize="body.lg"
-          >
+        <DialogCloseTrigger
+          mt="2"
+          color="interactive.control"
+          top="-6px"
+          right="0px"
+        />
+        <DialogBody paddingX="24px" paddingBottom="24px" paddingTop="0">
+          <Text fontSize="body.lg" color="content.tertiary" lineHeight="24px">
             {renderModalText(deleteScenarioData)}
           </Text>
-        </HStack>
+        </DialogBody>
         <DialogFooter
-          paddingX={6}
-          paddingY={6}
-          borderTop="2px"
-          borderColor="background.neutral"
-          borderStyle="solid"
+          paddingX="24px"
+          paddingY="24px"
+          paddingTop="0"
+          display="flex"
+          justifyContent="flex-end"
+          gap="16px"
         >
           <Button
+            variant="ghost"
+            h="48px"
+            minW="120px"
+            onClick={onClose}
+            textTransform="uppercase"
+            letterSpacing="wider"
+            fontWeight="semibold"
+            fontSize="button.md"
+            color="content.secondary"
+          >
+            {t("cancel")}
+          </Button>
+          <Button
             variant="solid"
-            h="64px"
-            w="full"
+            h="48px"
+            minW="200px"
             onClick={handleRemoveFunction}
-            color="base.light"
-            backgroundColor="sentiment.negativeDefault"
-            marginRight="2"
             loading={isLoading}
+            textTransform="uppercase"
+            letterSpacing="wider"
+            fontWeight="semibold"
+            fontSize="button.md"
+            backgroundColor="sentiment.negativeDefault"
+            color="base.light"
           >
             {t("remove-user")}
           </Button>

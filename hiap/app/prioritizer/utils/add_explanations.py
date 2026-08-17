@@ -1,9 +1,18 @@
+"""
+Generate multilingual explanations for prioritized climate actions.
+
+Uses OpenAI structured outputs (`chat.completions.parse`) and returns an
+application-owned `Explanation` model. The OpenAI client is intentionally
+not wrapped with LangSmith `wrap_openai` so SDK Completions with a populated
+`parsed` field are not auto-serialized (ON-6039). Function-level `@traceable`
+still records the helper's inputs/outputs.
+"""
+
 import os
 import json
 from typing import Optional, Type, Dict, Any, cast
 from pydantic import create_model, BaseModel
 from openai import OpenAI
-from langsmith.wrappers import wrap_openai
 from langsmith import traceable
 from dotenv import load_dotenv
 from utils.logging_config import setup_logger
@@ -23,7 +32,7 @@ load_dotenv()
 setup_logger()
 logger = logging.getLogger(__name__)
 
-# Initialize OpenAI and OpenRouter clients
+# Initialize OpenAI client
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set")
@@ -41,6 +50,7 @@ if not LANGCHAIN_PROJECT_NAME_PRIORITIZER:
 
 # Use OpenAI client with client-level timeout and retries (overrideable via env)
 def _get_openai_timeout_seconds() -> float:
+    """Return OpenAI request timeout in seconds from env (default 60)."""
     try:
         return float(os.getenv("OPENAI_TIMEOUT_SECONDS", "60"))
     except Exception:
@@ -48,18 +58,18 @@ def _get_openai_timeout_seconds() -> float:
 
 
 def _get_openai_max_retries() -> int:
+    """Return OpenAI max retries from env (default 3)."""
     try:
         return int(os.getenv("OPENAI_MAX_RETRIES", "3"))
     except Exception:
         return 3
 
 
-openai_client = wrap_openai(
-    OpenAI(
-        api_key=OPENAI_API_KEY,
-        timeout=_get_openai_timeout_seconds(),
-        max_retries=_get_openai_max_retries(),
-    )
+# Plain OpenAI client for structured parse — avoid wrap_openai serializing `parsed`
+openai_client = OpenAI(
+    api_key=OPENAI_API_KEY,
+    timeout=_get_openai_timeout_seconds(),
+    max_retries=_get_openai_max_retries(),
 )
 
 
@@ -108,14 +118,18 @@ def generate_multilingual_explanation(
     Generate qualitative explanation for a single prioritized climate action in multiple languages.
 
     Args:
-        country_code (str): The country code of the city.
-        city_data (dict): Contextual data for the city.
-        single_action (dict): The action to explain.
-        rank (int): The action's rank among the top prioritized actions (1 = highest priority).
-        languages (list[str]): List of 2-letter ISO language codes for the explanation.
+        country_code: The country code of the city.
+        city_data: Contextual data for the city.
+        single_action: The action to explain.
+        rank: The action's rank among the top prioritized actions (1 = highest priority).
+        languages: List of 2-letter ISO language codes for the explanation.
 
     Returns:
-        Optional[dict[str, str]]: Dictionary mapping language codes to explanation strings, or None if generation fails.
+        Explanation with per-language text, or None if generation/parsing fails.
+
+    Side effects:
+        Calls OpenAI structured parse; may call vector-store retrieval; logs errors/debug.
+        LangSmith traces this function when tracing is enabled (@traceable).
     """
     logger.debug(
         f"Generating explanation for action_id={single_action['ActionID']}, rank={rank}, languages={languages}."
@@ -178,18 +192,31 @@ def generate_multilingual_explanation(
             # Per-request timeout (falls back to client default if omitted)
             timeout=_get_openai_timeout_seconds(),
         )
+        # Extract application-owned data immediately; do not log/serialize `completion`
         explanation_obj = completion.choices[0].message.parsed
+
+        if explanation_obj is None:
+            logger.error(
+                "OpenAI response did not contain a parsed explanation for action_id=%s",
+                single_action["ActionID"],
+            )
+            return None
 
         if not isinstance(explanation_obj, ExplanationModelDynamic):
             logger.error(
-                f"Parsed response is not an Explanation object: {explanation_obj}"
+                "Parsed response is not an Explanation object for action_id=%s: %s",
+                single_action["ActionID"],
+                explanation_obj,
             )
             return None
 
         # Wrap the flat fields into .explanations using the Explanation model
         wrapped_explanation = Explanation(explanations=explanation_obj.model_dump())
-
-        # Return the explanation object
+        logger.debug(
+            "Generated explanation for action_id=%s: %s",
+            single_action["ActionID"],
+            wrapped_explanation.model_dump(mode="json"),
+        )
         return wrapped_explanation
 
     except Exception as e:

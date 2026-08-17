@@ -1,8 +1,12 @@
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import React from "react";
 import {
   Control,
   Controller,
+  FieldErrors,
+  FieldValues,
+  Path,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -16,13 +20,14 @@ import {
   NativeSelectRoot,
 } from "@/components/ui/native-select";
 import { BodyMedium } from "@/components/package/Texts/Body";
+import { Inputs } from "../activity-modal-body";
 
 interface ActivityDataSectionProps {
   t: TFunction;
-  register: UseFormRegister<any>;
-  control: Control<any, any>;
-  errors: Record<string, any>;
-  setValue: UseFormSetValue<any>;
+  register: UseFormRegister<Inputs>;
+  control: Control<FieldValues>;
+  errors: FieldErrors<FieldValues>;
+  setValue: UseFormSetValue<Inputs>;
   title: string;
   units?: string[];
   hideEmissionFactors?: boolean;
@@ -44,6 +49,10 @@ export const ActivityDataSection = ({
 }: ActivityDataSectionProps) => {
   const prefix = "";
 
+  const activityErrors = errors?.activity as
+    | Record<string, { message?: string } | undefined>
+    | undefined;
+
   if (isDirectMeasure || !title) {
     return null;
   }
@@ -55,14 +64,14 @@ export const ActivityDataSection = ({
         label={<Text truncate>{t(title)}</Text>}
         flex="2"
       >
-        <HStack>
+        <HStack w="full">
           <FormattedNumberInput
             control={control}
             name={`activity.${title}`}
             defaultValue="0"
             t={t}
             miniAddon
-            minWidth="300px"
+            w="full"
             flex={2}
           />
           {(units?.length as number) > 0 && (
@@ -70,22 +79,22 @@ export const ActivityDataSection = ({
               rules={{ required: t("option-required") }}
               defaultValue=""
               control={control}
-              name={`activity.${title}-unit` as any}
+              name={`activity.${title}-unit`}
               render={({ field }) => (
                 <NativeSelectRoot
                   {...field}
                   borderRadius="4px"
-                  borderWidth={errors?.activity?.[`${title}-unit`] ? "1px" : 0}
+                  borderWidth={activityErrors?.[`${title}-unit`] ? "1px" : 0}
                   border="inputBox"
                   h="42px"
                   shadow="1dp"
                   borderColor={
-                    errors?.activity?.[`${title}-unit`]
+                    activityErrors?.[`${title}-unit`]
                       ? "sentiment.negativeDefault"
                       : ""
                   }
                   background={
-                    errors?.activity?.[`${title}-unit`]
+                    activityErrors?.[`${title}-unit`]
                       ? "sentiment.negativeOverlay"
                       : ""
                   }
@@ -95,9 +104,11 @@ export const ActivityDataSection = ({
                     borderColor: "content.link",
                   }}
                   bgColor="base.light"
-                  onChange={(e: any) => {
-                    field.onChange(e.target.value);
-                    setValue(`activity.${title}-unit` as any, e.target.value);
+                  onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
+                    const value = (e.target as unknown as HTMLSelectElement)
+                      .value;
+                    field.onChange(value);
+                    setValue(`activity.${title}-unit` as Path<Inputs>, value);
                   }}
                 >
                   <NativeSelectField
@@ -117,19 +128,19 @@ export const ActivityDataSection = ({
           )}
         </HStack>
 
-        {errors?.activity?.[title] && (
+        {activityErrors?.[title] && (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
             <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <BodyMedium>
-              {t(errors?.activity?.[title]?.message as string)}
+              {t(activityErrors?.[title]?.message as string)}
             </BodyMedium>
           </Box>
         )}
-        {errors?.activity?.[`${title}-unit`] && !errors?.activity?.[title] && (
+        {activityErrors?.[`${title}-unit`] && !activityErrors?.[title] && (
           <Box display="flex" gap="6px" alignItems="center" mt="6px">
             <Icon as={MdWarning} color="sentiment.negativeDefault" />
             <BodyMedium>
-              {errors?.activity?.[`${title}-unit`]?.message}
+              {activityErrors?.[`${title}-unit`]?.message}
             </BodyMedium>
           </Box>
         )}
@@ -149,17 +160,17 @@ export const ActivityDataSection = ({
             render={({ field }) => (
               <NativeSelectRoot
                 borderRadius="4px"
-                borderWidth={errors?.activity?.emissionFactorType ? "1px" : 0}
+                borderWidth={activityErrors?.emissionFactorType ? "1px" : 0}
                 border="inputBox"
                 h="42px"
                 shadow="1dp"
                 borderColor={
-                  errors?.activity?.emissionFactorType
+                  activityErrors?.emissionFactorType
                     ? "sentiment.negativeDefault"
                     : ""
                 }
                 background={
-                  errors?.activity?.emissionFactorType
+                  activityErrors?.emissionFactorType
                     ? "sentiment.negativeOverlay"
                     : ""
                 }
@@ -177,7 +188,7 @@ export const ActivityDataSection = ({
                   aria-label={t("select-emission-factor-type")}
                   value={field.value}
                   placeholder={t("emissions-factor-type-placeholder")}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
                     field.onChange(e.target.value);
                     setValue("activity.emissionFactorType", e.target.value);
                   }}
@@ -195,7 +206,7 @@ export const ActivityDataSection = ({
             )}
           />
 
-          {errors.activity?.emissionFactorType ? (
+          {activityErrors?.emissionFactorType ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>{t("emission-factor-form-label")}</BodyMedium>

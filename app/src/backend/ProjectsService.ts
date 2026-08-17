@@ -1,15 +1,7 @@
 import { db } from "@/models";
 import { logger } from "@/services/logger";
-import { ProjectWithCities } from "@/util/types";
+import { CityResponse, ProjectWithCities } from "@/util/types";
 import uniqBy from "lodash/uniqBy";
-
-interface ProjectInfo {
-  projectId: string;
-  name: string;
-  organizationId: string;
-  description?: string | null;
-  cityCountLimit?: Number;
-}
 
 export class ProjectService {
   public static async fetchUserProjects(
@@ -114,9 +106,11 @@ export class ProjectService {
           cities: assoc.project.cities.map((city) => ({
             name: city.name as string,
             cityId: city.cityId as string,
-            inventories: city.inventories as any,
+            inventories: city.inventories as unknown as CityResponse["inventories"],
             country: city.country as string,
             countryLocode: city.countryLocode as string,
+            region: city.region as string,
+            regionLocode: city.regionLocode as string,
             locode: city.locode as string,
           })),
         })),
@@ -130,9 +124,11 @@ export class ProjectService {
           cities: project.cities.map((city) => ({
             name: city.name as string,
             cityId: city.cityId as string,
-            inventories: city.inventories as any,
+            inventories: city.inventories as unknown as CityResponse["inventories"],
             country: city.country as string,
             countryLocode: city.countryLocode as string,
+            region: city.region as string,
+            regionLocode: city.regionLocode as string,
             locode: city.locode as string,
           })),
         })),
@@ -150,14 +146,19 @@ export class ProjectService {
           }
           return !!assoc.city?.project;
         })
-        .reduce((acc: Record<string, any>, cityUserAsocc) => {
+        .reduce((acc: Record<string, ProjectWithCities>, cityUserAsocc) => {
           const projectId = cityUserAsocc.city?.project?.projectId;
           const project = cityUserAsocc.city?.project;
           const existingProject = acc[projectId];
           const city = {
             name: cityUserAsocc.city.name as string,
             cityId: cityUserAsocc.city.cityId as string,
-            inventories: cityUserAsocc.city.inventories as any,
+            inventories: cityUserAsocc.city.inventories as unknown as CityResponse["inventories"],
+            country: cityUserAsocc.city.country as string,
+            countryLocode: cityUserAsocc.city.countryLocode as string,
+            region: cityUserAsocc.city.region as string,
+            regionLocode: cityUserAsocc.city.regionLocode as string,
+            locode: cityUserAsocc.city.locode as string,
           };
           if (!existingProject) {
             acc[projectId] = {

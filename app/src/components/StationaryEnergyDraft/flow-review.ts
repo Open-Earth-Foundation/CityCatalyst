@@ -40,6 +40,9 @@ type ReviewDecisionPayload = {
   selected_source_id?: string;
   manual_value?: number;
   manual_unit?: string;
+  notation_key?: string;
+  unavailable_reason?: string;
+  unavailable_explanation?: string;
   note?: string;
 };
 
@@ -108,6 +111,9 @@ export function buildInitialDecisionState(
                 : (staged.selected_source_id ?? ""),
             manualValue: "",
             manualUnit: "",
+            notationKey: staged.notation_key ?? "",
+            unavailableReason: staged.unavailable_reason ?? "",
+            unavailableExplanation: staged.unavailable_explanation ?? "",
             note: staged.rationale ?? "",
           },
         ];
@@ -125,6 +131,9 @@ export function buildInitialDecisionState(
                 ? ""
                 : String(existing.manual_value),
             manualUnit: existing.manual_unit ?? "",
+            notationKey: existing.notation_key ?? "",
+            unavailableReason: existing.unavailable_reason ?? "",
+            unavailableExplanation: existing.unavailable_explanation ?? "",
             note: existing.note ?? "",
           },
         ];
@@ -216,7 +225,8 @@ export function canSaveDraft(params: {
     return (
       decision.action === "accept" ||
       decision.action === "override_source" ||
-      decision.action === "override_manual"
+      decision.action === "override_manual" ||
+      decision.action === "set_notation_key"
     );
   });
 }
@@ -245,7 +255,8 @@ export function canSaveToInventory(params: {
     (decision) =>
       decision.action === "accept" ||
       decision.action === "override_source" ||
-      decision.action === "override_manual",
+      decision.action === "override_manual" ||
+      decision.action === "set_notation_key",
   );
 }
 
@@ -310,10 +321,19 @@ export function hasDraftReviewChanges(params: {
             String(decision.manual_value ?? "") ||
           (persisted.manual_unit ?? "") !== (decision.manual_unit ?? "")
         : false;
+    const notationKeyChanged =
+      decision.action === "set_notation_key"
+        ? (persisted.notation_key ?? "") !== (decision.notation_key ?? "") ||
+          (persisted.unavailable_reason ?? "") !==
+            (decision.unavailable_reason ?? "") ||
+          (persisted.unavailable_explanation ?? "") !==
+            (decision.unavailable_explanation ?? "")
+        : false;
     return (
       persisted.action !== decision.action ||
       sourceSelectionChanged ||
       manualOverrideChanged ||
+      notationKeyChanged ||
       (persisted.note ?? "") !== (decision.note ?? "")
     );
   });
@@ -350,10 +370,19 @@ export function hasInventorySaveReviewChanges(params: {
             String(decision.manual_value ?? "") ||
           (persisted.manual_unit ?? "") !== (decision.manual_unit ?? "")
         : false;
+    const notationKeyChanged =
+      decision.action === "set_notation_key"
+        ? (persisted.notation_key ?? "") !== (decision.notation_key ?? "") ||
+          (persisted.unavailable_reason ?? "") !==
+            (decision.unavailable_reason ?? "") ||
+          (persisted.unavailable_explanation ?? "") !==
+            (decision.unavailable_explanation ?? "")
+        : false;
     return (
       persisted.action !== decision.action ||
       sourceSelectionChanged ||
       manualOverrideChanged ||
+      notationKeyChanged ||
       (persisted.note ?? "") !== (decision.note ?? "")
     );
   });
@@ -363,7 +392,7 @@ function serializeReviewDecisionInput(params: {
   proposal: DraftProposal;
   decision: DraftDecisionState;
 }): ReviewDecisionPayload {
-  return {
+  const payload: ReviewDecisionPayload = {
     proposal_id: params.proposal.proposal_id,
     action: params.decision.action,
     selected_source_id:
@@ -381,6 +410,13 @@ function serializeReviewDecisionInput(params: {
         : undefined,
     note: params.decision.note || undefined,
   };
+  if (params.decision.action === "set_notation_key") {
+    payload.notation_key = params.decision.notationKey || undefined;
+    payload.unavailable_reason = params.decision.unavailableReason || undefined;
+    payload.unavailable_explanation =
+      params.decision.unavailableExplanation || undefined;
+  }
+  return payload;
 }
 
 function persistedDecisionState(decision: ReviewDecision): DraftDecisionState {
@@ -393,6 +429,9 @@ function persistedDecisionState(decision: ReviewDecision): DraftDecisionState {
     manualValue:
       decision.manual_value == null ? "" : String(decision.manual_value),
     manualUnit: decision.manual_unit ?? "",
+    notationKey: decision.notation_key ?? "",
+    unavailableReason: decision.unavailable_reason ?? "",
+    unavailableExplanation: decision.unavailable_explanation ?? "",
     note: decision.note ?? "",
   };
 }

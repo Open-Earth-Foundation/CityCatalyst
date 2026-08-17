@@ -145,8 +145,36 @@ export const POST = apiHandler(async (req, { session }) => {
   const projectId = body.projectId;
 
   if (!projectId) {
-    logger.info("Project ID is not provided, defaulting to Default Project ");
-    body.projectId = DEFAULT_PROJECT_ID;
+    const orgAdmin = await db.models.OrganizationAdmin.findOne({
+      where: { userId: session.user.id },
+    });
+
+    if (orgAdmin) {
+      // Attach to any existing project in the admin's own organization, or
+      // create one, rather than falling back to the unrelated global
+      // default project/organization.
+      const [defaultProject] = await Project.findOrCreate({
+        where: { organizationId: orgAdmin.organizationId },
+        defaults: {
+          projectId: randomUUID(),
+          name: "Default Project",
+          description: "Default project created automatically during onboarding",
+          cityCountLimit: 999999,
+          organizationId: orgAdmin.organizationId,
+        },
+      });
+      logger.info(
+        {
+          organizationId: orgAdmin.organizationId,
+          projectId: defaultProject.projectId,
+        },
+        "Project ID is not provided, defaulting to organization's default project",
+      );
+      body.projectId = defaultProject.projectId;
+    } else {
+      logger.info("Project ID is not provided, defaulting to Default Project ");
+      body.projectId = DEFAULT_PROJECT_ID;
+    }
   }
 
   // Check permission to create city in this project (ORG_ADMIN or PROJECT_ADMIN required)
@@ -276,7 +304,7 @@ export const POST = apiHandler(async (req, { session }) => {
  *       - city
  *     operationId: getCities
  *     summary: List cities that the current user is a member of.
- *     description: Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: City[] '}'.
+ *     description: "Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: City[] '}'."
  *     responses:
  *       200:
  *         description: Cities wrapped in data.

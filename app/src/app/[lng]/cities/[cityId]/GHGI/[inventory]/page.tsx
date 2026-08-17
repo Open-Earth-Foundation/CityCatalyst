@@ -7,9 +7,8 @@ import ProgressLoader from "@/components/ProgressLoader";
 
 export default function CityInventoryPage() {
   const router = useRouter();
-  const { cityId, inventory, lng } = useParams();
+  const { inventory, lng } = useParams();
 
-  const cityIdValue = Array.isArray(cityId) ? cityId[0] : cityId;
   const inventoryValue = Array.isArray(inventory) ? inventory[0] : inventory;
   const lngValue = Array.isArray(lng) ? lng[0] : lng;
 

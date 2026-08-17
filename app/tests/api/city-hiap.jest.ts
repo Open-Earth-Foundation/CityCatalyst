@@ -24,6 +24,7 @@ import { randomUUID } from "node:crypto";
 
 import { GET, PATCH } from "@/app/api/v1/inventory/[inventory]/hiap/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
+import GlobalAPIService from "@/backend/GlobalAPIService";
 
 describe("Inventory HIAP API", () => {
   let inventoryId: string;
@@ -80,19 +81,26 @@ describe("Inventory HIAP API", () => {
     jest
       .spyOn(HiapApiService.hiapApiWrapper, "getPrioritizationResult")
       .mockResolvedValue({
+        metadata: { locode: "XX-TST", rankedDate: "" },
         rankedActionsMitigation: [
           {
             actionId: "test-action-1",
             rank: 1,
             explanation: {
-              en: "Test explanation for mitigation",
-              es: "Explicación de prueba para mitigación",
-              pt: "Explicação de teste para mitigação",
+              explanations: {
+                en: "Test explanation for mitigation",
+                es: "Explicación de prueba para mitigación",
+                pt: "Explicação de teste para mitigação",
+              },
             },
           },
         ],
         rankedActionsAdaptation: [],
-      } as any);
+      });
+
+    // Mock the climate-actions catalog API — GET always fetches it to build
+    // unrankedActions, so without this it hits the real external service.
+    jest.spyOn(GlobalAPIService, "fetchAllClimateActions").mockResolvedValue([]);
   });
 
   afterAll(async () => {
@@ -193,7 +201,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: randomUUID(),
         rank: 1,
-        explanation: { en: "Test explanation" } as any,
+        explanation: { explanations: { en: "Test explanation" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action",
@@ -244,7 +252,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: randomUUID(),
         rank: 1,
-        explanation: { en: "Test explanation" } as any,
+        explanation: { explanations: { en: "Test explanation" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action 1",
@@ -256,7 +264,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: randomUUID(),
         rank: 2,
-        explanation: { en: "Test explanation" } as any,
+        explanation: { explanations: { en: "Test explanation" } },
         lang: "en",
         type: "mitigation",
         name: "Test Action 2",
@@ -264,7 +272,7 @@ describe("Inventory HIAP API", () => {
       });
 
       const body = { selectedActionIds: [ranked1.id] };
-      const req = mockRequest(body);
+      const req = mockRequest(body, { actionType: ACTION_TYPES.Mitigation });
       const res = await PATCH(req, {
         params: Promise.resolve({ inventory: inventoryId }),
       });
@@ -293,8 +301,153 @@ describe("Inventory HIAP API", () => {
       });
     });
 
-    it("is a no-op when there are no rankings for inventory", async () => {
+    it("syncs ranked selection across language rows by actionId", async () => {
+      const ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId,
+        locode: "XX-TST",
+        type: ACTION_TYPES.Mitigation,
+        langs: ["en", "pt"],
+        jobId: randomUUID(),
+        status: HighImpactActionRankingStatus.SUCCESS,
+        userId: testData.userId,
+      });
+
+      const sharedActionId = "shared-action-1";
+      const otherActionId = "other-action-2";
+
+      const enSelected = await db.models.HighImpactActionRanked.create({
+        id: randomUUID(),
+        hiaRankingId: ranking.id,
+        actionId: sharedActionId,
+        rank: 1,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
+        lang: "en",
+        type: "mitigation",
+        name: "Shared Action EN",
+        isSelected: false,
+      });
+
+      const ptSelected = await db.models.HighImpactActionRanked.create({
+        id: randomUUID(),
+        hiaRankingId: ranking.id,
+        actionId: sharedActionId,
+        rank: 1,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
+        lang: "pt",
+        type: "mitigation",
+        name: "Shared Action PT",
+        isSelected: false,
+      });
+
+      const enOther = await db.models.HighImpactActionRanked.create({
+        id: randomUUID(),
+        hiaRankingId: ranking.id,
+        actionId: otherActionId,
+        rank: 2,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
+        lang: "en",
+        type: "mitigation",
+        name: "Other Action EN",
+        isSelected: true,
+      });
+
+      const ptOther = await db.models.HighImpactActionRanked.create({
+        id: randomUUID(),
+        hiaRankingId: ranking.id,
+        actionId: otherActionId,
+        rank: 2,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
+        lang: "pt",
+        type: "mitigation",
+        name: "Other Action PT",
+        isSelected: true,
+      });
+
+      // Select EN row UUID only — PT row for same actionId should also become selected
+      const req = mockRequest(
+        { selectedActionIds: [enSelected.id] },
+        { actionType: ACTION_TYPES.Mitigation },
+      );
+      const res = await PATCH(req, {
+        params: Promise.resolve({ inventory: inventoryId }),
+      });
+
+      await expectStatusCode(res, 200);
+
+      const refreshedEn = await db.models.HighImpactActionRanked.findByPk(
+        enSelected.id,
+      );
+      const refreshedPt = await db.models.HighImpactActionRanked.findByPk(
+        ptSelected.id,
+      );
+      const refreshedEnOther = await db.models.HighImpactActionRanked.findByPk(
+        enOther.id,
+      );
+      const refreshedPtOther = await db.models.HighImpactActionRanked.findByPk(
+        ptOther.id,
+      );
+
+      expect(refreshedEn?.isSelected).toBe(true);
+      expect(refreshedPt?.isSelected).toBe(true);
+      expect(refreshedEnOther?.isSelected).toBe(false);
+      expect(refreshedPtOther?.isSelected).toBe(false);
+
+      await db.models.HighImpactActionRanked.destroy({
+        where: {
+          id: [enSelected.id, ptSelected.id, enOther.id, ptOther.id],
+        },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
+    });
+
+    it("writes unranked selections for all languages", async () => {
+      const unrankedActionId = "UNRANKED_ACTION_1";
+      const req = mockRequest(
+        { selectedActionIds: [unrankedActionId] },
+        { actionType: ACTION_TYPES.Mitigation },
+      );
+      const res = await PATCH(req, {
+        params: Promise.resolve({ inventory: inventoryId }),
+      });
+
+      await expectStatusCode(res, 200);
+
+      const selections = await db.models.UnrankedActionSelection.findAll({
+        where: {
+          inventoryId,
+          actionId: unrankedActionId,
+          actionType: ACTION_TYPES.Mitigation,
+        },
+      });
+
+      expect(selections.length).toBeGreaterThan(1);
+      expect(selections.every((s) => s.isSelected)).toBe(true);
+      expect(new Set(selections.map((s) => s.lang)).size).toBe(
+        selections.length,
+      );
+
+      await db.models.UnrankedActionSelection.destroy({
+        where: { inventoryId, actionId: unrankedActionId },
+      });
+    });
+
+    it("rejects PATCH without actionType", async () => {
       const req = mockRequest({ selectedActionIds: [] });
+      const res = await PATCH(req, {
+        params: Promise.resolve({ inventory: inventoryId }),
+      });
+
+      await expectStatusCode(res, 400);
+    });
+
+    it("is a no-op when there are no rankings for inventory", async () => {
+      const req = mockRequest(
+        { selectedActionIds: [] },
+        { actionType: ACTION_TYPES.Mitigation },
+      );
       // Use the actual inventory ID which exists but has no rankings
       const res = await PATCH(req, {
         params: Promise.resolve({ inventory: inventoryId }),

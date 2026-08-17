@@ -2,8 +2,18 @@
 
 import { Box, HStack, Icon, Text } from "@chakra-ui/react";
 import { Radio, RadioGroup } from "@/components/ui/radio";
-import React, { FC, useEffect, useMemo } from "react";
-import { Control, FieldError, useWatch } from "react-hook-form";
+import { ElementType, FC, useEffect, useMemo } from "react";
+import {
+  Control,
+  FieldError,
+  FieldValues,
+  useWatch,
+  UseFormSetError,
+  UseFormClearErrors,
+  UseFormRegister,
+  UseFormGetValues,
+  UseFormSetValue,
+} from "react-hook-form";
 import {
   ClinicalWasteIcon,
   FoodIcon,
@@ -34,7 +44,7 @@ import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
 import Callout from "@/components/ui/callout";
 
-const categoryIconMapping: Record<string, any> = {
+const categoryIconMapping: Record<string, ElementType> = {
   "waste-composition-municipal-solid-waste": MunicipalSolidWasteIcon,
   "waste-composition-industrial-solid-waste": IndustrialSolidWasteIcon,
   "waste-composition-hazardous-waste": HazardousWasteIcon,
@@ -58,14 +68,14 @@ interface FormInputProps {
   label: string;
   tooltipInfo?: string;
   value?: string | null | undefined;
-  control: Control<any, any>;
+  control: Control<FieldValues>;
   isDisabled?: boolean;
   error: FieldError | undefined;
-  setError: Function;
-  clearErrors: Function;
-  register: Function;
-  getValues: Function;
-  setValue: Function;
+  setError: UseFormSetError<FieldValues>;
+  clearErrors: UseFormClearErrors<FieldValues>;
+  register: UseFormRegister<FieldValues>;
+  getValues: UseFormGetValues<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
   id: string;
   t: TFunction;
   breakdownCategories: string[];
@@ -103,7 +113,7 @@ const PercentageBreakdownInput: FC<FormInputProps> = ({
     defaultValue: null,
   });
 
-  let { data: wasteCompositionValues, isLoading: wasteCompositionLoading } =
+  const { data: wasteCompositionValues, isLoading: wasteCompositionLoading } =
     api.useGetWasteCompositionValuesQuery(
       {
         inventoryId: inventoryId as string,

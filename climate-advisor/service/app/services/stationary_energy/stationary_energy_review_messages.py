@@ -50,6 +50,30 @@ def stage_message_payload(
     return message_payload("tool-message-stage-none")
 
 
+def notation_stage_message_payload(
+    selected_choices: list[StationaryEnergyAgentReviewChoice],
+    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
+) -> dict[str, Any]:
+    """Build localized-message metadata after staging notation keys."""
+    if selected_choices and not blocked_choices:
+        return message_payload(
+            "tool-message-notation-stage-success",
+            selected=len(selected_choices),
+        )
+    if selected_choices:
+        return message_payload(
+            "tool-message-notation-stage-partial",
+            selected=len(selected_choices),
+            blocked=len(blocked_choices),
+        )
+    if blocked_choices:
+        return message_payload(
+            "tool-message-notation-stage-blocked",
+            blocked=len(blocked_choices),
+        )
+    return message_payload("tool-message-notation-stage-none")
+
+
 def bulk_confirmation_message_payload(
     selected_choices: list[StationaryEnergyAgentReviewChoice],
     blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
@@ -74,6 +98,30 @@ def bulk_confirmation_message_payload(
             blocked=len(blocked_choices),
         )
     return message_payload("tool-message-bulk-confirm-none")
+
+
+def notation_bulk_confirmation_message_payload(
+    selected_choices: list[StationaryEnergyAgentReviewChoice],
+    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
+) -> dict[str, Any]:
+    """Build localized-message metadata for notation-key bulk previews."""
+    if selected_choices and not blocked_choices:
+        return message_payload(
+            "tool-message-notation-bulk-confirm-success",
+            selected=len(selected_choices),
+        )
+    if selected_choices:
+        return message_payload(
+            "tool-message-notation-bulk-confirm-partial",
+            selected=len(selected_choices),
+            blocked=len(blocked_choices),
+        )
+    if blocked_choices:
+        return message_payload(
+            "tool-message-notation-bulk-confirm-blocked",
+            blocked=len(blocked_choices),
+        )
+    return message_payload("tool-message-notation-bulk-confirm-none")
 
 
 def staged_change_confirmation_message_payload(
@@ -152,3 +200,27 @@ def staged_rollback_result_message_payload(
             blocked=len(blocked_choices),
         )
     return message_payload("tool-message-staged-rollback-none")
+
+
+def notation_rollback_result_message_payload(
+    selected_choices: list[StationaryEnergyAgentReviewChoice],
+    blocked_choices: list[StationaryEnergyAgentReviewBlockedChoice],
+) -> dict[str, Any]:
+    """Build localized-message metadata after rolling back staged notation keys."""
+    if selected_choices and not blocked_choices:
+        return message_payload(
+            "tool-message-notation-rollback-success",
+            selected=len(selected_choices),
+        )
+    if selected_choices:
+        return message_payload(
+            "tool-message-notation-rollback-partial",
+            selected=len(selected_choices),
+            blocked=len(blocked_choices),
+        )
+    if blocked_choices:
+        return message_payload(
+            "tool-message-notation-rollback-blocked",
+            blocked=len(blocked_choices),
+        )
+    return message_payload("tool-message-notation-rollback-none")

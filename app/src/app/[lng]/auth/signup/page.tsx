@@ -4,23 +4,22 @@ import EmailInput from "@/components/email-input";
 import PasswordInput from "@/components/password-input";
 import { useTranslation } from "@/i18n/client";
 
-import { Box, Heading, Icon, Input, Link, Text } from "@chakra-ui/react";
+import { Heading, Input, Link, Text } from "@chakra-ui/react";
 import LabelLarge from "@/components/package/Texts/Label";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, use } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { logger } from "@/services/logger";
-import { MdWarning } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { signIn } from "next-auth/react";
 import { LANGUAGES } from "@/util/types";
-import { LanguageSelector } from "./LanguageSelector";
 import i18next from "i18next";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 import { getHomePath } from "@/util/routes";
+import { getApiErrorMessage } from "@/util/helpers";
 
 type Inputs = {
   inventory?: string;
@@ -32,10 +31,11 @@ type Inputs = {
   preferredLanguage: LANGUAGES;
 };
 
+
 const normalizeInviteEmail = (value: string | null): string =>
   (value ?? "").replaceAll(" ", "+");
 
-export default function Signup(props: { params: Promise<{ lng: string }> }) {
+export default function Signup() {
   const lng = i18next.language as LANGUAGES;
   const { t } = useTranslation(lng, "auth");
   const router = useRouter();
@@ -56,12 +56,11 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   const {
     handleSubmit,
     register,
-    setError: setFormError,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitted },
     watch,
   } = useForm<Inputs>({
     defaultValues: {
-      preferredLanguage: lng as LANGUAGES,
+      preferredLanguage: lng,
       email: prefilledEmail,
     },
   });
@@ -76,18 +75,9 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
   }
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (data.password !== data.confirmPassword) {
-      setFormError("confirmPassword", {
-        type: "custom",
-        message: "Passwords don't match!",
-      });
-      return;
-    }
-
     if (typeof data.acceptTerms !== "boolean") {
       data.acceptTerms = data.acceptTerms === "on";
     }
-
     try {
       const res = await fetch("/api/v1/auth/register", {
         method: "POST",
@@ -107,7 +97,14 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         setError(message);
         return;
       }
-      const userData = (await res.json()) as any;
+      const userData = (await res.json()) as {
+        user: {
+          email: string;
+          name?: string;
+          preferredLanguage?: string;
+          role?: string;
+        };
+      };
 
       // Track user registration
       trackEvent("user_registered", {
@@ -134,14 +131,22 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         logger.error(loginResponse, "Failed to login");
         setError(t("invalid-email-password"));
       }
-    } catch (error: any) {
-      setError(error);
+    } catch (error: unknown) {
+      setError(getApiErrorMessage(error, "Something went wrong"));
     }
   };
 
   return (
     <>
-      <Heading size="xl">{t("signup-heading")}</Heading>
+      <Heading
+        fontFamily="Poppins"
+        fontSize="display.sm"
+        fontWeight={600}
+        lineHeight="44px"
+        color="content.secondary"
+      >
+        {t("signup-heading")}
+      </Heading>
       <Text mt={4} mb={8} color="content.tertiary">
         {t("signup-details")}
       </Text>
@@ -153,19 +158,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
         <Field
           label={<LabelLarge>{t("full-name")}</LabelLarge>}
           invalid={!!errors.name}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.name?.message}
-              </Text>
-            </Box>
-          }
+          errorText={errors.name?.message}
         >
           <Input
             type="text"
@@ -181,19 +174,13 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
             })}
           />
         </Field>
-        <EmailInput
-          register={register}
-          error={errors.email}
-          t={t}
-          disabled={Boolean(prefilledEmail)}
-          defaultValue={prefilledEmail}
-        />
         <PasswordInput
           register={register}
           error={errors.password}
           shouldValidate={true}
           t={t}
           watchPassword={watchPassword}
+          isSubmitted={isSubmitted}
         />
         <PasswordInput
           register={register}
@@ -202,46 +189,21 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           name={t("confirm-password")}
           id="confirmPassword"
           shouldValidate={false}
+          isSubmitted={isSubmitted}
+          validate={(value) => value === watchPassword || t("passwords-dont-match")}
         />
+        <EmailInput
+          register={register}
+          error={errors.email}
+          t={t}
+          disabled={Boolean(prefilledEmail)}
+          defaultValue={prefilledEmail}
+        />
+        <input type="hidden" {...register("preferredLanguage")} />
         <Field
-          label={<LabelLarge>{t("preferred-language")}</LabelLarge>}
-          invalid={!!errors.preferredLanguage}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.preferredLanguage?.message}
-              </Text>
-            </Box>
-          }
-        >
-          <LanguageSelector
-            register={register}
-            error={errors.preferredLanguage}
-            t={t}
-            defaultValue={lng as LANGUAGES}
-          />
-        </Field>
-        <Field
+          mt="s"
           invalid={!!errors.acceptTerms}
-          errorText={
-            <Box display="flex" gap="6px">
-              <Icon as={MdWarning} />
-              <Text
-                fontSize="body.md"
-                lineHeight="20px"
-                letterSpacing="wide"
-                color="content.tertiary"
-              >
-                {errors.acceptTerms?.message}
-              </Text>
-            </Box>
-          }
+          errorText={errors.acceptTerms?.message}
         >
           <Checkbox
             color="content.tertiary"
@@ -268,9 +230,13 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
           type="submit"
           formNoValidate
           loading={isSubmitting}
+          disabled={isSubmitting}
+          mt="s"
           h={16}
           width="full"
           bgColor="interactive.secondary"
+          color="white"
+          _disabled={{ color: "white" }}
         >
           {t("create-account")}
         </Button>
@@ -284,7 +250,7 @@ export default function Signup(props: { params: Promise<{ lng: string }> }) {
       >
         {t("have-account")}{" "}
         <Link
-          href={`/auth/login?callbackUrl=${encodeURIComponent(`${callbackUrl ?? ""}&from=signup`)}`}
+          href={`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl ?? "")}`}
           textDecoration="underline"
         >
           {t("log-in")}

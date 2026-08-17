@@ -1,34 +1,38 @@
-import { Box, Button, Heading, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Text, VStack } from "@chakra-ui/react";
 import Image from "next/image";
 import { Link } from "@chakra-ui/react";
 import React from "react";
-import { useParams } from "next/navigation";
 import FooterLink from "../Navigation/FooterLink";
 import { useTranslation } from "@/i18n/client";
 import { getCurrentVersion } from "@/util/helpers";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { TitleSmall } from "@/components/package/Texts/Title";
 
+const FEEDBACK_FORM_URLS: Record<string, string> = {
+  en: "https://docs.google.com/forms/d/e/1FAIpQLSded7MUlIafwYvhLNq9Hyq4tQtTfpqGTp8j6X4zwywl6bUTmQ/viewform",
+  pt: "https://docs.google.com/forms/d/e/1FAIpQLSdNDYSa5j96ahtJYnkvbQAnSJaGm-fAnO-tINBMIu7ggyQqIQ/viewform",
+};
+
 const Footer = ({ lng }: { lng: string }) => {
   const currentVersion = getCurrentVersion();
   const { t } = useTranslation(lng, "footer");
   const { organization } = useOrganizationContext();
   const logoUrl = organization?.logoUrl;
-  const params = useParams();
-  const isInInventoryContext = !!params?.inventory;
+  const feedbackFormUrl = FEEDBACK_FORM_URLS[lng] ?? FEEDBACK_FORM_URLS.en;
   return (
-    <Box as="footer" w="full" h="320px" bg="#00001f" pt={"48px"}>
-      <Box w="full" px={"64px"}>
-        <Box display="flex" justifyContent="space-between" w="full" pb={10}>
+    <Box as="footer" w="full" bg="#00001f" pt={12} pb={20}>
+      <Box w="full" px={16}>
+        <Box display="flex" w="full" pb={12} gap="xxl-7">
           <Box>
             {logoUrl ? (
-              <img src={logoUrl} width={200} alt="Org logo" />
+              <Image src={logoUrl} width={200} height={40} alt="Org logo" />
             ) : (
               <Image
                 src="/assets/city_catalyst_logo.svg"
                 alt="city-catalyst-logo"
                 width={121}
                 height={24}
+                style={{ marginLeft: "11.5px", marginRight: "11.5px" }}
               />
             )}
           </Box>
@@ -38,10 +42,10 @@ const Footer = ({ lng }: { lng: string }) => {
             w="60%"
             display="grid"
             gridTemplateColumns="repeat(3, 1fr)"
-            gap={6}
+            gap="xxl-2"
             fontFamily="poppins"
           >
-            <VStack align="flex-start">
+            <VStack align="flex-start" gap="l">
               <TitleSmall color="background.overlay" textTransform="uppercase">
                 {t("about")}
               </TitleSmall>
@@ -50,16 +54,11 @@ const Footer = ({ lng }: { lng: string }) => {
                 title={t("about-citycatalyst")}
               />
               <FooterLink
-                url="https://wiki.climatedata.network/"
-                title={t("cad")}
-              />
-
-              <FooterLink
                 url="https://citycatalyst.openearth.org/privacy"
                 title={t("our-privacy-policy")}
               />
             </VStack>
-            <VStack align="flex-start">
+            <VStack align="flex-start" gap="l">
               <TitleSmall color="background.overlay" textTransform="uppercase">
                 {t("developers")}
               </TitleSmall>
@@ -79,19 +78,23 @@ const Footer = ({ lng }: { lng: string }) => {
               />
             </VStack>
 
-            <VStack align="flex-start">
+            <VStack align="flex-start" gap="l">
               <TitleSmall color="background.overlay" textTransform="uppercase">
                 {t("resources")}
               </TitleSmall>
               <FooterLink url="/methodologies" title={t("methodologies")} />
-              {isInInventoryContext && (
-                <FooterLink url="./cdp" title={t("submit-to-cdp")} />
-              )}
             </VStack>
           </Box>
           <Box>
             <Link href="mailto:info@openearth.org">
-              <Button h={"48px"} minW={"150px"} gap={3} borderRadius="48px">
+              <Button
+                h="auto"
+                minW="172px"
+                gap="s"
+                borderRadius="48px"
+                py="l"
+                px="l"
+              >
                 <Text
                   color="base.light"
                   fontFamily="heading"
@@ -126,7 +129,7 @@ const Footer = ({ lng }: { lng: string }) => {
             <>v{currentVersion}</>
           </Text>
           <Link
-            href="https://forms.gle/bAbjwLuDV9bvS5w88"
+            href={feedbackFormUrl}
             target="_blank"
             rel="noopener noreferrer"
             color="base.light"

@@ -46,8 +46,15 @@ export const inventoryCapabilityInputSchema = z.object({
 });
 
 export const inventoryListAccessibleInputSchema = z.object({
-  city_query: z.string().trim().min(1).optional(),
-  year: z.number().int().optional(),
+  city_id: z.string().uuid().optional(),
+  city_query: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.string().trim().min(1).optional(),
+  ),
+  year: z.preprocess(
+    (value) => (value === null ? undefined : value),
+    z.number().int().optional(),
+  ),
   include_all_city_years: z.boolean().optional().default(false),
 });
 

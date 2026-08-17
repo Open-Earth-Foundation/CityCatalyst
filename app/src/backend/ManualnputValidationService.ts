@@ -53,7 +53,7 @@ export default class ManualInputValidationService {
   }) {
     // we wanna compare the activity data with other exisiting activity datas stored in the database belonging to the same inventoryValue
     if (inventoryValueId) {
-      let inventoryValue: InventoryValueAttributes | null =
+      const inventoryValue: InventoryValueAttributes | null =
         await db.models.InventoryValue.findByPk(inventoryValueId);
 
       if (!inventoryValue) {
@@ -113,7 +113,7 @@ export default class ManualInputValidationService {
       if (extraFields && extraFields.length > 0) {
         // handle required fields validation
         await this.requiredFieldValidation({
-          activityData: activityValueParams.activityData as Record<string, any>,
+          activityData: activityValueParams.activityData as Record<string, unknown>,
           requiredFields: extraFields
             .filter((field) => field.required !== false)
             .map((field) => field.id),
@@ -121,7 +121,7 @@ export default class ManualInputValidationService {
 
         // handle exclusive fields validation
         await this.exclusiveFieldValidation({
-          activityData: activityValueParams.activityData as Record<string, any>,
+          activityData: activityValueParams.activityData as Record<string, unknown>,
           exclusiveFieldValue: extraFields
             .filter((field) => field.exclusive)
             .map((f) => ({ id: f.id, value: f.exclusive as string })),
@@ -131,12 +131,12 @@ export default class ManualInputValidationService {
         });
       }
 
-      let activityRules = (methodology as Methodology).activities;
+      const activityRules = (methodology as Methodology).activities;
 
       // handle non direct measure methodologies
       if (activityRules && activityRules.length > 0) {
-        let activityRule = activityRules[selectedActivityIndex];
-        let uniqueBy = activityRule["unique-by"];
+        const activityRule = activityRules[selectedActivityIndex];
+        const uniqueBy = activityRule["unique-by"];
         if (uniqueBy) {
           await this.uniqueByValidation({
             uniqueBy,
@@ -153,10 +153,10 @@ export default class ManualInputValidationService {
     activityData,
     requiredFields,
   }: {
-    activityData: Record<string, any>;
+    activityData: Record<string, unknown>;
     requiredFields: string[];
   }) {
-    let missingFields: string[] = [];
+    const missingFields: string[] = [];
 
     for (const field of requiredFields) {
       if (!activityData[field] && typeof activityData[field] !== "number") {
@@ -202,7 +202,7 @@ export default class ManualInputValidationService {
       } else {
         // using the LOWER function to make the comparison case-insensitive
         return where(fn("lower", literal(`activity_data_jsonb->>'${field}'`)), {
-          [Op.eq]: value?.toLowerCase(),
+          [Op.eq]: value?.toString().toLowerCase(),
         });
       }
     });
@@ -232,7 +232,10 @@ export default class ManualInputValidationService {
           return existingValue.some((item) => newValue.includes(item));
         } else {
           // For single values (strings), do a case-insensitive comparison
-          return existingValue?.toLowerCase() === newValue?.toLowerCase();
+          return (
+            existingValue?.toString().toLowerCase() ===
+            newValue?.toString().toLowerCase()
+          );
         }
       });
 
@@ -255,7 +258,7 @@ export default class ManualInputValidationService {
     activityValueId,
     activityTypeField,
   }: {
-    activityData: Record<string, any>;
+    activityData: Record<string, unknown>;
     exclusiveFieldValue: { id: string; value: string }[];
     inventoryValueId: string;
     activityValueId?: string;
@@ -298,7 +301,7 @@ export default class ManualInputValidationService {
           targetFields: [field.id],
           meta: {
             exclusiveFieldValue: exclusiveValue,
-            targetValue: activityData[field.id],
+            targetValue: activityData[field.id] as string | undefined,
           },
         };
 

@@ -22,7 +22,7 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import { InviteUserToMultipleCitiesTemplate } from "@/lib/emails/InviteUserToMultipleCitiesTemplate";
 import { Op } from "sequelize";
 import { logger } from "@/services/logger";
@@ -31,7 +31,7 @@ import { InviteStatus, Roles } from "@/util/types";
 import { subDays } from "date-fns";
 import EmailService from "@/backend/EmailService";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
@@ -107,12 +107,12 @@ export const GET = apiHandler(async (req, { params, session }) => {
  *       500:
  *         description: Something went wrong.
  */
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Not signed in");
   }
   const inviteRequest = CreateUsersInvite.parse(await req.json());
-  const { emails, cityIds } = inviteRequest;
+  const { invites, cityIds, projectId } = inviteRequest;
 
   // if the user is not an OEF admin, we want to make sure they have access to the city they are people inviting to
   if (!(session.user.role === Roles.Admin)) {
@@ -216,19 +216,20 @@ export const POST = apiHandler(async (req, { params, session }) => {
   }
 
   const failedInvites: { email: string; cityIds: string[] }[] = [];
+  const inviteUrls: Record<string, string> = {};
 
   await Promise.all(
-    emails.map(async (email) => {
+    invites.map(async ({ email, role }) => {
       const inviteData = { email, cityIds };
       try {
         const invitationCode = jwt.sign(
-          { email: email, reason: "invite", cities: cityIds },
+          { email, reason: "invite", cities: cityIds, role, projectId },
           process.env.VERIFICATION_TOKEN_SECRET!,
           {
             expiresIn: "30d",
           },
         );
-        const invites = await Promise.all(
+        const cityInvites = await Promise.all(
           cityIds.map(async (cityId) => {
             const existingInvite = await db.models.CityInvite.findOne({
               where: { email, cityId },
@@ -251,10 +252,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
 
               if (!invite) {
                 failedInvites.push({ email, cityIds: [cityId] });
-                logger.error(
-                  { cityId, email },
-                  "error creating invite",
-                );
+                logger.error({ cityId, email }, "error creating invite");
               }
               return invite;
             }
@@ -269,7 +267,7 @@ export const POST = apiHandler(async (req, { params, session }) => {
         const params = new URLSearchParams();
 
         // Add query parameters
-        params.set("cityIds", invites.map((i) => i.cityId).join(","));
+        params.set("cityIds", cityInvites.map((i) => i.cityId).join(","));
         params.set("token", invitationCode);
         params.set("email", email);
         params.set(
@@ -277,6 +275,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
           doesInvitedUserExist ? "true" : "false",
         );
         const url = `${host}/user/invites?${params.toString()}`;
+        inviteUrls[email] = url;
+
         // Get the inviting user's preferred language
         const invitingUser = await db.models.User.findByPk(session.user.id);
 
@@ -285,10 +285,6 @@ export const POST = apiHandler(async (req, { params, session }) => {
             url,
             email,
             cities: cities,
-            invitingUser: {
-              name: session?.user.name!,
-              email: session?.user.email!,
-            },
             language: invitingUser?.preferredLanguage,
             ...(emailBranding
               ? {
@@ -302,18 +298,17 @@ export const POST = apiHandler(async (req, { params, session }) => {
           "invite-multiple.subject",
         ).subject;
 
+        // Email is best-effort: invite URL is still returned for clipboard copy.
         const sendInvite = await sendEmail({
           to: email!,
           subject: translatedSubject,
           html,
         });
         if (!sendInvite) {
-          logger.error(
+          logger.warn(
             { email, cityIds },
-            "Email could not be sent",
+            "Invitation email could not be sent; invite was created and URL is available",
           );
-          logger.error({ inviteData }, "error in invites/route POST: ");
-          failedInvites.push(inviteData);
         }
       } catch (error) {
         failedInvites.push(inviteData);
@@ -324,5 +319,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
   if (failedInvites.length > 0) {
     throw new createHttpError.InternalServerError("Something went wrong");
   }
-  return NextResponse.json({ success: failedInvites.length === 0 });
+  return NextResponse.json({
+    success: failedInvites.length === 0,
+    inviteUrls,
+  });
 });

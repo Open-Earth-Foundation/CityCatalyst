@@ -96,7 +96,7 @@ export function usePollUntil<T>({
     setIsPolling(true);
 
     intervalRef.current = setInterval(async () => {
-      const { fetchFn: f, isTerminal: isTerm, onSuccess: ok, onFailure: fail, onTick: tick, onPollError: onErr } =
+      const { fetchFn: f, isTerminal: isTerm, onSuccess: ok, onFailure: fail, onTick: tick } =
         optionsRef.current;
       try {
         const data = await f();

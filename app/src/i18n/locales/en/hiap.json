@@ -46,6 +46,7 @@
   "reduction-potential": "Reduction potential",
   "high": "High",
   "sector-name": "Sector",
+  "hazard-name": "Hazard",
   "transport": "Transport",
   "estimated-cost": "Estimated cost",
   "implementation-time": "Implementation time",
@@ -124,7 +125,8 @@
     "ghg_reduction": "GHG Reduction",
     "climate_resilience": "Climate Resilience"
   },
-  "top-actions-tip": "Your top actions list is based on your current inventory progress. We recommend completing it before using this module.",
+  "top-actions-tip-mitigation": "Your top actions list is based on your current inventory progress. We recommend completing it before using this module.",
+  "top-actions-tip-adaptation": "Your top actions list is based on your current Climate Risk Assessment. We recommend completing it before using this module.",
   "climate-actions-title": "Climate actions",
   "actions": "Actions",
   "open-cc-actions": "Open CC Actions",
@@ -183,5 +185,7 @@
     }
   },
   "history": "History",
-  "last-update": "Last update"
+  "last-update": "Last update",
+  "view-more": "VIEW MORE",
+  "view-less": "VIEW LESS"
 }

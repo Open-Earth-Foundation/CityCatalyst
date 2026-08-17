@@ -1,20 +1,15 @@
-import {
-  ACTION_TYPES,
-  HIAction,
-  HighImpactActionRankingStatus,
-  LANGUAGES,
-} from "@/util/types";
+import { ACTION_TYPES, HIAction, LANGUAGES } from "@/util/types";
 import { logger } from "@/services/logger";
 import {
   PrioritizerResponse,
   PrioritizerResponseBulk,
   PrioritizerCityData,
+  LegacyActionPlanData,
 } from "./types";
 import { db } from "@/models";
 import { hiapServiceWrapper } from "./HiapService";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
-import { ActionPlan } from "@/models/ActionPlan";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 
@@ -22,7 +17,7 @@ const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 // These are the actual 3rd-party HTTP calls to the HIAP service
 export const hiapApiWrapper: {
   startPrioritization: (
-    contextData: any,
+    contextData: PrioritizerCityData,
     type: ACTION_TYPES,
     langs: LANGUAGES[],
   ) => Promise<{ taskId: string }>;
@@ -50,10 +45,10 @@ export const hiapApiWrapper: {
     createdBy?: string;
   }) => Promise<{ plan: string; timestamp: string; actionName: string }>;
   translateActionPlan: (
-    inputPlan: ActionPlan,
+    inputPlan: LegacyActionPlanData,
     inputLanguage: string,
     outputLanguage: string,
-  ) => Promise<ActionPlan>;
+  ) => Promise<LegacyActionPlanData>;
 } = {
   startPrioritization: async (contextData, type, langs) => {
     return await startPrioritizationImpl(contextData, type, langs);
@@ -87,7 +82,7 @@ export const hiapApiWrapper: {
 
 /** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
 const startPrioritizationImpl = async (
-  contextData: any,
+  contextData: PrioritizerCityData,
   type: ACTION_TYPES,
   langs: LANGUAGES[],
 ): Promise<{ taskId: string }> => {
@@ -616,10 +611,10 @@ const getBulkPrioritizationResultImpl = async (
 };
 
 const translateActionPlanImpl = async (
-  inputPlan: ActionPlan,
+  inputPlan: LegacyActionPlanData,
   inputLanguage: string,
   outputLanguage: string,
-): Promise<ActionPlan> => {
+): Promise<LegacyActionPlanData> => {
   const startResponse = await fetch(
     `${HIAP_API_URL}/plan-creator/v1/translate_plan`,
     {
@@ -637,10 +632,10 @@ const translateActionPlanImpl = async (
     throw new Error(`Failed to start translation: ${startText}`);
   }
 
-  let startJson: any;
+  let startJson: { taskId: string };
   try {
     startJson = JSON.parse(startText);
-  } catch (e) {
+  } catch {
     throw new Error(`Invalid JSON from translate_plan: ${startText}`);
   }
 
@@ -684,10 +679,10 @@ const translateActionPlanImpl = async (
   if (!planResp.ok) {
     throw new Error(`Failed to fetch translated plan: ${planText}`);
   }
-  let planJson: ActionPlan;
+  let planJson: LegacyActionPlanData;
   try {
     planJson = JSON.parse(planText);
-  } catch (e) {
+  } catch {
     throw new Error(`Invalid translated plan JSON: ${planText}`);
   }
   return planJson;

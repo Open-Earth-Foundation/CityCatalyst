@@ -74,7 +74,7 @@ export class PermissionService {
           ? false
           : options.includeResource !== false;
         const resource = shouldLoadResource
-          ? await ResourceLoader.getResource(context)
+          ? (await ResourceLoader.getResource(context)) ?? undefined
           : undefined;
 
         return {
@@ -110,7 +110,7 @@ export class PermissionService {
     if (session.user.role === Roles.Admin) {
       logger.debug({ userId: session.user.id }, "System admin access granted");
       const resource = shouldLoadResource
-        ? await ResourceLoader.getResource(context)
+        ? (await ResourceLoader.getResource(context)) ?? undefined
         : undefined;
       return {
         hasAccess: true,
@@ -184,7 +184,7 @@ export class PermissionService {
 
     // Load resource if requested
     const resource = shouldLoadResource
-      ? await ResourceLoader.getResource(context)
+      ? ((await ResourceLoader.getResource(context)) ?? undefined)
       : undefined;
 
     return {

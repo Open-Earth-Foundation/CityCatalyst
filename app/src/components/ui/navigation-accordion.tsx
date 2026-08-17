@@ -1,7 +1,6 @@
 import { Accordion, Box, Icon, Link, Span, Text } from "@chakra-ui/react";
 import * as React from "react";
 import { BiChevronDown } from "react-icons/bi";
-import { GoArrowRight } from "react-icons/go";
 
 interface NavigationItem {
   label: string;
@@ -11,9 +10,9 @@ interface NavigationItem {
 
 interface NavigationAccordionProps {
   title: string;
-  icon: React.ComponentType<any>;
+  icon: React.ElementType;
   items: NavigationItem[];
-  t: Function;
+  t: (key: string) => string;
   defaultOpen?: boolean;
 }
 
@@ -25,19 +24,18 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
   defaultOpen = false,
 }) => {
   return (
-    <Box w="full" display="flex" flexDirection="column" py="24px">
+    <Box w="full" display="flex" flexDirection="column">
       <Accordion.Root collapsible defaultValue={defaultOpen ? ["section"] : []}>
-        <Accordion.Item value="section">
+        <Accordion.Item value="section" borderBottom="none">
           <Accordion.ItemTrigger
             w="full"
             display="flex"
             alignItems="center"
             justifyContent="space-between"
             border="none"
-            pl="16px"
           >
             <Box display="flex" alignItems="center" gap="12px">
-              <Icon as={IconComponent} color={"content.tertiary"} boxSize={6} />
+              <Icon as={IconComponent} color={"interactive.secondary"} boxSize={6} />
               <Span
                 flex="1"
                 fontSize="body.lg"
@@ -48,35 +46,36 @@ export const NavigationAccordion: React.FC<NavigationAccordionProps> = ({
               </Span>
             </Box>
             <Accordion.ItemIndicator>
-              <Icon as={BiChevronDown} color={"content.tertiary"} boxSize={6} />
+              <Icon as={BiChevronDown} color={"icon.default"} boxSize={6} />
             </Accordion.ItemIndicator>
           </Accordion.ItemTrigger>
           <Accordion.ItemContent>
-            <Accordion.ItemBody border="none" pl="16px">
-              {items.map((item, index) => (
-                <Link
-                  key={index}
-                  rounded={0}
-                  w="full"
-                  h="48px"
-                  gap="12px"
-                  display="flex"
-                  justifyContent="space-between"
-                  href={item.href}
-                  onClick={item.onClick}
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  <Text fontSize="body.lg" color="content.primary">
-                    {t(item.label)}
-                  </Text>
-                  <Icon
-                    as={GoArrowRight}
-                    color={"interactive.control"}
-                    boxSize={6}
-                  />
-                </Link>
-              ))}
+            <Accordion.ItemBody border="none" pl="xl">
+              {items.map((item, index) => {
+                const isExternal =
+                  !!item.href &&
+                  (item.href.startsWith("http://") ||
+                    item.href.startsWith("https://"));
+                return (
+                  <Link
+                    key={index}
+                    rounded={0}
+                    w="full"
+                    h="48px"
+                    gap="12px"
+                    display="flex"
+                    alignItems="center"
+                    href={item.href}
+                    onClick={item.onClick}
+                    rel={isExternal ? "noopener noreferrer" : undefined}
+                    target={isExternal ? "_blank" : undefined}
+                  >
+                    <Text fontSize="body.lg" color="content.primary">
+                      {t(item.label)}
+                    </Text>
+                  </Link>
+                );
+              })}
             </Accordion.ItemBody>
           </Accordion.ItemContent>
         </Accordion.Item>

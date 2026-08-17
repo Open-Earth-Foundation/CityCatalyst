@@ -21,7 +21,7 @@ import { getApiDocs } from "@/lib/swagger";
 import { NextResponse } from "next/server";
 import { apiHandler } from "@/util/api";
 
-export const GET = apiHandler(async (_req, { params, session }) => {
+export const GET = apiHandler(async () => {
   try {
     const spec = await getApiDocs();
     

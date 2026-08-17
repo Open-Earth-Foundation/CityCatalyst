@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import time
@@ -209,12 +210,18 @@ def log_metrics(metrics: Mapping[str, float | int]) -> None:
         logger.warning("MLflow metric logging failed error=%s", error)
 
 
-def log_json_artifact(artifact_file: str, payload: Mapping[str, object]) -> None:
-    """Best-effort log one JSON artifact to the active MLflow run."""
+def log_json_artifact(artifact_file: str, payload: Any) -> None:
+    """Best-effort log one JSON-compatible artifact to the active MLflow run."""
     if not _has_active_run():
         return
     try:
-        mlflow.log_dict(dict(payload), artifact_file)
+        if isinstance(payload, Mapping):
+            mlflow.log_dict(dict(payload), artifact_file)
+        else:
+            mlflow.log_text(
+                json.dumps(payload, ensure_ascii=False, indent=2),
+                artifact_file,
+            )
     except Exception as error:
         logger.warning(
             "MLflow JSON artifact logging failed artifact_file=%s error=%s",

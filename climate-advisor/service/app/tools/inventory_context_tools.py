@@ -208,9 +208,10 @@ def build_inventory_capability_tools(
     ) -> str:
         """List city/year inventories the user can access.
 
-        Use optional city/year filters to narrow choices. Set
-        include_all_city_years when the user asks for every inventory year for a
-        matching city.
+        Returns totals plus organization/project breakdown fields so count
+        questions can be answered as access summaries. Use optional city/year
+        filters to narrow choices. Set include_all_city_years when the user asks
+        for every inventory year for a matching city.
         """
 
         request_payload: Dict[str, Any] = {

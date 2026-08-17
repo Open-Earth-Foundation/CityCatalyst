@@ -1,13 +1,8 @@
 import { api, useGetCitiesAndYearsQuery } from "@/services/api";
 import type { CityAndYearsResponse } from "@/util/types";
-import { Center, Icon, IconButton, Spinner, Text } from "@chakra-ui/react";
+import { Center, Icon, Spinner, Text } from "@chakra-ui/react";
 import { useRouter, useParams } from "next/navigation";
-import {
-  MdAdd,
-  MdArrowDropDown,
-  MdLocationOn,
-  MdOutlineLocationOn,
-} from "react-icons/md";
+import { MdAdd, MdArrowDropDown } from "react-icons/md";
 import { MenuRoot, MenuContent, MenuItem, MenuTrigger } from "./ui/menu";
 import { Button } from "./ui/button";
 import type { TFunction } from "i18next";
@@ -32,7 +27,7 @@ export const InventorySelect = ({
   const [setUserInfo] = api.useSetUserInfoMutation();
   const onSelect = async ({ city, years }: CityAndYearsResponse) => {
     // get the latest inventory for the city
-    let targetInventory = years[0];
+    const targetInventory = years[0];
     await setUserInfo({
       defaultCityId: city.cityId!,
       defaultInventoryId: targetInventory.inventoryId,

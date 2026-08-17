@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import { z } from "zod";
 import createHttpError from "http-errors";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 const getActionPlansSchema = z.object({
   cityId: z.string().optional(), // Optional since we get it from path params
@@ -66,30 +67,19 @@ const createActionPlanSchema = z.object({
  *                 data:
  *                   type: object
  */
-export const GET = apiHandler(async (req: NextRequest, { params }) => {
-  const url = new URL(req.url);
-  const queryParams = Object.fromEntries(url.searchParams.entries());
-
-  try {
-    const { language, actionId } = getActionPlansSchema.parse(queryParams);
-    const cityId = params.city as string;
+export const GET = apiHandler(
+  async (_req: NextRequest, { params, searchParams }) => {
+    const { language, actionId } = getActionPlansSchema.parse(searchParams);
 
     const actionPlans = await ActionPlanService.fetchOrTranslateActionPlan(
-      cityId,
+      params.city,
       language,
       actionId,
     );
 
     return NextResponse.json({ data: actionPlans });
-  } catch (error: any) {
-    if (error instanceof z.ZodError) {
-      throw createHttpError.BadRequest(
-        `Invalid query parameters: ${error.message}`,
-      );
-    }
-    throw error;
-  }
-});
+  },
+);
 
 /**
  * @swagger
@@ -100,7 +90,7 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
  *       - hiap
  *     operationId: postCityHiapActionPlan
  *     summary: Create or update an action plan for a city
- *     description: Upsert an action plan with the provided data. The cityId is extracted from the route parameter.
+ *     description: Upsert an action plan with the provided data. Requires authentication and inventory access. The inventory, city, ranking, and ranked action must belong together.
  *     parameters:
  *       - in: path
  *         name: city
@@ -159,15 +149,25 @@ export const GET = apiHandler(async (req: NextRequest, { params }) => {
  */
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
+    if (!session?.user?.id) {
+      throw new createHttpError.Unauthorized("Authentication required");
+    }
+
     const body = await req.json();
 
     const validatedData = createActionPlanSchema.parse(body);
+
+    await PermissionService.canAccessInventory(
+      session,
+      validatedData.inventoryId,
+    );
 
     const { actionPlan } = await ActionPlanService.upsertActionPlan({
       cityId: params.city,
       actionId: validatedData.actionId,
       highImpactActionRankedId: validatedData.hiActionRankingId,
       cityLocode: validatedData.cityLocode,
+      inventoryId: validatedData.inventoryId,
       actionName: validatedData.actionName,
       language: validatedData.language,
       planData: validatedData.planData,

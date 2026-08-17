@@ -4,6 +4,10 @@ export const LOAD_CONTEXT_CAPABILITY =
   "ghgi.stationary_energy.load_context" as const;
 export const COMMIT_ACCEPTED_CAPABILITY =
   "ghgi.stationary_energy.commit_accepted" as const;
+export const LIST_NOTATION_KEYS_CAPABILITY =
+  "ghgi.stationary_energy.list_notation_keys" as const;
+export const COMMIT_NOTATION_KEYS_CAPABILITY =
+  "ghgi.stationary_energy.commit_notation_keys" as const;
 
 export const stationaryEnergyWorkflowStepSchema = z.enum(["draft", "review"]);
 
@@ -13,7 +17,9 @@ export type StationaryEnergyWorkflowStep = z.infer<
 
 export type StationaryEnergyCapabilityId =
   | typeof LOAD_CONTEXT_CAPABILITY
-  | typeof COMMIT_ACCEPTED_CAPABILITY;
+  | typeof COMMIT_ACCEPTED_CAPABILITY
+  | typeof LIST_NOTATION_KEYS_CAPABILITY
+  | typeof COMMIT_NOTATION_KEYS_CAPABILITY;
 
 export type StationaryEnergyOperationType = "query" | "command" | "workflow";
 export type StationaryEnergyResourceScope =
@@ -25,7 +31,9 @@ export type StationaryEnergyResourceScope =
 export type StationaryEnergyTransportExposure = "internal_ca_route";
 export type StationaryEnergyResultShape =
   | "stationary_energy_context"
-  | "stationary_energy_commit_results";
+  | "stationary_energy_commit_results"
+  | "stationary_energy_notation_key_targets"
+  | "stationary_energy_notation_key_commit_results";
 
 type StationaryEnergyConfirmationBehavior =
   | {
@@ -118,6 +126,40 @@ export const commitAcceptedStationaryEnergyInputSchema = z.object({
   rows: z.array(commitAcceptedStationaryEnergyRowSchema).min(1),
 });
 
+const allowedNotationKeySchema = z.enum(["NO", "NE", "IE", "C"]);
+
+export const listStationaryEnergyNotationKeysInputSchema = z.object({
+  draft_run_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
+  sector_code: z.literal("stationary_energy").default("stationary_energy"),
+});
+
+export const listStationaryEnergyNotationKeysOutputSchema = z
+  .object({
+    allowed_notation_keys: z.array(recordSchema),
+    targets: z.array(recordSchema),
+  })
+  .passthrough();
+
+export const commitStationaryEnergyNotationKeyRowSchema = z.object({
+  proposal_id: z.string().uuid(),
+  decision_version: z.number().int().positive(),
+  target_id: z.string().uuid(),
+  target_ref: recordSchema,
+  notation_key: allowedNotationKeySchema,
+  unavailable_explanation: z.string().min(1),
+});
+
+export const commitStationaryEnergyNotationKeysInputSchema = z.object({
+  draft_run_id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  city_id: z.string().uuid(),
+  inventory_id: z.string().uuid(),
+  rows: z.array(commitStationaryEnergyNotationKeyRowSchema).min(1),
+});
+
 export const commitAcceptedStationaryEnergyOutputSchema = z
   .object({
     draft_run_id: z.string().uuid(),
@@ -172,6 +214,54 @@ export const stationaryEnergyCapabilityRegistry = {
     },
     schemas: {
       input: commitAcceptedStationaryEnergyInputSchema,
+      output: commitAcceptedStationaryEnergyOutputSchema,
+    },
+  },
+  [LIST_NOTATION_KEYS_CAPABILITY]: {
+    id: LIST_NOTATION_KEYS_CAPABILITY,
+    module: "ghgi",
+    sectorCode: "stationary_energy",
+    operationType: "query",
+    workflowSteps: ["review"],
+    requiredResourceScope: ["user", "city", "inventory", "sector", "draft_run"],
+    requiresConfirmation: false,
+    writesCommittedProductData: false,
+    confirmationBehavior: {
+      required: false,
+      type: "none",
+    },
+    resultShape: "stationary_energy_notation_key_targets",
+    transportExposure: {
+      type: "internal_ca_route",
+      route:
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/list-notation-keys",
+    },
+    schemas: {
+      input: listStationaryEnergyNotationKeysInputSchema,
+      output: listStationaryEnergyNotationKeysOutputSchema,
+    },
+  },
+  [COMMIT_NOTATION_KEYS_CAPABILITY]: {
+    id: COMMIT_NOTATION_KEYS_CAPABILITY,
+    module: "ghgi",
+    sectorCode: "stationary_energy",
+    operationType: "command",
+    workflowSteps: ["review"],
+    requiredResourceScope: ["user", "city", "inventory", "sector", "draft_run"],
+    requiresConfirmation: true,
+    writesCommittedProductData: true,
+    confirmationBehavior: {
+      required: true,
+      type: "review_acceptance",
+    },
+    resultShape: "stationary_energy_notation_key_commit_results",
+    transportExposure: {
+      type: "internal_ca_route",
+      route:
+        "/api/v1/internal/ca/capabilities/ghgi/stationary-energy/commit-notation-keys",
+    },
+    schemas: {
+      input: commitStationaryEnergyNotationKeysInputSchema,
       output: commitAcceptedStationaryEnergyOutputSchema,
     },
   },

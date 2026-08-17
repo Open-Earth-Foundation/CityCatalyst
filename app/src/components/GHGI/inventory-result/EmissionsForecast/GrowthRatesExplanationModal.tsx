@@ -11,7 +11,8 @@ import { Box, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { MdBarChart } from "react-icons/md";
 import { GrowthRatesExplanationModalTable } from "./GrowthRatesExplanationModalTable";
-import { BodyLarge, DisplayLarge } from "@/components/package";
+import { BodyLarge } from "@/components/package/Texts/Body";
+import { DisplayLarge } from "@/components/package/Texts/Display";
 
 export function GrowthRatesExplanationModal({
   t,
@@ -84,7 +85,7 @@ export function GrowthRatesExplanationModal({
             </VStack>
             <VStack alignItems="left" justifyItems="end" p="24px">
               <BodyLarge fontWeight="regular">
-                {cluster?.description?.[lng]}
+                {cluster?.description?.[lng] ?? cluster?.description?.en ?? ""}
               </BodyLarge>
               <LabelLarge>{t("description")}</LabelLarge>
             </VStack>

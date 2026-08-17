@@ -1,31 +1,39 @@
-import crypto from 'crypto';
+import crypto from "crypto";
+import { Suspense } from "react";
 import { Auth } from "@/lib/auth";
-import { hasFeatureFlag, FeatureFlags } from '@/util/feature-flags';
-import AuthorizeForm from './AuthorizeForm';
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import AuthorizeForm from "./AuthorizeForm";
 import RedirectToLogin from "@/components/Navigation/RedirectToLogin";
 import OAuthNotEnabled from "./OAuthNotEnabled";
 
-export default async function AuthorizePage({ params }: { params: any }) {
-
+export default async function AuthorizePage({
+  params,
+}: {
+  params: Promise<{ lng: string }>;
+}) {
   const { lng } = await params;
 
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
-    return <OAuthNotEnabled lng={lng} />
+    return <OAuthNotEnabled lng={lng} />;
   }
 
   const session = await Auth.getServerSession();
 
   if (!session) {
-    return <RedirectToLogin lng={lng} />
+    return <RedirectToLogin lng={lng} />;
   }
 
   if (!session.csrfSecret) {
-    throw new Error('Must have a csrfSecret');
+    throw new Error("Must have a csrfSecret");
   }
 
   const csrfToken = crypto
-    .createHmac('sha256', session.csrfSecret)
-    .digest('hex');
+    .createHmac("sha256", session.csrfSecret)
+    .digest("hex");
 
-  return <AuthorizeForm csrfToken={csrfToken} lng={lng} />;
+  return (
+    <Suspense fallback={null}>
+      <AuthorizeForm csrfToken={csrfToken} lng={lng} />
+    </Suspense>
+  );
 }

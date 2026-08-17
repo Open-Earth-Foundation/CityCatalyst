@@ -1,0 +1,111 @@
+<role>
+You write the Action Impact chapter for a City Action Report.
+</role>
+
+<task>
+Explain the action's qualitative mitigation potential, ranking impact signal, co-benefits, and why the action matters for the city.
+</task>
+
+<input>
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
+- `key` (string): must be `action_impact`
+- `title` (string): chapter title
+- `language` (string): requested report language
+- `facts.action` (object): selected action ID, name, emissions references, intervention summary, outcome summary, co-benefits, and implementation timeline when available
+- `facts.ranking` (object): selected-action rank, returned action count, impact score, and final score
+- `facts.impact_evidence` (object): selected-action impact evidence from the ranking snapshot
+- `source_refs` (array): source keys available to cite in `source_refs`
+- `limitations` (array): chapter limitations to carry forward when relevant
+
+Runtime input:
+{
+  "key": "action_impact",
+  "title": "Action Impact",
+  "language": "en",
+  "facts": {
+    "action": {
+      "action_id": "icare_0040",
+      "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods",
+      "description": "The city will install LED-based (or other low emission technologies), solar-powered streetlights in all neighborhoods, including rural and peri-urban areas, to enhance safety, accessibility, and social inclusion while reducing energy costs and environmental impacts. Where feasible, the action prioritizes solar power generation, especially in areas with limited grid coverage or high carbon intensity. In locations where the electricity grid is already clean, the focus will be on maximizing lighting efficiency through LED retrofits and smart controls. Municipal roles include procuring equipment, establishing public–private financing mechanisms, and contracting long-term maintenance services to ensure system reliability. This action delivers strong co-benefits for communities of all sizes but requires careful planning to address maintenance and operational challenges.",
+      "intervention_summary": "The city installs energy-efficient and solar-powered streetlights.",
+      "outcome_summary": "Street lighting shifts to efficient LED and solar-powered fixtures.",
+      "implementation_timeline": "5-10 years",
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": [
+          1
+        ],
+        "gpc_reference_number": [
+          "I.1.1",
+          "I.1.2"
+        ],
+        "impact_relationship": "positive",
+        "impact_text": "very low",
+        "impact_numeric": 1,
+        "methodology": "expert review"
+      },
+      "co_benefits": {
+        "air_quality": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "cost_of_living": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "mobility": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "stakeholder_engagement": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        }
+      }
+    },
+    "ranking": {
+      "rank": 8,
+      "returned_action_count": 20,
+      "impact_score": 0.2547734586057905,
+      "final_score": 0.4764567293028953
+    },
+    "impact_evidence": {
+      "impact_block_score": 0.2547734586057905,
+      "matched_city_subsector_keys_count": 1,
+      "emissions_reduction_component_score": 0.19346682325723805,
+      "timeline_component_score": 0.5
+    }
+  },
+  "source_refs": [
+    "ranking_snapshot",
+    "action_pathways"
+  ],
+  "limitations": [
+    "City-level quantified emissions reductions are not available for this action in the supplied context."
+  ]
+}
+</input>
+
+<output>
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining qualitative impact and co-benefits.
+- `limitations` (array of strings): relevant impact-estimation limitations.
+
+Do not provide city-level per-action tCO2e estimates, annual reductions, or quantified benefits unless explicitly present in `facts`.
+</output>
+
+<example_output>
+{
+  "markdown": "The action has a meaningful impact signal in the ranking because the supplied score facts show it contributes to the impact pillar. The action pathway facts support a qualitative discussion of mitigation potential and associated co-benefits.\n\nThe report input does not provide a city-specific per-action tCO2e estimate, so the impact should be described qualitatively rather than as a quantified abatement forecast.",
+  "source_refs": ["ranking_snapshot", "action_pathways"],
+  "limitations": ["City-level per-action tCO2e estimates are not available in the supplied context."]
+}
+</example_output>

@@ -39,7 +39,6 @@
  */
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
-import { db } from "@/models";
 import UserService from "@/backend/UserService";
 import { NextResponse } from "next/server";
 

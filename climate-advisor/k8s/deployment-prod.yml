@@ -37,7 +37,7 @@ spec:
             - name: MLFLOW_ENVIRONMENT
               value: "prod"
             - name: MLFLOW_EXPERIMENT_NAME
-              value: "clima"
+              value: "Clima"
             - name: MLFLOW_HTTP_REQUEST_TIMEOUT
               value: "3"
             - name: MLFLOW_HTTP_REQUEST_MAX_RETRIES
@@ -50,6 +50,8 @@ spec:
               value: "quiet"
             - name: MLFLOW_ASYNC_LOGGING_ENABLED
               value: "true"
+            - name: CA_FEATURE_FLAGS
+              value: "STATIONARY_ENERGY_AGENTIC"
           resources:
             requests:
               memory: "512Mi"
@@ -68,10 +70,10 @@ spec:
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: http
               httpHeaders:
-                - name: X-Liveness-Probe
+                - name: X-Readiness-Probe
                   value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5

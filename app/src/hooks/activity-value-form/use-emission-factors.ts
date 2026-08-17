@@ -2,9 +2,19 @@ import { api } from "@/services/api";
 import { ExtraField } from "@/util/form-schema";
 import { useMemo } from "react";
 import { Control, UseFormSetValue, useWatch } from "react-hook-form";
-import { EmissionsFactorResponse } from "@/util/types";
+import {
+  EmissionsFactorResponse,
+  EmissionsFactorWithDataSources,
+} from "@/util/types";
 import { getTranslationFromDict } from "@/i18n";
 import { uniqBy } from "lodash";
+import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
+
+type GasValueEntry = EmissionsFactorWithDataSources & {
+  gas: string;
+  emissionsPerActivity: number;
+  datasource: null;
+};
 
 export interface EmissionFactorTypes {
   id: string;
@@ -12,7 +22,7 @@ export interface EmissionFactorTypes {
   reference: string;
   gasValuesByGas: {
     [gas: string]: {
-      gasValues: Record<string, any>[];
+      gasValues: GasValueEntry[];
     };
   };
 }
@@ -67,7 +77,7 @@ const reduceEmissionsToUniqueSourcesAndUnits = (
               source.gasValuesByGas[currentValue].gasValues,
               "emissionsPerActivity",
             ).filter((factor) =>
-              ["kg/m3", "kg/kWh", "kg/kg"].includes(factor.units),
+              ["kg/m3", "kg/kWh", "kg/kg"].includes(factor.units ?? ""),
             ), // filter only emissions that have kg/m3, kg/kWh, or kg/kg as the unit
           },
         };
@@ -83,38 +93,40 @@ const useEmissionFactors = ({
   inventoryId,
   control,
   fields,
-  setValue,
 }: {
   referenceNumber: string;
   methodologyId: string;
   inventoryId: string;
-  control: Control<any, any>;
+  control: Control<Inputs>;
   fields: ExtraField[];
-  setValue: UseFormSetValue<any>;
+  setValue: UseFormSetValue<Inputs>;
 }) => {
   const activityData = useWatch({
     control,
-    name: `activity` as any,
+    name: `activity`,
   });
 
   const emissionFactorMetadata = useMemo(() => {
+    const dynamicActivityData = activityData as
+      | Record<string, unknown>
+      | undefined;
     const metadata = fields.reduce(
       (acc, field) => {
         if (
           field["emission-factor-dependency"] &&
-          activityData &&
-          field.id in activityData
+          dynamicActivityData &&
+          field.id in dynamicActivityData
         ) {
-          acc[field.id] = activityData[field.id];
+          acc[field.id] = dynamicActivityData[field.id];
         }
         return acc;
       },
-      {} as Record<string, ExtraField>,
+      {} as Record<string, unknown>,
     );
     return metadata;
   }, [activityData, fields]);
 
-  let { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
+  const { data: emissionsFactors, isLoading: emissionsFactorsLoading } =
     api.useGetEmissionsFactorsQuery({
       referenceNumber,
       methodologyId,

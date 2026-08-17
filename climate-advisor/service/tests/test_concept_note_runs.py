@@ -138,8 +138,12 @@ async def test_start_run_creates_after_scope_and_reference_validation() -> None:
     )
 
 
-async def test_start_run_schedules_initial_context_after_commit(monkeypatch) -> None:
-    """Commit a new run before scheduling its initial thin-context build."""
+@pytest.mark.parametrize("created", [True, False])
+async def test_start_run_schedules_only_new_context_after_commit(
+    monkeypatch,
+    created: bool,
+) -> None:
+    """Commit every accepted start and schedule only newly created runs."""
     payload = _start_request()
     service, repository, _, _ = _run_service()
     repository.create_or_get.return_value = (
@@ -147,7 +151,7 @@ async def test_start_run_schedules_initial_context_after_commit(monkeypatch) -> 
             payload,
             request_fingerprint=_request_fingerprint(payload),
         ),
-        True,
+        created,
     )
     context_bundle_service = Mock(spec=ContextBundleService)
     schedule = Mock()
@@ -165,43 +169,18 @@ async def test_start_run_schedules_initial_context_after_commit(monkeypatch) -> 
         context_bundle_service=context_bundle_service,
     )
 
-    assert response.created is True
-    assert events == ["commit", "schedule"]
+    assert response.created is created
+    assert events == (["commit", "schedule"] if created else ["commit"])
     service.session.commit.assert_awaited_once_with()
-    schedule.assert_called_once_with(
-        service=context_bundle_service,
-        user_id=payload.user_id,
-        run_id=response.run_id,
-        token="token",
-    )
-
-
-async def test_start_run_replay_commits_without_rescheduling(monkeypatch) -> None:
-    """Do not start a duplicate context build for an idempotent replay."""
-    payload = _start_request()
-    service, repository, _, _ = _run_service()
-    repository.create_or_get.return_value = (
-        _persisted_run(
-            payload,
-            request_fingerprint=_request_fingerprint(payload),
-        ),
-        False,
-    )
-    schedule = Mock()
-    monkeypatch.setattr(
-        "app.services.concept_note_runs.schedule_context_bundle_build",
-        schedule,
-    )
-
-    response = await service.start_run_and_schedule_context(
-        payload,
-        authorization="Bearer token",
-        context_bundle_service=Mock(spec=ContextBundleService),
-    )
-
-    assert response.created is False
-    service.session.commit.assert_awaited_once_with()
-    schedule.assert_not_called()
+    if created:
+        schedule.assert_called_once_with(
+            service=context_bundle_service,
+            user_id=payload.user_id,
+            run_id=response.run_id,
+            token="token",
+        )
+    else:
+        schedule.assert_not_called()
 
 
 async def test_start_run_rejects_reused_key_with_different_fingerprint() -> None:

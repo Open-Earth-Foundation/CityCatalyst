@@ -64,45 +64,32 @@ describe("PDF OCR delivery", () => {
     delete process.env.CC_SERVICE_API_KEY;
   });
 
-  it("serializes only the durable pointer and immutable metadata", () => {
-    const body = JSON.parse(serializeMarkdownDeliveryPayload(job, source));
-    expect(body).toEqual({
-      markdown_s3_key: "result.md",
-      filename: "plan.pdf",
-      source_label: "Plan",
-      source_format: "pdf",
-      page_count: 1,
-      sha256: "a".repeat(64),
-    });
-  });
-
-  it("serializes direct Markdown without a synthetic page count", () => {
-    getSourceFormat.mockReturnValueOnce("markdown");
-
-    const body = JSON.parse(
-      serializeMarkdownDeliveryPayload(
-        {
-          ...job,
-          model: "direct_markdown",
-          pageCount: null,
-        } as PdfOcrJob,
-        {
-          ...source,
-          filename: "plan.md",
-          sourceFormat: "markdown",
-        },
-      ),
-    );
-
-    expect(body).toEqual({
-      markdown_s3_key: "result.md",
-      filename: "plan.md",
-      source_label: "Plan",
-      source_format: "markdown",
-      page_count: null,
-      sha256: "a".repeat(64),
-    });
-  });
+  it.each([
+    ["pdf", "plan.pdf", 1, job, source],
+    [
+      "markdown",
+      "plan.md",
+      null,
+      { ...job, model: "direct_markdown", pageCount: null } as PdfOcrJob,
+      { ...source, filename: "plan.md", sourceFormat: "markdown" as const },
+    ],
+  ] as const)(
+    "serializes %s delivery metadata",
+    (sourceFormat, filename, pageCount, testJob, testSource) => {
+      getSourceFormat.mockReturnValue(sourceFormat);
+      const body = JSON.parse(
+        serializeMarkdownDeliveryPayload(testJob, testSource),
+      );
+      expect(body).toEqual({
+        markdown_s3_key: "result.md",
+        filename,
+        source_label: "Plan",
+        source_format: sourceFormat,
+        page_count: pageCount,
+        sha256: "a".repeat(64),
+      });
+    },
+  );
 
   it("accepts idempotent 202 responses without changing OCR state", async () => {
     process.env.CA_BASE_URL = "http://climate-advisor";
@@ -160,39 +147,10 @@ describe("PDF OCR delivery", () => {
     });
   });
 
-  it("resolves delivery metadata through reverse service authentication", async () => {
+  it("resolves source format through reverse service authentication", async () => {
     process.env.CA_BASE_URL = "http://climate-advisor";
     process.env.CC_SERVICE_API_KEY = "shared-key";
     const fetchMock = jest.spyOn(global, "fetch").mockResolvedValue(
-      Response.json({
-        upload_id: source.uploadId,
-        run_id: source.runId,
-        user_id: source.userId,
-        filename: source.filename,
-        source_label: source.sourceLabel,
-        source_format: "pdf",
-      }),
-    );
-
-    await expect(
-      resolvePdfOcrDeliverySource({
-        ...job,
-        sourceType: "concept_note_upload",
-        sourceId: source.uploadId,
-      } as PdfOcrJob),
-    ).resolves.toEqual(source);
-    expect(fetchMock.mock.calls[0][0]).toContain(
-      `/concept-note-uploads/${source.uploadId}/delivery-context`,
-    );
-    expect(fetchMock.mock.calls[0][1]?.headers).toEqual({
-      "X-CC-Service-Key": "shared-key",
-    });
-  });
-
-  it("parses source_format from delivery context when CA provides it", async () => {
-    process.env.CA_BASE_URL = "http://climate-advisor";
-    process.env.CC_SERVICE_API_KEY = "shared-key";
-    jest.spyOn(global, "fetch").mockResolvedValue(
       Response.json({
         upload_id: source.uploadId,
         run_id: source.runId,
@@ -213,6 +171,12 @@ describe("PDF OCR delivery", () => {
       ...source,
       filename: "plan.md",
       sourceFormat: "markdown",
+    });
+    expect(fetchMock.mock.calls[0][0]).toContain(
+      `/concept-note-uploads/${source.uploadId}/delivery-context`,
+    );
+    expect(fetchMock.mock.calls[0][1]?.headers).toEqual({
+      "X-CC-Service-Key": "shared-key",
     });
   });
 });

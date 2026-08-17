@@ -64,7 +64,7 @@ beforeAll(async () => {
 });
 
 function requestWithFile(
-  bytes: string,
+  bytes: string | Uint8Array,
   options: { name?: string; type?: string } = {},
 ): Request {
   const form = new FormData();
@@ -238,21 +238,36 @@ describe("Concept Note source upload route", () => {
     expect(registerMarkdown).toHaveBeenCalledWith(payload.uploadId, "# Plan");
   });
 
-  it("rejects MIME, empty, and signature failures before CA registration", async () => {
-    await expect(
-      uploadHandler(
-        requestWithFile("%PDF-1.7", { type: "text/plain" }),
-        context,
-      ),
-    ).rejects.toMatchObject({ statusCode: 415 });
-    await expect(
-      uploadHandler(requestWithFile(""), context),
-    ).rejects.toMatchObject({ statusCode: 422 });
-    await expect(
-      uploadHandler(requestWithFile("not a pdf"), context),
-    ).rejects.toMatchObject({ statusCode: 422 });
-    expect(callConceptNoteApi).not.toHaveBeenCalled();
-  });
+  it.each([
+    [
+      "wrong PDF MIME type",
+      requestWithFile("%PDF-1.7", { type: "text/plain" }),
+      415,
+    ],
+    ["empty PDF", requestWithFile(""), 422],
+    ["invalid PDF signature", requestWithFile("not a pdf"), 422],
+    [
+      "unsupported Markdown MIME type",
+      requestWithFile("# Draft", { name: "plan.md", type: "application/json" }),
+      415,
+    ],
+    [
+      "non-UTF-8 Markdown",
+      requestWithFile(new Uint8Array([0xff, 0xfe, 0x61]), {
+        name: "plan.md",
+        type: "text/markdown",
+      }),
+      422,
+    ],
+  ] as const)(
+    "rejects %s before CA registration",
+    async (_case, request, statusCode) => {
+      await expect(uploadHandler(request, context)).rejects.toMatchObject({
+        statusCode,
+      });
+      expect(callConceptNoteApi).not.toHaveBeenCalled();
+    },
+  );
 
   it("does not store or queue when CA row creation fails", async () => {
     callConceptNoteApi.mockResolvedValueOnce(
@@ -314,64 +329,6 @@ describe("Concept Note source upload route", () => {
         requestWithFile("# Draft", {
           name: "plan.md",
           type: "text/markdown",
-        }),
-        context,
-      ),
-    ).rejects.toMatchObject({ statusCode: 422 });
-
-    expect(callConceptNoteApi).not.toHaveBeenCalled();
-  });
-
-  it("rejects non-UTF-8 Markdown before CA registration", async () => {
-    const form = new FormData();
-    form.set(
-      "file",
-      new File([new Uint8Array([0xff, 0xfe, 0x61])], "plan.md", {
-        type: "text/markdown",
-      }),
-    );
-
-    await expect(
-      uploadHandler(
-        new Request(`http://localhost/api/v1/concept-notes/${runId}/uploads`, {
-          method: "POST",
-          body: form,
-        }),
-        context,
-      ),
-    ).rejects.toMatchObject({ statusCode: 422 });
-
-    expect(callConceptNoteApi).not.toHaveBeenCalled();
-  });
-
-  it("rejects unsupported Markdown MIME types before CA registration", async () => {
-    await expect(
-      uploadHandler(
-        requestWithFile("# Draft", {
-          name: "plan.md",
-          type: "application/json",
-        }),
-        context,
-      ),
-    ).rejects.toMatchObject({ statusCode: 415 });
-
-    expect(callConceptNoteApi).not.toHaveBeenCalled();
-  });
-
-  it("rejects Markdown containing NUL bytes before CA registration", async () => {
-    const form = new FormData();
-    form.set(
-      "file",
-      new File([new Uint8Array([0x23, 0x00, 0x20])], "plan.md", {
-        type: "text/markdown",
-      }),
-    );
-
-    await expect(
-      uploadHandler(
-        new Request(`http://localhost/api/v1/concept-notes/${runId}/uploads`, {
-          method: "POST",
-          body: form,
         }),
         context,
       ),

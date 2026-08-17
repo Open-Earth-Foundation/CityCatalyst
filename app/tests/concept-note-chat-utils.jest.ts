@@ -3,7 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import { readConceptNoteThreadMessages } from "@/components/ConceptNoteWorkspace/chat-utils";
 
 describe("Concept Note chat helpers", () => {
-  it("keeps persisted user and assistant messages", () => {
+  it("keeps supported messages and drops malformed entries", () => {
     expect(
       readConceptNoteThreadMessages({
         messages: [
@@ -13,6 +13,9 @@ describe("Concept Note chat helpers", () => {
             role: "assistant",
             text: "We can start with the available context.",
           },
+          null,
+          { role: "system", text: "internal" },
+          { role: "user", text: 12 },
         ],
       }),
     ).toEqual([
@@ -23,18 +26,6 @@ describe("Concept Note chat helpers", () => {
         text: "We can start with the available context.",
       },
     ]);
-  });
-
-  it("drops malformed and unsupported messages", () => {
-    expect(
-      readConceptNoteThreadMessages({
-        messages: [
-          null,
-          { role: "system", text: "internal" },
-          { role: "user", text: 12 },
-        ],
-      }),
-    ).toEqual([]);
     expect(readConceptNoteThreadMessages({})).toEqual([]);
   });
 });

@@ -347,7 +347,7 @@ All under `/api/v1/organizations/{organization}/webhooks`. Auth: session/JWT/PAT
 
 Validation (Zod): HTTPS URL; non-empty `events` subset of catalog; name length bounds.
 
-OpenAPI/Swagger JSDoc on routes (project convention). **No RTK / UI in this ticket.**
+OpenAPI/Swagger JSDoc on routes (project convention). Admin **Manage Webhooks** UI uses RTK Query against this API.
 
 ---
 
@@ -420,7 +420,7 @@ Testable outcomes for CC-669 implementation against this design:
 
 ## Open questions / follow-ups
 
-- Settings UI + RTK hooks for org admins.
+- Settings UI + RTK hooks for org admins (admin panel **Manage Webhooks** tab).
 - Partner-facing public documentation site page (beyond this internal architecture + OpenAPI).
 - SSRF hardening (block RFC1918 / link-local / metadata IPs).
 - Expanding emits from the reserved catalog.

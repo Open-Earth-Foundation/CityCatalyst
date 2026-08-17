@@ -17,6 +17,7 @@ import React, { FC, useState, use } from "react";
 import CreateOrganizationModal from "@/app/[lng]/admin/CreateOrganizationModal";
 import OAuthClientList from "@/app/[lng]/admin/OAuthClientList";
 import ManageModulesList from "@/app/[lng]/admin/ManageModulesList";
+import ManageWebhooksList from "@/app/[lng]/admin/ManageWebhooksList";
 import { api } from "@/services/api";
 import DataTable from "@/components/ui/data-table";
 import { Tag } from "@/components/ui/tag";
@@ -250,6 +251,7 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
             <TabTrigger title="organizations" />
             <TabTrigger title="bulk-actions" />
             <TabTrigger title="manage-modules" />
+            <TabTrigger title="manage-webhooks" />
             {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
               <TabTrigger title="oauth-clients" />
             )}
@@ -563,6 +565,9 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
           </Tabs.Content>
           <Tabs.Content value="manage-modules">
             <ManageModulesList lng={lng} />
+          </Tabs.Content>
+          <Tabs.Content value="manage-webhooks">
+            <ManageWebhooksList lng={lng} />
           </Tabs.Content>
           {hasFeatureFlag(FeatureFlags.OAUTH_ENABLED) && (
             <Tabs.Content value="oauth-clients">

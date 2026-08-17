@@ -342,6 +342,7 @@ export default class ActionPlanService {
           language,
           actionId,
           cityLocode: city.locode, // Direct filter by city locode
+          cityId,
         },
         include: [
           {
@@ -355,7 +356,6 @@ export default class ActionPlanService {
                   {
                     model: db.models.Inventory,
                     as: "inventory",
-                    where: { cityId: cityId },
                   },
                 ],
               },
@@ -578,6 +578,7 @@ export default class ActionPlanService {
         const basePlans = await db.models.ActionPlan.findAll({
           where: {
             actionId,
+            cityId,
           },
           include: [
             {
@@ -591,7 +592,6 @@ export default class ActionPlanService {
                     {
                       model: db.models.Inventory,
                       as: "inventory",
-                      where: { cityId: cityId },
                     },
                   ],
                 },

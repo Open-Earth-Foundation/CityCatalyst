@@ -334,6 +334,11 @@ export default class ActionPlanService {
     input: UpsertActionPlanInput,
   ): Promise<{ actionPlan: ActionPlan; created: boolean }> {
     try {
+      // make sure no zero-length strings are written to UUID fields in the database
+      if (input.highImpactActionRankedId?.length === 0) {
+        input.highImpactActionRankedId = undefined;
+      }
+
       // Transform legacy planData to new structure
       const transformedData = this.transformPlanData(input.planData);
 

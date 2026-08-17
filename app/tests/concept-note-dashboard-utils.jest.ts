@@ -4,9 +4,10 @@ import {
   conceptNoteResumeHref,
   formatRelativeTime,
   getConceptNoteBundleProgress,
+  getContextSourceStatusTranslationKey,
   getRunProgressPercent,
   getRunStatusPresentation,
-  humanizeLifecycleValue,
+  getWorkflowStepTranslationKey,
 } from "@/components/ConceptNoteDashboard/utils";
 
 describe("Concept Note dashboard presentation helpers", () => {
@@ -20,11 +21,42 @@ describe("Concept Note dashboard presentation helpers", () => {
     expect(getRunStatusPresentation(status).tone).toBe(tone);
   });
 
-  it("humanizes persisted lifecycle values", () => {
-    expect(humanizeLifecycleValue("assembling_context")).toBe(
-      "Assembling context",
+  it("maps every persisted workflow step to a translation key", () => {
+    expect(getWorkflowStepTranslationKey("assembling_context")).toBe(
+      "workflow-assembling-context",
     );
-    expect(humanizeLifecycleValue("ready-for-review")).toBe("Ready for review");
+    expect(getWorkflowStepTranslationKey("interviewing")).toBe(
+      "workflow-interviewing",
+    );
+    expect(getWorkflowStepTranslationKey("drafting_document")).toBe(
+      "workflow-drafting-document",
+    );
+    expect(getWorkflowStepTranslationKey("editing_document")).toBe(
+      "workflow-editing-document",
+    );
+    expect(getWorkflowStepTranslationKey("future-step")).toBe(
+      "workflow-unknown",
+    );
+  });
+
+  it.each([
+    ["available", "bundle-source-available"],
+    ["failed", "bundle-source-failed"],
+    ["included", "bundle-source-included"],
+    ["missing", "bundle-source-missing"],
+    ["partial", "bundle-source-partial"],
+    ["pending", "bundle-source-pending"],
+    ["unavailable", "bundle-source-unavailable"],
+    ["future-status", "bundle-source-status-unknown"],
+  ] as const)("maps source status %s to %s", (status, translationKey) => {
+    expect(getContextSourceStatusTranslationKey(status)).toBe(translationKey);
+  });
+
+  it("uses a translated fallback for unknown run statuses", () => {
+    expect(getRunStatusPresentation("future-state")).toEqual({
+      tone: "neutral",
+      translationKey: "status-unknown",
+    });
   });
 
   it("formats run activity relative to a stable clock", () => {
@@ -68,6 +100,16 @@ describe("Concept Note dashboard presentation helpers", () => {
       hiapStatus: "unavailable",
       retryable: false,
     });
+  });
+
+  it("does not expose backend-authored bundle warnings to the UI", () => {
+    expect(
+      getConceptNoteBundleProgress({
+        context_bundle: {
+          warnings: ["Raw backend warning"],
+        },
+      }),
+    ).not.toHaveProperty("warnings");
   });
 
   it("defaults unknown thin-context metadata safely", () => {

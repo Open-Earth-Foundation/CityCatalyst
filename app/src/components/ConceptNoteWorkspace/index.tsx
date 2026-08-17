@@ -32,7 +32,7 @@ import type { ConceptNoteUploadResponse } from "@/util/types";
 import {
   getConceptNoteBundleProgress,
   getRunStatusPresentation,
-  humanizeLifecycleValue,
+  getWorkflowStepTranslationKey,
 } from "../ConceptNoteDashboard/utils";
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
 import {
@@ -245,9 +245,8 @@ export function ConceptNoteWorkspace({
   }
 
   const status = getRunStatusPresentation(run.status);
-  const statusLabel = status.translationKey
-    ? t(status.translationKey)
-    : humanizeLifecycleValue(run.status);
+  const statusLabel = t(status.translationKey);
+  const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
 
   return (
     <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
@@ -302,8 +301,7 @@ export function ConceptNoteWorkspace({
                 <StatusBadge label={statusLabel} tone={status.tone} />
               </HStack>
               <Text mt={1} fontSize="label.sm" color="content.tertiary">
-                {cityName} · {humanizeLifecycleValue(run.workflow_step)} ·{" "}
-                {t("autosaved")}
+                {cityName} · {workflowLabel} · {t("autosaved")}
               </Text>
             </Box>
             <Button

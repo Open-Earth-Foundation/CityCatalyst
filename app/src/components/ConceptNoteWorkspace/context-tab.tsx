@@ -22,7 +22,10 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteUploadResponse } from "@/util/types";
 
-import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+import {
+  getContextSourceStatusTranslationKey,
+  type ConceptNoteBundleProgress,
+} from "../ConceptNoteDashboard/utils";
 import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
 
 interface ContextTabProps {
@@ -139,6 +142,9 @@ export function ContextTab({
   const hiapIncluded = ["available", "partial", "included"].includes(
     bundle.hiapStatus ?? "",
   );
+  const hiapStatusLabel = bundle.hiapStatus
+    ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
+    : null;
 
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
@@ -246,8 +252,8 @@ export function ContextTab({
             icon={LuCheck}
             label={t("hiap-context")}
             detail={
-              bundle.hiapStatus
-                ? t("hiap-bundle-status", { status: bundle.hiapStatus })
+              hiapStatusLabel
+                ? t("hiap-bundle-status", { status: hiapStatusLabel })
                 : t("hiap-optional")
             }
             status={hiapIncluded ? t("included-in-run") : t("optional")}

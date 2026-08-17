@@ -42,7 +42,7 @@ import {
   formatRelativeTime,
   getRunProgressPercent,
   getRunStatusPresentation,
-  humanizeLifecycleValue,
+  getWorkflowStepTranslationKey,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -312,10 +312,10 @@ export function ConceptNoteDashboard({
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               {runs.map((run) => {
                 const status = getRunStatusPresentation(run.status);
-                const statusLabel = status.translationKey
-                  ? t(status.translationKey)
-                  : humanizeLifecycleValue(run.status);
-                const workflowLabel = humanizeLifecycleValue(run.workflow_step);
+                const statusLabel = t(status.translationKey);
+                const workflowLabel = t(
+                  getWorkflowStepTranslationKey(run.workflow_step),
+                );
                 const updatedLabel =
                   formatRelativeTime(run.updated_at, lng) ||
                   t("updated-recently");

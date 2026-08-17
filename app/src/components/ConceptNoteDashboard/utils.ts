@@ -3,7 +3,7 @@ export type RunStatusTone =
 
 interface RunStatusPresentation {
   tone: RunStatusTone;
-  translationKey?: string;
+  translationKey: string;
 }
 
 const statusPresentations: Record<string, RunStatusPresentation> = {
@@ -21,20 +21,51 @@ const statusPresentations: Record<string, RunStatusPresentation> = {
   succeeded: { tone: "positive", translationKey: "status-completed" },
 };
 
+const workflowStepTranslationKeys: Record<string, string> = {
+  assembling_context: "workflow-assembling-context",
+  draft: "workflow-draft",
+  drafting_document: "workflow-drafting-document",
+  editing_document: "workflow-editing-document",
+  interviewing: "workflow-interviewing",
+};
+
+const contextSourceStatusTranslationKeys: Record<string, string> = {
+  available: "bundle-source-available",
+  failed: "bundle-source-failed",
+  included: "bundle-source-included",
+  missing: "bundle-source-missing",
+  partial: "bundle-source-partial",
+  pending: "bundle-source-pending",
+  unavailable: "bundle-source-unavailable",
+};
+
+function normalizeLifecycleValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
 export function getRunStatusPresentation(
   status: string,
 ): RunStatusPresentation {
   return (
-    statusPresentations[status.trim().toLowerCase()] ?? { tone: "neutral" }
+    statusPresentations[normalizeLifecycleValue(status)] ?? {
+      tone: "neutral",
+      translationKey: "status-unknown",
+    }
   );
 }
 
-export function humanizeLifecycleValue(value: string): string {
-  const normalized = value.trim().replaceAll(/[_-]+/g, " ");
-  if (!normalized) {
-    return "";
-  }
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+export function getWorkflowStepTranslationKey(value: string): string {
+  return (
+    workflowStepTranslationKeys[normalizeLifecycleValue(value)] ??
+    "workflow-unknown"
+  );
+}
+
+export function getContextSourceStatusTranslationKey(value: string): string {
+  return (
+    contextSourceStatusTranslationKeys[normalizeLifecycleValue(value)] ??
+    "bundle-source-status-unknown"
+  );
 }
 
 export function conceptNoteResumeHref(

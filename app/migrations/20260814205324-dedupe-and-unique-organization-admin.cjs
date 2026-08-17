@@ -20,17 +20,20 @@ module.exports = {
         AND ranked.rn > 1;
     `);
 
-    await queryInterface.addIndex("OrganizationAdmin", {
-      fields: ["organization_id", "user_id"],
-      unique: true,
-      name: "organization_admin_organization_id_user_id_unique",
-    });
+    // CREATE UNIQUE INDEX CONCURRENTLY cannot run inside a transaction, so this
+    // is issued as a raw query (instead of queryInterface.addIndex) to avoid
+    // taking a long-lived lock on OrganizationAdmin.
+    await queryInterface.sequelize.query(`
+      CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS
+        organization_admin_organization_id_user_id_unique
+        ON "OrganizationAdmin" (organization_id, user_id);
+    `);
   },
 
   async down(queryInterface) {
-    await queryInterface.removeIndex(
-      "OrganizationAdmin",
-      "organization_admin_organization_id_user_id_unique",
-    );
+    await queryInterface.sequelize.query(`
+      DROP INDEX CONCURRENTLY IF EXISTS
+        organization_admin_organization_id_user_id_unique;
+    `);
   },
 };

@@ -48,6 +48,8 @@ describe("Concept Note dashboard presentation helpers", () => {
         unrelated: "preserved",
         context_bundle: {
           status: "ready",
+          context_mode: "thin",
+          missing_context: ["source_documents", 12],
           source_counts: { ready: 2, queued: 1, failed: -1 },
           optional_sources: { ghgi: "included", hiap: "unavailable" },
           retryable: false,
@@ -56,6 +58,8 @@ describe("Concept Note dashboard presentation helpers", () => {
       }),
     ).toEqual({
       status: "ready",
+      contextMode: "thin",
+      missingContext: ["source_documents"],
       readySources: 2,
       queuedSources: 1,
       processingSources: 0,
@@ -63,7 +67,22 @@ describe("Concept Note dashboard presentation helpers", () => {
       ghgiStatus: "included",
       hiapStatus: "unavailable",
       retryable: false,
-      warnings: ["One optional source was unavailable"],
+    });
+  });
+
+  it("defaults unknown thin-context metadata safely", () => {
+    expect(
+      getConceptNoteBundleProgress({
+        context_bundle: {
+          context_mode: "future-mode",
+          missing_context: "source_documents",
+        },
+      }),
+    ).toMatchObject({
+      status: null,
+      contextMode: null,
+      missingContext: [],
+      readySources: 0,
     });
   });
 

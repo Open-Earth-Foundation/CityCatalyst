@@ -1,5 +1,9 @@
+"""Authenticated Concept Note run lifecycle routes."""
+
 from __future__ import annotations
 
+import logging
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, Query
@@ -14,8 +18,14 @@ from app.models.concept_note_runs import (
     ConceptNoteStartRequest,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.cnb.context_bundle import (
+    ContextBundleService,
+    get_context_bundle_service,
+    schedule_context_bundle_build,
+)
 
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -46,13 +56,33 @@ async def list_concept_note_runs(
 )
 async def start_concept_note_run(
     payload: ConceptNoteStartRequest,
+    context_bundle_service: Annotated[
+        ContextBundleService | None,
+        Depends(get_context_bundle_service),
+    ],
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
+    # Persist and authorize the run before background workers use another session.
     service = ConceptNoteRunService(session)
     response = await service.start_run(payload, authorization=authorization)
     await session.commit()
+
+    # New runs immediately receive a usable thin bundle; later uploads rebuild it.
+    if response.created and context_bundle_service is not None:
+        token = authorization[7:].strip() if authorization else ""
+        schedule_context_bundle_build(
+            service=context_bundle_service,
+            user_id=response.user_id,
+            run_id=response.run_id,
+            token=token,
+        )
+    elif response.created:
+        logger.warning(
+            "Concept Note thin-context build was not scheduled because storage is unavailable run_id=%s",
+            response.run_id,
+        )
 
     return JSONResponse(
         status_code=201 if response.created else 200,

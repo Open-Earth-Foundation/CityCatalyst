@@ -309,7 +309,7 @@ export function ContextTab({
           <input
             ref={fileInputRef}
             type="file"
-            accept="application/pdf,.pdf"
+            accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
             hidden
             onChange={onFileChange}
           />
@@ -435,7 +435,7 @@ export function ContextTab({
                 {t("context-retry-title")}
               </Text>
               <Text mt={1} fontSize="label.sm" color="content.secondary">
-                {bundle.warnings[0] || t("context-failed-description")}
+                {t("context-failed-description")}
               </Text>
             </Box>
             <Button

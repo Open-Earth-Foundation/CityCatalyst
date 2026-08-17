@@ -6,6 +6,7 @@ import {
   it,
   jest,
 } from "@jest/globals";
+import { createHash } from "node:crypto";
 import { Op } from "sequelize";
 
 type AsyncMock = (...args: unknown[]) => Promise<unknown>;
@@ -26,6 +27,7 @@ const importedFindByPk = jest.fn<AsyncMock>();
 const importedUpdate = jest.fn<AsyncMock>();
 const inventoryFindByPk = jest.fn<AsyncMock>();
 const getTextFile = jest.fn<AsyncMock>();
+const putTextFile = jest.fn<AsyncMock>();
 const resolveImportedFileBuffer = jest.fn<AsyncMock>();
 const extractRows = jest.fn<AsyncMock>();
 const convertPdfUrlToMarkdown = jest.fn<AsyncMock>();
@@ -45,7 +47,7 @@ jest.unstable_mockModule("@/models", () => ({
   },
 }));
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
-  default: { getTextFile, resolveImportedFileBuffer },
+  default: { getTextFile, putTextFile, resolveImportedFileBuffer },
 }));
 jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
   MistralOcrError: class extends Error {},
@@ -61,6 +63,8 @@ jest.unstable_mockModule("@/services/logger", () => ({
 let enqueueInventoryPdfOcr: typeof import("@/backend/PdfOcrService").enqueueInventoryPdfOcr;
 let enqueueConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").enqueueConceptNotePdfOcr;
 let conceptNotePdfSourceKey: typeof import("@/backend/PdfOcrService").conceptNotePdfSourceKey;
+let normalizeConceptNoteMarkdown: typeof import("@/backend/PdfOcrService").normalizeConceptNoteMarkdown;
+let registerConceptNoteMarkdownUpload: typeof import("@/backend/PdfOcrService").registerConceptNoteMarkdownUpload;
 let retryConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").retryConceptNotePdfOcr;
 let normalizeConceptNotePdfOcrStatus: typeof import("@/backend/PdfOcrService").normalizeConceptNotePdfOcrStatus;
 let claimPdfOcrJobs: typeof import("@/backend/PdfOcrService").claimPdfOcrJobs;
@@ -73,6 +77,8 @@ beforeAll(async () => {
     enqueueInventoryPdfOcr,
     enqueueConceptNotePdfOcr,
     conceptNotePdfSourceKey,
+    normalizeConceptNoteMarkdown,
+    registerConceptNoteMarkdownUpload,
     retryConceptNotePdfOcr,
     normalizeConceptNotePdfOcrStatus,
     claimPdfOcrJobs,
@@ -91,6 +97,7 @@ describe("PdfOcrJob queue", () => {
     pdfOcrUpdate.mockResolvedValue([1]);
     importedUpdate.mockResolvedValue([1]);
     resolveImportedFileBuffer.mockResolvedValue(null);
+    findOne.mockResolvedValue(null);
   });
 
   it("uses the composite source identity and idempotent find-or-create", async () => {
@@ -135,6 +142,66 @@ describe("PdfOcrJob queue", () => {
     expect(conceptNotePdfSourceKey(uploadId)).toBe(
       `pdf-ocr/sources/concept_note_upload/${uploadId}/source.pdf`,
     );
+  });
+
+  it("normalizes direct Markdown without adding synthetic page markers", async () => {
+    expect(normalizeConceptNoteMarkdown("\uFEFF# Plan\r\n## Need")).toBe(
+      "# Plan\n## Need",
+    );
+    expect(() => normalizeConceptNoteMarkdown("\0# Plan")).toThrow("NUL");
+    expect(() => normalizeConceptNoteMarkdown(" \n\t ")).toThrow(
+      "non-whitespace",
+    );
+  });
+
+  it("persists a direct Markdown upload as a succeeded delivery artifact", async () => {
+    const uploadId = "22222222-2222-4222-8222-222222222222";
+    const resultSha256 = createHash("sha256").update("# Plan").digest("hex");
+    const job = { status: "succeeded" };
+    findOrCreate.mockResolvedValue([job, true]);
+    putTextFile.mockResolvedValue(undefined);
+
+    await expect(
+      registerConceptNoteMarkdownUpload(uploadId, "# Plan"),
+    ).resolves.toBe(job as never);
+
+    expect(putTextFile).toHaveBeenCalledWith(
+      `pdf-ocr/results/concept_note_upload/${uploadId}/direct-${resultSha256}/combined_markdown.md`,
+      "# Plan",
+    );
+    expect(findOrCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          sourceType: "concept_note_upload",
+          sourceId: uploadId,
+        },
+        defaults: expect.objectContaining({
+          status: "succeeded",
+          attemptCount: 0,
+          model: "direct_markdown",
+          pageCount: null,
+          deliveryStatus: "pending",
+          deliveryRunAfter: expect.any(Date),
+        }),
+      }),
+    );
+  });
+
+  it("rejects changed Markdown identity before replacing an existing artifact", async () => {
+    const uploadId = "22222222-2222-4222-8222-222222222222";
+    findOne.mockResolvedValue({
+      model: "direct_markdown",
+      pageCount: null,
+      resultS3Key: `pdf-ocr/results/concept_note_upload/${uploadId}/direct-old/combined_markdown.md`,
+      resultSha256: "a".repeat(64),
+    });
+
+    await expect(
+      registerConceptNoteMarkdownUpload(uploadId, "# Changed"),
+    ).rejects.toThrow("identity cannot change");
+
+    expect(putTextFile).not.toHaveBeenCalled();
+    expect(findOrCreate).not.toHaveBeenCalled();
   });
 
   it("retries pointer delivery without resetting successful OCR", async () => {

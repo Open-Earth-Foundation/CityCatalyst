@@ -22,14 +22,14 @@ import {
 import { useTranslation } from "@/i18n/client";
 
 interface ExportDialogProps {
-  bundleReady: boolean;
+  hasGroundedSources: boolean;
   lng: string;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
 
 export function ExportDialog({
-  bundleReady,
+  hasGroundedSources,
   lng,
   onOpenChange,
   open,
@@ -91,22 +91,22 @@ export function ExportDialog({
                   gap={3}
                   border="1px solid"
                   borderColor={
-                    bundleReady
+                    hasGroundedSources
                       ? "sentiment.positiveDefault"
                       : "sentiment.warningDefault"
                   }
                   borderRadius="rounded"
                   bg={
-                    bundleReady
+                    hasGroundedSources
                       ? "sentiment.positiveOverlay"
                       : "sentiment.warningOverlay"
                   }
                   p={3}
                 >
                   <Icon
-                    as={bundleReady ? LuCheck : LuCircleAlert}
+                    as={hasGroundedSources ? LuCheck : LuCircleAlert}
                     color={
-                      bundleReady
+                      hasGroundedSources
                         ? "sentiment.positiveDefault"
                         : "sentiment.warningDefault"
                     }
@@ -117,14 +117,14 @@ export function ExportDialog({
                       fontWeight="semibold"
                       color="content.primary"
                     >
-                      {bundleReady
+                      {hasGroundedSources
                         ? t("source-context-ready")
-                        : t("source-context-incomplete")}
+                        : t("source-context-recommended")}
                     </Text>
                     <Text fontSize="label.sm" color="content.secondary">
-                      {bundleReady
+                      {hasGroundedSources
                         ? t("source-context-ready-export")
-                        : t("source-context-incomplete-export")}
+                        : t("source-context-recommended-export")}
                     </Text>
                   </Box>
                 </HStack>

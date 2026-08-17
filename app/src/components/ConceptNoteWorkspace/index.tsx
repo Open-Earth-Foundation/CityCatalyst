@@ -36,8 +36,9 @@ import {
 } from "../ConceptNoteDashboard/utils";
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
 import {
+  conceptNoteSourceLabel,
   shouldPollConceptNoteUpload,
-  validateConceptNotePdf,
+  validateConceptNoteSourceFile,
 } from "../ConceptNoteWiringHarness/utils";
 import { ConceptNoteChatPanel } from "./chat-panel";
 import { ContextTab } from "./context-tab";
@@ -94,7 +95,8 @@ export function ConceptNoteWorkspace({
   });
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
-  const [uploadPdf, uploadState] = api.useUploadConceptNotePdfMutation();
+  const [uploadSourceMutation, uploadState] =
+    api.useUploadConceptNoteSourceMutation();
   const [retryUpload, retryUploadState] =
     api.useRetryConceptNoteUploadMutation();
   const [retryBundle, retryBundleState] =
@@ -131,7 +133,7 @@ export function ConceptNoteWorkspace({
 
   async function uploadSource(file: File): Promise<void> {
     setUploadError(null);
-    const validationError = await validateConceptNotePdf(file);
+    const validationError = await validateConceptNoteSourceFile(file);
     if (validationError) {
       setUploadError(t(validationError));
       return;
@@ -140,8 +142,12 @@ export function ConceptNoteWorkspace({
     try {
       const formData = new FormData();
       formData.set("file", file);
-      formData.set("sourceLabel", file.name.replace(/\.pdf$/i, ""));
-      const upload = await uploadPdf({ cityId, formData, runId }).unwrap();
+      formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
+      const upload = await uploadSourceMutation({
+        cityId,
+        formData,
+        runId,
+      }).unwrap();
       setActiveUploadId(upload.uploadId);
       setUploadDetails(upload);
       void refetchRun();
@@ -321,15 +327,15 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
+              contextMode={bundle.contextMode}
               lng={lng}
               onOpenContext={() => setTab("context")}
+              threadId={run.thread_id}
             />
 
             <Tabs.Root
               value={tab}
-              onValueChange={(details) =>
-                setTab(details.value as WorkspaceTab)
-              }
+              onValueChange={(details) => setTab(details.value as WorkspaceTab)}
               minW={0}
               overflow="hidden"
               border="1px solid"
@@ -412,7 +418,9 @@ export function ConceptNoteWorkspace({
       </motion.main>
 
       <ExportDialog
-        bundleReady={bundle.status === "ready"}
+        hasGroundedSources={
+          bundle.contextMode === "grounded" && bundle.readySources > 0
+        }
         lng={lng}
         open={exportOpen}
         onOpenChange={setExportOpen}

@@ -45,6 +45,8 @@ export function DraftTab({
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
+  const isThinContext =
+    isReady && (bundle.contextMode === "thin" || bundle.readySources === 0);
 
   return (
     <VStack align="stretch" gap={0} minH="720px" bg="background.neutral">
@@ -75,15 +77,21 @@ export function DraftTab({
             boxSize="7px"
             borderRadius="full"
             bg={
-              isReady ? "sentiment.positiveDefault" : "sentiment.warningDefault"
+              isThinContext
+                ? "content.link"
+                : isReady
+                  ? "sentiment.positiveDefault"
+                  : "sentiment.warningDefault"
             }
           />
           <Text fontSize="label.sm" color="content.secondary">
-            {isReady
-              ? t("context-ready")
-              : isBuilding
-                ? t("assembling-context")
-                : t("setup-incomplete")}
+            {isThinContext
+              ? t("thin-context-ready")
+              : isReady
+                ? t("context-ready")
+                : isBuilding
+                  ? t("assembling-context")
+                  : t("setup-incomplete")}
           </Text>
         </HStack>
       </Flex>
@@ -172,7 +180,7 @@ export function DraftTab({
                 lineHeight="24px"
                 color="content.secondary"
               >
-                {bundle.warnings[0] || t("context-failed-description")}
+                {t("context-failed-description")}
               </Text>
               {bundle.retryable && (
                 <Button
@@ -192,12 +200,24 @@ export function DraftTab({
                 align="start"
                 gap={3}
                 border="1px solid"
-                borderColor="sentiment.positiveDefault"
+                borderColor={
+                  isThinContext ? "content.link" : "sentiment.positiveDefault"
+                }
                 borderRadius="rounded"
-                bg="sentiment.positiveOverlay"
+                bg={
+                  isThinContext
+                    ? "background.neutral"
+                    : "sentiment.positiveOverlay"
+                }
                 p={4}
               >
-                <Icon as={LuCheck} mt={0.5} color="sentiment.positiveDefault" />
+                <Icon
+                  as={isThinContext ? LuDatabase : LuCheck}
+                  mt={0.5}
+                  color={
+                    isThinContext ? "content.link" : "sentiment.positiveDefault"
+                  }
+                />
                 <Box>
                   <Text
                     fontFamily="heading"
@@ -205,7 +225,9 @@ export function DraftTab({
                     fontWeight="semibold"
                     color="content.primary"
                   >
-                    {t("source-context-assembled")}
+                    {isThinContext
+                      ? t("thin-context-ready")
+                      : t("source-context-assembled")}
                   </Text>
                   <Text
                     mt={1}
@@ -213,7 +235,11 @@ export function DraftTab({
                     lineHeight="20px"
                     color="content.secondary"
                   >
-                    {t("source-context-count", { count: bundle.readySources })}
+                    {isThinContext
+                      ? t("thin-context-draft-description")
+                      : t("source-context-count", {
+                          count: bundle.readySources,
+                        })}
                   </Text>
                 </Box>
               </Flex>
@@ -270,7 +296,7 @@ export function DraftTab({
                   fontSize="title.md"
                   color="content.primary"
                 >
-                  {t("blank-note-title")}
+                  {t("thin-context-starting-title")}
                 </Text>
                 <Text
                   mt={2}
@@ -278,11 +304,11 @@ export function DraftTab({
                   lineHeight="24px"
                   color="content.secondary"
                 >
-                  {t("blank-note-description")}
+                  {t("thin-context-starting-description")}
                 </Text>
               </Box>
-              <Button size="sm" variant="solid" onClick={onOpenContext}>
-                {t("add-source-pdf")}
+              <Button size="sm" variant="outline" onClick={onOpenContext}>
+                {t("review-context")}
               </Button>
             </VStack>
           )}

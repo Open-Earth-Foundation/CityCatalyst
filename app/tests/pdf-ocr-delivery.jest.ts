@@ -1,6 +1,7 @@
 import {
   afterEach,
   beforeAll,
+  beforeEach,
   describe,
   expect,
   it,
@@ -9,12 +10,16 @@ import {
 import type { PdfOcrJob } from "@/models/PdfOcrJob";
 
 const issueToken = jest.fn<() => Promise<{ access_token: string }>>();
+const getSourceFormat = jest.fn<() => "pdf" | "markdown">();
 
 jest.unstable_mockModule("@/models", () => ({
   db: { models: { PdfOcrJob: { findAll: jest.fn() } } },
 }));
 jest.unstable_mockModule("@/backend/chat/climate-advisor", () => ({
   issueClimateAdvisorUserToken: issueToken,
+}));
+jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
+  getConceptNoteSourceFormat: getSourceFormat,
 }));
 jest.unstable_mockModule("@/services/logger", () => ({
   logger: { warn: jest.fn() },
@@ -36,6 +41,7 @@ const source = {
   userId: "33333333-3333-4333-8333-333333333333",
   filename: "plan.pdf",
   sourceLabel: "Plan",
+  sourceFormat: "pdf" as const,
 };
 
 beforeAll(async () => {
@@ -47,6 +53,10 @@ beforeAll(async () => {
 });
 
 describe("PDF OCR delivery", () => {
+  beforeEach(() => {
+    getSourceFormat.mockReturnValue("pdf");
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
@@ -60,7 +70,36 @@ describe("PDF OCR delivery", () => {
       markdown_s3_key: "result.md",
       filename: "plan.pdf",
       source_label: "Plan",
+      source_format: "pdf",
       page_count: 1,
+      sha256: "a".repeat(64),
+    });
+  });
+
+  it("serializes direct Markdown without a synthetic page count", () => {
+    getSourceFormat.mockReturnValueOnce("markdown");
+
+    const body = JSON.parse(
+      serializeMarkdownDeliveryPayload(
+        {
+          ...job,
+          model: "direct_markdown",
+          pageCount: null,
+        } as PdfOcrJob,
+        {
+          ...source,
+          filename: "plan.md",
+          sourceFormat: "markdown",
+        },
+      ),
+    );
+
+    expect(body).toEqual({
+      markdown_s3_key: "result.md",
+      filename: "plan.md",
+      source_label: "Plan",
+      source_format: "markdown",
+      page_count: null,
       sha256: "a".repeat(64),
     });
   });
@@ -131,6 +170,7 @@ describe("PDF OCR delivery", () => {
         user_id: source.userId,
         filename: source.filename,
         source_label: source.sourceLabel,
+        source_format: "pdf",
       }),
     );
 
@@ -146,6 +186,33 @@ describe("PDF OCR delivery", () => {
     );
     expect(fetchMock.mock.calls[0][1]?.headers).toEqual({
       "X-CC-Service-Key": "shared-key",
+    });
+  });
+
+  it("parses source_format from delivery context when CA provides it", async () => {
+    process.env.CA_BASE_URL = "http://climate-advisor";
+    process.env.CC_SERVICE_API_KEY = "shared-key";
+    jest.spyOn(global, "fetch").mockResolvedValue(
+      Response.json({
+        upload_id: source.uploadId,
+        run_id: source.runId,
+        user_id: source.userId,
+        filename: "plan.md",
+        source_label: source.sourceLabel,
+        source_format: "markdown",
+      }),
+    );
+
+    await expect(
+      resolvePdfOcrDeliverySource({
+        ...job,
+        sourceType: "concept_note_upload",
+        sourceId: source.uploadId,
+      } as PdfOcrJob),
+    ).resolves.toEqual({
+      ...source,
+      filename: "plan.md",
+      sourceFormat: "markdown",
     });
   });
 });

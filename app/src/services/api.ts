@@ -1907,7 +1907,10 @@ export const api = createApi({
       }),
 
       // Climate Advisor Chat Endpoints (CA Integration)
-      createChatThread: builder.mutation({
+      createChatThread: builder.mutation<
+        { threadId: string },
+        { inventory_id?: string; title?: string }
+      >({
         query: (data: { inventory_id?: string; title?: string }) => ({
           url: `/chat/threads`,
           method: "POST",
@@ -2193,7 +2196,7 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      uploadConceptNotePdf: builder.mutation<
+      uploadConceptNoteSource: builder.mutation<
         ConceptNoteUploadResponse,
         ConceptNoteUploadRequest
       >({
@@ -2389,7 +2392,7 @@ export const {
   useGetConceptNoteRunsQuery,
   useGetConceptNoteRunQuery,
   useStartConceptNoteRunMutation,
-  useUploadConceptNotePdfMutation,
+  useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,
   useRetryConceptNoteContextBundleMutation,

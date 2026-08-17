@@ -95,7 +95,7 @@ The city user sees every concept note for the current city, understands its prog
 - Delete/archive-run endpoint.
 - Rename endpoint.
 - Export status and export artifact lookup.
-- Real lifecycle values for Draft, In progress, Exported, and failure states. The current public run response is effectively fixed at `active / assembling_context`.
+- Real lifecycle values for Draft, Exported, and terminal failure states. Thin and grounded context builds now move active runs from `assembling_context` to `interviewing`.
 
 ## 2. V2 / V2b — New-concept-note modal
 
@@ -113,11 +113,12 @@ The user starts with whatever information is already available. Every skipped fi
 
 ### Submission sequence
 
-1. Create the durable run.
-2. Receive `run_id`.
-3. Upload any selected files against that run.
-4. Open the workspace immediately.
-5. Continue upload/context preparation in the background.
+1. Create a durable Climate Advisor chat thread.
+2. Create the durable run with that `thread_id`.
+3. Receive `run_id` and queue its thin-context build.
+4. Upload any selected files against that run.
+5. Open the workspace immediately and allow chat.
+6. Continue upload/context preparation in the background.
 
 Uploads must never be created before the durable run because they are run-scoped.
 
@@ -161,6 +162,8 @@ The run opens immediately, shows the context already known from CityCatalyst, di
 - Run-scoped uploads with queued, processing, ready, and failed states.
 - CityCatalyst context assembly for accessible city data.
 - Existing generic chat and SSE foundations.
+- Run-scoped thread binding, persisted chat history, and streamed CNB conversation.
+- A ready typed thin-context mode when no source is attached; later uploads rebuild the run as grounded context.
 
 ### Backend still missing
 

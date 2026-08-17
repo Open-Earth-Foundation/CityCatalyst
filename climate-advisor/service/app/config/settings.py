@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
 import yaml
-from dotenv import find_dotenv, load_dotenv, dotenv_values
+from dotenv import dotenv_values, find_dotenv, load_dotenv
 from pydantic import BaseModel, Field
 
 _ENV_LOADED = False
@@ -148,7 +148,7 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
 
 
 class CnbSourcePromptBudgetConfig(BaseModel):
-    """Limits for page-preserving Concept Note source analysis."""
+    """Limits for source-preserving Concept Note analysis."""
 
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)

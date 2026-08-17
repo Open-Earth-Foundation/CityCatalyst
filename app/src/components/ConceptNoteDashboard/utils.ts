@@ -47,6 +47,8 @@ export function conceptNoteResumeHref(
 
 export interface ConceptNoteBundleProgress {
   status: string | null;
+  contextMode: "thin" | "grounded" | null;
+  missingContext: string[];
   readySources: number;
   queuedSources: number;
   processingSources: number;
@@ -54,7 +56,6 @@ export interface ConceptNoteBundleProgress {
   ghgiStatus: string | null;
   hiapStatus: string | null;
   retryable: boolean;
-  warnings: string[];
 }
 
 function recordValue(value: unknown): Record<string, unknown> {
@@ -82,6 +83,15 @@ export function getConceptNoteBundleProgress(
 
   return {
     status: stringValue(bundle.status),
+    contextMode:
+      bundle.context_mode === "thin" || bundle.context_mode === "grounded"
+        ? bundle.context_mode
+        : null,
+    missingContext: Array.isArray(bundle.missing_context)
+      ? bundle.missing_context.filter(
+          (item): item is string => typeof item === "string",
+        )
+      : [],
     readySources: countValue(sourceCounts.ready),
     queuedSources: countValue(sourceCounts.queued),
     processingSources: countValue(sourceCounts.processing),
@@ -89,11 +99,6 @@ export function getConceptNoteBundleProgress(
     ghgiStatus: stringValue(optionalSources.ghgi),
     hiapStatus: stringValue(optionalSources.hiap),
     retryable: bundle.retryable === true,
-    warnings: Array.isArray(bundle.warnings)
-      ? bundle.warnings.filter(
-          (warning): warning is string => typeof warning === "string",
-        )
-      : [],
   };
 }
 

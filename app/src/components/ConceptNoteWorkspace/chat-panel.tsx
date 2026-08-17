@@ -1,5 +1,8 @@
 "use client";
 
+import type { FormEvent } from "react";
+import { useState } from "react";
+
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
 import {
   LuArrowRight,
@@ -13,19 +16,46 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 
+import { useConceptNoteChat } from "./use-concept-note-chat";
+
 interface ConceptNoteChatPanelProps {
   bundleStatus: string | null;
+  contextMode: "thin" | "grounded" | null;
   lng: string;
   onOpenContext: () => void;
+  threadId: string | null;
 }
 
 export function ConceptNoteChatPanel({
   bundleStatus,
+  contextMode,
   lng,
   onOpenContext,
+  threadId,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const contextReady = bundleStatus === "ready";
+  const [input, setInput] = useState("");
+  const {
+    error: chatError,
+    historyLoading,
+    isGenerating,
+    messages,
+    sendMessage: sendChatMessage,
+  } = useConceptNoteChat({ lng, threadId });
+  const groundedContext =
+    bundleStatus === "ready" && contextMode === "grounded";
+
+  async function submitMessage(
+    event: FormEvent<HTMLDivElement>,
+  ): Promise<void> {
+    event.preventDefault();
+    if (!input.trim()) {
+      return;
+    }
+    const content = input;
+    setInput("");
+    await sendChatMessage(content);
+  }
 
   return (
     <VStack
@@ -71,13 +101,18 @@ export function ConceptNoteChatPanel({
             {t("concept-note-copilot")}
           </Text>
         </Box>
-        <HStack gap={1.5} color="sentiment.warningDefault">
+        <HStack
+          gap={1.5}
+          color={threadId ? "sentiment.positiveDefault" : "content.tertiary"}
+        >
           <Box
             boxSize="7px"
             borderRadius="full"
-            bg="sentiment.warningDefault"
+            bg={threadId ? "sentiment.positiveDefault" : "content.tertiary"}
           />
-          <Text fontSize="label.sm">{t("not-connected")}</Text>
+          <Text fontSize="label.sm">
+            {threadId ? t("connected") : t("not-connected")}
+          </Text>
         </HStack>
       </Flex>
 
@@ -101,9 +136,9 @@ export function ConceptNoteChatPanel({
           boxShadow="1dp"
         >
           <Text fontSize="body.sm" lineHeight="24px" color="content.secondary">
-            {contextReady
+            {groundedContext
               ? t("clima-context-ready-message")
-              : t("clima-welcome-message")}
+              : t("clima-thin-context-message")}
           </Text>
         </Box>
 
@@ -112,26 +147,20 @@ export function ConceptNoteChatPanel({
           gap={3}
           border="1px solid"
           borderColor={
-            contextReady
-              ? "sentiment.positiveDefault"
-              : "sentiment.warningDefault"
+            groundedContext ? "sentiment.positiveDefault" : "content.link"
           }
           borderRadius="rounded"
           bg={
-            contextReady
-              ? "sentiment.positiveOverlay"
-              : "sentiment.warningOverlay"
+            groundedContext ? "sentiment.positiveOverlay" : "background.neutral"
           }
           p={4}
         >
           <HStack align="start" gap={2.5}>
             <Icon
-              as={contextReady ? LuDatabase : LuCircleAlert}
+              as={groundedContext ? LuDatabase : LuCircleAlert}
               mt={0.5}
               color={
-                contextReady
-                  ? "sentiment.positiveDefault"
-                  : "sentiment.warningDefault"
+                groundedContext ? "sentiment.positiveDefault" : "content.link"
               }
             />
             <Box flex={1}>
@@ -141,7 +170,9 @@ export function ConceptNoteChatPanel({
                 fontWeight="semibold"
                 color="content.primary"
               >
-                {contextReady ? t("context-is-ready") : t("setup-gap-title")}
+                {groundedContext
+                  ? t("context-is-ready")
+                  : t("thin-context-ready")}
               </Text>
               <Text
                 mt={1}
@@ -149,9 +180,9 @@ export function ConceptNoteChatPanel({
                 lineHeight="20px"
                 color="content.secondary"
               >
-                {contextReady
+                {groundedContext
                   ? t("context-ready-description")
-                  : t("setup-gap-description")}
+                  : t("thin-context-description")}
               </Text>
             </Box>
           </HStack>
@@ -161,52 +192,94 @@ export function ConceptNoteChatPanel({
             alignSelf="start"
             onClick={onOpenContext}
           >
-            <Icon as={contextReady ? LuArrowRight : LuFilePlus2} />
-            {contextReady ? t("review-context") : t("add-source-pdf")}
+            <Icon as={groundedContext ? LuArrowRight : LuFilePlus2} />
+            {groundedContext
+              ? t("review-context")
+              : t("add-recommended-source")}
           </Button>
         </VStack>
 
-        <Box>
-          <Text
-            mb={2}
-            fontFamily="heading"
-            fontSize="overline"
-            fontWeight="semibold"
-            color="content.tertiary"
-            textTransform="uppercase"
+        {messages.length === 0 && !historyLoading && (
+          <Box>
+            <Text
+              mb={2}
+              fontFamily="heading"
+              fontSize="overline"
+              fontWeight="semibold"
+              color="content.tertiary"
+              textTransform="uppercase"
+            >
+              {t("suggested-next-steps")}
+            </Text>
+            <VStack align="stretch" gap={2}>
+              {["quick-add-source", "quick-review-context"].map((key) => (
+                <Button
+                  key={key}
+                  size="xs"
+                  variant="outline"
+                  justifyContent="start"
+                  onClick={onOpenContext}
+                >
+                  {t(key)}
+                </Button>
+              ))}
+            </VStack>
+          </Box>
+        )}
+
+        {messages.map((message) => (
+          <Box
+            key={message.id}
+            alignSelf={message.role === "user" ? "end" : "start"}
+            maxW="92%"
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="rounded"
+            bg={message.role === "user" ? "background.neutral" : "base.light"}
+            px={3}
+            py={2.5}
           >
-            {t("suggested-next-steps")}
-          </Text>
-          <VStack align="stretch" gap={2}>
-            {[
-              "quick-add-source",
-              "quick-review-context",
-              "quick-choose-funder",
-            ].map((key) => (
-              <Button
-                key={key}
-                size="xs"
-                variant="outline"
-                justifyContent="start"
-                onClick={onOpenContext}
-              >
-                {t(key)}
-              </Button>
-            ))}
-          </VStack>
-        </Box>
+            <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
+              {message.text || t("chat-thinking")}
+            </Text>
+          </Box>
+        ))}
+
+        {chatError && (
+          <HStack
+            role="alert"
+            align="start"
+            gap={2}
+            color="sentiment.negativeDefault"
+          >
+            <Icon as={LuCircleAlert} mt={0.5} />
+            <Text fontSize="label.sm">{chatError}</Text>
+          </HStack>
+        )}
       </VStack>
 
-      <Box borderTop="1px solid" borderColor="border.neutral" p={3}>
+      <Box
+        as="form"
+        borderTop="1px solid"
+        borderColor="border.neutral"
+        p={3}
+        onSubmit={submitMessage}
+      >
         <HStack gap={2}>
           <Input
-            disabled
-            placeholder={t("chat-coming-soon")}
+            value={input}
+            disabled={!threadId || historyLoading || isGenerating}
+            placeholder={
+              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+            }
             bg="background.neutral"
             borderColor="border.neutral"
+            onChange={(event) => setInput(event.target.value)}
           />
           <Button
-            disabled
+            type="submit"
+            disabled={!threadId || !input.trim() || historyLoading}
+            loading={isGenerating}
             size="sm"
             variant="solid"
             aria-label={t("send-message")}
@@ -215,7 +288,9 @@ export function ConceptNoteChatPanel({
           </Button>
         </HStack>
         <Text mt={2} fontSize="label.sm" color="content.tertiary">
-          {t("chat-backend-note")}
+          {threadId
+            ? t("source-upload-recommended-chat")
+            : t("chat-thread-unavailable")}
         </Text>
       </Box>
     </VStack>

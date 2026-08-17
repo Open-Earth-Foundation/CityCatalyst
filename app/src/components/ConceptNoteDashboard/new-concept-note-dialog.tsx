@@ -34,8 +34,9 @@ import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 
 import {
+  conceptNoteSourceLabel,
   formatFileSize,
-  validateConceptNotePdf,
+  validateConceptNoteSourceFile,
 } from "../ConceptNoteWiringHarness/utils";
 
 interface NewConceptNoteDialogProps {
@@ -71,6 +72,7 @@ export function NewConceptNoteDialog({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const idempotencyKeyRef = useRef(crypto.randomUUID());
   const createdRunIdRef = useRef<string | null>(null);
+  const createdThreadIdRef = useRef<string | null>(null);
   const latestUploadIdRef = useRef<string | null>(null);
   const uploadedFileIdentitiesRef = useRef(new Set<string>());
   const [name, setName] = useState("");
@@ -78,9 +80,11 @@ export function NewConceptNoteDialog({
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [startRun, startState] = api.useStartConceptNoteRunMutation();
-  const [uploadPdf, uploadState] = api.useUploadConceptNotePdfMutation();
+  const [createChatThread, chatState] = api.useCreateChatThreadMutation();
+  const [uploadSource, uploadState] = api.useUploadConceptNoteSourceMutation();
 
-  const isBusy = startState.isLoading || uploadState.isLoading;
+  const isBusy =
+    chatState.isLoading || startState.isLoading || uploadState.isLoading;
   const optionalText = (
     <Text
       as="span"
@@ -97,7 +101,7 @@ export function NewConceptNoteDialog({
     setError(null);
     const validated: File[] = [];
     for (const file of selectedFiles) {
-      const validationError = await validateConceptNotePdf(file);
+      const validationError = await validateConceptNoteSourceFile(file);
       if (validationError) {
         setError(t(validationError));
         return;
@@ -144,6 +148,7 @@ export function NewConceptNoteDialog({
     setError(null);
     idempotencyKeyRef.current = crypto.randomUUID();
     createdRunIdRef.current = null;
+    createdThreadIdRef.current = null;
     latestUploadIdRef.current = null;
     uploadedFileIdentitiesRef.current.clear();
   }
@@ -155,13 +160,21 @@ export function NewConceptNoteDialog({
     try {
       let targetRunId = createdRunIdRef.current;
       if (!targetRunId) {
+        const runName =
+          name.trim() ||
+          defaultConceptNoteName(lng, t("untitled-concept-note"));
+        let targetThreadId = createdThreadIdRef.current;
+        if (!targetThreadId) {
+          const thread = await createChatThread({ title: runName }).unwrap();
+          targetThreadId = thread.threadId;
+          createdThreadIdRef.current = targetThreadId;
+        }
         const run = await startRun({
           cityId,
           idempotencyKey: idempotencyKeyRef.current,
-          name:
-            name.trim() ||
-            defaultConceptNoteName(lng, t("untitled-concept-note")),
+          name: runName,
           projectId: projectId ?? null,
+          threadId: targetThreadId,
         }).unwrap();
         targetRunId = run.run_id;
         createdRunIdRef.current = targetRunId;
@@ -174,8 +187,8 @@ export function NewConceptNoteDialog({
         }
         const formData = new FormData();
         formData.set("file", file);
-        formData.set("sourceLabel", file.name.replace(/\.pdf$/i, ""));
-        const upload = await uploadPdf({
+        formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
+        const upload = await uploadSource({
           cityId,
           formData,
           runId: targetRunId,
@@ -324,11 +337,7 @@ export function NewConceptNoteDialog({
               </Flex>
 
               <Flex gap={4} direction={{ base: "column", sm: "row" }}>
-                <Field
-                  flex={1}
-                  label={t("funder")}
-                  optionalText={optionalText}
-                >
+                <Field flex={1} label={t("funder")} optionalText={optionalText}>
                   <NativeSelectRoot width="full" disabled>
                     <NativeSelectField>
                       <option>{t("choose-later-in-chat")}</option>
@@ -373,7 +382,7 @@ export function NewConceptNoteDialog({
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="application/pdf,.pdf"
+                  accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
                   multiple
                   hidden
                   onChange={onFileChange}
@@ -509,9 +518,11 @@ export function NewConceptNoteDialog({
               variant="solid"
               loading={isBusy}
               loadingText={
-                startState.isLoading
-                  ? t("creating-workspace")
-                  : t("uploading-sources")
+                chatState.isLoading
+                  ? t("connecting-chat")
+                  : startState.isLoading
+                    ? t("creating-workspace")
+                    : t("uploading-sources")
               }
             >
               {t("create-and-open")}

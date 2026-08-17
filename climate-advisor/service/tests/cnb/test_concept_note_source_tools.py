@@ -38,13 +38,15 @@ async def fake_query_document(**kwargs) -> SourceQueryResult:
     """Return deterministic no-support evidence for the selected source."""
     assert kwargs["pages"] == fake_verify_source_artifact()
     assert kwargs["question"] == "What evidence is stated?"
+    assert kwargs["source_format"] == "pdf"
     return SourceQueryResult(
         found=False,
         upload_id=kwargs["upload_id"],
         source_label=kwargs["source_label"],
+        source_format="pdf",
         excerpts=[],
-        pages_processed=1,
-        pages_total=1,
+        units_processed=1,
+        units_total=1,
         segments_processed=1,
         segments_total=1,
         caveats=["No direct support was found."],

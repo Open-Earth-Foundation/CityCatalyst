@@ -27,9 +27,42 @@ import {
 
 const INVENTORY_SOURCE_TYPE = "inventory_import" as const;
 const CONCEPT_NOTE_SOURCE_TYPE = "concept_note_upload" as const;
+export const DIRECT_MARKDOWN_MODEL = "direct_markdown" as const;
+export type ConceptNoteSourceFormat = "pdf" | "markdown";
 
 export function conceptNotePdfSourceKey(uploadId: string): string {
   return `pdf-ocr/sources/${CONCEPT_NOTE_SOURCE_TYPE}/${uploadId}/source.pdf`;
+}
+
+function resultKey(
+  sourceType: string,
+  sourceId: string,
+  resultRevision: number | string,
+): string {
+  return `pdf-ocr/results/${sourceType}/${sourceId}/${resultRevision}/combined_markdown.md`;
+}
+
+export function normalizeConceptNoteMarkdown(markdown: string): string {
+  const normalized = markdown.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  if (normalized.includes("\0")) {
+    throw new PdfSourceError(
+      "invalid_markdown_source",
+      "Markdown source cannot contain NUL bytes",
+    );
+  }
+  if (!normalized.trim()) {
+    throw new PdfSourceError(
+      "empty_markdown_source",
+      "Markdown source must contain non-whitespace text",
+    );
+  }
+  return normalized;
+}
+
+export function getConceptNoteSourceFormat(job: {
+  model?: string | null;
+}): ConceptNoteSourceFormat {
+  return job.model === DIRECT_MARKDOWN_MODEL ? "markdown" : "pdf";
 }
 
 class PdfSourceError extends Error {
@@ -93,6 +126,75 @@ export async function enqueueConceptNotePdfOcr(
     },
   });
   return job;
+}
+
+export async function registerConceptNoteMarkdownUpload(
+  uploadId: string,
+  markdown: string,
+): Promise<PdfOcrJob> {
+  const now = new Date();
+  const normalized = normalizeConceptNoteMarkdown(markdown);
+  const resultBuffer = Buffer.from(normalized, "utf8");
+  const resultSha256 = createHash("sha256").update(resultBuffer).digest("hex");
+  const resultS3Key = resultKey(
+    CONCEPT_NOTE_SOURCE_TYPE,
+    uploadId,
+    `direct-${resultSha256}`,
+  );
+
+  const existing = await getConceptNotePdfOcrJob(uploadId);
+  if (existing) {
+    requireDirectMarkdownIdentity(existing, { resultS3Key, resultSha256 });
+    return existing;
+  }
+
+  await InventoryFileStorageService.putTextFile(resultS3Key, normalized);
+
+  const [job, created] = await db.models.PdfOcrJob.findOrCreate({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+    },
+    defaults: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+      status: "succeeded",
+      attemptCount: 0,
+      model: DIRECT_MARKDOWN_MODEL,
+      pageCount: null,
+      resultS3Key,
+      resultSizeBytes: resultBuffer.byteLength,
+      resultSha256,
+      startedAt: now,
+      completedAt: now,
+      deliveryTarget: "climate_advisor",
+      deliveryStatus: "pending",
+      deliveryAttemptCount: 0,
+      deliveryRunAfter: now,
+    },
+  });
+  if (!created) {
+    requireDirectMarkdownIdentity(job, { resultS3Key, resultSha256 });
+  }
+
+  return job;
+}
+
+function requireDirectMarkdownIdentity(
+  job: PdfOcrJob,
+  expected: { resultS3Key: string; resultSha256: string },
+): void {
+  if (
+    job.model !== DIRECT_MARKDOWN_MODEL ||
+    job.resultS3Key !== expected.resultS3Key ||
+    job.resultSha256 !== expected.resultSha256 ||
+    job.pageCount !== null
+  ) {
+    throw new PdfSourceError(
+      "markdown_identity_conflict",
+      "Markdown result identity cannot change",
+    );
+  }
 }
 
 export async function claimPdfOcrJobs(owner: string): Promise<PdfOcrJob[]> {
@@ -279,7 +381,7 @@ async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
     config.presignedUrlSeconds,
   );
   const result = await convertPdfUrlToMarkdown(documentUrl);
-  const resultS3Key = `pdf-ocr/results/${job.sourceType}/${job.sourceId}/${job.attemptCount}/combined_markdown.md`;
+  const resultS3Key = resultKey(job.sourceType, job.sourceId, job.attemptCount);
   const resultBuffer = Buffer.from(result.markdown, "utf8");
   await InventoryFileStorageService.putTextFile(resultS3Key, result.markdown);
   const completedAt = new Date();

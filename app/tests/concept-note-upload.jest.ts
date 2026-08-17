@@ -13,6 +13,11 @@ const updateUpload = jest.fn<() => Promise<void>>();
 const putFile = jest.fn<() => Promise<void>>();
 const enqueue =
   jest.fn<(uploadId: string) => Promise<Record<string, unknown>>>();
+const registerMarkdown =
+  jest.fn<
+    (uploadId: string, markdown: string) => Promise<Record<string, unknown>>
+  >();
+const normalizeMarkdown = jest.fn<(markdown: string) => string>();
 const normalizeStatus = jest.fn<
   (job: Record<string, unknown>) => {
     status: "queued" | "processing" | "ready" | "failed";
@@ -36,6 +41,8 @@ jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   conceptNotePdfSourceKey: (id: string) =>
     `pdf-ocr/sources/concept_note_upload/${id}/source.pdf`,
   enqueueConceptNotePdfOcr: enqueue,
+  normalizeConceptNoteMarkdown: normalizeMarkdown,
+  registerConceptNoteMarkdownUpload: registerMarkdown,
   normalizeConceptNotePdfOcrStatus: normalizeStatus,
 }));
 jest.unstable_mockModule("@/backend/concept-notes", () => ({
@@ -64,7 +71,7 @@ function requestWithFile(
   form.set(
     "file",
     new File([bytes], options.name || "plan.pdf", {
-      type: options.type || "application/pdf",
+      type: options.type ?? "application/pdf",
     }),
   );
   form.set("sourceLabel", "Climate plan");
@@ -79,7 +86,7 @@ const context = {
   params: { runId },
 };
 
-describe("Concept Note PDF upload route", () => {
+describe("Concept Note source upload route", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     loadRunCity.mockResolvedValue("33333333-3333-4333-8333-333333333333");
@@ -92,9 +99,19 @@ describe("Concept Note PDF upload route", () => {
     );
     putFile.mockResolvedValue(undefined);
     enqueue.mockResolvedValue({ status: "queued", deliveryStatus: "pending" });
+    normalizeMarkdown.mockImplementation((markdown) =>
+      markdown.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n"),
+    );
+    registerMarkdown.mockResolvedValue({
+      status: "succeeded",
+      deliveryStatus: "pending",
+    });
     normalizeStatus.mockImplementation((job) => {
       if (job.status === "succeeded" && job.deliveryStatus === "delivered") {
         return { status: "ready", stage: "complete", canRetry: false };
+      }
+      if (job.status === "succeeded") {
+        return { status: "processing", stage: "delivery", canRetry: false };
       }
       return { status: "queued", stage: "ocr", canRetry: false };
     });
@@ -140,7 +157,10 @@ describe("Concept Note PDF upload route", () => {
       expect.objectContaining({
         path: `/v1/concept-notes/${runId}/uploads`,
         method: "POST",
-        body: expect.objectContaining({ upload_id: payload.uploadId }),
+        body: expect.objectContaining({
+          upload_id: payload.uploadId,
+          source_format: "pdf",
+        }),
       }),
     );
     expect(putFile).toHaveBeenCalledWith(
@@ -169,6 +189,53 @@ describe("Concept Note PDF upload route", () => {
     );
     expect(putFile).toHaveBeenCalledTimes(2);
     expect(enqueue).toHaveBeenCalledTimes(2);
+  });
+
+  it("stores Markdown and prepares direct delivery without queueing OCR", async () => {
+    const response = await uploadHandler(
+      requestWithFile("# Plan\n## Need", {
+        name: "plan.md",
+        type: "text/markdown",
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(202);
+    const payload = await response.json();
+    expect(payload).toEqual({
+      uploadId: expect.any(String),
+      status: "processing",
+      stage: "delivery",
+      canRetry: false,
+    });
+    expect(putFile).not.toHaveBeenCalled();
+    expect(registerMarkdown).toHaveBeenCalledWith(
+      payload.uploadId,
+      "# Plan\n## Need",
+    );
+    expect(callConceptNoteApi).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({
+          upload_id: payload.uploadId,
+          source_format: "markdown",
+        }),
+      }),
+    );
+    expect(enqueue).not.toHaveBeenCalled();
+  });
+
+  it("accepts .md uploads with an empty MIME type", async () => {
+    const response = await uploadHandler(
+      requestWithFile("# Plan", {
+        name: "plan.md",
+        type: "",
+      }),
+      context,
+    );
+
+    expect(response.status).toBe(202);
+    const payload = await response.json();
+    expect(registerMarkdown).toHaveBeenCalledWith(payload.uploadId, "# Plan");
   });
 
   it("rejects MIME, empty, and signature failures before CA registration", async () => {
@@ -214,5 +281,102 @@ describe("Concept Note PDF upload route", () => {
         errorCode: "ocr_enqueue_failed",
       }),
     );
+  });
+
+  it("marks CA failed when direct Markdown registration fails", async () => {
+    registerMarkdown.mockRejectedValueOnce(new Error("storage unavailable"));
+
+    await expect(
+      uploadHandler(
+        requestWithFile("# Draft", {
+          name: "plan.md",
+          type: "text/markdown",
+        }),
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 503 });
+
+    expect(updateUpload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        action: "failed",
+        errorCode: "markdown_registration_failed",
+      }),
+    );
+  });
+
+  it("rejects invalid Markdown content before CA registration", async () => {
+    normalizeMarkdown.mockImplementationOnce(() => {
+      throw new Error("Markdown source must contain non-whitespace text");
+    });
+
+    await expect(
+      uploadHandler(
+        requestWithFile("# Draft", {
+          name: "plan.md",
+          type: "text/markdown",
+        }),
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 422 });
+
+    expect(callConceptNoteApi).not.toHaveBeenCalled();
+  });
+
+  it("rejects non-UTF-8 Markdown before CA registration", async () => {
+    const form = new FormData();
+    form.set(
+      "file",
+      new File([new Uint8Array([0xff, 0xfe, 0x61])], "plan.md", {
+        type: "text/markdown",
+      }),
+    );
+
+    await expect(
+      uploadHandler(
+        new Request(`http://localhost/api/v1/concept-notes/${runId}/uploads`, {
+          method: "POST",
+          body: form,
+        }),
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 422 });
+
+    expect(callConceptNoteApi).not.toHaveBeenCalled();
+  });
+
+  it("rejects unsupported Markdown MIME types before CA registration", async () => {
+    await expect(
+      uploadHandler(
+        requestWithFile("# Draft", {
+          name: "plan.md",
+          type: "application/json",
+        }),
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 415 });
+
+    expect(callConceptNoteApi).not.toHaveBeenCalled();
+  });
+
+  it("rejects Markdown containing NUL bytes before CA registration", async () => {
+    const form = new FormData();
+    form.set(
+      "file",
+      new File([new Uint8Array([0x23, 0x00, 0x20])], "plan.md", {
+        type: "text/markdown",
+      }),
+    );
+
+    await expect(
+      uploadHandler(
+        new Request(`http://localhost/api/v1/concept-notes/${runId}/uploads`, {
+          method: "POST",
+          body: form,
+        }),
+        context,
+      ),
+    ).rejects.toMatchObject({ statusCode: 422 });
+
+    expect(callConceptNoteApi).not.toHaveBeenCalled();
   });
 });

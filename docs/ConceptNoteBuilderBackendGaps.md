@@ -6,9 +6,9 @@
 
 ## Outcome
 
-The backend already has more of the evidence pipeline than the Figma-only audit suggested: a run can be bound at start to an existing authorized chat thread, successful PDF-to-Markdown delivery can schedule a guarded bundle rebuild, large sources are processed in page-preserving partitions, and the agent can query exact page evidence or return an explicit no-basis result.
+The backend already has more of the evidence pipeline than the Figma-only audit suggested: a run can be bound at start to an existing authorized chat thread, successful PDF-to-Markdown delivery can schedule a guarded bundle rebuild, native Markdown uploads can land directly in the final CityCatalyst Markdown-result namespace without OCR, large PDF sources are processed in page-preserving partitions, and the agent can query exact evidence or return an explicit no-basis result.
 
-The smallest meaningful missing piece is therefore **not** a new chat stack or granular SSE. It is a frontend-safe read model for the context bundle. After that, the highest-value small slices are a representative 180-page acceptance test, a selected-grant requirements read model, and run-scoped corrections that preserve the original CityCatalyst values.
+The highest-priority missing capability is a durable first version of the document. The agent can chat and query grounded evidence, but it cannot initialize the selected template, draft the full first version, persist chapter text, or return that document to the Draft preview on resume. The full context bundle remains internal to Climate Advisor; exposing it to the frontend is not a product requirement.
 
 ## Product sources and precedence
 
@@ -47,65 +47,77 @@ The following should not be treated as first-start backend work:
 
 These are product/data-contract decisions, not evidence that the backend team has failed to implement an agreed contract.
 
-| Decision                      | Current conflict                                                                                                                                                | Recommended v1 decision                                                                                                                                                                          |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| File gate versus thin context | UC-5 expects the interview to work with little data, while the current bundle requires at least one ready PDF                                                   | Permit run creation and chat with thin context; make source upload recommended, not a prerequisite. If a mandatory file gate is intended, state it explicitly and keep the current backend rule. |
-| Mid-interview refresh         | The stories leave push versus pull re-checking open                                                                                                             | Start with pull: expose the ready-upload `source_fingerprint` plus a separate full `bundle_revision`, then let the workspace re-read. Add SSE only if measured latency requires it.              |
-| Live structured note          | The preview fills during the interview, but the backend currently has only schema groundwork                                                                    | Use one persisted structured note/chapter model during the run; render Word from it. A Word-only end render cannot support a trustworthy live preview.                                           |
-| Source links in Word          | The later v1 page asks for linked sources, while [repository architecture notes](./ConceptNoteBuilderArchitecture.md) have described evidence as workspace-only | Decide whether Word contains footnotes/endnotes, a source appendix, or only source URLs before export work starts.                                                                               |
-| Bundle reuse scope            | The stories mention multiple notes on reusable context; the Draft PRD leans run-scoped for the first attempt; the current bundle is one-to-one with a run       | Keep the first vertical slice run-scoped, but decide whether shared bundle identity is a committed v1 requirement before locking the schema.                                                     |
-| Readiness assessment          | Older US-03 requires before/after scoring and a cohort dashboard; the later v1 page omits it                                                                    | Confirm whether US-03 is still in v1. If retained, plan it as a separate product/backend track after the core note flow.                                                                         |
-| Final format                  | The older Epic and Figma allow Word/PDF; the later v1 page says Word                                                                                            | Treat DOCX as required. Do not make PDF a release blocker until scope is reconfirmed.                                                                                                            |
+Resolved on 2026-08-17: run creation and chat use a typed thin-context bundle
+when no source is ready. Source upload is recommended for grounding and evidence,
+not required. Later ready uploads rebuild the same run as grounded context.
 
-## Smallest meaningful backend start order
+Resolved on 2026-08-17: the first drafting slice must create one complete,
+persisted document version. Missing facts are surfaced as gaps instead of being
+invented, evidence remains review-only, and export later uses chapter text rather
+than evidence metadata.
 
-Sizes are relative engineering slices, not calendar estimates. Ordering favors the smallest slice that unlocks a real user outcome and respects dependencies.
+| Decision              | Current conflict                                                                                                                                          | Recommended v1 decision                                                                                                                                                                        |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mid-interview refresh | The stories leave push versus pull re-checking open                                                                                                       | Keep source fingerprints and bundle revisions internal. When later input changes drafting context, mark the persisted document as needing review and surface one simple context-updated state. |
+| Bundle reuse scope    | The stories mention multiple notes on reusable context; the Draft PRD leans run-scoped for the first attempt; the current bundle is one-to-one with a run | Keep the first vertical slice run-scoped, but decide whether shared bundle identity is a committed v1 requirement before locking the schema.                                                   |
+| Readiness assessment  | Older US-03 requires before/after scoring and a cohort dashboard; the later v1 page omits it                                                              | Confirm whether US-03 is still in v1. If retained, plan it as a separate product/backend track after the core note flow.                                                                       |
+| Final format          | The older Epic and Figma allow Word/PDF; the later v1 page says Word                                                                                      | Treat DOCX as required. Do not make PDF a release blocker until scope is reconfirmed.                                                                                                          |
 
-| Rank | Slice                                                    |     Size     | Why it comes now                                                                                                                                                           | Acceptance proof                                                                                                                                                                                    |
-| ---: | -------------------------------------------------------- | :----------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|    1 | Frontend-readable context-bundle projection              |      XS      | Unlocks the real Context panel, provenance, and pull-based detection of files added mid-interview using state that already exists                                          | An authorized `GET` returns status, ready-upload `source_fingerprint`, full `bundle_revision`, selected sources, CityCatalyst context, optional GHGI/HIAP, provenance, freshness, and typed absence |
-|    2 | Representative 180-page CAP acceptance and observability |     XS/S     | UC-3 is high-risk, while the code foundation is already present; prove it before redesigning ingestion                                                                     | A real approximately 180-page PDF completes with every page covered, exact page anchors, explicit not-found behavior, and recorded latency/token/failure metrics                                    |
-|    3 | Selected grant requirements/template read model          |      S       | Delivers the read-only part of older US-01 and gives the guided interview a real target without adding funder discovery                                                    | For the run's selected opportunity, return requirements, criteria, template sections, authoritative source/version, and known dossier gaps                                                          |
-|    4 | Run-scoped CityCatalyst correction annotations           |      S       | UC-1 requires the user to confirm or correct existing data without corrupting CityCatalyst source records                                                                  | Create/read/remove an override that keeps original value, corrected value, author, reason, timestamp, and source provenance; agent and UI resolve the run overlay first                             |
-|    5 | Direct Markdown source intake                            |      S       | The v1 source list includes Markdown, while the user-facing upload route accepts only PDF                                                                                  | Existing upload flow accepts Markdown without OCR and produces stable heading/block anchors rather than fake page numbers                                                                           |
-|    6 | Thin-context mode, if the product chooses an open start  |      S       | Satisfies UC-5 and removes the current `no_ready_city_pdf` block                                                                                                           | A run with no ready file can enter interviewing with typed missing-context warnings; later uploads rebuild the same run normally                                                                    |
-|    7 | Post-start scope correction                              |      S       | Useful if a user can correct the project/funder/opportunity after opening; it is smaller than document runtime but is not required for a strictly pre-selected-funder flow | An authorized patch validates funder/opportunity ownership, persists the new scope, reports setup gaps, and invalidates only affected derived context                                               |
-|    8 | Requirement-to-context coverage map                      |     S/M      | Completes the “what is missing from this project?” part of US-01 and provides grounded interview questions                                                                 | Every selected-grant requirement is `supported`, `missing`, or `unknown`, with source anchors or explicit no-basis; results carry the full bundle revision                                          |
-|    9 | Minimal structured document vertical slice               |      M       | Enables the first honest live preview and editing path using the existing chapter/revision/evidence schema                                                                 | Initialize template chapters, read the workspace, edit one chapter by appending a revision, return evidence/no-basis state, and mark revisions stale when their bundle revision changes             |
-|   10 | Guided suggestion actions                                |      M       | Delivers US-02 after there is somewhere durable to put suggestions                                                                                                         | Generate, accept, edit, and regenerate a section suggestion; every suggestion records its bundle revision and evidence anchors                                                                      |
-|   11 | DOCX source intake                                       |      M       | Completes the v1 PDF/Markdown/DOCX input promise after the simpler Markdown contract is proven                                                                             | DOCX text and tables are stored with stable section/paragraph anchors, provenance, retry, and bundle rebuild behavior                                                                               |
-|   12 | Validation and DOCX export                               |     M/L      | Completes the user outcome only after structured content and source-link policy exist                                                                                      | Preflight returns blocking/warning findings; export is persisted, retryable, downloadable, and rendered from the same accepted revisions shown in preview                                           |
-|   13 | Shared bundle identity across notes, if confirmed        |      L       | The current one-bundle-per-run model cannot literally serve multiple notes from one bundle                                                                                 | Separate bundle identity/version from run identity, authorize reuse, and preserve immutable source/revision provenance across notes                                                                 |
-|   14 | Readiness assessment, if US-03 is retained               | L / separate | It introduces questionnaires, scoring policy, before/after snapshots, and cohort aggregation unrelated to the core drafting runtime                                        | Versioned assessment instrument, auditable score calculation, snapshots, permissions, and cohort reporting have an agreed contract and tests                                                        |
+## Backend priority order
 
-### Recommended first three implementation tickets
+Sizes are relative engineering slices, not calendar estimates. Priority starts
+with the first complete user outcome. Smaller enabling tasks belong inside that
+vertical slice rather than displacing it.
 
-1. `GET /api/v1/concept-notes/{runId}/context-bundle`, exposing the already-persisted ready-upload source fingerprint and adding a full bundle revision.
-2. A real 180-page CAP acceptance fixture/harness with page-coverage, evidence, latency, and cost assertions.
-3. `GET /api/v1/concept-notes/{runId}/funding-context` for the single pre-selected opportunity.
+| Rank | Slice                                                    |     Size     | Why it comes now                                                                                                                       | Acceptance proof                                                                                                                                                                                                                                                                    |
+| ---: | -------------------------------------------------------- | :----------: | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|    1 | Agent-generated first document version                   |     M/L      | This is the first user outcome that proves CNB creates a document rather than only discussing one in chat.                             | One idempotent, authorized flow resolves the selected template, drafts every required chapter from internal run context, persists agent-authored revisions, records missing facts as gaps, and returns the same ordered document on resume.                                         |
+|    2 | Visual review and application of model-suggested edits   |      M       | The first version is only useful if users can safely inspect and control later agent changes instead of having text silently replaced. | A proposal is bound to an exact base revision, exposes deterministic before/after hunks for red/green rendering, supports per-hunk and whole-proposal accept/reject, applies accepted hunks atomically as a new revision, and becomes stale rather than overwriting a changed base. |
+|    3 | Representative 180-page CAP acceptance and observability |     XS/S     | The source pipeline is already present, but a first draft cannot be trusted on large CAPs until the real path is measured.             | A real approximately 180-page PDF completes with every page covered, exact page anchors, explicit not-found behavior, and recorded latency/token/failure metrics.                                                                                                                   |
+|    4 | Run-scoped CityCatalyst correction annotations           |      S       | Confirmed corrections must reach the first version without overwriting authoritative CityCatalyst records.                             | Create/read/remove an override retaining original value, corrected value, author, reason, timestamp, and source provenance; internal drafting context resolves the run overlay first.                                                                                               |
+|    5 | Post-start scope correction                              |      S       | Useful only if project, funder, or opportunity can change after opening the run.                                                       | An authorized patch validates funder/opportunity ownership, persists the new scope, reports setup gaps, and invalidates affected derived context.                                                                                                                                   |
+|    6 | Requirement-to-context coverage map                      |     S/M      | Improves later refinement by making unsupported requirements and missing facts explicit.                                               | Every selected-grant requirement is `supported`, `missing`, or `unknown`, with source anchors or explicit no-basis.                                                                                                                                                                 |
+|    7 | DOCX source intake                                       |      M       | Completes the v1 PDF/Markdown/DOCX input promise now that direct Markdown intake exists.                                               | DOCX text and tables are stored with stable section/paragraph anchors, provenance, retry, and bundle rebuild behavior.                                                                                                                                                              |
+|    8 | Validation and DOCX export                               |     M/L      | Completes delivery after the first version can be reviewed and edited.                                                                 | Preflight returns blocking findings and warnings; export is persisted, retryable, downloadable, and contains the accepted chapter text shown in preview.                                                                                                                            |
+|    9 | Shared bundle identity across notes, if confirmed        |      L       | The current one-bundle-per-run model cannot literally serve multiple notes from one bundle.                                            | Separate bundle identity/version from run identity, authorize reuse, and preserve internal provenance across notes.                                                                                                                                                                 |
+|   10 | Readiness assessment, if US-03 is retained               | L / separate | This introduces a separate questionnaire, scoring, snapshot, and cohort-reporting product.                                             | A versioned assessment instrument, auditable scoring, snapshots, permissions, and cohort reporting have an agreed contract and tests.                                                                                                                                               |
 
-Together these make the current frontend materially truthful without waiting for the full drafting engine.
+### Recommended first implementation tickets
+
+1. Resolve the selected authoritative template and initialize its ordered chapters for the run.
+2. Generate and persist one complete first version, storing unknown or unsupported facts as user-visible gaps instead of invented prose.
+3. Return and update that persisted document so the Draft preview, resume flow, and later DOCX export all use the same chapter text.
+4. Generate and persist model edit proposals against exact chapter base revisions without changing the accepted document.
+5. Return server-derived before/after hunks so the Draft UI can show removed text in red and proposed text in green, with per-hunk and accept-all/reject-all controls.
+6. Apply accepted hunks atomically as a new immutable revision, persist the decisions for resume, and reject stale-base application.
+
+Tickets 1-3 form the first-document vertical slice; tickets 4-6 form the
+immediately following visual-editing slice. A chat response containing
+draft-like prose does not satisfy the first slice unless the document is
+persisted and recoverable. A model message describing an edit does not satisfy
+the second slice unless the proposal can be reviewed and explicitly applied or
+rejected.
 
 ## User-story coverage
 
 Statuses mean:
 
 - **Covered** — runtime path exists end to end at the backend boundary.
-- **Partial** — meaningful runtime foundation exists, but a required public contract or persisted behavior is absent.
+- **Partial** — meaningful runtime foundation exists, but required runtime or persisted behavior is absent.
 - **Backend gap** — no runtime implementation exists; schema alone does not count.
 - **Decision** — scope or contract must be resolved before implementation is judged.
 
-| Story or outcome                                                                     | Status                            | Current truth and remaining gap                                                                                                                                                                                                                                                                              |
-| ------------------------------------------------------------------------------------ | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| UC-1: use existing CityCatalyst data and files                                       | Partial                           | City context, PDF bundle assembly, and agent consumption exist internally. Missing public bundle/requirements reads, run-scoped corrections, template-to-interview/chapter mapping, and the live structured draft.                                                                                           |
-| UC-2: add a file during the interview                                                | Partial, strong foundation        | Successful Markdown registration schedules a rebuild over all ready uploads when the bundle service is available; source fingerprinting prevents a stale build from replacing a newer upload set. Missing non-PDF intake, frontend bundle revision/read, and drafted-section invalidation/re-check behavior. |
-| UC-3: ingest an approximately 180-page CAP                                           | Partial, strong foundation        | Page-preserving 50,000-token partitions, bounded concurrency of 3, oversized-page splitting, digest/page verification, and exact-citation tests exist. A representative 180-page performance/operability acceptance test is still missing.                                                                   |
-| UC-4: show sources and say when there is no basis                                    | Partial                           | Internal source query covers every page, returns verified page excerpts, and can return explicit not-found. Chapter-level evidence links, frontend source objects, and a persisted no-basis state are not wired at runtime.                                                                                  |
-| UC-5: work with thin context                                                         | Decision plus conditional gap     | Chat can operate with limited context, but the bundle fails with `no_ready_city_pdf` when no PDF is ready. Backend work depends on the file-gate decision.                                                                                                                                                   |
-| UC-6: one note, one conversation, resume later                                       | Mostly covered backend foundation | Thread creation/history/SSE already exist; start accepts `thread_id`, persists it on the run, and binds `concept_note_run_id` into thread context. The frontend must use that path. Literal reuse of one bundle by multiple runs is not supported by the current one-to-one schema.                          |
-| US-01: view the selected grant's requirements, criteria, template, and current gaps  | Partial/internal                  | Funding IDs are validated and funder research/reference foundations exist, but no stable run-scoped read model or requirement-to-project coverage map composes them for the product.                                                                                                                         |
-| US-02: guided section adaptation with accept/edit/regenerate and structured download | Backend gap                       | Generic run-scoped chat exists, but chapter initialization, suggestions, revisions, evidence, validation, and export have no runtime API.                                                                                                                                                                    |
-| US-03: before/after readiness score and cohort dashboard                             | Decision; backend gap if retained | No assessment instrument, scoring service, snapshots, aggregation, or cohort API exists. The story is absent from the later v1 use-case page and must be reconfirmed.                                                                                                                                        |
+| Story or outcome                                                                    | Status                            | Current truth and remaining gap                                                                                                                                                                                                                                                        |
+| ----------------------------------------------------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UC-1: use existing CityCatalyst data and files                                      | Partial                           | City context, PDF bundle assembly, and agent consumption exist internally. The missing core outcome is selected-template initialization plus agent generation and persistence of the first complete document version.                                                                  |
+| UC-2: add a file during the interview                                               | Partial, strong foundation        | Successful PDF OCR and native Markdown registration rebuild over all ready uploads, with fingerprint and build guards preventing stale replacement. Missing DOCX intake and backend-owned review/refresh behavior for a document drafted before the new file arrived.                  |
+| UC-3: ingest an approximately 180-page CAP                                          | Partial, strong foundation        | Page-preserving 50,000-token partitions, bounded concurrency of 3, oversized-page splitting, digest/page verification, and exact-citation tests exist. A representative 180-page performance/operability acceptance test is still missing.                                             |
+| UC-4: show sources and say when there is no basis                                   | Partial                           | Internal source query covers every PDF page or native Markdown block, returns verified located excerpts, and can return explicit not-found. Chapter-level evidence links, frontend source objects, and a persisted no-basis state are not wired at runtime.                            |
+| UC-5: work with thin context                                                        | Implemented                       | A source-less run automatically completes a ready `thin` bundle with typed `source_documents` absence, enters interviewing, and can chat. Later ready uploads rebuild the same run as `grounded`.                                                                                      |
+| UC-6: one note, one conversation, resume later                                      | Mostly covered                    | New frontend runs create and bind a durable chat thread; history and SSE are connected in the workspace. Literal reuse of one bundle by multiple runs is not supported by the current one-to-one schema.                                                                               |
+| US-01: view the selected grant's requirements, criteria, template, and current gaps | Partial/internal                  | Funding IDs are validated and funder research/reference foundations exist, but no stable run-scoped read model or requirement-to-project coverage map composes them for the product.                                                                                                   |
+| US-02: guided drafting, editing, and structured download                            | Backend gap                       | Generic run-scoped chat exists, but no runtime initializes chapters, asks the agent for a first persisted document version, stores revision-bound model edit proposals, applies explicit red/green review decisions, records direct user edits, validates the document, or exports it. |
+| US-03: before/after readiness score and cohort dashboard                            | Decision; backend gap if retained | No assessment instrument, scoring service, snapshots, aggregation, or cohort API exists. The story is absent from the later v1 use-case page and must be reconfirmed.                                                                                                                  |
 
 ## Current code-backed foundations
 
@@ -126,19 +138,24 @@ Code evidence:
 - [`chat/messages/route.ts`](../app/src/app/api/v1/chat/messages/route.ts)
 - [`chat/threads/[threadId]/messages/route.ts`](../app/src/app/api/v1/chat/threads/%5BthreadId%5D/messages/route.ts)
 
-### PDF intake and mid-interview rebuilding
+### PDF and Markdown intake with mid-interview rebuilding
 
 - CityCatalyst accepts a run-scoped PDF, stores it, and queues OCR.
+- CityCatalyst validates native UTF-8 Markdown, normalizes its BOM and line
+  endings, stores it directly as an immutable content-addressed result artifact,
+  and skips OCR.
 - Climate Advisor owns the upload lifecycle and immutable Markdown pointer.
 - Successful Markdown registration schedules a context build when the context-bundle service is available.
 - The build considers all current ready uploads.
 - Source fingerprint and build-id guards prevent an older build from overwriting a newer source set.
 
-This satisfies the core append-and-reindex foundation of UC-2 for PDF. What is missing is the user-facing revision contract and downstream chapter invalidation, not the rebuild trigger itself.
+This satisfies the core PDF/Markdown append-and-reindex foundation of UC-2. What is
+missing is backend-owned document review/refresh behavior after context changes,
+not the rebuild trigger itself.
 
 ### Large-document evidence
 
-- Page markers, artifact digest, and declared page count are reverified before analysis.
+- PDF page markers, artifact digest, and declared page count are reverified before analysis.
 - Source pages are split without dropping or reordering content.
 - Oversized individual pages are segmented while retaining their page identity.
 - Partition readers must confirm complete segment coverage.
@@ -154,32 +171,69 @@ Code evidence:
 ### Context and workspace persistence
 
 - A normalized bundle can hold selected sources, CityCatalyst context, funder context, similar projects, and document context.
-- Production assembly currently populates selected PDF analyses plus optional GHGI/HIAP context.
+- Production assembly currently populates selected PDF or Markdown analyses plus optional GHGI/HIAP context.
 - The full ready bundle is internal to Climate Advisor; the frontend only receives run/upload progress.
 - Chapter, revision, evidence-link, gap, matched-project, and export tables exist.
 - Those workspace tables are schema groundwork only; no merged end-user runtime routes currently use them.
 - `concept_note_context_bundles.run_id` is the primary key, so the current model is exactly one bundle per run.
 
+### First draft generation
+
+- The implemented CNB routes stop at run lifecycle, uploads, upload status, Markdown registration, bundle retry, and CityCatalyst context refresh.
+- The frontend draft tab is explicit that no application text has been generated and that chapter generation, evidence links, revisions, and funder templates do not yet have runtime APIs.
+- The export dialog is also explicit that document, validation, and export services are not implemented yet.
+- Workspace tables for chapters, revisions, evidence links, gaps, and exports exist only as schema and migration coverage today.
+
+Consequently, the agent can currently chat about the note and query grounded evidence, but it cannot yet draft and persist the first version of the concept note as a document artifact.
+
 ## Missing contracts by area
 
-### 1. Context read and correction
+### 1. Agent-generated first document version
 
-Minimum public projection:
+The context bundle is injected into the agent internally. The first-document
+runtime does not require a frontend route that exposes the bundle, its source
+fingerprint, or revision mechanics.
 
-- bundle status and failure/retry state;
-- the existing ready-upload `source_fingerprint` and a new opaque full `bundle_revision`;
-- selected source identifier, filename, type, readiness, summary, topics, and anchors;
-- CityCatalyst values with provenance and freshness;
-- optional GHGI/HIAP, funder, similar-project, and document sections represented as typed absence, not fabricated empty content;
-- run-scoped override annotations that never overwrite the source record.
+The minimum complete vertical slice must:
 
-Do not expose the internal agent bundle unchanged. Return a versioned UI contract and authorize it through the CityCatalyst proxy.
+- resolve the authoritative template for the run's selected opportunity;
+- initialize its ordered required and optional chapters;
+- generate a complete first version from the available internal run context;
+- persist each chapter body as an immutable agent-authored draft revision;
+- store unsupported or unknown facts as gaps surfaced to the user, not prose;
+- keep evidence metadata separate for review and out of exported chapter text;
+- return the same ordered document on refresh and resume;
+- be idempotent and retryable so retries do not create duplicate first versions.
 
-The existing `source_fingerprint` hashes only ready upload IDs, Markdown digests, and page counts. It is suitable for detecting source-set changes, but it does not version GHGI/HIAP, funder, similar-project, correction, or other bundle content. Staleness and cache validation therefore need a separate full bundle revision.
+The agent may trigger this orchestration from chat, but a draft-like assistant
+message is not completion. Success means the document version is persisted and
+readable by the workspace.
 
-### 2. Selected funding context
+### 2. Visual review and application of model-suggested edits
 
-The single selected opportunity needs a composed read model containing:
+This is the next top-priority document outcome after first-version generation.
+The Cursor-like red/green treatment is a frontend presentation responsibility;
+the backend must provide the revision-safe proposal and decision contract that
+makes the comparison truthful and recoverable.
+
+The minimum complete vertical slice must:
+
+- create a model-authored edit proposal for one chapter against an exact immutable `base_revision_id` without changing the accepted chapter text;
+- retain the model instruction, author type, creation time, and full proposed text for audit and resume;
+- derive deterministic ordered diff hunks on the server from the stored base and proposed text rather than trusting line offsets invented by the model;
+- return stable hunk identifiers with `before_text` and `after_text`, allowing the frontend to render existing/removal text in red and proposed/addition text in green;
+- support accept or reject for each hunk, plus accept-all and reject-all, and persist those decisions;
+- apply the accepted set atomically as one new immutable chapter revision while leaving a fully rejected proposal non-mutating;
+- require the current chapter revision to still equal the proposal's base revision, otherwise mark the proposal `stale` and require a new proposal instead of silently rebasing or overwriting user work;
+- return pending and decided proposals on refresh and resume with clear `pending`, `applied`, `rejected`, or `stale` status.
+
+The accepted document remains the only input to validation and export. Pending
+green text is a proposal, not document content, and a model message claiming an
+edit was made is not completion.
+
+### 3. Selected funding context
+
+The single selected opportunity needs composed run context containing:
 
 - funder and program identity;
 - application requirements and eligibility/selection criteria;
@@ -188,13 +242,13 @@ The single selected opportunity needs a composed read model containing:
 - known gaps or unavailable fields;
 - selected similar projects only if internal matching has produced reviewed results.
 
-This is not a funder discovery or scoring API.
+This is not a funder discovery or scoring capability.
 
-The selected-grant dossier's own missing fields are different from the project's coverage gaps. A second run-scoped evaluation should map every requirement to `supported`, `missing`, or `unknown`, carry exact source anchors or no-basis state, and identify the full bundle revision used. That result seeds interview questions without pretending to be the separate US-03 readiness score or a formal applicant-eligibility decision.
+The selected-grant dossier's own missing fields are different from the project's coverage gaps. A later run-scoped evaluation can map every requirement to `supported`, `missing`, or `unknown`, with exact source anchors or no-basis state. That result supports refinement without pretending to be the separate US-03 readiness score or a formal applicant-eligibility decision.
 
-### 3. Multi-format sources and provenance
+### 4. Multi-format sources and provenance
 
-Current user-facing source upload is PDF-only. Markdown exists only as the internal OCR-delivery/ingest artifact today. Supporting direct Markdown and DOCX upload requires an anchor contract:
+Current user-facing source upload accepts PDF and Markdown. Native Markdown is validated, BOM/line-ending normalized, and saved as UTF-8 in a content-addressed object in the final CityCatalyst Markdown-result namespace. It bypasses OCR and is not wrapped in synthetic page markers or a synthetic page count. Climate Advisor derives deterministic heading/block anchors from the stored Markdown bytes. PDF remains page-based and continues to use exact page citations. Supporting DOCX upload still requires an anchor contract:
 
 - PDF: page and exact excerpt;
 - Markdown: heading path plus immutable block identifier;
@@ -203,27 +257,33 @@ Current user-facing source upload is PDF-only. Markdown exists only as the inter
 
 Inventing synthetic page numbers for Markdown or DOCX would make UC-4 look complete while breaking traceability.
 
-### 4. Structured document runtime
+### 5. Direct user edits and document review
 
-The minimum useful vertical slice should provide:
+After the first version exists, the runtime should:
 
-- initialize chapters from the selected authoritative template;
-- read chapters/current revisions/evidence/gaps;
-- append a user edit as a revision;
-- generate and regenerate a suggestion;
-- accept a suggestion without losing its source anchors;
-- associate every revision with the full bundle revision it used;
-- flag, rather than silently rewrite, a chapter when new source input makes it stale.
+- read ordered chapters, their current text, revision history, evidence review state, and gaps;
+- append explicit user edits as immutable revisions;
+- flag affected chapters for review when later inputs change drafting context;
+- never silently replace user-edited chapter text;
+- keep evidence and source links visible in review state but outside the exported document.
 
-Reorder, custom chapters, delete/restore, and locks can follow after this slice. Whether custom chapters appear in the final funder document remains a product decision.
+Reorder, custom chapters, delete/restore, and locks can follow after the first
+version is usable. Model-suggested changes use the top-priority proposal and
+acceptance contract above; direct user edits and accepted model changes should
+share the same immutable revision service.
 
-### 5. Validation and Word export
+### 6. Validation and Word export
 
-Validation should report blocking findings and warnings against exact chapter/source identifiers. Export should be asynchronous, persisted, retryable, and generated from the same accepted revisions returned by the workspace read model.
+Validation should report blocking findings and warnings against exact chapter
+and gap identifiers. Export should be asynchronous, persisted, retryable, and
+generated from the same accepted chapter revisions returned by the workspace.
+The exported DOCX contains chapter text only; evidence and source metadata stay
+in the review workspace.
 
-The backend should not start final rendering until product names the authoritative DOCX template and resolves how linked sources appear in the file.
+The backend should not start final rendering until product names the
+authoritative DOCX template.
 
-### 6. Shared bundle and readiness assessment
+### 7. Shared bundle and readiness assessment
 
 These are architecture/product expansions, not small additions:
 
@@ -242,37 +302,59 @@ This register keeps lower-priority and conditional gaps visible even though they
 | Post-start scope      | Missing                                            | Update name/project/funder/opportunity, return setup gaps, and invalidate affected derived context                             | Small but conditional on agreed flow                                                     |
 | Run management        | Missing                                            | Rename and archive/delete with ownership and list behavior                                                                     | Later polish; duplicate/branch is explicitly deferred                                    |
 | Chat attachment       | Covered only when `thread_id` is supplied at start | Attach a newly created thread to an existing run                                                                               | Do not add if the frontend can create the thread before starting the run                 |
-| Funding orchestration | Internal/partial                                   | Compose selected requirements, template sections, reviewed similar projects, provenance, and known gaps into the run           | Start with the read model; keep matching internal                                        |
-| Requirement coverage  | Missing                                            | Map selected grant requirements to supported/missing/unknown project context with evidence and bundle revision                 | After the bundle and funding reads; before guided drafting                               |
+| Funding orchestration | Internal/partial                                   | Resolve the selected authoritative template and requirements for the run                                                       | Required inside the top-priority first-document slice; keep matching internal            |
+| Requirement coverage  | Missing                                            | Map selected grant requirements to supported/missing/unknown project context with evidence                                     | Refine after the first persisted version exists                                          |
 | Shared context        | Decision/partial                                   | Freshness/refresh semantics, run-only versus shared correction ownership, promote/remove operations, and cross-run permissions | Product/data decision before mutation APIs                                               |
-| Document content      | Schema-only                                        | Chapter initialization, current revision read/write, suggestions, evidence, gaps, and stale-source handling                    | Core medium slice                                                                        |
+| First document        | Schema-only                                        | Template chapter initialization, complete agent draft, persisted revisions, gap creation, and resume/read                      | Top priority; schema alone does not produce a document                                   |
+| Model edit proposals  | Missing                                            | Revision-bound proposed text, server-derived before/after hunks, persisted decisions, atomic apply, and stale-base protection  | Second top priority, directly after the first-version vertical slice                     |
+| Document content      | Schema-only                                        | Current revision read/write, evidence review, gaps, and changed-context review state                                           | Share the revision service used by first drafts and accepted model edits                 |
 | Document structure    | Schema-only                                        | Reorder, custom chapter, delete/restore, lock/unlock, conflict handling, and revision history                                  | After minimal content editing; export treatment of custom chapters remains a decision    |
 | Validation            | Missing                                            | Blocking/warning findings linked to exact chapter and source identifiers                                                       | Before export; existing schema does not implement it                                     |
-| Export                | Schema-only                                        | DOCX render, attempt/status/artifact read, download authorization, failure detail, and retry                                   | After template and source-link decisions                                                 |
-| CNB events            | Missing                                            | Optional bundle-revision or document-update notifications                                                                      | Poll first; add only events justified by measured UX need                                |
+| Export                | Schema-only                                        | DOCX render, attempt/status/artifact read, download authorization, failure detail, and retry                                   | After the first version, authoritative DOCX template, and validation                     |
+| CNB events            | Missing                                            | Optional first-draft-ready or context-updated notification                                                                     | Poll first; add one user-meaningful event only if measured UX needs it                   |
 | Readiness assessment  | Missing                                            | Instrument, score policy, snapshots, cohort aggregation, and reporting                                                         | Separate track only if US-03 is reconfirmed                                              |
 
 ## Recommended minimal API shape
 
-### Start-now read contracts
+### Immediate first-version contracts
 
-- `GET /api/v1/concept-notes/{runId}/context-bundle`
-- `GET /api/v1/concept-notes/{runId}/funding-context`
-- `GET /api/v1/concept-notes/{runId}/requirements-coverage`
+- one agent-callable first-document operation backed by a shared drafting service;
+- `POST /api/v1/concept-notes/{runId}/first-draft` for the same authorized orchestration outside chat;
+- `GET /api/v1/concept-notes/{runId}/document` for Draft preview and resume;
+- `PATCH /api/v1/concept-notes/{runId}/chapters/{chapterId}` for later user edits.
+
+The route names are proposed contracts, not implemented endpoints. Neither the
+agent operation nor these routes expose the internal context bundle.
+
+### Visual edit-proposal contracts
+
+- one agent-callable propose-edit operation backed by the same revision-aware service as the document routes;
+- `POST /api/v1/concept-notes/{runId}/chapters/{chapterId}/edit-proposals` with an instruction and expected base revision;
+- `GET /api/v1/concept-notes/{runId}/edit-proposals?status=pending` for review and resume;
+- `POST /api/v1/concept-notes/{runId}/edit-proposals/{proposalId}/decisions` with the expected base revision and a decision for every hunk.
+
+The proposal read model should include `proposal_id`, `chapter_id`,
+`base_revision_id`, proposal status, author metadata, and ordered hunks containing
+stable `hunk_id`, `before_text`, and `after_text`. The decision call is
+idempotent: it either records a fully rejected proposal without changing the
+chapter or atomically returns the new accepted chapter revision. Endpoint names
+are proposed; the required behavior is the contract.
+
+### Supporting internal/read contracts
+
+- selected funder template and requirements resolution for the run;
+- `GET /api/v1/concept-notes/{runId}/requirements-coverage` after the first-version slice;
+- run-scoped correction annotations that are injected into drafting context.
 
 ### Next small mutations
 
 - `POST /api/v1/concept-notes/{runId}/context-overrides`
 - `DELETE /api/v1/concept-notes/{runId}/context-overrides/{overrideId}`
-- extend `POST /api/v1/concept-notes/{runId}/uploads` for Markdown, then DOCX
+- extend `POST /api/v1/concept-notes/{runId}/uploads` for DOCX
 - `PATCH /api/v1/concept-notes/{runId}/scope` only if post-start selection/correction is part of the agreed flow
 
-### Structured-document contracts
+### Validation and export contracts
 
-- `GET /api/v1/concept-notes/{runId}/workspace`
-- `PATCH /api/v1/concept-notes/{runId}/chapters/{chapterId}`
-- `POST /api/v1/concept-notes/{runId}/chapters/{chapterId}/suggestions`
-- `POST /api/v1/concept-notes/{runId}/chapters/{chapterId}/suggestions/{suggestionId}/accept`
 - `POST /api/v1/concept-notes/{runId}/validate`
 - `POST /api/v1/concept-notes/{runId}/exports`
 - `GET /api/v1/concept-notes/{runId}/exports/{exportId}`
@@ -285,7 +367,9 @@ This register keeps lower-priority and conditional gaps visible even though they
 - Never overwrite a CityCatalyst source value to apply a run-specific correction.
 - Never claim a source basis when complete source search returned no evidence.
 - Reuse the existing chat/thread flow before creating CNB-specific chat infrastructure.
-- Prefer bundle revision polling before adding granular SSE.
+- Never mutate accepted chapter text merely because the model generated a suggestion; require an explicit persisted accept decision.
+- Compute before/after hunks from the stored base revision and proposed text on the server, and reject stale proposals instead of guessing how to rebase them.
+- Keep source fingerprints and bundle revisions internal; surface only user-meaningful document or context states.
 - Keep one selected funder/instrument in v1; do not turn funding context into discovery.
 - Do not implement duplicate/branch variants as a substitute for the unresolved shared-bundle model.
 - Verify the 180-page path with the real OCR/artifact/Climate Advisor pipeline; mock-only success is not acceptance evidence.

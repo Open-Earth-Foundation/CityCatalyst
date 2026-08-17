@@ -7,7 +7,6 @@ from unittest.mock import patch
 
 import httpx
 import pytest
-
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
@@ -54,6 +53,7 @@ async def test_markdown_client_streams_and_parses_a_bounded_artifact() -> None:
                 "Content-Length": str(len(markdown)),
                 "X-Markdown-S3-Key": "results/upload/combined.md",
                 "X-Markdown-SHA256": digest,
+                "X-Source-Format": "pdf",
                 "X-Page-Count": "1",
             },
             stream=stream,
@@ -79,8 +79,45 @@ async def test_markdown_client_streams_and_parses_a_bounded_artifact() -> None:
     assert artifact.markdown == markdown.decode()
     assert artifact.markdown_s3_key == "results/upload/combined.md"
     assert artifact.sha256 == digest
+    assert artifact.source_format == "pdf"
     assert artifact.page_count == 1
     assert stream.chunks_read == 2
+
+
+@pytest.mark.asyncio
+async def test_markdown_client_accepts_native_markdown_without_page_count() -> None:
+    markdown = b"# Plan\n\nNative context"
+    digest = hashlib.sha256(markdown).hexdigest()
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            headers={
+                "Content-Length": str(len(markdown)),
+                "X-Markdown-S3-Key": "results/upload/combined.md",
+                "X-Markdown-SHA256": digest,
+                "X-Source-Format": "markdown",
+            },
+            content=markdown,
+        )
+
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=settings(len(markdown)),
+    ):
+        client = CityCatalystClient(base_url="https://cc.example")
+        client._client = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+        try:
+            artifact = await client.get_concept_note_markdown(
+                upload_id="upload-id",
+                token="user-token",
+            )
+        finally:
+            await client.close()
+
+    assert artifact.markdown == markdown.decode()
+    assert artifact.source_format == "markdown"
+    assert artifact.page_count is None
 
 
 @pytest.mark.asyncio

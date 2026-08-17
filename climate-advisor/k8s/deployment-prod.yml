@@ -27,8 +27,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: climate-advisor-db-configmap-prod
-            - secretRef:
-                name: climate-advisor-cnb-db-secret-prod
           env:
             - name: PROJECT_NAME
               value: "CityCatalyst Climate Advisor"

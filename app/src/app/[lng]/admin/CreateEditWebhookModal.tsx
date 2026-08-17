@@ -20,9 +20,11 @@ import { api } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import {
   WEBHOOK_EMITTED_EVENT_TYPES,
-  WEBHOOK_RESERVED_EVENT_TYPES,
+  isEmittedWebhookEventType,
 } from "@/backend/webhooks/events";
 import type { WebhookSubscriptionResponse } from "@/util/types";
+
+const DEFAULT_EVENTS = [WEBHOOK_EMITTED_EVENT_TYPES[0]];
 
 const schema = z.object({
   name: z.string().trim().min(1).max(255),
@@ -32,7 +34,7 @@ const schema = z.object({
     .refine((value) => value.toLowerCase().startsWith("https://"), {
       message: "webhook-url-https",
     }),
-  events: z.array(z.string()).min(1),
+  events: z.array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES)).min(1),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -76,6 +78,7 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
     reset,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<Schema>({
     mode: "onSubmit",
@@ -83,25 +86,32 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
     defaultValues: {
       name: "",
       url: "",
-      events: ["inventory.published"],
+      events: DEFAULT_EVENTS,
     },
   });
 
   useEffect(() => {
+    const selected = (webhook?.events ?? DEFAULT_EVENTS).filter(
+      isEmittedWebhookEventType,
+    );
     reset({
       name: webhook?.name ?? "",
       url: webhook?.url ?? "",
-      events: webhook?.events ?? ["inventory.published"],
+      events: selected.length > 0 ? selected : DEFAULT_EVENTS,
     });
   }, [webhook, isOpen, reset]);
 
   const selectedEvents = watch("events") ?? [];
 
-  const toggleEvent = (eventType: string, checked: boolean) => {
+  const toggleEvent = (
+    eventType: (typeof WEBHOOK_EMITTED_EVENT_TYPES)[number],
+    checked: boolean,
+  ) => {
+    const current = getValues("events") ?? [];
     const next = checked
-      ? [...selectedEvents, eventType]
-      : selectedEvents.filter((event) => event !== eventType);
-    setValue("events", next, { shouldValidate: true });
+      ? Array.from(new Set([...current, eventType]))
+      : current.filter((event) => event !== eventType);
+    setValue("events", next, { shouldValidate: true, shouldDirty: true });
   };
 
   const handleFormSubmit = async (data: Schema) => {
@@ -134,39 +144,6 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
       showErrorToast();
     }
   };
-
-  const renderEventGroup = (
-    labelKey: string,
-    events: readonly string[],
-  ) => (
-    <Box>
-      <Text fontSize="body.md" color="content.tertiary" mb={2}>
-        {t(labelKey)}
-      </Text>
-      <VStack align="stretch" gap={2}>
-        {events.map((eventType) => (
-          <Checkbox.Root
-            key={eventType}
-            checked={selectedEvents.includes(eventType)}
-            onCheckedChange={(details) =>
-              toggleEvent(eventType, details.checked === true)
-            }
-          >
-            <Checkbox.HiddenInput />
-            <Checkbox.Control>
-              <Checkbox.Indicator />
-            </Checkbox.Control>
-            <Checkbox.Label>
-              {t(`event-${eventType.replace(".", "-")}`)}
-              <Text as="span" color="content.tertiary" ml={2} fontSize="body.sm">
-                {eventType}
-              </Text>
-            </Checkbox.Label>
-          </Checkbox.Root>
-        ))}
-      </VStack>
-    </Box>
-  );
 
   return (
     <DialogRoot
@@ -222,22 +199,54 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
                 {...register("url")}
               />
             </Field>
-            <Field
-              label={t("webhook-events")}
-              invalid={Boolean(errors.events)}
-              errorText={errors.events ? t("webhook-events-required") : undefined}
-            >
-              <VStack align="stretch" gap={4} mt={2}>
-                {renderEventGroup(
-                  "webhook-emitted-events",
-                  WEBHOOK_EMITTED_EVENT_TYPES,
-                )}
-                {renderEventGroup(
-                  "webhook-reserved-events",
-                  WEBHOOK_RESERVED_EVENT_TYPES,
-                )}
+            {/* Keep mapped checkboxes out of Field — FieldRoot only wires the first checkbox. */}
+            <Box>
+              <Text
+                fontSize="body.md"
+                color="content.tertiary"
+                fontWeight="medium"
+                mb={2}
+              >
+                {t("webhook-events")}
+              </Text>
+              <VStack align="stretch" gap={2}>
+                {WEBHOOK_EMITTED_EVENT_TYPES.map((eventType) => (
+                  <Checkbox.Root
+                    key={eventType}
+                    value={eventType}
+                    checked={selectedEvents.includes(eventType)}
+                    onCheckedChange={(details) =>
+                      toggleEvent(eventType, details.checked === true)
+                    }
+                  >
+                    <Checkbox.HiddenInput />
+                    <Checkbox.Control>
+                      <Checkbox.Indicator />
+                    </Checkbox.Control>
+                    <Checkbox.Label>
+                      {t(`event-${eventType.replace(".", "-")}`)}
+                      <Text
+                        as="span"
+                        color="content.tertiary"
+                        ml={2}
+                        fontSize="body.sm"
+                      >
+                        {eventType}
+                      </Text>
+                    </Checkbox.Label>
+                  </Checkbox.Root>
+                ))}
               </VStack>
-            </Field>
+              {errors.events ? (
+                <Text
+                  mt={2}
+                  fontSize="body.sm"
+                  color="sentiment.negativeDefault"
+                >
+                  {t("webhook-events-required")}
+                </Text>
+              ) : null}
+            </Box>
           </VStack>
           <DialogFooter
             paddingX={6}
@@ -247,7 +256,7 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
             borderStyle="solid"
           >
             <HStack w="full" justify="flex-end" gap={3}>
-              <Button variant="ghost" h="48px" onClick={onClose}>
+              <Button type="button" variant="ghost" h="48px" onClick={onClose}>
                 {t("cancel")}
               </Button>
               <Button

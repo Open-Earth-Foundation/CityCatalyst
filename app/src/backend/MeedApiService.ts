@@ -90,8 +90,9 @@ export default class MeedApiService {
     fullRequest.cityDataList = requestBody.cityDataList.map((cityData) => {
       return {
         ...cityData,
-        locode: inventory.city.locode ?? "",
-        countryCode: inventory.city.countryLocode ?? "",
+        // TODO restore
+        locode: "CL IQQ", // inventory.city.locode ?? "",
+        countryCode: "CL", //inventory.city.countryLocode ?? "",
         populationSize: population ?? 0,
         cityEmissionsData: {
           inventoryYear: inventory.year ?? 0,
@@ -123,7 +124,7 @@ export default class MeedApiService {
       };
     });
 
-    const result = await fetch(MEED_API_URL + "prioritize", {
+    const response = await fetch(MEED_API_URL + "prioritize", {
       method: "POST",
       body: JSON.stringify({
         requestData: fullRequest,
@@ -141,11 +142,18 @@ export default class MeedApiService {
       },
     });
 
-    const json = await result.json();
-    console.log("MEED result", JSON.stringify(json, null, 2));
+    const result = await response.json();
+    const resultString = JSON.stringify(result, null, 2);
+    // TODO replace with only first condition when MEED API status responses are fixed
+    if (response.status != 200 || result.data.detail) {
+      throw new createHttpError.BadRequest("MEED API error: " + resultString);
+    }
+
+    console.log("MEED result", resultString);
+    const actions = result.data.results[0].ranked_action_ids;
 
     // TODO save result to database
 
-    return json; // result.json();
+    return result; // result.json();
   }
 }

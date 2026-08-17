@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -20,10 +21,16 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.services.cnb.context_bundle import (
+    ContextBundleService,
+    schedule_context_bundle_build,
+)
 from app.services.cnb.funding_references import (
     FundingReferenceValidator,
     PostgresFundingReferenceValidator,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class ConceptNoteRunService:
@@ -37,6 +44,7 @@ class ConceptNoteRunService:
         funding_reference_validator: FundingReferenceValidator | None = None,
     ) -> None:
         """Initialize the service with persistence and CityCatalyst clients."""
+        self.session = session
         self.repository = ConceptNoteRunRepository(session)
         self.cc_client = cc_client or CityCatalystClient()
         self.funding_reference_validator = (
@@ -51,6 +59,48 @@ class ConceptNoteRunService:
     ) -> ConceptNoteRunResponse:
         """Create or replay a run after validating user and city access."""
         token = _require_bearer_token(authorization)
+        return await self._start_run_with_token(payload, token=token)
+
+    async def start_run_and_schedule_context(
+        self,
+        payload: ConceptNoteStartRequest,
+        *,
+        authorization: str | None,
+        context_bundle_service: ContextBundleService | None,
+    ) -> ConceptNoteRunResponse:
+        """Persist a run and schedule its initial context build after commit."""
+        token = _require_bearer_token(authorization)
+        response = await self._start_run_with_token(payload, token=token)
+
+        # Commit before the background build opens an independent session.
+        await self.session.commit()
+
+        # Only a newly created run needs its initial thin-context build.
+        if not response.created:
+            return response
+        if context_bundle_service is None:
+            logger.warning(
+                "Concept Note thin-context build was not scheduled because "
+                "storage is unavailable run_id=%s",
+                response.run_id,
+            )
+            return response
+        schedule_context_bundle_build(
+            service=context_bundle_service,
+            user_id=response.user_id,
+            run_id=response.run_id,
+            token=token,
+        )
+        return response
+
+    async def _start_run_with_token(
+        self,
+        payload: ConceptNoteStartRequest,
+        *,
+        token: str,
+    ) -> ConceptNoteRunResponse:
+        """Create or replay a run with an already validated bearer token."""
+        # Validate the authenticated scope and optional funding references.
         await self._authorize_scope(
             token=token,
             requested_user_id=payload.user_id,
@@ -68,6 +118,7 @@ class ConceptNoteRunService:
             selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
         )
 
+        # Create or replay the run and bind its optional chat context.
         fingerprint = _request_fingerprint(payload)
         run, created = await self.repository.create_or_get(
             user_id=payload.user_id,

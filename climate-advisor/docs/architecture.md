@@ -279,14 +279,10 @@ The detailed bundle schema, persistence guards, source-analysis rules, and
 capability contract live in
 [`ConceptNoteBuilderArchitecture.md`](../../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
 Operationally, run creation schedules guarded background assembly. A run with
-no ready source becomes a typed `thin` bundle with `source_documents` missing;
-the same run is rebuilt as `grounded` when a PDF or native Markdown upload is
-ready. PDF evidence keeps exact page locators, while native Markdown bypasses
-OCR and uses deterministic heading/block anchors. Optional GHGI/HIAP failures do
-not block readiness, and eligible grounded Concept Note turns use the existing
-stream with compact summaries plus one step-scoped read-only selected-document
-query. `llm_config.yaml` remains the source of truth for the reader models,
-prompts, partition budget, and concurrency limit.
+no source becomes `thin`; a ready PDF or native Markdown source rebuilds it as
+`grounded`. Evidence keeps page or heading/block locators, optional GHGI/HIAP
+failures do not block readiness, and eligible turns get one scoped read-only
+source query. Reader configuration remains in `llm_config.yaml`.
 
 ## SSE Contract
 

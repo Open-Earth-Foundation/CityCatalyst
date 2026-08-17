@@ -1,16 +1,18 @@
 from datetime import datetime, timezone
-from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
+
 from app.models.concept_note_runs import ConceptNoteRunResponse, ConceptNoteStartRequest
 from app.routes import concept_note_runs
+from app.services.cnb.context_bundle import ContextBundleService
+from app.services.concept_note_runs import ConceptNoteRunService
 
 
 @pytest.mark.asyncio
-async def test_new_run_schedules_initial_thin_context_build(monkeypatch) -> None:
-    """Queue context assembly after committing a source-less run."""
+async def test_start_route_delegates_context_scheduling_to_service(monkeypatch) -> None:
+    """Keep run creation and context scheduling out of the route layer."""
     run_id = uuid4()
     city_id = uuid4()
     payload = ConceptNoteStartRequest(
@@ -36,35 +38,27 @@ async def test_new_run_schedules_initial_thin_context_build(monkeypatch) -> None
         updated_at=now,
         created=True,
     )
-    run_service = AsyncMock()
-    run_service.start_run.return_value = response
+    run_service = AsyncMock(spec=ConceptNoteRunService)
+    run_service.start_run_and_schedule_context.return_value = response
     session = AsyncMock()
-    bundle_service = SimpleNamespace()
-    schedule = Mock()
+    bundle_service = Mock(spec=ContextBundleService)
 
     monkeypatch.setattr(
         concept_note_runs,
         "ConceptNoteRunService",
         lambda _session: run_service,
     )
-    monkeypatch.setattr(
-        concept_note_runs,
-        "schedule_context_bundle_build",
-        schedule,
-    )
-
     route_response = await concept_note_runs.start_concept_note_run(
         payload,
-        context_bundle_service=bundle_service,  # type: ignore[arg-type]
+        context_bundle_service=bundle_service,
         authorization="Bearer token",
         session=session,
     )
 
     assert route_response.status_code == 201
-    session.commit.assert_awaited_once_with()
-    schedule.assert_called_once_with(
-        service=bundle_service,
-        user_id="owner",
-        run_id=run_id,
-        token="token",
+    run_service.start_run_and_schedule_context.assert_awaited_once_with(
+        payload,
+        authorization="Bearer token",
+        context_bundle_service=bundle_service,
     )
+    session.commit.assert_not_awaited()

@@ -4,11 +4,11 @@ import type { ChangeEvent } from "react";
 import { useRef } from "react";
 
 import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import type { IconType } from "react-icons";
 import {
   LuBuilding2,
   LuCheck,
   LuCircleAlert,
-  LuDatabase,
   LuFileText,
   LuFolderOpen,
   LuLandmark,
@@ -50,7 +50,7 @@ interface ContextTabProps {
 
 interface ContextRowProps {
   detail: string;
-  icon: typeof LuDatabase;
+  icon: IconType;
   label: string;
   status: string;
   tone?: "positive" | "neutral" | "warning";
@@ -173,36 +173,6 @@ export function ContextTab({
         >
           {t("context-tab-description")}
         </Text>
-      </Box>
-
-      <Box
-        border="1px solid"
-        borderColor="border.neutral"
-        borderRadius="rounded"
-        bg="background.alternativeLight"
-        p={4}
-      >
-        <Flex align="start" gap={3}>
-          <Icon as={LuDatabase} mt={0.5} color="content.link" />
-          <Box flex={1}>
-            <Text
-              fontFamily="heading"
-              fontSize="body.sm"
-              fontWeight="semibold"
-              color="content.primary"
-            >
-              {t("run-context-boundary")}
-            </Text>
-            <Text
-              mt={1}
-              fontSize="label.sm"
-              lineHeight="20px"
-              color="content.secondary"
-            >
-              {t("run-context-boundary-description")}
-            </Text>
-          </Box>
-        </Flex>
       </Box>
 
       <Box>

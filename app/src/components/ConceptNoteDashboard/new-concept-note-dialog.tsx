@@ -1,15 +1,14 @@
 "use client";
 
-import type { ChangeEvent, DragEvent, FormEvent } from "react";
+import type { FormEvent } from "react";
 import { useRef, useState } from "react";
 
+import type { FileUploadFileChangeDetails } from "@chakra-ui/react";
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import {
   LuBuilding2,
-  LuFilePlus2,
   LuFileText,
-  LuInfo,
   LuLandmark,
   LuUpload,
   LuX,
@@ -27,9 +26,9 @@ import {
 } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/field";
 import {
-  NativeSelectField,
-  NativeSelectRoot,
-} from "@/components/ui/native-select";
+  FileUploadDropzone,
+  FileUploadRoot,
+} from "@/components/ui/file-upload";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 
@@ -58,6 +57,10 @@ function defaultConceptNoteName(locale: string, label: string): string {
   return `${label} · ${date}`;
 }
 
+function fileIdentity(file: File): string {
+  return `${file.name}:${file.size}:${file.lastModified}`;
+}
+
 export function NewConceptNoteDialog({
   cityId,
   cityName,
@@ -69,7 +72,6 @@ export function NewConceptNoteDialog({
 }: NewConceptNoteDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const idempotencyKeyRef = useRef(crypto.randomUUID());
   const createdRunIdRef = useRef<string | null>(null);
   const createdThreadIdRef = useRef<string | null>(null);
@@ -77,7 +79,6 @@ export function NewConceptNoteDialog({
   const uploadedFileIdentitiesRef = useRef(new Set<string>());
   const [name, setName] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [startRun, startState] = api.useStartConceptNoteRunMutation();
   const [createChatThread, chatState] = api.useCreateChatThreadMutation();
@@ -97,40 +98,28 @@ export function NewConceptNoteDialog({
     </Text>
   );
 
-  async function addFiles(selectedFiles: File[]): Promise<void> {
+  async function updateFiles(selectedFiles: File[]): Promise<void> {
     setError(null);
     const validated: File[] = [];
+    const identities = new Set<string>();
     for (const file of selectedFiles) {
+      const identity = fileIdentity(file);
+      if (identities.has(identity)) {
+        continue;
+      }
       const validationError = await validateConceptNoteSourceFile(file);
       if (validationError) {
         setError(t(validationError));
         return;
       }
+      identities.add(identity);
       validated.push(file);
     }
-    setFiles((current) => {
-      const identities = new Set(
-        current.map((file) => `${file.name}:${file.size}:${file.lastModified}`),
-      );
-      return [
-        ...current,
-        ...validated.filter(
-          (file) =>
-            !identities.has(`${file.name}:${file.size}:${file.lastModified}`),
-        ),
-      ];
-    });
+    setFiles(validated);
   }
 
-  function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
-    void addFiles(Array.from(event.target.files ?? []));
-    event.target.value = "";
-  }
-
-  function onDrop(event: DragEvent<HTMLDivElement>): void {
-    event.preventDefault();
-    setIsDragging(false);
-    void addFiles(Array.from(event.dataTransfer.files));
+  function onFileSelect(details: FileUploadFileChangeDetails): void {
+    void updateFiles(details.acceptedFiles);
   }
 
   function closeDialog(): void {
@@ -144,7 +133,6 @@ export function NewConceptNoteDialog({
   function resetDraft(): void {
     setName("");
     setFiles([]);
-    setIsDragging(false);
     setError(null);
     idempotencyKeyRef.current = crypto.randomUUID();
     createdRunIdRef.current = null;
@@ -181,7 +169,7 @@ export function NewConceptNoteDialog({
       }
 
       for (const file of files) {
-        const identity = `${file.name}:${file.size}:${file.lastModified}`;
+        const identity = fileIdentity(file);
         if (uploadedFileIdentitiesRef.current.has(identity)) {
           continue;
         }
@@ -336,97 +324,50 @@ export function NewConceptNoteDialog({
                 </VStack>
               </Flex>
 
-              <Flex gap={4} direction={{ base: "column", sm: "row" }}>
-                <Field flex={1} label={t("funder")} optionalText={optionalText}>
-                  <NativeSelectRoot width="full" disabled>
-                    <NativeSelectField>
-                      <option>{t("choose-later-in-chat")}</option>
-                    </NativeSelectField>
-                  </NativeSelectRoot>
-                </Field>
-                <Field
-                  flex={1}
-                  label={t("funding-opportunity")}
-                  optionalText={optionalText}
-                >
-                  <NativeSelectRoot width="full" disabled>
-                    <NativeSelectField>
-                      <option>{t("choose-later-in-chat")}</option>
-                    </NativeSelectField>
-                  </NativeSelectRoot>
-                </Field>
-              </Flex>
-
-              <Box
-                border="1px solid"
-                borderColor="border.neutral"
-                borderRadius="rounded"
-                bg="background.neutral"
-                px={3}
-                py={2.5}
-              >
-                <HStack align="start" gap={2} color="content.link">
-                  <Icon as={LuInfo} mt={0.5} />
-                  <Text fontSize="label.sm" color="content.secondary">
-                    {t("funder-backend-note")}
-                  </Text>
-                </HStack>
-              </Box>
-
               <Field
                 width="full"
                 label={t("supporting-pdfs")}
                 optionalText={optionalText}
                 helperText={t("supporting-pdfs-help")}
               >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
-                  multiple
-                  hidden
-                  onChange={onFileChange}
-                />
-                <Flex
-                  width="full"
-                  minH="116px"
-                  align="center"
-                  justify="center"
-                  direction="column"
-                  gap={2}
-                  border="1px dashed"
-                  borderColor={isDragging ? "content.link" : "border.neutral"}
-                  borderRadius="rounded"
-                  bg={isDragging ? "background.alternativeLight" : "base.light"}
-                  cursor="pointer"
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragEnter={(event) => {
-                    event.preventDefault();
-                    setIsDragging(true);
+                <FileUploadRoot
+                  acceptedFiles={files}
+                  inputProps={{
+                    accept:
+                      "application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md",
                   }}
-                  onDragOver={(event) => event.preventDefault()}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={onDrop}
+                  maxFiles={Number.MAX_SAFE_INTEGER}
+                  onFileChange={onFileSelect}
                 >
-                  <Icon as={LuUpload} boxSize={5} color="content.link" />
-                  <Text
-                    fontSize="body.sm"
-                    fontWeight="semibold"
-                    color="content.primary"
-                  >
-                    {t("drop-pdfs")}
-                  </Text>
-                  <Text fontSize="label.sm" color="content.tertiary">
-                    {t("pdf-limit")}
-                  </Text>
-                </Flex>
+                  <FileUploadDropzone
+                    minH="116px"
+                    border="1px dashed"
+                    borderColor="border.neutral"
+                    borderRadius="rounded"
+                    bg="base.light"
+                    cursor="pointer"
+                    label={
+                      <VStack gap={2}>
+                        <Icon as={LuUpload} boxSize={5} color="content.link" />
+                        <Text
+                          fontSize="body.sm"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t("drop-pdfs")}
+                        </Text>
+                      </VStack>
+                    }
+                    description={t("pdf-limit")}
+                  />
+                </FileUploadRoot>
               </Field>
 
               {files.length > 0 && (
                 <VStack align="stretch" gap={2}>
                   {files.map((file) => (
                     <Flex
-                      key={`${file.name}:${file.size}:${file.lastModified}`}
+                      key={fileIdentity(file)}
                       align="center"
                       gap={3}
                       border="1px solid"
@@ -465,18 +406,6 @@ export function NewConceptNoteDialog({
                       </Button>
                     </Flex>
                   ))}
-                  <Button
-                    type="button"
-                    alignSelf="start"
-                    size="xs"
-                    variant="ghost"
-                    color="content.link"
-                    _hover={{ color: "content.link" }}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Icon as={LuFilePlus2} />
-                    {t("add-another-pdf")}
-                  </Button>
                 </VStack>
               )}
 

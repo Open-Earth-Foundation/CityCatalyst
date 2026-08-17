@@ -589,23 +589,16 @@ language, or client-side fallback behavior. The boundary is:
 ### CC-produced Concept Note Markdown baseline
 
 `POST /v1/concept-notes/{run_id}/uploads` creates or replays the authoritative
-pre-conversion upload row. After CC persists the authoritative Markdown artifact
-for either a PDF upload or a native `.md` upload,
-`POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` receives only a
-stable S3 key, SHA-256, filename, and label, plus PDF-only page metadata when
-applicable. CA rejects control JSON larger than 16 KiB before parsing, then
-streams the artifact through CC's authenticated internal Markdown route up to
-`CNB_MARKDOWN_REQUEST_MAX_BYTES`, checks the returned identity, recomputes
-SHA-256, and applies source-type-specific validation before storing the pointer
-as ready in `concept_note_uploads` through `CA_DATABASE_URL`. PDF-derived
-Markdown keeps page-marker and page-count validation. Native `.md` is validated,
-BOM/line-ending normalized, and stored as UTF-8 in the same final CC result
-namespace without OCR, synthetic page markers, or a synthetic `page_count`; CA
-derives deterministic heading/block anchors from the returned bytes. Identical
-create and delivery requests are
-idempotent; changing upload or Markdown identity returns `409`. CA owns no OCR
-queue, Mistral dependency, bucket credential, or presigned URL. An unavailable
-or unmigrated workflow database returns `503 cnb_storage_unavailable`.
+pre-conversion upload row. The Markdown delivery route receives only the stable
+CC key, digest, labels, and optional PDF page metadata. CA enforces the 16 KiB
+control limit and `CNB_MARKDOWN_REQUEST_MAX_BYTES`, fetches through authenticated
+CC, verifies identity, digest, and source-specific structure, then stores the
+pointer in `CA_DATABASE_URL`. PDFs retain page validation; native `.md` bypasses
+OCR and uses deterministic heading/block anchors. Requests are idempotent,
+identity changes return `409`, and unavailable storage returns
+`503 cnb_storage_unavailable`. CA owns no OCR queue, bucket credential, or
+presigned URL. See the authoritative handoff contract in
+[`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#pdf-conversion-and-native-markdown-handoff).
 
 CC uses the intentionally separate service-to-service route
 `GET /v1/concept-note-uploads/{upload_id}/delivery-context` with
@@ -621,17 +614,11 @@ contract lives in
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
 Operationally:
 
-- A new run automatically builds a ready thin-context bundle even when no source
-  is attached. Progress records `context_mode: thin` and
-  `missing_context: [source_documents]`, so chat can begin while upload remains a
-  recommendation rather than a gate. A ready Markdown pointer later rebuilds the
-  same run from every ready upload and changes the mode to `grounded`. PDF
-  sources stay page-cited, native Markdown stays heading/block anchored, and
-  optional GHGI and HIAP failures do not block readiness. Stale builds cannot
-  overwrite a newer upload set. Chat keeps using the last completed thin or
-  grounded bundle while a later source rebuild is building or has failed.
-  A five-minute reconciler marks builds left in `building` for more than one
-  hour as retryable failures after an interrupted process or pod.
+- A new run becomes `thin` with `source_documents` missing when no source is
+  ready; later uploads rebuild it as `grounded`. PDFs remain page-cited and
+  native Markdown remains anchor-cited. Optional GHGI/HIAP failures do not block
+  readiness, stale builds cannot win, and chat keeps the last completed bundle
+  during rebuilds. The reconciler marks builds older than one hour retryable.
 - `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
   proxy rerun bundle assembly without rerunning OCR.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
@@ -650,11 +637,9 @@ uv run pytest service/tests/cnb/test_context_bundle_service.py -q
 the supplied `user_id` is the token's canonical user, and rechecks access to
 the selected city. It then creates a durable `concept_note_runs` row and its
 empty `concept_note_context_bundles` row in one transaction. The run starts as
-`active` at `assembling_context`, returns `next_action: load_context`, and queues
-an initial thin-context build. The completed build advances the run to
-`interviewing` with an empty selected-source list and an explicit missing-source
-marker. Uploading a source later rebuilds the same run without replacing its chat
-thread.
+`active` at `assembling_context` and queues its initial thin bundle. Completion
+advances it to `interviewing`; a later upload rebuilds the same run without
+replacing its chat thread.
 
 Creation is idempotent per `(user_id, idempotency_key)`. Replaying the same
 normalized request returns the original run with HTTP `200` and

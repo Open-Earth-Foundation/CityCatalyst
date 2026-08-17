@@ -44,6 +44,25 @@ export function ConceptNoteChatPanel({
   } = useConceptNoteChat({ lng, threadId });
   const groundedContext =
     bundleStatus === "ready" && contextMode === "grounded";
+  const contextStatus = groundedContext
+    ? {
+        actionIcon: LuArrowRight,
+        actionLabel: t("review-context"),
+        color: "sentiment.positiveDefault",
+        description: t("clima-context-ready-message"),
+        icon: LuDatabase,
+        surface: "sentiment.positiveOverlay",
+        title: t("source-context-assembled"),
+      }
+    : {
+        actionIcon: LuFilePlus2,
+        actionLabel: t("add-recommended-source"),
+        color: "content.link",
+        description: t("clima-thin-context-message"),
+        icon: LuCircleAlert,
+        surface: "background.neutral",
+        title: t("thin-context-ready"),
+      };
 
   async function submitMessage(
     event: FormEvent<HTMLDivElement>,
@@ -124,108 +143,39 @@ export function ConceptNoteChatPanel({
         bg="background.alternativeLight"
         p={4}
       >
-        <Box
-          alignSelf="start"
-          maxW="92%"
-          border="1px solid"
-          borderColor="border.neutral"
-          borderRadius="rounded"
-          borderTopLeftRadius="minimal"
-          bg="base.light"
-          p={4}
-          boxShadow="1dp"
-        >
-          <Text fontSize="body.sm" lineHeight="24px" color="content.secondary">
-            {groundedContext
-              ? t("clima-context-ready-message")
-              : t("clima-thin-context-message")}
-          </Text>
-        </Box>
-
-        <VStack
-          align="stretch"
+        <Flex
+          align="start"
           gap={3}
           border="1px solid"
-          borderColor={
-            groundedContext ? "sentiment.positiveDefault" : "content.link"
-          }
+          borderColor={contextStatus.color}
           borderRadius="rounded"
-          bg={
-            groundedContext ? "sentiment.positiveOverlay" : "background.neutral"
-          }
+          bg={contextStatus.surface}
           p={4}
         >
-          <HStack align="start" gap={2.5}>
-            <Icon
-              as={groundedContext ? LuDatabase : LuCircleAlert}
-              mt={0.5}
-              color={
-                groundedContext ? "sentiment.positiveDefault" : "content.link"
-              }
-            />
-            <Box flex={1}>
-              <Text
-                fontFamily="heading"
-                fontSize="body.sm"
-                fontWeight="semibold"
-                color="content.primary"
-              >
-                {groundedContext
-                  ? t("context-is-ready")
-                  : t("thin-context-ready")}
-              </Text>
-              <Text
-                mt={1}
-                fontSize="label.sm"
-                lineHeight="20px"
-                color="content.secondary"
-              >
-                {groundedContext
-                  ? t("context-ready-description")
-                  : t("thin-context-description")}
-              </Text>
-            </Box>
-          </HStack>
-          <Button
-            size="xs"
-            variant="outline"
-            alignSelf="start"
-            onClick={onOpenContext}
-          >
-            <Icon as={groundedContext ? LuArrowRight : LuFilePlus2} />
-            {groundedContext
-              ? t("review-context")
-              : t("add-recommended-source")}
-          </Button>
-        </VStack>
-
-        {messages.length === 0 && !historyLoading && (
-          <Box>
+          <Icon as={contextStatus.icon} mt={0.5} color={contextStatus.color} />
+          <Box flex={1}>
             <Text
-              mb={2}
               fontFamily="heading"
-              fontSize="overline"
+              fontSize="body.sm"
               fontWeight="semibold"
-              color="content.tertiary"
-              textTransform="uppercase"
+              color="content.primary"
             >
-              {t("suggested-next-steps")}
+              {contextStatus.title}
             </Text>
-            <VStack align="stretch" gap={2}>
-              {["quick-add-source", "quick-review-context"].map((key) => (
-                <Button
-                  key={key}
-                  size="xs"
-                  variant="outline"
-                  justifyContent="start"
-                  onClick={onOpenContext}
-                >
-                  {t(key)}
-                </Button>
-              ))}
-            </VStack>
+            <Text
+              mt={1}
+              fontSize="label.sm"
+              lineHeight="20px"
+              color="content.secondary"
+            >
+              {contextStatus.description}
+            </Text>
+            <Button mt={3} size="xs" variant="outline" onClick={onOpenContext}>
+              <Icon as={contextStatus.actionIcon} />
+              {contextStatus.actionLabel}
+            </Button>
           </Box>
-        )}
+        </Flex>
 
         {messages.map((message) => (
           <Box

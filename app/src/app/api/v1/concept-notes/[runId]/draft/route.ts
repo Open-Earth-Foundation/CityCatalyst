@@ -1,14 +1,53 @@
 /**
  * @swagger
  * /api/v1/concept-notes/{runId}/draft:
+ *   parameters:
+ *     - in: path
+ *       name: runId
+ *       required: true
+ *       schema:
+ *         type: string
+ *         format: uuid
  *   get:
  *     operationId: getConceptNoteDraft
  *     summary: Get persisted chapter drafting state
- *     tags: [concept-notes]
+ *     description: Returns the current chapter-drafting workspace for an authorized concept note run.
+ *     tags:
+ *       - concept-notes
+ *     responses:
+ *       200:
+ *         description: Chapter-drafting state returned
+ *       400:
+ *         description: Invalid run identifier
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: City or run access denied
+ *       404:
+ *         description: Concept note run not found
+ *       503:
+ *         description: Chapter drafting is unavailable
  *   post:
  *     operationId: startConceptNoteDraft
  *     summary: Start or resume sequential chapter drafting
- *     tags: [concept-notes]
+ *     description: Starts or resumes the sequential chapter-drafting process for an authorized concept note run.
+ *     tags:
+ *       - concept-notes
+ *     responses:
+ *       202:
+ *         description: Chapter drafting accepted
+ *       400:
+ *         description: Invalid run identifier
+ *       401:
+ *         description: Authentication required
+ *       403:
+ *         description: City or run access denied
+ *       404:
+ *         description: Concept note run not found
+ *       409:
+ *         description: Chapter drafting cannot start in the current state
+ *       503:
+ *         description: Chapter drafting is unavailable
  */
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

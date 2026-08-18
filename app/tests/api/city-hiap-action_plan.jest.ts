@@ -99,17 +99,28 @@ describe("City HIAP Prioritization API", () => {
   });
 
   afterAll(async () => {
-    // Cleanup any remaining action plans
     if (inventoryId) {
-      try {
-        await db.models.ActionPlan.destroy({
-          where: { cityLocode: "XX-APT" },
+      await db.models.ActionPlan.destroy({
+        where: { cityLocode: "XX-APT" },
+      });
+      const rankings = await db.models.HighImpactActionRanking.findAll({
+        where: { inventoryId },
+      });
+      const rankingIds = rankings.map((ranking) => ranking.id);
+      if (rankingIds.length > 0) {
+        await db.models.HighImpactActionRanked.destroy({
+          where: { hiaRankingId: rankingIds },
         });
+      }
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId },
+      });
+      try {
         await db.models.NativeInputCatalog.destroy({
           where: { inventoryId },
         });
       } catch {
-        // Table might not exist, that's okay
+        // Table might not exist in older test DBs
       }
       await db.models.Inventory.destroy({ where: { inventoryId } });
     }

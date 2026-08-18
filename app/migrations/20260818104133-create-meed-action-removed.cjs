@@ -36,11 +36,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: false,
       },
-      is_selected: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true,
-      },
 
       // legal sub-object
       verdict_category: {

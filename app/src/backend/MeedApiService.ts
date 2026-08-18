@@ -44,6 +44,39 @@ type GpcActivity = {
   notationKey?: string;
 };
 
+type MeedResponseActionRanked = {
+  action_id: string;
+  rank: number;
+  final_score: number;
+  impact_score: number;
+  alignment_score: number;
+  feasibility_score: number;
+  explanations: Record<string, string>;
+};
+
+type MeedResponseActionRemoved = {
+  action_id: string;
+  action_name: string;
+  removal_reason?: string;
+  removal_source?: string;
+  legal: {
+    verdict_category?: string;
+    ownership_category?: string;
+    restrictions_category?: string;
+    // TODO use this once MEED API returns translation objects
+    /* ownership_description?: Record<string, string>;
+    restrictions_description?: Record<string, string>;
+    legal_justification?: Record<string, string>; */
+    ownership_description?: string;
+    ownership_description_es?: string;
+    restrictions_description?: string;
+    restrictions_description_es?: string;
+    legal_justification_en?: string;
+    legal_justification?: string;
+    legal_references?: string[];
+  };
+};
+
 export default class MeedApiService {
   public static async runRanking(
     inventoryId: string,
@@ -124,6 +157,7 @@ export default class MeedApiService {
       };
     });
 
+    // make API request to MEED API
     const response = await fetch(MEED_API_URL + "prioritize", {
       method: "POST",
       body: JSON.stringify({
@@ -144,16 +178,68 @@ export default class MeedApiService {
 
     const result = await response.json();
     const resultString = JSON.stringify(result, null, 2);
-    // TODO replace with only first condition when MEED API status responses are fixed
-    if (response.status != 200 || result.data.detail) {
+
+    console.log("MEED result", resultString);
+    if (response.status != 200 || result.detail) {
       throw new createHttpError.BadRequest("MEED API error: " + resultString);
     }
 
-    console.log("MEED result", resultString);
-    const actions = result.data.results[0].ranked_actions;
+    const rankedActionsRaw: MeedResponseActionRanked[] =
+      result.results[0].ranked_actions;
+    const removedActionsRaw: MeedResponseActionRemoved[] =
+      result.results[0].removed_actions;
 
-    // TODO save result to database
+    // save result to database
+    const data = await db.sequelize?.transaction(async (transaction) => {
+      const rankedActions = await db.models.MeedActionRanked.bulkCreate(
+        rankedActionsRaw.map((action) => ({
+          id: randomUUID(),
+          inventoryId,
+          actionId: action.action_id,
+          rank: action.rank,
+          finalScore: action.final_score,
+          impactScore: action.impact_score,
+          alignmentScore: action.alignment_score,
+          feasibilityScore: action.feasibility_score,
+          explanations: action.explanations,
+          isSelected: false, // TODO should we pre-select the top actions?
+        })),
+        { transaction },
+      );
+      const removedActions = await db.models.MeedActionRemoved.bulkCreate(
+        removedActionsRaw.map(
+          (action) => ({
+            id: randomUUID(),
+            inventoryId,
+            actionId: action.action_id,
+            actionName: action.action_name,
+            removalReason: action.removal_reason,
+            removalSource: action.removal_source,
+            verdictCategory: action.legal.verdict_category,
+            ownershipCategory: action.legal.ownership_category,
+            restrictionsCategory: action.legal.restrictions_category,
+            // TODO adjust once the MEED API returns translation objects for these
+            ownershipDescription: {
+              en: action.legal.ownership_description,
+              es: action.legal.ownership_description_es,
+            },
+            restrictionsDescription: {
+              en: action.legal.restrictions_description,
+              es: action.legal.restrictions_description_es,
+            },
+            legalJustification: {
+              en: action.legal.legal_justification_en,
+              es: action.legal.legal_justification,
+            },
+            legalReferences: action.legal.legal_references,
+            isSelected: false,
+          }),
+          { transaction },
+        ),
+      );
+      return { rankedActions, removedActions };
+    });
 
-    return result; // result.json();
+    return data;
   }
 }

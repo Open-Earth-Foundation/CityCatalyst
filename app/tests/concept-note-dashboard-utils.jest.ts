@@ -3,26 +3,35 @@ import { describe, expect, it } from "@jest/globals";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
+  getConceptNoteBundleProgress,
+  getContextSourceStatusTranslationKey,
+  getRunProgressPercent,
   getRunStatusPresentation,
-  humanizeLifecycleValue,
+  getWorkflowStepTranslationKey,
 } from "@/components/ConceptNoteDashboard/utils";
 
 describe("Concept Note dashboard presentation helpers", () => {
-  it.each([
-    ["completed", "positive"],
-    ["active", "warning"],
-    ["draft", "info"],
-    ["failed", "negative"],
-    ["future-state", "neutral"],
-  ] as const)("maps %s to the %s tone", (status, tone) => {
-    expect(getRunStatusPresentation(status).tone).toBe(tone);
-  });
-
-  it("humanizes persisted lifecycle values", () => {
-    expect(humanizeLifecycleValue("assembling_context")).toBe(
-      "Assembling context",
+  it("maps known and unknown lifecycle values", () => {
+    expect(getRunStatusPresentation("active")).toEqual({
+      tone: "warning",
+      translationKey: "status-in-progress",
+    });
+    expect(getRunStatusPresentation("future-state")).toEqual({
+      tone: "neutral",
+      translationKey: "status-unknown",
+    });
+    expect(getWorkflowStepTranslationKey("interviewing")).toBe(
+      "workflow-interviewing",
     );
-    expect(humanizeLifecycleValue("ready-for-review")).toBe("Ready for review");
+    expect(getWorkflowStepTranslationKey("future-step")).toBe(
+      "workflow-unknown",
+    );
+    expect(getContextSourceStatusTranslationKey("included")).toBe(
+      "bundle-source-included",
+    );
+    expect(getContextSourceStatusTranslationKey("future-status")).toBe(
+      "bundle-source-status-unknown",
+    );
   });
 
   it("formats run activity relative to a stable clock", () => {
@@ -36,7 +45,63 @@ describe("Concept Note dashboard presentation helpers", () => {
 
   it("uses the durable run ID in resume navigation", () => {
     expect(conceptNoteResumeHref("en", "city-1", "run-1")).toBe(
-      "/en/cities/city-1/concept-notes/wiring?runId=run-1",
+      "/en/cities/city-1/concept-notes/run-1",
     );
+  });
+
+  it("normalizes persisted context-bundle progress defensively", () => {
+    expect(
+      getConceptNoteBundleProgress({
+        unrelated: "preserved",
+        context_bundle: {
+          status: "ready",
+          context_mode: "thin",
+          missing_context: ["source_documents", 12],
+          source_counts: { ready: 2, queued: 1, failed: -1 },
+          optional_sources: { ghgi: "included", hiap: "unavailable" },
+          retryable: false,
+          warnings: ["One optional source was unavailable", 12],
+        },
+      }),
+    ).toEqual({
+      status: "ready",
+      contextMode: "thin",
+      missingContext: ["source_documents"],
+      readySources: 2,
+      queuedSources: 1,
+      processingSources: 0,
+      failedSources: 0,
+      ghgiStatus: "included",
+      hiapStatus: "unavailable",
+      retryable: false,
+    });
+    expect(
+      getConceptNoteBundleProgress({
+        context_bundle: {
+          context_mode: "future-mode",
+          missing_context: "source_documents",
+        },
+      }),
+    ).toMatchObject({
+      status: null,
+      contextMode: null,
+      missingContext: [],
+      readySources: 0,
+    });
+  });
+
+  it("derives conservative run progress without inventing document work", () => {
+    expect(getRunProgressPercent("active", "assembling_context", {})).toBe(4);
+    expect(
+      getRunProgressPercent("active", "assembling_context", {
+        context_bundle: { status: "building" },
+      }),
+    ).toBe(28);
+    expect(
+      getRunProgressPercent("active", "interviewing", {
+        context_bundle: { status: "ready" },
+      }),
+    ).toBe(40);
+    expect(getRunProgressPercent("exported", "exported", {})).toBe(100);
   });
 });

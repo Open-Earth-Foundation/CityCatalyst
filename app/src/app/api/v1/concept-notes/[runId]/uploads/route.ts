@@ -3,8 +3,8 @@
  * /api/v1/concept-notes/{runId}/uploads:
  *   post:
  *     operationId: createConceptNoteUpload
- *     summary: Register and queue an authorized Concept Note PDF upload
- *     description: Each accepted request receives a new UUID v4 upload identity before conversion is queued.
+ *     summary: Register and process an authorized Concept Note source upload
+ *     description: Each accepted request receives a new UUID v4 upload identity before PDF OCR or direct Markdown delivery begins.
  *     tags:
  *       - concept-notes
  *     parameters:
@@ -31,7 +31,7 @@
  *                 nullable: true
  *     responses:
  *       202:
- *         description: Upload registered and conversion queued
+ *         description: Upload registered and processing accepted
  *         content:
  *           application/json:
  *             schema:
@@ -59,11 +59,11 @@
  *       403:
  *         description: City or run access denied
  *       413:
- *         description: PDF exceeds the 20 MiB limit
+ *         description: Source exceeds the 20 MiB limit
  *       415:
- *         description: Only PDF uploads are accepted
+ *         description: Only PDF or Markdown uploads are accepted
  *       422:
- *         description: Invalid filename, label, empty file, or PDF signature
+ *         description: Invalid filename, label, empty source, PDF signature, or Markdown encoding
  *       502:
  *         description: Climate Advisor returned an invalid upload identity
  *       503:
@@ -79,11 +79,14 @@ import {
   loadConceptNoteRunCity,
   updateConceptNoteUpload,
 } from "@/backend/ConceptNoteUploadService";
+import { triggerConceptNoteSourceProcessing } from "@/backend/ConceptNoteSourceProcessingService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   conceptNotePdfSourceKey,
   enqueueConceptNotePdfOcr,
+  normalizeConceptNoteMarkdown,
   normalizeConceptNotePdfOcrStatus,
+  registerConceptNoteMarkdownUpload,
 } from "@/backend/PdfOcrService";
 import {
   callConceptNoteApi,
@@ -94,6 +97,13 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 
 const paramsSchema = z.object({ runId: z.string().uuid() });
+const markdownMimeTypes = new Set([
+  "",
+  "application/octet-stream",
+  "text/markdown",
+  "text/plain",
+  "text/x-markdown",
+]);
 const createResponseWireSchema = z
   .object({
     upload_id: z.string().uuid(),
@@ -106,6 +116,33 @@ const createResponseWireSchema = z
 
 function requestId(req: Request): string | undefined {
   return req.headers.get("x-request-id")?.trim() || undefined;
+}
+
+function isMarkdownUpload(filename: string): boolean {
+  return filename.toLowerCase().endsWith(".md");
+}
+
+function decodeMarkdownUpload(fileBuffer: Buffer): string {
+  if (fileBuffer.includes(0)) {
+    throw new createHttpError.UnprocessableEntity(
+      "Markdown uploads cannot contain NUL bytes",
+    );
+  }
+  let decoded: string;
+  try {
+    decoded = new TextDecoder("utf-8", { fatal: true }).decode(fileBuffer);
+  } catch {
+    throw new createHttpError.UnprocessableEntity(
+      "Markdown uploads must be valid UTF-8 text",
+    );
+  }
+  try {
+    return normalizeConceptNoteMarkdown(decoded);
+  } catch (error) {
+    throw new createHttpError.UnprocessableEntity(
+      error instanceof Error ? error.message : "Markdown uploads are invalid",
+    );
+  }
 }
 
 export const POST = apiHandler(async (req, { session, params }) => {
@@ -134,34 +171,48 @@ export const POST = apiHandler(async (req, { session, params }) => {
   }
   const fileEntry = formData.get("file");
   if (!(fileEntry instanceof File)) {
-    throw new createHttpError.BadRequest("A PDF file is required");
+    throw new createHttpError.BadRequest("A source file is required");
   }
   const filename = fileEntry.name.trim();
   if (!filename || filename.length > 255) {
-    throw new createHttpError.UnprocessableEntity("Invalid PDF filename");
+    throw new createHttpError.UnprocessableEntity("Invalid source filename");
   }
-  if (
-    fileEntry.type !== "application/pdf" ||
-    !filename.toLowerCase().endsWith(".pdf")
-  ) {
+  const isPdf = filename.toLowerCase().endsWith(".pdf");
+  const isMarkdown = isMarkdownUpload(filename);
+  if (!isPdf && !isMarkdown) {
     throw new createHttpError.UnsupportedMediaType(
-      "Only application/pdf uploads are accepted",
+      "Only PDF or Markdown uploads are accepted",
     );
   }
   if (fileEntry.size === 0) {
-    throw new createHttpError.UnprocessableEntity("PDF file is empty");
+    throw new createHttpError.UnprocessableEntity("Source file is empty");
   }
   if (fileEntry.size > INVENTORY_IMPORT_MAX_FILE_SIZE_BYTES) {
     throw new createHttpError.PayloadTooLarge(
-      "PDF exceeds the 20 MiB upload limit",
+      "Source exceeds the 20 MiB upload limit",
     );
   }
   const fileBuffer = Buffer.from(await fileEntry.arrayBuffer());
-  if (fileBuffer.subarray(0, 5).toString("ascii") !== "%PDF-") {
-    throw new createHttpError.UnprocessableEntity(
-      "Uploaded file does not have a valid PDF signature",
+  if (isPdf) {
+    if (fileEntry.type !== "application/pdf") {
+      throw new createHttpError.UnsupportedMediaType(
+        "Only application/pdf uploads are accepted for PDF files",
+      );
+    }
+    if (fileBuffer.subarray(0, 5).toString("ascii") !== "%PDF-") {
+      throw new createHttpError.UnprocessableEntity(
+        "Uploaded file does not have a valid PDF signature",
+      );
+    }
+  } else if (!markdownMimeTypes.has(fileEntry.type)) {
+    throw new createHttpError.UnsupportedMediaType(
+      "Only Markdown uploads are accepted for .md files",
     );
   }
+  const markdownText = isMarkdown
+    ? decodeMarkdownUpload(fileBuffer)
+    : undefined;
+
   const sourceLabelEntry = formData.get("sourceLabel");
   const sourceLabel =
     typeof sourceLabelEntry === "string" && sourceLabelEntry.trim()
@@ -182,6 +233,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
       user_id: userId,
       filename,
       source_label: sourceLabel,
+      source_format: isPdf ? "pdf" : "markdown",
     },
   });
   const createPayload = await readConceptNoteApiPayload(createResponse);
@@ -203,18 +255,30 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
-  const sourceKey = conceptNotePdfSourceKey(uploadId);
   let failureCode = "source_storage_failed";
-  let job: Awaited<ReturnType<typeof enqueueConceptNotePdfOcr>>;
+  let job:
+    | Awaited<ReturnType<typeof enqueueConceptNotePdfOcr>>
+    | Awaited<ReturnType<typeof registerConceptNoteMarkdownUpload>>;
   try {
-    await InventoryFileStorageService.putFile(
-      sourceKey,
-      fileBuffer,
-      "application/pdf",
-    );
-    failureCode = "ocr_enqueue_failed";
-    job = await enqueueConceptNotePdfOcr(uploadId);
-  } catch {
+    if (isPdf) {
+      await InventoryFileStorageService.putFile(
+        conceptNotePdfSourceKey(uploadId),
+        fileBuffer,
+        "application/pdf",
+      );
+      failureCode = "ocr_enqueue_failed";
+      job = await enqueueConceptNotePdfOcr(uploadId);
+    } else {
+      failureCode = "markdown_registration_failed";
+      job = await registerConceptNoteMarkdownUpload(
+        uploadId,
+        markdownText ?? "",
+      );
+    }
+  } catch (error) {
+    if (createHttpError.isHttpError(error)) {
+      throw error;
+    }
     await updateConceptNoteUpload({
       runId,
       uploadId,
@@ -224,10 +288,11 @@ export const POST = apiHandler(async (req, { session, params }) => {
       errorCode: failureCode,
     }).catch(() => {});
     throw new createHttpError.ServiceUnavailable(
-      "PDF conversion could not be queued",
+      "Source processing could not be prepared",
     );
   }
 
+  triggerConceptNoteSourceProcessing();
   const state = normalizeConceptNotePdfOcrStatus(job);
 
   return NextResponse.json(

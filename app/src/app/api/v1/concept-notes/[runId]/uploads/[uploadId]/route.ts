@@ -3,8 +3,8 @@
  * /api/v1/concept-notes/{runId}/uploads/{uploadId}:
  *   get:
  *     operationId: getConceptNoteUploadStatus
- *     summary: Get the authorized lifecycle status of a Concept Note PDF upload
- *     description: Reports whether failure occurred during upload registration, OCR, or pointer delivery and whether retry is supported.
+ *     summary: Get the authorized lifecycle status of a Concept Note source upload
+ *     description: Reports whether failure occurred during upload registration, OCR, direct Markdown preparation, or pointer delivery and whether retry is supported.
  *     tags:
  *       - concept-notes
  *     parameters:

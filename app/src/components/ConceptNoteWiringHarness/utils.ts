@@ -1,9 +1,22 @@
 import type { ConceptNoteUploadStatus } from "@/util/types";
 
-export const CONCEPT_NOTE_PDF_MAX_BYTES = 20 * 1024 * 1024;
+export const CONCEPT_NOTE_SOURCE_MAX_BYTES = 20 * 1024 * 1024;
+const markdownMimeTypes = new Set([
+  "",
+  "application/octet-stream",
+  "text/markdown",
+  "text/plain",
+  "text/x-markdown",
+]);
 
-export type ConceptNotePdfValidationError =
-  "invalid-pdf-type" | "empty-pdf" | "oversized-pdf" | "invalid-pdf-signature";
+export type ConceptNoteSourceValidationError =
+  | "invalid-source-type"
+  | "empty-source-file"
+  | "oversized-source-file"
+  | "invalid-pdf-signature"
+  | "invalid-markdown-utf8"
+  | "empty-markdown-source"
+  | "invalid-markdown-source";
 
 export function requireConceptNoteUploadIdentity(upload: {
   uploadId?: string;
@@ -15,26 +28,52 @@ export function requireConceptNoteUploadIdentity(upload: {
   return { uploadId: upload.uploadId, status: upload.status };
 }
 
-export async function validateConceptNotePdf(
+export async function validateConceptNoteSourceFile(
   file: File,
-): Promise<ConceptNotePdfValidationError | null> {
-  if (
-    file.type !== "application/pdf" ||
-    !file.name.toLowerCase().endsWith(".pdf")
-  ) {
-    return "invalid-pdf-type";
+): Promise<ConceptNoteSourceValidationError | null> {
+  const lowerName = file.name.toLowerCase();
+  const isPdf = lowerName.endsWith(".pdf");
+  const isMarkdown =
+    lowerName.endsWith(".md") && markdownMimeTypes.has(file.type);
+
+  if (!isPdf && !isMarkdown) {
+    return "invalid-source-type";
   }
   if (file.size === 0) {
-    return "empty-pdf";
+    return "empty-source-file";
   }
-  if (file.size > CONCEPT_NOTE_PDF_MAX_BYTES) {
-    return "oversized-pdf";
+  if (file.size > CONCEPT_NOTE_SOURCE_MAX_BYTES) {
+    return "oversized-source-file";
+  }
+  if (isMarkdown) {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    if (bytes.includes(0)) {
+      return "invalid-markdown-source";
+    }
+    let markdown: string;
+    try {
+      markdown = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    } catch {
+      return "invalid-markdown-utf8";
+    }
+    const normalized = markdown.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+    if (!normalized.trim()) {
+      return "empty-markdown-source";
+    }
+    return null;
+  }
+  if (file.type !== "application/pdf") {
+    return "invalid-source-type";
   }
 
   const signature = new TextDecoder("ascii").decode(
     await file.slice(0, 5).arrayBuffer(),
   );
   return signature === "%PDF-" ? null : "invalid-pdf-signature";
+}
+
+export function conceptNoteSourceLabel(filename: string): string {
+  return filename.replace(/\.(pdf|md)$/i, "");
 }
 
 export function formatFileSize(bytes: number): string {

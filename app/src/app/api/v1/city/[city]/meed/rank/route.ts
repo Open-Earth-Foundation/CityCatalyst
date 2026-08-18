@@ -12,7 +12,7 @@ import z from "zod";
  *       - meed
  *       - city
  *     operationId: createMeedRanking
- *     summary: Starts and retrieves MEED+ ranking for a given city
+ *     summary: Starts and retrieves MEED+ ranking for a given inventory
  *     description: Runs the ranking process in the MEED service, stores the result and returns ranked and removed actions.
  *     parameters:
  *       - in: path
@@ -128,7 +128,7 @@ import z from "zod";
 
 const runRankingRequest = z.object({
   // for CC internal use
-  inventoryId: z.string(),
+  inventoryId: z.string().uuid(),
 
   // passed along to hiap-meed microservice
   requestedLanguages: z.array(z.string()),
@@ -158,5 +158,144 @@ export const POST = apiHandler(async (req, { session }) => {
   await PermissionService.canAccessInventory(session, inventoryId);
 
   const result = await MeedApiService.runRanking(inventoryId, requestBody);
+  return NextResponse.json({ data: result });
+});
+
+/**
+ * @swagger
+ * /api/v1/city/{city}/meed/rank:
+ *   get:
+ *     tags:
+ *       - meed
+ *       - city
+ *     operationId: getMeedRanking
+ *     summary: Fetches MEED+ ranking for a given inventory from the database
+ *     description: Fetches ranking from the database and returns ranked and removed actions.
+ *     parameters:
+ *       - in: path
+ *         name: city
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *       - in: query
+ *         name: inventoryId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *     responses:
+ *       200:
+ *         description: Ranking retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     rankedActions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           actionId:
+ *                             type: string
+ *                           rank:
+ *                             type: number
+ *                           finalScore:
+ *                             type: number
+ *                           impactScore:
+ *                             type: number
+ *                           alignmentScore:
+ *                             type: number
+ *                           feasibilityScore:
+ *                             type: number
+ *                           explanations:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           created:
+ *                             type: string
+ *                             format: date-time
+ *                           lastUpdated:
+ *                             type: string
+ *                             format: date-time
+ *                     removedActions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           actionId:
+ *                             type: string
+ *                           actionName:
+ *                             type: string
+ *                           removalReason:
+ *                             type: string
+ *                           removalSource:
+ *                             type: string
+ *                           verdictCategory:
+ *                             type: string
+ *                           ownershipCategory:
+ *                             type: string
+ *                           restrictionsCategory:
+ *                             type: string
+ *                           ownershipDescription:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           restrictionsDescription:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           legalJustification:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           legalReferences:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           created:
+ *                             type: string
+ *                             format: date-time
+ *                           lastUpdated:
+ *                             type: string
+ *                             format: date-time
+ */
+
+const getRankingQuery = z.object({
+  inventoryId: z.string().uuid(),
+});
+export const GET = apiHandler(async (_req, { session, searchParams }) => {
+  const { inventoryId } = getRankingQuery.parse(searchParams);
+  await PermissionService.canAccessInventory(session, inventoryId);
+
+  const result = await MeedApiService.getRanking(inventoryId);
   return NextResponse.json({ data: result });
 });

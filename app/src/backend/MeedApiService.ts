@@ -178,7 +178,6 @@ export default class MeedApiService {
     const result = await response.json();
     const resultString = JSON.stringify(result, null, 2);
 
-    console.log("MEED result", resultString);
     if (response.status != 200 || result.detail) {
       throw new createHttpError.BadRequest("MEED API error: " + resultString);
     }
@@ -238,5 +237,20 @@ export default class MeedApiService {
     });
 
     return data;
+  }
+
+  public static async getRanking(inventoryId: string) {
+    const rankedActions = await db.models.MeedActionRanked.findAll({
+      where: {
+        inventoryId,
+      },
+    });
+    const removedActions = await db.models.MeedActionRemoved.findAll({
+      where: {
+        inventoryId,
+      },
+    });
+
+    return { rankedActions, removedActions };
   }
 }

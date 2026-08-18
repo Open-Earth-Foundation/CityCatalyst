@@ -20,9 +20,11 @@ from app.models.cnb.context_bundle import (
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
+    SourceBlock,
     SourcePage,
     analyze_document,
     gather_all_or_raise,
+    parse_markdown_blocks,
     parse_source_pages,
     partition_source_pages,
     prompt_token_count,
@@ -33,7 +35,7 @@ from app.services.cnb.source_analysis import (
 from openai import AsyncOpenAI
 
 SEGMENT = re.compile(
-    r'<segment id="([^"]+)" page="(\d+)">\n(.*?)\n</segment>',
+    r'<segment id="([^"]+)" (page|anchor)="([^"]+)">\n(.*?)\n</segment>',
     re.DOTALL,
 )
 
@@ -55,12 +57,19 @@ class FakeRunner:
             self.reader_tools.append(agent.tools)
             await asyncio.sleep(0.001)
             segments = SEGMENT.findall(input_text)
-            ids = [segment_id for segment_id, _, _ in segments]
+            ids = [segment_id for segment_id, _, _, _ in segments]
             self.covered_ids.extend(ids)
             excerpt = next(
                 (
-                    SourceExcerpt(text="Drainage upgrades", page=int(page))
-                    for _, page, text in segments
+                    SourceExcerpt(
+                        text="Drainage upgrades",
+                        **(
+                            {"page": int(locator)}
+                            if locator_type == "page"
+                            else {"anchor": locator}
+                        ),
+                    )
+                    for _, locator_type, locator, text in segments
                     if "Drainage upgrades" in text
                 ),
                 None,
@@ -163,7 +172,7 @@ async def test_analysis_and_query_cover_every_page_with_exact_citations(
     assert source.key_excerpts[0].text == "Drainage upgrades"
     assert result.found is True
     assert result.excerpts[0].text == "Drainage upgrades"
-    assert result.pages_processed == result.pages_total == 6
+    assert result.units_processed == result.units_total == 6
     assert result.segments_processed == result.segments_total
     assert {
         int(identifier.split("-")[0][1:]) for identifier in runner.covered_ids
@@ -190,7 +199,7 @@ async def test_query_returns_explicit_not_found_after_full_coverage(
     )
     assert result.found is False
     assert result.excerpts == []
-    assert result.pages_processed == 1
+    assert result.units_processed == 1
 
 
 def test_oversized_page_partition_preserves_text_within_token_budget() -> None:
@@ -248,6 +257,54 @@ def test_artifact_pointer_digest_and_page_sequence_are_reverified() -> None:
             page_count=2,
         )
     assert mismatch.value.code == "source_identity_mismatch"
+
+
+@pytest.mark.asyncio
+async def test_native_markdown_uses_stable_block_anchors_without_pages(
+    analysis_dependencies,
+) -> None:
+    markdown = "# Priorities\n\nDrainage upgrades\n\n## Transit\n\nBus lanes"
+    digest = hashlib.sha256(markdown.encode()).hexdigest()
+    artifact = ConceptNoteMarkdownArtifact(
+        markdown=markdown,
+        markdown_s3_key="result.md",
+        sha256=digest,
+        source_format="markdown",
+        page_count=None,
+    )
+    first = verify_source_artifact(
+        artifact=artifact,
+        markdown_s3_key="result.md",
+        sha256=digest,
+        source_format="markdown",
+        page_count=None,
+    )
+    second = parse_markdown_blocks(markdown)
+
+    assert all(isinstance(unit, SourceBlock) for unit in first)
+    assert [unit.anchor for unit in first] == [unit.anchor for unit in second]
+    assert "".join(unit.text for unit in first) == markdown
+    assert all("/block-" in unit.anchor for unit in first)
+
+    settings, client = analysis_dependencies
+    runner = FakeRunner()
+    source = await analyze_document(
+        upload_id=uuid4(),
+        filename="plan.md",
+        source_label="Plan",
+        sha256=digest,
+        source_format="markdown",
+        pages=first,
+        settings=settings,
+        client=client,
+        runner=runner,
+    )
+
+    assert source.source_format == "markdown"
+    assert source.page_count is None
+    assert source.block_count == len(first)
+    assert source.key_excerpts[0].page is None
+    assert source.key_excerpts[0].anchor is not None
 
 
 @pytest.mark.asyncio

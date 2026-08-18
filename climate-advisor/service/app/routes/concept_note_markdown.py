@@ -8,10 +8,6 @@ from collections.abc import AsyncIterator
 from typing import Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Request, status
-from fastapi.responses import JSONResponse
-from pydantic import ValidationError
-
 from app.config import get_settings
 from app.models.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
@@ -37,7 +33,9 @@ from app.services.cnb.context_bundle import (
     get_context_bundle_service,
     schedule_context_bundle_build,
 )
-
+from fastapi import APIRouter, Depends, Request, status
+from fastapi.responses import JSONResponse
+from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -139,28 +137,35 @@ def validate_markdown_artifact(
     payload: ConceptNoteMarkdownRequest,
 ) -> str | None:
     """Validate the fetched artifact and immutable pointer identity."""
+    # Recheck the immutable delivery identity against the authenticated CC read.
     if (
         artifact.markdown_s3_key != payload.markdown_s3_key
         or artifact.sha256 != payload.sha256
+        or artifact.source_format != payload.source_format
         or artifact.page_count != payload.page_count
     ):
         return "markdown_identity_conflict"
 
+    # Verify bytes before interpreting format-specific structure.
     digest = hashlib.sha256(artifact.markdown.encode("utf-8")).hexdigest()
     if digest != payload.sha256:
         return "markdown_digest_mismatch"
-    if not artifact.markdown.lstrip().startswith("<!-- page: 1 -->"):
-        return "invalid_markdown_pages"
-
-    marker_count = 0
-    for marker_count, match in enumerate(
-        PAGE_MARKER.finditer(artifact.markdown), start=1
-    ):
-        if int(match.group(1)) != marker_count:
+    # PDFs retain page markers; native Markdown deliberately has no pagination.
+    if payload.source_format == "pdf":
+        if not artifact.markdown.lstrip().startswith("<!-- page: 1 -->"):
             return "invalid_markdown_pages"
-    if marker_count != payload.page_count:
-        return "invalid_markdown_pages"
-    if not PAGE_MARKER.sub("", artifact.markdown).strip():
+        marker_count = 0
+        for marker_count, match in enumerate(
+            PAGE_MARKER.finditer(artifact.markdown), start=1
+        ):
+            if int(match.group(1)) != marker_count:
+                return "invalid_markdown_pages"
+        if marker_count != payload.page_count:
+            return "invalid_markdown_pages"
+        source_text = PAGE_MARKER.sub("", artifact.markdown)
+    else:
+        source_text = artifact.markdown
+    if not source_text.strip():
         return "empty_markdown"
     return None
 
@@ -175,6 +180,7 @@ def status_response(
         status=snapshot.status,
         filename=snapshot.filename,
         source_label=snapshot.source_label,
+        source_format=snapshot.source_format,
         page_count=snapshot.page_count,
         error_code=snapshot.error_code,
         received_at=snapshot.received_at,
@@ -417,4 +423,5 @@ async def get_concept_note_delivery_context(
         user_id=snapshot.user_id,
         filename=snapshot.filename,
         source_label=snapshot.source_label,
+        source_format=snapshot.source_format,
     )

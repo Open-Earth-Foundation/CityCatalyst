@@ -189,6 +189,16 @@ export default class MeedApiService {
 
     // save result to database
     const data = await db.sequelize?.transaction(async (transaction) => {
+      // delete previous data if it's present
+      await db.models.MeedActionRanked.destroy({
+        where: { inventoryId },
+        transaction,
+      });
+      await db.models.MeedActionRemoved.destroy({
+        where: { inventoryId },
+        transaction,
+      });
+
       const rankedActions = await db.models.MeedActionRanked.bulkCreate(
         rankedActionsRaw.map((action) => ({
           id: randomUUID(),

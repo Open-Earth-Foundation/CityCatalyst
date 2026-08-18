@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Flex, HStack, Icon, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  chakra,
+  Flex,
+  HStack,
+  Icon,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import type { IconType } from "react-icons";
 import {
@@ -15,6 +23,7 @@ import remarkGfm from "remark-gfm";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
@@ -24,6 +33,12 @@ import type {
 } from "@/util/types";
 
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
+
+import {
+  decodeMissingInformationMessage,
+  MISSING_INFORMATION_LINK,
+  replaceMissingInformationMarkers,
+} from "./draft-markdown";
 
 interface DraftTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -51,7 +66,7 @@ interface DraftStatusPresentation {
   title: string;
 }
 
-const markdownComponents = createChatMarkdownComponents({
+const baseMarkdownComponents = createChatMarkdownComponents({
   paragraph: {
     fontSize: "body.sm",
     lineHeight: "22px",
@@ -103,6 +118,67 @@ const markdownComponents = createChatMarkdownComponents({
     color: "content.tertiary",
   },
 });
+
+const markdownComponents = {
+  ...baseMarkdownComponents,
+  a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
+    const missingInformation =
+      href === MISSING_INFORMATION_LINK
+        ? decodeMissingInformationMessage(title)
+        : null;
+
+    if (missingInformation) {
+      return (
+        <Tooltip
+          showArrow
+          portalled
+          content={missingInformation}
+          contentProps={{
+            maxW: "360px",
+            px: 3,
+            py: 2,
+            fontSize: "label.sm",
+            lineHeight: "20px",
+          }}
+        >
+          <chakra.button
+            type="button"
+            aria-label={missingInformation}
+            display="inline-flex"
+            alignItems="center"
+            justifyContent="center"
+            boxSize="18px"
+            mx={1}
+            borderRadius="full"
+            bg="sentiment.warningOverlay"
+            color="sentiment.warningDefault"
+            verticalAlign="text-bottom"
+            cursor="help"
+            _focusVisible={{
+              outline: "2px solid",
+              outlineColor: "content.link",
+              outlineOffset: "1px",
+            }}
+          >
+            <Icon as={LuCircleAlert} boxSize="12px" />
+          </chakra.button>
+        </Tooltip>
+      );
+    }
+
+    return (
+      <chakra.a
+        href={href}
+        color="interactive.primary"
+        fontWeight="semibold"
+        textDecoration="underline"
+        display="inline"
+      >
+        {children}
+      </chakra.a>
+    );
+  },
+};
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
   switch (status) {
@@ -156,14 +232,12 @@ function currentChapter(draft: ConceptNoteDraftState | null): string | null {
 function chapterPreviewMarkdown(markdown: string, title: string): string {
   const lines = markdown.trimStart().split(/\r?\n/);
   const firstLineTitle = lines[0]?.replace(/^#{1,6}\s+/, "").trim();
-
-  if (
+  const body =
     firstLineTitle?.toLocaleLowerCase() === title.trim().toLocaleLowerCase()
-  ) {
-    return lines.slice(1).join("\n").trimStart();
-  }
+      ? lines.slice(1).join("\n").trimStart()
+      : markdown;
 
-  return markdown;
+  return replaceMissingInformationMarkers(body);
 }
 
 export function DraftTab({
@@ -662,10 +736,6 @@ export function DraftTab({
               </VStack>
             </Box>
           </Flex>
-
-          <Text fontSize="10px" color="content.tertiary">
-            {t("draft-preview-description", { count: chapters.length })}
-          </Text>
         </VStack>
       )}
     </VStack>

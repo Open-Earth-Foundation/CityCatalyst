@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import {
   LuCheck,
@@ -10,6 +12,7 @@ import {
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   DialogBody,
   DialogCloseTrigger,
@@ -20,26 +23,79 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/client";
+import type { ConceptNoteDraftState } from "@/util/types";
+
+import {
+  canExportConceptNote,
+  countUnresolvedExportItems,
+  exportConceptNote,
+  type ConceptNoteExportFormat,
+} from "./concept-note-export";
 
 interface ExportDialogProps {
+  draft: ConceptNoteDraftState | null;
   hasGroundedSources: boolean;
   lng: string;
+  noteName: string;
   onOpenChange: (open: boolean) => void;
   open: boolean;
 }
 
 export function ExportDialog({
+  draft,
   hasGroundedSources,
   lng,
+  noteName,
   onOpenChange,
   open,
 }: ExportDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
+  const [acceptedMissingInformation, setAcceptedMissingInformation] =
+    useState(false);
+  const [exportError, setExportError] = useState(false);
+  const [exportingFormat, setExportingFormat] =
+    useState<ConceptNoteExportFormat | null>(null);
+  const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
+  const unresolvedCount = useMemo(
+    () => countUnresolvedExportItems(chapters),
+    [chapters],
+  );
+  const hasExportableDraft = chapters.some((chapter) =>
+    Boolean(chapter.body_markdown?.trim()),
+  );
+  const canExport =
+    canExportConceptNote(chapters, acceptedMissingInformation) &&
+    !exportingFormat;
+
+  function handleOpenChange(nextOpen: boolean): void {
+    if (!nextOpen) {
+      setAcceptedMissingInformation(false);
+      setExportError(false);
+      setExportingFormat(null);
+    }
+    onOpenChange(nextOpen);
+  }
+
+  async function handleExport(format: ConceptNoteExportFormat): Promise<void> {
+    if (!canExport) {
+      return;
+    }
+
+    setExportError(false);
+    setExportingFormat(format);
+    try {
+      await exportConceptNote(format, noteName, chapters);
+    } catch {
+      setExportError(true);
+    } finally {
+      setExportingFormat(null);
+    }
+  }
 
   return (
     <DialogRoot
       open={open}
-      onOpenChange={(details) => onOpenChange(details.open)}
+      onOpenChange={(details) => handleOpenChange(details.open)}
       size="lg"
     >
       <DialogContent
@@ -129,25 +185,78 @@ export function ExportDialog({
                   </Box>
                 </HStack>
                 <HStack
+                  align="start"
                   gap={3}
                   border="1px solid"
-                  borderColor="sentiment.warningDefault"
+                  borderColor={
+                    hasExportableDraft && unresolvedCount === 0
+                      ? "sentiment.positiveDefault"
+                      : "sentiment.warningDefault"
+                  }
                   borderRadius="rounded"
-                  bg="sentiment.warningOverlay"
+                  bg={
+                    hasExportableDraft && unresolvedCount === 0
+                      ? "sentiment.positiveOverlay"
+                      : "sentiment.warningOverlay"
+                  }
                   p={3}
                 >
-                  <Icon as={LuCircleAlert} color="sentiment.warningDefault" />
+                  <Icon
+                    as={
+                      hasExportableDraft && unresolvedCount === 0
+                        ? LuCheck
+                        : LuCircleAlert
+                    }
+                    mt={0.5}
+                    color={
+                      hasExportableDraft && unresolvedCount === 0
+                        ? "sentiment.positiveDefault"
+                        : "sentiment.warningDefault"
+                    }
+                  />
                   <Box flex={1}>
                     <Text
                       fontSize="body.sm"
                       fontWeight="semibold"
                       color="content.primary"
                     >
-                      {t("draft-preflight-warning")}
+                      {!hasExportableDraft
+                        ? t("draft-preflight-empty")
+                        : unresolvedCount > 0
+                          ? t("draft-preflight-warning")
+                          : t("draft-preflight-ready")}
                     </Text>
                     <Text fontSize="label.sm" color="content.secondary">
-                      {t("draft-preflight-warning-description")}
+                      {!hasExportableDraft
+                        ? t("draft-preflight-empty-description")
+                        : unresolvedCount > 0
+                          ? t("draft-preflight-warning-description", {
+                              count: unresolvedCount,
+                            })
+                          : t("draft-preflight-ready-description")}
                     </Text>
+                    {hasExportableDraft && unresolvedCount > 0 && (
+                      <Checkbox
+                        mt={3}
+                        alignItems="start"
+                        checked={acceptedMissingInformation}
+                        onCheckedChange={(details) =>
+                          setAcceptedMissingInformation(
+                            details.checked === true,
+                          )
+                        }
+                      >
+                        <Text
+                          fontSize="label.sm"
+                          lineHeight="20px"
+                          color="content.primary"
+                        >
+                          {t("missing-information-export-confirmation", {
+                            count: unresolvedCount,
+                          })}
+                        </Text>
+                      </Checkbox>
+                    )}
                   </Box>
                 </HStack>
               </VStack>
@@ -172,10 +281,24 @@ export function ExportDialog({
                   sm: "repeat(2, minmax(0, 1fr))",
                 }}
               >
-                {[
-                  { format: "DOCX", description: t("docx-description") },
-                  { format: "PDF", description: t("pdf-description") },
-                ].map((item) => (
+                {(
+                  [
+                    {
+                      format: "docx",
+                      label: "DOCX",
+                      description: t("docx-description"),
+                    },
+                    {
+                      format: "pdf",
+                      label: "PDF",
+                      description: t("pdf-description"),
+                    },
+                  ] satisfies Array<{
+                    description: string;
+                    format: ConceptNoteExportFormat;
+                    label: string;
+                  }>
+                ).map((item) => (
                   <VStack
                     key={item.format}
                     align="stretch"
@@ -204,21 +327,39 @@ export function ExportDialog({
                           fontWeight="semibold"
                           color="content.primary"
                         >
-                          {item.format}
+                          {item.label}
                         </Text>
                         <Text fontSize="label.sm" color="content.tertiary">
                           {item.description}
                         </Text>
                       </Box>
                     </Flex>
-                    <Button disabled size="sm" variant="outline">
+                    <Button
+                      disabled={!canExport}
+                      loading={exportingFormat === item.format}
+                      size="sm"
+                      variant="outline"
+                      onClick={() => void handleExport(item.format)}
+                    >
                       <Icon as={LuDownload} />
-                      {t("export-format", { format: item.format })}
+                      {t("export-format", { format: item.label })}
                     </Button>
                   </VStack>
                 ))}
               </Grid>
             </Box>
+
+            {exportError && (
+              <HStack
+                role="alert"
+                align="start"
+                gap={2}
+                color="sentiment.negativeDefault"
+              >
+                <Icon as={LuCircleAlert} mt={0.5} />
+                <Text fontSize="label.sm">{t("export-failed")}</Text>
+              </HStack>
+            )}
 
             <HStack
               align="start"
@@ -252,12 +393,9 @@ export function ExportDialog({
             variant="ghost"
             color="content.link"
             _hover={{ color: "content.link" }}
-            onClick={() => onOpenChange(false)}
+            onClick={() => handleOpenChange(false)}
           >
             {t("go-back")}
-          </Button>
-          <Button disabled variant="solid">
-            {t("export-anyway")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -64,6 +64,19 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
             )
 
 
+def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -> None:
+    """Keep missing-data output detectable by the draft preview."""
+    config = _load_llm_config()
+    prompt_path = config.prompts.cnb_chapter_drafting
+    assert prompt_path is not None
+    prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
+
+    assert "treat `[Information needed: ...]` as the UI contract" in prompt_text
+    assert "use that exact English prefix and square-bracket format" in prompt_text
+    assert "full message a user should" in prompt_text
+    assert "Include one matching entry for every `[Information needed:" in prompt_text
+
+
 def test_cnb_research_configuration_matches_runtime_contract() -> None:
     """Keep the requested model and architecture-shaped prompt contract."""
     config = _load_llm_config()

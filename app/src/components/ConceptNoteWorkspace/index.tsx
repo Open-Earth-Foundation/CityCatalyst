@@ -218,22 +218,37 @@ export function ConceptNoteWorkspace({
   if (runLoading) {
     return (
       <Box
-        minH="calc(100vh - 80px)"
+        h="calc(100dvh - 80px)"
+        minH={0}
+        overflow="hidden"
         bg="background.alternativeLight"
         px={{ base: 4, md: 10 }}
         py={8}
       >
-        <VStack align="stretch" gap={5} maxW="1480px" mx="auto">
+        <VStack
+          align="stretch"
+          gap={5}
+          h="full"
+          minH={0}
+          maxW="1480px"
+          mx="auto"
+        >
           <Skeleton h="70px" />
           <Grid
+            flex={1}
+            minH={0}
             gap={5}
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
               md: "440px minmax(0, 1fr)",
             }}
+            gridTemplateRows={{
+              base: "repeat(2, minmax(0, 1fr))",
+              md: "minmax(0, 1fr)",
+            }}
           >
-            <Skeleton h="680px" />
-            <Skeleton h="680px" />
+            <Skeleton h="full" minH={0} />
+            <Skeleton h="full" minH={0} />
           </Grid>
         </VStack>
       </Box>
@@ -243,7 +258,9 @@ export function ConceptNoteWorkspace({
   if (runFailed || !run || run.city_id !== cityId) {
     return (
       <Flex
-        minH="calc(100vh - 80px)"
+        h="calc(100dvh - 80px)"
+        minH={0}
+        overflow="hidden"
         align="center"
         justify="center"
         bg="background.alternativeLight"
@@ -286,21 +303,29 @@ export function ConceptNoteWorkspace({
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
 
   return (
-    <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
+    <Box
+      h="calc(100dvh - 80px)"
+      minH={0}
+      overflow="hidden"
+      bg="background.alternativeLight"
+    >
       <motion.main
         initial={reducedMotion ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: "easeOut" }}
+        style={{ height: "100%" }}
       >
         <VStack
           align="stretch"
           gap={4}
+          h="full"
+          minH={0}
           maxW="1480px"
           mx="auto"
           px={{ base: 4, md: 10 }}
           py={6}
         >
-          <HStack gap={2} color="content.tertiary">
+          <HStack flexShrink={0} gap={2} color="content.tertiary">
             <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
               <HStack gap={1.5} _hover={{ color: "content.link" }}>
                 <Icon as={LuArrowLeft} />
@@ -319,6 +344,7 @@ export function ConceptNoteWorkspace({
           </HStack>
 
           <Flex
+            flexShrink={0}
             align={{ base: "start", md: "center" }}
             direction={{ base: "column", md: "row" }}
             gap={4}
@@ -353,11 +379,18 @@ export function ConceptNoteWorkspace({
           </Flex>
 
           <Grid
+            flex={1}
+            minH={0}
+            overflow="hidden"
             gap={5}
-            alignItems="start"
+            alignItems="stretch"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
               md: "440px minmax(0, 1fr)",
+            }}
+            gridTemplateRows={{
+              base: "repeat(2, minmax(0, 1fr))",
+              md: "minmax(0, 1fr)",
             }}
           >
             <ConceptNoteChatPanel
@@ -373,8 +406,8 @@ export function ConceptNoteWorkspace({
               onValueChange={(details) => setTab(details.value as WorkspaceTab)}
               display="flex"
               flexDirection="column"
-              h={{ md: "calc(100vh - 184px)" }}
-              minH={{ md: "650px" }}
+              h="full"
+              minH={0}
               minW={0}
               overflow="hidden"
               border="1px solid"
@@ -422,7 +455,7 @@ export function ConceptNoteWorkspace({
                 value="draft"
                 flex={1}
                 minH={0}
-                overflowY={{ base: "visible", md: "auto" }}
+                overflowY="auto"
                 p={0}
               >
                 <DraftTab
@@ -447,7 +480,7 @@ export function ConceptNoteWorkspace({
                 value="structure"
                 flex={1}
                 minH={0}
-                overflowY={{ base: "visible", md: "auto" }}
+                overflowY="auto"
                 p={0}
               >
                 <StructureTab
@@ -460,7 +493,7 @@ export function ConceptNoteWorkspace({
                 value="context"
                 flex={1}
                 minH={0}
-                overflowY={{ base: "visible", md: "auto" }}
+                overflowY="auto"
                 p={0}
               >
                 <ContextTab
@@ -489,10 +522,12 @@ export function ConceptNoteWorkspace({
       </motion.main>
 
       <ExportDialog
+        draft={draft ?? null}
         hasGroundedSources={
           bundle.contextMode === "grounded" && bundle.readySources > 0
         }
         lng={lng}
+        noteName={run.name}
         open={exportOpen}
         onOpenChange={setExportOpen}
       />

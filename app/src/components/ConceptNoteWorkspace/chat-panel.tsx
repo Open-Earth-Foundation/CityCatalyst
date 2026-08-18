@@ -214,8 +214,8 @@ export function ConceptNoteChatPanel({
     <VStack
       align="stretch"
       gap={0}
-      h={{ base: "auto", md: "calc(100vh - 184px)" }}
-      minH={{ md: "650px" }}
+      h="full"
+      minH={0}
       overflow="hidden"
       border="1px solid"
       borderColor="border.neutral"
@@ -273,7 +273,8 @@ export function ConceptNoteChatPanel({
         align="stretch"
         gap={4}
         flex={1}
-        overflowY={{ md: "auto" }}
+        minH={0}
+        overflowY="auto"
         bg="background.alternativeLight"
         p={4}
       >

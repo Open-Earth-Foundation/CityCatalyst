@@ -141,7 +141,6 @@ export class InventoryService {
     }
 
     return {
-      //methodology?.id,
       activityType:
         methodology?.activityTypeField && data[methodology.activityTypeField]
           ? data[methodology.activityTypeField]

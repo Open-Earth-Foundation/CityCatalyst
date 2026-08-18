@@ -62,8 +62,6 @@ import z from "zod";
  *                                 type: string
  *                               es:
  *                                 type: string
- *                           isSelected:
- *                             type: boolean
  *                           created:
  *                             type: string
  *                             format: date-time
@@ -120,8 +118,6 @@ import z from "zod";
  *                             type: array
  *                             items:
  *                               type: string
- *                           isSelected:
- *                             type: boolean
  *                           created:
  *                             type: string
  *                             format: date-time

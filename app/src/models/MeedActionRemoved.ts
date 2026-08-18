@@ -16,7 +16,6 @@ export interface MeedActionRemovedAttributes {
   restrictionsDescription?: object;
   legalJustification?: object;
   legalReferences?: string[];
-  isSelected?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -24,7 +23,6 @@ export interface MeedActionRemovedAttributes {
 export type MeedActionRemovedPk = "id";
 export type MeedActionRemovedId = MeedActionRemoved[MeedActionRemovedPk];
 export type MeedActionRemovedOptionalAttributes =
-  | "isSelected"
   | "ownershipDescription"
   | "restrictionsDescription"
   | "legalJustification"
@@ -56,7 +54,6 @@ export class MeedActionRemoved
   declare restrictionsDescription?: object;
   declare legalJustification?: object;
   declare legalReferences?: string[];
-  declare isSelected?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -105,12 +102,6 @@ export class MeedActionRemoved
           type: DataTypes.TEXT,
           allowNull: false,
           field: "removal_source",
-        },
-        isSelected: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: true,
-          field: "is_selected",
         },
         verdictCategory: {
           type: DataTypes.TEXT,

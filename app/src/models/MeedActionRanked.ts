@@ -12,7 +12,6 @@ export interface MeedActionRankedAttributes {
   alignmentScore?: number;
   feasibilityScore?: number;
   explanations?: object;
-  isSelected?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -20,7 +19,7 @@ export interface MeedActionRankedAttributes {
 export type MeedActionRankedPk = "id";
 export type MeedActionRankedId = MeedActionRanked[MeedActionRankedPk];
 export type MeedActionRankedOptionalAttributes =
-  "explanations" | "isSelected" | "created" | "lastUpdated";
+  "explanations" | "created" | "lastUpdated";
 export type MeedActionRankedCreationAttributes = Optional<
   MeedActionRankedAttributes,
   MeedActionRankedOptionalAttributes
@@ -39,7 +38,6 @@ export class MeedActionRanked
   declare alignmentScore?: number;
   declare feasibilityScore?: number;
   declare explanations?: object;
-  declare isSelected?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -101,12 +99,6 @@ export class MeedActionRanked
           type: DataTypes.JSONB,
           allowNull: false,
           defaultValue: {},
-        },
-        isSelected: {
-          type: DataTypes.BOOLEAN,
-          allowNull: false,
-          defaultValue: true,
-          field: "is_selected",
         },
         created: {
           type: DataTypes.DATE,

@@ -202,7 +202,6 @@ export default class MeedApiService {
           alignmentScore: action.alignment_score,
           feasibilityScore: action.feasibility_score,
           explanations: action.explanations,
-          isSelected: false, // TODO should we pre-select the top actions?
         })),
         { transaction },
       );
@@ -232,7 +231,6 @@ export default class MeedApiService {
               es: action.legal.legal_justification,
             },
             legalReferences: action.legal.legal_references,
-            isSelected: false,
           }),
           { transaction },
         ),

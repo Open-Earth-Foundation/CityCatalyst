@@ -186,6 +186,7 @@ export default class MeedApiService {
       result.results[0].ranked_actions;
     const removedActionsRaw: MeedResponseActionRemoved[] =
       result.results[0].removed_actions;
+    const weights = result.results[0].metadata.weights;
 
     // save result to database
     const data = await db.sequelize?.transaction(async (transaction) => {
@@ -210,6 +211,7 @@ export default class MeedApiService {
           alignmentScore: action.alignment_score,
           feasibilityScore: action.feasibility_score,
           explanations: action.explanations,
+          weights,
         })),
         { transaction },
       );

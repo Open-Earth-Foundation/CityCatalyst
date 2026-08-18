@@ -225,6 +225,15 @@ export const POST = apiHandler(async (req, { session }) => {
  *                                 type: string
  *                               es:
  *                                 type: string
+ *                           weights:
+ *                             type: object
+ *                             properties:
+ *                               impact:
+ *                                 type: number
+ *                               alignment:
+ *                                 type: number
+ *                               feasibility:
+ *                                 type: number
  *                           created:
  *                             type: string
  *                             format: date-time

@@ -11,7 +11,8 @@ export interface MeedActionRankedAttributes {
   impactScore?: number;
   alignmentScore?: number;
   feasibilityScore?: number;
-  explanations?: object;
+  explanations?: Record<string, string>;
+  weights?: Record<string, number>;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -37,7 +38,8 @@ export class MeedActionRanked
   declare impactScore?: number;
   declare alignmentScore?: number;
   declare feasibilityScore?: number;
-  declare explanations?: object;
+  declare explanations?: Record<string, string>;
+  declare weights?: Record<string, number>;
   declare created?: Date;
   declare lastUpdated?: Date;
 
@@ -96,6 +98,11 @@ export class MeedActionRanked
           allowNull: false,
         },
         explanations: {
+          type: DataTypes.JSONB,
+          allowNull: false,
+          defaultValue: {},
+        },
+        weights: {
           type: DataTypes.JSONB,
           allowNull: false,
           defaultValue: {},

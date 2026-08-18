@@ -51,6 +51,11 @@ module.exports = {
         allowNull: false,
         defaultValue: {},
       },
+      weights: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
       created: {
         type: Sequelize.DATE,
         allowNull: false,

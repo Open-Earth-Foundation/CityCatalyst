@@ -51,6 +51,7 @@ type MeedResponseActionRanked = {
   impact_score: number;
   alignment_score: number;
   feasibility_score: number;
+  evidence_summary: Record<string, object>;
   explanations: Record<string, string>;
 };
 
@@ -163,7 +164,7 @@ export default class MeedApiService {
         requestData: fullRequest,
         meta: {
           requestId: randomUUID(),
-          generatedAtUtc: new Date().toUTCString(),
+          generatedAtUtc: new Date().toISOString(),
           backendConsumer: "CityCatalyst",
           upstreamProvider: "CityCatalyst",
           apiContext: { endpoint: "/v1/prioritize" },
@@ -211,6 +212,7 @@ export default class MeedApiService {
           alignmentScore: action.alignment_score,
           feasibilityScore: action.feasibility_score,
           explanations: action.explanations,
+          evidenceSummary: action.evidence_summary,
           weights,
         })),
         { transaction },

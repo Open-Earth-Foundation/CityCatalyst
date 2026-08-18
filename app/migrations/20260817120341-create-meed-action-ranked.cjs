@@ -44,7 +44,11 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      // TODO do we need evidence summary?
+      evidenceSummary: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {},
+      },
       // this contains keys for each language
       explanations: {
         type: Sequelize.JSONB,

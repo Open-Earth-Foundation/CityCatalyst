@@ -11,6 +11,7 @@ export interface MeedActionRankedAttributes {
   impactScore?: number;
   alignmentScore?: number;
   feasibilityScore?: number;
+  evidenceSummary?: Record<string, object>;
   explanations?: Record<string, string>;
   weights?: Record<string, number>;
   created?: Date;
@@ -38,6 +39,7 @@ export class MeedActionRanked
   declare impactScore?: number;
   declare alignmentScore?: number;
   declare feasibilityScore?: number;
+  declare evidenceSummary?: Record<string, object>;
   declare explanations?: Record<string, string>;
   declare weights?: Record<string, number>;
   declare created?: Date;
@@ -96,6 +98,11 @@ export class MeedActionRanked
         feasibilityScore: {
           type: DataTypes.DOUBLE,
           allowNull: false,
+        },
+        evidenceSummary: {
+          type: DataTypes.JSONB,
+          allowNull: false,
+          defaultValue: {},
         },
         explanations: {
           type: DataTypes.JSONB,

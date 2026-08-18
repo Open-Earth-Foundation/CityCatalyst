@@ -55,6 +55,9 @@ import z from "zod";
  *                             type: number
  *                           feasibilityScore:
  *                             type: number
+ *                           evidenceSummary:
+ *                             type: object
+ *                             additionalProperties: true
  *                           explanations:
  *                             type: object
  *                             properties:
@@ -218,6 +221,9 @@ export const POST = apiHandler(async (req, { session }) => {
  *                             type: number
  *                           feasibilityScore:
  *                             type: number
+ *                           evidenceSummary:
+ *                             type: object
+ *                             additionalProperties: true
  *                           explanations:
  *                             type: object
  *                             properties:

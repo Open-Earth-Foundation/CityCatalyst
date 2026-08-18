@@ -169,10 +169,10 @@ export function NavigationBar({
         display="flex"
         justifyContent="space-between"
         flexDirection="row"
-        px={8}
+        px={{ base: 4, md: 8 }}
         py={4}
         alignItems="center"
-        gap={12}
+        gap={{ base: 2, md: 12 }}
         position="relative"
         zIndex={50}
         w="full"
@@ -216,13 +216,13 @@ export function NavigationBar({
                   />
                 </Link>
               )}
-              <Link href={homePath}>
+              <Link href={homePath} display={{ base: "none", md: "block" }}>
                 <Heading size="lg" color="base.light">
                   {t("title")}
                 </Heading>
               </Link>
               {moduleName && (
-                <>
+                <Box display={{ base: "none", md: "flex" }} alignItems="center" gap={2}>
                   <Separator
                     orientation="vertical"
                     height="5"
@@ -231,16 +231,16 @@ export function NavigationBar({
                   <Heading size="lg" color="base.light" fontWeight="normal">
                     {moduleName}
                   </Heading>
-                </>
+                </Box>
               )}
             </HStack>
           )}
         </Box>
 
         {/* Menu Items */}
-        <Box display="flex" gap="48px" alignItems="center">
+        <Box display="flex" gap={{ base: "12px", md: "48px" }} alignItems="center">
           {children}
-          <Box display="flex" gap="32px">
+          <Box display="flex" gap={{ base: "8px", md: "32px" }}>
             <MenuRoot
               onOpenChange={(details) => {
                 setLanguageMenuOpen(details.open);
@@ -271,6 +271,7 @@ export function NavigationBar({
                     />
 
                     <Text
+                      display={{ base: "none", md: "block" }}
                       fontSize="title.sm"
                       fontWeight="medium"
                       letterSpacing="wide"
@@ -310,7 +311,7 @@ export function NavigationBar({
               </MenuContent>
             </MenuRoot>
             {organizations && organizations.length > 1 && (
-              <Box display="flex">
+              <Box display={{ base: "none", md: "flex" }}>
                 <MenuRoot
                   onOpenChange={(details) => {
                     setOrgMenuOpen(details.open);
@@ -419,7 +420,12 @@ export function NavigationBar({
                   }
                 >
                   <MenuTrigger asChild whiteSpace="nowrap" textTransform="none">
-                    <Button variant="ghost" px="8px" minW="220px" minH="48px">
+                    <Button
+                      variant="ghost"
+                      px="8px"
+                      minW={{ base: "auto", md: "220px" }}
+                      minH="48px"
+                    >
                       <Box display="flex" alignItems="center" gap="4">
                         <Avatar
                           height="32px"
@@ -430,6 +436,7 @@ export function NavigationBar({
                           src={session.user?.image}
                         />
                         <Text
+                          display={{ base: "none", md: "block" }}
                           w="120px"
                           overflow="hidden"
                           textOverflow="ellipsis"

@@ -115,6 +115,16 @@ import type {
   ImportMappingFeedbackCreationAttributes,
 } from "./ImportMappingFeedback";
 import { ImportMappingFeedback as _ImportMappingFeedback } from "./ImportMappingFeedback";
+import { MeedActionRanked as _MeedActionRanked } from "./MeedActionRanked";
+import type {
+  MeedActionRankedAttributes,
+  MeedActionRankedCreationAttributes,
+} from "./MeedActionRanked";
+import { MeedActionRemoved as _MeedActionRemoved } from "./MeedActionRemoved";
+import type {
+  MeedActionRemovedAttributes,
+  MeedActionRemovedCreationAttributes,
+} from "./MeedActionRemoved";
 import type {
   MethodologyAttributes,
   MethodologyCreationAttributes,
@@ -282,6 +292,8 @@ export {
   _PdfOcrJob as PdfOcrJob,
   _NativeInputCatalog as NativeInputCatalog,
   _ImportMappingFeedback as ImportMappingFeedback,
+  _MeedActionRanked as MeedActionRanked,
+  _MeedActionRemoved as MeedActionRemoved,
   _Methodology as Methodology,
   _Organization as Organization,
   _Project as Project,
@@ -365,6 +377,10 @@ export type {
   NativeInputCatalogCreationAttributes,
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
+  MeedActionRankedAttributes,
+  MeedActionRankedCreationAttributes,
+  MeedActionRemovedAttributes,
+  MeedActionRemovedCreationAttributes,
   MethodologyAttributes,
   MethodologyCreationAttributes,
   OrganizationAttributes,
@@ -461,6 +477,8 @@ export function initModels(sequelize: Sequelize) {
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
   const NativeInputCatalog = _NativeInputCatalog.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
+  const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
+  const MeedActionRemoved = _MeedActionRemoved.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
   const Project = _Project.initModel(sequelize);
@@ -1108,6 +1126,24 @@ export function initModels(sequelize: Sequelize) {
     foreignKey: "hiaRankingId",
   });
 
+  // Associations for MeedActionRanked and MeedActionRemoved
+  MeedActionRanked.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionRanked, {
+    as: "meedActionRankeds",
+    foreignKey: "inventoryId",
+  });
+  MeedActionRemoved.belongsTo(Inventory, {
+    as: "inventory",
+    foreignKey: "inventoryId",
+  });
+  Inventory.hasMany(MeedActionRemoved, {
+    as: "meedActionRemoveds",
+    foreignKey: "inventoryId",
+  });
+
   // Associations for UnrankedActionSelection
   UnrankedActionSelectionModel.belongsTo(Inventory, {
     as: "inventory",
@@ -1227,6 +1263,8 @@ export function initModels(sequelize: Sequelize) {
     PdfOcrJob: PdfOcrJob,
     NativeInputCatalog: NativeInputCatalog,
     ImportMappingFeedback: ImportMappingFeedback,
+    MeedActionRanked: MeedActionRanked,
+    MeedActionRemoved: MeedActionRemoved,
     Methodology: Methodology,
     Organization: Organization,
     Project: Project,

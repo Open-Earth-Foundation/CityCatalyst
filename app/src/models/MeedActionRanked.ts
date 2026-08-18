@@ -1,0 +1,118 @@
+import * as Sequelize from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
+import type { Inventory, InventoryId } from './Inventory';
+
+export interface MeedActionRankedAttributes {
+  id: string;
+  inventoryId: string;
+  actionId: string;
+  rank: number;
+  finalScore: number;
+  impactScore: number;
+  alignmentScore: number;
+  feasibilityScore: number;
+  explanations: object;
+  isSelected: boolean;
+  created: Date;
+  lastUpdated: Date;
+}
+
+export type MeedActionRankedPk = "id";
+export type MeedActionRankedId = MeedActionRanked[MeedActionRankedPk];
+export type MeedActionRankedOptionalAttributes = "explanations" | "isSelected" | "created" | "lastUpdated";
+export type MeedActionRankedCreationAttributes = Optional<MeedActionRankedAttributes, MeedActionRankedOptionalAttributes>;
+
+export class MeedActionRanked extends Model<MeedActionRankedAttributes, MeedActionRankedCreationAttributes> implements MeedActionRankedAttributes {
+  id!: string;
+  inventoryId!: string;
+  actionId!: string;
+  rank!: number;
+  finalScore!: number;
+  impactScore!: number;
+  alignmentScore!: number;
+  feasibilityScore!: number;
+  explanations!: object;
+  isSelected!: boolean;
+  created!: Date;
+  lastUpdated!: Date;
+
+  // MeedActionRanked belongsTo Inventory via inventoryId
+  inventory!: Inventory;
+  getInventory!: Sequelize.BelongsToGetAssociationMixin<Inventory>;
+  setInventory!: Sequelize.BelongsToSetAssociationMixin<Inventory, InventoryId>;
+  createInventory!: Sequelize.BelongsToCreateAssociationMixin<Inventory>;
+
+  static initModel(sequelize: Sequelize.Sequelize): typeof MeedActionRanked {
+    return MeedActionRanked.init({
+    id: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      primaryKey: true
+    },
+    inventoryId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+      references: {
+        model: 'Inventory',
+        key: 'inventory_id'
+      },
+      field: 'inventory_id'
+    },
+    actionId: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      field: 'action_id'
+    },
+    rank: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    finalScore: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+      field: 'final_score'
+    },
+    impactScore: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+      field: 'impact_score'
+    },
+    alignmentScore: {
+      type: DataTypes.DOUBLE,
+      allowNull: false,
+      field: 'alignment_score'
+    },
+    feasibilityScore: {
+      type: DataTypes.DOUBLE,
+      allowNull: false
+    },
+    explanations: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+      defaultValue: {}
+    },
+    isSelected: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true,
+      field: 'is_selected'
+    }
+  }, {
+    sequelize,
+    tableName: 'MeedActionRanked',
+    schema: 'public',
+    timestamps: true,
+    createdAt: 'created',
+    updatedAt: 'last_updated',
+    indexes: [
+      {
+        name: "MeedActionRanked_pkey",
+        unique: true,
+        fields: [
+          { name: "id" },
+        ]
+      },
+    ]
+  });
+  }
+}

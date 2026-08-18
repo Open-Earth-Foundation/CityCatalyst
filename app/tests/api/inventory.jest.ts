@@ -6,6 +6,7 @@ import {
 import { GET as calculateProgress } from "@/app/api/v1/inventory/[inventory]/progress/route";
 import { POST as createInventory } from "@/app/api/v1/city/[city]/inventory/route";
 import { POST as submitInventory } from "@/app/api/v1/inventory/[inventory]/cdp/route";
+import CDPService from "@/backend/CDPService";
 import { db } from "@/models";
 import { CreateInventoryRequest } from "@/util/validation";
 import { randomUUID } from "node:crypto";
@@ -44,6 +45,7 @@ import {
 } from "@/util/enums";
 import { AppSession, Auth } from "@/lib/auth";
 import { Roles } from "@/util/types";
+import { cdpEmissionsRows } from "@/util/cdp-emissions-crosswalk";
 
 jest.useFakeTimers();
 
@@ -558,14 +560,93 @@ describe("Inventory API", () => {
     // expect(totalProgress.total).toEqual(27);
   });
 
-  it.skip("should submit an inventory to the CDP test API", async () => {
-    const req = mockRequest({});
-    const res = await submitInventory(req, {
-      params: Promise.resolve({ inventory: inventory.inventoryId }),
-    });
-    await expectStatusCode(res, 200);
-    const json = await res.json();
-    expect(json.success).toBe(true);
+  it("should submit an inventory to the CDP API (mocked)", async () => {
+    // Avoid live CDP calls — CI/local often lack a valid CDP_API_KEY.
+    Auth.getServerSession = jest.fn(() => Promise.resolve(orgAdminSession));
+
+    const matrixRowTitles = [
+      "Total scope 1 emissions excluding generation of grid-supplied energy",
+      "Scope 1 emissions from generation of grid-supplied energy",
+      "Total scope 2 emissions",
+      "Total scope 3 emissions",
+      "Stationary Energy – scope 1",
+      "Stationary Energy – scope 2",
+      "Stationary Energy – scope 3",
+      "Transportation – scope 1",
+      "Transportation – scope 2",
+      "Transportation – scope 3",
+      "Waste within the city boundary – scope 1",
+      "Waste within the city boundary – scope 3",
+      "Waste outside the city boundary – scope 1",
+      "TOTAL BASIC emissions",
+    ];
+
+    const getCityID = jest
+      .spyOn(CDPService, "getCityID")
+      .mockResolvedValue("mock-cdp-city-id");
+    const getQuestions = jest
+      .spyOn(CDPService, "getQuestions")
+      .mockResolvedValue({
+        sections: [
+          { questions: [] },
+          { questions: [] },
+          { questions: [] },
+          {
+            questions: [
+              {
+                id: "emissions-inventory-q",
+                text: "Do you report an emissions inventory?",
+                options: [{ id: "yes-option", name: "Yes" }],
+              },
+              { id: "unused-q", text: "Unused" },
+              {
+                id: "emissions-matrix-q",
+                text: "Emissions by category",
+                columns: [
+                  {
+                    id: "emissions-col",
+                    text: "Emissions (metric tonnes CO2e)",
+                  },
+                ],
+                rows: matrixRowTitles.map((title, index) => ({
+                  id: `matrix-row-${index}`,
+                  title,
+                })),
+              },
+            ],
+          },
+        ],
+      });
+    const submitSingleSelect = jest
+      .spyOn(CDPService, "submitSingleSelect")
+      .mockResolvedValue(true);
+    const submitMatrix = jest
+      .spyOn(CDPService, "submitMatrix")
+      .mockResolvedValue(true);
+
+    try {
+      const req = mockRequest({});
+      const res = await submitInventory(req, {
+        params: Promise.resolve({ inventory: inventory.inventoryId }),
+      });
+      await expectStatusCode(res, 200);
+      const json = await res.json();
+      expect(json.success).toBe(true);
+      expect(submitSingleSelect).toHaveBeenCalled();
+      expect(submitMatrix).toHaveBeenCalled();
+      // Every crosswalk regex should resolve to a matrix row.
+      const submittedRows = submitMatrix.mock.calls[0][2] as {
+        rowId: string;
+        content: string;
+      }[];
+      expect(submittedRows.length).toBe(cdpEmissionsRows.length);
+    } finally {
+      // Restore only CDP spies — do not restoreAllMocks (breaks Auth session spy).
+      getCityID.mockRestore();
+      getQuestions.mockRestore();
+      submitSingleSelect.mockRestore();
+      submitMatrix.mockRestore();
+    }
   });
 
   it("should return 400 for a 'null' inventory ID", async () => {

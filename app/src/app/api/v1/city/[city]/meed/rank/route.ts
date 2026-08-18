@@ -13,7 +13,7 @@ import z from "zod";
  *       - city
  *     operationId: createMeedRanking
  *     summary: Starts and retrieves MEED+ ranking for a given city
- *     description:
+ *     description: Runs the ranking process in the MEED service, stores the result and returns ranked and removed actions.
  *     parameters:
  *       - in: path
  *         name: city

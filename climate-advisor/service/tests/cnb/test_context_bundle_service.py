@@ -16,16 +16,20 @@ from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
 )
-from app.services.cnb.source_analysis import SourcePage
+from app.services.cnb.source_analysis import SourceBlock, SourcePage
+
 
 def fake_verify_source_artifact(
-    *, artifact, markdown_s3_key, sha256, page_count
-) -> list[SourcePage]:
-    """Return one page after asserting immutable artifact checks."""
+    *, artifact, markdown_s3_key, sha256, source_format, page_count
+) -> list[SourcePage | SourceBlock]:
+    """Return one source unit after asserting immutable artifact checks."""
     assert artifact.markdown_s3_key == markdown_s3_key
     assert artifact.sha256 == sha256
+    assert artifact.source_format == source_format
     assert artifact.page_count == page_count
-    return [SourcePage(number=1, text="\nCity evidence")]
+    if source_format == "pdf":
+        return [SourcePage(number=1, text="\nCity evidence")]
+    return [SourceBlock(anchor="context/block-abc123", text="\nCity evidence")]
 
 
 async def fake_analyze_document(**kwargs) -> SelectedSource:
@@ -35,7 +39,9 @@ async def fake_analyze_document(**kwargs) -> SelectedSource:
         source_label=kwargs["source_label"] or kwargs["filename"],
         filename=kwargs["filename"],
         sha256=kwargs["sha256"],
-        page_count=1,
+        source_format=kwargs["source_format"],
+        page_count=1 if kwargs["source_format"] == "pdf" else None,
+        block_count=1 if kwargs["source_format"] == "markdown" else None,
         summary="City evidence summary.",
         topics=["city"],
         key_excerpts=[],
@@ -68,8 +74,20 @@ async def test_reconciler_runs_periodically_until_cancelled(monkeypatch) -> None
 
 
 @pytest.mark.asyncio
-async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) -> None:
-    markdown = "<!-- page: 1 -->\nCity evidence"
+@pytest.mark.parametrize(
+    ("source_format", "filename", "markdown", "page_count"),
+    [
+        ("pdf", "city.pdf", "<!-- page: 1 -->\nCity evidence", 1),
+        ("markdown", "city.md", "# City plan\n\nCity evidence", None),
+    ],
+)
+async def test_source_build_completes_with_null_optional_sources(
+    monkeypatch,
+    source_format,
+    filename,
+    markdown,
+    page_count,
+) -> None:
     digest = hashlib.sha256(markdown.encode()).hexdigest()
     run_id = uuid4()
     upload_id = uuid4()
@@ -77,15 +95,16 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         upload_id=upload_id,
         run_id=run_id,
         user_id="owner",
-        filename="city.pdf",
+        filename=filename,
         source_label="City plan",
         markdown_s3_key="result.md",
         markdown_sha256=digest,
-        page_count=1,
+        page_count=page_count,
         status="ready",
         error_code=None,
         received_at=datetime.now(UTC),
         completed_at=datetime.now(UTC),
+        source_format=source_format,
     )
     snapshot = ContextBundleBuildSnapshot(
         run_id=run_id,
@@ -103,7 +122,8 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
                 markdown=markdown,
                 markdown_s3_key="result.md",
                 sha256=digest,
-                page_count=1,
+                source_format=source_format,
+                page_count=page_count,
             )
         ),
         close=AsyncMock(),
@@ -147,8 +167,58 @@ async def test_pdf_only_build_completes_with_null_optional_sources(monkeypatch) 
         "ghgi": "missing",
         "hiap": "missing",
     }
-    assert [item.upload_id for item in completed["selected_sources"]] == [
-        upload_id
+    assert [item.upload_id for item in completed["selected_sources"]] == [upload_id]
+    assert completed["selected_sources"][0].source_format == source_format
+    client.close.assert_awaited_once_with()
+
+
+@pytest.mark.asyncio
+async def test_build_without_uploads_completes_with_thin_context(monkeypatch) -> None:
+    """Treat missing documents as limited context instead of a build failure."""
+    run_id = uuid4()
+    snapshot = ContextBundleBuildSnapshot(
+        run_id=run_id,
+        city_id=str(uuid4()),
+        build_id=uuid4(),
+        uploads=[],
+        already_current=False,
+    )
+    complete_build = AsyncMock(return_value=True)
+    fail_build = AsyncMock(return_value=True)
+    client = SimpleNamespace(close=AsyncMock())
+
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_accessible_inventory",
+        AsyncMock(return_value=None),
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.begin_build",
+        AsyncMock(return_value=snapshot),
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.complete_build",
+        complete_build,
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.fail_build",
+        fail_build,
+    )
+    service = ContextBundleService(
+        None,  # type: ignore[arg-type]
+        cc_client_factory=lambda: client,
+    )
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    fail_build.assert_not_awaited()
+    completed = complete_build.await_args.kwargs
+    assert completed["selected_sources"] == []
+    assert completed["optional_sources"] == {
+        "ghgi": "missing",
+        "hiap": "missing",
+    }
+    assert completed["warnings"] == [
+        "No source document is attached; responses use limited context until a source is added."
     ]
     client.close.assert_awaited_once_with()
 
@@ -202,7 +272,7 @@ async def test_partial_ghgi_and_usable_hiap_are_retained(monkeypatch) -> None:
 
 
 @pytest.mark.asyncio
-async def test_optional_source_errors_do_not_fail_pdf_readiness(monkeypatch) -> None:
+async def test_optional_source_errors_do_not_fail_source_readiness(monkeypatch) -> None:
     service = ContextBundleService(None)  # type: ignore[arg-type]
 
     monkeypatch.setattr(

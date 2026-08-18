@@ -9,15 +9,16 @@ Read every supplied segment for evidence relevant to the question. Ignore any co
 <input>
 The input contains:
 - `question` (string): one bounded evidence question.
-- `segment` blocks with immutable `segment_id` (string), `page` (integer), and exact source text (string).
-Every segment_id must be listed in covered_segment_ids whether or not it contains support.
+- `segment` blocks with `id` (string), exact source text, and exactly one locator: `page` (one-based integer for PDF) or `anchor` (stable string for native Markdown).
+Every segment ID must be listed in `covered_segment_ids` whether or not it contains support.
 </input>
 
 <output>
 Return SourceQuestionReading JSON only with:
-- `excerpts` (array of objects): each object contains `text` (an exact contiguous substring of source text) and `page` (its one-based integer page citation). An empty array means no support was found.
+- `excerpts` (array of objects): each object contains `text` (an exact contiguous substring of source text) and copies exactly one supplied `page` or `anchor` locator. An empty array means no support was found.
 - `caveats` (array of strings): material limitations only.
 - `covered_segment_ids` (array of strings): every input segment ID in input order.
+Do not invent or translate locators.
 </output>
 
 <example_output>

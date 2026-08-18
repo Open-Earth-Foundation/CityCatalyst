@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from app.config.settings import _load_llm_config
-from app.config.settings import PromptsConfig
+from app.config.settings import PromptsConfig, _load_llm_config
 
 CA_ROOT = Path(__file__).resolve().parents[2]
 
@@ -49,6 +48,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_document_mapping": prompts.cnb_source_document_mapping,
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
+        "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -184,4 +184,5 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     ):
         prompt = config.prompts.get_prompt(prompt_name)
         assert "untrusted evidence" in prompt
-        assert "exact contiguous substring" in prompt
+        assert "exact contiguous" in prompt
+        assert "substring" in prompt

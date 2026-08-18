@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
+from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.sse import format_sse
 from app.utils.streaming_handler import StreamingHandler
 
@@ -100,6 +101,39 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(handler.cc_access_token, "fresh-token")
 
+    async def test_resolve_workflow_context_loads_thread_once(self) -> None:
+        draft_run_id = str(uuid4())
+        concept_note_run_id = str(uuid4())
+        handler = StreamingHandler(
+            thread_id=str(uuid4()),
+            user_id="user-1",
+            session_factory=MagicMock(),
+        )
+        thread_context_loader = AsyncMock(
+            return_value=ChatWorkflowContext(
+                stationary_energy_draft_run_id=draft_run_id,
+                concept_note_run_id=concept_note_run_id,
+            )
+        )
+
+        with patch.object(
+            handler,
+            "_load_thread_workflow_context",
+            thread_context_loader,
+        ):
+            await handler._resolve_workflow_context(
+                MessageCreateRequest(user_id="user-1", content="hello")
+            )
+
+        thread_context_loader.assert_awaited_once()
+        self.assertEqual(
+            handler.workflow_context,
+            ChatWorkflowContext(
+                stationary_energy_draft_run_id=draft_run_id,
+                concept_note_run_id=concept_note_run_id,
+            ),
+        )
+
     async def test_run_config_uses_persisted_stationary_energy_context_marker(
         self,
     ) -> None:
@@ -110,7 +144,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             user_id="user-1",
             session_factory=MagicMock(),
         )
-        handler.stationary_energy_draft_run_id = draft_run_id
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=draft_run_id
+        )
 
         run_config = handler._run_config(payload)
 
@@ -157,7 +193,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             session_factory=MagicMock(),
             inventory_id="inventory-1",
         )
-        handler.stationary_energy_draft_run_id = draft_run_id
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=draft_run_id
+        )
         agent = SimpleNamespace(
             instructions=(
                 "<role>\n"
@@ -236,7 +274,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             session_factory=MagicMock(),
             inventory_id="inventory-1",
         )
-        handler.stationary_energy_draft_run_id = draft_run_id
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=draft_run_id
+        )
         agent = SimpleNamespace(instructions=original_instructions)
 
         class FakeMessages:
@@ -474,7 +514,9 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
             user_id="user-1",
             session_factory=MagicMock(),
         )
-        handler.stationary_energy_draft_run_id = str(uuid4())
+        handler.workflow_context = ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(uuid4())
+        )
         prompts = MagicMock()
         prompts.compose_prompt.return_value = "Composed Stationary Energy prompt"
         settings = SimpleNamespace(llm=SimpleNamespace(prompts=prompts))

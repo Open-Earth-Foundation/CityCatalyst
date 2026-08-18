@@ -258,7 +258,7 @@ def test_prioritize_rejects_invalid_weights_override(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -535,7 +535,7 @@ def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -618,6 +618,7 @@ def test_prioritize_smoke() -> None:
         Action(
             action_id="c40_0010",
             action_name="Retrofit buildings",
+            action_type="mitigation",
             implementation_timeline="<5 years",
             emissions={
                 "sector_number": "I",
@@ -630,6 +631,7 @@ def test_prioritize_smoke() -> None:
         Action(
             action_id="c40_0020",
             action_name="Fleet expansion",
+            action_type="mitigation",
             implementation_timeline=">10 years",
             emissions={
                 "sector_number": "I",
@@ -731,11 +733,13 @@ def test_exclusion_preview_returns_deterministic_proposals(
         Action(
             action_id="A_waste",
             action_name="Waste action",
+            action_type="mitigation",
             emissions={"sector_number": "III"},
         ),
         Action(
             action_id="A_air",
             action_name="Air impact action",
+            action_type="mitigation",
             emissions={"sector_number": "II"},
             co_benefits={"air_quality": {"impact_numeric": -1}},
         ),
@@ -882,8 +886,8 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
         city_context=[],
     )
     actions = [
-        Action(action_id="A_keep", action_name="Keep action"),
-        Action(action_id="A_exclude", action_name="Exclude action"),
+        Action(action_id="A_keep", action_name="Keep action", action_type="mitigation"),
+        Action(action_id="A_exclude", action_name="Exclude action", action_type="mitigation"),
     ]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
@@ -955,7 +959,7 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1021,7 +1025,7 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1084,7 +1088,7 @@ def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1151,11 +1155,13 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
         Action(
             action_id="A_long",
             action_name="Long action",
+            action_type="mitigation",
             implementation_timeline=">10 years",
         ),
         Action(
             action_id="A_short",
             action_name="Short action",
+            action_type="mitigation",
             implementation_timeline="<5 years",
         ),
     ]
@@ -1239,8 +1245,8 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
         city_context=[],
     )
     actions = [
-        Action(action_id="A_ok", action_name="Aligned action"),
-        Action(action_id="A_blocked", action_name="Blocked action"),
+        Action(action_id="A_ok", action_name="Aligned action", action_type="mitigation"),
+        Action(action_id="A_blocked", action_name="Blocked action", action_type="mitigation"),
     ]
     assessments_by_action_id = {
         "A_blocked": LegalAssessmentRecord(
@@ -1314,7 +1320,13 @@ def test_prioritize_keeps_missing_legal_category_and_uses_score() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_unknown", action_name="Unknown legal evidence action")]
+    actions = [
+        Action(
+            action_id="A_unknown",
+            action_name="Unknown legal evidence action",
+            action_type="mitigation",
+        )
+    ]
     assessments_by_action_id = {
         "A_unknown": LegalAssessmentRecord(
             action_id="A_unknown",
@@ -1520,7 +1532,7 @@ def test_prioritize_skips_explanations_when_flag_false(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1592,8 +1604,8 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
         city_context=[],
     )
     actions = [
-        Action(action_id="A_top", action_name="Top action"),
-        Action(action_id="A_second", action_name="Second action"),
+        Action(action_id="A_top", action_name="Top action", action_type="mitigation"),
+        Action(action_id="A_second", action_name="Second action", action_type="mitigation"),
     ]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
@@ -1668,7 +1680,7 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1738,7 +1750,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1838,7 +1850,7 @@ def test_prioritize_generates_every_requested_explanation_language(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1931,7 +1943,7 @@ def test_prioritize_reports_only_successfully_generated_languages(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})

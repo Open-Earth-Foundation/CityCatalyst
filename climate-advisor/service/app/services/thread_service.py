@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.exceptions import ThreadNotFoundException, ThreadAccessDeniedException
 from app.models.db.thread import Thread
 from app.models.requests import ThreadCreateRequest
+from app.utils.chat_workflow_context import bind_workflow_context
 from app.utils.token_manager import create_token_context
 
 
@@ -122,6 +123,21 @@ class ThreadService:
         merged_context = dict(thread.context or {})
         merged_context.update(context_update)
         thread.context = merged_context
+        await self.session.flush()
+
+    async def set_workflow_context(
+        self,
+        thread: Thread,
+        *,
+        workflow_key: str,
+        run_id: str | UUID,
+    ) -> None:
+        """Persist one workflow identifier while clearing competing workflows."""
+        thread.context = bind_workflow_context(
+            thread.context,
+            workflow_key=workflow_key,
+            run_id=run_id,
+        )
         await self.session.flush()
     
     async def update_access_token(

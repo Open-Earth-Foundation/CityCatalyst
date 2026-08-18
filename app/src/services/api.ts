@@ -832,8 +832,7 @@ export const api = createApi({
               body: data,
             };
           },
-          transformResponse: (response: { data: AcceptInviteResponse }) =>
-            response.data,
+          transformResponse: (response: AcceptInviteResponse) => response,
           invalidatesTags: [
             "Invites",
             "UserData",
@@ -1501,7 +1500,6 @@ export const api = createApi({
           cityLocode: string;
           lng?: string;
           cityId: string;
-          rankingId: string;
         }
       >({
         query: ({
@@ -1510,16 +1508,14 @@ export const api = createApi({
           cityId,
           lng,
           cityLocode,
-          rankingId,
         }: {
           action: HIAction;
           inventoryId: string;
           cityId: string;
           cityLocode?: string;
           lng?: string;
-          rankingId: string;
         }) => ({
-          url: `city/${cityId}/hiap/action-plan/generate/${rankingId}`,
+          url: `city/${cityId}/hiap/action-plan/generate`,
           method: "POST",
           body: { action, inventoryId, cityLocode, lng },
         }),

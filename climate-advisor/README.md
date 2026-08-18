@@ -28,7 +28,7 @@ conversational experience for CityCatalyst (CC). The service lives under
 
 ## Current Architecture
 
-Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
+Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
 
 1. General chat
    - Composes `prompts.core` with `prompts.chat`
@@ -45,18 +45,24 @@ Climate Advisor runs two chat modes through the same `/v1/messages` endpoint:
    - Composes `prompts.core` with `prompts.stationary_energy_review`
    - Registers only scoped review tools that stage, preview, rollback, and save
      draft-review choices, including notation-key choices
+3. Concept Note context chat
+   - Activates for an authorized `concept_note_run_id`
+   - Keeps the general chat prompt, injects compact ready-source summaries, and
+     exposes the step-scoped read-only source query
+   - Uses the detailed contract in
+     [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
 At runtime:
 
 - `ThreadService` and `ThreadResolver` own chat-thread lifecycle.
 - `TokenHandler` loads and refreshes CityCatalyst tokens.
-- `StreamingHandler` loads pruned history, optionally injects Stationary Energy
-  draft context and `ui_context`, runs the agent, emits SSE events, and
-  persists assistant messages.
+- `StreamingHandler` resolves scoped Stationary Energy or Concept Note context,
+  loads pruned history, runs the agent, emits SSE events, and persists assistant
+  messages.
 - `AgentService` chooses the model and builds the tool pack for the current
   request.
-- PostgreSQL stores threads, messages, embeddings, and Stationary Energy draft
-  workflow state.
+- PostgreSQL stores threads, messages, embeddings, Stationary Energy draft
+  state, and Concept Note run/bundle state.
 
 ## Offline CNB Funding Research
 
@@ -494,7 +500,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 
 All non-secret LLM settings are centralized in `llm_config.yaml`, including the
 orchestrator and agentic-flow model settings, provider base URLs, retry and
-timeout settings, and Stationary Energy review chat-context prompt budgets.
+timeout settings, Stationary Energy review chat-context prompt budgets, and the
+CNB source reader/synthesizer roles and partition limits.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -505,11 +512,15 @@ Prompt paths are also configured in `llm_config.yaml`:
 - `prompts.chat` is the workflow prompt for general Climate Advisor chat
 - `prompts.stationary_energy_review` is the workflow prompt for active
   Stationary Energy draft review chat
+- the three `prompts.cnb_source_*` entries map document partitions, reduce them
+  to compact document summaries, and read focused questions for exact evidence
 
 At runtime, CA composes the final system instructions as:
 
 - general chat: `prompts.core + prompts.chat`
 - Stationary Energy review chat: `prompts.core + prompts.stationary_energy_review`
+- Concept Note context chat currently keeps `prompts.core + prompts.chat`; a
+  dedicated writing/editing prompt is outside this source-analysis scope
 
 Workflow prompt `<tools>` sections load shared tool-policy fragments with
 `{{ include: ... }}` directives. Exact tool argument contracts come from the
@@ -597,6 +608,30 @@ Rejected service-key requests emit a `WARNING` audit log with the upload ID but
 never the supplied credential. Deployments should alert on repeated warnings or
 `401 invalid_service_key` responses for this route.
 
+### PDF-first Concept Note context bundles
+
+The full persistence, security, source-analysis, and selected-document query
+contract lives in
+[`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
+Operationally:
+
+- A ready Markdown pointer automatically rebuilds the bundle from every ready
+  PDF. At least one ready PDF is required; optional GHGI and HIAP failures do
+  not block readiness, and stale builds cannot overwrite a newer upload set.
+  A five-minute reconciler marks builds left in `building` for more than one
+  hour as retryable failures after an interrupted process or pod.
+- `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
+  proxy rerun bundle assembly without rerunning OCR.
+- Eligible Concept Note chat turns receive compact summaries and the read-only,
+  single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
+  storage keys, credentials, and derived chunks are not persisted in the bundle.
+
+Run the focused contract test with:
+
+```bash
+uv run pytest service/tests/cnb/test_context_bundle_service.py -q
+```
+
 ### Concept Note run foundation
 
 `POST /v1/concept-notes/start` validates a CC-issued bearer token, verifies that
@@ -625,7 +660,11 @@ revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable
 chat thread to belong to the authenticated user; it remains an integration
-identifier rather than a run-table foreign key.
+identifier rather than a run-table foreign key. The authorized `run_id` is also
+persisted as `concept_note_run_id` in thread context so later chat turns can
+scope their prompt and source capability without trusting an LLM-provided run.
+Binding either Concept Note or Stationary Energy context clears the competing
+workflow identifier while preserving tokens and unrelated thread context.
 
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,

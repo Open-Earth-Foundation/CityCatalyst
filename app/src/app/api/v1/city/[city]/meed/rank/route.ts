@@ -27,45 +27,107 @@ import z from "zod";
  *         content:
  *           application/json:
  *             schema:
- *             // TODO adjust to returned data schema
  *               type: object
  *               properties:
  *                 data:
  *                   type: object
  *                   properties:
- *                     cityId:
- *                       type: string
- *                       format: uuid
- *                     name:
- *                       type: string
- *                     region:
- *                       type: string
- *                       nullable: true
- *                     country:
- *                       type: string
- *                       nullable: true
- *                     locode:
- *                       type: string
- *                       nullable: true
- *                     population:
+ *                     rankedActions:
  *                       type: array
  *                       items:
  *                         type: object
  *                         properties:
- *                           year:
- *                             type: number
- *                           population:
- *                             type: number
- *                     boundaries:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           boundaryId:
+ *                           id:
  *                             type: string
  *                             format: uuid
- *                           name:
+ *                           inventoryId:
  *                             type: string
+ *                             format: uuid
+ *                           actionId:
+ *                             type: string
+ *                           rank:
+ *                             type: number
+ *                           finalScore:
+ *                             type: number
+ *                           impactScore:
+ *                             type: number
+ *                           alignmentScore:
+ *                             type: number
+ *                           feasibilityScore:
+ *                             type: number
+ *                           explanations:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           isSelected:
+ *                             type: boolean
+ *                           created:
+ *                             type: string
+ *                             format: date-time
+ *                           lastUpdated:
+ *                             type: string
+ *                             format: date-time
+ *                     removedActions:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                             format: uuid
+ *                           inventoryId:
+ *                             type: string
+ *                             format: uuid
+ *                           actionId:
+ *                             type: string
+ *                           actionName:
+ *                             type: string
+ *                           removalReason:
+ *                             type: string
+ *                           removalSource:
+ *                             type: string
+ *                           verdictCategory:
+ *                             type: string
+ *                           ownershipCategory:
+ *                             type: string
+ *                           restrictionsCategory:
+ *                             type: string
+ *                           ownershipDescription:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           restrictionsDescription:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           legalJustification:
+ *                             type: object
+ *                             properties:
+ *                               en:
+ *                                 type: string
+ *                               es:
+ *                                 type: string
+ *                           legalReferences:
+ *                             type: array
+ *                             items:
+ *                               type: string
+ *                           isSelected:
+ *                             type: boolean
+ *                           created:
+ *                             type: string
+ *                             format: date-time
+ *                           lastUpdated:
+ *                             type: string
+ *                             format: date-time
  */
 
 const runRankingRequest = z.object({

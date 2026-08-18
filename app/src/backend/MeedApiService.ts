@@ -136,18 +136,46 @@ export default class MeedApiService {
                 inventoryValue.unavailableReason.length > 0
                   ? inventoryValue.unavailableReason
                   : undefined;
+              let activities = inventoryValue.activityValues.map((activity) => {
+                const fields = InventoryService.extractActivityFields(
+                  activity,
+                  inventoryValue,
+                );
+                return fields as GpcActivity;
+              });
+
+              // make sure direct measure data is represented even if there are no activities
+              if (activities.length === 0 && (inventoryValue.co2eq ?? 0) > 0) {
+                activities = [
+                  {
+                    activityType: "direct-measure",
+                    totalEmissions: Number(inventoryValue.co2eq) ?? 0,
+                    totalEmissionsUnit: "kg",
+                    dataSource: inventoryValue.dataSource?.datasourceName,
+                    notationKey: inventoryValue.unavailableReason ?? undefined,
+                  },
+                ];
+              }
+
+              // validation for duplicate or missing GPC reference numbers
+              if (!inventoryValue.gpcReferenceNumber) {
+                throw new createHttpError.BadRequest(
+                  "Missing GPC reference number for InventoryValue " +
+                    inventoryValue.id,
+                );
+              }
+              if (acc.hasOwnProperty(inventoryValue.gpcReferenceNumber)) {
+                throw new createHttpError.BadRequest(
+                  "Duplicate GPC reference number in inventory: " +
+                    inventoryValue.gpcReferenceNumber,
+                );
+              }
 
               return {
                 ...acc,
                 [inventoryValue.gpcReferenceNumber ?? ""]: {
                   notationKey,
-                  activities: inventoryValue.activityValues.map((activity) => {
-                    const fields = InventoryService.extractActivityFields(
-                      activity,
-                      inventoryValue,
-                    );
-                    return fields as GpcActivity;
-                  }),
+                  activities,
                 },
               };
             },

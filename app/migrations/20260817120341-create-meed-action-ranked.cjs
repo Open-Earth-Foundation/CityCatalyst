@@ -32,9 +32,24 @@ module.exports = {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      lang: {
-        type: Sequelize.TEXT,
+      impact_score: {
+        type: Sequelize.FLOAT,
         allowNull: false,
+      },
+      alignment_score: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      feasibilityScore: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      // TODO do we need evidence summary?
+      // this contains keys for each language
+      explanations: {
+        type: Sequelize.JSONB,
+        allowNull: false,
+        defaultValue: {},
       },
       is_selected: {
         type: Sequelize.BOOLEAN,

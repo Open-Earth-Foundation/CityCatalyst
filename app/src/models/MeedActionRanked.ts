@@ -108,6 +108,17 @@ export class MeedActionRanked
           defaultValue: true,
           field: "is_selected",
         },
+        created: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+        },
+        lastUpdated: {
+          field: "last_updated",
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+        },
       },
       {
         sequelize,

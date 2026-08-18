@@ -151,6 +151,17 @@ export class MeedActionRemoved
           defaultValue: ["ARRAY[]"],
           field: "legal_references",
         },
+        created: {
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+        },
+        lastUpdated: {
+          field: "last_updated",
+          type: DataTypes.DATE,
+          allowNull: false,
+          defaultValue: DataTypes.NOW,
+        },
       },
       {
         sequelize,

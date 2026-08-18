@@ -130,6 +130,16 @@ function ensureScope(scope: HiapCatalogScope): void {
   }
 }
 
+export async function resolveHIAPCatalogScope(input: {
+  inventoryId?: string | null;
+  cityId?: string | null;
+  userId?: string | null;
+}): Promise<HiapCatalogScope> {
+  const scope = await resolveScope(input);
+  ensureScope(scope);
+  return scope;
+}
+
 async function supersedePreviousVersions(
   sourceType: string,
   sourcePrefix: string,
@@ -151,7 +161,9 @@ async function supersedePreviousVersions(
   }
 }
 
-export async function registerHIAPRanking(ranking: HighImpactActionRanking) {
+export async function buildHIAPRankingInput(
+  ranking: HighImpactActionRanking,
+): Promise<RegisterNativeInputInput> {
   if (ranking.status !== HighImpactActionRankingStatus.SUCCESS) {
     throw new Error("Only successful HIAP rankings can enter the catalog");
   }
@@ -200,6 +212,11 @@ export async function registerHIAPRanking(ranking: HighImpactActionRanking) {
     },
   };
 
+  return input;
+}
+
+export async function registerHIAPRanking(ranking: HighImpactActionRanking) {
+  const input = await buildHIAPRankingInput(ranking);
   const registration = await registerNativeInput(input);
   await supersedePreviousVersions(
     RANKING_SOURCE_TYPE,
@@ -286,7 +303,9 @@ function actionPlanSourceId(plan: ActionPlan): string {
   return `${plan.id}:${digest(planContent(plan))}`;
 }
 
-export async function registerHIAPActionPlan(plan: ActionPlan) {
+export async function buildHIAPActionPlanInput(
+  plan: ActionPlan,
+): Promise<RegisterNativeInputInput> {
   if (!plan.id)
     throw new Error("Only persisted HIAP action plans can enter the catalog");
 
@@ -312,6 +331,12 @@ export async function registerHIAPActionPlan(plan: ActionPlan) {
       language: plan.language,
     },
   };
+
+  return input;
+}
+
+export async function registerHIAPActionPlan(plan: ActionPlan) {
+  const input = await buildHIAPActionPlanInput(plan);
 
   const registration = await registerNativeInput(input);
   await supersedePreviousVersions(
@@ -373,15 +398,15 @@ function selectionSourceId(
   return `${inventoryId}:${actionType}:${actionId}`;
 }
 
-async function registerSelection(
+export function buildHIAPSelectionInput(
   sourceType: SelectionSourceType,
   inventoryId: string,
   actionType: ACTION_TYPES,
   actionId: string,
   scope: HiapCatalogScope,
   rankingId?: string,
-): Promise<SelectionRegistration> {
-  const input: RegisterNativeInputInput = {
+): RegisterNativeInputInput {
+  return {
     kind: "hiap_selection",
     owningModule: HIAP_MODULE,
     sourceType,
@@ -401,6 +426,24 @@ async function registerSelection(
       rankingId: rankingId ?? null,
     },
   };
+}
+
+async function registerSelection(
+  sourceType: SelectionSourceType,
+  inventoryId: string,
+  actionType: ACTION_TYPES,
+  actionId: string,
+  scope: HiapCatalogScope,
+  rankingId?: string,
+): Promise<SelectionRegistration> {
+  const input = buildHIAPSelectionInput(
+    sourceType,
+    inventoryId,
+    actionType,
+    actionId,
+    scope,
+    rankingId,
+  );
   const registration = await registerNativeInput(input);
   return {
     input,

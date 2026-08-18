@@ -90,6 +90,16 @@ export function ConceptNoteWorkspace({
     skipPollingIfUnfocused: true,
   });
   const { data: city } = api.useGetCityQuery(cityId);
+  const {
+    data: applicationContext,
+    isError: applicationContextFailed,
+    isLoading: applicationContextLoading,
+  } = api.useGetConceptNoteApplicationContextQuery(runId);
+  const { data: draft, refetch: refetchDraft } =
+    api.useGetConceptNoteDraftQuery(runId, {
+      pollingInterval: 3_000,
+      skipPollingIfUnfocused: true,
+    });
   const { data: population } = api.useGetMostRecentCityPopulationQuery({
     cityId,
   });
@@ -101,6 +111,8 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteUploadMutation();
   const [retryBundle, retryBundleState] =
     api.useRetryConceptNoteContextBundleMutation();
+  const [startDraftMutation, startDraftState] =
+    api.useStartConceptNoteDraftMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: activeUploadId ?? "" },
@@ -130,6 +142,15 @@ export function ConceptNoteWorkspace({
       })
     : t("population-unavailable");
   const files = cityFiles ?? [];
+  const canStartDrafting = Boolean(
+    applicationContext?.funder &&
+    applicationContext.opportunity &&
+    applicationContext.template,
+  );
+  const draftStartError = startDraftState.isError
+    ? t("draft-start-error")
+    : null;
+  const isDraftRunning = draft?.status === "running";
 
   async function uploadSource(file: File): Promise<void> {
     setUploadError(null);
@@ -181,6 +202,19 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  async function startDrafting(): Promise<void> {
+    if (!canStartDrafting || isDraftRunning) {
+      return;
+    }
+
+    try {
+      await startDraftMutation(runId).unwrap();
+      await Promise.all([refetchDraft(), refetchRun()]);
+    } catch {
+      return;
+    }
+  }
+
   if (runLoading) {
     return (
       <Box
@@ -193,7 +227,10 @@ export function ConceptNoteWorkspace({
           <Skeleton h="70px" />
           <Grid
             gap={5}
-            gridTemplateColumns={{ base: "1fr", xl: "480px minmax(0, 1fr)" }}
+            gridTemplateColumns={{
+              base: "minmax(0, 1fr)",
+              md: "440px minmax(0, 1fr)",
+            }}
           >
             <Skeleton h="680px" />
             <Skeleton h="680px" />
@@ -320,7 +357,7 @@ export function ConceptNoteWorkspace({
             alignItems="start"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
-              xl: "480px minmax(0, 900px)",
+              md: "440px minmax(0, 1fr)",
             }}
           >
             <ConceptNoteChatPanel
@@ -334,6 +371,10 @@ export function ConceptNoteWorkspace({
             <Tabs.Root
               value={tab}
               onValueChange={(details) => setTab(details.value as WorkspaceTab)}
+              display="flex"
+              flexDirection="column"
+              h={{ md: "calc(100vh - 184px)" }}
+              minH={{ md: "650px" }}
               minW={0}
               overflow="hidden"
               border="1px solid"
@@ -343,6 +384,7 @@ export function ConceptNoteWorkspace({
               boxShadow="1dp"
             >
               <Tabs.List
+                flexShrink={0}
                 gap={0}
                 borderBottom="1px solid"
                 borderColor="border.neutral"
@@ -376,21 +418,53 @@ export function ConceptNoteWorkspace({
                 ))}
               </Tabs.List>
 
-              <Tabs.Content value="draft" p={0}>
+              <Tabs.Content
+                value="draft"
+                flex={1}
+                minH={0}
+                overflowY={{ base: "visible", md: "auto" }}
+                p={0}
+              >
                 <DraftTab
+                  applicationContext={applicationContext ?? null}
                   bundle={bundle}
+                  canStartDrafting={canStartDrafting}
+                  draft={draft ?? null}
+                  draftError={draftStartError}
+                  applicationContextFailed={applicationContextFailed}
+                  applicationContextLoading={applicationContextLoading}
+                  isDraftRunning={isDraftRunning}
                   isRetrying={retryBundleState.isLoading}
+                  isStartingDraft={startDraftState.isLoading}
                   lng={lng}
                   noteName={run.name}
                   onOpenContext={() => setTab("context")}
                   onRetry={() => void retryContextBundle()}
+                  onStartDrafting={() => void startDrafting()}
                 />
               </Tabs.Content>
-              <Tabs.Content value="structure" p={0}>
-                <StructureTab lng={lng} />
+              <Tabs.Content
+                value="structure"
+                flex={1}
+                minH={0}
+                overflowY={{ base: "visible", md: "auto" }}
+                p={0}
+              >
+                <StructureTab
+                  applicationContext={applicationContext ?? null}
+                  draft={draft ?? null}
+                  lng={lng}
+                />
               </Tabs.Content>
-              <Tabs.Content value="context" p={0}>
+              <Tabs.Content
+                value="context"
+                flex={1}
+                minH={0}
+                overflowY={{ base: "visible", md: "auto" }}
+                p={0}
+              >
                 <ContextTab
+                  applicationContext={applicationContext ?? null}
                   bundle={bundle}
                   cityFilesCount={files.length}
                   cityName={cityName}
@@ -405,7 +479,6 @@ export function ConceptNoteWorkspace({
                   onRetryUpload={() => void retryActiveUpload()}
                   onUploadFile={uploadSource}
                   populationLabel={populationLabel}
-                  projectName={city?.project?.name ?? null}
                   upload={effectiveUpload}
                   uploadError={effectiveUploadError}
                 />

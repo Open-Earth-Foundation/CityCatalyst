@@ -133,6 +133,7 @@ class ModelsConfig(BaseModel):
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
+    cnb_chapter_drafter: ResearchModelConfig | None = None
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -185,6 +186,7 @@ class PromptsConfig(BaseModel):
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

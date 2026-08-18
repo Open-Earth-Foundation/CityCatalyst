@@ -61,6 +61,7 @@ import {
   loadConceptNoteUpload,
   updateConceptNoteUpload,
 } from "@/backend/ConceptNoteUploadService";
+import { triggerConceptNoteSourceProcessing } from "@/backend/ConceptNoteSourceProcessingService";
 import {
   getConceptNotePdfOcrJob,
   normalizeConceptNotePdfOcrStatus,
@@ -116,6 +117,9 @@ export const POST = apiHandler(async (req, { session, params }) => {
   const retryKind = await retryConceptNotePdfOcr(job);
   const acceptedKind =
     retryKind === "noop" ? currentState.retryKind : retryKind;
+  if (retryKind !== "noop") {
+    triggerConceptNoteSourceProcessing();
+  }
   logger.info(
     {
       requestId,

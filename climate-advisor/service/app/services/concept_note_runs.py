@@ -149,12 +149,28 @@ class ConceptNoteRunService:
         authorization: str | None,
     ) -> ConceptNoteRunResponse:
         """Return an owned run after revalidating current city access."""
+        run = await self.get_authorized_run(
+            run_id=run_id,
+            requested_user_id=requested_user_id,
+            authorization=authorization,
+        )
+        return _to_response(run, created=False)
+
+    async def get_authorized_run(
+        self,
+        *,
+        run_id: UUID,
+        requested_user_id: str,
+        authorization: str | None,
+    ) -> ConceptNoteRun:
+        """Return the owned run row after revalidating current city access."""
         token = _require_bearer_token(authorization)
         canonical_user_id = await self._authorize_user(
             token=token,
             requested_user_id=requested_user_id,
         )
 
+        # Load the owned run before revalidating its current city access.
         run = await self.repository.get_for_user(
             run_id=run_id,
             user_id=canonical_user_id,
@@ -162,12 +178,13 @@ class ConceptNoteRunService:
         if run is None:
             raise HTTPException(status_code=404, detail="Concept Note run not found")
 
+        # Reject stale local access when CityCatalyst has revoked the city scope.
         await self._validate_city_access(
             token=token,
             user_id=canonical_user_id,
             city_id=UUID(run.city_id),
         )
-        return _to_response(run, created=False)
+        return run
 
     async def list_runs(
         self,

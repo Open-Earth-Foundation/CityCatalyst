@@ -6,6 +6,7 @@ import { Box, Flex, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import {
   LuArrowDown,
   LuArrowUp,
+  LuCheck,
   LuGripVertical,
   LuInfo,
   LuLock,
@@ -14,6 +15,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import type {
+  ConceptNoteApplicationContext,
+  ConceptNoteDraftChapter,
+  ConceptNoteDraftState,
+} from "@/util/types";
 
 const initialChapterKeys = [
   "chapter-project-summary",
@@ -30,27 +36,114 @@ const initialChapterKeys = [
   "chapter-monitoring-evaluation",
 ] as const;
 
+interface StructureChapter {
+  id: string;
+  required: boolean;
+  title: string | null;
+  translationKey: string | null;
+}
+
+interface ChapterOrderState {
+  chapters: StructureChapter[];
+  sourceId: string;
+}
+
 interface StructureTabProps {
+  applicationContext: ConceptNoteApplicationContext | null;
+  draft: ConceptNoteDraftState | null;
   lng: string;
 }
 
-export function StructureTab({ lng }: StructureTabProps) {
+function chapterStatusTranslationKey(
+  status: ConceptNoteDraftChapter["status"] | null,
+): string {
+  switch (status) {
+    case "draft":
+      return "chapter-status-draft";
+    case "needs_review":
+      return "chapter-status-needs-review";
+    case "ready":
+      return "chapter-status-ready";
+    case "empty":
+    default:
+      return "not-started";
+  }
+}
+
+function chapterStatusColor(
+  status: ConceptNoteDraftChapter["status"] | null,
+): string {
+  switch (status) {
+    case "ready":
+      return "sentiment.positiveDefault";
+    case "needs_review":
+      return "sentiment.warningDefault";
+    case "draft":
+      return "content.link";
+    case "empty":
+    default:
+      return "content.tertiary";
+  }
+}
+
+function defaultChapters(): StructureChapter[] {
+  return initialChapterKeys.map((translationKey, index) => ({
+    id: translationKey,
+    required: index < 2,
+    title: null,
+    translationKey,
+  }));
+}
+
+function chaptersFromTemplate(
+  applicationContext: ConceptNoteApplicationContext | null,
+): StructureChapter[] {
+  const templateChapters = applicationContext?.template?.chapter_schema;
+  if (!templateChapters?.length) {
+    return defaultChapters();
+  }
+
+  return templateChapters.map((chapter) => ({
+    id: chapter.chapter_ref,
+    required: chapter.required === true,
+    title: chapter.title,
+    translationKey: null,
+  }));
+}
+
+export function StructureTab({
+  applicationContext,
+  draft,
+  lng,
+}: StructureTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
-  const [chapters, setChapters] = useState<string[]>([...initialChapterKeys]);
+  const sourceId = applicationContext?.template?.id ?? "default";
+  const sourceChapters = chaptersFromTemplate(applicationContext);
+  const [chapterOrder, setChapterOrder] = useState<ChapterOrderState | null>(
+    null,
+  );
+  const chapters =
+    chapterOrder?.sourceId === sourceId
+      ? chapterOrder.chapters
+      : sourceChapters;
+  const draftChapterBySection = new Map(
+    (draft?.chapters ?? []).map((chapter) => [
+      chapter.template_section_id ?? chapter.chapter_id,
+      chapter,
+    ]),
+  );
 
   function moveChapter(index: number, direction: -1 | 1): void {
     const target = index + direction;
     if (target < 0 || target >= chapters.length) {
       return;
     }
-    setChapters((current) => {
-      const reordered = [...current];
-      [reordered[index], reordered[target]] = [
-        reordered[target],
-        reordered[index],
-      ];
-      return reordered;
-    });
+    const reordered = [...chapters];
+    [reordered[index], reordered[target]] = [
+      reordered[target],
+      reordered[index],
+    ];
+    setChapterOrder({ chapters: reordered, sourceId });
   }
 
   return (
@@ -71,21 +164,42 @@ export function StructureTab({ lng }: StructureTabProps) {
             {t("structure-title")}
           </Text>
           <Text mt={1} fontSize="body.sm" color="content.tertiary">
-            {t("structure-description")}
+            {applicationContext?.template
+              ? t("structure-template-description", {
+                  template: applicationContext.template.name,
+                })
+              : t("structure-description")}
           </Text>
         </Box>
         <HStack
           gap={2}
           border="1px solid"
-          borderColor="sentiment.warningDefault"
+          borderColor={
+            applicationContext?.template
+              ? "sentiment.positiveDefault"
+              : "sentiment.warningDefault"
+          }
           borderRadius="pill"
-          bg="sentiment.warningOverlay"
+          bg={
+            applicationContext?.template
+              ? "sentiment.positiveOverlay"
+              : "sentiment.warningOverlay"
+          }
           px={3}
           py={1.5}
         >
-          <Icon as={LuInfo} color="sentiment.warningDefault" />
+          <Icon
+            as={applicationContext?.template ? LuCheck : LuInfo}
+            color={
+              applicationContext?.template
+                ? "sentiment.positiveDefault"
+                : "sentiment.warningDefault"
+            }
+          />
           <Text fontSize="label.sm" color="content.secondary">
-            {t("preview-only")}
+            {t(
+              applicationContext?.template ? "template-ready" : "preview-only",
+            )}
           </Text>
         </HStack>
       </Flex>
@@ -98,19 +212,33 @@ export function StructureTab({ lng }: StructureTabProps) {
         p={4}
       >
         <Text fontSize="body.sm" lineHeight="22px" color="content.secondary">
-          {t("structure-backend-note")}
+          {t(
+            applicationContext?.template
+              ? "structure-save-note"
+              : "structure-backend-note",
+          )}
         </Text>
       </Box>
 
       <VStack align="stretch" gap={2}>
         {chapters.map((chapter, index) => {
-          const chapterLabel = chapter.startsWith("custom-chapter-")
-            ? t("custom-chapter", { number: index + 1 })
-            : t(chapter);
+          const draftChapter =
+            draftChapterBySection.get(chapter.id) ??
+            draft?.chapters?.find(
+              (item) => item.position === index || item.position === index + 1,
+            ) ??
+            null;
+          const chapterLabel = chapter.title
+            ? chapter.title
+            : chapter.translationKey
+              ? t(chapter.translationKey)
+              : t("custom-chapter", { number: index + 1 });
+          const runtimeStatus = draftChapter?.status ?? null;
+          const runtimeStatusColor = chapterStatusColor(runtimeStatus);
 
           return (
             <Flex
-              key={chapter}
+              key={chapter.id}
               align="center"
               gap={3}
               border="1px solid"
@@ -150,12 +278,12 @@ export function StructureTab({ lng }: StructureTabProps) {
                   <Box
                     boxSize="6px"
                     borderRadius="full"
-                    bg="content.tertiary"
+                    bg={runtimeStatusColor}
                   />
                   <Text fontSize="label.sm" color="content.tertiary">
-                    {t("not-started")}
+                    {t(chapterStatusTranslationKey(runtimeStatus))}
                   </Text>
-                  {index < 2 && (
+                  {chapter.required && (
                     <HStack gap={1} color="content.tertiary">
                       <Icon as={LuLock} boxSize={3} />
                       <Text fontSize="label.sm">{t("required")}</Text>
@@ -197,10 +325,18 @@ export function StructureTab({ lng }: StructureTabProps) {
         variant="outline"
         alignSelf="start"
         onClick={() =>
-          setChapters((current) => [
-            ...current,
-            `custom-chapter-${current.length + 1}`,
-          ])
+          setChapterOrder({
+            chapters: [
+              ...chapters,
+              {
+                id: `custom-chapter-${chapters.length + 1}`,
+                required: false,
+                title: null,
+                translationKey: null,
+              },
+            ],
+            sourceId,
+          })
         }
       >
         <Icon as={LuPlus} />

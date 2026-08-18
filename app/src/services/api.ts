@@ -65,6 +65,8 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteApplicationContext,
+  ConceptNoteDraftState,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
   ConceptNoteUploadRequest,
@@ -140,6 +142,7 @@ export const api = createApi({
     "AdminModules",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
+    "ConceptNoteDraft",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -2166,6 +2169,18 @@ export const api = createApi({
       getConceptNoteRun: builder.query<ConceptNoteRun, string>({
         query: (runId) => `concept-notes/${runId}`,
       }),
+      getConceptNoteApplicationContext: builder.query<
+        ConceptNoteApplicationContext,
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/application-context`,
+      }),
+      getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
+        query: (runId) => `concept-notes/${runId}/draft`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
       startConceptNoteRun: builder.mutation<
         ConceptNoteRun,
         StartConceptNoteRunRequest
@@ -2240,6 +2255,15 @@ export const api = createApi({
           method: "POST",
         }),
         invalidatesTags: ["ConceptNoteRuns"],
+      }),
+      startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/draft`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
       }),
     };
   },
@@ -2391,7 +2415,10 @@ export const {
   useDeleteModuleMutation,
   useGetConceptNoteRunsQuery,
   useGetConceptNoteRunQuery,
+  useGetConceptNoteApplicationContextQuery,
+  useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useStartConceptNoteDraftMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,

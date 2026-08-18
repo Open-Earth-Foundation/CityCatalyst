@@ -4,23 +4,14 @@ import type { ChangeEvent } from "react";
 import { useRef } from "react";
 
 import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import type { IconType } from "react-icons";
-import {
-  LuBuilding2,
-  LuCheck,
-  LuCircleAlert,
-  LuFileText,
-  LuFolderOpen,
-  LuLandmark,
-  LuRefreshCw,
-  LuSearch,
-  LuShieldAlert,
-  LuUpload,
-} from "react-icons/lu";
+import { LuCircleAlert, LuRefreshCw, LuUpload } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
-import type { ConceptNoteUploadResponse } from "@/util/types";
+import type {
+  ConceptNoteApplicationContext,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 import {
   getContextSourceStatusTranslationKey,
@@ -29,6 +20,7 @@ import {
 import { uploadStatusTranslationKey } from "../ConceptNoteWiringHarness/utils";
 
 interface ContextTabProps {
+  applicationContext: ConceptNoteApplicationContext | null;
   bundle: ConceptNoteBundleProgress;
   cityFilesCount: number;
   cityName: string;
@@ -43,79 +35,118 @@ interface ContextTabProps {
   onRetryUpload: () => void;
   onUploadFile: (file: File) => Promise<void>;
   populationLabel: string;
-  projectName: string | null;
   upload: ConceptNoteUploadResponse | null;
   uploadError: string | null;
 }
 
-interface ContextRowProps {
-  detail: string;
-  icon: IconType;
+type ContextTone = "positive" | "neutral" | "warning";
+
+interface ContextCardProps {
+  details: string[];
   label: string;
   status: string;
-  tone?: "positive" | "neutral" | "warning";
+  tone?: ContextTone;
+  value: string;
 }
 
-function ContextRow({
-  detail,
-  icon,
+function toneColor(tone: ContextTone): string {
+  if (tone === "positive") {
+    return "sentiment.positiveDefault";
+  }
+  if (tone === "warning") {
+    return "sentiment.warningDefault";
+  }
+  return "content.tertiary";
+}
+
+function ContextStatusBadge({
+  label,
+  tone = "neutral",
+}: {
+  label: string;
+  tone?: ContextTone;
+}) {
+  const color = toneColor(tone);
+
+  return (
+    <HStack
+      alignSelf="flex-start"
+      gap={1.5}
+      border="1px solid"
+      borderColor={color}
+      borderRadius="pill"
+      px={2}
+      py={0.5}
+    >
+      <Box boxSize="6px" borderRadius="full" bg={color} />
+      <Text fontSize="10px" lineHeight="16px" color="content.secondary">
+        {label}
+      </Text>
+    </HStack>
+  );
+}
+
+function ContextSectionLabel({ children }: { children: string }) {
+  return (
+    <Text
+      fontFamily="heading"
+      fontSize="10px"
+      fontWeight="semibold"
+      letterSpacing="1.5px"
+      color="content.tertiary"
+      textTransform="uppercase"
+    >
+      {children}
+    </Text>
+  );
+}
+
+function ContextCard({
+  details,
   label,
   status,
   tone = "neutral",
-}: ContextRowProps) {
-  const toneColor =
-    tone === "positive"
-      ? "sentiment.positiveDefault"
-      : tone === "warning"
-        ? "sentiment.warningDefault"
-        : "content.tertiary";
-
+  value,
+}: ContextCardProps) {
   return (
-    <Flex
-      align="center"
-      gap={3}
+    <VStack
+      align="stretch"
+      gap={2}
+      minH="128px"
       border="1px solid"
       borderColor="border.neutral"
       borderRadius="rounded"
       bg="base.light"
-      px={3}
-      py={3}
+      p={3}
     >
-      <Flex
-        boxSize="34px"
-        align="center"
-        justify="center"
-        flexShrink={0}
-        borderRadius="rounded"
-        bg="background.alternativeLight"
-        color="content.link"
+      <ContextSectionLabel>{label}</ContextSectionLabel>
+      <ContextStatusBadge label={status} tone={tone} />
+      <Text
+        fontFamily="heading"
+        fontSize="body.sm"
+        fontWeight="semibold"
+        color="content.primary"
       >
-        <Icon as={icon} />
-      </Flex>
-      <Box minW={0} flex={1}>
-        <Text
-          fontFamily="heading"
-          fontSize="body.sm"
-          fontWeight="semibold"
-          color="content.primary"
-        >
-          {label}
-        </Text>
-        <Text truncate fontSize="label.sm" color="content.tertiary">
-          {detail}
-        </Text>
-      </Box>
-      <HStack gap={1.5} flexShrink={0}>
-        <Box boxSize="6px" borderRadius="full" bg={toneColor} />
-        <Text fontSize="label.sm" color="content.secondary">
-          {status}
-        </Text>
-      </HStack>
-    </Flex>
+        {value}
+      </Text>
+      <VStack align="stretch" gap={0.5}>
+        {details.filter(Boolean).map((detail) => (
+          <Text
+            key={detail}
+            fontSize="10px"
+            lineHeight="16px"
+            color="content.tertiary"
+          >
+            {detail}
+          </Text>
+        ))}
+      </VStack>
+    </VStack>
   );
 }
 
 export function ContextTab({
+  applicationContext,
   bundle,
   cityFilesCount,
   cityName,
@@ -130,21 +161,24 @@ export function ContextTab({
   onRetryUpload,
   onUploadFile,
   populationLabel,
-  projectName,
   upload,
   uploadError,
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ghgiIncluded = ["available", "partial", "included"].includes(
-    bundle.ghgiStatus ?? "",
-  );
-  const hiapIncluded = ["available", "partial", "included"].includes(
-    bundle.hiapStatus ?? "",
-  );
+  const ghgiIncluded = applicationContext?.included_sources.ghgi ?? false;
+  const ccraIncluded = applicationContext?.included_sources.ccra ?? false;
+  const hiapIncluded = applicationContext?.included_sources.hiap ?? false;
+  const cityIncluded = applicationContext?.included_sources.city ?? false;
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
-    : null;
+    : t("not-available");
+  const uploadTone: ContextTone =
+    upload?.status === "ready"
+      ? "positive"
+      : upload?.status === "failed"
+        ? "warning"
+        : "neutral";
 
   function onFileChange(event: ChangeEvent<HTMLInputElement>): void {
     const file = event.target.files?.[0];
@@ -155,133 +189,105 @@ export function ContextTab({
   }
 
   return (
-    <VStack align="stretch" gap={6} p={{ base: 4, md: 6 }}>
-      <Box>
-        <Text
-          fontFamily="heading"
-          fontSize="title.md"
-          fontWeight="semibold"
-          color="content.primary"
-        >
-          {t("context-tab-title")}
-        </Text>
-        <Text
-          mt={1}
-          fontSize="body.sm"
-          lineHeight="22px"
-          color="content.tertiary"
-        >
-          {t("context-tab-description")}
-        </Text>
-      </Box>
-
-      <Box>
-        <Text
-          mb={3}
-          fontFamily="heading"
-          fontSize="overline"
-          fontWeight="semibold"
-          letterSpacing="widest"
-          color="content.tertiary"
-          textTransform="uppercase"
-        >
-          {t("citycatalyst-context")}
-        </Text>
+    <VStack
+      align="stretch"
+      gap={4}
+      minH="full"
+      bg="background.alternativeLight"
+      p={{ base: 4, md: 5 }}
+    >
+      <VStack align="stretch" gap={2}>
+        <ContextSectionLabel>
+          {t("context-citycatalyst-sources")}
+        </ContextSectionLabel>
         <Grid
           gap={2}
-          gridTemplateColumns={{ base: "1fr", lg: "repeat(2, minmax(0, 1fr))" }}
+          gridTemplateColumns={{
+            base: "1fr",
+            md: "repeat(2, minmax(0, 1fr))",
+            xl: "repeat(4, minmax(0, 1fr))",
+          }}
         >
-          <ContextRow
-            icon={LuBuilding2}
-            label={t("city-profile")}
-            detail={[cityName, country, populationLabel]
-              .filter(Boolean)
-              .join(" · ")}
-            status={t("connected")}
-            tone="positive"
+          <ContextCard
+            label={t("city-population")}
+            value={populationLabel}
+            details={[[cityName, country].filter(Boolean).join(", ")]}
+            status={t(cityIncluded ? "included-in-run" : "not-included-in-run")}
+            tone={cityIncluded ? "positive" : "warning"}
           />
-          <ContextRow
-            icon={LuLandmark}
+          <ContextCard
             label={t("ghg-inventory")}
-            detail={
+            value={
               inventoryYear
                 ? t("inventory-year", { year: inventoryYear })
-                : t("no-inventory")
+                : t("not-available")
             }
-            status={ghgiIncluded ? t("included-in-run") : t("available-to-run")}
+            details={[
+              ghgiIncluded ? t("included-in-run") : t("available-to-run"),
+            ]}
+            status={t(ghgiIncluded ? "connected" : "available-to-run")}
             tone={ghgiIncluded ? "positive" : "neutral"}
           />
-          <ContextRow
-            icon={LuShieldAlert}
+          <ContextCard
             label={t("climate-risk-assessment")}
-            detail={t("ccra-not-in-bundle")}
-            status={t("not-connected")}
-            tone="warning"
+            value={t(
+              ccraIncluded ? "bundle-source-available" : "not-available",
+            )}
+            details={[t("ccra-not-in-bundle")]}
+            status={t(ccraIncluded ? "included-in-run" : "not-connected")}
+            tone={ccraIncluded ? "positive" : "warning"}
           />
-          <ContextRow
-            icon={LuCheck}
+          <ContextCard
             label={t("hiap-context")}
-            detail={
-              hiapStatusLabel
-                ? t("hiap-bundle-status", { status: hiapStatusLabel })
-                : t("hiap-optional")
-            }
-            status={hiapIncluded ? t("included-in-run") : t("optional")}
-            tone={hiapIncluded ? "positive" : "neutral"}
+            value={hiapIncluded ? hiapStatusLabel : t("not-available")}
+            details={[t("hiap-optional")]}
+            status={t(
+              hiapIncluded ? "included-in-run" : "bundle-source-missing",
+            )}
+            tone={hiapIncluded ? "positive" : "warning"}
           />
         </Grid>
-      </Box>
+      </VStack>
 
-      <Box>
-        <Text
-          mb={3}
-          fontFamily="heading"
-          fontSize="overline"
-          fontWeight="semibold"
-          letterSpacing="widest"
-          color="content.tertiary"
-          textTransform="uppercase"
-        >
-          {t("application-context")}
-        </Text>
+      <VStack align="stretch" gap={2}>
+        <ContextSectionLabel>
+          {t("context-funder-similar-projects")}
+        </ContextSectionLabel>
         <Grid
           gap={2}
           gridTemplateColumns={{ base: "1fr", lg: "repeat(2, minmax(0, 1fr))" }}
         >
-          <ContextRow
-            icon={LuLandmark}
-            label={t("city-project")}
-            detail={projectName || t("no-project-linked")}
-            status={projectName ? t("connected") : t("optional")}
-            tone={projectName ? "positive" : "neutral"}
+          <ContextCard
+            label={t("funder-profile")}
+            value={
+              applicationContext?.funder?.name || t("funding-not-selected")
+            }
+            details={[
+              applicationContext?.opportunity?.name || "",
+              applicationContext?.template
+                ? t("template-context-detail", {
+                    template: applicationContext.template.name,
+                  })
+                : t("template-not-selected"),
+            ]}
+            status={t(
+              applicationContext?.funder ? "connected" : "not-connected",
+            )}
+            tone={applicationContext?.funder ? "positive" : "warning"}
           />
-          <ContextRow
-            icon={LuSearch}
-            label={t("funder-and-similar-projects")}
-            detail={t("research-context-not-wired")}
+          <ContextCard
+            label={t("similar-funded-projects")}
+            value={t("not-available")}
+            details={[t("similar-projects-unavailable")]}
             status={t("not-connected")}
             tone="warning"
           />
         </Grid>
-      </Box>
+      </VStack>
 
-      <Box>
-        <Flex align="center" justify="space-between" gap={3} mb={3}>
-          <Box>
-            <Text
-              fontFamily="heading"
-              fontSize="overline"
-              fontWeight="semibold"
-              letterSpacing="widest"
-              color="content.tertiary"
-              textTransform="uppercase"
-            >
-              {t("source-files")}
-            </Text>
-            <Text mt={1} fontSize="label.sm" color="content.tertiary">
-              {t("source-files-description")}
-            </Text>
-          </Box>
+      <VStack align="stretch" gap={2}>
+        <Flex align="center" justify="space-between" gap={3}>
+          <ContextSectionLabel>{t("your-files")}</ContextSectionLabel>
           <input
             ref={fileInputRef}
             type="file"
@@ -290,8 +296,8 @@ export function ContextTab({
             onChange={onFileChange}
           />
           <Button
-            size="sm"
-            variant="solid"
+            size="xs"
+            variant="outline"
             loading={isUploading}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -300,131 +306,123 @@ export function ContextTab({
           </Button>
         </Flex>
 
-        <VStack align="stretch" gap={2}>
-          {upload ? (
-            <Flex
-              align="center"
-              gap={3}
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              bg="base.light"
-              p={3}
+        <Flex
+          align="center"
+          gap={3}
+          border="1px solid"
+          borderColor="border.neutral"
+          borderRadius="rounded"
+          bg="base.light"
+          px={3}
+          py={2.5}
+        >
+          <Box
+            boxSize="7px"
+            flexShrink={0}
+            borderRadius="full"
+            bg={toneColor(uploadTone)}
+          />
+          <Box minW={0} flex={1}>
+            <Text truncate fontSize="body.sm" color="content.primary">
+              {upload?.filename ||
+                firstCityFile ||
+                (bundle.readySources
+                  ? t("ready-run-sources", { count: bundle.readySources })
+                  : t("no-run-sources"))}
+            </Text>
+            <Text fontSize="10px" color="content.tertiary">
+              {upload
+                ? `${t(uploadStatusTranslationKey(upload.status))}${
+                    upload.pageCount
+                      ? ` · ${t("pages-count", { count: upload.pageCount })}`
+                      : ""
+                  }`
+                : firstCityFile
+                  ? t("city-files-available", {
+                      count: cityFilesCount,
+                      file: firstCityFile,
+                    })
+                  : t("upload-source-help")}
+            </Text>
+          </Box>
+          <ContextStatusBadge
+            label={
+              upload
+                ? t(uploadStatusTranslationKey(upload.status))
+                : t("not-connected")
+            }
+            tone={uploadTone}
+          />
+          {upload?.status === "failed" && upload.canRetry && (
+            <Button
+              size="xs"
+              variant="outline"
+              loading={isRetryingUpload}
+              onClick={onRetryUpload}
             >
-              <Icon as={LuFileText} color="content.link" />
-              <Box minW={0} flex={1}>
-                <Text truncate fontSize="body.sm" color="content.primary">
-                  {upload.filename || t("recent-run-upload")}
-                </Text>
-                <Text fontSize="label.sm" color="content.tertiary">
-                  {t(uploadStatusTranslationKey(upload.status))}
-                  {upload.pageCount
-                    ? ` · ${t("pages-count", { count: upload.pageCount })}`
-                    : ""}
-                </Text>
-              </Box>
-              {upload.status === "failed" && upload.canRetry && (
-                <Button
-                  size="xs"
-                  variant="outline"
-                  loading={isRetryingUpload}
-                  onClick={onRetryUpload}
-                >
-                  <Icon as={LuRefreshCw} />
-                  {t("retry")}
-                </Button>
-              )}
-            </Flex>
-          ) : (
-            <Flex
-              align="center"
-              gap={3}
-              border="1px dashed"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              bg="base.light"
-              p={4}
-            >
-              <Icon as={LuFolderOpen} color="content.link" />
-              <Box>
-                <Text fontSize="body.sm" color="content.primary">
-                  {bundle.readySources
-                    ? t("ready-run-sources", { count: bundle.readySources })
-                    : t("no-run-sources")}
-                </Text>
-                <Text mt={1} fontSize="label.sm" color="content.tertiary">
-                  {firstCityFile
-                    ? t("city-files-available", {
-                        count: cityFilesCount,
-                        file: firstCityFile,
-                      })
-                    : t("upload-source-help")}
-                </Text>
-              </Box>
-            </Flex>
+              <Icon as={LuRefreshCw} />
+              {t("retry")}
+            </Button>
           )}
+        </Flex>
 
-          {uploadError && (
-            <HStack
-              role="alert"
-              align="start"
-              gap={2}
-              border="1px solid"
-              borderColor="sentiment.negativeDefault"
-              borderRadius="rounded"
-              bg="sentiment.negativeOverlay"
-              p={3}
-            >
-              <Icon
-                as={LuCircleAlert}
-                mt={0.5}
-                color="sentiment.negativeDefault"
-              />
-              <Text fontSize="body.sm" color="content.secondary">
-                {uploadError}
-              </Text>
-            </HStack>
-          )}
-        </VStack>
-      </Box>
+        {uploadError && (
+          <HStack
+            role="alert"
+            align="start"
+            gap={2}
+            border="1px solid"
+            borderColor="sentiment.negativeDefault"
+            borderRadius="rounded"
+            bg="sentiment.negativeOverlay"
+            p={3}
+          >
+            <Icon
+              as={LuCircleAlert}
+              mt={0.5}
+              color="sentiment.negativeDefault"
+            />
+            <Text fontSize="body.sm" color="content.secondary">
+              {uploadError}
+            </Text>
+          </HStack>
+        )}
+      </VStack>
 
       {bundle.status === "failed" && bundle.retryable && (
-        <Box
+        <Flex
+          align={{ base: "start", sm: "center" }}
+          direction={{ base: "column", sm: "row" }}
+          gap={3}
           border="1px solid"
           borderColor="sentiment.warningDefault"
           borderRadius="rounded"
           bg="sentiment.warningOverlay"
           p={4}
         >
-          <Flex
-            align={{ base: "start", sm: "center" }}
-            direction={{ base: "column", sm: "row" }}
-            gap={3}
-          >
-            <Box flex={1}>
-              <Text
-                fontFamily="heading"
-                fontSize="body.sm"
-                fontWeight="semibold"
-                color="content.primary"
-              >
-                {t("context-retry-title")}
-              </Text>
-              <Text mt={1} fontSize="label.sm" color="content.secondary">
-                {t("context-failed-description")}
-              </Text>
-            </Box>
-            <Button
-              size="sm"
-              variant="outline"
-              loading={isRetryingBundle}
-              onClick={onRetryBundle}
+          <Box flex={1}>
+            <Text
+              fontFamily="heading"
+              fontSize="body.sm"
+              fontWeight="semibold"
+              color="content.primary"
             >
-              <Icon as={LuRefreshCw} />
-              {t("retry-context")}
-            </Button>
-          </Flex>
-        </Box>
+              {t("context-retry-title")}
+            </Text>
+            <Text mt={1} fontSize="label.sm" color="content.secondary">
+              {t("context-failed-description")}
+            </Text>
+          </Box>
+          <Button
+            size="sm"
+            variant="outline"
+            loading={isRetryingBundle}
+            onClick={onRetryBundle}
+          >
+            <Icon as={LuRefreshCw} />
+            {t("retry-context")}
+          </Button>
+        </Flex>
       )}
     </VStack>
   );

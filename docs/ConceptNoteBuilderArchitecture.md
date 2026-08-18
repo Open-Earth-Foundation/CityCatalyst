@@ -26,14 +26,16 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-08-17): the repository owns the CNB schema chain,
-reviewed-reference importer, and similar-project reader; the initial migration
-adds no workspace API or seed data. CA owns run, bundle, and pointer persistence.
-CC accepts authorized PDFs through `PdfOcrJob` and native UTF-8 Markdown through
-direct artifact storage, then exposes either result through its authenticated
-read boundary. CC-513 adds automatic bundles and run-scoped source query. Runs
-may enter interviewing with typed thin context and later rebuild as grounded;
-all optional CC, funding, matching, and document context may be absent.
+Implementation baseline (2026-08-18): the repository owns the CNB schema chain,
+reviewed-reference importer, similar-project reader, and persisted chapter
+workspace. CA owns run, bundle, pointer, and drafting-progress persistence. Its
+draft API materializes the selected template, then runs an independent
+server-side process that saves one immutable chapter revision before generating
+the next. CC accepts authorized PDFs through `PdfOcrJob` and native UTF-8
+Markdown through direct artifact storage, then exposes either result through its
+authenticated read boundary. Runs may begin with typed thin context and later
+rebuild as grounded; all optional CC, funding, matching, and source context may
+be absent.
 
 In scope:
 
@@ -152,8 +154,10 @@ flowchart TB
 
 ## Product Shape
 
-The user experience is not a step-by-step questionnaire. It is a guided
-interview with a live document workspace.
+The user experience is not a step-by-step questionnaire. It combines an
+optional manual interview with a live document workspace. Draft generation is
+not driven through chat: starting a draft invokes a dedicated persisted process,
+and chat remains available only for user-led questions and clarification.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
@@ -174,9 +178,11 @@ Matching is internal preparation. Completing a match does not immediately show
 the user a list of projects. A stored example is surfaced only when it is useful
 for the current interview question, chapter draft, or evidence review.
 
-The agent and document workspace then use that context bundle to:
+The drafting service and document workspace then use that context bundle to:
 
-- Draft document chapters and show evidence links for user review.
+- Draft exactly one template chapter at a time and persist it before continuing.
+- Give each chapter call the complete Markdown of every earlier chapter so the
+  document remains consistent without turning drafting into a chat exchange.
 - Ask only for the identified decisions or missing facts.
 - Let the user edit, add, delete, restore, and reorder chapters.
 - Export DOCX and PDF documents plus a reusable context bundle.
@@ -184,8 +190,8 @@ The agent and document workspace then use that context bundle to:
 ```mermaid
 flowchart LR
     Context["Assemble context bundle"]
-    Context --> Interview["Guided interview"]
-    Interview --> Draft["Draft chapters"]
+    Context --> Interview["Optional manual interview"]
+    Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
     Review --> Revise["Revise chapters"]
     Revise --> Export["Generate DOCX/PDF export"]
@@ -423,7 +429,7 @@ flowchart TB
 | `matching_examples`    | ingested project-upload fields, funder profile, project KB filters           | internal `ProjectMatchingService`; no agent tools |
 | `assembling_context` | zero or more ready sources, optional GHGI/HIAP, typed empty sections | internal `ContextBundleService`; no agent tools |
 | `interviewing`         | per-document summaries, optional CC context, gaps and known facts            | interview tools plus `concept_note.sources.query` |
-| `drafting_document`    | chapter plan, evidence map, examples, per-document summaries                 | chapter/evidence tools plus selected-source query |
+| `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time |
 | `editing_document`     | selected chapter/revision and per-document summaries                         | document edit tools plus selected-source query    |
 
 Export is not a workflow step for the LLM. It is a document workspace button
@@ -1320,7 +1326,10 @@ key, reads S3, verifies SHA-256, and streams the bytes.
 Each upload is handled independently:
 
 1. `POST .../{run_id}/uploads` verifies run access, creates or replays the
-   authoritative CA row, and stores the user file in CC.
+   authoritative CA row, stores the user file in CC, and wakes the shared OCR
+   and delivery processors after the durable work record exists. The route
+   still returns `202` without waiting for OCR or context rebuilding; the
+   scheduled worker remains the recovery and retry path.
 2. For a PDF upload, CC creates or reuses the OCR job, converts the file, and
    stores the authoritative Markdown artifact in CC S3. For a native Markdown
    upload, CC stores the validated, normalized UTF-8 artifact directly in the
@@ -1556,6 +1565,11 @@ Context bundle building is not an agent tool group. `ContextBundleService`
 builds at run creation and whenever a source reaches `ready`. It snapshots the
 ready-upload set, assembles it in retained background work, and injects only the
 completed compact bundle.
+
+The authorized application-context read reports presence flags for the
+persisted `cc_context` sections. The workspace uses those flags for its status
+badges; it does not infer that city or project context is included merely
+because the corresponding record is available elsewhere in CityCatalyst.
 
 Context loaded:
 

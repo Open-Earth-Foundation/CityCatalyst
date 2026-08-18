@@ -79,6 +79,7 @@ import {
   loadConceptNoteRunCity,
   updateConceptNoteUpload,
 } from "@/backend/ConceptNoteUploadService";
+import { triggerConceptNoteSourceProcessing } from "@/backend/ConceptNoteSourceProcessingService";
 import InventoryFileStorageService from "@/backend/InventoryFileStorageService";
 import {
   conceptNotePdfSourceKey,
@@ -291,6 +292,7 @@ export const POST = apiHandler(async (req, { session, params }) => {
     );
   }
 
+  triggerConceptNoteSourceProcessing();
   const state = normalizeConceptNotePdfOcrStatus(job);
 
   return NextResponse.json(

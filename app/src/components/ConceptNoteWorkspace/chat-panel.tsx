@@ -1,9 +1,10 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
+import type { IconType } from "react-icons";
 import {
   LuArrowRight,
   LuBot,
@@ -12,7 +13,10 @@ import {
   LuFilePlus2,
   LuSend,
 } from "react-icons/lu";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
+import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 
@@ -25,6 +29,136 @@ interface ConceptNoteChatPanelProps {
   onOpenContext: () => void;
   threadId: string | null;
 }
+
+interface ContextStatusNoticeProps {
+  autoDismissAfterMs?: number;
+  onOpenContext: () => void;
+  status: {
+    actionIcon: IconType;
+    actionLabel: string;
+    color: string;
+    description: string;
+    icon: IconType;
+    surface: string;
+    title: string;
+  };
+}
+
+const CONTEXT_READY_NOTICE_DURATION_MS = 30_000;
+
+function ContextStatusNotice({
+  autoDismissAfterMs,
+  onOpenContext,
+  status,
+}: ContextStatusNoticeProps) {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (!autoDismissAfterMs) {
+      return;
+    }
+
+    const timeout = window.setTimeout(
+      () => setVisible(false),
+      autoDismissAfterMs,
+    );
+    return () => window.clearTimeout(timeout);
+  }, [autoDismissAfterMs]);
+
+  if (!visible) {
+    return null;
+  }
+
+  return (
+    <Flex
+      align="start"
+      gap={3}
+      border="1px solid"
+      borderColor={status.color}
+      borderRadius="rounded"
+      bg={status.surface}
+      p={4}
+      role={autoDismissAfterMs ? "status" : undefined}
+    >
+      <Icon as={status.icon} mt={0.5} color={status.color} />
+      <Box flex={1}>
+        <Text
+          fontFamily="heading"
+          fontSize="body.sm"
+          fontWeight="semibold"
+          color="content.primary"
+        >
+          {status.title}
+        </Text>
+        <Text
+          mt={1}
+          fontSize="label.sm"
+          lineHeight="20px"
+          color="content.secondary"
+        >
+          {status.description}
+        </Text>
+        <Button mt={3} size="xs" variant="outline" onClick={onOpenContext}>
+          <Icon as={status.actionIcon} />
+          {status.actionLabel}
+        </Button>
+      </Box>
+    </Flex>
+  );
+}
+
+const assistantMarkdownComponents = createChatMarkdownComponents({
+  paragraph: {
+    fontSize: "body.sm",
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  h1: {
+    fontSize: "title.md",
+    lineHeight: "24px",
+    color: "content.primary",
+  },
+  h2: {
+    fontSize: "body.md",
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  h3: {
+    fontSize: "body.sm",
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  list: {
+    lineHeight: "22px",
+    color: "content.primary",
+  },
+  inlineColor: "content.primary",
+  code: {
+    bg: "background.neutral",
+    fontSize: "label.sm",
+    color: "content.primary",
+  },
+  pre: {
+    bg: "background.neutral",
+    borderRadius: "rounded",
+    fontSize: "label.sm",
+  },
+  table: {
+    fontSize: "label.sm",
+    headBg: "background.neutral",
+    color: "content.primary",
+  },
+  borderColor: "border.overlay",
+  link: {
+    color: "interactive.primary",
+    fontWeight: "semibold",
+    textDecoration: "underline",
+  },
+  blockquote: {
+    borderColor: "border.overlay",
+    color: "content.tertiary",
+  },
+});
 
 export function ConceptNoteChatPanel({
   bundleStatus,
@@ -80,8 +214,8 @@ export function ConceptNoteChatPanel({
     <VStack
       align="stretch"
       gap={0}
-      h={{ base: "auto", xl: "calc(100vh - 184px)" }}
-      minH={{ xl: "650px" }}
+      h={{ base: "auto", md: "calc(100vh - 184px)" }}
+      minH={{ md: "650px" }}
       overflow="hidden"
       border="1px solid"
       borderColor="border.neutral"
@@ -139,43 +273,18 @@ export function ConceptNoteChatPanel({
         align="stretch"
         gap={4}
         flex={1}
-        overflowY={{ xl: "auto" }}
+        overflowY={{ md: "auto" }}
         bg="background.alternativeLight"
         p={4}
       >
-        <Flex
-          align="start"
-          gap={3}
-          border="1px solid"
-          borderColor={contextStatus.color}
-          borderRadius="rounded"
-          bg={contextStatus.surface}
-          p={4}
-        >
-          <Icon as={contextStatus.icon} mt={0.5} color={contextStatus.color} />
-          <Box flex={1}>
-            <Text
-              fontFamily="heading"
-              fontSize="body.sm"
-              fontWeight="semibold"
-              color="content.primary"
-            >
-              {contextStatus.title}
-            </Text>
-            <Text
-              mt={1}
-              fontSize="label.sm"
-              lineHeight="20px"
-              color="content.secondary"
-            >
-              {contextStatus.description}
-            </Text>
-            <Button mt={3} size="xs" variant="outline" onClick={onOpenContext}>
-              <Icon as={contextStatus.actionIcon} />
-              {contextStatus.actionLabel}
-            </Button>
-          </Box>
-        </Flex>
+        <ContextStatusNotice
+          key={groundedContext ? "grounded" : "thin"}
+          autoDismissAfterMs={
+            groundedContext ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
+          }
+          onOpenContext={onOpenContext}
+          status={contextStatus}
+        />
 
         {messages.map((message) => (
           <Box
@@ -189,9 +298,23 @@ export function ConceptNoteChatPanel({
             px={3}
             py={2.5}
           >
-            <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
-              {message.text || t("chat-thinking")}
-            </Text>
+            {message.role === "assistant" ? (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={assistantMarkdownComponents}
+              >
+                {message.text || t("chat-thinking")}
+              </ReactMarkdown>
+            ) : (
+              <Text
+                fontSize="body.sm"
+                lineHeight="22px"
+                color="content.primary"
+                whiteSpace="pre-wrap"
+              >
+                {message.text || t("chat-thinking")}
+              </Text>
+            )}
           </Box>
         ))}
 
@@ -237,11 +360,11 @@ export function ConceptNoteChatPanel({
             <Icon as={LuSend} />
           </Button>
         </HStack>
-        <Text mt={2} fontSize="label.sm" color="content.tertiary">
-          {threadId
-            ? t("source-upload-recommended-chat")
-            : t("chat-thread-unavailable")}
-        </Text>
+        {!threadId && (
+          <Text mt={2} fontSize="label.sm" color="content.tertiary">
+            {t("chat-thread-unavailable")}
+          </Text>
+        )}
       </Box>
     </VStack>
   );

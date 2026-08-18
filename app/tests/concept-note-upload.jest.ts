@@ -17,6 +17,7 @@ const registerMarkdown =
   jest.fn<
     (uploadId: string, markdown: string) => Promise<Record<string, unknown>>
   >();
+const triggerProcessing = jest.fn<() => void>();
 const normalizeMarkdown = jest.fn<(markdown: string) => string>();
 const normalizeStatus = jest.fn<
   (job: Record<string, unknown>) => {
@@ -37,6 +38,12 @@ jest.unstable_mockModule("@/backend/ConceptNoteUploadService", () => ({
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
   default: { putFile },
 }));
+jest.unstable_mockModule(
+  "@/backend/ConceptNoteSourceProcessingService",
+  () => ({
+    triggerConceptNoteSourceProcessing: triggerProcessing,
+  }),
+);
 jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   conceptNotePdfSourceKey: (id: string) =>
     `pdf-ocr/sources/concept_note_upload/${id}/source.pdf`,
@@ -169,6 +176,7 @@ describe("Concept Note source upload route", () => {
       "application/pdf",
     );
     expect(enqueue).toHaveBeenCalledWith(payload.uploadId);
+    expect(triggerProcessing).toHaveBeenCalledTimes(1);
   });
 
   it("assigns a fresh identity to repeated initial uploads", async () => {
@@ -222,6 +230,7 @@ describe("Concept Note source upload route", () => {
       }),
     );
     expect(enqueue).not.toHaveBeenCalled();
+    expect(triggerProcessing).toHaveBeenCalledTimes(1);
   });
 
   it("accepts .md uploads with an empty MIME type", async () => {

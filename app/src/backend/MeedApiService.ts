@@ -123,9 +123,8 @@ export default class MeedApiService {
     fullRequest.cityDataList = requestBody.cityDataList.map((cityData) => {
       return {
         ...cityData,
-        // TODO restore
-        locode: "CL IQQ", // inventory.city.locode ?? "",
-        countryCode: "CL", //inventory.city.countryLocode ?? "",
+        locode: inventory.city.locode ?? "",
+        countryCode: inventory.city.countryLocode ?? "",
         populationSize: population ?? 0,
         cityEmissionsData: {
           inventoryYear: inventory.year ?? 0,

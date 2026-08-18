@@ -24,7 +24,6 @@ import {
   LuFolderOpen,
   LuLandmark,
   LuListChecks,
-  LuRefreshCw,
   LuShieldAlert,
 } from "react-icons/lu";
 
@@ -67,7 +66,6 @@ export function ConceptNoteDashboard({
     data: runList,
     isError: runsFailed,
     isLoading: runsLoading,
-    refetch: refetchRuns,
   } = api.useGetConceptNoteRunsQuery(cityId);
   const { data: city, isLoading: cityLoading } = api.useGetCityQuery(cityId);
   const { data: population, isLoading: populationLoading } =
@@ -269,40 +267,7 @@ export function ConceptNoteDashboard({
             </Grid>
           </VStack>
 
-          {runsFailed ? (
-            <Flex
-              align={{ base: "stretch", sm: "center" }}
-              direction={{ base: "column", sm: "row" }}
-              gap={4}
-              border="1px solid"
-              borderColor="sentiment.negativeDefault"
-              borderRadius="rounded"
-              bg="sentiment.negativeOverlay"
-              p={5}
-            >
-              <Box flex={1}>
-                <Heading
-                  as="h2"
-                  fontFamily="heading"
-                  fontSize="title.sm"
-                  color="content.primary"
-                >
-                  {t("load-error-title")}
-                </Heading>
-                <Text mt={1} fontSize="body.sm" color="content.secondary">
-                  {t("load-error-description")}
-                </Text>
-              </Box>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => void refetchRuns()}
-              >
-                <Icon as={LuRefreshCw} />
-                {t("try-again")}
-              </Button>
-            </Flex>
-          ) : runsLoading ? (
+          {runsFailed ? null : runsLoading ? (
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               <RunCardSkeleton />
               <RunCardSkeleton />

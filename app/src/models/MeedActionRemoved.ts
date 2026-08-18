@@ -9,7 +9,6 @@ export interface MeedActionRemovedAttributes {
   actionName?: string;
   removalReason?: string;
   removalSource?: string;
-  isSelected?: boolean;
   verdictCategory?: string;
   ownershipCategory?: string;
   restrictionsCategory?: string;
@@ -17,6 +16,7 @@ export interface MeedActionRemovedAttributes {
   restrictionsDescription?: object;
   legalJustification?: object;
   legalReferences?: string[];
+  isSelected?: boolean;
   created?: Date;
   lastUpdated?: Date;
 }
@@ -49,7 +49,6 @@ export class MeedActionRemoved
   declare actionName?: string;
   declare removalReason?: string;
   declare removalSource?: string;
-  declare isSelected?: boolean;
   declare verdictCategory?: string;
   declare ownershipCategory?: string;
   declare restrictionsCategory?: string;
@@ -57,6 +56,7 @@ export class MeedActionRemoved
   declare restrictionsDescription?: object;
   declare legalJustification?: object;
   declare legalReferences?: string[];
+  declare isSelected?: boolean;
   declare created?: Date;
   declare lastUpdated?: Date;
 

@@ -45,14 +45,18 @@ export function computeMeedGate(states: MeedSectionStates): MeedGate {
   );
 
   if (settled.length < MIN_COMPLETE_SECTIONS) {
+    // Name the sections rather than only counting them. "2 more sections
+    // needed" tells the user nothing actionable — they still have to work out
+    // which ones, from six cards that all look equally unfinished.
+    const outstanding = values
+      .filter((s) => s.status !== "complete" && s.status !== "needs-review")
+      .map((s) => s.key);
     return {
       canGenerate: false,
       reasonKey: "gate-sections-needed",
       reasonValues: { count: MIN_COMPLETE_SECTIONS - settled.length },
       tone: "warning",
-      missing: values
-        .filter((s) => s.status === "not-started")
-        .map((s) => s.key),
+      missing: outstanding,
     };
   }
 

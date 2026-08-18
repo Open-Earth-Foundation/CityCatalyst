@@ -8,7 +8,6 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import type { MeedStep } from "../steps";
 import type { MeedSectionState } from "../meedStatus";
-import { STEP_CONTRIBUTION, formatShare } from "../scoringWeights";
 import { MeedStatusTag, STATUS_LABEL_KEY, STATUS_TONE } from "./MeedStatusTag";
 import { MeedMeter } from "./MeedMeter";
 
@@ -48,7 +47,6 @@ export function MeedSectionCard({
   t,
 }: MeedSectionCardProps) {
   const status = state?.status ?? "not-started";
-  const contribution = STEP_CONTRIBUTION[step.key];
   const progress = state?.progress;
 
   return (
@@ -68,13 +66,16 @@ export function MeedSectionCard({
       <NextLink href={href}>
         <Card.Body display="flex" flexDirection="column" gap="s" h="full">
           <HStack justifyContent="space-between" alignItems="center" gap="s">
-            {contribution ? (
-              <MeedStatusTag tone="info">
-                {t("shapes-percent", {
-                  weight: formatShare(contribution.rankingShare),
-                })}
-              </MeedStatusTag>
-            ) : step.optional ? (
+            {/*
+              No weight badge here. Showing each step's share of the ranking on
+              the card competed with the status tag for the same slot and read
+              as a ranking of the steps themselves — and once the numbers were
+              made accurate they carried decimals (7.6%, 16.5%) that were more
+              confusing than the wrong round numbers had been. Each step's own
+              screen still states its contribution in context, where there is
+              room to say what it means.
+            */}
+            {step.optional ? (
               <MeedStatusTag tone="neutral">{t("optional")}</MeedStatusTag>
             ) : (
               <Box />

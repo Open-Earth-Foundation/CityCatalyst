@@ -13,7 +13,6 @@ export enum FeatureFlags {
   STATIONARY_ENERGY_AGENTIC = "STATIONARY_ENERGY_AGENTIC",
   HIGHLIGHT_ENABLED = "HIGHLIGHT_ENABLED",
   NUMERICAL_FORMATS = "NUMERICAL_FORMATS",
-  MEED_MODULE = "MEED_MODULE",
   /**
    * Fills the results screens with a stand-in ranking built from the live
    * action catalog, so they can be reviewed before the prioritization

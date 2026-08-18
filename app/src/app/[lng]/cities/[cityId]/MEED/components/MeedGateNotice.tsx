@@ -4,6 +4,7 @@ import { LuCircleAlert, LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import type { MeedGate } from "../meedGate";
+import { MEED_WIZARD_STEPS } from "../steps";
 
 const TONE = {
   negative: {
@@ -53,7 +54,18 @@ export function MeedGateNotice({ gate, t, id }: MeedGateNoticeProps) {
     >
       <Icon as={tone.icon} boxSize="16px" color={tone.color} mt="xs" />
       <BodyMedium color={tone.color}>
-        {t(gate.reasonKey, gate.reasonValues)}
+        {t(gate.reasonKey, {
+          ...gate.reasonValues,
+          // Name the outstanding sections. A bare count leaves the user to
+          // work out which of six cards it meant.
+          sections: gate.missing
+            .map((key) => {
+              const step = MEED_WIZARD_STEPS.find((s) => s.key === key);
+              return step ? t(step.labelKey) : null;
+            })
+            .filter(Boolean)
+            .join(", "),
+        })}
       </BodyMedium>
     </HStack>
   );

@@ -456,7 +456,7 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
 - Malformed or unsupported inputs use the existing FastAPI/Pydantic `422` behavior.
 - Unknown required city/action resources use `404` where that is the current endpoint convention.
 - Upstream failures or invalid upstream payloads use the existing HIAP-MEED `502` error handling.
-- Data families with current â€œno releaseâ€ semantics return `200`, an empty data section, and a warning.
+- Data families with current “no release” semantics return `200`, an empty data section, and a warning.
 - No new error envelope is introduced.
 
 ## Implemented product decisions

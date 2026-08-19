@@ -103,6 +103,23 @@ def localized_source_value(
     return fallback.strip() if fallback and fallback.strip() else None
 
 
+def localized_text_map(
+    *,
+    localized: dict[str, str],
+    fallback_language: str,
+    fallback: str | None,
+) -> dict[str, str]:
+    """Return cleaned source text keyed by language with one optional fallback."""
+    values = {
+        language.strip().lower(): text.strip()
+        for language, text in localized.items()
+        if language.strip() and text.strip()
+    }
+    if fallback and fallback.strip():
+        values.setdefault(fallback_language.strip().lower(), fallback.strip())
+    return values
+
+
 def validate_generated_language(
     text: str,
     language: str,

@@ -42,6 +42,7 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
+import { uniqueBy } from "@/util/array";
 import { useTheme } from "next-themes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
@@ -91,9 +92,18 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
-  const { data: organizations } = api.useGetUserOrganizationsQuery(undefined, {
-    skip: isPublic || status !== "authenticated",
-  });
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
+    undefined,
+    {
+      skip: isPublic || status !== "authenticated",
+    },
+  );
+  const organizations = useMemo(
+    () =>
+      rawOrganizations &&
+      uniqueBy(rawOrganizations, (org) => org.organizationId),
+    [rawOrganizations],
+  );
   const [getProjects] = api.useLazyGetProjectsQuery();
   const router = useRouter();
 
@@ -361,48 +371,37 @@ export function NavigationBar({
                     </Button>
                   </MenuTrigger>
                   <MenuContent minW="220px" zIndex={2000}>
-                    {/* only show unique organizations and not duplicates */}
-                    {organizations
-                      .filter(
-                        (org, index, self) =>
-                          index ===
-                          self.findIndex(
-                            (t) => t.organizationId === org.organizationId,
-                          ),
-                      )
-                      .map((org) => (
-                        <MenuItem
-                          value={org.organizationId}
-                          onClick={() =>
-                            onChangeOrganization(org.organizationId)
-                          }
-                          key={org.organizationId}
+                    {organizations.map((org) => (
+                      <MenuItem
+                        value={org.organizationId}
+                        onClick={() => onChangeOrganization(org.organizationId)}
+                        key={org.organizationId}
+                      >
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          w="full"
                         >
-                          <Box
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="space-between"
-                            w="full"
+                          <Text
+                            fontSize="title.md"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
                           >
-                            <Text
-                              fontSize="title.md"
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              whiteSpace="nowrap"
-                            >
-                              {org.name}
-                            </Text>
-                            {org.organizationId ===
-                              organization?.organizationId && (
-                              <Icon
-                                as={MdCheck}
-                                boxSize={5}
-                                color="interactive.secondary"
-                              />
-                            )}
-                          </Box>
-                        </MenuItem>
-                      ))}
+                            {org.name}
+                          </Text>
+                          {org.organizationId ===
+                            organization?.organizationId && (
+                            <Icon
+                              as={MdCheck}
+                              boxSize={5}
+                              color="interactive.secondary"
+                            />
+                          )}
+                        </Box>
+                      </MenuItem>
+                    ))}
                   </MenuContent>
                 </MenuRoot>
               </Box>

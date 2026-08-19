@@ -31,6 +31,35 @@ class TestAPIHealth:
 
         assert "openapi" in data
         assert data["info"]["title"] == "HIAP-MEED"
+        response_schemas = [
+            "ExclusionPreviewApiResponse",
+            "PrioritizerApiResponse",
+            "CityActionReportApiResponse",
+            "ExplanationTranslationApiResponse",
+            "CityAttributesResponse",
+            "ActionPathwaysResponse",
+            "ActionPolicyScoresResponse",
+            "ActionMitigationScoresResponse",
+            "ActionFinancialScoresResponse",
+            "ClimateFinanceOpportunitiesResponse",
+            "ClimateFinanceProjectsResponse",
+        ]
+        for schema_name in response_schemas:
+            assert data["components"]["schemas"][schema_name]["properties"]["meta"][
+                "$ref"
+            ].endswith("/ApiResponseMeta")
+        for schema_name in (
+            "ExclusionPreviewApiRequest",
+            "PrioritizerApiRequest",
+            "CityActionReportApiRequest",
+            "ExplanationTranslationApiRequest",
+        ):
+            request_properties = data["components"]["schemas"][schema_name][
+                "properties"
+            ]
+            assert request_properties["meta"]["$ref"].endswith("/ApiRequestMeta")
+            assert "requestId" not in request_properties
+            assert "meta" in data["components"]["schemas"][schema_name]["required"]
         ranked_action_schema = data["components"]["schemas"]["RankedActionResult"]
         evidence_summary_property = ranked_action_schema["properties"]["evidence_summary"]
         assert evidence_summary_property["$ref"].endswith(

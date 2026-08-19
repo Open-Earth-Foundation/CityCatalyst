@@ -18,14 +18,15 @@ Every successful response also contains:
 
 ```text
 meta: {
-  generated_at_utc,
-  backend_consumer,
-  upstream_provider,
-  api_context,
-  total_records
+  requestId,
+  generatedAtUtc,
+  totalRecords
 }
 warnings: string[]
 ```
+
+These metadata values are server-owned. HIAP-MEED generates the response ID for
+reference-data GET requests.
 
 The JSON examples below are complete for the public contracts: every response field is shown. Dynamic lists and maps contain representative entries.
 
@@ -77,14 +78,9 @@ GET /v1/cities/CL%20IQQ/attributes
     ]
   },
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/attributes",
-      "locode": "CL IQQ"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -146,21 +142,18 @@ No `language` returns all available localizations. Repeating it, for example `?l
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/action-pathways",
-      "missing_action_type_count": 0
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
 ```
 
 - **Backend logic:** fetch the canonical catalogue with all languages, then apply the same prioritizable-action rule used by exclusion preview, prioritization, and output-plan generation. Only actions whose normalized `action_type` is `mitigation` are included. The language parameter only changes which localizations are returned. Production uses Global API; configured mocks remain test/local behavior only.
-- **Data-quality signal:** `meta.api_context.missing_action_type_count` reports malformed upstream rows excluded because `action_type` was missing. A non-zero count also adds a warning. Valid non-mitigation actions are intentionally excluded and do not produce this warning.
+- **Data-quality signal:** a warning reports malformed upstream rows excluded
+  because `action_type` was missing. Valid non-mitigation actions are
+  intentionally excluded and do not produce this warning.
 
 ## 3. Action policy scores
 
@@ -208,14 +201,9 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
     "municipal": 0.69
   },
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/action-policy-scores",
-      "locode": "CL IQQ"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -257,15 +245,9 @@ GET /v1/cities/CL%20IQQ/action-mitigation-feasibility-scores?country_code=CL
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/action-mitigation-feasibility-scores",
-      "locode": "CL IQQ",
-      "country_code": "CL"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -346,15 +328,9 @@ GET /v1/cities/CL%20IQQ/climate-finance/feasibility?country_code=CL
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/climate-finance/feasibility",
-      "locode": "CL IQQ",
-      "country_code": "CL"
-    },
-    "total_records": 2
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 2
   },
   "warnings": []
 }
@@ -403,16 +379,9 @@ GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&r
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/climate-finance/opportunities",
-      "country_code": "CL",
-      "sector": "stationary_energy",
-      "route": "technical_assistance"
-    },
-    "total_records": 2
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 2
   },
   "warnings": []
 }
@@ -471,15 +440,9 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/climate-finance/projects",
-      "country_code": "CL",
-      "action_id": "c40_0012"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -493,7 +456,7 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
 - Malformed or unsupported inputs use the existing FastAPI/Pydantic `422` behavior.
 - Unknown required city/action resources use `404` where that is the current endpoint convention.
 - Upstream failures or invalid upstream payloads use the existing HIAP-MEED `502` error handling.
-- Data families with current “no release” semantics return `200`, an empty data section, and a warning.
+- Data families with current â€œno releaseâ€ semantics return `200`, an empty data section, and a warning.
 - No new error envelope is introduced.
 
 ## Implemented product decisions

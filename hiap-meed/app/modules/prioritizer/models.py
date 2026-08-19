@@ -8,6 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.models import ApiRequestMeta, ApiResponseMeta
 from app.modules.prioritizer.localization import supported_languages
 from app.modules.prioritizer.scoring_config import resolve_impact_text_multiplier
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
@@ -52,51 +53,17 @@ def _normalize_required_upper_string(value: str, field_name: str) -> str:
 
 
 # ============================================================================
-# CALLER REQUEST ENVELOPE MODELS (external frontend or upstream caller -> hiap-meed)
+# CALLER REQUEST MODELS (external frontend or upstream caller -> hiap-meed)
 # ----------------------------------------------------------------------------
 # Composition:
 # - PrioritizerApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: PrioritizerRequestData
 #     - cityDataList: list[FrontendCityInput]
 #       - cityEmissionsData: FrontendCityEmissionsData
 #         - gpcData: dict[str, GpcDataEntry]
 #           - activities: list[GpcActivity]
 # ============================================================================
-
-
-class FrontendApiContext(BaseModel):
-    """Caller request API context metadata."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    endpoint: str = Field(description="Caller route or endpoint that originated the request.")
-    locodes: list[str] = Field(
-        default_factory=list,
-        description="One or more UN/LOCODE values included in the request context.",
-    )
-
-
-class FrontendRequestMeta(BaseModel):
-    """Metadata envelope for prioritizer requests sent by the current caller."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    requestId: str = Field(description="Caller-generated request identifier.")
-    generatedAtUtc: str = Field(
-        description="Caller timestamp for when the request envelope was created."
-    )
-    backendConsumer: str = Field(
-        description="Backend service expected to consume this request."
-    )
-    upstreamProvider: str = Field(
-        description="Originating frontend or upstream caller name."
-    )
-    apiContext: FrontendApiContext = Field(
-        description="Lightweight caller route context for observability."
-    )
-    totalRecords: int = Field(description="Number of city records carried in the request.")
 
 
 class GpcActivity(BaseModel):
@@ -318,11 +285,13 @@ class PrioritizerRequestData(BaseModel):
 
 
 class PrioritizerApiRequest(BaseModel):
-    """Caller -> hiap-meed request envelope for single or multi-city prioritization."""
+    """Caller request for single or multi-city prioritization."""
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: PrioritizerRequestData = Field(
         description="Prioritization request payload."
     )
@@ -333,8 +302,7 @@ class PrioritizerApiRequest(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - ExplanationTranslationApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: ExplanationTranslationRequestData
 #     - rankedActions: list[ExplanationTranslationActionInput]
 # - ExplanationTranslationApiResponse
@@ -436,11 +404,13 @@ class ExplanationTranslationRequestData(BaseModel):
 
 
 class ExplanationTranslationApiRequest(BaseModel):
-    """Caller -> hiap-meed request envelope for stateless explanation translation."""
+    """Caller request for stateless explanation translation."""
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: ExplanationTranslationRequestData = Field(
         description="Explanation translation request payload."
     )
@@ -451,8 +421,7 @@ class ExplanationTranslationApiRequest(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - ExclusionPreviewApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: ExclusionPreviewRequestData
 #     - cityDataList: list[ExclusionPreviewCityInput]
 # - ExclusionPreviewApiResponse
@@ -503,11 +472,13 @@ class ExclusionPreviewRequestData(BaseModel):
 
 
 class ExclusionPreviewApiRequest(BaseModel):
-    """Caller -> hiap-meed request envelope for exclusion preview."""
+    """Caller request for exclusion preview."""
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: ExclusionPreviewRequestData
 
 
@@ -547,6 +518,7 @@ class ExclusionPreviewApiResponse(BaseModel):
     """Top-level response for exclusion preview."""
 
     results: list[ExclusionPreviewCityResult] = Field(default_factory=list)
+    meta: ApiResponseMeta
 
 
 # ============================================================================
@@ -1713,6 +1685,7 @@ class ExplanationTranslationApiResponse(BaseModel):
         default_factory=list,
         description="Top-level human-readable warnings aggregated by the backend.",
     )
+    meta: ApiResponseMeta
 
 
 class PrioritizerApiCityResult(BaseModel):
@@ -1741,11 +1714,24 @@ class PrioritizerApiCityResult(BaseModel):
 
 
 class PrioritizerApiResponse(BaseModel):
-    """Top-level response for the caller prioritization request envelope."""
+    """Top-level response for a caller prioritization request."""
 
     results: list[PrioritizerApiCityResult] = Field(
         default_factory=list,
         description="One prioritization result entry per requested city.",
+    )
+    meta: ApiResponseMeta
+
+
+class PrioritizerSnapshotResponse(BaseModel):
+    """Prioritization response accepted in stored frontend snapshots."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    results: list[PrioritizerApiCityResult] = Field(default_factory=list)
+    meta: ApiResponseMeta | None = Field(
+        default=None,
+        description="Response metadata, optional for snapshots stored before this contract.",
     )
 
 
@@ -1754,15 +1740,14 @@ class PrioritizerApiResponse(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - CityActionReportApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: CityActionReportRequestData
 #     - locode: str
 #     - actionId: str
 #     - language: list[str]
 #     - prioritizationSnapshot: CityActionPrioritizationSnapshot
 #       - request: PrioritizerApiRequest
-#       - response: PrioritizerApiResponse
+#       - response: PrioritizerSnapshotResponse
 #       - storedAtUtc: str | None
 #     - debugContextOnly: bool
 # - CityActionReportApiResponse
@@ -1785,7 +1770,7 @@ class CityActionPrioritizationSnapshot(BaseModel):
     request: PrioritizerApiRequest = Field(
         description="Original /v1/prioritize request used to create the ranking."
     )
-    response: PrioritizerApiResponse = Field(
+    response: PrioritizerSnapshotResponse = Field(
         description="Full /v1/prioritize response returned to the frontend."
     )
     storedAtUtc: str | None = Field(
@@ -1861,7 +1846,9 @@ class CityActionReportApiRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta = Field(description="Caller request metadata.")
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: CityActionReportRequestData = Field(
         description="Single-city, single-action output-plan request data."
     )
@@ -1945,6 +1932,7 @@ class CityActionReportApiResponse(BaseModel):
     metadata: CityActionReportMetadata = Field(
         description="Request correlation and source-context metadata."
     )
+    meta: ApiResponseMeta
 
     @model_validator(mode="after")
     def _validate_localized_chapter_coverage(self) -> CityActionReportApiResponse:

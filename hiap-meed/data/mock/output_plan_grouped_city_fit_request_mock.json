@@ -1,13 +1,6 @@
 {
   "meta": {
-    "requestId": "output-plan-grouped-city-fit-mock-req-1",
-    "generatedAtUtc": "2026-07-14T00:00:00Z",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/reports/output-plan"
-    },
-    "totalRecords": 1
+    "requestId": "output-plan-grouped-city-fit-mock-req-1"
   },
   "requestData": {
     "locode": "CL IQQ",
@@ -20,17 +13,7 @@
     "prioritizationSnapshot": {
       "request": {
         "meta": {
-          "requestId": "1234567890",
-          "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-          "backendConsumer": "hiap-meed",
-          "upstreamProvider": "city_catalyst_frontend",
-          "apiContext": {
-            "endpoint": "POST /v1/prioritize",
-            "locodes": [
-              "CL IQQ"
-            ]
-          },
-          "totalRecords": 1
+          "requestId": "1234567890"
         },
         "requestData": {
           "requestedLanguages": [

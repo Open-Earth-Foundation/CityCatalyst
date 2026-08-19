@@ -73,12 +73,7 @@ def _report_request(
     return CityActionReportApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "report-req-1",
-                "generatedAtUtc": "2026-07-14T00:00:00Z",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "test",
-                "apiContext": {"endpoint": "POST /v1/reports/output-plan"},
-                "totalRecords": 1,
+              "requestId": "report-req-1"
             },
             "requestData": {
                 "locode": locode,
@@ -88,15 +83,7 @@ def _report_request(
                 "prioritizationSnapshot": {
                     "request": {
                         "meta": {
-                            "requestId": "prioritize-req-1",
-                            "generatedAtUtc": "2026-07-14T00:00:00Z",
-                            "backendConsumer": "hiap-meed",
-                            "upstreamProvider": "test",
-                            "apiContext": {
-                                "endpoint": "POST /v1/prioritize",
-                                "locodes": ["CL-SCL"],
-                            },
-                            "totalRecords": 1,
+                          "requestId": "prioritize-req-1"
                         },
                         "requestData": {
                             "requestedLanguages": ["en"],
@@ -112,6 +99,11 @@ def _report_request(
                         },
                     },
                     "response": {
+                        "meta": {
+                            "requestId": "prioritize-req-1",
+                            "generatedAtUtc": "2026-07-14T00:00:01Z",
+                            "totalRecords": len(response_results),
+                        },
                         "results": response_results,
                     },
                     "storedAtUtc": "2026-07-14T00:00:01Z",

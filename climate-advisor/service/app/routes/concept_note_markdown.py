@@ -32,6 +32,11 @@ from app.services.citycatalyst_client import (
     CityCatalystClientError,
     ConceptNoteMarkdownArtifact,
 )
+from app.services.cnb.context_bundle import (
+    ContextBundleService,
+    get_context_bundle_service,
+    schedule_context_bundle_build,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -252,6 +257,9 @@ async def ingest_concept_note_markdown(
     repository: ConceptNoteMarkdownRepository = Depends(
         get_concept_note_markdown_repository
     ),
+    context_bundle_service: ContextBundleService | None = Depends(
+        get_context_bundle_service
+    ),
     cc_client: CityCatalystClient = Depends(get_citycatalyst_client),
 ) -> JSONResponse | ConceptNoteMarkdownResponse:
     """Verify the CC object, then persist its immutable pointer as ready."""
@@ -290,6 +298,20 @@ async def ingest_concept_note_markdown(
         )
     except ConceptNoteMarkdownRepositoryError as exc:
         return problem(exc.status_code, exc.code, str(exc))
+    if context_bundle_service is not None:
+        schedule_context_bundle_build(
+            service=context_bundle_service,
+            user_id=user_id,
+            run_id=run_id,
+            token=authorization,
+        )
+    else:
+        logger.error(
+            "Context-bundle build was not scheduled because storage is unavailable "
+            "run_id=%s upload_id=%s",
+            run_id,
+            upload_id,
+        )
     return ConceptNoteMarkdownResponse(
         upload_id=snapshot.upload_id,
         status=snapshot.status,

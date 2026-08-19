@@ -406,3 +406,13 @@ export const nativeInputCatalogRegisterRequest = z.object({
 export type NativeInputCatalogRegisterRequest = z.infer<
   typeof nativeInputCatalogRegisterRequest
 >;
+
+export const nativeInputCatalogReconciliationRequest = z.object({
+  mode: z.enum(["dry-run", "apply"]),
+  limit: z.number().int().min(1).max(1000).optional(),
+  maxPages: z.number().int().min(1).max(1000).optional(),
+});
+
+export type NativeInputCatalogReconciliationRequest = z.infer<
+  typeof nativeInputCatalogReconciliationRequest
+>;

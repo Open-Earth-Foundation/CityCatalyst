@@ -17,6 +17,7 @@ from app.models.requests import MessageCreateRequest
 from app.services.message_service import MessageService
 from app.services.thread_service import ThreadService
 from app.utils.agent_tracing import configure_agents_tracing
+from app.utils.chat_workflow_context import STATIONARY_ENERGY_DRAFT_RUN_ID_KEY
 from app.utils.streaming_handler import StreamingHandler
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.thread_resolver import ThreadResolver
@@ -133,23 +134,25 @@ async def post_message(
                             context_update["access_token"] = token_from_payload
                             logger.info("Persisted CC token from payload to thread context")
 
+                        if context_update:
+                            await thread_service.update_context(
+                                thread=thread,
+                                context_update=context_update,
+                            )
+
                         stationary_energy_draft_run_id = extract_stationary_energy_draft_run_id(
                             payload.context,
                             payload.options,
                         )
                         if stationary_energy_draft_run_id:
-                            context_update["stationary_energy_draft_run_id"] = (
-                                stationary_energy_draft_run_id
+                            await thread_service.set_workflow_context(
+                                thread,
+                                workflow_key=STATIONARY_ENERGY_DRAFT_RUN_ID_KEY,
+                                run_id=stationary_energy_draft_run_id,
                             )
                             logger.info(
                                 "Persisted Stationary Energy draft context on thread_id=%s",
                                 resolved_thread_id,
-                            )
-
-                        if context_update:
-                            await thread_service.update_context(
-                                thread=thread,
-                                context_update=context_update,
                             )
                         
                         message_service = MessageService(db_session)

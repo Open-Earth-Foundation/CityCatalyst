@@ -46,6 +46,9 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
         "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
         "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
+        "cnb_source_document_mapping": prompts.cnb_source_document_mapping,
+        "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
+        "cnb_source_question_reading": prompts.cnb_source_question_reading,
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -165,3 +168,20 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "focused_decision_state" in composed_prompt
     assert "inventory_context" not in composed_prompt
     assert "Stationary Energy review tool argument contracts:" not in composed_prompt
+
+
+def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
+    config = _load_llm_config()
+    budget = config.generation.prompt_budget.cnb_sources
+
+    assert config.models.cnb_source_reader.name == "openai/gpt-5.4-mini"
+    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.4"
+    assert budget.max_partition_tokens == 50000
+    assert budget.max_concurrency == 3
+    for prompt_name in (
+        "cnb_source_document_mapping",
+        "cnb_source_question_reading",
+    ):
+        prompt = config.prompts.get_prompt(prompt_name)
+        assert "untrusted evidence" in prompt
+        assert "exact contiguous substring" in prompt

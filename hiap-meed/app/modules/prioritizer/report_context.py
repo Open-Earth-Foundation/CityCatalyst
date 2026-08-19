@@ -568,6 +568,8 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
     """Build the six evidence rows required by the Snapshot signal table."""
     policy = _policy_facts(context.policy_score) or {}
     legal = _legal_facts(context) or {}
+    ownership_description = legal.get("ownership_description") or {}
+    restrictions_description = legal.get("restrictions_description") or {}
     financial = _financial_facts(context) or {}
     project_count = financial.get("comparable_project_count")
     emissions = context.action.emissions
@@ -635,8 +637,16 @@ def _snapshot_signal_rows(context: ReportContext) -> list[dict[str, Any]]:
             "reading": translate_term(
                 "score_labels", legal.get("verdict_category"), context.language
             ),
-            "detail": legal.get("ownership_description")
-            or legal.get("restrictions_description"),
+            "detail": localized_source_value(
+                language=context.language,
+                localized=ownership_description,
+                fallback=ownership_description.get("en"),
+            )
+            or localized_source_value(
+                language=context.language,
+                localized=restrictions_description,
+                fallback=restrictions_description.get("en"),
+            ),
         },
         {
             "what_we_checked": translate_term(

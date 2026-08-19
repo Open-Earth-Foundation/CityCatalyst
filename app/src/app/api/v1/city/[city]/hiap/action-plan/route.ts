@@ -3,6 +3,7 @@ import { apiHandler } from "@/util/api";
 import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import { z } from "zod";
 import createHttpError from "http-errors";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 
 const getActionPlansSchema = z.object({
   cityId: z.string().optional(), // Optional since we get it from path params
@@ -89,7 +90,7 @@ export const GET = apiHandler(
  *       - hiap
  *     operationId: postCityHiapActionPlan
  *     summary: Create or update an action plan for a city
- *     description: Upsert an action plan with the provided data. The cityId is extracted from the route parameter.
+ *     description: Upsert an action plan with the provided data. Requires authentication and inventory access. The inventory, city, ranking, and ranked action must belong together.
  *     parameters:
  *       - in: path
  *         name: city
@@ -148,15 +149,25 @@ export const GET = apiHandler(
  */
 export const POST = apiHandler(
   async (req: NextRequest, { session, params }) => {
+    if (!session?.user?.id) {
+      throw new createHttpError.Unauthorized("Authentication required");
+    }
+
     const body = await req.json();
 
     const validatedData = createActionPlanSchema.parse(body);
+
+    await PermissionService.canAccessInventory(
+      session,
+      validatedData.inventoryId,
+    );
 
     const { actionPlan } = await ActionPlanService.upsertActionPlan({
       cityId: params.city,
       actionId: validatedData.actionId,
       highImpactActionRankedId: validatedData.hiActionRankingId,
       cityLocode: validatedData.cityLocode,
+      inventoryId: validatedData.inventoryId,
       actionName: validatedData.actionName,
       language: validatedData.language,
       planData: validatedData.planData,

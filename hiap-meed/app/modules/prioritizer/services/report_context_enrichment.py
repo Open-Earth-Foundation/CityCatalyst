@@ -16,6 +16,7 @@ from app.modules.prioritizer.report_context import (
     validate_report_snapshot,
 )
 from app.modules.prioritizer.report_models import ReportContext
+from app.services.action_pathways_api import select_prioritizable_actions
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionMitigationFeasibilityScoresDataApiClient,
@@ -73,7 +74,8 @@ def build_report_context_with_live_enrichment(
     # Step 1: fetch live source data used by several report chapters.
     city = city_data_api_client.get_city(locode)
     actions_result = action_pathways_data_api_client.list_actions()
-    action = _find_action(actions_result.actions, action_id)
+    prioritizable_actions, _, _ = select_prioritizable_actions(actions_result.actions)
+    action = _find_action(prioritizable_actions, action_id)
     policy_result = action_policy_scores_data_api_client.get_action_policy_scores(locode)
     legal_assessments = legal_data_api_client.get_action_legal_assessments(country_code)
     mitigation_result = (

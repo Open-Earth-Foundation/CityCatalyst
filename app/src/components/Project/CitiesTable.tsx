@@ -73,7 +73,7 @@ export default function CitiesTable({
           </Table.Cell>
           <Table.Cell>
             <Link
-              href={`/${lng}/settings?tab=team&project=${projectId}&city=${item.cityId}`}
+              href={`/${lng}/settings?tab=team&organization=${organizationId}&project=${projectId}&city=${item.cityId}`}
               color="content.link"
               textDecoration="underline"
               fontFamily="body"

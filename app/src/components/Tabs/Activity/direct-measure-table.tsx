@@ -53,15 +53,20 @@ const DirectMeasureTable: FC<DirectMeasureTableProps> = ({
 
   const activityGroups = useMemo<Record<string, ActivityValue[]>>(() => {
     if (!groupBy) return {};
-    return activityData?.reduce((acc: any, activity: any) => {
-      // TODO extend for groupby with multiple values
-      const key = activity.activityData[groupBy];
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(activity);
-      return acc;
-    }, {});
+    return (
+      activityData?.reduce(
+        (acc, activity) => {
+          // TODO extend for groupby with multiple values
+          const key = activity.activityData?.[groupBy] as string;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(activity);
+          return acc;
+        },
+        {} as Record<string, ActivityValue[]>,
+      ) ?? {}
+    );
   }, [activityData, groupBy]);
 
   const sourceField = extraFields.find(

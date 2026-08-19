@@ -12,7 +12,7 @@ interface ActionPlan {
   cityLocode: string;
   actionName: string;
   language: string;
-  planData: any;
+  planData: ActionPlanPDFData;
   createdBy?: string;
   created: string;
   lastUpdated: string;

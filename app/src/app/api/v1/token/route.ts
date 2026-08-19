@@ -65,7 +65,7 @@ import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { OAuthClient } from "@/models/OAuthClient";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 import { logger } from "@/services/logger";
 import { createHash } from "node:crypto";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -104,7 +104,7 @@ const refreshTokenRequest = z.object({
 });
 
 /** accept an authorization code and return an access token  */
-export const POST = apiHandler(async (_req, { params, session }) => {
+export const POST = apiHandler(async (_req) => {
   if (!hasFeatureFlag(FeatureFlags.OAUTH_ENABLED)) {
     throw createHttpError.InternalServerError("OAuth 2.0 not enabled");
   }
@@ -150,7 +150,7 @@ export const POST = apiHandler(async (_req, { params, session }) => {
 
 async function handleAuthorizationCodeRequest(
   _req: NextRequest,
-  tr: any,
+  tr: z.infer<typeof authorizationCodeRequest>,
   key: string,
 ) {
   const client = await OAuthClient.findByPk(tr.client_id);
@@ -163,12 +163,12 @@ async function handleAuthorizationCodeRequest(
     throw new createHttpError.BadRequest("redirect_uri mismatch");
   }
 
-  let decoded: any;
+  let decoded: JwtPayload;
 
   try {
-    decoded = jwt.verify(tr.code, key);
-  } catch (error: any) {
-    if (error.name === "TokenExpiredError") {
+    decoded = jwt.verify(tr.code, key) as JwtPayload;
+  } catch (error: unknown) {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
     } else {
       throw createHttpError.BadRequest("Invalid reset token.");
@@ -264,15 +264,15 @@ async function handleAuthorizationCodeRequest(
 
 async function handleRefreshTokenRequest(
   _req: NextRequest,
-  rtr: any,
+  rtr: z.infer<typeof refreshTokenRequest>,
   key: string,
 ) {
-  let decoded: any;
+  let decoded: JwtPayload;
 
   try {
-    decoded = jwt.verify(rtr.refresh_token, key);
-  } catch (error: any) {
-    if (error.name === "TokenExpiredError") {
+    decoded = jwt.verify(rtr.refresh_token, key) as JwtPayload;
+  } catch (error: unknown) {
+    if (error instanceof TokenExpiredError) {
       throw createHttpError.BadRequest("Code has expired.");
     } else {
       throw createHttpError.BadRequest("Invalid reset token.");

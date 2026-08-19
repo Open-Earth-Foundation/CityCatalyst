@@ -30,7 +30,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
     >
       <Box display="flex" gap="16px">
         <Box display="flex" alignItems="center" color="interactive.tertiary">
-          <ExcelFileIcon size="32px" />
+          <ExcelFileIcon />
         </Box>
         <Box display="flex" flexDirection="column" gap="8px">
           <Text
@@ -58,7 +58,7 @@ const FileDataCard: FC<FileCardDataProps> = ({
         </Box>
       </Box>
       <Box w="full" position="relative" pl="50px">
-        {tags?.map((item: any) => (
+        {tags?.map((item) => (
           <Tag.Root
             key={item}
             mt={2}

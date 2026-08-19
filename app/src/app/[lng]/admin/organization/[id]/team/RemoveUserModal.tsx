@@ -193,7 +193,7 @@ const RemoveUserModal = (props: RemoveUserModalProps) => {
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: { open: boolean }) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
         if (!e.open) {
           onClose();

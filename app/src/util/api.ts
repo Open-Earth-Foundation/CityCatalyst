@@ -292,12 +292,13 @@ export function apiHandler(
     let session: AppSession | null = null;
     let error: Error | null = null;
 
-    const span = hasServerFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED)
-      ? H.startWithHeaders(
-          `${req.method} ${new URL(req.url).pathname}`,
-          req.headers,
-        ).span
-      : null;
+    const span =
+      hasServerFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED) && H
+        ? H.startWithHeaders(
+            `${req.method} ${new URL(req.url).pathname}`,
+            req.headers,
+          ).span
+        : null;
 
     // Apply rate limiting (disabled during tests)
     if (apiLimiter) {

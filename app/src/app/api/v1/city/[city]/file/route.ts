@@ -238,6 +238,12 @@ export const POST = apiHandler(
 
     const city = await UserService.findUserCity(cityId, session);
 
+    // findUserCity throws Unauthorized above unless the caller is an admin or
+    // has a valid session, so `user` is guaranteed defined past this point.
+    if (!user) {
+      throw new createHttpError.Unauthorized("Not signed in");
+    }
+
     const formData = await req.formData();
     const file = formData?.get("data") as unknown as File;
 
@@ -316,8 +322,8 @@ export const POST = apiHandler(
 
     await NotificationService.sendNotificationEmail({
       user: {
-        email: user?.email!,
-        name: user?.name!,
+        email: user.email ?? "",
+        name: user.name ?? "",
         // default to english since the email goes to admins
         preferredLanguage: LANGUAGES.en,
       },

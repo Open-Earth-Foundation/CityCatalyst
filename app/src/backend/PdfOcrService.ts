@@ -18,6 +18,12 @@ import {
 import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
 import { logger } from "@/services/logger";
+import {
+  syncGHGIImportedInventorySource,
+  syncGHGIOcrArtifact,
+  syncPendingGHGIOcrArtifacts,
+  withdrawGHGIImportCatalog,
+} from "@/backend/GHGINativeInputCatalogService";
 
 const INVENTORY_SOURCE_TYPE = "inventory_import" as const;
 const CONCEPT_NOTE_SOURCE_TYPE = "concept_note_upload" as const;
@@ -63,6 +69,7 @@ export async function enqueueInventoryPdfOcr(
     errorLog: null,
     lastUpdated: new Date(),
   });
+  await syncGHGIImportedInventorySource(importedFile);
   return job;
 }
 
@@ -301,6 +308,8 @@ async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
   if (updated !== 1) {
     throw new Error("PDF OCR lease was lost before result registration");
   }
+  const completedJob = await db.models.PdfOcrJob.findByPk(job.id);
+  if (completedJob) await syncGHGIOcrArtifact(completedJob);
 }
 
 async function failOrRetry(
@@ -353,6 +362,16 @@ async function failOrRetry(
       },
       { where: { id: job.sourceId } },
     );
+  }
+  if (!retryable && error instanceof PdfSourceError) {
+    try {
+      await withdrawGHGIImportCatalog(job.sourceId, job.id);
+    } catch (withdrawError) {
+      logger.error(
+        { err: withdrawError, importedFileId: job.sourceId, ocrJobId: job.id },
+        "Failed to withdraw invalid GHGI catalog entries",
+      );
+    }
   }
 }
 
@@ -570,6 +589,7 @@ export async function processPdfOcrJobs() {
   const owner = `pdf-ocr-${randomUUID()}`;
   const jobs = await claimPdfOcrJobs(owner);
   await Promise.all(jobs.map((job) => runOcrJob(job, owner)));
+  await syncPendingGHGIOcrArtifacts(config.batchSize);
 
   const extractionOwner = `pdf-extraction-${randomUUID()}`;
   const successfulJobs = await claimInventoryExtractionJobs(extractionOwner);

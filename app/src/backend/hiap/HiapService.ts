@@ -8,6 +8,7 @@ import {
   EmissionsBySector,
 } from "../ResultsService";
 import { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import { HighImpactActionRanked } from "@/models/HighImpactActionRanked";
 import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
 import { InventoryService } from "../InventoryService";
@@ -16,15 +17,19 @@ import {
   PrioritizerResponse,
   PrioritizerCityData,
   PrioritizerRankedAction,
+  MergedRankedAction,
 } from "./types";
 import uniqBy from "lodash/uniqBy";
 import EmailService from "../EmailService";
 import { User } from "@/models/User";
-import { getSession } from "next-auth/react";
 import { AppSession } from "@/lib/auth";
 import { Op } from "sequelize";
 import VersionHistoryService from "../VersionHistoryService";
 import { getTranslationFromDictionary } from "@/util/helpers";
+import {
+  syncHIAPRanking,
+  syncHIAPSelections,
+} from "./HiapNativeInputCatalogService";
 
 const HIAP_API_URL = process.env.HIAP_API_URL || "http://hiap-service";
 logger.info(`Using HIAP API at ${HIAP_API_URL}`);
@@ -65,28 +70,6 @@ const getClient = (() => {
     return client;
   };
 })();
-
-export interface GlobalApiClimateAction {
-  ActionID: string;
-  ActionName: string;
-  ActionType: ACTION_TYPES[];
-  Hazard: string[] | null;
-  Sector: string[] | null;
-  Subsector: string[] | null;
-  PrimaryPurpose: string[];
-  Description: string;
-  CoBenefits: { [k: string]: number };
-  EquityAndInclusionConsiderations: string;
-  GHGReductionPotential: { [k: string]: string };
-  AdaptationEffectiveness: string | null;
-  CostInvestmentNeeded: string | null;
-  TimelineForImplementation: string | null;
-  Dependencies: string[];
-  KeyPerformanceIndicators: string[];
-  PowersAndMandates: string[] | null;
-  AdaptationEffectivenessPerHazard: { [k: string]: string };
-  biome: string | null;
-}
 
 export const findExistingRanking = async (
   inventoryId: string,
@@ -224,12 +207,15 @@ export const startBulkActionRankingJob = async (
       const contextData =
         await hiapServiceWrapper.getCityContextAndEmissionsData(inventoryId);
       citiesData.push(contextData);
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { inventoryId, error },
         `Failed to get context data for city ${locode}`,
       );
-      failed.push({ inventoryId, error: error.message });
+      failed.push({
+        inventoryId,
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -251,7 +237,7 @@ export const startBulkActionRankingJob = async (
 
   // Create ranking records for all cities with the SAME jobId
   const rankings = await Promise.all(
-    citiesInventoriesData.map(async ({ inventoryId, locode, cityId }) => {
+    citiesInventoriesData.map(async ({ inventoryId, locode }) => {
       // Skip if context data failed for this city
       if (failed.some((f) => f.inventoryId === inventoryId)) {
         return null;
@@ -335,8 +321,8 @@ export const checkSingleActionRankingJob = async (
     let singleResponse;
     try {
       singleResponse = await hiapApiWrapper.getPrioritizationResult(jobId);
-    } catch (error: any) {
-      if (error.message?.includes("409")) {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes("409")) {
         logger.warn(
           { jobId, error: error.message },
           "Result not ready yet (409 Conflict), will retry on next cron run",
@@ -366,7 +352,7 @@ export const checkSingleActionRankingJob = async (
  */
 async function processBulkJobResults(
   jobId: string,
-  bulkResponse: { prioritizerResponseList: any[] },
+  bulkResponse: { prioritizerResponseList: PrioritizerResponse[] },
 ): Promise<boolean> {
   // Get all rankings that share this jobId
   const rankings = await db.models.HighImpactActionRanking.findAll({
@@ -481,6 +467,7 @@ async function processBulkJobResults(
 
       // Update ranking status to success
       await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+      await syncHIAPRanking(ranking);
 
       logger.info(
         {
@@ -490,14 +477,17 @@ async function processBulkJobResults(
         },
         "Saved ranked actions for city in all languages",
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { rankingId: ranking.id, locode: ranking.locode, error },
         "Failed to save ranked actions for city",
       );
       await ranking.update({
         status: HighImpactActionRankingStatus.FAILURE,
-        errorMessage: error.message || "Failed to save ranked actions",
+        errorMessage:
+          error instanceof Error
+            ? error.message
+            : "Failed to save ranked actions",
       });
     }
   }
@@ -556,8 +546,8 @@ export const checkBulkActionRankingJob = async (
     let bulkResponse;
     try {
       bulkResponse = await hiapApiWrapper.getBulkPrioritizationResult(jobId);
-    } catch (error: any) {
-      if (error.message?.includes("409")) {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes("409")) {
         logger.warn(
           { jobId, error: error.message },
           "Result not ready yet (409 Conflict), will retry on next cron run",
@@ -584,7 +574,10 @@ function extractLocalizedString(
 }
 
 /** Ensure ranked action text fields are strings for the requested language. */
-export function normalizeRankedActionForLang(action: any, lang: LANGUAGES) {
+export function normalizeRankedActionForLang(
+  action: HighImpactActionRanked,
+  lang: LANGUAGES,
+): Record<string, unknown> {
   const plain = typeof action.toJSON === "function" ? action.toJSON() : action;
   return {
     ...plain,
@@ -608,16 +601,17 @@ async function fetchAndMergeRankedActions(
   rankedActions: {
     actionId: string;
     rank: number;
-    explanation: any;
+    explanation: { explanations?: Record<string, string> };
+    isSelected?: boolean;
     type: ACTION_TYPES;
   }[],
-) {
+): Promise<MergedRankedAction[]> {
   const allActions = await GlobalAPIService.fetchAllClimateActions(lang);
 
   return rankedActions
-    .map((rankedAction) => {
+    .map((rankedAction): MergedRankedAction | null => {
       const details = allActions.find(
-        (a: any) => a.ActionID === rankedAction.actionId,
+        (a) => a.ActionID === rankedAction.actionId,
       );
       if (!details) {
         logger.error(
@@ -652,14 +646,14 @@ async function fetchAndMergeRankedActions(
         biome: details.biome,
       };
     })
-    .filter((r) => r !== null);
+    .filter((r): r is MergedRankedAction => r !== null);
 }
 
 // Helper: Check if actions already exist for a language and return them if they do
 async function checkExistingActions(
   rankingId: string,
   lang: LANGUAGES,
-): Promise<any[] | null> {
+): Promise<HighImpactActionRanked[] | null> {
   const existingActions = await db.models.HighImpactActionRanked.findAll({
     where: { hiaRankingId: rankingId, lang },
   });
@@ -674,7 +668,9 @@ async function checkExistingActions(
 }
 
 // Helper: Normalize field to array (handles strings and nulls)
-function normalizeToArray(value: any): string[] | undefined {
+function normalizeToArray(
+  value: string | string[] | null | undefined,
+): string[] | undefined {
   if (value === null || value === undefined) {
     return undefined;
   }
@@ -709,7 +705,7 @@ function normalizeToArray(value: any): string[] | undefined {
 async function createRankedActionRecord(
   rankingId: string,
   lang: LANGUAGES,
-  rankedAction: any,
+  rankedAction: MergedRankedAction | null,
   inventoryId: string,
   userId: string | undefined,
 ): Promise<boolean> {
@@ -724,27 +720,37 @@ async function createRankedActionRecord(
         rank: rankedAction.rank,
         type: rankedAction.type,
         explanation: rankedAction.explanation,
-        name: rankedAction.name,
+        name: rankedAction.name ?? "",
         hazards: normalizeToArray(rankedAction.hazard),
         sectors: normalizeToArray(rankedAction.sector),
         subsectors: normalizeToArray(rankedAction.subsector),
         primaryPurposes: normalizeToArray(rankedAction.primaryPurpose),
         description: rankedAction.description,
-        cobenefits: rankedAction.cobenefits,
+        cobenefits: rankedAction.cobenefits as unknown as Record<
+          string,
+          object
+        >,
         equityAndInclusionConsiderations:
           rankedAction.equityAndInclusionConsiderations,
-        GHGReductionPotential: rankedAction.GHGReductionPotential,
-        adaptationEffectiveness: rankedAction.adaptationEffectiveness,
-        costInvestmentNeeded: rankedAction.costInvestmentNeeded,
-        timelineForImplementation: rankedAction.timelineForImplementation,
+        GHGReductionPotential: rankedAction.GHGReductionPotential as unknown as Record<
+          string,
+          object
+        >,
+        adaptationEffectiveness: rankedAction.adaptationEffectiveness ?? undefined,
+        costInvestmentNeeded: rankedAction.costInvestmentNeeded ?? undefined,
+        timelineForImplementation:
+          rankedAction.timelineForImplementation ?? undefined,
         dependencies: normalizeToArray(rankedAction.dependencies),
         keyPerformanceIndicators: normalizeToArray(
           rankedAction.keyPerformanceIndicators,
         ),
         powersAndMandates: normalizeToArray(rankedAction.powersAndMandates),
         adaptationEffectivenessPerHazard:
-          rankedAction.adaptationEffectivenessPerHazard,
-        biome: rankedAction.biome,
+          rankedAction.adaptationEffectivenessPerHazard as unknown as Record<
+            string,
+            object
+          >,
+        biome: rankedAction.biome ?? undefined,
         // Keep selection in sync when copying ranked rows into a new language
         isSelected: Boolean(rankedAction.isSelected),
       },
@@ -771,13 +777,19 @@ async function createRankedActionRecord(
 // Helper: Save ranked actions for a language and return the actions
 async function saveRankedActionsForLanguage(
   ranking: HighImpactActionRanking,
-  rankedActions: any[],
+  rankedActions: {
+    actionId: string;
+    rank: number;
+    explanation: { explanations?: Record<string, string> };
+    type: ACTION_TYPES;
+    isSelected?: boolean;
+  }[],
   lang: LANGUAGES,
-): Promise<any[]> {
+): Promise<Record<string, unknown>[]> {
   // Check if actions already exist for this language
   const existingActions = await checkExistingActions(ranking.id, lang);
   if (existingActions) {
-    return existingActions;
+    return existingActions as unknown as Record<string, unknown>[];
   }
 
   // Note: No race condition check needed here because we prevent multiple
@@ -828,7 +840,7 @@ export const checkActionRankingJob = async (
   type: ACTION_TYPES,
   user?: User,
 ) => {
-  const { locode, inventoryId, jobId } = ranking;
+  const { jobId } = ranking;
   if (!jobId) throw new Error("Ranking is missing jobId");
   try {
     let jobStatus: HighImpactActionRankingStatus =
@@ -880,6 +892,7 @@ export const checkActionRankingJob = async (
     await saveRankedActionsForLanguage(ranking, mergedRanked, lang);
 
     await ranking.update({ status: HighImpactActionRankingStatus.SUCCESS });
+    await syncHIAPRanking(ranking);
 
     // Send email notification when job completes successfully
     if (user && mergedRanked.length > 0) {
@@ -906,7 +919,7 @@ export const checkActionRankingJob = async (
 
 // Helper to get emissions for a sector by name
 function getSectorEmissions(
-  emissionsBySector: any[],
+  emissionsBySector: EmissionsBySector[],
   sectorName: string,
 ): number | null {
   const value = emissionsBySector.find(
@@ -1099,14 +1112,18 @@ async function findOrSelectRanking(
 
 // Helper: Get ranked actions for a ranking and language
 async function getRankedActionsForLang(
-  ranking: any,
+  ranking: HighImpactActionRanking,
   lang: LANGUAGES,
   type?: ACTION_TYPES,
-) {
+): Promise<Record<string, unknown>[]> {
   // Repair any pre-existing per-language selection drift before reading
   await syncRankedActionSelectionsAcrossLanguages(ranking.id);
 
-  const whereClause: any = { hiaRankingId: ranking.id, lang };
+  const whereClause: {
+    hiaRankingId: string;
+    lang: LANGUAGES;
+    type?: ACTION_TYPES;
+  } = { hiaRankingId: ranking.id, lang };
 
   // Add type filter only if type is provided
   if (type) {
@@ -1363,7 +1380,7 @@ function getSelectedActionsFileName(locode: string, type: ACTION_TYPES) {
   return `data/selected/${type}/${locode}.json`;
 }
 
-const streamToString = async (stream: any) => {
+const streamToString = async (stream: NodeJS.ReadableStream) => {
   // AWS S3 returns a stream-like object with 'on' method in Node.js backend
   const chunks: Uint8Array[] = [];
 
@@ -1394,7 +1411,8 @@ export const readSelectedActionsFile = async (
     const response = await client.send(command);
     const body = response.Body;
     if (!body) return [];
-    const data = await streamToString(body);
+    // Always a Node.js Readable in this backend runtime (see streamToString).
+    const data = await streamToString(body as NodeJS.ReadableStream);
     try {
       return JSON.parse(data); // This will be an array of action IDs
     } catch {
@@ -1519,7 +1537,7 @@ export async function updateHiapActionSelections({
           }
         : { hiaRankingId: rankingIds };
 
-    const [_deselectedCount, changedDeselectedEntries] =
+    const [, changedDeselectedEntries] =
       await db.models.HighImpactActionRanked.update(
         { isSelected: false },
         {
@@ -1588,6 +1606,8 @@ export async function updateHiapActionSelections({
     await db.models.UnrankedActionSelection.bulkCreate(unrankedSelections);
     updatedCount += unrankedActionIds.length;
   }
+
+  await syncHIAPSelections({ inventoryId, actionType, authorId });
 
   return updatedCount;
 }
@@ -1676,7 +1696,7 @@ export async function migrateProjectActionSelections(
             ],
             attributes: ["id"],
           });
-          const rankingIds = rankings.map((r: any) => r.id);
+          const rankingIds = rankings.map((r) => r.id);
 
           logger.info(
             `Found ${rankingIds.length} rankings for ${locode}, ${actionType} (year: ${year})`,

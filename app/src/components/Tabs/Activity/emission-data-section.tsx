@@ -21,7 +21,6 @@ import HeadingText from "@/components/heading-text";
 import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { useParams } from "next/navigation";
 import {
   MenuContent,
   MenuItem,
@@ -106,13 +105,6 @@ const EmissionDataSection = ({
     0n,
   );
 
-  const closeModals = () => {
-    setSelectedActivityValue(undefined);
-    setAddActivityDataDialogOpen(false);
-    setActivityDeleteAllDataDialogOpen(false);
-    setActivityDeleteDataDialogOpen(false);
-  };
-
   const handleActivityAdded = (suggestedActivity?: SuggestedActivity) => {
     setSelectedActivity(suggestedActivity);
     setAddActivityDataDialogOpen(true);
@@ -123,7 +115,6 @@ const EmissionDataSection = ({
     setAddActivityDataDialogOpen(true);
   };
 
-  const { lng } = useParams();
   const { isFrozenCheck } = useOrganizationContext();
 
   const renderSuggestedActivities = () => (
@@ -143,12 +134,10 @@ const EmissionDataSection = ({
               const { id, prefills } = suggestedActivity;
               return (
                 <SuggestedActivityCard
-                  id={id}
                   key={`${id}-${prefills[0]?.key ?? "no-key"}-${prefills[0]?.value ?? "no-value"}`}
                   prefillKey={prefills[0]?.key}
                   prefillValue={prefills[0]?.value}
                   t={t}
-                  isSelected={selectedActivity?.id === id}
                   onActivityAdded={() =>
                     isFrozenCheck()
                       ? null
@@ -340,7 +329,8 @@ const EmissionDataSection = ({
               renderSuggestedActivities()
             ) : (
               <Box>
-                {getInputMethodology(methodology?.id!) === "direct-measure" ? (
+                {getInputMethodology(methodology?.id ?? "") ===
+                "direct-measure" ? (
                   <DirectMeasureTable
                     t={t}
                     referenceNumber={refNumberWithScope}

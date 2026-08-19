@@ -35,7 +35,7 @@ const UpdateUserDialog: FC<UpdateUserDialogProps> = ({
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
   } = useForm<GetUserCityInvitesResponseUserData>();
 

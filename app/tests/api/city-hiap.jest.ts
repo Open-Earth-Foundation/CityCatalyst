@@ -24,6 +24,7 @@ import { randomUUID } from "node:crypto";
 
 import { GET, PATCH } from "@/app/api/v1/inventory/[inventory]/hiap/route";
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
+import GlobalAPIService from "@/backend/GlobalAPIService";
 
 describe("Inventory HIAP API", () => {
   let inventoryId: string;
@@ -96,6 +97,10 @@ describe("Inventory HIAP API", () => {
         ],
         rankedActionsAdaptation: [],
       });
+
+    // Mock the climate-actions catalog API — GET always fetches it to build
+    // unrankedActions, so without this it hits the real external service.
+    jest.spyOn(GlobalAPIService, "fetchAllClimateActions").mockResolvedValue([]);
   });
 
   afterAll(async () => {
@@ -316,7 +321,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: sharedActionId,
         rank: 1,
-        explanation: { en: "EN", pt: "PT" } as any,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
         lang: "en",
         type: "mitigation",
         name: "Shared Action EN",
@@ -328,7 +333,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: sharedActionId,
         rank: 1,
-        explanation: { en: "EN", pt: "PT" } as any,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
         lang: "pt",
         type: "mitigation",
         name: "Shared Action PT",
@@ -340,7 +345,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: otherActionId,
         rank: 2,
-        explanation: { en: "EN", pt: "PT" } as any,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
         lang: "en",
         type: "mitigation",
         name: "Other Action EN",
@@ -352,7 +357,7 @@ describe("Inventory HIAP API", () => {
         hiaRankingId: ranking.id,
         actionId: otherActionId,
         rank: 2,
-        explanation: { en: "EN", pt: "PT" } as any,
+        explanation: { explanations: { en: "EN", pt: "PT" } },
         lang: "pt",
         type: "mitigation",
         name: "Other Action PT",

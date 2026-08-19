@@ -65,7 +65,9 @@ export default function HomePage({
   const router = useRouter();
 
   // Check if user is authenticated otherwise route to login page
-  isPublic || CheckUserSession();
+  if (!isPublic) {
+    CheckUserSession();
+  }
   const language = cookieLanguage ?? lng;
   const { cityId } = useParams();
 
@@ -120,7 +122,9 @@ export default function HomePage({
   const { data: allModules, isLoading: isAllModulesLoading } =
     useGetModulesQuery();
   const { data: projectModules, isLoading: isProjectModulesLoading } =
-    useGetProjectModulesQuery(city?.projectId!, { skip: !city?.projectId });
+    useGetProjectModulesQuery(city?.projectId ?? "", {
+      skip: !city?.projectId,
+    });
 
   const modulesByStage =
     allModules?.reduce(

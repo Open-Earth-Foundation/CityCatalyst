@@ -1,8 +1,8 @@
-import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import type * as HighlightNextServer from "@highlight-run/next/server";
 import { env } from "@/lib/runtime-env";
 
 // Only import and initialize Highlight if not in test environment
-let H: any = null;
+let H: typeof HighlightNextServer.H | null = null;
 
 if (process.env.NODE_ENV !== "test" && typeof window === "undefined") {
   try {

@@ -3,7 +3,13 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "@/models";
 import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
+import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
+import { LegacyActionPlanData } from "./types";
+import {
+  syncHIAPActionPlan,
+  withdrawHIAPActionPlanCatalog,
+} from "./HiapNativeInputCatalogService";
 
 // Interfaces updated to work with new table structure
 
@@ -17,24 +23,24 @@ export interface CreateActionPlanInput {
   language: string;
 
   // Plan metadata
-  cityName?: string;
-  createdAtTimestamp?: string;
+  cityName?: string | null;
+  createdAtTimestamp?: string | null;
 
   // Plan content from introduction
-  cityDescription?: string;
-  actionDescription?: string;
-  nationalStrategyExplanation?: string;
+  cityDescription?: string | null;
+  actionDescription?: string | null;
+  nationalStrategyExplanation?: string | null;
 
   // Structured plan data
-  subactions?: any;
-  institutions?: any;
-  milestones?: any;
-  timeline?: any;
-  costBudget?: any;
-  merIndicators?: any;
-  mitigations?: any;
-  adaptations?: any;
-  sdgs?: any;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 
   // Tracking
   createdBy?: string;
@@ -42,28 +48,29 @@ export interface CreateActionPlanInput {
 
 export interface UpdateActionPlanInput {
   id: string;
+  cityId: string;
   actionName?: string;
   language?: string;
 
   // Plan metadata
-  cityName?: string;
-  createdAtTimestamp?: string;
+  cityName?: string | null;
+  createdAtTimestamp?: string | null;
 
   // Plan content
-  cityDescription?: string;
-  actionDescription?: string;
-  nationalStrategyExplanation?: string;
+  cityDescription?: string | null;
+  actionDescription?: string | null;
+  nationalStrategyExplanation?: string | null;
 
   // Structured plan data
-  subactions?: any;
-  institutions?: any;
-  milestones?: any;
-  timeline?: any;
-  costBudget?: any;
-  merIndicators?: any;
-  mitigations?: any;
-  adaptations?: any;
-  sdgs?: any;
+  subactions?: object | null;
+  institutions?: object | null;
+  milestones?: object | null;
+  timeline?: object | null;
+  costBudget?: object | null;
+  merIndicators?: object | null;
+  mitigations?: object | null;
+  adaptations?: object | null;
+  sdgs?: object | null;
 }
 
 export interface UpsertActionPlanInput {
@@ -74,16 +81,111 @@ export interface UpsertActionPlanInput {
   inventoryId?: string;
   actionName: string;
   language: string;
-  planData: any; // Legacy HIAP API format - will be transformed
+  planData: LegacyActionPlanData; // Legacy HIAP API format - will be transformed
   createdBy?: string;
 }
 
+type HIAPActionPlanContext = Pick<
+  UpsertActionPlanInput,
+  | "actionId"
+  | "highImpactActionRankedId"
+  | "cityId"
+  | "cityLocode"
+  | "inventoryId"
+>;
+
 export default class ActionPlanService {
+  private static async validateHIAPActionPlanContext(
+    input: HIAPActionPlanContext,
+  ): Promise<void> {
+    if (!input.inventoryId || !input.highImpactActionRankedId) {
+      throw new createHttpError.BadRequest(
+        "Inventory and ranked HIAP action are required",
+      );
+    }
+
+    const inventory = await db.models.Inventory.findByPk(input.inventoryId, {
+      include: [{ model: db.models.City, as: "city" }],
+    });
+
+    if (!inventory || inventory.cityId !== input.cityId) {
+      throw new createHttpError.BadRequest(
+        "Inventory does not belong to the requested city",
+      );
+    }
+
+    if (inventory.city?.locode && inventory.city.locode !== input.cityLocode) {
+      throw new createHttpError.BadRequest(
+        "City locode does not match the requested inventory",
+      );
+    }
+
+    const rankedAction = await db.models.HighImpactActionRanked.findByPk(
+      input.highImpactActionRankedId,
+    );
+    if (!rankedAction) {
+      throw new createHttpError.NotFound("Ranked HIAP action not found");
+    }
+
+    if (rankedAction.actionId !== input.actionId) {
+      throw new createHttpError.BadRequest(
+        "Action does not match the ranked HIAP action",
+      );
+    }
+
+    const ranking = await db.models.HighImpactActionRanking.findByPk(
+      rankedAction.hiaRankingId,
+    );
+    if (
+      !ranking ||
+      ranking.inventoryId !== input.inventoryId ||
+      ranking.status !== HighImpactActionRankingStatus.SUCCESS
+    ) {
+      throw new createHttpError.BadRequest(
+        "Ranked HIAP action does not belong to a successful ranking for the requested inventory",
+      );
+    }
+  }
+
+  private static async getValidatedActionPlanForMutation(
+    id: string,
+    cityId: string,
+  ): Promise<ActionPlan> {
+    const actionPlan = await db.models.ActionPlan.findByPk(id);
+    if (!actionPlan) {
+      throw new createHttpError.NotFound(`Action plan with id ${id} not found`);
+    }
+
+    if (actionPlan.cityId !== cityId) {
+      throw new createHttpError.BadRequest(
+        "Action plan does not belong to the requested city",
+      );
+    }
+
+    await this.validateHIAPActionPlanContext({
+      actionId: actionPlan.actionId,
+      highImpactActionRankedId:
+        actionPlan.highImpactActionRankedId ?? undefined,
+      cityId,
+      cityLocode: actionPlan.cityLocode,
+      inventoryId: actionPlan.inventoryId ?? undefined,
+    });
+
+    return actionPlan;
+  }
+
+  public static async getActionPlanForMutation(
+    id: string,
+    cityId: string,
+  ): Promise<ActionPlan> {
+    return this.getValidatedActionPlanForMutation(id, cityId);
+  }
+
   /**
    * Transform legacy planData format to new column structure
    */
   private static transformPlanData(
-    planData: any,
+    planData: LegacyActionPlanData,
   ): Partial<CreateActionPlanInput> {
     const result: Partial<CreateActionPlanInput> = {};
 
@@ -91,7 +193,7 @@ export default class ActionPlanService {
     if (planData.metadata) {
       result.cityName = planData.metadata.cityName;
       result.createdAtTimestamp = planData.metadata.createdAt;
-      result.actionName = planData.metadata.actionName;
+      result.actionName = planData.metadata.actionName ?? undefined;
     }
 
     // Extract introduction content
@@ -122,7 +224,9 @@ export default class ActionPlanService {
   /**
    * Transform database record back to legacy planData format for API compatibility
    */
-  private static transformToLegacyFormat(actionPlan: ActionPlan): any {
+  private static transformToLegacyFormat(
+    actionPlan: ActionPlan,
+  ): LegacyActionPlanData {
     return {
       metadata: {
         cityName: actionPlan.cityName,
@@ -184,8 +288,10 @@ export default class ActionPlanService {
         createdBy: input.createdBy,
       });
 
+      await syncHIAPActionPlan(actionPlan);
+
       return actionPlan;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to create action plan");
       throw createHttpError.InternalServerError("Failed to create action plan");
     }
@@ -208,7 +314,7 @@ export default class ActionPlanService {
       });
 
       return actionPlan;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plan by ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
@@ -259,7 +365,7 @@ export default class ActionPlanService {
         order: [["created", "DESC"]],
       });
       return actionPlans;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plans by city ID");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plans",
@@ -274,6 +380,8 @@ export default class ActionPlanService {
     input: UpdateActionPlanInput,
   ): Promise<ActionPlan | null> {
     try {
+      await this.getValidatedActionPlanForMutation(input.id, input.cityId);
+
       const [updatedRowsCount] = await db.models.ActionPlan.update(
         {
           actionName: input.actionName,
@@ -304,8 +412,14 @@ export default class ActionPlanService {
         return null;
       }
 
-      return await this.getActionPlanById(input.id);
-    } catch (error: any) {
+      const actionPlan = await this.getActionPlanById(input.id);
+      if (actionPlan) await syncHIAPActionPlan(actionPlan);
+      return actionPlan;
+    } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to update action plan");
       throw createHttpError.InternalServerError("Failed to update action plan");
     }
@@ -314,14 +428,23 @@ export default class ActionPlanService {
   /**
    * Delete an action plan
    */
-  public static async deleteActionPlan(id: string): Promise<boolean> {
+  public static async deleteActionPlan(
+    id: string,
+    cityId: string,
+  ): Promise<boolean> {
     try {
+      await this.getValidatedActionPlanForMutation(id, cityId);
+      await withdrawHIAPActionPlanCatalog(id);
       const deletedRowsCount = await db.models.ActionPlan.destroy({
         where: { id },
       });
 
       return deletedRowsCount > 0;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to delete action plan");
       throw createHttpError.InternalServerError("Failed to delete action plan");
     }
@@ -337,6 +460,10 @@ export default class ActionPlanService {
       // make sure no zero-length strings are written to UUID fields in the database
       if (input.highImpactActionRankedId?.length === 0) {
         input.highImpactActionRankedId = undefined;
+      }
+
+      if (input.inventoryId || input.highImpactActionRankedId) {
+        await this.validateHIAPActionPlanContext(input);
       }
 
       // Transform legacy planData to new structure
@@ -358,6 +485,7 @@ export default class ActionPlanService {
         // Update existing plan
         const updatedPlan = await this.updateActionPlan({
           id: existingPlan.id,
+          cityId: input.cityId,
           actionName: input.actionName,
           language: input.language,
           ...transformedData,
@@ -380,7 +508,11 @@ export default class ActionPlanService {
 
         return { actionPlan: newPlan, created: true };
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to upsert action plan");
       throw createHttpError.InternalServerError("Failed to upsert action plan");
     }
@@ -393,7 +525,7 @@ export default class ActionPlanService {
     actionId: string,
     language: string,
     cityId: string,
-  ): Promise<{ planData: any } | null> {
+  ): Promise<{ planData: LegacyActionPlanData } | null> {
     try {
       const actionPlans = await this.getActionPlansByCityId(
         cityId,
@@ -409,7 +541,7 @@ export default class ActionPlanService {
       // Transform back to legacy format
       const planData = this.transformToLegacyFormat(actionPlan);
       return { planData };
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error({ err: error }, "Failed to get action plan by key");
       throw createHttpError.InternalServerError(
         "Failed to retrieve action plan",
@@ -501,6 +633,7 @@ export default class ActionPlanService {
                   sourcePlan.highImpactActionRankedId || undefined,
                 cityId: cityId,
                 cityLocode: sourcePlan.cityLocode,
+                inventoryId: sourcePlan.inventoryId || undefined,
                 actionName: transformedData.actionName || sourcePlan.actionName,
                 language,
                 planData: translated,
@@ -525,7 +658,7 @@ export default class ActionPlanService {
       }
 
       return actionPlans;
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, cityId, language, actionId },
         "Failed to get action plans",

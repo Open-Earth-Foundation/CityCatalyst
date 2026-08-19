@@ -43,7 +43,7 @@ const schema = z.object({
   planType: z.nativeEnum(OrganizationPlanType),
   projectName: z.string().min(3, "required"),
   description: z.string().min(3, "required"),
-  cityCountLimit: z.number().min(1, "required"),
+  cityCountLimit: z.coerce.number().min(1, "required"),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -61,12 +61,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     handleSubmit,
     reset,
     watch,
-    setError,
-    clearErrors,
-    setFocus,
-    setValue,
     control,
-    getValues,
     trigger,
     formState: { errors },
   } = useForm<Schema>({
@@ -110,7 +105,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     reset();
   };
 
-  const handleCustomError = (error: any, fallbackTitle: string) => {
+  const handleCustomError = (error: CustomError, fallbackTitle: string) => {
     const errorBody = error?.data?.error;
     const errorData = errorBody?.data;
     const errorKey = errorData?.errorKey || "unknown-error";
@@ -189,7 +184,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => onOpenChange(e.open)}
+      onOpenChange={(e) => onOpenChange(e.open)}
       onExitComplete={closeFunction}
     >
       <DialogBackdrop />
@@ -365,15 +360,13 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                   <FormattedNumberInput
                     placeholder="00"
                     max={99999}
-                    setError={setError}
-                    clearErrors={clearErrors}
                     min={1}
                     control={control}
                     name={`cityCountLimit`}
                     t={t}
                     w="full"
                   />
-                  {errors.description && (
+                  {errors.cityCountLimit && (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text color="error" fontSize="body.sm">

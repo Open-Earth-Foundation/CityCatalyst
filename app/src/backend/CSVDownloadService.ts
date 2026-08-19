@@ -89,21 +89,21 @@ export default class CSVDownloadService {
         const co2Amount =
           activityValue?.emission_co2 != null
             ? Decimal.mul(
-                (activityValue?.emission_co2 as any) ?? 0,
+                activityValue?.emission_co2 ?? 0,
                 gwps["CO2"].co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const ch4Amount =
           activityValue?.emission_ch4 != null
             ? Decimal.mul(
-                (activityValue?.emission_ch4 as any) ?? 0,
+                activityValue?.emission_ch4 ?? 0,
                 gwps["CH4"].co2eqPerKg ?? 0,
               ).toNumber()
             : "";
         const n2oAmount =
           activityValue?.emission_n2o != null
             ? Decimal.mul(
-                (activityValue?.emission_n2o as any) ?? 0,
+                activityValue?.emission_n2o ?? 0,
                 gwps["N2O"].co2eqPerKg ?? 0,
               ).toNumber()
             : "";

@@ -22,11 +22,11 @@ export default function CitiesLayout(props: {
   const { children } = props;
 
   const { setOrganization, organization } = useOrganizationContext();
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
 
   // Get organization data using organizationId from context
   const { data: orgData, isLoading: isOrgDataLoading } =
-    useGetOrganizationQuery(organization?.organizationId!, {
+    useGetOrganizationQuery(organization?.organizationId ?? "", {
       skip: !organization?.organizationId,
     });
 

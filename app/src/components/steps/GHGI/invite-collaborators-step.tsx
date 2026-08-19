@@ -14,7 +14,6 @@ import {
   CloseButton,
   createListCollection,
   Flex,
-  Heading,
   HStack,
   Icon,
   Input,

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Tabs, Text } from "@chakra-ui/react";
+import { Box, Tabs } from "@chakra-ui/react";
 import React, { FC } from "react";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";

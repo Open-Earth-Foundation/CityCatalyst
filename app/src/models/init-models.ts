@@ -106,6 +106,11 @@ import type {
 } from "./PdfOcrJob";
 import { PdfOcrJob as _PdfOcrJob } from "./PdfOcrJob";
 import type {
+  NativeInputCatalogAttributes,
+  NativeInputCatalogCreationAttributes,
+} from "./NativeInputCatalog";
+import { NativeInputCatalog as _NativeInputCatalog } from "./NativeInputCatalog";
+import type {
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
 } from "./ImportMappingFeedback";
@@ -275,6 +280,7 @@ export {
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
   _PdfOcrJob as PdfOcrJob,
+  _NativeInputCatalog as NativeInputCatalog,
   _ImportMappingFeedback as ImportMappingFeedback,
   _Methodology as Methodology,
   _Organization as Organization,
@@ -355,6 +361,8 @@ export type {
   ImportedInventoryFileCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
+  NativeInputCatalogAttributes,
+  NativeInputCatalogCreationAttributes,
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
   MethodologyAttributes,
@@ -451,6 +459,7 @@ export function initModels(sequelize: Sequelize) {
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
+  const NativeInputCatalog = _NativeInputCatalog.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
@@ -1216,6 +1225,7 @@ export function initModels(sequelize: Sequelize) {
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
     PdfOcrJob: PdfOcrJob,
+    NativeInputCatalog: NativeInputCatalog,
     ImportMappingFeedback: ImportMappingFeedback,
     Methodology: Methodology,
     Organization: Organization,

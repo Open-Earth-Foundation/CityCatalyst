@@ -5,12 +5,11 @@ import React from "react";
 import type { TFunction } from "i18next";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { MdArrowForward, MdOpenInNew } from "react-icons/md";
+import { MdOpenInNew } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { ModuleAttributes } from "@/models/Module";
 import NextLink from "next/link";
-import { Modules } from "@/util/constants";
 
 export function ModuleCard({
   module,

@@ -6,7 +6,7 @@ import logging
 from decimal import Decimal
 from uuid import UUID, uuid5
 
-from app.models.cnb.research import FundingOpportunityResearchBundle, FundingRecordDraft
+from app.models.cnb.research import FundedProjectDraft, FundingOpportunityResearchBundle
 from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
     CnbSimilarProjectEvidence,
@@ -40,9 +40,9 @@ def _normalize_decimal(value: Decimal | None) -> str:
     return text.rstrip("0").rstrip(".")
 
 
-def _humanize_gap_field(target_path: str, funding_record_ref: str) -> str | None:
+def _humanize_gap_field(target_path: str, funded_project_ref: str) -> str | None:
     """Return a simple field label for one project-scoped gap path."""
-    prefix = f"funding_records[{funding_record_ref}]"
+    prefix = f"funded_projects[{funded_project_ref}]"
     if not target_path.startswith(f"{prefix}."):
         return None
     field_path = target_path[len(prefix) + 1 :]
@@ -58,16 +58,16 @@ def _humanize_gap_field(target_path: str, funding_record_ref: str) -> str | None
 
 def _record_gap_texts(
     research: FundingOpportunityResearchBundle,
-    funding_record_ref: str,
+    funded_project_ref: str,
 ) -> list[str]:
     """Retain project-scoped gap reasons as prompt-facing caveat text."""
-    prefix = f"funding_records[{funding_record_ref}]"
+    prefix = f"funded_projects[{funded_project_ref}]"
     gap_texts: list[str] = []
     seen: set[str] = set()
     for gap in research.gaps:
         if gap.target_path != prefix and not gap.target_path.startswith(f"{prefix}."):
             continue
-        label = _humanize_gap_field(gap.target_path, funding_record_ref)
+        label = _humanize_gap_field(gap.target_path, funded_project_ref)
         gap_text = f"{label}: {gap.reason}" if label else gap.reason
         if gap_text in seen:
             continue
@@ -76,7 +76,7 @@ def _record_gap_texts(
     return gap_texts
 
 
-def _candidate_funder_name(record: FundingRecordDraft) -> str | None:
+def _candidate_funder_name(record: FundedProjectDraft) -> str | None:
     """Return the reviewed canonical funder name for one funded project."""
     if record.selected_funder_id is None:
         return record.reported_funder_name
@@ -91,7 +91,7 @@ def _local_ref(*, run_id: str, reference: str) -> str:
     return f"{run_id}:{reference}"
 
 
-def _candidate_identity_key(record: FundingRecordDraft) -> str:
+def _candidate_identity_key(record: FundedProjectDraft) -> str:
     """Build the semantic key used for local reviewed-project deduplication."""
     return "|".join(
         (
@@ -108,7 +108,7 @@ def _candidate_identity_key(record: FundingRecordDraft) -> str:
     )
 
 
-def _candidate_funding_record_id(record: FundingRecordDraft) -> UUID:
+def _candidate_funded_project_id(record: FundedProjectDraft) -> UUID:
     """Derive one deterministic local UUID from the semantic candidate key."""
     return uuid5(LOCAL_REVIEW_ID_NAMESPACE, _candidate_identity_key(record))
 
@@ -213,10 +213,9 @@ def _build_reviewed_candidate(
     # Preserve reviewed project fields and expose research gaps as caveats.
     record = reviewed_project.record
     candidate = CnbSimilarProjectCandidate(
-        funding_record_id=_candidate_funding_record_id(record),
+        funded_project_id=_candidate_funded_project_id(record),
         funder_id=record.selected_funder_id,
         funder_name=_candidate_funder_name(record),
-        is_opportunity=False,
         is_funded_award=True,
         award_status=record.status,
         award_amount=record.award_amount,
@@ -224,12 +223,12 @@ def _build_reviewed_candidate(
         award_year=record.award_year,
         name=record.name,
         applicant_name=record.applicant_name,
-        applicant_type=None,
+        applicant_type=record.applicant_type,
         city=record.city,
         state_region=record.state_region,
         country=record.country,
         category=record.category,
-        sector=None,
+        sector=record.sector,
         hazards=list(record.hazards),
         interventions=list(record.interventions),
         finance_route=record.finance_route,
@@ -237,7 +236,10 @@ def _build_reviewed_candidate(
         region_scope=record.region_scope,
         summary=record.summary,
         project_tags=list(record.project_tags),
-        known_gaps=_record_gap_texts(research, record.funding_record_ref),
+        known_gaps=(
+            list(record.known_gaps)
+            or _record_gap_texts(research, record.funded_project_ref)
+        ),
         evidence=evidence_items,
     )
     return candidate, list(sources_by_ref.values())
@@ -270,7 +272,7 @@ def _merge_candidate_entries(
             "Merged %s semantically equivalent CNB reviewed project records "
             "into candidate %s: %s",
             len(entries),
-            best_candidate.funding_record_id,
+            best_candidate.funded_project_id,
             origin_list,
         )
         known_gaps.append(
@@ -329,16 +331,16 @@ def build_run_input_from_reviewed_pairs(
                 reviewed_project=project,
                 research=research,
             )
-            grouped_candidates.setdefault(candidate.funding_record_id, []).append(
-                (candidate, research.run_id, project.record.funding_record_ref)
+            grouped_candidates.setdefault(candidate.funded_project_id, []).append(
+                (candidate, research.run_id, project.record.funded_project_ref)
             )
             all_sources.extend(sources)
 
     # Merge duplicate candidates while preferring the richest scalar record.
     merged_candidates = []
-    for funding_record_id, entries in grouped_candidates.items():
+    for funded_project_id, entries in grouped_candidates.items():
         merged_candidate = _merge_candidate_entries(entries)
-        assert merged_candidate.funding_record_id == funding_record_id
+        assert merged_candidate.funded_project_id == funded_project_id
         merged_candidates.append(merged_candidate)
 
     # Keep output stable for review diffs and reproducible local artifacts.
@@ -346,7 +348,7 @@ def build_run_input_from_reviewed_pairs(
         key=lambda candidate: (
             candidate.name.casefold(),
             str(candidate.funder_id),
-            str(candidate.funding_record_id),
+            str(candidate.funded_project_id),
         )
     )
     return CnbSimilarProjectReviewRunInput(

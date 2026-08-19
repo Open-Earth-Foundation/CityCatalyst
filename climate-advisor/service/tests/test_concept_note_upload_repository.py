@@ -1,9 +1,14 @@
 from __future__ import annotations
 
-from uuid import uuid4
+from datetime import datetime
+from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
 from app.db import Base
 from app.models.concept_note_markdown import (
@@ -15,6 +20,29 @@ from app.persistence.concept_notes.markdown import (
     ConceptNoteMarkdownRepositoryError,
     SqlAlchemyConceptNoteMarkdownRepository,
 )
+
+
+async def _set_run_updated_at(
+    session_factory: async_sessionmaker[AsyncSession],
+    run_id: UUID,
+    value: datetime,
+) -> None:
+    """Set a stable timestamp before exercising one lifecycle transition."""
+    async with session_factory() as session, session.begin():
+        run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        run.updated_at = value
+
+
+async def _get_run_updated_at(
+    session_factory: async_sessionmaker[AsyncSession],
+    run_id: UUID,
+) -> datetime:
+    """Read the parent run activity timestamp."""
+    async with session_factory() as session:
+        run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        return run.updated_at
 
 
 @pytest.mark.asyncio
@@ -38,6 +66,7 @@ async def test_repository_persists_nullable_then_immutable_pointer(
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
         run_id = uuid4()
         upload_id = uuid4()
+        inactive_at = datetime(2020, 1, 1)
         async with session_factory() as session, session.begin():
             session.add(
                 ConceptNoteRun(
@@ -49,6 +78,7 @@ async def test_repository_persists_nullable_then_immutable_pointer(
                     request_fingerprint="a" * 64,
                     context_summary={},
                     permission_summary={},
+                    updated_at=inactive_at,
                 )
             )
 
@@ -67,6 +97,26 @@ async def test_repository_persists_nullable_then_immutable_pointer(
         assert created.markdown_s3_key is None
         assert created.markdown_sha256 is None
         assert created.page_count is None
+        assert await _get_run_updated_at(session_factory, run_id) != inactive_at
+
+        await _set_run_updated_at(session_factory, run_id, inactive_at)
+        failed = await repository.mark_failed(
+            user_id="owner-user",
+            run_id=run_id,
+            upload_id=upload_id,
+            error_code="ocr_failed",
+        )
+        assert failed.status == "failed"
+        assert await _get_run_updated_at(session_factory, run_id) != inactive_at
+
+        await _set_run_updated_at(session_factory, run_id, inactive_at)
+        retried = await repository.retry_upload(
+            user_id="owner-user",
+            run_id=run_id,
+            upload_id=upload_id,
+        )
+        assert retried.status == "queued"
+        assert await _get_run_updated_at(session_factory, run_id) != inactive_at
 
         pointer = ConceptNoteMarkdownRequest(
             markdown_s3_key="pdf-ocr/results/result.md",
@@ -75,6 +125,7 @@ async def test_repository_persists_nullable_then_immutable_pointer(
             page_count=3,
             sha256="b" * 64,
         )
+        await _set_run_updated_at(session_factory, run_id, inactive_at)
         ready = await repository.register_markdown(
             user_id="owner-user",
             run_id=run_id,
@@ -89,6 +140,7 @@ async def test_repository_persists_nullable_then_immutable_pointer(
         )
         assert ready.status == replayed.status == "ready"
         assert ready.markdown_s3_key == pointer.markdown_s3_key
+        assert await _get_run_updated_at(session_factory, run_id) != inactive_at
 
         with pytest.raises(ConceptNoteMarkdownRepositoryError) as conflict:
             await repository.register_markdown(

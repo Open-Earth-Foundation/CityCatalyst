@@ -462,12 +462,7 @@ export class PDFExportService {
         `${t("pdf.sections.sustainable-development-goals")} (${planData.content.sdgs.items.length})`,
         yPosition + 4,
       );
-      yPosition = this.addBulletList(
-        doc,
-        planData.content.sdgs.items,
-        yPosition,
-        t,
-      );
+      this.addBulletList(doc, planData.content.sdgs.items, yPosition, t);
     }
 
     this.addFooter(doc, t);

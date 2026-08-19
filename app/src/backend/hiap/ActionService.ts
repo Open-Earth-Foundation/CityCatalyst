@@ -76,7 +76,7 @@ export default class ActionService {
     });
     rankedActions = rankedActions.map((action) =>
       normalizeRankedActionForLang(action, lng),
-    );
+    ) as unknown as typeof rankedActions;
 
     // If ranking is successful but no actions exist for this language, copy them synchronously
     const hasActionsForLang = rankedActions.length > 0;
@@ -99,7 +99,10 @@ export default class ActionService {
 
       try {
         // Copy actions synchronously and return them immediately
-        rankedActions = await copyRankedActionsToLang(ranking, lng);
+        rankedActions = (await copyRankedActionsToLang(
+          ranking,
+          lng,
+        )) as unknown as typeof rankedActions;
         logger.info(
           {
             rankingId: ranking.id,
@@ -122,18 +125,18 @@ export default class ActionService {
     }
 
     // Get all available climate actions and filter out ranked ones to get unranked actions
-    let unrankedActions = [];
+    let unrankedActions: unknown[] = [];
     try {
       const allActions = await GlobalAPIService.fetchAllClimateActions(lng);
 
       // Filter actions by the requested action type (mitigation or adaptation)
-      const actionsOfType = allActions.filter((action: any) => {
+      const actionsOfType = allActions.filter((action) => {
         return action.ActionType && action.ActionType.includes(type);
       });
 
       // Extract ranked action IDs to filter them out from unranked
       const rankedActionIds = new Set(
-        rankedActions.map((action: any) => action.actionId),
+        rankedActions.map((action) => action.actionId),
       );
 
       // Get unranked action selections (any language — selections are shared)
@@ -147,16 +150,16 @@ export default class ActionService {
         });
 
       const selectedUnrankedActionIds = new Set(
-        unrankedSelections.map((selection: any) => selection.actionId),
+        unrankedSelections.map((selection) => selection.actionId),
       );
 
       // Get unranked actions (all actions of this type minus ranked ones) and transform them
-      const rawUnrankedActions = actionsOfType.filter((action: any) => {
+      const rawUnrankedActions = actionsOfType.filter((action) => {
         return !rankedActionIds.has(action.ActionID);
       });
 
       // Transform unranked actions to HIAction format
-      unrankedActions = rawUnrankedActions.map((action: any, index: number) => {
+      unrankedActions = rawUnrankedActions.map((action, index: number) => {
         const baseAction = {
           id: action.ActionID,
           actionId: action.ActionID,

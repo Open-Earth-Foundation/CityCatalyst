@@ -26,6 +26,7 @@ const importedFindByPk = jest.fn<AsyncMock>();
 const importedUpdate = jest.fn<AsyncMock>();
 const inventoryFindByPk = jest.fn<AsyncMock>();
 const getTextFile = jest.fn<AsyncMock>();
+const resolveImportedFileBuffer = jest.fn<AsyncMock>();
 const extractRows = jest.fn<AsyncMock>();
 const convertPdfUrlToMarkdown = jest.fn<AsyncMock>();
 
@@ -44,7 +45,7 @@ jest.unstable_mockModule("@/models", () => ({
   },
 }));
 jest.unstable_mockModule("@/backend/InventoryFileStorageService", () => ({
-  default: { getTextFile },
+  default: { getTextFile, resolveImportedFileBuffer },
 }));
 jest.unstable_mockModule("@/backend/MistralOcrService", () => ({
   MistralOcrError: class extends Error {},
@@ -89,6 +90,7 @@ describe("PdfOcrJob queue", () => {
     );
     pdfOcrUpdate.mockResolvedValue([1]);
     importedUpdate.mockResolvedValue([1]);
+    resolveImportedFileBuffer.mockResolvedValue(null);
   });
 
   it("uses the composite source identity and idempotent find-or-create", async () => {

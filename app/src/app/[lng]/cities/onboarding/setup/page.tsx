@@ -5,9 +5,6 @@ import {
   api,
   useAddCityMutation,
   useAddCityPopulationMutation,
-  useAddInventoryMutation,
-  useConnectAllInventoryDataSourcesMutation,
-  useSetUserInfoMutation,
 } from "@/services/api";
 
 import { OCCityAttributes } from "@/util/types";
@@ -16,29 +13,26 @@ import { MdArrowBack, MdArrowForward } from "react-icons/md";
 import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useEffect, useMemo, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import type {
   Control,
   FieldErrors,
   SubmitHandler,
-  UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
-import SetInventoryDetailsStep from "@/components/steps/GHGI/set-inventory-details-step";
 import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-step";
-import ThirdPartyInventoryDataStep, {
-  THIRD_PARTY_DATA_FILL_YES,
-} from "@/components/steps/GHGI/set-third-party-step";
 import InviteCollaboratorsStep, {
   type InviteCollaboratorsStepRef,
 } from "@/components/steps/GHGI/invite-collaborators-step";
 import ProgressSteps from "@/components/steps/progress-steps";
 import { Button } from "@/components/ui/button";
-import { UseErrorToast, UseWarningToast } from "@/hooks/Toasts";
+import { UseErrorToast } from "@/hooks/Toasts";
 import ProgressLoader from "@/components/ProgressLoader";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { logger } from "@/services/logger";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import ProjectLimitModal from "@/components/project-limit";
 
 type Inputs = { city: string } & GHGIFormInputs;
@@ -49,13 +43,11 @@ export default function OnboardingSetup(props: {
 }) {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
-  const { t: tDrawer } = useTranslation(lng, "data");
   const router = useRouter();
 
   const {
     handleSubmit,
     register,
-    getValues,
     setValue,
     watch,
     control,
@@ -64,7 +56,6 @@ export default function OnboardingSetup(props: {
 
   const params = useSearchParams();
   const projectId = params.get("project");
-  const isUploadMode = params.get("mode") === "upload";
 
   const EnterpriseMode = hasFeatureFlag(FeatureFlags.ENTERPRISE_MODE);
 
@@ -81,23 +72,13 @@ export default function OnboardingSetup(props: {
     }
   }, [projectsList]);
 
-  const steps = isUploadMode
-    ? [
-        { title: t("setup-step") },
-        { title: t("set-inventory-details-step") },
-        { title: t("set-population-step") },
-      ]
-    : [
-        { title: t("setup-step") },
-        { title: t("set-inventory-details-step") },
-        { title: t("set-population-step") },
-        { title: t("invite-collaborators-step") },
-        { title: t("set-third-party-data-step") },
-      ];
+  const steps = [
+    { title: t("setup-step") },
+    { title: t("set-population-step") },
+    { title: t("invite-collaborators-step") },
+  ];
 
-  const thirdPartyStepIndex = 4;
-  const inviteCollaboratorsStepIndex = 3;
-  const inventoryConfirmStepIndex = isUploadMode ? 2 : thirdPartyStepIndex;
+  const inviteCollaboratorsStepIndex = 2;
 
   const {
     value: activeStep,
@@ -110,10 +91,6 @@ export default function OnboardingSetup(props: {
 
   const [addCity] = useAddCityMutation();
   const [addCityPopulation] = useAddCityPopulationMutation();
-  const [addInventory] = useAddInventoryMutation();
-  const [connectAllInventoryDataSources] =
-    useConnectAllInventoryDataSourcesMutation();
-  const [setUserInfo] = useSetUserInfoMutation();
 
   const [data, setData] = useState<OnboardingData>({
     name: "",
@@ -123,22 +100,12 @@ export default function OnboardingSetup(props: {
     globalWarmingPotential: "",
   });
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
-  const [isConfirming, setConfirming] = useState(false);
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   const [createdCityId, setCreatedCityId] = useState<string | null>(null);
-  const [isCreatingCity, setIsCreatingCity] = useState(false);
-
-  // Inventory step UI state
-  const [selectedYearArray, setSelectedYearArray] = useState<string[]>([]);
-  const [selectedInventoryGoalValue, setSelectedInventoryGoalValue] =
-    useState("");
-  const [
-    selectedGlobalWarmingPotentialValue,
-    setSelectedGlobalWarmingPotentialValue,
-  ] = useState("");
-  const [thirdPartyDataChoice, setThirdPartyDataChoice] = useState<
-    string | null
-  >(null);
+  const [isSubmittingStep, setIsSubmittingStep] = useState(false);
+  const [isFinishing, setIsFinishing] = useState(false);
+  // Continue on the invite step requires project + email(s) + city (CC-652).
+  const [canSubmitInvite, setCanSubmitInvite] = useState(false);
 
   const inviteStepRef = useRef<InviteCollaboratorsStepRef>(null);
 
@@ -147,57 +114,21 @@ export default function OnboardingSetup(props: {
     showErrorToast();
   };
 
-  // Fetch existing inventories for the created city to check for duplicate years
-  const { data: existingInventories } = api.useGetInventoriesQuery(
-    { cityId: createdCityId! },
-    { skip: !createdCityId },
-  );
-
-  // Check if the selected year already has an inventory
-  const selectedYear =
-    selectedYearArray.length > 0 ? parseInt(selectedYearArray[0], 10) : null;
-  const yearAlreadyExists = useMemo(() => {
-    if (!selectedYear || !existingInventories) return false;
-    return existingInventories.some((inv) => inv.year === selectedYear);
-  }, [selectedYear, existingInventories]);
-
-  // Show error toast when user selects a year that already has an inventory
-  useEffect(() => {
-    if (yearAlreadyExists && selectedYear) {
-      makeErrorToast(
-        t("inventory-year-already-exists-title"),
-        t("inventory-year-already-exists-description", { year: selectedYear }),
-      );
-    }
-  }, [yearAlreadyExists, selectedYear]);
-
-  const makeWarningToast = (title: string, description?: string) => {
-    const { showWarningToast } = UseWarningToast({ description, title });
-    showWarningToast();
-  };
-
   const { data: cityArea } = api.useGetCityBoundaryQuery(
-    ocCityData?.actor_id!,
+    ocCityData?.actor_id ?? "",
     { skip: !ocCityData?.actor_id },
   );
 
-  // Watched form fields used for per-step validation and confirm payload
-  const yearValue = watch("year");
+  // Watched form fields used for per-step validation and population payload
   const cityPopulation = watch("cityPopulation");
   const regionPopulation = watch("regionPopulation");
   const countryPopulation = watch("countryPopulation");
   const cityPopulationYear = watch("cityPopulationYear");
   const regionPopulationYear = watch("regionPopulationYear");
   const countryPopulationYear = watch("countryPopulationYear");
-  const inventoryGoal = watch("inventoryGoal");
-  const globalWarmingPotential = watch("globalWarmingPotential");
 
   // A field is "filled" if it is not undefined/null/empty string
   const hasValue = (v: unknown) => v !== undefined && v !== null && v !== "";
-  const isInventoryDetailsValid =
-    hasValue(yearValue) &&
-    hasValue(inventoryGoal) &&
-    hasValue(globalWarmingPotential);
   const isPopulationValid = [
     cityPopulation,
     cityPopulationYear,
@@ -214,79 +145,25 @@ export default function OnboardingSetup(props: {
     (_x, i) => currentYear - i,
   );
 
-  // Step 4: create population + inventory, then redirect
-  const onInventoryConfirm = async () => {
-    if (!createdCityId) return;
-    setConfirming(true);
-
-    try {
-      await addCityPopulation({
-        cityId: createdCityId,
-        cityPopulation: cityPopulation!,
-        cityPopulationYear: cityPopulationYear!,
-        regionPopulation: regionPopulation!,
-        regionPopulationYear: regionPopulationYear!,
-        countryPopulation: countryPopulation!,
-        countryPopulationYear: countryPopulationYear!,
-      }).unwrap();
-    } catch (err: any) {
-      logger.error({ err }, "Onboarding - Failed to add population");
-      makeErrorToast(
-        t("failed-to-add-city"),
-        t(err.data?.error?.message ?? ""),
-      );
-      setConfirming(false);
-      return;
-    }
-
-    try {
-      const inventory = await addInventory({
-        cityId: createdCityId,
-        year: typeof data.year === "string" ? parseInt(data.year) : data.year,
-        inventoryName: `${data.name} - ${data.year}`,
-        totalCountryEmissions: getValues("totalCountryEmissions"),
-        inventoryType: inventoryGoal,
-        globalWarmingPotentialType: globalWarmingPotential,
-      }).unwrap();
-
-      await setUserInfo({
-        defaultInventoryId: inventory.inventoryId,
-        defaultCityId: createdCityId,
-      }).unwrap();
-
-      if (thirdPartyDataChoice === THIRD_PARTY_DATA_FILL_YES) {
-        const { errors } = await connectAllInventoryDataSources({
-          inventoryId: inventory.inventoryId,
-        }).unwrap();
-        if (errors.length > 0) {
-          logger.warn(
-            { errors, inventoryId: inventory.inventoryId },
-            "Some third-party sources failed to connect during onboarding",
-          );
-        }
-      }
-
-      setConfirming(false);
-      if (isUploadMode) {
-        router.push(
-          `/${lng}/cities/${createdCityId}/GHGI/onboarding/import?inventory=${inventory.inventoryId}`,
-        );
-      } else {
-        router.push(
-          `/${lng}/cities/${createdCityId}/GHGI/${inventory.inventoryId}`,
-        );
-      }
-    } catch (err: any) {
-      logger.error({ err }, "Onboarding - Failed to create inventory");
-      makeErrorToast("failed-to-create-inventory", err.data?.error?.message);
-      setConfirming(false);
-    }
+  // Final step: send invites (if any) and finish onboarding. The user's
+  // default city is already set server-side when the city is created.
+  // Inventory creation happens separately, outside onboarding.
+  const finishOnboarding = async () => {
+    setIsFinishing(true);
+    const doneParams = new URLSearchParams();
+    if (projectId) doneParams.set("project", projectId);
+    if (createdCityId) doneParams.set("cityId", createdCityId);
+    router.push(`/${lng}/cities/onboarding/done?${doneParams.toString()}`);
+    setIsFinishing(false);
   };
 
   // Step 0: validate project limit, create city, then advance.
-  // Steps 1, 2: merge form data and advance.
+  // Step 1: persist population data, then advance.
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
     if (activeStep === 0) {
+      // Guaranteed by the disabled state of the submit button, which requires ocCityData.
+      if (!ocCityData) return;
+
       const selectedProjectId =
         selectedProject.length > 0 ? selectedProject[0] : undefined;
       if (EnterpriseMode && selectedProjectId) {
@@ -310,20 +187,20 @@ export default function OnboardingSetup(props: {
       const nextData: OnboardingData = {
         ...data,
         ...formData,
-        locode: ocCityData?.actor_id!,
-        name: ocCityData?.name!,
+        locode: ocCityData.actor_id,
+        name: ocCityData.name,
       };
       setData(nextData);
 
       // Create city now (was previously done in the removed confirm step)
       if (!createdCityId) {
-        setIsCreatingCity(true);
+        setIsSubmittingStep(true);
         const area = cityArea?.area ?? ocCityData?.area ?? undefined;
         const region = ocCityData?.root_path_geo.filter(
-          (item: any) => item.type === "adm1",
+          (item) => item.type === "adm1",
         )[0];
         const country = ocCityData?.root_path_geo.filter(
-          (item: any) => item.type === "country",
+          (item) => item.type === "country",
         )[0];
 
         try {
@@ -338,29 +215,47 @@ export default function OnboardingSetup(props: {
             projectId: EnterpriseMode ? selectedProjectId : undefined,
           }).unwrap();
           setCreatedCityId(city?.cityId ?? null);
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err }, "Onboarding - Failed to add city");
+          const errorData = isFetchBaseQueryError(err)
+            ? (err.data as { error?: { message?: string } })
+            : undefined;
           makeErrorToast(
             t("failed-to-add-city"),
-            t(err.data?.error?.message ?? ""),
+            t(errorData?.error?.message ?? ""),
           );
-          setIsCreatingCity(false);
+          setIsSubmittingStep(false);
           return;
         }
-        setIsCreatingCity(false);
+        setIsSubmittingStep(false);
       }
-    } else {
-      setData({ ...data, ...formData });
+    } else if (activeStep === 1) {
+      if (!createdCityId) return;
+      setIsSubmittingStep(true);
+      try {
+        await addCityPopulation({
+          cityId: createdCityId,
+          cityPopulation: cityPopulation!,
+          cityPopulationYear: cityPopulationYear!,
+          regionPopulation: regionPopulation!,
+          regionPopulationYear: regionPopulationYear!,
+          countryPopulation: countryPopulation!,
+          countryPopulationYear: countryPopulationYear!,
+        }).unwrap();
+        setData({ ...data, ...formData });
+      } catch (err: any) {
+        logger.error({ err }, "Onboarding - Failed to add population");
+        makeErrorToast(
+          t("failed-to-add-city"),
+          t(err.data?.error?.message ?? ""),
+        );
+        setIsSubmittingStep(false);
+        return;
+      }
+      setIsSubmittingStep(false);
     }
     goToNextStep();
   };
-
-  // Reset third-party choice when user enters that step
-  useEffect(() => {
-    if (!isUploadMode && activeStep === thirdPartyStepIndex) {
-      setThirdPartyDataChoice(null);
-    }
-  }, [activeStep, isUploadMode]);
 
   const [selectedProject, setSelectedProject] = useState<string[]>([]);
   useEffect(() => {
@@ -379,7 +274,11 @@ export default function OnboardingSetup(props: {
         <Button
           variant="ghost"
           onClick={() => {
-            activeStep === 0 ? router.back() : goToPrevStep();
+            if (activeStep === 0) {
+              router.back();
+            } else {
+              goToPrevStep();
+            }
           }}
           pl={0}
           color="content.link"
@@ -415,56 +314,24 @@ export default function OnboardingSetup(props: {
             />
           )}
           {activeStep === 1 && (
-            <SetInventoryDetailsStep
-              t={t}
-              register={register as unknown as UseFormRegister<GHGIFormInputs>}
-              errors={errors as unknown as FieldErrors<GHGIFormInputs>}
-              control={control as unknown as Control<GHGIFormInputs>}
-              setValue={setValue}
-              years={years}
-              selectedYearArray={selectedYearArray}
-              setSelectedYearArray={setSelectedYearArray}
-              selectedInventoryGoalValue={selectedInventoryGoalValue}
-              selectedGlobalWarmingPotentialValue={
-                selectedGlobalWarmingPotentialValue
-              }
-              setSelectedInventoryGoalValue={setSelectedInventoryGoalValue}
-              setSelectedGlobalWarmingPotentialValue={
-                setSelectedGlobalWarmingPotentialValue
-              }
-            />
-          )}
-          {activeStep === 2 && (
             <SetPopulationDataStep
               t={t}
-              register={register as unknown as UseFormRegister<GHGIFormInputs>}
               control={control as unknown as Control<GHGIFormInputs>}
               errors={errors as unknown as FieldErrors<GHGIFormInputs>}
               years={years}
               numberOfYearsDisplayed={numberOfYearsDisplayed}
               setData={setData}
-              setValue={setValue}
+              setValue={setValue as unknown as UseFormSetValue<GHGIFormInputs>}
               watch={watch}
               ocCityData={ocCityData}
               numberFormat={userInfo?.numberFormat}
             />
           )}
-          {!isUploadMode && activeStep === inviteCollaboratorsStepIndex && (
-            <InviteCollaboratorsStep ref={inviteStepRef} lng={lng} />
-          )}
-          {!isUploadMode && activeStep === thirdPartyStepIndex && (
-            <ThirdPartyInventoryDataStep
-              t={t}
-              tDrawer={tDrawer}
-              cityId={createdCityId!}
-              year={
-                typeof data.year === "string"
-                  ? parseInt(data.year, 10)
-                  : data.year
-              }
-              inventoryType={inventoryGoal}
-              value={thirdPartyDataChoice}
-              onValueChange={setThirdPartyDataChoice}
+          {activeStep === inviteCollaboratorsStepIndex && (
+            <InviteCollaboratorsStep
+              ref={inviteStepRef}
+              lng={lng}
+              onValidityChange={setCanSubmitInvite}
             />
           )}
         </Box>
@@ -484,35 +351,33 @@ export default function OnboardingSetup(props: {
               <ProgressSteps steps={steps} currentStep={activeStep} />
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
-              {(activeStep === 0 || activeStep === 1 || activeStep === 2) &&
-                activeStep !== inventoryConfirmStepIndex && (
-                  <Button
-                    w="auto"
-                    gap="8px"
-                    py="16px"
-                    px="24px"
-                    onClick={handleSubmit(onSubmit)}
-                    h="64px"
-                    type="submit"
-                    loading={isCreatingCity}
-                    disabled={
-                      isCreatingCity ||
-                      (activeStep === 0 && !ocCityData) ||
-                      (activeStep === 1 && !isInventoryDetailsValid) ||
-                      (activeStep === 2 && !isPopulationValid)
-                    }
+              {(activeStep === 0 || activeStep === 1) && (
+                <Button
+                  w="auto"
+                  gap="8px"
+                  py="16px"
+                  px="24px"
+                  onClick={handleSubmit(onSubmit)}
+                  h="64px"
+                  type="submit"
+                  loading={isSubmittingStep}
+                  disabled={
+                    isSubmittingStep ||
+                    (activeStep === 0 && !ocCityData) ||
+                    (activeStep === 1 && !isPopulationValid)
+                  }
+                >
+                  <Text
+                    fontFamily="button.md"
+                    fontWeight="600"
+                    letterSpacing="wider"
                   >
-                    <Text
-                      fontFamily="button.md"
-                      fontWeight="600"
-                      letterSpacing="wider"
-                    >
-                      {t("continue")}
-                    </Text>
-                    <MdArrowForward height="24px" width="24px" />
-                  </Button>
-                )}
-              {!isUploadMode && activeStep === inviteCollaboratorsStepIndex && (
+                    {t("continue")}
+                  </Text>
+                  <MdArrowForward height="24px" width="24px" />
+                </Button>
+              )}
+              {activeStep === inviteCollaboratorsStepIndex && (
                 <Box display="flex" gap="16px">
                   <Button
                     w="auto"
@@ -521,8 +386,9 @@ export default function OnboardingSetup(props: {
                     px="24px"
                     h="64px"
                     variant="ghost"
-                    onClick={goToNextStep}
                     color="content.link"
+                    loading={isFinishing}
+                    onClick={finishOnboarding}
                   >
                     <Text
                       fontFamily="button.md"
@@ -538,13 +404,15 @@ export default function OnboardingSetup(props: {
                     py="16px"
                     px="24px"
                     h="64px"
+                    loading={isFinishing}
+                    disabled={!canSubmitInvite || isFinishing}
                     onClick={async () => {
                       try {
                         await inviteStepRef.current?.sendInvites();
                       } catch {
                         makeErrorToast(t("invite-failed"));
                       }
-                      goToNextStep();
+                      await finishOnboarding();
                     }}
                   >
                     <Text
@@ -557,29 +425,6 @@ export default function OnboardingSetup(props: {
                     <MdArrowForward height="24px" width="24px" />
                   </Button>
                 </Box>
-              )}
-              {activeStep === inventoryConfirmStepIndex && (
-                <Button
-                  h={16}
-                  w="auto"
-                  px="24px"
-                  loading={isConfirming}
-                  disabled={
-                    isConfirming ||
-                    (!isUploadMode && !thirdPartyDataChoice) ||
-                    (isUploadMode && !isPopulationValid)
-                  }
-                  onClick={onInventoryConfirm}
-                >
-                  <Text
-                    fontFamily="button.md"
-                    fontWeight="600"
-                    letterSpacing="wider"
-                  >
-                    {t("continue")}
-                  </Text>
-                  <MdArrowForward height="24px" width="24px" />
-                </Button>
               )}
             </Box>
           </Box>

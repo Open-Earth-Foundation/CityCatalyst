@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, HStack, Box, Heading, Icon, Link } from "@chakra-ui/react";
+import { Text, HStack, Box, Icon, Link } from "@chakra-ui/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/i18n/client";
 import { useGetCityCCRADashboardQuery, useGetCityQuery } from "@/services/api";
@@ -7,10 +7,7 @@ import { useLatestInventory } from "@/hooks/use-latest-inventory";
 import { MdOpenInNew } from "react-icons/md";
 import { Button } from "../ui/button";
 import TopRisksWidget from "./CCRAWidget";
-import {
-  HeadlineLarge,
-  HeadlineSmall,
-} from "@/components/package/Texts/Headline";
+import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import type { CCRASummary, CityWithProjectDataResponse } from "@/util/types";
 import type { InventoryAttributes } from "@/models/init-models";

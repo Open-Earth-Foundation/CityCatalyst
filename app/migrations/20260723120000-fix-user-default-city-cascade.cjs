@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     // CC-568: deleting a city fails with a FK constraint violation whenever
     // any user has that city set as their default_city_id, because this
     // constraint was created (20250724120000-add-cityid-to-user.cjs) without
@@ -19,7 +19,7 @@ module.exports = {
     `);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.sequelize.query(`
       ALTER TABLE "User" DROP CONSTRAINT IF EXISTS "User_default_city_id_fkey";
       ALTER TABLE "User"

@@ -1,8 +1,4 @@
-import {
-  api,
-  useGetCityPopulationQuery,
-  useGetOCCityDataQuery,
-} from "@/services/api";
+import { api, useGetCityPopulationQuery } from "@/services/api";
 import { useMemo } from "react";
 import ProgressLoader from "@/components/ProgressLoader";
 import {

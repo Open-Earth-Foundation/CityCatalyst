@@ -41,7 +41,7 @@ from app.utils.mlflow_logging import (
 )
 
 logger = logging.getLogger(__name__)
-PIPELINE_VERSION = "2.0"
+PIPELINE_VERSION = "3.0"
 
 
 def run_funding_opportunity_research(
@@ -242,21 +242,19 @@ def log_run_artifacts(
     run_directory: Path,
 ) -> None:
     """Record the review bundle and trace in the active best-effort MLflow run."""
-    funded_projects = [
-        record for record in bundle.funding_records if not record.is_opportunity
-    ]
     log_metrics(
         {
             "duration_seconds": bundle.run_metadata.duration_seconds,
             "turns_used": bundle.run_metadata.turns_used,
             "sources": len(bundle.sources),
             "evidence_records": len(bundle.evidence),
-            "funding_records": len(bundle.funding_records),
+            "funding_opportunities": len(bundle.funding_opportunities),
             "criteria": len(bundle.funder_criteria),
             "templates": len(bundle.funder_templates),
-            "funded_projects": len(funded_projects),
+            "funded_projects": len(bundle.funded_projects),
             "funded_project_awards": sum(
-                record.award_amount is not None for record in funded_projects
+                project.award_amount is not None
+                for project in bundle.funded_projects
             ),
             "gaps": len(bundle.gaps),
             "conflicts": len(bundle.conflicts),

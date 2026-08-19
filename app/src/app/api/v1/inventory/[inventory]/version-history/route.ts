@@ -98,9 +98,9 @@ export const GET = apiHandler(
         activityValueVersions,
         (version) => version.data?.inventoryValueId,
       );
-      const dataSourcesUsed = inventoryValueVersions.map(
-        (version) => version.data?.datasourceId,
-      );
+      const dataSourcesUsed = inventoryValueVersions
+        .map((version) => version.data?.datasourceId as string | undefined)
+        .filter((datasourceId): datasourceId is string => !!datasourceId);
 
       const dataSources = await db.models.DataSource.findAll({
         where: {
@@ -111,10 +111,12 @@ export const GET = apiHandler(
 
       // add metadata required by frontend to GHGI version history data
       versions = inventoryValueVersions.map((version) => {
-        let subCategoryId = version.data?.subCategoryId;
+        let subCategoryId = version.data?.subCategoryId as string | undefined;
         // try to get the subCategoryId from the previous version if available (necessary for deletes)
         if (!subCategoryId && version.previousVersion?.data) {
-          subCategoryId = version.previousVersion.data?.subCategoryId;
+          subCategoryId = version.previousVersion.data?.subCategoryId as
+            | string
+            | undefined;
         }
         let subCategory = undefined;
         if (subCategoryId) {

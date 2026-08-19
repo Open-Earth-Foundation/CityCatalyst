@@ -137,7 +137,6 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   const {
     data: projectBoundaries,
     isLoading,
-    error,
   } = api.useGetProjectBoundariesQuery(projectId!, {
     skip: !projectId,
   });
@@ -158,7 +157,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
   useEffect(() => {
     if (projectBoundaries) {
       const boundingBoxes = projectBoundaries.map(
-        (boundary: any) => boundary.boundingBox,
+        (boundary) => boundary.boundingBox,
       );
       const combinedBoundingBox = getCombinedBoundingBox(boundingBoxes);
       if (combinedBoundingBox && !combinedBoundingBox.some(isNaN)) {
@@ -208,7 +207,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
           }}
         >
           {projectBoundaries?.map(
-            (boundary: any) =>
+            (boundary) =>
               boundary.data && (
                 <GeoJsonFeature
                   key={boundary.city.id}
@@ -223,7 +222,7 @@ export const ProjectMap: FC<ProjectMapProps> = ({
         </GeoJson>
 
         {projectBoundaries?.map(
-          (boundary: any) =>
+          (boundary) =>
             boundary.boundingBox && (
               <Marker
                 key={boundary.city.id}

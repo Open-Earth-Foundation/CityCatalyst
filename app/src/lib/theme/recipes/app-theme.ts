@@ -537,6 +537,7 @@ export const appTheme = createSystem(defaultConfig, {
         },
         gray: {
           focusRing: { value: "#A1A1AA" }, // gray-focusRing
+          muted: { value: "#E4E4E7" }, // gray-muted
         },
         divider: {
           neutral: { value: "#F0F0F0" },

@@ -42,13 +42,8 @@ export default function ImportingInventoryStep({
         borderWidth="1px"
         borderColor="border.default"
       >
-        <VStack
-          gap="16px"
-          py={12}
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Spinner size="lg" color="interactive.primary" />
+        <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
+          <Spinner size="lg" color="interactive.secondary" />
           <Text fontSize="body.md" color="content.secondary">
             {t("importing-inventory-status")}
           </Text>

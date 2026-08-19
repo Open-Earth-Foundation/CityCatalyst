@@ -1,11 +1,8 @@
 import "../../globals.css";
 import { NavigationBar } from "@/components/navigation-bar";
 import type { Metadata } from "next";
-import { Providers } from "../../providers";
-import { dir } from "i18next";
 import { languages } from "@/i18n/settings";
 import { Toaster } from "@/components/ui/toaster";
-import ClientRootLayout from "@/components/ClientRootLayout";
 import { use } from "react";
 import { Box } from "@chakra-ui/react";
 

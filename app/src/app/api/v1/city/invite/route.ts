@@ -72,7 +72,7 @@ import InviteUserTemplate from "@/lib/emails/InviteUserTemplate";
 import UserService from "@/backend/UserService";
 import { logger } from "@/services/logger";
 
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized(
       "Not signed in as the requested user",
@@ -133,8 +133,8 @@ export const POST = apiHandler(async (req, { params, session }) => {
       user: { email: body.email, name: body.name },
       city,
       invitingUser: {
-        name: session?.user.name!,
-        email: session?.user.email!,
+        name: session.user.name ?? "",
+        email: session.user.email ?? "",
       },
       members: city.users,
       language: invitingUser?.preferredLanguage,

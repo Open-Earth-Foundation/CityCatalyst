@@ -138,7 +138,7 @@ describe("City API", () => {
           { where: { defaultCityId: city.cityId } },
         );
         await city.destroy();
-      } catch (_error) {
+      } catch {
         // Ignore errors if city was already deleted
       }
     }

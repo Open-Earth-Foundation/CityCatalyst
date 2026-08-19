@@ -4,7 +4,10 @@ import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { groupBy } from "@/util/helpers";
-import { getScopesForInventoryAndSector } from "@/util/constants";
+import {
+  getScopesForInventoryAndSector,
+  InventoryType,
+} from "@/util/constants";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceService from "./DataSourceService";
@@ -381,7 +384,7 @@ export default class DataSourceConnectService {
               }
 
               const allowedScopes = getScopesForInventoryAndSector(
-                inventoryType as any,
+                inventoryType as InventoryType,
                 sector.referenceNumber,
               );
 
@@ -409,7 +412,7 @@ export default class DataSourceConnectService {
           }
 
           const allowedScopes = getScopesForInventoryAndSector(
-            inventoryType as any,
+            inventoryType as InventoryType,
             sector.referenceNumber,
           );
 

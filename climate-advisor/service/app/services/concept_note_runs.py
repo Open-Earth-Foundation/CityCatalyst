@@ -9,10 +9,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.request_context import get_request_id
 from app.models.concept_note_runs import (
+    ConceptNoteRunListItemResponse,
+    ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
 )
 from app.models.db.concept_note import ConceptNoteRun
+from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
@@ -21,7 +24,6 @@ from app.services.cnb.funding_references import (
     FundingReferenceValidator,
     PostgresFundingReferenceValidator,
 )
-from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 
 
 class ConceptNoteRunService:
@@ -63,7 +65,7 @@ class ConceptNoteRunService:
             raise HTTPException(status_code=404, detail="Chat thread not found")
         await self.funding_reference_validator.validate(
             funder_id=payload.funder_id,
-            selected_funding_record_id=payload.selected_funding_record_id,
+            selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
         )
 
         fingerprint = _request_fingerprint(payload)
@@ -73,13 +75,19 @@ class ConceptNoteRunService:
             city_id=str(payload.city_id),
             project_id=payload.project_id,
             funder_id=payload.funder_id,
-            selected_funding_record_id=payload.selected_funding_record_id,
+            selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
             thread_id=payload.thread_id,
             idempotency_key=payload.idempotency_key,
             request_fingerprint=fingerprint,
             trace_id=get_request_id() or None,
         )
         _require_matching_fingerprint(run, fingerprint)
+        if payload.thread_id is not None:
+            await self.repository.bind_thread_context(
+                thread_id=payload.thread_id,
+                user_id=payload.user_id,
+                run_id=run.run_id,
+            )
         return _to_response(run, created=created)
 
     async def get_run(
@@ -91,12 +99,10 @@ class ConceptNoteRunService:
     ) -> ConceptNoteRunResponse:
         """Return an owned run after revalidating current city access."""
         token = _require_bearer_token(authorization)
-        canonical_user_id = await self._canonical_user_id(token)
-        if canonical_user_id != requested_user_id:
-            raise HTTPException(
-                status_code=403,
-                detail="Request user does not match authenticated token",
-            )
+        canonical_user_id = await self._authorize_user(
+            token=token,
+            requested_user_id=requested_user_id,
+        )
 
         run = await self.repository.get_for_user(
             run_id=run_id,
@@ -112,25 +118,64 @@ class ConceptNoteRunService:
         )
         return _to_response(run, created=False)
 
+    async def list_runs(
+        self,
+        *,
+        requested_user_id: str,
+        city_id: UUID,
+        authorization: str | None,
+    ) -> ConceptNoteRunListResponse:
+        """Return the authenticated user's runs for one accessible city."""
+        # Authorize the requested user and city before reading persisted runs.
+        token = _require_bearer_token(authorization)
+        canonical_user_id = await self._authorize_scope(
+            token=token,
+            requested_user_id=requested_user_id,
+            city_id=city_id,
+        )
+        runs = await self.repository.list_for_user_city(
+            user_id=canonical_user_id,
+            city_id=str(city_id),
+        )
+
+        # Serialize the ordered rows into the stable list contract.
+        return ConceptNoteRunListResponse(
+            runs=[_to_list_item(run) for run in runs]
+        )
+
     async def _authorize_scope(
         self,
         *,
         token: str,
         requested_user_id: str,
         city_id: UUID,
-    ) -> None:
+    ) -> str:
         """Validate token identity and CityCatalyst city access."""
+        canonical_user_id = await self._authorize_user(
+            token=token,
+            requested_user_id=requested_user_id,
+        )
+        await self._validate_city_access(
+            token=token,
+            user_id=canonical_user_id,
+            city_id=city_id,
+        )
+        return canonical_user_id
+
+    async def _authorize_user(
+        self,
+        *,
+        token: str,
+        requested_user_id: str,
+    ) -> str:
+        """Require the requested user to match the bearer-token identity."""
         canonical_user_id = await self._canonical_user_id(token)
         if canonical_user_id != requested_user_id:
             raise HTTPException(
                 status_code=403,
                 detail="Request user does not match authenticated token",
             )
-        await self._validate_city_access(
-            token=token,
-            user_id=canonical_user_id,
-            city_id=city_id,
-        )
+        return canonical_user_id
 
     async def _canonical_user_id(self, token: str) -> str:
         """Resolve a bearer token to its canonical CityCatalyst user."""
@@ -223,19 +268,28 @@ def _to_response(
     created: bool,
 ) -> ConceptNoteRunResponse:
     """Serialize one persisted run into the public API contract."""
+    list_item = _to_list_item(run)
     return ConceptNoteRunResponse(
+        **list_item.model_dump(),
+        user_id=run.user_id,
+        created=created,
+        trace_id=run.trace_id,
+    )
+
+
+def _to_list_item(run: ConceptNoteRun) -> ConceptNoteRunListItemResponse:
+    """Serialize one run into the stable list and resume contract."""
+    return ConceptNoteRunListItemResponse(
         run_id=run.run_id,
         thread_id=run.thread_id,
-        user_id=run.user_id,
         name=run.name,
         city_id=run.city_id,
         project_id=run.project_id,
         funder_id=run.funder_id,
-        selected_funding_record_id=run.selected_funding_record_id,
-        status="active",
-        workflow_step="assembling_context",
-        created=created,
-        trace_id=run.trace_id,
+        selected_funding_opportunity_id=run.selected_funding_opportunity_id,
+        status=run.status,
+        workflow_step=run.workflow_step,
+        progress_summary=run.context_summary or {},
         created_at=run.created_at,
         updated_at=run.updated_at,
     )

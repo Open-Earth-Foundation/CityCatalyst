@@ -89,12 +89,13 @@ import FormatAdapterService from "@/backend/FormatAdapterService";
 import InventoryFileStorageService, {
   isS3Configured,
 } from "@/backend/InventoryFileStorageService";
+import { syncGHGIImportedInventorySource } from "@/backend/GHGINativeInputCatalogService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { ImportStatusEnum } from "@/util/enums";
 import createHttpError from "http-errors";
 import { NextRequest, NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { logger } from "@/services/logger";
 
@@ -413,6 +414,7 @@ export const POST = apiHandler(
         fileName,
         fileType: basicValidation.fileType,
         fileSize: basicValidation.fileSize!,
+        contentDigest: createHash("sha256").update(buffer).digest("hex"),
         s3Key,
         data: dataBuffer,
         originalFileName,
@@ -422,6 +424,10 @@ export const POST = apiHandler(
           warnings: basicValidation.warnings,
         },
       });
+      await syncGHGIImportedInventorySource(
+        importedFile,
+        createHash("sha256").update(buffer).digest("hex"),
+      );
       logger.info(
         {
           importedFileId: importedFile.id,
@@ -451,12 +457,17 @@ export const POST = apiHandler(
         fileName,
         fileType: basicValidation.fileType,
         fileSize: basicValidation.fileSize!,
+        contentDigest: createHash("sha256").update(buffer).digest("hex"),
         s3Key,
         data: dataBuffer,
         originalFileName,
         importStatus: ImportStatusEnum.PROCESSING,
         validationResults: null,
       });
+      await syncGHGIImportedInventorySource(
+        importedFile,
+        createHash("sha256").update(buffer).digest("hex"),
+      );
       runUploadProcessingInBackground(
         cityId,
         inventoryId,

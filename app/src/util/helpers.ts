@@ -9,6 +9,30 @@ export function isFetchBaseQueryError(
   return typeof error === "object" && error != null && "status" in error;
 }
 
+// Extracts a human-readable message from an RTK Query mutation/query rejection
+// (FetchBaseQueryError | SerializedError, the type `.unwrap()` throws) or a
+// plain Error, falling back to `fallback` if nothing usable is found.
+export function getApiErrorMessage(error: unknown, fallback = ""): string {
+  if (isFetchBaseQueryError(error)) {
+    if ("error" in error && typeof error.error === "string") {
+      return error.error;
+    }
+    const data = error.data as
+      | { message?: string; error?: { message?: string } }
+      | undefined;
+    return data?.error?.message || data?.message || fallback;
+  }
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as { message?: unknown }).message === "string"
+  ) {
+    return (error as { message: string }).message || fallback;
+  }
+  return fallback;
+}
+
 export const getTranslationFromDictionary = (
   translations: Record<string, string> | string | undefined,
   lng?: string,
@@ -40,11 +64,14 @@ export const getTranslationFromDictionary = (
  */
 export function resolve(
   path: string | string[],
-  obj: Record<string, any>,
+  obj: Record<string, unknown>,
   separator: string = ".",
-) {
+): { message?: string } | undefined {
   const properties = Array.isArray(path) ? path : path.split(separator);
-  return properties.reduce((prev, curr) => prev?.[curr], obj);
+  return properties.reduce<unknown>(
+    (prev, curr) => (prev as Record<string, unknown> | undefined)?.[curr],
+    obj,
+  ) as { message?: string } | undefined;
 }
 
 export function formatPercent(percent: number) {
@@ -81,7 +108,9 @@ export function getShortenNumberUnit(number: number): string {
   }
 }
 
-export async function resolvePromisesSequentially(promises: Promise<any>[]) {
+export async function resolvePromisesSequentially(
+  promises: Promise<unknown>[],
+) {
   const results = [];
   for (const promise of promises) {
     results.push(await promise);
@@ -109,9 +138,9 @@ export const fileEndingToMIMEType: Record<string, string> = {
   default: "application/x-binary",
 };
 
-export function base64ToFile(base64String: any, filename: string) {
+export function base64ToFile(base64String: string, filename: string) {
   const arr = base64String.split(",");
-  const mime = arr[0].match(/:(.*?);/)[1];
+  const mime = arr[0].match(/:(.*?);/)![1];
   const bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
@@ -432,7 +461,7 @@ export const sortGpcReferenceNumbers = (refNumbers: string[]): string[] => {
   return [...refNumbers].sort(compareGpcRefNumbers);
 };
 
-export const isEmptyObject = (obj: Record<string, any>) => {
+export const isEmptyObject = (obj: Record<string, unknown>) => {
   return Object.keys(obj).length === 0 && obj.constructor === Object;
 };
 

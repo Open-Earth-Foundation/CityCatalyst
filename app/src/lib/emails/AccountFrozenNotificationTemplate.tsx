@@ -208,3 +208,4 @@ const footerText = {
   fontWeight: "400",
   color: "#79797A",
 };
+

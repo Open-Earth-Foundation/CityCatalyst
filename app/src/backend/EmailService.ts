@@ -1,5 +1,5 @@
 import createHttpError from "http-errors";
-import type { User } from "@/models/User";
+import type { User, UserAttributes } from "@/models/User";
 import { Organization } from "@/models/Organization";
 import jwt from "jsonwebtoken";
 import { sendEmail } from "@/lib/email";
@@ -12,7 +12,7 @@ import ProjectDeletedNotificationTemplate from "@/lib/emails/ProjectDeletedNotif
 import CitySlotChangedNotificationTemplate from "@/lib/emails/CitySlotChangedNotification";
 import AccountFrozenNotificationTemplate from "@/lib/emails/AccountFrozenNotificationTemplate";
 import AccountUnFrozenNotificationTemplate from "@/lib/emails/AccountUnFrozenNotificationTemplate";
-import { City } from "@/models/City";
+import { City, CityAttributes } from "@/models/City";
 import RemoveUserFromMultipleCitiesTemplate from "@/lib/emails/RemoveUsersFromMultipleCities";
 import { ACTION_TYPES, LANGUAGES, OrganizationRole } from "@/util/types";
 import RoleUpdateNotificationTemplate from "@/lib/emails/RoleUpdateNotificationTemplate";
@@ -54,7 +54,9 @@ export default class EmailService {
       typeof translation === "object" &&
       subKey in translation
     ) {
-      return { [subKey]: (translation as any)[subKey] } as EmailTranslation;
+      return {
+        [subKey]: (translation as Record<string, unknown>)[subKey],
+      } as EmailTranslation;
     }
 
     // Otherwise return the full translation object
@@ -166,7 +168,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -209,7 +211,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -252,7 +254,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -289,7 +291,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -326,7 +328,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -476,7 +478,7 @@ export default class EmailService {
             subject: translatedSubject,
             html,
           });
-        } catch (err) {
+        } catch {
           logger.error(`Failed to send email to ${user.email}`);
         }
       }),
@@ -563,7 +565,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${email}`);
     }
   }
@@ -594,7 +596,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${user?.email}`);
     }
   }
@@ -694,9 +696,9 @@ export default class EmailService {
   }: {
     url?: string;
     user?: { name: string; email: string; cityId?: string };
-    city?: any;
+    city?: CityAttributes;
     invitingUser?: { name: string; email: string };
-    members: any[];
+    members: UserAttributes[];
     userEmail: string;
     language?: string;
   }) {
@@ -722,7 +724,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error(`Failed to send email to ${userEmail}`);
     }
   }
@@ -758,7 +760,7 @@ export default class EmailService {
         subject: translatedSubject,
         html,
       });
-    } catch (err) {
+    } catch {
       logger.error({ email }, "Failed to send confirm registration email");
     }
   }

@@ -9,7 +9,7 @@ from app.models.cnb.similar_projects import CnbSimilarProjectCandidate
 from app.services.cnb.similar_project_review import _merge_candidate_entries
 
 
-FUNDING_RECORD_ID = UUID("16fd2706-8baf-433b-82eb-8c7fada847da")
+FUNDED_PROJECT_ID = UUID("16fd2706-8baf-433b-82eb-8c7fada847da")
 FUNDER_ID = UUID("2ff090d6-b421-4fa6-881c-ec14e379da12")
 
 
@@ -21,9 +21,8 @@ def _candidate(
 ) -> CnbSimilarProjectCandidate:
     """Build one semantically identical candidate with varied reviewed fields."""
     return CnbSimilarProjectCandidate(
-        funding_record_id=FUNDING_RECORD_ID,
+        funded_project_id=FUNDED_PROJECT_ID,
         funder_id=FUNDER_ID,
-        is_opportunity=False,
         is_funded_award=True,
         name="Municipal Solar Project",
         hazards=hazards,
@@ -61,7 +60,7 @@ def test_duplicate_candidate_merge_logs_origins_and_adds_review_caveat(
     origin_list = "run-a:project-1, run-b:project-2"
     assert (
         f"Merged 2 semantically equivalent CNB reviewed project records "
-        f"into candidate {FUNDING_RECORD_ID}: {origin_list}"
+        f"into candidate {FUNDED_PROJECT_ID}: {origin_list}"
         in caplog.text
     )
     assert merged.hazards == ["heat", "drought"]

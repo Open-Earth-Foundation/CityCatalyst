@@ -6,7 +6,7 @@ from app.models.cnb.research import (
     FunderResearchResult,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
-    FundingRecordResearchResult,
+    FundingOpportunityResearchResultRow,
 )
 
 def build_request(*, max_turns: int = 3) -> FundingOpportunityResearchRequest:
@@ -29,20 +29,20 @@ def build_result() -> FundingOpportunityResearchResult:
             name="Example Funder",
             profile=FunderProfileResearchResult(),
         ),
-        funding_records=[
-            FundingRecordResearchResult(
-                funding_record_ref="opportunity-001",
+        funding_opportunities=[
+            FundingOpportunityResearchResultRow(
+                funding_opportunity_ref="opportunity-001",
                 funder_ref="funder-001",
-                is_opportunity=True,
                 name="Example Program",
                 status="open",
             )
         ],
+        funded_projects=[],
         evidence=[
             FieldEvidence(
                 evidence_ref="evidence-001",
-                funding_record_ref="opportunity-001",
-                target_path="funding_records[opportunity-001].status",
+                funding_opportunity_ref="opportunity-001",
+                target_path="funding_opportunities[opportunity-001].status",
                 source_ref="source-002",
                 source_location="Status",
                 quote_or_summary=(

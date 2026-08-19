@@ -197,9 +197,11 @@ File:
 Contract note:
 
 - This file mirrors `GET /api/v1/action-pathways?lang=all`, including the upstream multilingual text maps.
-- The action client returns the full upstream catalog. The prioritization
-  pipeline then keeps only mitigation actions as a fixed runtime filter, not a
-  frontend-request filter.
+- The action client returns the full upstream catalog. The shared
+  `select_prioritizable_actions()` rule then keeps only actions whose normalized
+  action type is `mitigation`. Missing types remain visible in diagnostics.
+- The public action GET, exclusion preview, prioritization, and output-plan
+  enrichment all use this same selected set.
 
 Fields that affect the result:
 
@@ -221,9 +223,9 @@ Fields that affect the result:
 What these are used for:
 
 - `actionId` identifies and sorts actions.
-- `actionType` is filtered to the currently supported value, `mitigation`.
+- `actionType` drives the shared membership rule described above.
 - `actionName`, `description`, `interventionType`, and `actionRole` are used in exclusion preview free-text matching.
-- For the free-text preview prompt, the service sends all actions but only with:
+- For the free-text preview prompt, the service sends all selected actions but only with:
   - action ID
   - action name
   - action description

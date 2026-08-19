@@ -57,7 +57,6 @@ function countryFromLanguage(language: string) {
 
 export function NavigationBar({
   lng,
-  showNav = true,
   isPublic = false,
   showMenu = false,
   isAuth = false,
@@ -170,10 +169,10 @@ export function NavigationBar({
         display="flex"
         justifyContent="space-between"
         flexDirection="row"
-        px={8}
+        px={{ base: 4, md: 8 }}
         py={4}
         alignItems="center"
-        gap={12}
+        gap={{ base: 2, md: 12 }}
         position="relative"
         zIndex={50}
         w="full"
@@ -193,9 +192,11 @@ export function NavigationBar({
           )}
           {logoUrl && !isAuth ? (
             <Link href={homePath}>
-              <img
+              <Image
                 src={logoUrl}
                 alt="Org logo"
+                width={250}
+                height={50}
                 style={{
                   objectFit: "cover",
                   height: "50px",
@@ -215,13 +216,13 @@ export function NavigationBar({
                   />
                 </Link>
               )}
-              <Link href={homePath}>
+              <Link href={homePath} display={{ base: "none", md: "block" }}>
                 <Heading size="lg" color="base.light">
                   {t("title")}
                 </Heading>
               </Link>
               {moduleName && (
-                <>
+                <Box display={{ base: "none", md: "flex" }} alignItems="center" gap={2}>
                   <Separator
                     orientation="vertical"
                     height="5"
@@ -230,89 +231,87 @@ export function NavigationBar({
                   <Heading size="lg" color="base.light" fontWeight="normal">
                     {moduleName}
                   </Heading>
-                </>
+                </Box>
               )}
             </HStack>
           )}
         </Box>
 
         {/* Menu Items */}
-        <Box display="flex" gap="48px" alignItems="center">
+        <Box display="flex" gap={{ base: "12px", md: "48px" }} alignItems="center">
           {children}
-          <Box display="flex">
-            <Box display="flex">
-              <MenuRoot
-                onOpenChange={(details) => {
-                  setLanguageMenuOpen(details.open);
-                }}
-                open={isLanguageMenuOpen}
-                variant="solid"
-              >
-                <MenuTrigger asChild>
-                  <Button
-                    color="base.light"
-                    minW="120px"
-                    minH="48px"
-                    variant="ghost"
-                    textTransform="none"
-                    whiteSpace="nowrap"
+          <Box display="flex" gap={{ base: "8px", md: "32px" }}>
+            <MenuRoot
+              onOpenChange={(details) => {
+                setLanguageMenuOpen(details.open);
+              }}
+              open={isLanguageMenuOpen}
+              variant="solid"
+            >
+              <MenuTrigger asChild>
+                <Button
+                  color="base.light"
+                  minW="auto"
+                  minH="48px"
+                  variant="ghost"
+                  textTransform="none"
+                  whiteSpace="nowrap"
+                  justifyContent="space-between"
+                  px="8px"
+                  gap="16px"
+                >
+                  <Box display="flex" alignItems="center" gap="3">
+                    <CircleFlag
+                      countryCode={
+                        countryFromLanguage(i18next.language) === "pt"
+                          ? "br"
+                          : countryFromLanguage(i18next.language)
+                      }
+                      width="24"
+                    />
+
+                    <Text
+                      display={{ base: "none", md: "block" }}
+                      fontSize="title.sm"
+                      fontWeight="medium"
+                      letterSpacing="wide"
+                      lineHeight="20"
+                    >
+                      {i18next.language.toUpperCase()}
+                    </Text>
+
+                    <Icon
+                      as={isLanguageMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                      boxSize={6}
+                    />
+                  </Box>
+                </Button>
+              </MenuTrigger>
+              <MenuContent minW="140px" zIndex={2000}>
+                {languages.map((language) => (
+                  <MenuItem
+                    value={language}
+                    onClick={() => onChangeLanguage(language)}
+                    key={language}
                   >
-                    <Box display="flex" alignItems="center" gap="3">
+                    <Box display="flex" alignItems="center">
                       <CircleFlag
                         countryCode={
-                          countryFromLanguage(i18next.language) === "pt"
+                          countryFromLanguage(language) === "pt"
                             ? "br"
-                            : countryFromLanguage(i18next.language)
+                            : countryFromLanguage(language)
                         }
                         width="24"
+                        style={{ marginRight: "16px" }}
                       />
-
-                      <Text
-                        fontSize="title.sm"
-                        fontWeight="medium"
-                        letterSpacing="wide"
-                        lineHeight="20"
-                      >
-                        {i18next.language.toUpperCase()}
-                      </Text>
-
-                      <Icon
-                        as={
-                          isLanguageMenuOpen ? MdArrowDropUp : MdArrowDropDown
-                        }
-                        boxSize={6}
-                      />
+                      <Text fontSize="title.md">{language.toUpperCase()}</Text>
                     </Box>
-                  </Button>
-                </MenuTrigger>
-                <MenuContent minW="140px" zIndex={2000}>
-                  {languages.map((language) => (
-                    <MenuItem
-                      value={language}
-                      onClick={() => onChangeLanguage(language)}
-                      key={language}
-                    >
-                      <Box display="flex" alignItems="center">
-                        <CircleFlag
-                          countryCode={
-                            countryFromLanguage(language) === "pt"
-                              ? "br"
-                              : countryFromLanguage(language)
-                          }
-                          width="24"
-                          style={{ marginRight: "16px" }}
-                        />
-                        <Text fontSize="title.md">
-                          {language.toUpperCase()}
-                        </Text>
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </MenuContent>
-              </MenuRoot>
-            </Box>
+                  </MenuItem>
+                ))}
+              </MenuContent>
+            </MenuRoot>
             {organizations && organizations.length > 1 && (
-              <Box display="flex">
+              <Box display={{ base: "none", md: "flex" }}>
                 <MenuRoot
                   onOpenChange={(details) => {
                     setOrgMenuOpen(details.open);
@@ -323,75 +322,87 @@ export function NavigationBar({
                   <MenuTrigger asChild>
                     <Button
                       color="base.light"
-                      minW="160px"
+                      minW="auto"
                       minH="48px"
                       variant="ghost"
                       textTransform="none"
                       whiteSpace="nowrap"
+                      px="8px"
+                      justifyContent="space-between"
+                      gap="16px"
                     >
-                      <Box display="flex" alignItems="center" gap="3">
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="center"
-                          boxSize="32px"
-                          borderRadius="full"
-                          bg="interactive.connected"
-                          color="base.light"
-                        >
-                          <Icon as={MdCardTravel} boxSize={4} />
-                        </Box>
-                        <Text
-                          maxW="140px"
-                          overflow="hidden"
-                          textOverflow="ellipsis"
-                          whiteSpace="nowrap"
-                          fontSize="title.sm"
-                          fontWeight="medium"
-                          letterSpacing="wide"
-                          lineHeight="20"
-                        >
-                          {currentOrganizationName}
-                        </Text>
-                        <Icon
-                          as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
-                          boxSize={6}
-                        />
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        boxSize="32px"
+                        borderRadius="full"
+                        bg="interactive.connected"
+                        color="base.light"
+                      >
+                        <Icon as={MdCardTravel} boxSize={4} />
                       </Box>
+                      <Text
+                        maxW="140px"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        fontSize="title.sm"
+                        fontWeight="medium"
+                        letterSpacing="wide"
+                        lineHeight="20"
+                      >
+                        {currentOrganizationName}
+                      </Text>
+                      <Icon
+                        as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                        boxSize={6}
+                      />
                     </Button>
                   </MenuTrigger>
                   <MenuContent minW="220px" zIndex={2000}>
-                    {organizations.map((org) => (
-                      <MenuItem
-                        value={org.organizationId}
-                        onClick={() => onChangeOrganization(org.organizationId)}
-                        key={org.organizationId}
-                      >
-                        <Box
-                          display="flex"
-                          alignItems="center"
-                          justifyContent="space-between"
-                          w="full"
+                    {/* only show unique organizations and not duplicates */}
+                    {organizations
+                      .filter(
+                        (org, index, self) =>
+                          index ===
+                          self.findIndex(
+                            (t) => t.organizationId === org.organizationId,
+                          ),
+                      )
+                      .map((org) => (
+                        <MenuItem
+                          value={org.organizationId}
+                          onClick={() =>
+                            onChangeOrganization(org.organizationId)
+                          }
+                          key={org.organizationId}
                         >
-                          <Text
-                            fontSize="title.md"
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                            whiteSpace="nowrap"
+                          <Box
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="space-between"
+                            w="full"
                           >
-                            {org.name}
-                          </Text>
-                          {org.organizationId ===
-                            organization?.organizationId && (
-                            <Icon
-                              as={MdCheck}
-                              boxSize={5}
-                              color="interactive.secondary"
-                            />
-                          )}
-                        </Box>
-                      </MenuItem>
-                    ))}
+                            <Text
+                              fontSize="title.md"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                              whiteSpace="nowrap"
+                            >
+                              {org.name}
+                            </Text>
+                            {org.organizationId ===
+                              organization?.organizationId && (
+                              <Icon
+                                as={MdCheck}
+                                boxSize={5}
+                                color="interactive.secondary"
+                              />
+                            )}
+                          </Box>
+                        </MenuItem>
+                      ))}
                   </MenuContent>
                 </MenuRoot>
               </Box>
@@ -408,13 +419,13 @@ export function NavigationBar({
                     setUserMenuHighlight(value.highlightedValue)
                   }
                 >
-                  <MenuTrigger
-                    asChild
-                    whiteSpace="nowrap"
-                    textTransform="none"
-                    ml={8}
-                  >
-                    <Button variant="ghost" p="s" minW="220px" minH="48px">
+                  <MenuTrigger asChild whiteSpace="nowrap" textTransform="none">
+                    <Button
+                      variant="ghost"
+                      px="8px"
+                      minW={{ base: "auto", md: "220px" }}
+                      minH="48px"
+                    >
                       <Box display="flex" alignItems="center" gap="4">
                         <Avatar
                           height="32px"
@@ -425,6 +436,7 @@ export function NavigationBar({
                           src={session.user?.image}
                         />
                         <Text
+                          display={{ base: "none", md: "block" }}
                           w="120px"
                           overflow="hidden"
                           textOverflow="ellipsis"
@@ -579,9 +591,8 @@ export function NavigationBar({
               i18nKey="account-frozen-warning-text"
               values={{
                 email:
-                  env("NEXT_PUBLIC_SUPPORT_EMAILS")?.split(",").join(
-                    " or ",
-                  ) || "info@openearth.org",
+                  env("NEXT_PUBLIC_SUPPORT_EMAILS")?.split(",").join(" or ") ||
+                  "info@openearth.org",
               }}
               t={t}
               components={{

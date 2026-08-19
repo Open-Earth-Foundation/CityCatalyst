@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID
 
 from sqlalchemy import func, select
@@ -200,7 +200,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         """Create or idempotently replay one pre-conversion upload."""
         try:
             async with self._session_factory() as session, session.begin():
-                await _require_owned_run(
+                run = await _require_owned_run(
                     session=session,
                     user_id=user_id,
                     run_id=run_id,
@@ -249,6 +249,9 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                     )
                     return _snapshot(existing)
 
+                # Keep dashboard ordering aligned with upload lifecycle activity.
+                _touch_run(run)
+                await session.flush()
                 await session.refresh(upload)
                 return _snapshot(upload)
         except ConceptNoteMarkdownRepositoryError:
@@ -304,7 +307,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         """Persist one immutable CC Markdown pointer and mark it ready."""
         try:
             async with self._session_factory() as session, session.begin():
-                await _require_owned_run(
+                run = await _require_owned_run(
                     session=session,
                     user_id=user_id,
                     run_id=run_id,
@@ -342,6 +345,8 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                 upload.ingest_error_code = None
                 upload.ingest_started_at = upload.ingest_started_at or func.now()
                 upload.ingest_completed_at = func.now()
+                # Keep dashboard ordering aligned with upload lifecycle activity.
+                _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
                 return _snapshot(upload)
@@ -366,7 +371,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         """Mark a non-ready upload failed without deleting its identity."""
         try:
             async with self._session_factory() as session, session.begin():
-                await _require_owned_run(
+                run = await _require_owned_run(
                     session=session,
                     user_id=user_id,
                     run_id=run_id,
@@ -390,6 +395,8 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                 upload.ingest_status = "failed"
                 upload.ingest_error_code = error_code
                 upload.ingest_completed_at = func.now()
+                # Keep dashboard ordering aligned with upload lifecycle activity.
+                _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
                 return _snapshot(upload)
@@ -413,7 +420,7 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
         """Return a failed upload to queued state."""
         try:
             async with self._session_factory() as session, session.begin():
-                await _require_owned_run(
+                run = await _require_owned_run(
                     session=session,
                     user_id=user_id,
                     run_id=run_id,
@@ -437,6 +444,8 @@ class SqlAlchemyConceptNoteMarkdownRepository(ConceptNoteMarkdownRepository):
                 upload.ingest_status = "queued"
                 upload.ingest_error_code = None
                 upload.ingest_completed_at = None
+                # Keep dashboard ordering aligned with upload lifecycle activity.
+                _touch_run(run)
                 await session.flush()
                 await session.refresh(upload)
                 return _snapshot(upload)
@@ -498,6 +507,11 @@ async def _require_owned_run(
             "Concept Note run belongs to another user",
         )
     return run
+
+
+def _touch_run(run: ConceptNoteRun) -> None:
+    """Record upload lifecycle activity on the parent run."""
+    run.updated_at = datetime.now(timezone.utc)
 
 
 def _require_upload_binding(

@@ -85,6 +85,14 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.Unauthorized("Unauthorized");
   }
 
+  if (session.user.email?.toLowerCase() !== email.toLowerCase()) {
+    logger.error({
+      sessionEmail: session.user.email,
+      inviteEmail: email,
+    }, "[UserInviteAccept] Logged-in user does not match invited email");
+    throw new createHttpError.Unauthorized("Unauthorized");
+  }
+
   const invites = await db.models.CityInvite.findAll({
     where: {
       cityId: { [Op.in]: cityIds },
@@ -111,7 +119,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   const failedInvites: { cityId: string }[] = [];
 
   if (tokenContent.role === "admin" && tokenContent.projectId) {
-    const [projectAdmin, created] = await ProjectAdmin.findOrCreate({
+    const [, created] = await ProjectAdmin.findOrCreate({
       where: { projectId: tokenContent.projectId, userId: session.user.id },
       defaults: {
         projectAdminId: randomUUID(),
@@ -192,6 +200,19 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     }, "[UserInviteAccept] Updated user defaultInventoryId and defaultCityId");
   }
 
+  // Look up the accepted cities directly (not scoped to CityUser membership,
+  // since admin invites grant ProjectAdmin access without a CityUser row).
+  const acceptedCities = await db.models.City.findAll({
+    where: { cityId: { [Op.in]: cityIds } },
+  });
+
   logger.info({ failedInvites: failedInvites.length }, "[UserInviteAccept] PATCH complete");
-  return NextResponse.json({ success: failedInvites.length === 0 });
+  return NextResponse.json({
+    success: failedInvites.length === 0,
+    cities: acceptedCities.map((city) => ({
+      cityId: city.cityId,
+      name: city.name,
+      countryLocode: city.countryLocode,
+    })),
+  });
 });

@@ -215,7 +215,7 @@ describe("DataSource API", () => {
 
   it("should delete an inventory value", async () => {
     const datasource = await db.models.DataSource.findOne({
-      // @ts-expect-error URL can be null
+      // @ts-expect-error -- `url` is typed as `string | undefined`, not `string | null`, even though the DB column allows NULL
       where: {
         url: {
           [Op.ne]: null,

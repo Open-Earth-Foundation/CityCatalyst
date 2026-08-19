@@ -25,7 +25,7 @@ import {
   groupBy,
   nameToI18NKey,
 } from "@/util/helpers";
-import { bigIntToDecimal } from "@/util/big_int";
+import Decimal from "decimal.js";
 import type { DataSourceResponse, SectorProgress } from "@/util/types";
 
 import {
@@ -53,15 +53,14 @@ import {
 } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useRouter, useParams, usePathname } from "next/navigation";
-import { forwardRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Trans } from "react-i18next/TransWithoutContext";
-import { FiRefreshCcw, FiTarget, FiTrash2 } from "react-icons/fi";
+import { FiTarget, FiTrash2 } from "react-icons/fi";
 import {
   MdAdd,
   MdArrowBack,
   MdArrowDropDown,
   MdArrowDropUp,
-  MdCheckCircle,
   MdCheckCircleOutline,
   MdChevronRight,
   MdInfoOutline,
@@ -71,7 +70,6 @@ import {
   MdOutlineDelete,
   MdOutlineFactory,
   MdOutlineLocalShipping,
-  MdRefresh,
   MdSearch,
   MdWarning,
 } from "react-icons/md";
@@ -81,11 +79,11 @@ import { SubsectorDatasetFilterSelect } from "@/components/GHGI/inventory-pages/
 import type {
   DataSourceWithRelations,
   DataStep,
+  GlobalAPISourceResponse,
   SubSectorWithRelations,
 } from "@/components/GHGI/data-step/types";
 
 import { InventoryValueAttributes } from "@/models/InventoryValue";
-import { motion } from "framer-motion";
 import { getTranslationFromDict } from "@/i18n";
 import { getScopesForInventoryAndSector, SECTORS } from "@/util/constants";
 import { Button } from "@/components/ui/button";
@@ -101,7 +99,7 @@ import AddFileDataDialog from "@/components/Modals/add-file-data-dialog";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
-import { getParamValueRequired } from "@/util/helpers";
+import { getApiErrorMessage, getParamValueRequired } from "@/util/helpers";
 import { Tooltip } from "@/components/ui/tooltip";
 import { env } from "@/lib/runtime-env";
 
@@ -299,7 +297,7 @@ export default function AddDataSteps() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inventoryProgress]);
 
-  const { value: activeStep, goToNextStep: goToNext } = useSteps({
+  const { value: activeStep } = useSteps({
     defaultStep: Number(step) - 1,
     count: steps.length,
   });
@@ -334,7 +332,7 @@ export default function AddDataSteps() {
   // only display data sources relevant to current sector
   let dataSources: DataSourceResponse[] | undefined;
   if (data) {
-    const { data: successfulSources, failedSources, removedSources } = data;
+    const { data: successfulSources } = data;
     dataSources = successfulSources?.filter(({ source, data }) => {
       const referenceNumber =
         source.subCategory?.referenceNumber ||
@@ -348,13 +346,17 @@ export default function AddDataSteps() {
 
   const [selectedSource, setSelectedSource] =
     useState<DataSourceWithRelations>();
-  const [selectedSourceData, setSelectedSourceData] = useState<any>();
+  const [selectedSourceData, setSelectedSourceData] =
+    useState<GlobalAPISourceResponse>();
   const {
     open: isSourceDrawerOpen,
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
+  const onSourceClick = (
+    source: DataSourceWithRelations,
+    data: GlobalAPISourceResponse,
+  ) => {
     setSelectedSource(source);
     setSelectedSourceData(data);
     onSourceDrawerOpen();
@@ -412,12 +414,12 @@ export default function AddDataSteps() {
         );
         onSourceDrawerClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to connect data source",
       );
-      showError("data-source-connect-failed", error.data?.error?.message);
+      showError("data-source-connect-failed", getApiErrorMessage(error));
     } finally {
       setConnectingDataSourceId(null);
       onSearchDataSourcesClicked();
@@ -459,7 +461,7 @@ export default function AddDataSteps() {
   }
 
   async function onSearchDataSourcesClicked() {
-    const { data, removedSources, failedSources } = await loadDataSources({
+    const { removedSources, failedSources } = await loadDataSources({
       inventoryId: inventory,
     }).unwrap();
 
@@ -492,7 +494,7 @@ export default function AddDataSteps() {
 
   const [openFileUploadDialog, setOpenFileUploadDialog] = useState(false);
 
-  const handleFileSelect = async (file: File) => {
+  const handleFileSelect = async () => {
     setOpenFileUploadDialog((v) => !v);
   };
 
@@ -500,14 +502,14 @@ export default function AddDataSteps() {
     (sector) => sector.sectorName === currentStep.name,
   );
 
-  const [deleteUserFile, { isLoading }] = api.useDeleteUserFileMutation();
+  const [deleteUserFile] = api.useDeleteUserFileMutation();
 
   function removeSectorFile(
     fileId: string,
     sectorName: string,
     cityId: string,
   ) {
-    deleteUserFile({ fileId, cityId }).then((res: any) => {
+    deleteUserFile({ fileId, cityId }).then((res) => {
       if (res.error) {
         showError(
           "file-deletion-error",
@@ -586,15 +588,6 @@ export default function AddDataSteps() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
-  const MotionBox = motion.create(
-    // the display name is added below, but the linter isn't picking it up
-    // eslint-disable-next-line react/display-name
-    forwardRef<HTMLDivElement, any>((props, ref) => (
-      <Box ref={ref} {...props} />
-    )),
-  );
-  MotionBox.displayName = "MotionBox";
 
   const scrollResizeHeaderThreshold = 50;
   const isExpanded = scrollPosition > scrollResizeHeaderThreshold;
@@ -1214,13 +1207,13 @@ export default function AddDataSteps() {
                                         gap={2}
                                       >
                                         {data?.totals?.emissions?.co2eq_100yr != null &&
-                                          data.totals.emissions.co2eq_100yr !== 0n && (
+                                          Number(data.totals.emissions.co2eq_100yr) !== 0 && (
                                             <Text
                                               fontSize="display.sm"
                                               fontWeight="semibold"
                                             >
                                               {convertKgToTonnes(
-                                                bigIntToDecimal(
+                                                new Decimal(
                                                   data.totals.emissions.co2eq_100yr,
                                                 ).toNumber(),
                                               )}
@@ -1481,9 +1474,7 @@ export default function AddDataSteps() {
                       <Box mb="24px">
                         <FileInput
                           onFileSelect={() =>
-                            isFrozenCheck()
-                              ? null
-                              : handleFileSelect(uploadedFile!)
+                            isFrozenCheck() ? null : handleFileSelect()
                           }
                           setUploadedFile={setUploadedFile}
                           t={t}
@@ -1564,7 +1555,7 @@ export default function AddDataSteps() {
                                     <Box w="full" position="relative" pl="63px">
                                       {file.subsectors
                                         ?.split(",")
-                                        .map((item: any) => (
+                                        .map((item) => (
                                           <Tag
                                             key={item}
                                             mt={2}

@@ -1,5 +1,6 @@
 import type {
   DataSourceWithRelations,
+  GlobalAPISourceResponse,
   InventoryValueData,
   SubSectorWithRelations,
 } from "@/components/GHGI/data-step/types";
@@ -13,6 +14,7 @@ import {
 } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import type { InventoryAttributes } from "@/models/Inventory";
+import type { GHGICountryEmissionsEntry } from "@/util/GHGI/types";
 import type { CityAttributes } from "@/models/City";
 import type { GasValue, GasValueAttributes } from "@/models/GasValue";
 import type {
@@ -29,6 +31,8 @@ import type {
 import type { ProjectAttributes } from "@/models/Project";
 import type { OrganizationAttributes } from "@/models/Organization";
 import type { VersionAttributes } from "@/models/Version";
+import type { BoundingBox } from "@/util/geojson";
+import type { GeoJSON } from "geojson";
 
 export interface CityAndYearsResponse {
   city: CityAttributes;
@@ -134,7 +138,7 @@ export type DataSource = DataSourceAttributes & {
 };
 export type DataSourceResponse = {
   source: DataSourceWithRelations;
-  data: any;
+  data: GlobalAPISourceResponse;
 };
 
 export interface GetDataSourcesResult {
@@ -204,8 +208,25 @@ export interface OCCityAttributes {
   actor_id: string;
   name: string;
   is_part_of: string;
-  root_path_geo: any;
+  root_path_geo: { actor_id: string; name: string; type: string }[];
   area: number;
+}
+
+export interface OCPopulationEntry {
+  year: number;
+  population: number;
+  datasource: { name: string };
+}
+
+/**
+ * Full response shape from OpenClimate's actor endpoint (used by
+ * getOCCityData), which includes population history and — for countries —
+ * emissions data keyed by source ID. OCCityAttributes covers just the
+ * subset used by city search results.
+ */
+export interface OCCityDataResponse extends OCCityAttributes {
+  population: OCPopulationEntry[];
+  emissions: Record<string, { data: GHGICountryEmissionsEntry[] }>;
 }
 
 declare module "next-auth" {
@@ -289,6 +310,11 @@ export interface GetUserCityInvitesResponse {
 export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
+  cities?: Array<{
+    cityId: string;
+    name: string | null;
+    countryLocode: string | null;
+  }>;
 }
 
 export interface AcceptInviteRequest {
@@ -534,11 +560,11 @@ export type ThemeResponse = {
 };
 
 export enum LANGUAGES {
-  "en" = "en",
-  "es" = "es",
-  "pt" = "pt",
-  "de" = "de",
-  "fr" = "fr",
+  en = "en",
+  es = "es",
+  pt = "pt",
+  de = "de",
+  fr = "fr",
 }
 
 export type OrganizationWithThemeResponse = {
@@ -897,7 +923,7 @@ export interface FieldMapping {
 export interface ReviewData {
   importSummary: ImportSummary;
   fieldMappings: FieldMapping[];
-  mappingPreview?: any;
+  mappingPreview?: unknown;
 }
 
 export interface ImportStatusResponse {
@@ -979,3 +1005,61 @@ export type UserOrganizationsResponse = {
   name: string;
   role: OrganizationRole;
 }[];
+
+export interface ProjectBoundary {
+  city: {
+    id: string;
+    name: string;
+    locode: string;
+    latestInventoryId: string;
+  };
+  boundingBox: BoundingBox;
+  data: GeoJSON;
+}
+
+export interface ConceptNoteRun {
+  run_id: string;
+  thread_id: string | null;
+  name: string;
+  city_id: string;
+  project_id: string | null;
+  funder_id: string | null;
+  selected_funding_opportunity_id: string | null;
+  status: string;
+  workflow_step: string;
+  progress_summary: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConceptNoteRunListResponse {
+  runs: ConceptNoteRun[];
+}
+
+export interface StartConceptNoteRunRequest {
+  cityId: string;
+  idempotencyKey: string;
+  name: string;
+}
+
+export type ConceptNoteUploadStatus =
+  "queued" | "processing" | "ready" | "failed";
+
+export interface ConceptNoteUploadResponse {
+  uploadId: string;
+  runId?: string;
+  status: ConceptNoteUploadStatus;
+  pageCount?: number | null;
+  errorCode?: string;
+}
+
+export interface ConceptNoteUploadRequest {
+  cityId: string;
+  formData: FormData;
+  runId: string;
+}
+
+export interface ConceptNoteUploadStatusRequest {
+  runId: string;
+  uploadId: string;
+}

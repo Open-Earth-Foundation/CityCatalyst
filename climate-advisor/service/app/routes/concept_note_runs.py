@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.session import get_session
 from app.models.concept_note_runs import (
+    ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
 )
@@ -16,6 +17,25 @@ from app.services.concept_note_runs import ConceptNoteRunService
 
 
 router = APIRouter()
+
+
+@router.get(
+    "/concept-notes",
+    response_model=ConceptNoteRunListResponse,
+)
+async def list_concept_note_runs(
+    user_id: str = Query(..., min_length=1),
+    city_id: UUID = Query(...),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunListResponse:
+    """Return the authenticated user's runs for one accessible city."""
+    service = ConceptNoteRunService(session)
+    return await service.list_runs(
+        requested_user_id=user_id,
+        city_id=city_id,
+        authorization=authorization,
+    )
 
 
 @router.post(

@@ -116,6 +116,7 @@ def _configure_output_plan_dependency_overrides() -> None:
                 Action(
                     action_id="A_1",
                     action_name="Bus electrification",
+                    action_type="mitigation",
                     name_i18n={
                         "en": "Bus electrification",
                         "es": "Electrificación de autobuses",

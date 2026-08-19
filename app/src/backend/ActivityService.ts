@@ -637,7 +637,7 @@ export default class ActivityService {
       );
     }
 
-    return await db.sequelize?.transaction(async (transaction) => {
+    return await db.sequelize!.transaction(async (transaction) => {
       // create Version history entries for all InventoryValues and ActivityValues that are being deleted
       // to be able to undo this change later if necessary
       await Promise.all(
@@ -719,6 +719,6 @@ export default class ActivityService {
         },
         transaction,
       });
-    })!;
+    });
   }
 }

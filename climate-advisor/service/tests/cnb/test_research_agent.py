@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 from app.models.cnb.research import (
     FieldEvidence,
-    FundingRecordResearchResult,
+    FundedProjectResearchResult,
     ResearchGap,
 )
 from app.services.cnb.research_agent import (
@@ -75,15 +75,15 @@ def test_resumed_prior_evidence_cannot_report_coverage_complete() -> None:
                 for target_path in (
                     "funder.funder_type",
                     "funder.region",
-                    "funding_records[opportunity-001].finance_route",
-                    "funding_records[opportunity-001].instrument_type",
-                    "funding_records[opportunity-001].region_scope",
+                    "funding_opportunities[opportunity-001].finance_route",
+                    "funding_opportunities[opportunity-001].instrument_type",
+                    "funding_opportunities[opportunity-001].region_scope",
                     "funder_templates",
                     "funder_criteria.eligibility",
                     "funder_criteria.selection",
-                    "funding_records[funded-project]",
-                    "funding_records.deep_funded_project",
-                    "funding_records.financial_coverage",
+                    "funded_projects[funded-project]",
+                    "funded_projects.deep_funded_project",
+                    "funding_opportunities.financial_coverage",
                     "sources.guidance_or_eligibility",
                     "sources.funded_project_evidence",
                 )
@@ -133,29 +133,30 @@ def test_recaptured_resume_evidence_can_satisfy_coverage() -> None:
     )
 
     assert not any("prior-run" in item for item in missing)
-    assert not any("funding_records[opportunity-001].status" in item for item in missing)
+    assert not any(
+        "funding_opportunities[opportunity-001].status" in item for item in missing
+    )
 
 
 def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> None:
     base = build_result()
-    project = FundingRecordResearchResult(
-        funding_record_ref="project-001",
+    project = FundedProjectResearchResult(
+        funded_project_ref="project-001",
         funder_ref="funder-001",
-        is_opportunity=False,
         name="Evidence-backed project",
         award_amount=999,
         currency="USD",
     )
     row_evidence = FieldEvidence(
         evidence_ref="evidence-project-row",
-        funding_record_ref=project.funding_record_ref,
-        target_path="funding_records[project-001]",
+        funded_project_ref=project.funded_project_ref,
+        target_path="funded_projects[project-001]",
         source_ref="source-project",
         quote_or_summary="The program supported Evidence-backed project.",
     )
     previous_result = base.model_copy(
         update={
-            "funding_records": [*base.funding_records, project],
+            "funded_projects": [*base.funded_projects, project],
             "evidence": [*base.evidence, row_evidence],
         }
     )
@@ -168,9 +169,9 @@ def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> N
     )
 
     restored_project = next(
-        record
-        for record in restored.funding_records
-        if record.funding_record_ref == project.funding_record_ref
+        item
+        for item in restored.funded_projects
+        if item.funded_project_ref == project.funded_project_ref
     )
     assert restored_project.name == project.name
     assert restored_project.award_amount is None
@@ -183,22 +184,21 @@ def test_restored_project_parent_evidence_does_not_restore_optional_facts() -> N
 
 def test_restored_project_only_clears_a_satisfied_target_gap() -> None:
     base = build_result()
-    project = FundingRecordResearchResult(
-        funding_record_ref="project-001",
+    project = FundedProjectResearchResult(
+        funded_project_ref="project-001",
         funder_ref="funder-001",
-        is_opportunity=False,
         name="Evidence-backed project",
     )
     row_evidence = FieldEvidence(
         evidence_ref="evidence-project-row",
-        funding_record_ref=project.funding_record_ref,
-        target_path="funding_records[project-001]",
+        funded_project_ref=project.funded_project_ref,
+        target_path="funded_projects[project-001]",
         source_ref="source-project",
         quote_or_summary="The program supported Evidence-backed project.",
     )
     previous_result = base.model_copy(
         update={
-            "funding_records": [*base.funding_records, project],
+            "funded_projects": [*base.funded_projects, project],
             "evidence": [*base.evidence, row_evidence],
         }
     )

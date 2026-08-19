@@ -1,5 +1,5 @@
 import { TFunction } from "i18next";
-import { Badge, Box, Flex, Heading, Icon, Link, Text } from "@chakra-ui/react";
+import { Badge, Box, Heading, Icon, Link, Text } from "@chakra-ui/react";
 import { Trans } from "react-i18next/TransWithoutContext";
 import { MdOutlineAccountTree, MdOutlineCalendarToday } from "react-icons/md";
 import type { InventoryResponse } from "@/util/types";
@@ -26,7 +26,7 @@ export function TabHeader({
   inventory?: InventoryResponse;
   showActionButtons?: boolean;
 }) {
-  const { data: citiesAndYears, isLoading } = useGetCitiesAndYearsQuery();
+  const { data: citiesAndYears } = useGetCitiesAndYearsQuery();
 
   const [setUserInfo] = api.useSetUserInfoMutation();
   const router = useRouter();

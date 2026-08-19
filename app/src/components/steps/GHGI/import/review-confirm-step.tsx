@@ -15,13 +15,7 @@ import {
 import { api } from "@/services/api";
 import { Trans } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import {
-  MdEdit,
-  MdEditSquare,
-  MdOutlineMap,
-  MdOutlineModeEdit,
-} from "react-icons/md";
-import { BiEdit } from "react-icons/bi";
+import { MdOutlineMap } from "react-icons/md";
 import { ConfirmDocumentIcon, EditIconOutlineSquare } from "@/components/icons";
 import { LuRows4 } from "react-icons/lu";
 
@@ -31,7 +25,6 @@ interface ReviewConfirmStepProps {
   cityName?: string;
   inventoryId: string;
   importedFileId: string;
-  onImport: () => void;
   onEditMapping?: () => void;
 }
 
@@ -40,7 +33,6 @@ export default function ReviewConfirmStep({
   cityId,
   cityName,
   importedFileId,
-  onImport,
   onEditMapping,
   inventoryId,
 }: ReviewConfirmStepProps) {
@@ -110,19 +102,27 @@ export default function ReviewConfirmStep({
     rowsFound: data?.rowCount || 0,
     fieldsMapped:
       reviewData?.fieldMappings?.length ||
-      validationResults?.columns?.filter((col: any) => col.interpretedAs)
-        .length ||
+      validationResults?.columns?.filter((col) => col.interpretedAs).length ||
       0,
   };
 
+  interface FieldMappingRow {
+    sourceColumn: string;
+    mappedField: string;
+    sampleValue: string | null;
+  }
+
   // Use field mappings from reviewData, or fallback to validation results
-  const fieldMappings =
-    reviewData?.fieldMappings ||
+  const fieldMappings: FieldMappingRow[] =
+    reviewData?.fieldMappings?.map((mapping) => ({
+      ...mapping,
+      sampleValue: null,
+    })) ||
     validationResults?.columns
-      ?.filter((col: any) => col.interpretedAs)
-      .map((col: any) => ({
+      ?.filter((col) => col.interpretedAs)
+      .map((col) => ({
         sourceColumn: col.columnName,
-        mappedField: col.interpretedAs,
+        mappedField: col.interpretedAs ?? "",
         sampleValue: col.exampleValue || null,
       })) ||
     [];
@@ -218,13 +218,13 @@ export default function ReviewConfirmStep({
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
-              <Table.ColumnHeader>{t("value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("example-value")}</Table.ColumnHeader>
               <Table.ColumnHeader>{t("map-to")}</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
           <Table.Body>
             {fieldMappings && fieldMappings.length > 0 ? (
-              fieldMappings.map((mapping: any, index: number) => (
+              fieldMappings.map((mapping, index: number) => (
                 <Table.Row key={index} h="72px">
                   <Table.Cell>
                     <Text fontWeight="medium">{mapping.sourceColumn}</Text>

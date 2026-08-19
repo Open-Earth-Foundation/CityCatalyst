@@ -58,6 +58,7 @@ from app.modules.prioritizer.services.exclusion_resolution import (
     resolve_exclusion_preview_with_diagnostics,
 )
 from app.modules.prioritizer.services.translation import translate_explanations
+from app.services.action_pathways_api import select_prioritizable_actions
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -291,7 +292,9 @@ def preview_exclusions(
                 },
             )
             action_pathways_fetch_result = action_pathways_data_api_client.list_actions()
-            actions = action_pathways_fetch_result.actions
+            actions, _, _ = select_prioritizable_actions(
+                action_pathways_fetch_result.actions
+            )
             fetch_actions_event_index = artifact_writer.write_event(
                 "fetch_actions.completed",
                 {

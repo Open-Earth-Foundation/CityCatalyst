@@ -1266,13 +1266,9 @@ class RankedActionFeasibilityLegalEvidence(BaseModel):
         default=None,
         description="Normalized ownership authority score when present.",
     )
-    ownership_description: str | None = Field(
-        default=None,
-        description="English plain-language description of who has legal authority.",
-    )
-    ownership_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of who has legal authority.",
+    ownership_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Plain-language description of legal authority keyed by language.",
     )
     restrictions_category: str | None = Field(
         default=None,
@@ -1282,21 +1278,13 @@ class RankedActionFeasibilityLegalEvidence(BaseModel):
         default=None,
         description="Normalized restrictions score when present.",
     )
-    restrictions_description: str | None = Field(
-        default=None,
-        description="English plain-language description of legal barriers or restrictions.",
+    restrictions_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Description of legal barriers or restrictions keyed by language.",
     )
-    restrictions_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of legal barriers or restrictions.",
-    )
-    legal_justification: str | None = Field(
-        default=None,
-        description="Full Spanish legal reasoning for the verdict when present.",
-    )
-    legal_justification_en: str | None = Field(
-        default=None,
-        description="Full English legal reasoning for the verdict when present.",
+    legal_justification: dict[str, str] = Field(
+        default_factory=dict,
+        description="Full legal reasoning for the verdict keyed by language.",
     )
     legal_references: list[str] = Field(
         default_factory=list,
@@ -1455,13 +1443,9 @@ class HardFilterLegalAssessmentSummary(BaseModel):
         default=None,
         description="Normalized ownership authority score when present.",
     )
-    ownership_description: str | None = Field(
-        default=None,
-        description="English plain-language description of who has legal authority.",
-    )
-    ownership_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of who has legal authority.",
+    ownership_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Plain-language description of legal authority keyed by language.",
     )
     restrictions_category: str | None = Field(
         default=None,
@@ -1471,21 +1455,13 @@ class HardFilterLegalAssessmentSummary(BaseModel):
         default=None,
         description="Normalized restrictions score when present.",
     )
-    restrictions_description: str | None = Field(
-        default=None,
-        description="English plain-language description of legal barriers or restrictions.",
+    restrictions_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Description of legal barriers or restrictions keyed by language.",
     )
-    restrictions_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of legal barriers or restrictions.",
-    )
-    legal_justification: str | None = Field(
-        default=None,
-        description="Full Spanish legal reasoning for the verdict when present.",
-    )
-    legal_justification_en: str | None = Field(
-        default=None,
-        description="Full English legal reasoning for the verdict when present.",
+    legal_justification: dict[str, str] = Field(
+        default_factory=dict,
+        description="Full legal reasoning for the verdict keyed by language.",
     )
     legal_references: list[str] = Field(
         default_factory=list,
@@ -1543,13 +1519,9 @@ class RemovedActionLegalEvidence(BaseModel):
         default=None,
         description="Normalized ownership authority score when present.",
     )
-    ownership_description: str | None = Field(
-        default=None,
-        description="English plain-language description of who has legal authority.",
-    )
-    ownership_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of who has legal authority.",
+    ownership_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Plain-language description of legal authority keyed by language.",
     )
     restrictions_category: str | None = Field(
         default=None,
@@ -1559,21 +1531,13 @@ class RemovedActionLegalEvidence(BaseModel):
         default=None,
         description="Normalized restrictions score when present.",
     )
-    restrictions_description: str | None = Field(
-        default=None,
-        description="English plain-language description of legal barriers or restrictions.",
+    restrictions_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Description of legal barriers or restrictions keyed by language.",
     )
-    restrictions_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of legal barriers or restrictions.",
-    )
-    legal_justification: str | None = Field(
-        default=None,
-        description="Full Spanish legal reasoning for the verdict when present.",
-    )
-    legal_justification_en: str | None = Field(
-        default=None,
-        description="Full English legal reasoning for the verdict when present.",
+    legal_justification: dict[str, str] = Field(
+        default_factory=dict,
+        description="Full legal reasoning for the verdict keyed by language.",
     )
     legal_references: list[str] = Field(
         default_factory=list,

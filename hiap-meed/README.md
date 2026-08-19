@@ -659,14 +659,20 @@ Example response:
                 "component_source": "verdict_score",
                 "ownership_category": "enabled",
                 "ownership_score": 1.0,
-                "ownership_description": "Municipality has explicit legal authority to act directly.",
-                "ownership_description_es": "El municipio cuenta con competencia legal expresa para actuar de forma directa.",
+                "ownership_description": {
+                  "en": "Municipality has explicit legal authority to act directly.",
+                  "es": "El municipio cuenta con competencia legal expresa para actuar de forma directa."
+                },
                 "restrictions_category": "conditional",
                 "restrictions_score": 0.5,
-                "restrictions_description": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
-                "restrictions_description_es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial.",
-                "legal_justification": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal.",
-                "legal_justification_en": "English legal reasoning text from the legal classification source.",
+                "restrictions_description": {
+                  "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                  "es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial."
+                },
+                "legal_justification": {
+                  "en": "English legal reasoning text from the legal classification source.",
+                  "es": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal."
+                },
                 "legal_references": ["Ley 18.695 (LOCM) - BCN"]
               },
               "mitigation_feasibility": {
@@ -692,12 +698,18 @@ Example response:
           "legal": {
             "verdict_category": "blocked",
             "verdict_score": 0.0,
-            "ownership_description": "Authority belongs to another level of government; municipality cannot act alone.",
-            "ownership_description_es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo.",
-            "restrictions_description": "There is a legal prohibition/restriction, or legal reform is needed.",
-            "restrictions_description_es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa.",
-            "legal_justification": "Texto de razonamiento juridico en espanol.",
-            "legal_justification_en": "English legal reasoning text.",
+            "ownership_description": {
+              "en": "Authority belongs to another level of government; municipality cannot act alone.",
+              "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo."
+            },
+            "restrictions_description": {
+              "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+              "es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa."
+            },
+            "legal_justification": {
+              "en": "English legal reasoning text.",
+              "es": "Texto de razonamiento juridico en espanol."
+            },
             "legal_references": ["Ley 18.695 (LOCM) - BCN"]
           }
         }
@@ -742,10 +754,10 @@ Example response:
 
 When actions are removed before ranking, the prioritization response includes
 them in `removed_actions` for frontend display. Legally blocked rows include a
-`legal` object with the same public legal detail fields used by ranked actions,
-including `ownership_description`, `ownership_description_es`,
-`restrictions_description`, `restrictions_description_es`,
-`legal_justification`, `legal_justification_en`, and `legal_references`.
+`legal` object with the same public legal detail fields used by ranked actions.
+`ownership_description`, `restrictions_description`, and `legal_justification`
+are objects keyed by available language code (for example, `en` and `es`), and
+`legal_references` remains a list.
 The diagnostic `metadata.hard_filter_evidence_by_action_id` map remains
 available for artifact/debug views.
 

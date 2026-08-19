@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
@@ -10,7 +11,10 @@ from uuid import UUID
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,
     ConceptNoteChapterRevision,
+    ConceptNoteEvidenceLink,
+    ConceptNoteExport,
     ConceptNoteGap,
+    ConceptNoteMatchedProject,
 )
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -40,6 +44,14 @@ class WorkspaceChapterSnapshot:
     body_markdown: str | None
     missing_information: list[str]
     revision_number: int | None
+
+
+@dataclass(frozen=True)
+class WorkspaceCopyResult:
+    """Counts needed to publish a duplicated run's draft progress."""
+
+    completed_chapters: int
+    total_chapters: int
 
 
 class ConceptNoteWorkspaceRepository:
@@ -158,6 +170,158 @@ class ConceptNoteWorkspaceRepository:
             )
             return [await _snapshot_chapter(session, chapter) for chapter in chapters]
 
+    async def has_active_export(self, *, run_id: UUID) -> bool:
+        """Return whether an export is still producing an artifact for the run."""
+        async with self._session_factory() as session:
+            export_id = await session.scalar(
+                select(ConceptNoteExport.export_id)
+                .where(
+                    ConceptNoteExport.run_id == run_id,
+                    ConceptNoteExport.status.in_({"queued", "running", "processing"}),
+                )
+                .limit(1)
+            )
+            return export_id is not None
+
+    async def copy_working_copy(
+        self,
+        *,
+        source_run_id: UUID,
+        destination_run_id: UUID,
+    ) -> WorkspaceCopyResult:
+        """Replace a destination with an independent copy of current workspace state."""
+        async with self._session_factory() as session, session.begin():
+            # Make retries deterministic after any earlier transaction failure.
+            await _delete_workspace_rows(session, destination_run_id)
+            source_chapters = list(
+                (
+                    await session.scalars(
+                        select(ConceptNoteChapter)
+                        .where(
+                            ConceptNoteChapter.run_id == source_run_id,
+                            ConceptNoteChapter.status != "deleted",
+                        )
+                        .order_by(
+                            ConceptNoteChapter.position.asc(),
+                            ConceptNoteChapter.chapter_id.asc(),
+                        )
+                    )
+                ).all()
+            )
+            chapter_map: dict[UUID, UUID] = {}
+            completed_chapters = 0
+
+            # Copy chapter metadata and only the latest body as revision one.
+            for source_chapter in source_chapters:
+                destination_chapter = ConceptNoteChapter(
+                    run_id=destination_run_id,
+                    template_section_id=source_chapter.template_section_id,
+                    title=source_chapter.title,
+                    position=source_chapter.position,
+                    status=source_chapter.status,
+                    required=source_chapter.required,
+                    user_locked=source_chapter.user_locked,
+                )
+                session.add(destination_chapter)
+                await session.flush()
+                chapter_map[source_chapter.chapter_id] = destination_chapter.chapter_id
+
+                latest = await _latest_revision(session, source_chapter.chapter_id)
+                if latest is not None:
+                    session.add(
+                        ConceptNoteChapterRevision(
+                            chapter_id=destination_chapter.chapter_id,
+                            revision_number=1,
+                            author_type="system",
+                            change_type="draft",
+                            body_markdown=latest.body_markdown,
+                            patch_summary={
+                                "duplicated_from_revision_id": str(latest.revision_id)
+                            },
+                        )
+                    )
+                    completed_chapters += 1
+
+                evidence_links = list(
+                    (
+                        await session.scalars(
+                            select(ConceptNoteEvidenceLink).where(
+                                ConceptNoteEvidenceLink.chapter_id
+                                == source_chapter.chapter_id
+                            )
+                        )
+                    ).all()
+                )
+                for evidence in evidence_links:
+                    session.add(
+                        ConceptNoteEvidenceLink(
+                            chapter_id=destination_chapter.chapter_id,
+                            selected_source_label=evidence.selected_source_label,
+                            source_location=evidence.source_location,
+                            claim_ref=evidence.claim_ref,
+                            quote_or_summary=evidence.quote_or_summary,
+                        )
+                    )
+
+            # Copy run-scoped gaps and remap any chapter relationship.
+            gaps = list(
+                (
+                    await session.scalars(
+                        select(ConceptNoteGap).where(
+                            ConceptNoteGap.run_id == source_run_id
+                        )
+                    )
+                ).all()
+            )
+            for gap in gaps:
+                session.add(
+                    ConceptNoteGap(
+                        run_id=destination_run_id,
+                        chapter_id=(
+                            chapter_map.get(gap.chapter_id)
+                            if gap.chapter_id is not None
+                            else None
+                        ),
+                        field_key=gap.field_key,
+                        severity=gap.severity,
+                        reason=gap.reason,
+                        status=gap.status,
+                    )
+                )
+
+            # Copy selected project matches as independent mutable rows.
+            matches = list(
+                (
+                    await session.scalars(
+                        select(ConceptNoteMatchedProject).where(
+                            ConceptNoteMatchedProject.run_id == source_run_id
+                        )
+                    )
+                ).all()
+            )
+            for match in matches:
+                session.add(
+                    ConceptNoteMatchedProject(
+                        run_id=destination_run_id,
+                        funded_project_id=match.funded_project_id,
+                        decision=match.decision,
+                        fit_rationale=match.fit_rationale,
+                        matched_tags=deepcopy(match.matched_tags),
+                        evidence=deepcopy(match.evidence),
+                        caveats=deepcopy(match.caveats),
+                    )
+                )
+
+            return WorkspaceCopyResult(
+                completed_chapters=completed_chapters,
+                total_chapters=len(source_chapters),
+            )
+
+    async def delete_run(self, *, run_id: UUID) -> None:
+        """Delete every managed workspace row owned by one CA run."""
+        async with self._session_factory() as session, session.begin():
+            await _delete_workspace_rows(session, run_id)
+
 
 async def _latest_revision(
     session: AsyncSession,
@@ -200,6 +364,42 @@ async def _snapshot_chapter(
         body_markdown=latest.body_markdown if latest is not None else None,
         missing_information=gaps,
         revision_number=latest.revision_number if latest is not None else None,
+    )
+
+
+async def _delete_workspace_rows(session: AsyncSession, run_id: UUID) -> None:
+    """Delete one run's workspace in explicit dependency order."""
+    chapter_ids = list(
+        (
+            await session.scalars(
+                select(ConceptNoteChapter.chapter_id).where(
+                    ConceptNoteChapter.run_id == run_id
+                )
+            )
+        ).all()
+    )
+    if chapter_ids:
+        await session.execute(
+            delete(ConceptNoteEvidenceLink).where(
+                ConceptNoteEvidenceLink.chapter_id.in_(chapter_ids)
+            )
+        )
+        await session.execute(
+            delete(ConceptNoteChapterRevision).where(
+                ConceptNoteChapterRevision.chapter_id.in_(chapter_ids)
+            )
+        )
+    await session.execute(
+        delete(ConceptNoteExport).where(ConceptNoteExport.run_id == run_id)
+    )
+    await session.execute(
+        delete(ConceptNoteMatchedProject).where(
+            ConceptNoteMatchedProject.run_id == run_id
+        )
+    )
+    await session.execute(delete(ConceptNoteGap).where(ConceptNoteGap.run_id == run_id))
+    await session.execute(
+        delete(ConceptNoteChapter).where(ConceptNoteChapter.run_id == run_id)
     )
 
 

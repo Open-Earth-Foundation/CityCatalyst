@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import {
   Box,
@@ -28,10 +28,17 @@ import {
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
+import type { ConceptNoteRun } from "@/util/types";
 
 import { ContextTile } from "./context-tile";
+import {
+  ConceptNoteLifecycleDialog,
+  type ConceptNoteLifecycleAction,
+} from "./lifecycle-dialog";
 import { NewConceptNoteDialog } from "./new-concept-note-dialog";
 import { RunCard } from "./run-card";
 import { RunCardSkeleton } from "./run-card-skeleton";
@@ -62,6 +69,13 @@ export function ConceptNoteDashboard({
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [lifecycleDialog, setLifecycleDialog] = useState<{
+    action: ConceptNoteLifecycleAction;
+    run: ConceptNoteRun;
+  } | null>(null);
+  const [duplicatingRunId, setDuplicatingRunId] = useState<string | null>(null);
+  const duplicateKeysRef = useRef(new Map<string, string>());
+  const [duplicateConceptNote] = api.useDuplicateConceptNoteRunMutation();
   const {
     data: runList,
     isError: runsFailed,
@@ -95,6 +109,39 @@ export function ConceptNoteDashboard({
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
   const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
   const hiapConnected = Boolean(cityDashboard?.widgets.hiap);
+
+  async function duplicateRun(run: ConceptNoteRun): Promise<void> {
+    const idempotencyKey =
+      duplicateKeysRef.current.get(run.run_id) ?? crypto.randomUUID();
+    duplicateKeysRef.current.set(run.run_id, idempotencyKey);
+    setDuplicatingRunId(run.run_id);
+    try {
+      await duplicateConceptNote({
+        cityId,
+        idempotencyKey,
+        runId: run.run_id,
+      }).unwrap();
+      duplicateKeysRef.current.delete(run.run_id);
+      toaster.create({
+        title: t("duplicate-success"),
+        description: t("duplicate-success-description"),
+        type: "success",
+        meta: { closable: true },
+      });
+    } catch (error) {
+      toaster.create({
+        title:
+          isFetchBaseQueryError(error) && error.status === 409
+            ? t("duplicate-conflict")
+            : t("duplicate-error"),
+        description: t("lifecycle-retry-description"),
+        type: "error",
+        meta: { closable: true },
+      });
+    } finally {
+      setDuplicatingRunId(null);
+    }
+  }
 
   return (
     <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
@@ -313,6 +360,18 @@ export function ConceptNoteDashboard({
                     progress={progress}
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
                     resumeLabel={t("resume")}
+                    renameLabel={t("rename")}
+                    duplicateLabel={t("duplicate")}
+                    deleteLabel={t("delete")}
+                    duplicateLoading={duplicatingRunId === run.run_id}
+                    lifecycleDisabled={Boolean(duplicatingRunId)}
+                    onRename={() =>
+                      setLifecycleDialog({ action: "rename", run })
+                    }
+                    onDuplicate={() => void duplicateRun(run)}
+                    onDelete={() =>
+                      setLifecycleDialog({ action: "delete", run })
+                    }
                   />
                 );
               })}
@@ -380,6 +439,16 @@ export function ConceptNoteDashboard({
         projectId={city?.projectId ?? null}
         projectName={city?.project?.name ?? null}
       />
+      {lifecycleDialog && (
+        <ConceptNoteLifecycleDialog
+          key={`${lifecycleDialog.action}-${lifecycleDialog.run.run_id}`}
+          action={lifecycleDialog.action}
+          cityId={cityId}
+          lng={lng}
+          run={lifecycleDialog.run}
+          onClose={() => setLifecycleDialog(null)}
+        />
+      )}
     </Box>
   );
 }

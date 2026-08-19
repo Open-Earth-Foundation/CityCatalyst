@@ -65,7 +65,7 @@ export function getConceptNoteSourceFormat(job: {
   return job.model === DIRECT_MARKDOWN_MODEL ? "markdown" : "pdf";
 }
 
-class PdfSourceError extends Error {
+export class PdfSourceError extends Error {
   constructor(
     public readonly code: string,
     message: string,
@@ -178,6 +178,92 @@ export async function registerConceptNoteMarkdownUpload(
   }
 
   return job;
+}
+
+export async function cloneConceptNotePdfOcrBindings(
+  uploads: Array<{
+    sourceUploadId: string;
+    destinationUploadId: string;
+  }>,
+): Promise<void> {
+  if (!uploads.length) return;
+  if (!db.sequelize) throw new Error("Database not initialized");
+
+  await db.sequelize.transaction(async (transaction) => {
+    const sourceJobs = await db.models.PdfOcrJob.findAll({
+      where: {
+        sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+        sourceId: { [Op.in]: uploads.map((upload) => upload.sourceUploadId) },
+      },
+      transaction,
+    });
+    const sources = new Map(sourceJobs.map((job) => [job.sourceId, job]));
+    const now = new Date();
+
+    for (const upload of uploads) {
+      const source = sources.get(upload.sourceUploadId);
+      if (
+        !source ||
+        source.status !== "succeeded" ||
+        !source.resultS3Key ||
+        !source.resultSha256
+      ) {
+        throw new PdfSourceError(
+          "concept_note_source_binding_unavailable",
+          "A completed Concept Note source binding was not found",
+        );
+      }
+      const [destination, created] = await db.models.PdfOcrJob.findOrCreate({
+        where: {
+          sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+          sourceId: upload.destinationUploadId,
+        },
+        defaults: {
+          sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+          sourceId: upload.destinationUploadId,
+          status: "succeeded",
+          attemptCount: 0,
+          model: source.model,
+          pageCount: source.pageCount,
+          resultS3Key: source.resultS3Key,
+          resultSizeBytes: source.resultSizeBytes,
+          resultSha256: source.resultSha256,
+          startedAt: now,
+          completedAt: now,
+          deliveryTarget: "climate_advisor",
+          deliveryStatus: "delivered",
+          deliveryAttemptCount: 0,
+          deliveredAt: now,
+        },
+        transaction,
+      });
+      if (
+        !created &&
+        (destination.status !== "succeeded" ||
+          destination.resultS3Key !== source.resultS3Key ||
+          destination.resultSha256 !== source.resultSha256 ||
+          destination.model !== source.model ||
+          destination.pageCount !== source.pageCount)
+      ) {
+        throw new PdfSourceError(
+          "concept_note_source_binding_conflict",
+          "The duplicated Concept Note source binding does not match",
+        );
+      }
+    }
+  });
+}
+
+export async function deleteConceptNotePdfOcrBindings(
+  uploadIds: string[],
+): Promise<void> {
+  if (!uploadIds.length) return;
+  await db.models.PdfOcrJob.destroy({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: { [Op.in]: uploadIds },
+    },
+  });
 }
 
 function requireDirectMarkdownIdentity(

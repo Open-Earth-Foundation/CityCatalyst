@@ -10,11 +10,19 @@ import type { RunStatusTone } from "./utils";
 
 interface RunCardProps {
   activityLabel: string;
+  deleteLabel: string;
+  duplicateLabel: string;
+  duplicateLoading: boolean;
+  lifecycleDisabled: boolean;
+  onDelete: () => void;
+  onDuplicate: () => void;
+  onRename: () => void;
   progress: number;
   progressLabel: string;
   reducedMotion: boolean;
   resumeHref: string;
   resumeLabel: string;
+  renameLabel: string;
   run: ConceptNoteRun;
   scopeLabel: string;
   statusLabel: string;
@@ -23,11 +31,19 @@ interface RunCardProps {
 
 export function RunCard({
   activityLabel,
+  deleteLabel,
+  duplicateLabel,
+  duplicateLoading,
+  lifecycleDisabled,
+  onDelete,
+  onDuplicate,
+  onRename,
   progress,
   progressLabel,
   reducedMotion,
   resumeHref,
   resumeLabel,
+  renameLabel,
   run,
   scopeLabel,
   statusLabel,
@@ -96,7 +112,7 @@ export function RunCard({
             </Text>
           </Flex>
           <Box
-            h="4px"
+            h="8px"
             overflow="hidden"
             borderRadius="pill"
             bg="background.neutral"
@@ -105,7 +121,7 @@ export function RunCard({
               h="full"
               w={`${progress}%`}
               borderRadius="pill"
-              bg="content.link"
+              bg="sentiment.positiveDefault"
               transition="width 180ms ease"
               _motionReduce={{ transition: "none" }}
             />
@@ -121,9 +137,51 @@ export function RunCard({
           {activityLabel}
         </Text>
 
-        <HStack mt="auto">
-          <Button asChild size="sm" variant="solid">
-            <NextLink href={resumeHref}>{resumeLabel}</NextLink>
+        <HStack mt="auto" gap={2} flexWrap="wrap">
+          <Button asChild size="sm" variant="solid" h="32px" px="14px" py="8px">
+            <NextLink
+              href={resumeHref}
+              aria-label={`${resumeLabel}: ${run.name}`}
+            >
+              {resumeLabel}
+            </NextLink>
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            h="32px"
+            px="14px"
+            py="8px"
+            onClick={onRename}
+            disabled={lifecycleDisabled}
+            aria-label={`${renameLabel}: ${run.name}`}
+          >
+            {renameLabel}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            h="32px"
+            px="14px"
+            py="8px"
+            onClick={onDuplicate}
+            loading={duplicateLoading}
+            disabled={lifecycleDisabled}
+            aria-label={`${duplicateLabel}: ${run.name}`}
+          >
+            {duplicateLabel}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            h="32px"
+            px="14px"
+            py="8px"
+            onClick={onDelete}
+            disabled={lifecycleDisabled}
+            aria-label={`${deleteLabel}: ${run.name}`}
+          >
+            {deleteLabel}
           </Button>
         </HStack>
       </VStack>

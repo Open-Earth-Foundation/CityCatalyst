@@ -29,18 +29,20 @@ import { z } from "zod";
 
 import {
   callConceptNoteApi,
+  conceptNoteRunResponse,
   readConceptNoteApiPayload,
 } from "@/backend/concept-notes";
-import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 
 const paramsSchema = z.object({
   runId: z.string().uuid(),
 });
 
-const upstreamRunSchema = z.object({
-  city_id: z.string().uuid(),
+const renameSchema = z.object({
+  name: z.string().trim().min(1).max(120),
 });
+
+const idempotencyKeySchema = z.string().uuid();
 
 export const GET = apiHandler(async (req, { session, params }) => {
   if (!session?.user?.id) {
@@ -54,19 +56,45 @@ export const GET = apiHandler(async (req, { session, params }) => {
     requestId: req.headers.get("x-request-id")?.trim() || undefined,
     searchParams: { user_id: session.user.id },
   });
-  const payload = await readConceptNoteApiPayload(response);
+  return conceptNoteRunResponse(response, session);
+});
 
-  if (response.ok) {
-    const run = upstreamRunSchema.safeParse(payload);
-    if (!run.success) {
-      throw new createHttpError.BadGateway(
-        "Climate Advisor returned an invalid concept-note run",
-      );
-    }
-    await PermissionService.canAccessCity(session, run.data.city_id, {
-      includeResource: false,
-    });
+export const PATCH = apiHandler(async (req, { session, params }) => {
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("Authentication required");
   }
+  const { runId } = paramsSchema.parse(params);
+  const body = renameSchema.parse(await req.json());
+  const response = await callConceptNoteApi({
+    path: `/v1/concept-notes/${runId}`,
+    userId: session.user.id,
+    method: "PATCH",
+    body,
+    requestId: req.headers.get("x-request-id")?.trim() || undefined,
+    searchParams: { user_id: session.user.id },
+  });
+  return conceptNoteRunResponse(response, session);
+});
 
+export const DELETE = apiHandler(async (req, { session, params }) => {
+  if (!session?.user?.id) {
+    throw new createHttpError.Unauthorized("Authentication required");
+  }
+  const { runId } = paramsSchema.parse(params);
+  const idempotencyKey = idempotencyKeySchema.parse(
+    req.headers.get("Idempotency-Key"),
+  );
+  const response = await callConceptNoteApi({
+    path: `/v1/concept-notes/${runId}`,
+    userId: session.user.id,
+    method: "DELETE",
+    headers: { "Idempotency-Key": idempotencyKey },
+    requestId: req.headers.get("x-request-id")?.trim() || undefined,
+    searchParams: { user_id: session.user.id },
+  });
+  if (response.status === 204) {
+    return new Response(null, { status: 204 });
+  }
+  const payload = await readConceptNoteApiPayload(response);
   return NextResponse.json(payload, { status: response.status });
 });

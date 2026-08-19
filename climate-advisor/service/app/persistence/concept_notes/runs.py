@@ -122,6 +122,7 @@ class ConceptNoteRunRepository:
             select(ConceptNoteRun).where(
                 ConceptNoteRun.run_id == run_id,
                 ConceptNoteRun.user_id == user_id,
+                ConceptNoteRun.lifecycle_state == "active",
             )
         )
         return result.scalar_one_or_none()
@@ -138,6 +139,7 @@ class ConceptNoteRunRepository:
             .where(
                 ConceptNoteRun.user_id == user_id,
                 ConceptNoteRun.city_id == city_id,
+                ConceptNoteRun.lifecycle_state == "active",
             )
             .order_by(
                 ConceptNoteRun.updated_at.desc(),

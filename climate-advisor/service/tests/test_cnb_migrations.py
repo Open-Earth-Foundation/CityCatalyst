@@ -92,6 +92,9 @@ def test_ca_migration_chain_renames_selected_opportunity_reference() -> None:
         f"ALTER TABLE concept_note_runs RENAME {legacy_column} "
         "TO selected_funding_opportunity_id;"
     ) in sql
+    assert "ADD COLUMN lifecycle_state VARCHAR(32) DEFAULT 'active' NOT NULL" in sql
+    assert "CREATE TABLE concept_note_lifecycle_operations" in sql
+    assert "uq_concept_note_lifecycle_source_incomplete" in sql
 
 
 def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:

@@ -2211,6 +2211,45 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
+      renameConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; name: string; runId: string }
+      >({
+        query: ({ name, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "PATCH",
+          body: { name },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      duplicateConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}/duplicate`,
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      deleteConceptNoteRun: builder.mutation<
+        void,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "DELETE",
+          headers: { "Idempotency-Key": idempotencyKey },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
       uploadConceptNoteSource: builder.mutation<
         ConceptNoteUploadResponse,
         ConceptNoteUploadRequest
@@ -2418,6 +2457,9 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useRenameConceptNoteRunMutation,
+  useDuplicateConceptNoteRunMutation,
+  useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

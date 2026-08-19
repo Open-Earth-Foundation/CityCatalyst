@@ -646,7 +646,9 @@ normalized request returns the original run with HTTP `200` and
 `created: false`; using that key with different input returns HTTP `409`.
 
 `GET /v1/concept-notes?user_id=...&city_id=...` validates the same token identity
-and live city access, then returns only that user's runs for the selected city.
+and live city access, then returns only that user's active runs for the selected
+city. Runs in the internal `copying` or `deleting` lifecycle states stay hidden
+until the operation either publishes the copy or finishes deletion.
 Runs are ordered by `updated_at`, `created_at`, and `run_id`, all descending, so
 the result is stable and most-recently-updated first. Upload registration and
 failed, retry, or ready lifecycle transitions refresh the parent run's
@@ -656,9 +658,24 @@ copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
 revalidates current city access before responding. It exposes the same persisted
-status, workflow step, and progress summary as the list contract. The Alembic
-revision `20260729_120000` provisions `concept_note_runs`,
-`concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
+status, workflow step, and progress summary as the list contract. `PATCH` on the
+same route accepts a trimmed 1-120 character `name` and updates both the run and
+its dedicated thread title.
+
+`POST /v1/concept-notes/{run_id}/duplicate` and
+`DELETE /v1/concept-notes/{run_id}` require `Idempotency-Key`. Both reject active
+context builds, draft generation, exports, or another lifecycle operation with
+HTTP `409`. Duplicate creates a hidden run with new run, thread, upload, chapter,
+gap, evidence, and match identifiers; it copies only current chapter content and
+context while omitting messages, revision history, exports, task state, and old
+idempotency data. Delete removes the run workspace, run-specific source bindings,
+and dedicated conversation while retaining shared source artifacts and city
+files. A legacy thread referenced by multiple notes cannot be deleted.
+
+The Alembic revisions `20260729_120000` and `20260819_120000` provision the run,
+context, upload, lifecycle-state, and durable lifecycle-operation records in
+`CA_DATABASE_URL`. Completed delete operations retain only the minimal operation
+tombstone needed to make retries return success.
 When `thread_id` is supplied, the start operation also requires that durable
 chat thread to belong to the authenticated user; it remains an integration
 identifier rather than a run-table foreign key. The authorized `run_id` is also
@@ -670,10 +687,12 @@ workflow identifier while preserving tokens and unrelated thread context.
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,
 `GET /api/v1/concept-notes?city_id=...`, and
-`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the session,
-checks city access, issues the scoped CA token server-side, and preserves Climate
-Advisor response statuses. The CityCatalyst dashboard consumes the collection
-route; its implementation details live in the repository architecture guide.
+`GET|PATCH|DELETE /api/v1/concept-notes/{runId}`, plus
+`POST /api/v1/concept-notes/{runId}/duplicate`. The proxy derives `user_id` from
+the session, checks city access, forwards idempotency headers, issues the scoped
+CA token server-side, and preserves Climate Advisor response statuses. The
+CityCatalyst dashboard consumes these routes; its implementation details live in
+the repository architecture guide.
 
 ### Concept Note city-context baseline
 

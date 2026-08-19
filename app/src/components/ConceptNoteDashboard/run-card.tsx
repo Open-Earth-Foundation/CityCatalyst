@@ -1,6 +1,16 @@
-import { Box, Flex, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import {
+  Box,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  IconButton,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import NextLink from "next/link";
+import { LuPencil } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import type { ConceptNoteRun } from "@/util/types";
@@ -13,9 +23,11 @@ interface RunCardProps {
   deleteLabel: string;
   duplicateLabel: string;
   duplicateLoading: boolean;
+  exportLabel: string;
   lifecycleDisabled: boolean;
   onDelete: () => void;
   onDuplicate: () => void;
+  onExport: () => void;
   onRename: () => void;
   progress: number;
   progressLabel: string;
@@ -34,9 +46,11 @@ export function RunCard({
   deleteLabel,
   duplicateLabel,
   duplicateLoading,
+  exportLabel,
   lifecycleDisabled,
   onDelete,
   onDuplicate,
+  onExport,
   onRename,
   progress,
   progressLabel,
@@ -75,17 +89,33 @@ export function RunCard({
         _motionReduce={{ transition: "none" }}
       >
         <Flex align="start" justify="space-between" gap={3}>
-          <Heading
-            as="h2"
-            minW={0}
-            fontFamily="heading"
-            fontSize="title.sm"
-            fontWeight="semibold"
-            lineHeight="20"
-            color="content.primary"
-          >
-            {run.name}
-          </Heading>
+          <HStack minW={0} gap={1}>
+            <Heading
+              as="h2"
+              minW={0}
+              fontFamily="heading"
+              fontSize="title.sm"
+              fontWeight="semibold"
+              lineHeight="20"
+              color="content.primary"
+            >
+              {run.name}
+            </Heading>
+            <IconButton
+              flexShrink={0}
+              size="xs"
+              variant="ghost"
+              boxSize="24px"
+              minW="24px"
+              color="content.tertiary"
+              onClick={onRename}
+              disabled={lifecycleDisabled}
+              aria-label={`${renameLabel}: ${run.name}`}
+              _hover={{ color: "content.link", bg: "background.neutral" }}
+            >
+              <Icon as={LuPencil} boxSize={3.5} />
+            </IconButton>
+          </HStack>
           <StatusBadge label={statusLabel} tone={statusTone} />
         </Flex>
 
@@ -152,24 +182,26 @@ export function RunCard({
             h="32px"
             px="14px"
             py="8px"
-            onClick={onRename}
-            disabled={lifecycleDisabled}
-            aria-label={`${renameLabel}: ${run.name}`}
-          >
-            {renameLabel}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            h="32px"
-            px="14px"
-            py="8px"
             onClick={onDuplicate}
             loading={duplicateLoading}
             disabled={lifecycleDisabled}
             aria-label={`${duplicateLabel}: ${run.name}`}
           >
             {duplicateLabel}
+          </Button>
+          <Button
+            size="sm"
+            variant="solid"
+            h="32px"
+            px="14px"
+            py="8px"
+            bg="sentiment.positiveDefault"
+            color="base.light"
+            onClick={onExport}
+            disabled={lifecycleDisabled}
+            aria-label={`${exportLabel}: ${run.name}`}
+          >
+            {exportLabel}
           </Button>
           <Button
             size="sm"

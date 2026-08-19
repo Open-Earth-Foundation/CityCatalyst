@@ -34,6 +34,7 @@ import { api } from "@/services/api";
 import { isFetchBaseQueryError } from "@/util/helpers";
 import type { ConceptNoteRun } from "@/util/types";
 
+import { ExportDialog } from "../ConceptNoteWorkspace/export-dialog";
 import { ContextTile } from "./context-tile";
 import {
   ConceptNoteLifecycleDialog,
@@ -46,6 +47,7 @@ import { StatusBadge } from "./status-badge";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
+  getConceptNoteBundleProgress,
   getRunProgressPercent,
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
@@ -73,6 +75,7 @@ export function ConceptNoteDashboard({
     action: ConceptNoteLifecycleAction;
     run: ConceptNoteRun;
   } | null>(null);
+  const [exportRun, setExportRun] = useState<ConceptNoteRun | null>(null);
   const [duplicatingRunId, setDuplicatingRunId] = useState<string | null>(null);
   const duplicateKeysRef = useRef(new Map<string, string>());
   const [duplicateConceptNote] = api.useDuplicateConceptNoteRunMutation();
@@ -90,6 +93,10 @@ export function ConceptNoteDashboard({
     api.useGetUserFilesQuery(cityId);
   const { data: cityDashboard, isLoading: modulesLoading } =
     api.useGetCityDashboardQuery({ cityId, lng });
+  const { currentData: exportDraft } = api.useGetConceptNoteDraftQuery(
+    exportRun?.run_id ?? "",
+    { skip: !exportRun },
+  );
 
   const runs = runList?.runs ?? [];
   const cityFiles = files ?? [];
@@ -109,6 +116,9 @@ export function ConceptNoteDashboard({
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
   const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
   const hiapConnected = Boolean(cityDashboard?.widgets.hiap);
+  const exportBundle = exportRun
+    ? getConceptNoteBundleProgress(exportRun.progress_summary)
+    : null;
 
   async function duplicateRun(run: ConceptNoteRun): Promise<void> {
     const idempotencyKey =
@@ -362,6 +372,7 @@ export function ConceptNoteDashboard({
                     resumeLabel={t("resume")}
                     renameLabel={t("rename")}
                     duplicateLabel={t("duplicate")}
+                    exportLabel={t("export")}
                     deleteLabel={t("delete")}
                     duplicateLoading={duplicatingRunId === run.run_id}
                     lifecycleDisabled={Boolean(duplicatingRunId)}
@@ -369,6 +380,7 @@ export function ConceptNoteDashboard({
                       setLifecycleDialog({ action: "rename", run })
                     }
                     onDuplicate={() => void duplicateRun(run)}
+                    onExport={() => setExportRun(run)}
                     onDelete={() =>
                       setLifecycleDialog({ action: "delete", run })
                     }
@@ -447,6 +459,19 @@ export function ConceptNoteDashboard({
           lng={lng}
           run={lifecycleDialog.run}
           onClose={() => setLifecycleDialog(null)}
+        />
+      )}
+      {exportRun && (
+        <ExportDialog
+          draft={exportDraft ?? null}
+          hasGroundedSources={
+            exportBundle?.contextMode === "grounded" &&
+            exportBundle.readySources > 0
+          }
+          lng={lng}
+          noteName={exportRun.name}
+          open
+          onOpenChange={(open) => !open && setExportRun(null)}
         />
       )}
     </Box>

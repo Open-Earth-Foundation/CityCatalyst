@@ -6,8 +6,6 @@ import {
   it,
   jest,
 } from "@jest/globals";
-import { ZodError } from "zod";
-
 const ownerId = "owner-user";
 const cityId = "11111111-1111-4111-8111-111111111111";
 const runId = "22222222-2222-4222-8222-222222222222";
@@ -113,7 +111,6 @@ describe("Concept Note lifecycle proxy routes", () => {
     const response = await deleteRun(
       new Request("http://localhost", {
         method: "DELETE",
-        headers: { "Idempotency-Key": idempotencyKey },
       }),
       context,
     );
@@ -124,13 +121,12 @@ describe("Concept Note lifecycle proxy routes", () => {
       path: `/v1/concept-notes/${runId}`,
       userId: ownerId,
       method: "DELETE",
-      headers: { "Idempotency-Key": idempotencyKey },
       requestId: undefined,
       searchParams: { user_id: ownerId },
     });
   });
 
-  it("requires authentication and a valid idempotency key", async () => {
+  it("requires authentication", async () => {
     await expect(
       duplicateRun(
         new Request("http://localhost", {
@@ -141,15 +137,6 @@ describe("Concept Note lifecycle proxy routes", () => {
       ),
     ).rejects.toMatchObject({ statusCode: 401 });
 
-    await expect(
-      deleteRun(
-        new Request("http://localhost", {
-          method: "DELETE",
-          headers: { "Idempotency-Key": "not-a-uuid" },
-        }),
-        context,
-      ),
-    ).rejects.toBeInstanceOf(ZodError);
     expect(callConceptNoteApi).not.toHaveBeenCalled();
   });
 });

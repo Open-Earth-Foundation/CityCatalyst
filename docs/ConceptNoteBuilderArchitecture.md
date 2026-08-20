@@ -796,7 +796,6 @@ the workspace and can use internal foreign keys.
 erDiagram
     concept_note_runs ||--|| concept_note_context_bundles : "stores"
     concept_note_runs ||--o{ concept_note_uploads : "has"
-    concept_note_runs ||--o{ concept_note_lifecycle_operations : "coordinates"
     concept_note_runs ||--o{ concept_note_chapters : "contains"
     concept_note_runs ||--o{ concept_note_gaps : "tracks"
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
@@ -814,8 +813,6 @@ erDiagram
         uuid funder_id
         uuid selected_funding_opportunity_id
         string status
-        string lifecycle_state "active, copying, or deleting"
-        uuid duplicated_from_run_id
         string workflow_step
         jsonb context_summary
         jsonb permission_summary
@@ -846,20 +843,6 @@ erDiagram
     concept_note_context_bundles {
         uuid run_id
         jsonb context_bundle
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    concept_note_lifecycle_operations {
-        uuid operation_id
-        string user_id
-        string city_id
-        uuid source_run_id
-        uuid destination_run_id
-        string kind "duplicate or delete"
-        uuid idempotency_key
-        string phase
-        jsonb operation_data
         timestamp created_at
         timestamp updated_at
     }
@@ -942,17 +925,9 @@ their source records:
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
 dedicated chat thread. It deliberately has no database foreign key so legacy
-thread bindings remain compatible, but lifecycle operations update or delete the
-owned thread in the same CA database transaction as the run. CityCatalyst
-validates thread ownership before passing the identifier into the workflow.
-
-`concept_note_lifecycle_operations` is a durable cross-storage coordinator, not
-user-visible run state. A partial unique index permits only one unfinished
-operation per source run. The destination stays in `copying` and the source in
-`deleting`, so dashboard reads expose neither partial copies nor half-deleted
-runs. The last committed phase is the retry marker; completion publishes the
-copy or removes the run and leaves only the operation tombstone. No archive state
-or restore contract exists for a concept-note run.
+thread bindings remain compatible. Rename updates the owned thread title and
+delete removes the dedicated thread. CityCatalyst validates thread ownership
+before passing the identifier into the workflow.
 
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
@@ -1554,20 +1529,18 @@ CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
 The CityCatalyst dashboard consumes this contract at
-`/{lng}/cities/{cityId}/concept-notes`. Each card exposes the direct visible
-actions Resume, Rename, Duplicate, and Delete. Rename uses the single-run patch
-contract; Duplicate remains on the dashboard while its independent working copy
-is created; Delete requires permanent-deletion confirmation and removes the card
-only after server confirmation. Resume carries the durable run ID and loads the
-authorized single-run detail before continuing.
+`/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
+Export, and Delete, with a compact rename button beside the title. Rename uses
+the single-run patch contract; Duplicate remains on the dashboard while its
+working copy is created; Delete requires permanent-deletion confirmation and
+removes the card only after server confirmation. Resume carries the durable run
+ID and loads the authorized single-run detail before continuing.
 
-Duplicate and delete use a durable operation row to cross the CA workflow,
-managed CNB workspace, and CityCatalyst OCR-binding stores. Duplicate creates a
-fresh thread and new mutable record IDs, remaps selected upload references, and
-reuses immutable OCR artifacts only through new run-specific bindings. Delete
-orders workspace deletion, binding cleanup, and CA run/thread removal so every
-completed phase can be retried safely. Shared city/project files and immutable
-source artifacts are outside the deletion boundary.
+Duplicate creates a fresh thread, copies current context and chapter content
+into new mutable records, and reuses immutable Markdown artifacts by key. Delete
+removes the managed workspace before deleting the CA run and dedicated thread.
+Shared city/project files and immutable source artifacts remain outside the
+deletion boundary. No archive or restore state is added.
 
 The dashboard and wiring pages are hidden unless both
 `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` are present in
@@ -2339,7 +2312,6 @@ file layout.
 | Chat thread/message storage   | CityCatalyst                     | Persists durable conversation state and supplies the authorized `thread_id` to the CNB workflow as a cross-database integration identifier.                                                                                                                    |
 | Workflow orchestration        | Climate Advisor                  | Starts/resumes runs, resolves active step, scopes tools, streams responses.                                                                                                                                                                                    |
 | CA workflow foundation        | Climate Advisor                  | The existing Alembic chain provisions and accesses `concept_note_runs`, `concept_note_context_bundles`, and `concept_note_uploads` through `CA_DATABASE_URL`.                                                                                                  |
-| Run lifecycle coordination    | Climate Advisor                  | Persists rename, duplicate, and permanent-delete phases in `concept_note_lifecycle_operations`; hides transitional runs and resumes cross-storage work by idempotency key.                                                                                     |
 | CNB workspace schema/access   | Climate Advisor repository       | The independent CNB chain owns chapters, revisions, gaps, evidence links, matches, and exports; externally operated infrastructure supplies `CNB_DATABASE_URL`.                                                                                                |
 | Funding reference access      | Climate Advisor repository       | The CNB chain owns the funder/reference schema; the importer writes reviewed projects/evidence and runtime matching reads the complete requested funder scope before bounded shortlist ranking. Curated data remains externally managed.                       |
 | Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                            |

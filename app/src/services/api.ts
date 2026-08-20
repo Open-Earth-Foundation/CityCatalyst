@@ -2239,12 +2239,11 @@ export const api = createApi({
       }),
       deleteConceptNoteRun: builder.mutation<
         void,
-        { cityId: string; idempotencyKey: string; runId: string }
+        { cityId: string; runId: string }
       >({
-        query: ({ idempotencyKey, runId }) => ({
+        query: ({ runId }) => ({
           url: `concept-notes/${runId}`,
           method: "DELETE",
-          headers: { "Idempotency-Key": idempotencyKey },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },

@@ -161,7 +161,6 @@ async def duplicate_concept_note_run(
 async def delete_concept_note_run(
     run_id: UUID,
     user_id: str = Query(..., min_length=1),
-    idempotency_key: UUID = Header(alias="Idempotency-Key"),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
 ) -> Response:
@@ -169,7 +168,6 @@ async def delete_concept_note_run(
     service = ConceptNoteLifecycleService(session)
     await service.delete_run(
         run_id=run_id,
-        idempotency_key=idempotency_key,
         requested_user_id=user_id,
         authorization=authorization,
     )

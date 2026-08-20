@@ -170,19 +170,6 @@ class ConceptNoteWorkspaceRepository:
             )
             return [await _snapshot_chapter(session, chapter) for chapter in chapters]
 
-    async def has_active_export(self, *, run_id: UUID) -> bool:
-        """Return whether an export is still producing an artifact for the run."""
-        async with self._session_factory() as session:
-            export_id = await session.scalar(
-                select(ConceptNoteExport.export_id)
-                .where(
-                    ConceptNoteExport.run_id == run_id,
-                    ConceptNoteExport.status.in_({"queued", "running", "processing"}),
-                )
-                .limit(1)
-            )
-            return export_id is not None
-
     async def copy_working_copy(
         self,
         *,

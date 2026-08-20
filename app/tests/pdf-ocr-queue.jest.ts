@@ -15,7 +15,6 @@ type MockTransaction = { LOCK: { UPDATE: string } };
 const findOrCreate = jest.fn<AsyncMock>();
 const findOne = jest.fn<AsyncMock>();
 const findAll = jest.fn<AsyncMock>();
-const destroy = jest.fn<AsyncMock>();
 const pdfOcrUpdate = jest.fn<AsyncMock>();
 const transaction =
   jest.fn<
@@ -25,17 +24,6 @@ const transaction =
   >();
 const importedFindAll = jest.fn<AsyncMock>();
 const importedFindByPk = jest.fn<AsyncMock>();
-const sourceUploadId = "22222222-2222-4222-8222-222222222222";
-const destinationUploadId = "33333333-3333-4333-8333-333333333333";
-const sourceBinding = {
-  sourceId: sourceUploadId,
-  status: "succeeded",
-  model: "mistral-ocr-latest",
-  pageCount: 3,
-  resultS3Key: "pdf-ocr/results/source/combined_markdown.md",
-  resultSizeBytes: 1024,
-  resultSha256: "a".repeat(64),
-};
 const importedUpdate = jest.fn<AsyncMock>();
 const inventoryFindByPk = jest.fn<AsyncMock>();
 const getTextFile = jest.fn<AsyncMock>();
@@ -48,13 +36,7 @@ jest.unstable_mockModule("@/models", () => ({
   db: {
     sequelize: { transaction },
     models: {
-      PdfOcrJob: {
-        findOrCreate,
-        findOne,
-        findAll,
-        destroy,
-        update: pdfOcrUpdate,
-      },
+      PdfOcrJob: { findOrCreate, findOne, findAll, update: pdfOcrUpdate },
       ImportedInventoryFile: {
         findAll: importedFindAll,
         findByPk: importedFindByPk,
@@ -83,8 +65,6 @@ let enqueueConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").enqueueCo
 let conceptNotePdfSourceKey: typeof import("@/backend/PdfOcrService").conceptNotePdfSourceKey;
 let normalizeConceptNoteMarkdown: typeof import("@/backend/PdfOcrService").normalizeConceptNoteMarkdown;
 let registerConceptNoteMarkdownUpload: typeof import("@/backend/PdfOcrService").registerConceptNoteMarkdownUpload;
-let cloneConceptNotePdfOcrBindings: typeof import("@/backend/PdfOcrService").cloneConceptNotePdfOcrBindings;
-let deleteConceptNotePdfOcrBindings: typeof import("@/backend/PdfOcrService").deleteConceptNotePdfOcrBindings;
 let retryConceptNotePdfOcr: typeof import("@/backend/PdfOcrService").retryConceptNotePdfOcr;
 let normalizeConceptNotePdfOcrStatus: typeof import("@/backend/PdfOcrService").normalizeConceptNotePdfOcrStatus;
 let claimPdfOcrJobs: typeof import("@/backend/PdfOcrService").claimPdfOcrJobs;
@@ -99,8 +79,6 @@ beforeAll(async () => {
     conceptNotePdfSourceKey,
     normalizeConceptNoteMarkdown,
     registerConceptNoteMarkdownUpload,
-    cloneConceptNotePdfOcrBindings,
-    deleteConceptNotePdfOcrBindings,
     retryConceptNotePdfOcr,
     normalizeConceptNotePdfOcrStatus,
     claimPdfOcrJobs,
@@ -207,63 +185,6 @@ describe("PdfOcrJob queue", () => {
         }),
       }),
     );
-  });
-
-  it("clones only the run binding while reusing the immutable result", async () => {
-    findAll.mockResolvedValue([sourceBinding]);
-    findOrCreate.mockResolvedValue([
-      {
-        ...sourceBinding,
-        sourceId: destinationUploadId,
-        deliveryStatus: "delivered",
-      },
-      true,
-    ]);
-
-    await cloneConceptNotePdfOcrBindings([
-      { sourceUploadId, destinationUploadId },
-    ]);
-
-    expect(findOrCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: {
-          sourceType: "concept_note_upload",
-          sourceId: destinationUploadId,
-        },
-        defaults: expect.objectContaining({
-          resultS3Key: sourceBinding.resultS3Key,
-          resultSha256: sourceBinding.resultSha256,
-          deliveryStatus: "delivered",
-        }),
-      }),
-    );
-    expect(putTextFile).not.toHaveBeenCalled();
-  });
-
-  it("rejects a conflicting duplicate binding and deletes only metadata", async () => {
-    findAll.mockResolvedValue([sourceBinding]);
-    findOrCreate.mockResolvedValue([
-      {
-        ...sourceBinding,
-        sourceId: destinationUploadId,
-        resultSha256: "b".repeat(64),
-      },
-      false,
-    ]);
-
-    await expect(
-      cloneConceptNotePdfOcrBindings([{ sourceUploadId, destinationUploadId }]),
-    ).rejects.toMatchObject({ code: "concept_note_source_binding_conflict" });
-
-    destroy.mockResolvedValue(1);
-    await deleteConceptNotePdfOcrBindings([destinationUploadId]);
-    expect(destroy).toHaveBeenCalledWith({
-      where: {
-        sourceType: "concept_note_upload",
-        sourceId: { [Op.in]: [destinationUploadId] },
-      },
-    });
-    expect(putTextFile).not.toHaveBeenCalled();
   });
 
   it("rejects changed Markdown identity before replacing an existing artifact", async () => {

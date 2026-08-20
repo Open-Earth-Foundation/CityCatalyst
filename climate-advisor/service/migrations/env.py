@@ -46,7 +46,6 @@ from app.models.db.stationary_energy_draft import (  # noqa: F401
 )
 from app.models.db.concept_note import (  # noqa: F401
     ConceptNoteContextBundle,
-    ConceptNoteLifecycleOperation,
     ConceptNoteRun,
     ConceptNoteUpload,
 )

@@ -43,7 +43,6 @@ export function ConceptNoteLifecycleDialog({
   const { t } = useTranslation(lng, "concept-notes");
   const inputRef = useRef<HTMLInputElement>(null);
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const idempotencyKey = useRef(crypto.randomUUID());
   const [name, setName] = useState(run.name);
   const [error, setError] = useState<string | null>(null);
   const [renameRun, renameState] = api.useRenameConceptNoteRunMutation();
@@ -76,7 +75,6 @@ export function ConceptNoteLifecycleDialog({
     try {
       await deleteRun({
         cityId,
-        idempotencyKey: idempotencyKey.current,
         runId: run.run_id,
       }).unwrap();
       toaster.create({ title: t("delete-success"), type: "success" });

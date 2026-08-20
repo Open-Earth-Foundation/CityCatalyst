@@ -42,8 +42,6 @@ const renameSchema = z.object({
   name: z.string().trim().min(1).max(120),
 });
 
-const idempotencyKeySchema = z.string().uuid();
-
 export const GET = apiHandler(async (req, { session, params }) => {
   if (!session?.user?.id) {
     throw new createHttpError.Unauthorized("Authentication required");
@@ -81,14 +79,10 @@ export const DELETE = apiHandler(async (req, { session, params }) => {
     throw new createHttpError.Unauthorized("Authentication required");
   }
   const { runId } = paramsSchema.parse(params);
-  const idempotencyKey = idempotencyKeySchema.parse(
-    req.headers.get("Idempotency-Key"),
-  );
   const response = await callConceptNoteApi({
     path: `/v1/concept-notes/${runId}`,
     userId: session.user.id,
     method: "DELETE",
-    headers: { "Idempotency-Key": idempotencyKey },
     requestId: req.headers.get("x-request-id")?.trim() || undefined,
     searchParams: { user_id: session.user.id },
   });

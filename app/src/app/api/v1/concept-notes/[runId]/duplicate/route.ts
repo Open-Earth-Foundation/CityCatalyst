@@ -5,6 +5,13 @@
  *     operationId: duplicateConceptNoteRun
  *     summary: Create an independent working copy of a concept note
  *     tags: [concept-notes]
+ *     parameters:
+ *       - in: path
+ *         name: runId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     responses:
  *       201:
  *         description: Working copy created

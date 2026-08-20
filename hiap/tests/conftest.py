@@ -26,6 +26,7 @@ _TEST_ENV_DEFAULTS = {
     "OPENAI_MODEL_NAME_PLAN_CREATOR": "gpt-test",
     "OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY": "gpt-test",
     "OPENAI_MODEL_NAME_PLAN_TRANSLATION": "gpt-test",
+    "OPENAI_MODEL_NAME_WEB_SEARCH": "gpt-test-search",
     "LANGCHAIN_PROJECT_NAME_PRIORITIZER": "hiap-test-prioritizer",
     "LANGCHAIN_PROJECT_NAME_PLAN_TRANSLATION": "hiap-test-plan-translation",
 }

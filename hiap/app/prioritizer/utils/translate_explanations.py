@@ -146,7 +146,7 @@ def translate_explanation_text(
                         "content": user_payload,
                     },
                 ],
-                temperature=0,
+                reasoning_effort="none",
                 response_format=TranslationModel,
                 timeout=_get_openai_timeout_seconds(),
             )

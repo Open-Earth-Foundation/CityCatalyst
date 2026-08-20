@@ -138,7 +138,7 @@
   "plan-generation-started": "Generación de Plan Iniciada",
   "plan-generation-started-description": "Su plan de acción se está generando. Recibirá una notificación por email cuando esté listo.",
   "plan-generation-failed": "Falló la Generación",
-  "plan-generation-failed-description": "Falló al iniciar la generación del plan. Por favor, inténtelo de nuevo.",
+  "plan-generation-failed-description": "Falló al generar el plan de acción. Por favor, inténtelo de nuevo.",
   "exit-selection": "Salir de la selección",
   "download-csv": "CSV",
   "export-as-csv": "Exportar como CSV",

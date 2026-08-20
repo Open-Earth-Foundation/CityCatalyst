@@ -81,7 +81,13 @@ The service loads `.env` at startup (see `app/main.py`). The variables below com
   - **`OPENAI_MODEL_NAME_EXPLANATIONS_TRANSLATION`**: Model for translating explanations.
   - **`OPENAI_MODEL_NAME_PLAN_CREATOR`**: Model for the current plan creator.
   - **`OPENAI_MODEL_NAME_PLAN_CREATOR_LEGACY`**: Model for the legacy plan creator.
+    - Both Terra-backed plan creators set `reasoning_effort="none"` because their
+      Chat Completions agents use function tools.
   - **`OPENAI_MODEL_NAME_PLAN_TRANSLATION`**: Model for translating plans.
+  - **`OPENAI_MODEL_NAME_ACTION_TRANSLATION`**: Model used by the climate-action translation maintenance script.
+  - **`OPENAI_MODEL_NAME_WEB_SEARCH`**: Search model used by the plan creator's web-search tool.
+  - GPT-5.6 requests omit `temperature` so the API uses the model-supported default.
+    Explanation and translation requests also use `reasoning_effort="none"`.
   - **`OPENAI_TIMEOUT_SECONDS`**: Timeout (seconds) for OpenAI calls.
   - **`OPENAI_MAX_RETRIES`**: Retry count for OpenAI calls.
 
@@ -166,24 +172,48 @@ Once running:
 - **Swagger UI**: `http://localhost:8000/docs`
 - **Health**: `http://localhost:8000/`
 
-## Docker (note about S3 downloads)
+## Run locally with Docker
 
 The Docker image runs `app/run.sh`, which by default **downloads vector stores / JSON artefacts from S3 on startup** and will fail if AWS credentials + bucket name are not configured.
 
 If you just want to start the API without S3 access, set `HIAP_SKIP_S3_DOWNLOADS=true`. The API will start, but **some features may degrade or fail** if they require those artefacts.
 
-```bash
+From the repository's `hiap/` directory, build the image.
+
+Windows (`cmd.exe`):
+
+```bat
+cd /d C:\Users\mirco\Projects\CityCatalyst\hiap
 docker build -t hiap-app .
-docker run -it --rm -p 8000:8000 --env-file .env hiap-app
 ```
 
-Example (skip S3 downloads):
+macOS / Linux:
 
 ```bash
-docker run -it --rm -p 8000:8000 --env-file .env -e HIAP_SKIP_S3_DOWNLOADS=true hiap-app
+cd hiap
+docker build -t hiap-app .
 ```
 
-If you don’t have access to the S3 bucket, prefer the **local dev** run above (it does not auto-download from S3).
+For the usual local startup without S3 access, run:
+
+```bash
+docker run -it --rm --name hiap-local -p 8000:8000 --env-file .env --env HIAP_SKIP_S3_DOWNLOADS=true hiap-app
+```
+
+The image name (`hiap-app`) must be the final argument. Do not add a standalone `-e`: both `-e` and `--env` require a following `NAME=value` or variable name. A trailing `-e` produces `flag needs an argument: 'e' in -e`.
+
+If `.env` contains valid `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and `S3_BUCKET_NAME` values and you want the startup script to download the artefacts, run without the override:
+
+```bash
+docker run -it --rm --name hiap-local -p 8000:8000 --env-file .env hiap-app
+```
+
+Once the container reports that the server has started, open:
+
+- Swagger UI: `http://localhost:8000/docs`
+- Health endpoint: `http://localhost:8000/`
+
+Stop the foreground container with `Ctrl+C`. Because `--rm` is set, Docker removes the stopped container automatically.
 
 ### Feature impact when S3 downloads are skipped
 

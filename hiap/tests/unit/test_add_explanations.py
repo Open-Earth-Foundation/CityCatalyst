@@ -79,6 +79,8 @@ def test_generate_multilingual_explanation_returns_explanation_content() -> None
     assert result.explanations["en"] == expected_en
     assert result.explanations["pt"] == expected_pt
     mock_parse.assert_called_once()
+    assert mock_parse.call_args.kwargs["reasoning_effort"] == "none"
+    assert "temperature" not in mock_parse.call_args.kwargs
     warning_text = " ".join(str(item.message) for item in captured)
     assert "PydanticSerializationUnexpectedValue" not in warning_text
     assert "Expected none" not in warning_text or "field_name='parsed'" not in warning_text

@@ -3,8 +3,13 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "@/models";
 import { ActionPlan } from "@/models/ActionPlan";
 import { logger } from "@/services/logger";
+import { HighImpactActionRankingStatus } from "@/util/types";
 import { hiapApiWrapper } from "./HiapApiService";
 import { LegacyActionPlanData } from "./types";
+import {
+  syncHIAPActionPlan,
+  withdrawHIAPActionPlanCatalog,
+} from "./HiapNativeInputCatalogService";
 
 // Interfaces updated to work with new table structure
 
@@ -43,6 +48,7 @@ export interface CreateActionPlanInput {
 
 export interface UpdateActionPlanInput {
   id: string;
+  cityId: string;
   actionName?: string;
   language?: string;
 
@@ -79,7 +85,102 @@ export interface UpsertActionPlanInput {
   createdBy?: string;
 }
 
+type HIAPActionPlanContext = Pick<
+  UpsertActionPlanInput,
+  | "actionId"
+  | "highImpactActionRankedId"
+  | "cityId"
+  | "cityLocode"
+  | "inventoryId"
+>;
+
 export default class ActionPlanService {
+  private static async validateHIAPActionPlanContext(
+    input: HIAPActionPlanContext,
+  ): Promise<void> {
+    if (!input.inventoryId || !input.highImpactActionRankedId) {
+      throw new createHttpError.BadRequest(
+        "Inventory and ranked HIAP action are required",
+      );
+    }
+
+    const inventory = await db.models.Inventory.findByPk(input.inventoryId, {
+      include: [{ model: db.models.City, as: "city" }],
+    });
+
+    if (!inventory || inventory.cityId !== input.cityId) {
+      throw new createHttpError.BadRequest(
+        "Inventory does not belong to the requested city",
+      );
+    }
+
+    if (inventory.city?.locode && inventory.city.locode !== input.cityLocode) {
+      throw new createHttpError.BadRequest(
+        "City locode does not match the requested inventory",
+      );
+    }
+
+    const rankedAction = await db.models.HighImpactActionRanked.findByPk(
+      input.highImpactActionRankedId,
+    );
+    if (!rankedAction) {
+      throw new createHttpError.NotFound("Ranked HIAP action not found");
+    }
+
+    if (rankedAction.actionId !== input.actionId) {
+      throw new createHttpError.BadRequest(
+        "Action does not match the ranked HIAP action",
+      );
+    }
+
+    const ranking = await db.models.HighImpactActionRanking.findByPk(
+      rankedAction.hiaRankingId,
+    );
+    if (
+      !ranking ||
+      ranking.inventoryId !== input.inventoryId ||
+      ranking.status !== HighImpactActionRankingStatus.SUCCESS
+    ) {
+      throw new createHttpError.BadRequest(
+        "Ranked HIAP action does not belong to a successful ranking for the requested inventory",
+      );
+    }
+  }
+
+  private static async getValidatedActionPlanForMutation(
+    id: string,
+    cityId: string,
+  ): Promise<ActionPlan> {
+    const actionPlan = await db.models.ActionPlan.findByPk(id);
+    if (!actionPlan) {
+      throw new createHttpError.NotFound(`Action plan with id ${id} not found`);
+    }
+
+    if (actionPlan.cityId !== cityId) {
+      throw new createHttpError.BadRequest(
+        "Action plan does not belong to the requested city",
+      );
+    }
+
+    await this.validateHIAPActionPlanContext({
+      actionId: actionPlan.actionId,
+      highImpactActionRankedId:
+        actionPlan.highImpactActionRankedId ?? undefined,
+      cityId,
+      cityLocode: actionPlan.cityLocode,
+      inventoryId: actionPlan.inventoryId ?? undefined,
+    });
+
+    return actionPlan;
+  }
+
+  public static async getActionPlanForMutation(
+    id: string,
+    cityId: string,
+  ): Promise<ActionPlan> {
+    return this.getValidatedActionPlanForMutation(id, cityId);
+  }
+
   /**
    * Transform legacy planData format to new column structure
    */
@@ -187,6 +288,8 @@ export default class ActionPlanService {
         createdBy: input.createdBy,
       });
 
+      await syncHIAPActionPlan(actionPlan);
+
       return actionPlan;
     } catch (error: unknown) {
       logger.error({ err: error }, "Failed to create action plan");
@@ -239,6 +342,7 @@ export default class ActionPlanService {
           language,
           actionId,
           cityLocode: city.locode, // Direct filter by city locode
+          cityId,
         },
         include: [
           {
@@ -252,7 +356,6 @@ export default class ActionPlanService {
                   {
                     model: db.models.Inventory,
                     as: "inventory",
-                    where: { cityId: cityId },
                   },
                 ],
               },
@@ -277,6 +380,8 @@ export default class ActionPlanService {
     input: UpdateActionPlanInput,
   ): Promise<ActionPlan | null> {
     try {
+      await this.getValidatedActionPlanForMutation(input.id, input.cityId);
+
       const [updatedRowsCount] = await db.models.ActionPlan.update(
         {
           actionName: input.actionName,
@@ -307,8 +412,14 @@ export default class ActionPlanService {
         return null;
       }
 
-      return await this.getActionPlanById(input.id);
+      const actionPlan = await this.getActionPlanById(input.id);
+      if (actionPlan) await syncHIAPActionPlan(actionPlan);
+      return actionPlan;
     } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to update action plan");
       throw createHttpError.InternalServerError("Failed to update action plan");
     }
@@ -317,14 +428,23 @@ export default class ActionPlanService {
   /**
    * Delete an action plan
    */
-  public static async deleteActionPlan(id: string): Promise<boolean> {
+  public static async deleteActionPlan(
+    id: string,
+    cityId: string,
+  ): Promise<boolean> {
     try {
+      await this.getValidatedActionPlanForMutation(id, cityId);
+      await withdrawHIAPActionPlanCatalog(id);
       const deletedRowsCount = await db.models.ActionPlan.destroy({
         where: { id },
       });
 
       return deletedRowsCount > 0;
     } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to delete action plan");
       throw createHttpError.InternalServerError("Failed to delete action plan");
     }
@@ -337,6 +457,17 @@ export default class ActionPlanService {
     input: UpsertActionPlanInput,
   ): Promise<{ actionPlan: ActionPlan; created: boolean }> {
     try {
+      // make sure no zero-length strings are written to UUID fields in the database
+      if (input.highImpactActionRankedId?.length === 0) {
+        input.highImpactActionRankedId = undefined;
+      }
+
+      // Ranked plans must resolve against HighImpactActionRanked. Unranked plans
+      // (no ranked-row FK) skip this check so inventoryId alone does not fail save.
+      if (input.highImpactActionRankedId) {
+        await this.validateHIAPActionPlanContext(input);
+      }
+
       // Transform legacy planData to new structure
       const transformedData = this.transformPlanData(input.planData);
 
@@ -356,6 +487,7 @@ export default class ActionPlanService {
         // Update existing plan
         const updatedPlan = await this.updateActionPlan({
           id: existingPlan.id,
+          cityId: input.cityId,
           actionName: input.actionName,
           language: input.language,
           ...transformedData,
@@ -379,6 +511,10 @@ export default class ActionPlanService {
         return { actionPlan: newPlan, created: true };
       }
     } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+
       logger.error({ err: error }, "Failed to upsert action plan");
       throw createHttpError.InternalServerError("Failed to upsert action plan");
     }
@@ -449,6 +585,7 @@ export default class ActionPlanService {
         const basePlans = await db.models.ActionPlan.findAll({
           where: {
             actionId,
+            cityId,
           },
           include: [
             {
@@ -462,7 +599,6 @@ export default class ActionPlanService {
                     {
                       model: db.models.Inventory,
                       as: "inventory",
-                      where: { cityId: cityId },
                     },
                   ],
                 },
@@ -499,6 +635,7 @@ export default class ActionPlanService {
                   sourcePlan.highImpactActionRankedId || undefined,
                 cityId: cityId,
                 cityLocode: sourcePlan.cityLocode,
+                inventoryId: sourcePlan.inventoryId || undefined,
                 actionName: transformedData.actionName || sourcePlan.actionName,
                 language,
                 planData: translated,

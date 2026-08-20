@@ -58,6 +58,7 @@ from app.modules.prioritizer.services.exclusion_resolution import (
     resolve_exclusion_preview_with_diagnostics,
 )
 from app.modules.prioritizer.services.translation import translate_explanations
+from app.services.action_pathways_api import select_prioritizable_actions
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -81,6 +82,7 @@ from app.services.data_clients import (
 )
 from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
+from app.utils.api_contract import build_response_meta
 from app.utils.mlflow_logging import (
     log_metrics,
     log_params,
@@ -226,7 +228,7 @@ def _mlflow_environment_tag() -> str:
     summary="Preview proposed action exclusions",
     description=(
         "Validate proposed exclusion preferences before committing them to a ranking. "
-        "Pass the standard `meta` envelope and `requestData.cityDataList`, including "
+        "Pass `requestData.cityDataList`, including "
         "each city's locode, emissions context, and proposed exclusion inputs. This "
         "endpoint fetches the action catalogue but does not score actions or require "
         "confirmed `excludedActionIds`. The response lists likely exclusions and "
@@ -237,7 +239,7 @@ def _mlflow_environment_tag() -> str:
             "description": "Preview completed. Response contains proposed exclusions and warnings per city."
         },
         404: {"description": "An upstream action-catalogue resource was not found."},
-        422: {"description": "The request envelope or exclusion values are invalid."},
+        422: {"description": "The request or exclusion values are invalid."},
         502: {"description": "The upstream action catalogue was unavailable or returned an invalid response."},
         500: {"description": "Internal server error while building the exclusion preview."},
     },
@@ -265,12 +267,10 @@ def preview_exclusions(
             "endpoint": "/v1/prioritize/exclusions/preview",
             "frontend_request_id": request_trace_id,
             "internal_request_id": internal_request_id,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
         },
         params={
             **_mlflow_source_params(),
-            "total_records": request.meta.totalRecords,
+            "total_records": len(request.requestData.cityDataList),
         },
     ):
         try:
@@ -291,7 +291,9 @@ def preview_exclusions(
                 },
             )
             action_pathways_fetch_result = action_pathways_data_api_client.list_actions()
-            actions = action_pathways_fetch_result.actions
+            actions, _, _ = select_prioritizable_actions(
+                action_pathways_fetch_result.actions
+            )
             fetch_actions_event_index = artifact_writer.write_event(
                 "fetch_actions.completed",
                 {
@@ -339,7 +341,13 @@ def preview_exclusions(
                 internal_request_id,
                 len(results),
             )
-            response = ExclusionPreviewApiResponse(results=results)
+            response = ExclusionPreviewApiResponse(
+                results=results,
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=len(results),
+                ),
+            )
             total_proposed_exclusions = sum(
                 result.exclusionSummary.totalProposed for result in results
             )
@@ -409,8 +417,8 @@ def preview_exclusions(
     response_model=PrioritizerApiResponse,
     summary="Run action prioritization synchronously",
     description=(
-        "Rank climate actions for one or more cities. Pass the standard `meta` "
-        "envelope and `requestData.cityDataList` with each city's locode, country, "
+        "Rank climate actions for one or more cities. Pass `requestData.cityDataList` "
+        "with each city's locode, country, "
         "emissions data, and preferences; optionally provide `topN`, exclusions, "
         "and explanation settings. When `createExplanations=true`, English is "
         "generated as the canonical explanation language and requested non-English "
@@ -423,7 +431,7 @@ def preview_exclusions(
             "description": "Ranking completed. Response contains ranked actions, metadata, and optional warnings."
         },
         404: {"description": "A required upstream city or action resource was not found."},
-        422: {"description": "The request envelope or prioritization inputs are invalid."},
+        422: {"description": "The request or prioritization inputs are invalid."},
         502: {"description": "A required upstream data source was unavailable or returned an invalid response."},
         500: {"description": "Internal server error while running the prioritization pipeline."},
     },
@@ -474,12 +482,10 @@ def prioritize(
             "request_kind": "prioritization",
             "endpoint": "/v1/prioritize",
             "frontend_request_id": request_trace_id,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
         },
         params={
             **_mlflow_source_params(),
-            "total_records": request.meta.totalRecords,
+            "total_records": len(request.requestData.cityDataList),
             "requested_top_n": request.requestData.topN,
             "create_explanations": int(request.requestData.createExplanations),
             "requested_languages_count": len(request.requestData.requestedLanguages),
@@ -547,7 +553,13 @@ def prioritize(
                     ),
                 }
             )
-            return PrioritizerApiResponse(results=results)
+            return PrioritizerApiResponse(
+                results=results,
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=len(results),
+                ),
+            )
         except ValueError as error:
             logger.warning(
                 "Invalid prioritization request request_id=%s error=%s",
@@ -582,8 +594,8 @@ def prioritize(
     response_model=CityActionReportApiResponse,
     summary="Generate one City Action Report output plan",
     description=(
-        "Generate one reader-facing City Action Report for a ranked action. Pass the "
-        "standard `meta` envelope and `requestData` containing one `locode`, one "
+        "Generate one reader-facing City Action Report for a ranked action. Pass "
+        "`requestData` containing one `locode`, one "
         "ranked `actionId`, a non-empty `language` list, and the complete original "
         "prioritization request/response snapshot. The endpoint is stateless: it "
         "validates the snapshot, refetches live context, generates canonical English "
@@ -651,15 +663,13 @@ def generate_output_plan(
             "endpoint": "/v1/reports/output-plan",
             "frontend_request_id": request_trace_id,
             "internal_request_id": internal_request_id_str,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
             "locode": request.requestData.locode,
             "action_id": request.requestData.actionId,
             "language": request.requestData.language,
         },
         params={
             **_mlflow_source_params(),
-            "total_records": request.meta.totalRecords,
+            "total_records": 1,
             "debug_context_only": int(request.requestData.debugContextOnly),
         },
     ):
@@ -780,6 +790,10 @@ def generate_output_plan(
                     ),
                     required_sources_ok=True,
                     limitations=report_context.limitations,
+                ),
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=1,
                 ),
             )
             response_payload = response.model_dump(mode="json")
@@ -925,7 +939,7 @@ def generate_output_plan(
     summary="Translate canonical explanations synchronously",
     description=(
         "Translate caller-supplied canonical English ranking explanations without "
-        "rerunning prioritization. Pass the standard `meta` envelope and `requestData` "
+        "rerunning prioritization. Pass `requestData` "
         "with `sourceLanguage` set to `en`, supported non-English `targetLanguages`, "
         "and one `rankedActions` row per action containing its ID and canonical "
         "explanation. The response returns translations keyed by target language and "
@@ -935,7 +949,7 @@ def generate_output_plan(
         200: {
             "description": "Translation completed. Response contains translated explanations and aggregated warnings."
         },
-        422: {"description": "Validation error in the request envelope, source language, or target languages."},
+        422: {"description": "Validation error in the request, source language, or target languages."},
         500: {"description": "Internal server error while translating explanations."},
     },
 )
@@ -959,8 +973,6 @@ def translate_ranked_action_explanations(
             "endpoint": "/v1/explanations/translate",
             "frontend_request_id": request_trace_id,
             "internal_request_id": internal_request_id,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
         },
         params={
             "source_language": request.requestData.sourceLanguage,
@@ -1023,6 +1035,10 @@ def translate_ranked_action_explanations(
             response = ExplanationTranslationApiResponse(
                 translations=translations,
                 warnings=warnings,
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=len(translations),
+                ),
             )
             if warnings:
                 warning_action_ids = (

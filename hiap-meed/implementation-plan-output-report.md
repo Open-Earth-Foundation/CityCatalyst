@@ -84,14 +84,7 @@ Recommended request, stateless snapshot-replay variant:
 ```json
 {
   "meta": {
-    "requestId": "...",
-    "generatedAtUtc": "...",
-    "backendConsumer": "...",
-    "upstreamProvider": "...",
-    "apiContext": {
-      "endpoint": "POST /v1/reports/output-plan"
-    },
-    "totalRecords": 1
+    "requestId": "..."
   },
   "requestData": {
     "locode": "CL ZAL",
@@ -114,7 +107,7 @@ For the prototype, the frontend should send the full data returned by `/v1/prior
 
 This lets the report use the same ranking basis as the prioritization result while keeping `hiap-meed` stateless. The backend should still query additional source data for report sections because the frontend does not receive every upstream field needed by the output-plan template.
 
-The request must include `locode`, `actionId`, and a non-empty `language` list in `requestData` because these are domain inputs, not metadata. The initial supported report languages are `en` and `es`; scalar language values are rejected. The `meta` envelope should stay aligned with existing caller metadata where possible: `requestId`, `generatedAtUtc`, `backendConsumer`, `upstreamProvider`, `apiContext.endpoint`, and `totalRecords`. The current `/v1/prioritize` request uses `apiContext.locodes` because it can carry multiple cities in `requestData.cityDataList`; the output-plan request is intentionally single-city, so `locode` belongs in `requestData`.
+The request must include `meta.requestId` for caller correlation plus `locode`, `actionId`, and a non-empty `language` list in `requestData` because these are domain inputs. The initial supported report languages are `en` and `es`; scalar language values are rejected. Timestamps, endpoint identity, provider labels, and record counts are server-owned response metadata. The output-plan request is intentionally single-city, so `locode` belongs in `requestData`.
 
 The backend should validate that `locode` matches the selected city in the supplied prioritization snapshot and that `actionId` exists in the supplied ranking for that city. Requested report languages are output choices. If one was not part of the original prioritization request's `requestedLanguages`, the backend should keep a diagnostic limitation note rather than reject the request.
 

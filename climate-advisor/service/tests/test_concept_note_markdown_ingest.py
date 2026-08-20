@@ -28,6 +28,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClientError,
     ConceptNoteMarkdownArtifact,
 )
+from app.services.cnb.context_bundle import get_context_bundle_service
 
 
 MARKDOWN = "<!-- page: 1 -->\n# Plan"
@@ -236,13 +237,20 @@ def pointer_payload(**overrides: object) -> dict[str, object]:
 
 
 @pytest.fixture
-def ingest_client():
+def ingest_client(monkeypatch):
     run_id = uuid4()
     repository = FakeMarkdownRepository(run_id, "owner-user")
     cc_client = FakeCityCatalystClient()
     app = get_app()
     app.dependency_overrides[get_citycatalyst_client] = lambda: cc_client
     app.dependency_overrides[get_concept_note_markdown_repository] = lambda: repository
+    app.dependency_overrides[get_context_bundle_service] = lambda: object()
+    scheduled_builds: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        "app.routes.concept_note_markdown.schedule_context_bundle_build",
+        lambda **kwargs: scheduled_builds.append(kwargs),
+    )
+    cc_client.scheduled_builds = scheduled_builds
     settings = get_settings()
     original_key = settings.cc_api_key
     settings.cc_api_key = "service-key"
@@ -340,7 +348,7 @@ def test_json_body_limit_rejects_declared_oversize_before_reading(
 
 
 def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None:
-    client, repository, _, run_id = ingest_client
+    client, repository, cc_client, run_id = ingest_client
     upload_id = uuid4()
     create_upload(client, run_id, upload_id)
     path = f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown"
@@ -352,6 +360,11 @@ def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None
     assert first.json() == {"upload_id": str(upload_id), "status": "ready"}
     assert repository.uploads[upload_id].markdown_s3_key == S3_KEY
     assert repository.uploads[upload_id].status == "ready"
+    assert [item["run_id"] for item in cc_client.scheduled_builds] == [
+        run_id,
+        run_id,
+    ]
+    assert all(item["token"] == "owner-user" for item in cc_client.scheduled_builds)
 
 
 def test_pointer_or_fetched_bytes_conflict_is_rejected(ingest_client) -> None:

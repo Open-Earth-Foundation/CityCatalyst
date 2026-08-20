@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Button, Card, Icon, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { TopPickIcon } from "@/components/icons";

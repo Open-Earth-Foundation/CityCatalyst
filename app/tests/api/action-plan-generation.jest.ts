@@ -22,6 +22,7 @@ import {
 } from "../helpers/testDataCreationHelper";
 import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
 import { hiapServiceWrapper } from "@/backend/hiap/HiapService";
+import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
 import {
   ACTION_TYPES,
@@ -320,6 +321,12 @@ describe("Action Plan Generation", () => {
     });
 
     it("sends correct payload to start_plan_creation", async () => {
+      // Locode mismatch would fail DB validation; this test only covers HIAP payload.
+      jest.spyOn(ActionPlanService, "upsertActionPlan").mockResolvedValueOnce({
+        actionPlan: { id: randomUUID() } as any,
+        created: false,
+      });
+
       await hiapApiWrapper.startActionPlanJob({
         action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
@@ -497,6 +504,27 @@ describe("Action Plan Generation", () => {
 
       globalThis.fetch = mockFetch as typeof fetch;
     });
+
+    it("throws on DB save failure and does not send email", async () => {
+      jest
+        .spyOn(ActionPlanService, "upsertActionPlan")
+        .mockRejectedValueOnce(new Error("Ranked HIAP action not found"));
+
+      await expect(
+        hiapApiWrapper.startActionPlanJob({
+          action: makeMockAction(rankedActionId, rankingId),
+          cityId: testData.cityId,
+          cityLocode: "XX APT",
+          lng: LANGUAGES.en,
+          inventoryId,
+          createdBy: testData.userId,
+        }),
+      ).rejects.toThrow(/Failed to generate plan|Ranked HIAP action not found/);
+
+      expect(
+        ActionPlanEmailService.sendActionPlanReadyEmailWithUrl,
+      ).not.toHaveBeenCalled();
+    });
   });
 
   describe("startActionPlanJob - data flow", () => {
@@ -515,6 +543,12 @@ describe("Action Plan Generation", () => {
     });
 
     it("extracts country code from locode (first 2 chars)", async () => {
+      // Locode mismatch would fail DB validation; this test only covers countryCode.
+      jest.spyOn(ActionPlanService, "upsertActionPlan").mockResolvedValueOnce({
+        actionPlan: { id: randomUUID() } as any,
+        created: false,
+      });
+
       await hiapApiWrapper.startActionPlanJob({
         action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,

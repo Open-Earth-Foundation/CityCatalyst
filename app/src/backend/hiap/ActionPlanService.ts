@@ -462,7 +462,9 @@ export default class ActionPlanService {
         input.highImpactActionRankedId = undefined;
       }
 
-      if (input.inventoryId || input.highImpactActionRankedId) {
+      // Ranked plans must resolve against HighImpactActionRanked. Unranked plans
+      // (no ranked-row FK) skip this check so inventoryId alone does not fail save.
+      if (input.highImpactActionRankedId) {
         await this.validateHIAPActionPlanContext(input);
       }
 

@@ -34,14 +34,9 @@ GET /v1/cities/CL%20IQQ/attributes
     ]
   },
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/attributes",
-      "locode": "CL IQQ"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -93,14 +88,9 @@ With no `language` query, the response includes all available localizations. Rep
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/action-pathways",
-      "missing_action_type_count": 0
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -149,14 +139,9 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
     "municipal": 0.69
   },
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/action-policy-scores",
-      "locode": "CL IQQ"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -190,15 +175,9 @@ The caller supplies both city and country scope. HIAP-MEED normalizes and valida
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/action-mitigation-feasibility-scores",
-      "locode": "CL IQQ",
-      "country_code": "CL"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -271,15 +250,9 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/climate-finance/feasibility",
-      "locode": "CL IQQ",
-      "country_code": "CL"
-    },
-    "total_records": 2
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 2
   },
   "warnings": []
 }
@@ -317,16 +290,9 @@ GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&r
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/climate-finance/opportunities",
-      "country_code": "CL",
-      "sector": "stationary_energy",
-      "route": "technical_assistance"
-    },
-    "total_records": 2
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 2
   },
   "warnings": []
 }
@@ -374,15 +340,9 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/climate-finance/projects",
-      "country_code": "CL",
-      "action_id": "c40_0012"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }

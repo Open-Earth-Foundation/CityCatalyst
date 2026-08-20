@@ -28,11 +28,11 @@ function sourceMetadata(
   };
 }
 
-export async function registerGHGIImportedInventorySource(
+export function buildGHGIImportedInventorySourceInput(
   importedFile: ImportedInventoryFile,
   contentDigest?: string | null,
 ) {
-  return registerNativeInput({
+  return {
     kind: "inventory_source_file",
     owningModule: GHGI_MODULE,
     sourceType: "imported_inventory_file",
@@ -43,7 +43,16 @@ export async function registerGHGIImportedInventorySource(
     contentDigest: contentDigest ?? null,
     markdownReady: false,
     labels: sourceMetadata(importedFile),
-  });
+  } as const;
+}
+
+export async function registerGHGIImportedInventorySource(
+  importedFile: ImportedInventoryFile,
+  contentDigest?: string | null,
+) {
+  return registerNativeInput(
+    buildGHGIImportedInventorySourceInput(importedFile, contentDigest),
+  );
 }
 
 export async function resolveGHGIImportedInventorySourceDigest(
@@ -82,7 +91,32 @@ export async function registerGHGIInventory(
   });
 }
 
+export function buildGHGIInventoryInput(importedFile: ImportedInventoryFile) {
+  if (importedFile.importStatus !== "completed") {
+    throw new Error("Only completed GHGI imports can enter the catalog");
+  }
+
+  return {
+    kind: "inventory_import",
+    owningModule: GHGI_MODULE,
+    sourceType: "inventory",
+    sourceId: importedFile.inventoryId,
+    userId: importedFile.userId,
+    inventoryId: importedFile.inventoryId,
+    cityId: importedFile.cityId,
+    labels: {
+      importedFileId: importedFile.id,
+      completedAt: importedFile.completedAt?.toISOString() ?? null,
+    },
+  } as const;
+}
+
 export async function registerGHGIOcrArtifact(job: PdfOcrJob) {
+  const input = await buildGHGIOcrArtifactInput(job);
+  return registerNativeInput(input);
+}
+
+export async function buildGHGIOcrArtifactInput(job: PdfOcrJob) {
   if (
     job.sourceType !== "inventory_import" ||
     job.status !== "succeeded" ||
@@ -102,7 +136,7 @@ export async function registerGHGIOcrArtifact(job: PdfOcrJob) {
     throw new Error("GHGI OCR source file no longer exists");
   }
 
-  return registerNativeInput({
+  return {
     kind: "inventory_ocr",
     owningModule: GHGI_MODULE,
     sourceType: "pdf_ocr_job",
@@ -118,7 +152,7 @@ export async function registerGHGIOcrArtifact(job: PdfOcrJob) {
       resultSizeBytes: job.resultSizeBytes ?? null,
       model: job.model ?? null,
     },
-  });
+  } as const;
 }
 
 async function tryCatalogSync<T>(

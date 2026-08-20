@@ -60,16 +60,20 @@ const MOCK_PLAN_RESPONSE = {
   },
 };
 
-const makeMockAction = (rankedActionId: string): AdaptationAction => ({
+const makeMockAction = (
+  rankedActionId: string,
+  rankingId: string,
+): AdaptationAction => ({
   actionId: "test-action-123",
   name: "Solar Rooftop",
-  hiaRankingId: rankedActionId,
+  // Match production HIAction shape from ActionService / HIAP status.
+  id: rankedActionId,
+  hiaRankingId: rankingId,
   type: ACTION_TYPES.Adaptation,
   lang: "en",
   GHGReductionPotential: null,
   adaptationEffectiveness: "",
 
-  id: randomUUID(),
   hazards: [],
   sectors: [],
   subsectors: [],
@@ -273,7 +277,7 @@ describe("Action Plan Generation", () => {
   describe("startActionPlanJob - success flow", () => {
     it("calls HIAP API in correct order: start, check_progress, get_plan", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -317,7 +321,7 @@ describe("Action Plan Generation", () => {
 
     it("sends correct payload to start_plan_creation", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "BR SAO",
         lng: LANGUAGES.es,
@@ -342,7 +346,7 @@ describe("Action Plan Generation", () => {
 
     it("saves action plan to database", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -365,7 +369,7 @@ describe("Action Plan Generation", () => {
       });
 
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -380,7 +384,7 @@ describe("Action Plan Generation", () => {
 
     it("returns plan, timestamp, and actionName", async () => {
       const result = await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -405,7 +409,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -426,7 +430,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -447,7 +451,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -465,7 +469,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -483,7 +487,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -498,7 +502,7 @@ describe("Action Plan Generation", () => {
   describe("startActionPlanJob - data flow", () => {
     it("uses getCityContextAndEmissionsData for payload", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -512,7 +516,7 @@ describe("Action Plan Generation", () => {
 
     it("extracts country code from locode (first 2 chars)", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "CR SJ",
         lng: LANGUAGES.en,

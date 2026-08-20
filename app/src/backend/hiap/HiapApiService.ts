@@ -342,10 +342,17 @@ const startActionPlanJobImpl = async ({
 
     // Save action plan to database
     try {
+      // Ranked actions carry HighImpactActionRanked.id in `action.id` and the
+      // parent ranking UUID in `action.hiaRankingId`. Unranked actions leave
+      // hiaRankingId empty and must not pass a ranked-row FK.
+      const highImpactActionRankedId = action.hiaRankingId
+        ? action.id
+        : undefined;
+
       const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
         cityId,
         actionId: action.actionId,
-        highImpactActionRankedId: action.hiaRankingId, // This should be the ranked ID, not ranking ID
+        highImpactActionRankedId,
         cityLocode,
         inventoryId,
         actionName: action.name,

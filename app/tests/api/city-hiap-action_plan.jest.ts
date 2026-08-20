@@ -690,9 +690,10 @@ describe("City HIAP Prioritization API", () => {
 
       const requestBody = {
         action: {
+          id: rankedAction.id,
           actionId: rankedAction.actionId,
           name: "Generate Action",
-          hiaRankingId: rankedAction.id,
+          hiaRankingId: ranking.id,
         },
         inventoryId,
         cityLocode: "XX-APT",

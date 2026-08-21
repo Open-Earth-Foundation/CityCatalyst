@@ -85,7 +85,7 @@ const TopEmissionsWidget = ({
   isPublic,
   numberFormat,
 }: {
-  t: Function & TFunction<"translation", undefined>;
+  t: TFunction<"translation", undefined>;
   inventory?: InventoryResponse;
   isPublic: boolean;
   numberFormat?: string;

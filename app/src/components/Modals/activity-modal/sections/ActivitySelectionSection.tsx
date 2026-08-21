@@ -6,7 +6,7 @@ import { Methodology, SuggestedActivity } from "@/util/form-schema";
 import { Field } from "@/components/ui/field";
 interface ActivitySelectionSectionProps {
   t: TFunction;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues>;
   methodology: Methodology;
   selectedActivity?: SuggestedActivity;
 }

@@ -12,12 +12,6 @@ import {
 } from "@/services/api";
 import { useState, useMemo } from "react";
 
-interface Module {
-  name: string;
-  provider: string;
-  hasAccess: boolean;
-}
-
 interface Project {
   projectId: string;
   name: string;
@@ -58,16 +52,10 @@ const ProjectModulesTabs = ({ projects, lng }: ProjectModulesTabsProps) => {
   }, [allModules, selectedProjectModules, selectedProjectId]);
 
   // Hooks must be called before any early returns
-  const [
-    enableProjectModuleAccess,
-    { isLoading: isEnableProjectModuleAccessLoading },
-  ] = useEnableProjectModuleAccessMutation();
+  const [enableProjectModuleAccess] = useEnableProjectModuleAccessMutation();
 
   // disable project module access
-  const [
-    disableProjectModuleAccess,
-    { isLoading: isDisableProjectModuleAccessLoading },
-  ] = useDisableProjectModuleAccessMutation();
+  const [disableProjectModuleAccess] = useDisableProjectModuleAccessMutation();
 
   // Loading state
   const isLoading =

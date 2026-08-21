@@ -832,6 +832,7 @@
   "external-dataset-integrated": "External dataset integrated",
   "external-dataset-description": "External dataset integrated emissions data from external providers directly into your GHG emissions inventory",
   "disconnected-data-source": "Disconnected data source",
+  "disconnect-data-source-error": "Failed to disconnect data source",
   "methane-commitment-solid-waste-inboundary-methodology": "Methane commitment",
   "methane-commitment-solid-waste-inboundary-methodology-description": "It calculates landfill emissions based on the amount of waste disposed in a given year, regardless of when the emissions actually occur (waste treated in the city)",
   "first-order-of-decay-solid-waste-inboundary-methodology": "First order decay",

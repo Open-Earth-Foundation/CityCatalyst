@@ -2,8 +2,6 @@
 import dynamic from "next/dynamic";
 import type { TFunction } from "i18next";
 import type { PopulationAttributes } from "@/models/Population";
-import { useGetOCCityDataQuery } from "@/services/api";
-import { useMemo } from "react";
 import { Box, Icon, Spinner, HStack, VStack, Text } from "@chakra-ui/react";
 import { CircleFlag } from "react-circle-flags";
 import { MdOutlineAspectRatio } from "react-icons/md";
@@ -41,24 +39,10 @@ export function Hero({
   hideMap = false,
   numberFormat,
 }: HeroProps) {
-  const { data: cityData } = useGetOCCityDataQuery(city?.locode!, {
-    skip: !city?.locode,
-  });
-
   const formattedEmissions =
     ghgiCityData?.totalEmissions != null
       ? formatEmissions(ghgiCityData.totalEmissions, numberFormat)
       : { value: t("no-data"), unit: "" };
-
-  const popWithDS = useMemo(
-    () =>
-      cityData?.population?.find(
-        (p: { population: number; year: number }) =>
-          p.population === population?.population &&
-          p.year === population?.year,
-      ),
-    [cityData?.population, population?.population, population?.year],
-  );
 
   return (
     <Box py={12} w="full">

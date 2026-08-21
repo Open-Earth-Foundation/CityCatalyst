@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "@/i18n/client";
 import React, { useState, useEffect } from "react";
 import { api } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
 interface AddClientModalProps {
   lng: string;
   isOpen: boolean;
@@ -118,9 +119,12 @@ const AddClientModal: React.FC<AddClientModalProps> = ({
         setErrors({ name: "", description: "", redirectUri: "" });
         onClose();
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorData = isFetchBaseQueryError(error)
+        ? (error.data as { message?: string })
+        : undefined;
       showError(
-        error?.data?.message ||
+        errorData?.message ||
           t("oauth-client-creation-failed") ||
           "Failed to create client",
       );

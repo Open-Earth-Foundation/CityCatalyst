@@ -1,0 +1,266 @@
+# Shared deterministic terminology for reports and ranking explanations.
+languages:
+  - en
+  - es
+
+chapter_titles:
+  snapshot:
+    en: Snapshot
+    es: Resumen
+  the_action:
+    en: The Action
+    es: La acción
+  action_impact:
+    en: Action Impact
+    es: Impacto de la acción
+  city_fit:
+    en: City Fit
+    es: Adecuación a la ciudad
+  policy_backing:
+    en: Policy Backing
+    es: Respaldo de políticas
+  legal_mandate_delivery:
+    en: Legal Mandate & Delivery
+    es: Mandato legal y ejecución
+  financing_precedents_pathway:
+    en: Financing, Precedents & Pathway
+    es: Financiación, precedentes y hoja de ruta
+  sources_assumptions:
+    en: Where The Information Comes From
+    es: Fuentes de la información
+
+chapter_terms:
+  snapshot:
+    ask_label:
+      en: The ask
+      es: La solicitud
+    what_we_checked:
+      en: What we checked
+      es: Qué se evaluó
+    reading:
+      en: Reading
+      es: Resultado
+    detail:
+      en: Detail
+      es: Detalle
+  city_fit:
+    supporting_heading:
+      en: Local conditions that support the action
+      es: Condiciones locales que favorecen la acción
+    limiting_heading:
+      en: Local conditions that limit the action
+      es: Condiciones locales que limitan la acción
+    mixed_heading:
+      en: Local conditions with mixed effects
+      es: Condiciones locales con efectos mixtos
+    indicator:
+      en: Indicator
+      es: Indicador
+    city_value:
+      en: City's value
+      es: Valor de la ciudad
+    implication:
+      en: What it implies
+      es: Qué implica
+  policy_backing:
+    document:
+      en: Document
+      es: Documento
+    page:
+      en: Page
+      es: Página
+    signal:
+      en: Signal
+      es: Señal
+    document_says:
+      en: What the document says
+      es: Qué dice el documento
+    translated_excerpt:
+      en: Translated excerpt
+      es: Extracto traducido
+  legal_mandate_delivery:
+    city_can_do:
+      en: What the city can do alone
+      es: Qué puede hacer la ciudad por sí sola
+    other_government:
+      en: What needs another level of government
+      es: Qué requiere otro nivel de gobierno
+    who_leads:
+      en: Who leads
+      es: Quién lidera
+  financing_precedents_pathway:
+    opportunities_heading:
+      en: Financing opportunities to assess
+      es: Oportunidades de financiación por evaluar
+    monitoring_heading:
+      en: Opportunities to monitor
+      es: Oportunidades por seguir
+    comparable_projects_heading:
+      en: Comparable projects
+      es: Proyectos comparables
+    pathway_heading:
+      en: Suggested pathway
+      es: Hoja de ruta sugerida
+    opportunity:
+      en: Opportunity
+      es: Oportunidad
+    funder:
+      en: Funder
+      es: Financiador
+    support:
+      en: Support
+      es: Apoyo
+    status:
+      en: Status
+      es: Estado
+    engagement:
+      en: How the city could engage
+      es: Cómo podría participar la ciudad
+    link:
+      en: Link
+      es: Enlace
+    last_status:
+      en: Last recorded status
+      es: Último estado registrado
+    recurrence:
+      en: Recurrence
+      es: Recurrencia
+    project:
+      en: Project
+      es: Proyecto
+    location:
+      en: Location
+      es: Ubicación
+    stage:
+      en: Stage
+      es: Etapa
+    funding:
+      en: Funding
+      es: Financiación
+  sources_assumptions:
+    sources_heading:
+      en: Source references
+      es: Fuentes de referencia
+    analyst_heading:
+      en: Analyst figures
+      es: Cifras del análisis
+    limitations_heading:
+      en: Data gaps and limitations
+      es: Vacíos de datos y limitaciones
+    prioritization_heading:
+      en: Prioritization summary
+      es: Resumen de priorización
+    category:
+      en: Category
+      es: Categoría
+    source:
+      en: Source
+      es: Fuente
+
+terms:
+  co_benefits:
+    air_quality: {en: Air quality, es: Calidad del aire}
+    cost_of_living: {en: Cost of living, es: Costo de vida}
+    mobility: {en: Mobility, es: Movilidad}
+    stakeholder_engagement: {en: Stakeholder engagement, es: Participación de actores}
+    habitat: {en: Habitat, es: Hábitat}
+    housing: {en: Housing, es: Vivienda}
+    water_quality: {en: Water quality, es: Calidad del agua}
+  gpc_sectors:
+    stationary_energy: {en: Stationary energy, es: Energía estacionaria}
+    transportation: {en: Transportation, es: Transporte}
+    waste: {en: Waste, es: Residuos}
+    ippu: {en: Industrial processes and product use, es: Procesos industriales y uso de productos}
+    afolu: {en: "Agriculture, forestry and other land use", es: "Agricultura, silvicultura y otros usos de la tierra"}
+  gpc_subsectors:
+    i.1: {en: residential buildings, es: edificios residenciales}
+    i.2: {en: commercial and institutional buildings and facilities, es: edificios e instalaciones comerciales e institucionales}
+    i.3: {en: manufacturing industries and construction, es: industrias manufactureras y construcción}
+    i.4: {en: energy industries, es: industrias energéticas}
+    i.5: {en: "agriculture, forestry and fishing energy use", es: "uso de energía en agricultura, silvicultura y pesca"}
+    i.6: {en: non-specified stationary energy sources, es: fuentes de energía estacionaria no especificadas}
+    ii.1: {en: on-road transportation, es: transporte por carretera}
+    ii.2: {en: railways, es: ferrocarriles}
+    ii.3: {en: waterborne navigation, es: navegación marítima y fluvial}
+    ii.4: {en: aviation, es: aviación}
+    ii.5: {en: off-road transportation, es: transporte fuera de carretera}
+    iii.1: {en: solid waste disposal, es: disposición de residuos sólidos}
+    iii.2: {en: biological treatment of waste, es: tratamiento biológico de residuos}
+    iii.3: {en: incineration and open burning, es: incineración y quema a cielo abierto}
+    iii.4: {en: wastewater treatment and discharge, es: tratamiento y descarga de aguas residuales}
+    iv.1: {en: industrial processes, es: procesos industriales}
+    iv.2: {en: product use, es: uso de productos}
+    v.1: {en: livestock, es: ganadería}
+    v.2: {en: land, es: tierra}
+    v.3: {en: aggregate sources and non-CO2 emissions on land, es: fuentes agregadas y emisiones no CO2 en la tierra}
+  feasibility_components:
+    legal: {en: legal feasibility, es: viabilidad legal}
+    mitigation_feasibility: {en: mitigation feasibility, es: viabilidad de mitigación}
+    financial_feasibility: {en: financial feasibility, es: viabilidad financiera}
+  timeframes:
+    short: {en: short-term, es: corto plazo}
+    medium: {en: medium-term, es: medio plazo}
+    long: {en: long-term, es: largo plazo}
+    no_preference: {en: no timeframe preference, es: sin preferencia de plazo}
+  indicators:
+    median_household_income: {en: Median household income, es: Ingreso mediano de los hogares}
+    poverty_rate: {en: Poverty rate, es: Tasa de pobreza}
+    electricity_access_rate: {en: Electricity access rate, es: Tasa de acceso a la electricidad}
+    fixed_internet_household_share: {en: Households with fixed internet, es: Hogares con internet fijo}
+    home_ownership: {en: Home ownership, es: Vivienda propia}
+    renter_share: {en: Renter share, es: Proporción de hogares arrendatarios}
+    unemployment_rate: {en: Unemployment rate, es: Tasa de desempleo}
+    public_transport_share: {en: Public transport share, es: Proporción de transporte público}
+  score_labels:
+    very_weak: {en: Very weak, es: Muy débil}
+    weak: {en: Weak, es: Débil}
+    neutral: {en: Neutral, es: Neutral}
+    very_strong: {en: Very strong, es: Muy fuerte}
+    very_low: {en: Very low, es: Muy bajo}
+    low: {en: Low, es: Bajo}
+    medium: {en: Medium, es: Medio}
+    moderate: {en: Moderate, es: Moderado}
+    good: {en: Good, es: Bueno}
+    high: {en: High, es: Alto}
+    very_high: {en: Very high, es: Muy alto}
+    strong: {en: Strong, es: Fuerte}
+    limited: {en: Limited, es: Limitado}
+    very_limited: {en: Very limited, es: Muy limitado}
+    enabled: {en: Enabled, es: Habilitada}
+    conditional: {en: Conditional, es: Condicionada}
+    blocked: {en: Blocked, es: Bloqueada}
+  signal_labels:
+    climate_benefit: {en: Climate benefit, es: Beneficio climático}
+    city_fit: {en: City fit, es: Adecuación a la ciudad}
+    policy_backing: {en: Policy backing, es: Respaldo de políticas}
+    legal_room: {en: Legal room to act, es: Margen legal para actuar}
+    funding: {en: Funding, es: Financiación}
+    track_record: {en: Track record, es: Experiencia previa}
+  feasibility_dimensions:
+    cost_effectiveness: {en: Affordability and value for money, es: Asequibilidad y relación calidad-precio}
+    economic: {en: Affordability and value for money, es: Asequibilidad y relación calidad-precio}
+    technical_scalability: {en: Technical delivery, es: Ejecución técnica}
+    technological: {en: Technical delivery, es: Ejecución técnica}
+    public_acceptance: {en: Public acceptance, es: Aceptación pública}
+    social_acceptance: {en: Public acceptance, es: Aceptación pública}
+    socio_cultural: {en: Public acceptance, es: Aceptación pública}
+    institutional: {en: Institutional delivery, es: Ejecución institucional}
+    overall_fit: {en: Overall fit, es: Adecuación general}
+  finance_routes:
+    needs_technical_assistance: {en: Needs technical assistance, es: Necesita asistencia técnica}
+    needs_co_financing: {en: Needs co-financing, es: Necesita cofinanciación}
+    self_deliverable: {en: Self-deliverable, es: Ejecutable directamente}
+    own_budget_feasible: {en: Feasible with own budget, es: Viable con presupuesto propio}
+  finance_statuses:
+    open: {en: Open, es: Abierta}
+    ongoing: {en: Ongoing, es: En curso}
+    closed: {en: Closed, es: Cerrada}
+    rolling: {en: Rolling, es: Convocatoria continua}
+  lifecycle_stages:
+    formulated: {en: Formulated, es: Formulado}
+    in_execution: {en: In execution, es: En ejecución}
+    completed: {en: Completed, es: Completado}
+  application_routes:
+    direct: {en: Apply directly, es: Solicitud directa}
+    facilitated: {en: Participate with municipal facilitation, es: Participar con facilitación municipal}
+    intermediated: {en: Participate through an intermediary, es: Participar mediante un intermediario}

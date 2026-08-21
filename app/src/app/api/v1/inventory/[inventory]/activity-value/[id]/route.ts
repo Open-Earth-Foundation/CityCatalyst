@@ -117,10 +117,10 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     });
 
     return NextResponse.json({ success: true, data: result });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Check for database bigint conversion errors
     if (
-      error.message &&
+      error instanceof Error &&
       error.message.includes("is out of range for type bigint")
     ) {
       const customError = createHttpError.BadRequest(
@@ -136,7 +136,7 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
     }
     // Check for JavaScript BigInt conversion errors
     if (
-      error.message &&
+      error instanceof Error &&
       error.message.includes("Cannot convert") &&
       error.message.includes("to a BigInt")
     ) {

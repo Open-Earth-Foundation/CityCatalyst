@@ -4,7 +4,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
 
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.removeConstraint('GasValue', 'FK_GasValue_activity_value_id');
     await queryInterface.addConstraint('GasValue', {
       fields: ['activity_value_id'],
@@ -19,7 +19,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeConstraint('GasValue', 'FK_GasValue_activity_value_id');
     await queryInterface.addConstraint('GasValue', {
       fields: ['activity_value_id'],

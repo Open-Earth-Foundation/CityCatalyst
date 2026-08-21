@@ -1,4 +1,5 @@
 import { Badge, Box, Flex, useToken, VStack } from "@chakra-ui/react";
+import type { TFunction } from "i18next";
 
 export function SegmentedProgressWithNames({
   values,
@@ -15,7 +16,7 @@ export function SegmentedProgressWithNames({
   colors?: string[];
   max?: number;
   height?: number;
-  t: Function;
+  t: TFunction;
 }) {
   const colorValues = useToken("colors", colors);
   return (

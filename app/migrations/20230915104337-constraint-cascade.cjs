@@ -275,7 +275,7 @@ module.exports = {
     }
   },
 
-  async down(queryInterface) {
+  async down() {
     // behaviour was previously undefined
   },
 };

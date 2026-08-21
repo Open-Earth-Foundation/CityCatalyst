@@ -3,7 +3,7 @@ You write the Sources & Assumptions chapter for a City Action Report.
 </role>
 
 <task>
-Summarize source categories, snapshot-vs-live context, assumptions, and evidence limitations.
+Present categorized source references, analyst figures, and plain-language data gaps as three separate subsections.
 </task>
 
 <input>
@@ -11,7 +11,10 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `sources_assumptions`
 - `title` (string): chapter title
 - `language` (string): requested report language
-- `facts.source_summary` (object): user-facing source categories, selected-action ranking summary, and live-enrichment availability
+- `terminology` (object): exact localized subsection and table labels
+- `facts.source_summary` (object): user-facing selected-action prioritization summary
+- `facts.categorized_sources` (array): source category, name, publisher, and public URL when available
+- `facts.analyst_figures` (object): scores, verdict components, ranking weights, and scoring mappings
 - `facts.limitations` (array): report-level limitations
 - `source_refs` (array): source keys available to cite in `source_refs`
 - `limitations` (array): chapter limitations to carry forward when relevant
@@ -22,16 +25,16 @@ Runtime input:
 
 <output>
 Use the shared OutputPlanChapterResponse contract:
-- `markdown` (string): concise bullets grouped by source categories, assumptions, and limitations.
+- `markdown` (string): Use exactly three subsections named by `terminology.sources_heading`, `terminology.analyst_heading`, and `terminology.limitations_heading`. The first contains a table using exactly `terminology.category | terminology.source`. Keep official source, dataset, document, agency, and legal names unchanged; translate descriptive source labels into `language`. Render the source name as a Markdown link when a public URL exists, otherwise as plain text. Include every source row, including the prioritization analysis. Never add a separate Link column or missing-link placeholders. The analyst subsection contains compact tables or bullets for scores/verdict components, ranking weights, and banding/component rules; use the prepared rounded values and backend-localized recurring terms, and label these as analyst figures rather than external claims. Call the first analyst block `terminology.prioritization_heading`, never use an internal snapshot label, and omit the requested language. The limitations subsection presents every substantive evidence limitation as concise prose in `language`. Missing optional hyperlinks are not evidence limitations and must not be mentioned. Do not mention APIs, MLflow, artifacts, request IDs, internal field names, implementation status, or deferred work.
 - `limitations` (array of strings): relevant evidence limitations.
 
-Use user-facing source categories and input `source_refs`; do not treat diagnostic metadata, artifact locations, endpoints, local paths, URLs, request identifiers, or implementation names as citations. Do not claim staleness was evaluated unless `facts` explicitly says it was.
+Use only public URLs explicitly present in `facts.categorized_sources`; do not expose diagnostic endpoints, local paths, object-storage paths, or request identifiers. Do not claim staleness was evaluated unless `facts` explicitly says it was.
 </output>
 
 <example_output>
 {{
-  "markdown": "- Ranking context: based on the supplied prioritization snapshot.\n- Additional context: based on live backend source data where available.\n- Assumptions and limits: the report should not claim unsupported emissions reductions, legal approvals, named funds, or comparable project counts when those fields are absent.",
+  "markdown": "### Source references\n\n| Category | Source |\n|---|---|\n| Prioritization | City action prioritization analysis for this report |\n| City fit | [Population and Housing Census](https://example.org/census) |\n\n### Analyst figures\n\n- Final score: 0.48\n- Legal verdict: enabled\n- GHG-reduction band: very low (multiplier 0.2)\n\n### Data gaps and limitations\n\n- No city-specific emissions-reduction estimate is available for this action.",
   "source_refs": ["ranking_snapshot", "city", "action_pathways"],
-  "limitations": ["Staleness comparison was not evaluated in the supplied context."]
+  "limitations": ["Source freshness has not been checked against the original prioritization date."]
 }}
 </example_output>

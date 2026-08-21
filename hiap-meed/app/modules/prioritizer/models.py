@@ -8,6 +8,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from app.models import ApiRequestMeta, ApiResponseMeta
+from app.modules.prioritizer.localization import supported_languages
 from app.modules.prioritizer.scoring_config import resolve_impact_text_multiplier
 from app.modules.prioritizer.utils.co_benefit_taxonomy import ALLOWED_CO_BENEFIT_KEYS
 from app.modules.prioritizer.utils.sector_mapping import ALLOWED_SECTOR_TAGS
@@ -51,51 +53,17 @@ def _normalize_required_upper_string(value: str, field_name: str) -> str:
 
 
 # ============================================================================
-# CALLER REQUEST ENVELOPE MODELS (external frontend or upstream caller -> hiap-meed)
+# CALLER REQUEST MODELS (external frontend or upstream caller -> hiap-meed)
 # ----------------------------------------------------------------------------
 # Composition:
 # - PrioritizerApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: PrioritizerRequestData
 #     - cityDataList: list[FrontendCityInput]
 #       - cityEmissionsData: FrontendCityEmissionsData
 #         - gpcData: dict[str, GpcDataEntry]
 #           - activities: list[GpcActivity]
 # ============================================================================
-
-
-class FrontendApiContext(BaseModel):
-    """Caller request API context metadata."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    endpoint: str = Field(description="Caller route or endpoint that originated the request.")
-    locodes: list[str] = Field(
-        default_factory=list,
-        description="One or more UN/LOCODE values included in the request context.",
-    )
-
-
-class FrontendRequestMeta(BaseModel):
-    """Metadata envelope for prioritizer requests sent by the current caller."""
-
-    model_config = ConfigDict(extra="forbid")
-
-    requestId: str = Field(description="Caller-generated request identifier.")
-    generatedAtUtc: str = Field(
-        description="Caller timestamp for when the request envelope was created."
-    )
-    backendConsumer: str = Field(
-        description="Backend service expected to consume this request."
-    )
-    upstreamProvider: str = Field(
-        description="Originating frontend or upstream caller name."
-    )
-    apiContext: FrontendApiContext = Field(
-        description="Lightweight caller route context for observability."
-    )
-    totalRecords: int = Field(description="Number of city records carried in the request.")
 
 
 class GpcActivity(BaseModel):
@@ -271,7 +239,10 @@ class PrioritizerRequestData(BaseModel):
 
     requestedLanguages: list[str] = Field(
         default_factory=lambda: ["en"],
-        description="Languages to include in the explanation output. English is always canonical.",
+        description=(
+            "Requested display languages. English is always generated first as the "
+            "canonical source, followed by the requested non-English languages."
+        ),
     )
     topN: int | None = Field(
         default=None,
@@ -290,7 +261,7 @@ class PrioritizerRequestData(BaseModel):
     @field_validator("requestedLanguages", mode="before")
     @classmethod
     def _normalize_requested_languages(cls, value: object) -> object:
-        """Normalize missing/empty requested languages to a single English default."""
+        """Normalize languages and make English the canonical first language."""
         if value is None:
             return ["en"]
         if not isinstance(value, list):
@@ -299,17 +270,28 @@ class PrioritizerRequestData(BaseModel):
         normalized_languages = [
             str(item).strip().lower() for item in value if str(item).strip()
         ]
-        if not normalized_languages:
-            return ["en"]
-        return list(dict.fromkeys(normalized_languages))
+        normalized_languages = normalized_languages or ["en"]
+        deduplicated = list(dict.fromkeys(normalized_languages))
+        supported = set(supported_languages())
+        unsupported = [
+            language for language in deduplicated if language not in supported
+        ]
+        if unsupported:
+            raise ValueError(
+                "requestedLanguages contains unsupported languages: "
+                f"{unsupported}; supported languages are {sorted(supported)}"
+            )
+        return ["en", *[language for language in deduplicated if language != "en"]]
 
 
 class PrioritizerApiRequest(BaseModel):
-    """Caller -> hiap-meed request envelope for single or multi-city prioritization."""
+    """Caller request for single or multi-city prioritization."""
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: PrioritizerRequestData = Field(
         description="Prioritization request payload."
     )
@@ -320,8 +302,7 @@ class PrioritizerApiRequest(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - ExplanationTranslationApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: ExplanationTranslationRequestData
 #     - rankedActions: list[ExplanationTranslationActionInput]
 # - ExplanationTranslationApiResponse
@@ -356,7 +337,10 @@ class ExplanationTranslationRequestData(BaseModel):
     )
     targetLanguages: list[str] = Field(
         min_length=1,
-        description="Non-English language codes to translate the canonical explanations into.",
+        description=(
+            "Non-English target languages configured in the shared terminology "
+            "catalogue."
+        ),
     )
     rankedActions: list[ExplanationTranslationActionInput] = Field(
         min_length=1,
@@ -386,11 +370,18 @@ class ExplanationTranslationRequestData(BaseModel):
     @field_validator("targetLanguages")
     @classmethod
     def _validate_target_languages(cls, value: list[str]) -> list[str]:
-        """Ensure translation targets are non-empty and do not include English."""
+        """Require non-English targets supported by the shared terminology catalogue."""
         if not value:
             raise ValueError("targetLanguages must contain at least one language")
         if "en" in value:
             raise ValueError("targetLanguages must not include `en`")
+        supported = set(supported_languages())
+        unsupported = [language for language in value if language not in supported]
+        if unsupported:
+            raise ValueError(
+                "targetLanguages contains unsupported languages: "
+                f"{unsupported}; supported languages are {sorted(supported - {'en'})}"
+            )
         return value
 
     @model_validator(mode="after")
@@ -413,11 +404,13 @@ class ExplanationTranslationRequestData(BaseModel):
 
 
 class ExplanationTranslationApiRequest(BaseModel):
-    """Caller -> hiap-meed request envelope for stateless explanation translation."""
+    """Caller request for stateless explanation translation."""
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta = Field(description="Caller request metadata envelope.")
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: ExplanationTranslationRequestData = Field(
         description="Explanation translation request payload."
     )
@@ -428,8 +421,7 @@ class ExplanationTranslationApiRequest(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - ExclusionPreviewApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: ExclusionPreviewRequestData
 #     - cityDataList: list[ExclusionPreviewCityInput]
 # - ExclusionPreviewApiResponse
@@ -480,11 +472,13 @@ class ExclusionPreviewRequestData(BaseModel):
 
 
 class ExclusionPreviewApiRequest(BaseModel):
-    """Caller -> hiap-meed request envelope for exclusion preview."""
+    """Caller request for exclusion preview."""
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: ExclusionPreviewRequestData
 
 
@@ -524,6 +518,7 @@ class ExclusionPreviewApiResponse(BaseModel):
     """Top-level response for exclusion preview."""
 
     results: list[ExclusionPreviewCityResult] = Field(default_factory=list)
+    meta: ApiResponseMeta
 
 
 # ============================================================================
@@ -880,6 +875,7 @@ class ActionPolicyEvidence(BaseModel):
     page: int | None = None
     evidence_strength: float | None = None
     evidence_text: str | None = None
+    link: str | None = None
 
 
 class ActionPolicyScoreApiItem(BaseModel):
@@ -982,6 +978,90 @@ class ActionFinancialFeasibilityScoresApiResponse(BaseModel):
 
     meta: ActionFinancialFeasibilityScoresApiMeta
     data: list[ActionFinancialFeasibilityScoreApiItem] = Field(default_factory=list)
+
+
+class ClimateFinanceCatalogueDataSource(BaseModel):
+    """Public datasource attribution returned by climate-finance catalogues."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    publisher_name: str | None = None
+    publisher_url: str | None = None
+    dataset_name: str | None = None
+    dataset_url: str | None = None
+
+
+class ClimateFinanceOpportunitiesApiMeta(BaseModel):
+    """Metadata returned by the climate-finance opportunities endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    count: int | None = None
+    datasources: list[ClimateFinanceCatalogueDataSource] = Field(default_factory=list)
+
+
+class ClimateFinanceOpportunityApiItem(BaseModel):
+    """One named financing opportunity returned by the upstream catalogue."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    opportunity_name: str
+    funder_name: str | None = None
+    instrument: str | None = None
+    status: str | None = None
+    status_as_of: str | None = None
+    recurrence: str | None = None
+    source_url: str | None = None
+    amount_note: str | None = None
+    city_application: list[str] = Field(default_factory=list)
+    climate_relevance: str | None = None
+
+
+class ClimateFinanceOpportunitiesApiResponse(BaseModel):
+    """Response model for named climate-finance opportunities."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ClimateFinanceOpportunitiesApiMeta
+    data: list[ClimateFinanceOpportunityApiItem] = Field(default_factory=list)
+
+
+class ClimateFinanceProjectsApiMeta(BaseModel):
+    """Metadata returned by the comparable climate-projects endpoint."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    generated_at_utc: str | None = None
+    total: int | None = None
+    count: int | None = None
+    datasources: list[ClimateFinanceCatalogueDataSource] = Field(default_factory=list)
+
+
+class ClimateFinanceProjectApiItem(BaseModel):
+    """One comparable project returned by the upstream catalogue."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    project_name: str
+    project_name_i18n: dict[str, str] = Field(default_factory=dict)
+    sector: str | None = None
+    jurisdiction: str | None = None
+    lifecycle_stage: str | None = None
+    funding_channel: str | None = None
+    cost_total: float | None = None
+    amount_unit: str | None = None
+    funding_sources: list[dict[str, Any]] = Field(default_factory=list)
+    action_matches: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class ClimateFinanceProjectsApiResponse(BaseModel):
+    """Response model for selected-action comparable climate projects."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    meta: ClimateFinanceProjectsApiMeta
+    data: list[ClimateFinanceProjectApiItem] = Field(default_factory=list)
 
 
 class ActionLegalAssessmentApiItem(BaseModel):
@@ -1186,13 +1266,9 @@ class RankedActionFeasibilityLegalEvidence(BaseModel):
         default=None,
         description="Normalized ownership authority score when present.",
     )
-    ownership_description: str | None = Field(
-        default=None,
-        description="English plain-language description of who has legal authority.",
-    )
-    ownership_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of who has legal authority.",
+    ownership_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Plain-language description of legal authority keyed by language.",
     )
     restrictions_category: str | None = Field(
         default=None,
@@ -1202,21 +1278,13 @@ class RankedActionFeasibilityLegalEvidence(BaseModel):
         default=None,
         description="Normalized restrictions score when present.",
     )
-    restrictions_description: str | None = Field(
-        default=None,
-        description="English plain-language description of legal barriers or restrictions.",
+    restrictions_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Description of legal barriers or restrictions keyed by language.",
     )
-    restrictions_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of legal barriers or restrictions.",
-    )
-    legal_justification: str | None = Field(
-        default=None,
-        description="Full Spanish legal reasoning for the verdict when present.",
-    )
-    legal_justification_en: str | None = Field(
-        default=None,
-        description="Full English legal reasoning for the verdict when present.",
+    legal_justification: dict[str, str] = Field(
+        default_factory=dict,
+        description="Full legal reasoning for the verdict keyed by language.",
     )
     legal_references: list[str] = Field(
         default_factory=list,
@@ -1330,14 +1398,19 @@ class PrioritizationExplanationMetadata(BaseModel):
         description="Whether the caller requested explanation generation."
     )
     generated: int = Field(
-        description="Number of ranked actions with generated canonical explanations."
+        description=(
+            "Number of ranked actions with explanations in every requested language."
+        )
     )
     requested_languages: list[str] = Field(
         default_factory=list,
         description="Languages requested by the caller for explanations.",
     )
     canonical_language: str = Field(
-        description="Canonical source language used for explanation generation."
+        description=(
+            "Stable English reference language; this does not select or order generated "
+            "languages."
+        )
     )
     generated_languages: list[str] = Field(
         default_factory=list,
@@ -1345,7 +1418,7 @@ class PrioritizationExplanationMetadata(BaseModel):
     )
     translation_warnings: list[str] = Field(
         default_factory=list,
-        description="Human-readable warnings from explanation translation.",
+        description="Human-readable explanation-generation warnings.",
     )
 
 
@@ -1370,13 +1443,9 @@ class HardFilterLegalAssessmentSummary(BaseModel):
         default=None,
         description="Normalized ownership authority score when present.",
     )
-    ownership_description: str | None = Field(
-        default=None,
-        description="English plain-language description of who has legal authority.",
-    )
-    ownership_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of who has legal authority.",
+    ownership_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Plain-language description of legal authority keyed by language.",
     )
     restrictions_category: str | None = Field(
         default=None,
@@ -1386,21 +1455,13 @@ class HardFilterLegalAssessmentSummary(BaseModel):
         default=None,
         description="Normalized restrictions score when present.",
     )
-    restrictions_description: str | None = Field(
-        default=None,
-        description="English plain-language description of legal barriers or restrictions.",
+    restrictions_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Description of legal barriers or restrictions keyed by language.",
     )
-    restrictions_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of legal barriers or restrictions.",
-    )
-    legal_justification: str | None = Field(
-        default=None,
-        description="Full Spanish legal reasoning for the verdict when present.",
-    )
-    legal_justification_en: str | None = Field(
-        default=None,
-        description="Full English legal reasoning for the verdict when present.",
+    legal_justification: dict[str, str] = Field(
+        default_factory=dict,
+        description="Full legal reasoning for the verdict keyed by language.",
     )
     legal_references: list[str] = Field(
         default_factory=list,
@@ -1458,13 +1519,9 @@ class RemovedActionLegalEvidence(BaseModel):
         default=None,
         description="Normalized ownership authority score when present.",
     )
-    ownership_description: str | None = Field(
-        default=None,
-        description="English plain-language description of who has legal authority.",
-    )
-    ownership_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of who has legal authority.",
+    ownership_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Plain-language description of legal authority keyed by language.",
     )
     restrictions_category: str | None = Field(
         default=None,
@@ -1474,21 +1531,13 @@ class RemovedActionLegalEvidence(BaseModel):
         default=None,
         description="Normalized restrictions score when present.",
     )
-    restrictions_description: str | None = Field(
-        default=None,
-        description="English plain-language description of legal barriers or restrictions.",
+    restrictions_description: dict[str, str] = Field(
+        default_factory=dict,
+        description="Description of legal barriers or restrictions keyed by language.",
     )
-    restrictions_description_es: str | None = Field(
-        default=None,
-        description="Spanish plain-language description of legal barriers or restrictions.",
-    )
-    legal_justification: str | None = Field(
-        default=None,
-        description="Full Spanish legal reasoning for the verdict when present.",
-    )
-    legal_justification_en: str | None = Field(
-        default=None,
-        description="Full English legal reasoning for the verdict when present.",
+    legal_justification: dict[str, str] = Field(
+        default_factory=dict,
+        description="Full legal reasoning for the verdict keyed by language.",
     )
     legal_references: list[str] = Field(
         default_factory=list,
@@ -1600,6 +1649,7 @@ class ExplanationTranslationApiResponse(BaseModel):
         default_factory=list,
         description="Top-level human-readable warnings aggregated by the backend.",
     )
+    meta: ApiResponseMeta
 
 
 class PrioritizerApiCityResult(BaseModel):
@@ -1623,16 +1673,29 @@ class PrioritizerApiCityResult(BaseModel):
     )
     warnings: list[str] = Field(
         default_factory=list,
-        description="Top-level warnings for this city's explanation/translation flow.",
+        description="Top-level warnings for this city's explanation flow.",
     )
 
 
 class PrioritizerApiResponse(BaseModel):
-    """Top-level response for the caller prioritization request envelope."""
+    """Top-level response for a caller prioritization request."""
 
     results: list[PrioritizerApiCityResult] = Field(
         default_factory=list,
         description="One prioritization result entry per requested city.",
+    )
+    meta: ApiResponseMeta
+
+
+class PrioritizerSnapshotResponse(BaseModel):
+    """Prioritization response accepted in stored frontend snapshots."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    results: list[PrioritizerApiCityResult] = Field(default_factory=list)
+    meta: ApiResponseMeta | None = Field(
+        default=None,
+        description="Response metadata, optional for snapshots stored before this contract.",
     )
 
 
@@ -1641,22 +1704,21 @@ class PrioritizerApiResponse(BaseModel):
 # ----------------------------------------------------------------------------
 # Composition:
 # - CityActionReportApiRequest
-#   - meta: FrontendRequestMeta
-#     - apiContext: FrontendApiContext
+#   - meta.requestId: caller correlation ID
 #   - requestData: CityActionReportRequestData
 #     - locode: str
 #     - actionId: str
-#     - language: str
+#     - language: list[str]
 #     - prioritizationSnapshot: CityActionPrioritizationSnapshot
 #       - request: PrioritizerApiRequest
-#       - response: PrioritizerApiResponse
+#       - response: PrioritizerSnapshotResponse
 #       - storedAtUtc: str | None
 #     - debugContextOnly: bool
 # - CityActionReportApiResponse
 #   - locode: str
 #   - action_id: str
-#   - language: str
-#   - format: Literal["json_chapters_markdown"]
+#   - language: list[str]
+#   - format: Literal["json_chapters_markdown_i18n"]
 #   - chapters: list[CityActionReportChapter]
 #   - metadata: CityActionReportMetadata
 #     - source_context: CityActionReportSourceContext
@@ -1672,7 +1734,7 @@ class CityActionPrioritizationSnapshot(BaseModel):
     request: PrioritizerApiRequest = Field(
         description="Original /v1/prioritize request used to create the ranking."
     )
-    response: PrioritizerApiResponse = Field(
+    response: PrioritizerSnapshotResponse = Field(
         description="Full /v1/prioritize response returned to the frontend."
     )
     storedAtUtc: str | None = Field(
@@ -1695,9 +1757,12 @@ class CityActionReportRequestData(BaseModel):
 
     locode: str = Field(min_length=1, description="UN/LOCODE for the ranked city.")
     actionId: str = Field(min_length=1, description="Selected ranked action ID.")
-    language: str = Field(
-        min_length=2,
-        description="Requested report language, usually one of requestedLanguages.",
+    language: list[str] = Field(
+        min_length=1,
+        description=(
+            "Report languages in frontend display order. English is always "
+            "included first as the canonical generation language."
+        ),
     )
     prioritizationSnapshot: CityActionPrioritizationSnapshot = Field(
         description="Original prioritization request and response snapshot."
@@ -1721,9 +1786,23 @@ class CityActionReportRequestData(BaseModel):
 
     @field_validator("language")
     @classmethod
-    def _normalize_language(cls, value: str) -> str:
-        """Normalize report language casing and reject blank values."""
-        return _normalize_required_lower_string(value, "language")
+    def _normalize_languages(cls, value: list[str]) -> list[str]:
+        """Normalize report languages and prepend canonical English."""
+        normalized = [
+            _normalize_required_lower_string(language, "language")
+            for language in value
+        ]
+        if not normalized:
+            raise ValueError("language must contain at least one requested language")
+        deduplicated = list(dict.fromkeys(normalized))
+        supported = set(supported_languages())
+        unsupported = [language for language in deduplicated if language not in supported]
+        if unsupported:
+            raise ValueError(
+                "language contains unsupported report languages: "
+                f"{unsupported}; supported languages are {sorted(supported)}"
+            )
+        return ["en", *[language for language in deduplicated if language != "en"]]
 
 
 class CityActionReportApiRequest(BaseModel):
@@ -1731,25 +1810,27 @@ class CityActionReportApiRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    meta: FrontendRequestMeta = Field(description="Caller request metadata.")
+    meta: ApiRequestMeta = Field(
+        description="Minimal caller metadata used to correlate the response.",
+    )
     requestData: CityActionReportRequestData = Field(
         description="Single-city, single-action output-plan request data."
     )
 
 
 class CityActionReportChapter(BaseModel):
-    """One Markdown chapter in the output-plan response."""
+    """One localized Markdown chapter in the output-plan response."""
 
     key: str = Field(description="Stable chapter key.")
-    title: str = Field(description="Human-readable chapter title.")
-    markdown: str = Field(description="Markdown body for the chapter.")
+    title: dict[str, str] = Field(description="Chapter title keyed by language.")
+    markdown: dict[str, str] = Field(description="Markdown body keyed by language.")
     source_refs: list[str] = Field(
         default_factory=list,
         description="Source identifiers used by this chapter when available.",
     )
-    limitations: list[str] = Field(
-        default_factory=list,
-        description="Chapter-specific diagnostic limitations for source-status handling.",
+    limitations: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="Frontend-visible chapter limitations keyed by language.",
     )
 
 
@@ -1806,8 +1887,8 @@ class CityActionReportApiResponse(BaseModel):
 
     locode: str = Field(description="UN/LOCODE for the report city.")
     action_id: str = Field(description="Selected action ID.")
-    language: str = Field(description="Report language.")
-    format: Literal["json_chapters_markdown"] = "json_chapters_markdown"
+    language: list[str] = Field(description="Languages generated for this report.")
+    format: Literal["json_chapters_markdown_i18n"] = "json_chapters_markdown_i18n"
     chapters: list[CityActionReportChapter] = Field(
         default_factory=list,
         description="Ordered report chapters with Markdown bodies.",
@@ -1815,5 +1896,35 @@ class CityActionReportApiResponse(BaseModel):
     metadata: CityActionReportMetadata = Field(
         description="Request correlation and source-context metadata."
     )
+    meta: ApiResponseMeta
+
+    @model_validator(mode="after")
+    def _validate_localized_chapter_coverage(self) -> CityActionReportApiResponse:
+        """Require every frontend-visible chapter field in every requested language."""
+        expected = set(self.language)
+        if not expected:
+            raise ValueError("language must contain at least one generated language")
+        for chapter in self.chapters:
+            localized_fields = {
+                "title": chapter.title,
+                "markdown": chapter.markdown,
+                "limitations": chapter.limitations,
+            }
+            for field_name, localized in localized_fields.items():
+                if set(localized) != expected:
+                    raise ValueError(
+                        f"chapters[{chapter.key}].{field_name} must contain exactly "
+                        f"the requested languages {self.language}"
+                    )
+            for language in self.language:
+                if not chapter.title[language].strip():
+                    raise ValueError(
+                        f"chapters[{chapter.key}].title[{language}] must not be blank"
+                    )
+                if not chapter.markdown[language].strip():
+                    raise ValueError(
+                        f"chapters[{chapter.key}].markdown[{language}] must not be blank"
+                    )
+        return self
 
 

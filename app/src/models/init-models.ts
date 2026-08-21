@@ -101,6 +101,16 @@ import type {
 } from "./ImportedInventoryFile";
 import { ImportedInventoryFile as _ImportedInventoryFile } from "./ImportedInventoryFile";
 import type {
+  PdfOcrJobAttributes,
+  PdfOcrJobCreationAttributes,
+} from "./PdfOcrJob";
+import { PdfOcrJob as _PdfOcrJob } from "./PdfOcrJob";
+import type {
+  NativeInputCatalogAttributes,
+  NativeInputCatalogCreationAttributes,
+} from "./NativeInputCatalog";
+import { NativeInputCatalog as _NativeInputCatalog } from "./NativeInputCatalog";
+import type {
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
 } from "./ImportMappingFeedback";
@@ -220,18 +230,17 @@ import {
   UnrankedActionSelectionCreationAttributes,
 } from "./UnrankedActionSelection";
 
-import { OAuthClient as _OAuthClient } from "./OAuthClient";
 import {
+  OAuthClient as _OAuthClient,
   OAuthClientAttributes,
   OAuthClientCreationAttributes,
   OAuthClientOptionalAttributes,
 } from "./OAuthClient";
-import { OAuthClientI18N as _OAuthClientI18N } from "./OAuthClientI18N";
 import {
+  OAuthClientI18N as _OAuthClientI18N,
   OAuthClientI18NAttributes,
   OAuthClientI18NCreationAttributes,
   OAuthClientI18NOptionalAttributes,
-  OAuthClientI18N,
 } from "./OAuthClientI18N";
 
 import { OAuthClientAuthz as _OAuthClientAuthz } from "./OAuthClientAuthz";
@@ -270,6 +279,8 @@ export {
   _GHGs as GHGs,
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
+  _PdfOcrJob as PdfOcrJob,
+  _NativeInputCatalog as NativeInputCatalog,
   _ImportMappingFeedback as ImportMappingFeedback,
   _Methodology as Methodology,
   _Organization as Organization,
@@ -348,6 +359,10 @@ export type {
   InventoryCreationAttributes,
   ImportedInventoryFileAttributes,
   ImportedInventoryFileCreationAttributes,
+  PdfOcrJobAttributes,
+  PdfOcrJobCreationAttributes,
+  NativeInputCatalogAttributes,
+  NativeInputCatalogCreationAttributes,
   ImportMappingFeedbackAttributes,
   ImportMappingFeedbackCreationAttributes,
   MethodologyAttributes,
@@ -443,6 +458,8 @@ export function initModels(sequelize: Sequelize) {
   const GHGs = _GHGs.initModel(sequelize);
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
+  const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
+  const NativeInputCatalog = _NativeInputCatalog.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const Methodology = _Methodology.initModel(sequelize);
   const Organization = _Organization.initModel(sequelize);
@@ -1207,6 +1224,8 @@ export function initModels(sequelize: Sequelize) {
     GHGs: GHGs,
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
+    PdfOcrJob: PdfOcrJob,
+    NativeInputCatalog: NativeInputCatalog,
     ImportMappingFeedback: ImportMappingFeedback,
     Methodology: Methodology,
     Organization: Organization,

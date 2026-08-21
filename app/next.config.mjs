@@ -8,14 +8,32 @@ const packageInfo = JSON.parse(packageJson);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   trailingSlash: true,
-  // Keep PDF parsers outside Turbopack/webpack bundles. pdf-parse's vendored pdf.js
-  // historically produced "bad XRef entry" when bundled; unpdf is the Path C extractor.
-  serverExternalPackages: ["sequelize", "unpdf"],
+  serverExternalPackages: ["sequelize"],
   turbopack: {
     rules: {},
   },
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
+  },
+  // Org logos / branding and other S3 objects used with next/image
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.s3.us-east-1.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.eu-north-1.amazonaws.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "*.s3.amazonaws.com",
+        pathname: "/**",
+      },
+    ],
   },
   env: {
     APP_VERSION: packageInfo.version,

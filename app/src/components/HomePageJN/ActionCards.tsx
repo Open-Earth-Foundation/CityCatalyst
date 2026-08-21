@@ -23,7 +23,6 @@ import {
 import { MdArrowForward } from "react-icons/md";
 import { AllProjectsIcon } from "../icons";
 import ActionCardSmall from "./ActionCardSmall";
-import { useGetUserAccessStatusQuery } from "@/services/api";
 
 export function ActionCards({
   organization,
@@ -31,20 +30,17 @@ export function ActionCards({
   t,
   city,
   ghgiCityData,
+  isCollaboratorRole,
 }: {
   t: TFunction;
   organization: OrganizationWithThemeResponse;
   lng: string;
   city?: CityWithProjectDataResponse;
   ghgiCityData?: InventoryResponse;
+  isCollaboratorRole: boolean;
 }) {
   const router = useRouter();
-  const { data: accessStatus } = useGetUserAccessStatusQuery({});
-  const isCollaborator =
-    accessStatus?.isCollaborator &&
-    !accessStatus?.isOrgOwner &&
-    !accessStatus?.isProjectAdmin;
-  const hasNoInventory = !ghgiCityData;
+  const hasNoData = !ghgiCityData || ghgiCityData.totalEmissions == null;
   return (
     <Box display="flex" gap={6} w="full">
       <Box display="flex" flexDirection="column" gap={2} w="full">
@@ -58,7 +54,7 @@ export function ActionCards({
           <GridItem
             colSpan={1}
             rowSpan={{ base: 1, md: 2 }}
-            bg={isCollaborator && hasNoInventory ? "background.neutral" : "base.light"}
+            bg={isCollaboratorRole && hasNoData ? "background.neutral" : "base.light"}
             borderRadius="lg"
             p={6}
             color="base.dark"
@@ -70,7 +66,7 @@ export function ActionCards({
             borderWidth="2px"
             borderColor="border.neutral"
           >
-            {isCollaborator && hasNoInventory ? (
+            {isCollaboratorRole && hasNoData ? (
               <Box>
                 <Text fontWeight="bold" fontSize="xl" mb={2}>
                   {t("no-inventory-title")}
@@ -104,7 +100,7 @@ export function ActionCards({
                   />
                 </Text>
               </Box>
-            ) : ghgiCityData ? (
+            ) : !hasNoData ? (
               <>
                 <Box>
                   <HStack alignItems="center">

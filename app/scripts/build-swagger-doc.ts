@@ -101,6 +101,15 @@ function generateOpenAPISpec() {
             description: "Waste composition operations",
           },
           {
+            name: "concept-notes",
+            description: "Concept Note Builder run and upload operations",
+          },
+          {
+            name: "concept-notes-internal",
+            description:
+              "Authenticated CityCatalyst and Climate Advisor integration contracts",
+          },
+          {
             name: "cron",
             description: "Cron job operations",
           },

@@ -3,14 +3,12 @@ import {
   Icon,
   IconButton,
   Spinner,
-  Tabs,
   Text,
   Badge,
   Card,
   Center,
   Flex,
   Heading,
-  HStack,
   Link,
   SimpleGrid,
   VStack,
@@ -42,7 +40,6 @@ import {
   MdModeEditOutline,
   MdCheckCircleOutline,
   MdInfoOutline,
-  MdClose,
   MdOutlineHomeWork,
   MdOutlineLocalShipping,
   MdOutlineDelete,
@@ -55,12 +52,15 @@ import { useOrganizationContext } from "@/hooks/organization-context-provider/us
 import { Tooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { SourceDrawer } from "@/components/GHGI/data-step/SourceDrawer";
-import { convertKgToTonnes } from "@/util/helpers";
-import { bigIntToDecimal } from "@/util/big_int";
+import { convertKgToTonnes, getApiErrorMessage } from "@/util/helpers";
+import Decimal from "decimal.js";
 import { getTranslationFromDict } from "@/i18n";
 import { DataCheckIcon } from "@/components/icons";
 import { logger } from "@/services/logger";
-import type { DataSourceWithRelations } from "@/components/GHGI/data-step/types";
+import type {
+  DataSourceWithRelations,
+  GlobalAPISourceResponse,
+} from "@/components/GHGI/data-step/types";
 import { SECTORS } from "@/util/constants";
 import { UseErrorToast } from "@/hooks/Toasts";
 import { toaster } from "@/components/ui/toaster";
@@ -123,9 +123,13 @@ const ActivityTab: FC<ActivityTabProps> = ({
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
   const [selectedSource, setSelectedSource] = useState<DataSourceWithRelations>();
-  const [selectedSourceData, setSelectedSourceData] = useState<any>();
+  const [selectedSourceData, setSelectedSourceData] =
+    useState<GlobalAPISourceResponse>();
 
-  const onSourceClick = (source: DataSourceWithRelations, data: any) => {
+  const onSourceClick = (
+    source: DataSourceWithRelations,
+    data: GlobalAPISourceResponse,
+  ) => {
     setSelectedSource(source);
     setSelectedSourceData(data);
     onSourceDrawerOpen();
@@ -188,12 +192,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
         );
         onSourceDrawerClose();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to connect data source",
       );
-      showError("data-source-connect-failed", error.data?.error?.message);
+      showError("data-source-connect-failed", getApiErrorMessage(error));
     } finally {
       setConnectingDataSourceId(null);
       refetchDataSources();
@@ -215,11 +219,12 @@ const ActivityTab: FC<ActivityTabProps> = ({
       setNewlyConnectedDataSourceIds(
         newlyConnectedDataSourceIds.filter((id) => id !== source.datasourceId),
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error(
         { err: error, source: source },
         "Failed to disconnect data source",
       );
+      showError("disconnect-data-source-error", "data-source-connect-load-error");
     } finally {
       setDisconnectingDataSourceId(null);
       refetchDataSources();
@@ -282,7 +287,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
     let methodologyId: string | null | undefined = undefined;
     const filteredValues = activityData?.filter((activity) => {
       const activityValue = activity as unknown as ActivityValue; // TODO use InventoryValueResponse/ ActivityValueResponse everywhere
-      let isCurrentRefno =
+      const isCurrentRefno =
         activityValue.inventoryValue.gpcReferenceNumber === referenceNumber;
       if (isCurrentRefno && !methodologyId) {
         methodologyId = activityValue.inventoryValue.inputMethodology;
@@ -292,7 +297,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
     // TODO remove this. Only extract the methodology from the inventory value if it exists
     if (methodologyId) {
-      let methodology =
+      const methodology =
         methodologies.find((methodology) => methodology.id === methodologyId) ??
         directMeasure;
       setSelectedMethodology(methodologyId);
@@ -397,7 +402,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
 
   const suggestedActivities: SuggestedActivity[] = getSuggestedActivities();
 
-  const handleSwitch = (e: any) => {
+  const handleSwitch = () => {
     if (!inventoryValue?.unavailableExplanation && !showUnavailableForm) {
       showUnavailableFormFunc();
     }
@@ -454,7 +459,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
             checked={
               showUnavailableForm || !!inventoryValue?.unavailableExplanation
             }
-            onChange={(e) => (isFrozenCheck() ? null : handleSwitch(e))}
+            onChange={() => (isFrozenCheck() ? null : handleSwitch())}
           />
           <Text
             opacity={!!externalInventoryValue ? 0.4 : 1}
@@ -721,10 +726,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
                   <Card.Body justifyContent="space-between" p="0" mt="12px">
                     <Flex direction="row" mb={0} wrap="wrap" gap={2}>
                       {data?.totals?.emissions?.co2eq_100yr != null &&
-                        data.totals.emissions.co2eq_100yr !== 0n && (
+                        Number(data.totals.emissions.co2eq_100yr) !== 0 && (
                         <Text fontSize="display.sm" fontWeight="semibold">
                           {convertKgToTonnes(
-                            bigIntToDecimal(
+                            new Decimal(
                               data.totals.emissions.co2eq_100yr,
                             ).toNumber(),
                           )}

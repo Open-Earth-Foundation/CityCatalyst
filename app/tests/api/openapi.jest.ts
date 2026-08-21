@@ -15,7 +15,16 @@ describe("OpenAPI Specification Endpoint", () => {
   });
 
   describe("GET /api/openapi/json", () => {
-    let openApiSpec: any;
+    let openApiSpec: {
+      info: { title: string; version: string };
+      openapi: string;
+      components: {
+        securitySchemes: {
+          BearerAuth: { type: string; scheme: string; bearerFormat: string };
+        };
+      };
+      paths: Record<string, Record<string, object>>;
+    };
 
     it("should return a JSON response with 200 status", async () => {
       const req = mockRequest();
@@ -113,4 +122,3 @@ describe("OpenAPI Specification Endpoint", () => {
     });
   });
 });
-

@@ -31,7 +31,7 @@ function fkName(table) {
   }
 }
 
-async function dropConstraint(queryInterface, table, foreignTable) {
+async function dropConstraint(queryInterface, table) {
   await queryInterface.sequelize.query(`
     ALTER TABLE "${table}" DROP CONSTRAINT IF EXISTS "${fkName(table)}";
     `);
@@ -59,7 +59,7 @@ async function deleteNonMatching(queryInterface, table, newTable) {
 /** @type {import("sequelize-cli").Migration} */
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     for (const table of TABLES) {
       await dropConstraint(queryInterface, table, OLD_TABLE);
       await deleteNonMatching(queryInterface, table, NEW_TABLE);
@@ -67,7 +67,7 @@ module.exports = {
     }
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     for (const table of TABLES) {
       await dropConstraint(queryInterface, table, NEW_TABLE);
       await addConstraint(queryInterface, table, OLD_TABLE);

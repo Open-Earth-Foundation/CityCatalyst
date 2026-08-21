@@ -153,8 +153,8 @@ What these are used for:
   - `long`
   - `no_preference`
 - `no_preference` is allowed as a neutral choice but may not be combined with other timeframe values.
-- `requestData.requestedLanguages` controls the explanation languages requested for post-ranking output.
-- The backend always generates canonical English explanations first, then translates from English into each requested non-English target language.
+- `requestData.requestedLanguages` controls the requested non-English display languages for post-ranking output. The backend always prepends canonical English, generates explanations in English once, then translates that completed batch into the requested non-English languages. Invalid translation output is retried once; if translation still fails, the canonical English explanations remain in the response with a warning.
+- The backend generates each requested language independently from the same curated evidence and deterministic terminology in `app/modules/prioritizer/translations.yaml`.
 - `totalEmissions` values are the main city emissions numbers used in the Impact block.
 - `activityType` rows are preserved for future activity-data-level matching and diagnostics, but they do not currently change ranking output.
 
@@ -196,10 +196,12 @@ File:
 
 Contract note:
 
-- This file mirrors `GET /api/v1/action-pathways` with no query parameters.
-- The action client returns the full upstream catalog. The prioritization
-  pipeline then keeps only mitigation actions as a fixed runtime filter, not a
-  frontend-request filter.
+- This file mirrors `GET /api/v1/action-pathways?lang=all`, including the upstream multilingual text maps.
+- The action client returns the full upstream catalog. The shared
+  `select_prioritizable_actions()` rule then keeps only actions whose normalized
+  action type is `mitigation`. Missing types remain visible in diagnostics.
+- The public action GET, exclusion preview, prioritization, and output-plan
+  enrichment all use this same selected set.
 
 Fields that affect the result:
 
@@ -221,9 +223,9 @@ Fields that affect the result:
 What these are used for:
 
 - `actionId` identifies and sorts actions.
-- `actionType` is filtered to the currently supported value, `mitigation`.
+- `actionType` drives the shared membership rule described above.
 - `actionName`, `description`, `interventionType`, and `actionRole` are used in exclusion preview free-text matching.
-- For the free-text preview prompt, the service sends all actions but only with:
+- For the free-text preview prompt, the service sends all selected actions but only with:
   - action ID
   - action name
   - action description
@@ -1059,14 +1061,11 @@ Key evidence fields in `012_feasibility.json` are grouped per component:
   - `verdict_score_missing`
   - `ownership_category`
   - `ownership_score`
-  - `ownership_description`
-  - `ownership_description_es`
+  - `ownership_description` (text keyed by available language code)
   - `restrictions_category`
   - `restrictions_score`
-  - `restrictions_description`
-  - `restrictions_description_es`
-  - `legal_justification`
-  - `legal_justification_en`
+  - `restrictions_description` (text keyed by available language code)
+  - `legal_justification` (text keyed by available language code)
   - `analysis_date`
   - `generation_method`
   - `references`
@@ -1211,14 +1210,13 @@ Important current behavior:
   3. the single weakest feasibility component, or a supportive feasibility reason when feasibility is not a constraint.
 - The generated text should explain why the ranking looks the way it does without repeating the numeric score bars already present in the response.
 - The explanation stage returns explanation texts keyed by language code per action.
-- The canonical explanation language is `en`.
-- Requested non-English explanation languages are produced by translating the canonical English explanation after ranking.
+- Every requested explanation language is generated independently after ranking; recurring GPC, co-benefit, timeframe, feasibility, finance-route, score, and legal-verdict labels come from the shared translation catalogue.
 - Response metadata records `generated_languages` as the languages actually present in the returned explanation payload.
 - Explanations receive `cityStrategicPreferenceCoBenefitKeys[]` directly from the request context
 - The backend logs a warning if the explanation prompt becomes unusually large
 - If explanation generation fails or times out, ranking still returns normally with `explanations={}`
 - When explanation artifacts are enabled, the run folder stores:
-  - `llm/explanations_prompt.txt`
+  - `llm/explanations/<language>_prompt.txt`
   - `llm/explanations_io.json`
 
 Key metadata includes:
@@ -1293,8 +1291,8 @@ Current behavior:
 
 - `{}` unless `requestData.createExplanations=true` and explanation generation succeeds
 - when generated, the field is an object keyed by language code
-- canonical English explanations are generated first and requested non-English languages are returned through the current translation flow
-- `/v1/explanations/translate` is already available as the stateless translation endpoint for canonical explanation text
+- each requested language is generated independently using the shared terminology catalogue
+- `/v1/explanations/translate` remains available as a separate stateless endpoint for caller-supplied canonical English text; it accepts only catalogue-supported targets and injects the same deterministic terminology into its translation prompt. The prioritization flow uses the same translation service internally after generating its canonical English batch.
 
 Planned improvements:
 

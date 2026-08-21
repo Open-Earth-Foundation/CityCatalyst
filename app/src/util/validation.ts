@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+  OrganizationPlanType,
+} from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
@@ -7,6 +11,14 @@ export const emailPattern =
 export const tokenRegex = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9_\-]+$/;
 export const uuidRegex =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Returns true when a password meets the minimum strength requirements:
+ *  at least 8 characters, one uppercase letter, one lowercase letter, one digit. */
+export const isPasswordPatternValid = (password: string): boolean =>
+  password.length >= 8 &&
+  /[A-Z]/.test(password) &&
+  /[a-z]/.test(password) &&
+  /[0-9]/.test(password);
 
 export const geoJSON = z.object({
   title: z.string(),
@@ -185,11 +197,13 @@ export const AcceptOrganizationInvite = z.object({
 
 export const CreateUsersInvite = z.object({
   projectId: z.string().uuid(),
-  cityIds: z.array(z.string()),
-  invites: z.array(z.object({
-    email: z.string().email(),
-    role: z.enum(["admin", "collaborator"]),
-  })),
+  cityIds: z.array(z.string()).min(1),
+  invites: z.array(
+    z.object({
+      email: z.string().email(),
+      role: z.enum(["admin", "collaborator"]),
+    }),
+  ),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
@@ -252,8 +266,8 @@ export const fetchEmissionsFactorRequest = z.object({
 });
 
 export const updatePasswordRequest = z.object({
-  currentPassword: z.string().min(4).max(64),
-  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
+  currentPassword: z.string().min(8).max(64),
+  confirmPassword: z.string().min(8).max(64).regex(passwordRegex),
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
@@ -266,6 +280,7 @@ export const createOrganizationRequest = z.object({
       message: "Organization name cannot be 'cc_organization_default'",
     }),
   contactEmail: z.string().email().max(255),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
 });
 
 export type CreateOrganizationRequest = z.infer<
@@ -275,6 +290,8 @@ export type CreateOrganizationRequest = z.infer<
 export const updateOrganizationRequest = z.object({
   name: z.string().max(255).optional(),
   contactEmail: z.string().email().max(255).optional(),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
+  trialEndsAt: z.coerce.date().nullable().optional(),
 });
 
 export type UpdateOrganizationRequest = z.infer<
@@ -347,3 +364,55 @@ export const createChatThreadRequest = z.object({
 });
 
 export type CreateChatThreadRequest = z.infer<typeof createChatThreadRequest>;
+
+export const conceptNoteStartRequest = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    city_id: z.string().uuid(),
+    project_id: z.string().trim().min(1).max(255).nullable().optional(),
+    funder_id: z.string().uuid().nullable().optional(),
+    selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
+    thread_id: z.string().uuid().nullable().optional(),
+    idempotency_key: z.string().uuid(),
+  })
+  .superRefine((request, context) => {
+    if (request.selected_funding_opportunity_id && !request.funder_id) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "funder_id is required when selected_funding_opportunity_id is provided",
+        path: ["funder_id"],
+      });
+    }
+  });
+
+export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;
+
+export const nativeInputCatalogRegisterRequest = z.object({
+  kind: z.string().trim().min(1).max(64),
+  owningModule: z.string().trim().min(1).max(64),
+  sourceType: z.string().trim().min(1).max(64),
+  sourceId: z.string().trim().min(1).max(255),
+  userId: z.string().uuid().nullable().optional(),
+  inventoryId: z.string().uuid().nullable().optional(),
+  cityId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  organizationId: z.string().uuid().nullable().optional(),
+  contentDigest: z.string().trim().min(1).max(128).nullable().optional(),
+  markdownReady: z.boolean().nullable().optional(),
+  labels: z.record(z.string(), z.unknown()).nullable().optional(),
+});
+
+export type NativeInputCatalogRegisterRequest = z.infer<
+  typeof nativeInputCatalogRegisterRequest
+>;
+
+export const nativeInputCatalogReconciliationRequest = z.object({
+  mode: z.enum(["dry-run", "apply"]),
+  limit: z.number().int().min(1).max(1000).optional(),
+  maxPages: z.number().int().min(1).max(1000).optional(),
+});
+
+export type NativeInputCatalogReconciliationRequest = z.infer<
+  typeof nativeInputCatalogReconciliationRequest
+>;

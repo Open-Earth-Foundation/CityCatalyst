@@ -4,6 +4,7 @@ import {
   Control,
   Controller,
   FieldValues,
+  Path,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
@@ -20,10 +21,10 @@ interface BuildingTypeSelectInputProps {
   placeholder: string;
   register: UseFormRegister<Inputs>;
   activity: string;
-  errors: Record<string, any>;
+  errors: Record<string, unknown>;
   t: TFunction;
   selectedActivity?: SuggestedActivity;
-  control: Control<FieldValues, any>;
+  control: Control<FieldValues>;
   multiselect?: boolean;
   required?: boolean;
   setValue: UseFormSetValue<Inputs>;
@@ -50,7 +51,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
   useEffect(() => {
     if (prefilledValue) {
       setSelectedActivityValue(prefilledValue);
-      setValue(activity as any, prefilledValue);
+      setValue(activity as Path<Inputs>, prefilledValue);
     }
   }, [activity, prefilledValue, setValue]);
 
@@ -69,7 +70,10 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
     );
   }
 
-  const error = activity.split(".").reduce((acc, key) => acc?.[key], errors);
+  const error = activity.split(".").reduce<unknown>(
+    (acc, key) => (acc as Record<string, unknown> | undefined)?.[key],
+    errors,
+  ) as { message?: string } | undefined;
   const labelText = t(title);
   return (
     <Box display="flex" flexDirection="column" gap="8px" w="full">
@@ -83,7 +87,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
         {labelText}
       </Text>
       <Controller
-        name={activity as any}
+        name={activity as Path<Inputs>}
         control={control}
         defaultValue={selectedActivityValue || ""}
         rules={{
@@ -106,7 +110,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
                 borderColor: "content.link",
                 shadow: "none",
               }}
-              {...register(activity as any, {
+              {...register(activity as Path<Inputs>, {
                 required: required === false ? false : t("option-required"),
               })}
             >
@@ -117,7 +121,7 @@ const BuildingTypeSelectInput: FC<BuildingTypeSelectInputProps> = ({
                 onChange={(e) => {
                   const value = e.currentTarget.value;
                   field.onChange(value);
-                  setValue(activity as any, value);
+                  setValue(activity as Path<Inputs>, value);
                 }}
               >
                 <option value="" disabled hidden>

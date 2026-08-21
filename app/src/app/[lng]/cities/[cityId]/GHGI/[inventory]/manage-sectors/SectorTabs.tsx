@@ -37,6 +37,7 @@ import type { SubCategoryAttributes } from "@/models/SubCategory";
 import type { InventoryValueAttributes } from "@/models/InventoryValue";
 import type { SubSectorAttributes } from "@/models/SubSector";
 import { logger } from "@/services/logger";
+import { getApiErrorMessage, isFetchBaseQueryError } from "@/util/helpers";
 
 interface SubcategoryItem {
   subSectorId: string;
@@ -53,28 +54,28 @@ interface SectorGroup {
   // Include the full sector data (extracted from the first item)
   sector: {
     sectorId: string;
-    sectorName: string;
     referenceNumber?: string;
   };
   items: SubcategoryItem[];
 }
 
-const groupScopesBySector = (data: Record<string, any[]>): SectorGroup[] => {
+const groupScopesBySector = (
+  data: Record<string, ScopeData[]>,
+): SectorGroup[] => {
   return Object.entries(data).map(([sectorRef, items]) => {
     const sector = items[0]?.subSector; // assume all items in this group share the same sector
     return {
       sectorRef: sectorRef as SectorReference,
       sector: {
-        sectorId: sector?.sectorId,
-        sectorName: sector?.sectorName,
+        sectorId: sector?.sectorId ?? "",
         referenceNumber: sector?.referenceNumber,
       },
       items: items.map((item) => ({
-        subSectorId: item.subSector.subsectorId,
-        subSectorName: item.subSector.subsectorName,
-        subCategoryId: item.subCategory.subcategoryId,
-        subCategoryName: item.subCategory.subcategoryName,
-        subCategoryReferenceNumber: item.subCategory.referenceNumber,
+        subSectorId: item.subSector?.subsectorId ?? "",
+        subSectorName: item.subSector?.subsectorName ?? "",
+        subCategoryId: item.subCategory?.subcategoryId ?? "",
+        subCategoryName: item.subCategory?.subcategoryName ?? "",
+        subCategoryReferenceNumber: item.subCategory?.referenceNumber ?? "",
       })),
     };
   });
@@ -135,7 +136,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   const [showDialog, setShowDialog] = useState(false);
   const pathname = usePathname();
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const [nextRoute, setNextRoute] = useState<string | null>(null);
   const [selectedSector, setSelectedSector] = useState<SectorReference>("I");
 
   const {
@@ -151,7 +151,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     if (!isSectorDataLoading && !error && sectorData?.result) {
       const result = Object.entries(
         sectorData.result as Record<string, ScopeData[]>,
-      ).flatMap(([_sectorRefno, scopes]: [string, ScopeData[]]) => {
+      ).flatMap(([, scopes]: [string, ScopeData[]]) => {
         return scopes.map((scope: ScopeData) => [
           scope.subCategory?.subcategoryId,
           {
@@ -186,7 +186,6 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   useEffect(() => {
     if (pathname !== prevPathname) {
       if (isDirty) {
-        setNextRoute(pathname);
         setShowDialog(true);
         // Prevent navigation by pushing back to previous path
         router.replace(prevPathname);
@@ -210,7 +209,7 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   }, [isDirty]);
 
   // update notation keys for subsectors from api service
-  const [createNotationKeys, { isLoading, isError, data, status }] =
+  const [createNotationKeys, { isLoading, isError }] =
     api.useUpdateOrCreateNotationKeysMutation();
   const handleUpdateNotationKeys = async (subCategoryId?: string) => {
     // Valid enum values for unavailableReason
@@ -255,8 +254,8 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     } else {
       // Bulk update all cards that have been edited
       const currentSectorSubCategoryIds =
-        sectorData?.result[selectedSector]?.map(
-          (scope: any) => scope.subCategory.subcategoryId,
+        (sectorData?.result[selectedSector] as ScopeData[] | undefined)?.map(
+          (scope) => scope.subCategory?.subcategoryId,
         ) || [];
 
       notationKeys = Object.entries(cardInputs)
@@ -311,19 +310,26 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
       // clear dirty state on success
       setIsDirty(false);
       // show success toast
-      !isLoading &&
-        !isError &&
+      if (!isLoading && !isError) {
         toaster.success({
           title: t("success"),
           description: t("notation-keys-updated"),
           duration: 5000,
         });
-    } catch (error: any) {
+      }
+    } catch (error: unknown) {
       // Check if error is about emissions data
-      const errorData = error?.data?.error || {};
+      type NotationKeyErrorData = {
+        message?: string;
+        data?: { translationKey?: string; itemName?: string };
+      };
+      const errorData: NotationKeyErrorData =
+        (isFetchBaseQueryError(error) &&
+          (error.data as { error?: NotationKeyErrorData })?.error) ||
+        {};
       const translationKey = errorData.data?.translationKey;
       const itemName = errorData.data?.itemName;
-      const errorMessage = errorData.message || error?.message || "";
+      const errorMessage = errorData.message || getApiErrorMessage(error);
       const hasEmissionsData =
         translationKey === "error-cannot-set-notation-key-emissions-data" ||
         errorMessage.includes("already has emissions data");
@@ -352,24 +358,12 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
     }
   };
 
-  // Modal handlers for unsaved changes
-  const confirmNavigation = () => {
-    setIsDirty(false);
-    if (nextRoute) {
-      setPrevPathname(nextRoute);
-      router.push(nextRoute);
-      setNextRoute(null);
-    }
-    setShowDialog(false);
-  };
-
   const resetFormData = (): void => {
     // Reset all form data to original values
     setCardInputs(originalCardInputs);
     setIsDirty(false);
     setQuickActionValues({});
     setSelectedCardsBySector({});
-    setNextRoute(null);
     setShowDialog(false);
 
     // Force a re-render of the form by resetting the selected sector
@@ -380,7 +374,9 @@ const SectorTabs: FC<SectorTabsProps> = ({ t, inventoryId }) => {
   // Our API response now contains a `result` object keyed by sector ref.
   const groupedSectors: SectorGroup[] = useMemo(() => {
     if (sectorData?.result) {
-      return groupScopesBySector(sectorData.result);
+      return groupScopesBySector(
+        sectorData.result as Record<string, ScopeData[]>,
+      );
     }
     return [];
   }, [sectorData?.result]);

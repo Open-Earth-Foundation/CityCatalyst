@@ -8,6 +8,9 @@ Follow the user prompt exactly.
 - Do not add or remove factual content.
 - Prioritize the main ranking drivers over small supporting details.
 - Write in plain language suitable for a non-technical city user.
+- Write all descriptive text in the requested `language` and copy prepared terminology exactly.
+- Keep official document, programme, agency, law, place, and action names in their source form.
+- Treat English examples as structural guidance only unless `language` is `en`.
 - Return JSON only.
 </task>
 

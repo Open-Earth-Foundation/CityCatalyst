@@ -14,6 +14,7 @@ on:
       - k8s/test/cc-test-ca-smoke-fixture.yml
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test-web.yml
+      - k8s/test/cc-test-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-test.yml
     branches: ["main"]
@@ -225,6 +226,7 @@ jobs:
         run: kubectl get pods -n default
 
       - name: Deploying service
+        id: deploy
         run: |
           kubectl create -f k8s/test/cc-test-migrate.yml -n default
           kubectl create -f k8s/test/cc-test-seed.yml -n default
@@ -239,6 +241,7 @@ jobs:
             RESET_TOKEN_SECRET=${{secrets.RESET_TOKEN_SECRET}} \
             VERIFICATION_TOKEN_SECRET=${{secrets.VERIFICATION_TOKEN_SECRET}} \
             OPENAI_API_KEY=${{secrets.OPENAI_API_KEY_TEST}} \
+            MISTRAL_API_KEY=${{secrets.MISTRAL_API_KEY_TEST}} \
             "OPENAI_ASSISTANT_ID=asst_4if8qn6W8Vlxwbf2cuyH8OFU" \
             LLM_PROVIDER=openai \
             LLM_MODEL=gpt-4o-mini \
@@ -253,7 +256,8 @@ jobs:
             "NEXTAUTH_URL=https://citycatalyst-test.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" \
             "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" \
-            "HIAP_API_URL=http://hiap-service-dev" \
+            "HIAP_API_URL=http://hiap-service-test" \
+            "HIAP_MEED_API_URL=http://hiap-meed-service-test" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
@@ -275,8 +279,25 @@ jobs:
           kubectl set env cronjob/citycatalyst-test-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
+          kubectl apply -f k8s/test/cc-test-process-pdf-ocr-jobs.yml -n default
+          kubectl set env cronjob/citycatalyst-test-process-pdf-ocr-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-test-web-deploy -n default
           kubectl rollout status deployment/cc-test-web-deploy -n default --timeout=300s
+
+      - name: Notify Slack - Deployment Success
+        if: steps.deploy.outputs.status == 'success'
+        uses: ./.github/actions/slack-notify
+        with:
+          type: deployment_success
+          webhook-url: ${{ secrets.SLACK_SUCCESS_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          environment: test
 
   ccCaPostDeploySmoke:
     name: CA/CC post-deploy smoke

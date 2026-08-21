@@ -42,8 +42,8 @@ export const GET = apiHandler(async (_req, { params, session }) => {
     session,
   );
 
-  let body: Buffer | undefined = userFile.data;
-  let headers: Record<string, string> = {
+  const body: Buffer | undefined = userFile.data;
+  const headers: Record<string, string> = {
     "Content-Type": `${
       fileEndingToMIMEType[userFile.fileType || "default"] ||
       "application/x-binary"

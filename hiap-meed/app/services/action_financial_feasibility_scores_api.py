@@ -13,9 +13,7 @@ from app.modules.prioritizer.internal_models import (
     ActionFinancialFeasibilityScoreRecord,
     ActionFinancialFeasibilityScoresFetchResult,
 )
-from app.modules.prioritizer.models import (
-    ActionFinancialFeasibilityScoresApiResponse,
-)
+from app.modules.prioritizer.models import ActionFinancialFeasibilityScoresApiResponse
 from app.services.http_client import UpstreamApiError, get_json_with_retries
 
 logger = logging.getLogger(__name__)
@@ -83,7 +81,16 @@ class ActionFinancialFeasibilityScoresApiService:
     def get_scores_by_action_id(
         self, locode: str, country_code: str
     ) -> ActionFinancialFeasibilityScoresFetchResult:
-        """Fetch one city-scoped payload and map it by action ID."""
+        """
+        Fetch financial-feasibility scores for a city and country.
+
+        The caller supplies both values; this service normalizes them and maps
+        each returned row by action ID. A missing score release returns an empty
+        result with a warning. Every normalized row is retained so the public GET,
+        prioritization, and output-plan enrichment start from the same records;
+        display ordering happens only when the public response is built. Other
+        upstream failures raise ``UpstreamApiError``.
+        """
         scores_url = self._build_action_financial_feasibility_scores_url(
             locode,
             country_code,

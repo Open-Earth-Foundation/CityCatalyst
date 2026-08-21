@@ -4,7 +4,10 @@ import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
 import { Inventory } from "@/models/Inventory";
 import { logger } from "@/services/logger";
 import { groupBy } from "@/util/helpers";
-import { getScopesForInventoryAndSector } from "@/util/constants";
+import {
+  getScopesForInventoryAndSector,
+  InventoryType,
+} from "@/util/constants";
 import createHttpError from "http-errors";
 import { randomUUID } from "node:crypto";
 import DataSourceService from "./DataSourceService";
@@ -213,35 +216,8 @@ export default class DataSourceConnectService {
             `Trying data source ${source.datasourceId} for inventory ${inventoryId}`,
           );
 
-          if (source.retrievalMethod === "global_api_notation_key") {
-            const result = await DataSourceService.applySource(
-              source,
-              inventory,
-              populationScaleFactors,
-              userId,
-              true,
-            );
-            if (result.success) {
-              isSuccessful = true;
-              break;
-            }
-            logger.error(
-              `Failed to apply notation key source ${source.datasourceId}: ${result.issue}`,
-            );
-          } else {
-            const data = await DataSourceService.retrieveGlobalAPISource(
-              source,
-              inventory,
-            );
-            if (data instanceof String || typeof data === "string") {
-              logger.error(
-                `Failed to fetch source ${source.datasourceId} for inventory ${inventoryId} for city ${cityLocode}: ${data}`,
-              );
-              errors.push({
-                locode: cityLocode,
-                error: `Failed to fetch source - ${source.datasourceId}: ${data}`,
-              });
-            } else {
+          try {
+            if (source.retrievalMethod === "global_api_notation_key") {
               const result = await DataSourceService.applySource(
                 source,
                 inventory,
@@ -254,9 +230,48 @@ export default class DataSourceConnectService {
                 break;
               }
               logger.error(
-                `Failed to apply source ${source.datasourceId}: ${result.issue}`,
+                `Failed to apply notation key source ${source.datasourceId}: ${result.issue}`,
               );
+            } else {
+              const data = await DataSourceService.retrieveGlobalAPISource(
+                source,
+                inventory,
+              );
+              if (data instanceof String || typeof data === "string") {
+                logger.error(
+                  `Failed to fetch source ${source.datasourceId} for inventory ${inventoryId} for city ${cityLocode}: ${data}`,
+                );
+                errors.push({
+                  locode: cityLocode,
+                  error: `Failed to fetch source - ${source.datasourceId}: ${data}`,
+                });
+              } else {
+                const result = await DataSourceService.applySource(
+                  source,
+                  inventory,
+                  populationScaleFactors,
+                  userId,
+                  true,
+                );
+                if (result.success) {
+                  isSuccessful = true;
+                  break;
+                }
+                logger.error(
+                  `Failed to apply source ${source.datasourceId}: ${result.issue}`,
+                );
+              }
             }
+          } catch (err) {
+            const message = err instanceof Error ? err.message : String(err);
+            logger.error(
+              { err, datasourceId: source.datasourceId },
+              `Unexpected error processing source ${source.datasourceId} for city ${cityLocode}: ${message}`,
+            );
+            errors.push({
+              locode: cityLocode,
+              error: `Unexpected error for source ${source.datasourceId}: ${message}`,
+            });
           }
         }
 
@@ -369,7 +384,7 @@ export default class DataSourceConnectService {
               }
 
               const allowedScopes = getScopesForInventoryAndSector(
-                inventoryType as any,
+                inventoryType as InventoryType,
                 sector.referenceNumber,
               );
 
@@ -397,7 +412,7 @@ export default class DataSourceConnectService {
           }
 
           const allowedScopes = getScopesForInventoryAndSector(
-            inventoryType as any,
+            inventoryType as InventoryType,
             sector.referenceNumber,
           );
 

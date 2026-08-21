@@ -1,0 +1,81 @@
+<role>
+You write the Legal Mandate & Delivery chapter for a City Action Report.
+</role>
+
+<task>
+Explain legal verdict, ownership, restrictions, and delivery implications from supplied legal facts.
+</task>
+
+<input>
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
+- `key` (string): must be `legal_mandate_delivery`
+- `title` (string): chapter title
+- `language` (string): requested report language
+- `facts.legal` (object or null): selected-action legal verdict, ownership, restrictions, justifications, and references when available
+- `facts.ranking` (object): selected-action feasibility and legal component score facts when available
+- `facts.action` (object): selected action facts when available
+- `source_refs` (array): source keys available to cite in `source_refs`
+- `limitations` (array): chapter limitations to carry forward when relevant
+
+Runtime input:
+{
+  "key": "legal_mandate_delivery",
+  "title": "Legal Mandate & Delivery",
+  "language": "en",
+  "facts": {
+    "action": {
+      "action_id": "icare_0040",
+      "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods"
+    },
+    "ranking": {
+      "feasibility_score": 0.88285,
+      "legal_component_score": 1.0,
+      "legal_verdict_category": "enabled",
+      "legal_assessment_present": true
+    },
+    "legal": {
+      "action_id": "icare_0040",
+      "country_code": "CL",
+      "gpc_sector": "stationary_energy",
+      "verdict_category": "enabled",
+      "verdict_score": 1.0,
+      "ownership_category": "enabled",
+      "ownership_score": 1.0,
+      "ownership_description": "Municipality has explicit legal authority to act directly.",
+      "restrictions_category": "enabled",
+      "restrictions_score": 1.0,
+      "restrictions_description": "No legal restrictions; no additional authorization required.",
+      "legal_justification": "La Ley 18.695 art. 3° letra d) establece el alumbrado público como función privativa municipal — es una de las pocas funciones exclusivas del municipio establecidas expresamente en la LOCM. El DL 3.063 (Rentas Municipales) art. 6° y siguientes regulan el financiamiento del alumbrado público. La Ley 21.305 promueve la eficiencia energética en alumbrado público como componente del Plan Nacional de EE. El municipio tiene competencia directa, exclusiva y plena — no requiere autorización de ningún otro nivel de gobierno. La coordinación con la empresa distribuidora es técnica, no decisional. Titularidad 100: función privativa municipal. Restricciones 100: sin restricciones jurídicas — plena autonomía. Alineación 100: plena con Ley 21.305 y Plan Nacional de EE.",
+      "legal_references": [
+        "Ley 18.695 (LOCM) — BCN",
+        "Ley 21.305 Eficiencia Energética — BCN",
+        "DL 3.063 Rentas Municipales — BCN",
+        "Agencia Sostenibilidad Energética",
+        "Potestades Minenergia"
+      ]
+    }
+  },
+  "source_refs": [
+    "legal"
+  ],
+  "limitations": [
+    "Permit and SEIA applicability are not available in the supplied legal context."
+  ]
+}
+</input>
+
+<output>
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining legal mandate and delivery implications.
+- `limitations` (array of strings): relevant legal-data limitations.
+
+Do not soften a blocked verdict. Do not make permit, SEIA, ownership, restriction, or legal-authority claims unless those facts are explicitly present. If legal facts are missing, state that legal mandate cannot be confirmed from the supplied context.
+</output>
+
+<example_output>
+{
+  "markdown": "The supplied legal assessment should drive this chapter. If ownership and restrictions are present, explain what they imply for municipal delivery. If the verdict is blocked, state that clearly and do not reframe it as merely uncertain.\n\nWhere legal evidence is missing or incomplete, the report should identify the gap and avoid naming permits or approval pathways.",
+  "source_refs": ["legal"],
+  "limitations": ["Detailed permitting requirements are not available in the supplied context."]
+}
+</example_output>

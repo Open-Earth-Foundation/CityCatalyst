@@ -6,6 +6,7 @@ import {
 import { LANGUAGES } from "@/util/types";
 import { TFunction } from "i18next";
 import { languages } from "@/i18n/settings";
+import { FieldValues, UseFormRegister } from "react-hook-form";
 
 export function LanguageSelector({
   register,
@@ -13,8 +14,8 @@ export function LanguageSelector({
   t,
   defaultValue,
 }: {
-  register: any;
-  error: any;
+  register: UseFormRegister<FieldValues>;
+  error: unknown;
   t: TFunction;
   defaultValue: LANGUAGES;
 }) {

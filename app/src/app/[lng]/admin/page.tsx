@@ -10,7 +10,6 @@ import {
   Table,
   Tabs,
   Text,
-  Spinner,
 } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { BsPlus } from "react-icons/bs";
@@ -40,6 +39,7 @@ import BulkInventoryCreationTabContent from "./bulk-inventory-actions/BulkInvent
 import BulkDownloadTabContent from "./bulk-inventory-actions/BulkDownloadTabContent";
 import BulkHiapPrioritizationTabContent from "./bulk-inventory-actions/BulkHiapPrioritizationTabContent";
 import { OrganizationRole } from "@/util/types";
+import { isFetchBaseQueryError } from "@/util/helpers";
 import { toaster } from "@/components/ui/toaster";
 import ProgressLoader from "@/components/ProgressLoader";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
@@ -105,10 +105,10 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
       </Tabs.Trigger>
     );
   };
-  const [createOrganizationInvite, { isLoading: isInviteLoading }] =
+  const [createOrganizationInvite] =
     api.useCreateOrganizationInviteMutation();
 
-  const [updateOrganizationActiveStatus, { isLoading: isUpdatingStatus }] =
+  const [updateOrganizationActiveStatus] =
     api.useUpdateOrganizationActiveStatusMutation();
 
   const handleReInvite = async (email: string, organizationId: string) => {
@@ -142,10 +142,13 @@ const AdminPage = (props: { params: Promise<{ lng: string }> }) => {
         type: "success",
         duration: 3000,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       toaster.dismiss();
       // Check if the error is about already being an admin using error code
-      if (error?.data?.error?.code === "USER_ALREADY_ORG_ADMIN") {
+      const errorData = isFetchBaseQueryError(error)
+        ? (error.data as { error?: { code?: string } })
+        : undefined;
+      if (errorData?.error?.code === "USER_ALREADY_ORG_ADMIN") {
         // Get the email from the error data or fallback to the original email
         toaster.create({
           title: t("already-registered-admin", { email }),

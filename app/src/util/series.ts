@@ -17,33 +17,33 @@ export function estimate(
 
   if (year < series[0].year) {
     // extrapolate backwards
-    let first = series[0];
-    let next = series.find((e) => e.year - first.year >= first.year - year);
+    const first = series[0];
+    const next = series.find((e) => e.year - first.year >= first.year - year);
     if (!next) {
       return null;
     }
-    let rate = (next.value - first.value) / (next.year - first.year);
-    let value = first.value - rate * (first.year - year);
+    const rate = (next.value - first.value) / (next.year - first.year);
+    const value = first.value - rate * (first.year - year);
     return value;
   } else if (year > series[series.length - 1].year) {
     // extrapolate forwards
-    let last = series[series.length - 1];
-    let prev = series.findLast((e) => last.year - e.year >= year - last.year);
+    const last = series[series.length - 1];
+    const prev = series.findLast((e) => last.year - e.year >= year - last.year);
     if (!prev) {
       return null;
     }
-    let rate = (last.value - prev.value) / (last.year - prev.year);
-    let value = last.value + rate * (year - last.year);
+    const rate = (last.value - prev.value) / (last.year - prev.year);
+    const value = last.value + rate * (year - last.year);
     return value;
   } else {
     // interpolate
-    let prev = series.findLast((e) => e.year < year);
-    let next = series.find((e) => e.year > year);
+    const prev = series.findLast((e) => e.year < year);
+    const next = series.find((e) => e.year > year);
     if (!prev || !next) {
       return null;
     }
-    let rate = (next.value - prev.value) / (next.year - prev.year);
-    let value = prev.value + rate * (year - prev.year);
+    const rate = (next.value - prev.value) / (next.year - prev.year);
+    const value = prev.value + rate * (year - prev.year);
     return value;
   }
 

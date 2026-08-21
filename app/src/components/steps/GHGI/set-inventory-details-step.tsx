@@ -4,23 +4,19 @@ import {
   Controller,
   FieldErrors,
   UseFormRegister,
+  UseFormSetValue,
 } from "react-hook-form";
 import type { GHGIFormInputs } from "@/util/GHGI/types";
 import { useEffect } from "react";
 import {
   Box,
-  CloseButton,
   createListCollection,
-  Heading,
   HStack,
   Icon,
-  List,
   Text,
 } from "@chakra-ui/react";
-import { MdCheck, MdWarning } from "react-icons/md";
-import { Trans } from "react-i18next";
+import { MdWarning } from "react-icons/md";
 import { RadioGroup } from "@/components/ui/custom-radio";
-import { InputGroup } from "@/components/ui/input-group";
 import {
   SelectContent,
   SelectItem,
@@ -31,9 +27,6 @@ import {
 } from "@/components/ui/select";
 import { Field } from "@/components/ui/field";
 import CustomSelectableButton from "../../custom-selectable-buttons";
-import { ButtonMedium } from "@/components/package";
-import { BiLink } from "react-icons/bi";
-import InventoryDetailsHelpDrawer from "./InventoryDetailsHelpDrawer";
 import InventoryDetailsHeader from "./inventory-details-header";
 
 export default function SetInventoryDetailsStep({
@@ -54,7 +47,7 @@ export default function SetInventoryDetailsStep({
   register: UseFormRegister<GHGIFormInputs>;
   errors: FieldErrors<GHGIFormInputs>;
   control: Control<GHGIFormInputs>;
-  setValue: any;
+  setValue: UseFormSetValue<GHGIFormInputs>;
   years: number[];
   selectedYearArray?: string[];
   setSelectedYearArray: (value: string[]) => void;
@@ -124,48 +117,34 @@ export default function SetInventoryDetailsStep({
                 </Box>
               }
             >
-              <InputGroup
-                endElement={
-                  (selectedYearArray?.length ?? 0) > 0 && (
-                    <Icon
-                      as={MdCheck}
-                      color="semantic.success"
-                      boxSize={4}
-                      mt={2}
-                      mr={10}
-                    />
-                  )
-                }
+              <SelectRoot
+                collection={yearsCollection}
+                size="lg"
+                w="400px"
+                _placeholder={{ color: "content.tertiary" }}
+                data-testid="inventory-details-year"
+                {...register("year", {
+                  required: t("inventory-year-required"),
+                })}
+                value={selectedYearArray}
+                onValueChange={({ value }) => setSelectedYearArray(value)}
               >
-                <SelectRoot
-                  collection={yearsCollection}
-                  size="lg"
-                  w="400px"
-                  _placeholder={{ color: "content.tertiary" }}
-                  data-testid="inventory-details-year"
-                  {...register("year", {
-                    required: t("inventory-year-required"),
-                  })}
-                  value={selectedYearArray}
-                  onValueChange={({ value }) => setSelectedYearArray(value)}
-                >
-                  <SelectLabel />
-                  <SelectTrigger shadow="1dp">
-                    <SelectValueText
-                      placeholder={t("inventory-year-placeholder")}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {yearsCollection.items.map(
-                      (year: { label: string; value: string }, i: number) => (
-                        <SelectItem item={year} key={i}>
-                          {year.label}
-                        </SelectItem>
-                      ),
-                    )}
-                  </SelectContent>
-                </SelectRoot>
-              </InputGroup>
+                <SelectLabel />
+                <SelectTrigger shadow="1dp">
+                  <SelectValueText
+                    placeholder={t("inventory-year-placeholder")}
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {yearsCollection.items.map(
+                    (year: { label: string; value: string }, i: number) => (
+                      <SelectItem item={year} key={i}>
+                        {year.label}
+                      </SelectItem>
+                    ),
+                  )}
+                </SelectContent>
+              </SelectRoot>
             </Field>
           </Box>
         </Box>

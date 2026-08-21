@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { logger } from "@/services/logger";
 import { trackEvent, identifyUser } from "@/lib/analytics";
 
@@ -22,7 +22,6 @@ export type UseLoginReturn = {
 export const useLogin = (): UseLoginReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
   const { lng } = useParams();
   const clearError = () => setError("");
 

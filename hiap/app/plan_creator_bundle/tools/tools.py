@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Tuple, Union, Optional, Dict, Any, Literal
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
@@ -9,6 +10,8 @@ from utils.get_vectorstore_local import get_vectorstore
 from utils.get_json_file import get_json_from_file
 
 logger = logging.getLogger(__name__)
+
+OPENAI_MODEL_NAME_WEB_SEARCH = os.environ["OPENAI_MODEL_NAME_WEB_SEARCH"]
 
 
 # Define tools for each agent
@@ -233,7 +236,7 @@ def openai_web_search_tool(
 
     client = OpenAI()
     completion = client.chat.completions.create(
-        model="gpt-4o-search-preview",
+        model=OPENAI_MODEL_NAME_WEB_SEARCH,
         web_search_options={
             "user_location": {
                 "type": "approximate",

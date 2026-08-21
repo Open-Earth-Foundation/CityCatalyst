@@ -5,9 +5,9 @@ import { MdOutlineAddchart } from "react-icons/md";
 import { Trans } from "react-i18next/TransWithoutContext";
 import DownloadButton from "@/components/GHGIHomePage/DownloadButton";
 import type { CityAttributes } from "@/models/City";
-import type { InventoryAttributes } from "@/models/Inventory";
 import { AddCollaboratorButton } from "@/components/GHGIHomePage/AddCollaboratorButton";
 import { usePathname } from "next/navigation";
+import type { InventoryResponse } from "@/util/types";
 
 export function ActionCards({
   city,
@@ -21,7 +21,7 @@ export function ActionCards({
   t: TFunction;
   city?: CityAttributes;
   lng: string;
-  inventory?: InventoryAttributes;
+  inventory?: InventoryResponse;
   organizationId?: string;
 }) {
   const pathname = usePathname();

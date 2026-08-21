@@ -6,7 +6,7 @@
  *       - projects
  *     operationId: getProjectBoundaries
  *     summary: Get boundary center points and latest inventory IDs for a project’s cities.
- *     description: Returns boundary info for each city (with center coordinates) plus the latest inventory ID per city, aggregating any errors for missing data. No explicit authentication is enforced in this handler; adjust upstream middleware if needed. Response is '{' result: CityBoundaryWithCity[], errors: {locode,error}[] '}'.
+ *     description: "Returns boundary info for each city (with center coordinates) plus the latest inventory ID per city, aggregating any errors for missing data. No explicit authentication is enforced in this handler; adjust upstream middleware if needed. Response is '{' result: CityBoundaryWithCity[], errors: {locode,error}[] '}'."
  *     parameters:
  *       - in: path
  *         name: project
@@ -93,7 +93,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
     throw new createHttpError.NotFound("project-not-found");
   }
 
-  const errors: { locode?: string; error: any }[] = [];
+  const errors: { locode?: string; error: string }[] = [];
   const cityResults = await Promise.all(
     project.cities
       .filter((city) => !!city.locode)
@@ -101,7 +101,7 @@ export const GET = apiHandler(async (req, { params, session }) => {
         let boundary: CityBoundary | null = null;
         try {
           boundary = await CityBoundaryService.getCityBoundary(city.locode!);
-        } catch (error: any) {
+        } catch (error: unknown) {
           const message =
             error instanceof Error ? error.message : "unknown-error";
           logger.error(

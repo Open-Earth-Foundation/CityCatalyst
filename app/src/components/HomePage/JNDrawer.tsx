@@ -5,15 +5,22 @@ import {
   DrawerRoot,
 } from "@/components/ui/drawer";
 import { OpenChangeDetails } from "@zag-js/popover";
-import { Box, Icon, Input, Text, VStack } from "@chakra-ui/react";
-import { MdAdd, MdSearch } from "react-icons/md";
+import { Box, Icon, Input, Link, Text, VStack } from "@chakra-ui/react";
+import {
+  MdAdd,
+  MdCardTravel,
+  MdCheck,
+  MdInsertChart,
+  MdOpenInNew,
+  MdSearch,
+} from "react-icons/md";
 import { InputGroup } from "@/components/ui/input-group";
 import { LuLayoutGrid } from "react-icons/lu";
-import type {
-  ProjectWithCities,
-  ProjectWithCitiesResponse,
-} from "@/util/types";
+import { BiCaretDown } from "react-icons/bi";
+import type { ProjectWithCitiesResponse } from "@/util/types";
+import { uniqueBy } from "@/util/array";
 import {
+  api,
   useGetUserProjectsQuery,
   useGetModulesQuery,
   useGetProjectModulesQuery,
@@ -21,195 +28,38 @@ import {
 } from "@/services/api";
 import React, { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { CloseButton } from "@/components/ui/close-button";
+import {
+  MenuContent,
+  MenuItem,
+  MenuRoot,
+  MenuTrigger,
+} from "@/components/ui/menu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
-import { BiCaretDown, BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
+import type { TFunction } from "i18next";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
-import { NavigationLinks } from "../ui/navigation-links";
-import { Modules, StageNames } from "@/util/constants";
+import { CustomSelect } from "../ui/custom-select";
+import { Modules } from "@/util/constants";
+import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
-
-// Custom Select Component
-interface CustomSelectOption {
-  value: string;
-  label: string;
-}
-
-interface CustomSelectProps {
-  options: CustomSelectOption[];
-  value?: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  width?: string;
-  height?: string;
-  t: Function;
-  label: string;
-}
-
-const CustomSelect: React.FC<CustomSelectProps> = ({
-  options,
-  value,
-  onChange,
-  placeholder = "Select an option",
-  width = "347px",
-  height = "300px",
-  t,
-  label,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] =
-    useState<CustomSelectOption | null>(
-      value ? options.find((opt) => opt.value === value) || null : null,
-    );
-
-  // Update selectedOption when value or options change
-  useEffect(() => {
-    if (value) {
-      const foundOption = options.find((opt) => opt.value === value);
-      setSelectedOption(foundOption || null);
-    } else {
-      setSelectedOption(null);
-    }
-  }, [value, options]);
-
-  const handleSelect = (option: CustomSelectOption) => {
-    setSelectedOption(option);
-    onChange(option.value);
-    setIsOpen(false);
-  };
-
-  return (
-    <Box position="relative" w="347px">
-      <Text
-        as="label"
-        fontSize="label.md"
-        color="content.tertiary"
-        fontFamily="heading"
-        fontWeight="semibold"
-      >
-        {t(label)}
-      </Text>
-      {/* Select Trigger */}
-      <Box
-        as="button"
-        w="auto"
-        h="48px"
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        px="16px"
-        bg="base.light"
-        paddingLeft="0px"
-        fontFamily="heading"
-        fontSize="title.md"
-        fontWeight="bold"
-        border="none"
-        borderColor="border.neutral"
-        borderRadius="0px"
-        gap="8px"
-        cursor="pointer"
-        _hover={{
-          borderColor: "content.secondary",
-        }}
-        _focus={{
-          outline: "none",
-          borderColor: "content.link",
-          borderBottomWidth: "3px",
-          borderBottomStyle: "solid",
-          boxShadow: "0 0 0 1px content.link",
-        }}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <Text
-          fontSize="body.lg"
-          color={selectedOption ? "content.primary" : "content.tertiary"}
-          fontWeight="medium"
-        >
-          {selectedOption ? selectedOption.label : placeholder}
-        </Text>
-        <Icon
-          as={BiCaretDown}
-          color="interactive.control"
-          boxSize={5}
-          transition="transform 0.2s"
-          transform={isOpen ? "rotate(180deg)" : "rotate(0deg)"}
-        />
-      </Box>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <Box
-          position="absolute"
-          top="100%"
-          left="-30px"
-          right="0"
-          mt="0px"
-          w="347px"
-          bg="base.light"
-          border="1px solid"
-          borderColor="border.neutral"
-          borderRadius="8px"
-          boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
-          maxH={height}
-          overflowY="auto"
-          zIndex={1000}
-          py="12px"
-        >
-          {options.map((option) => (
-            <Box
-              key={option.value}
-              px="16px"
-              display="flex"
-              alignItems="center"
-              h="72px"
-              cursor="pointer"
-              _hover={{
-                bg: "content.link",
-                color: "base.light",
-              }}
-              _selected={{
-                bg: "content.link",
-                color: "base.light",
-              }}
-              onClick={() => handleSelect(option)}
-            >
-              <Text fontSize="body.lg" fontWeight="medium">
-                {option.label}
-              </Text>
-            </Box>
-          ))}
-        </Box>
-      )}
-
-      {/* Backdrop to close dropdown */}
-      {isOpen && (
-        <Box
-          position="fixed"
-          top="0"
-          left="0"
-          right="0"
-          bottom="0"
-          zIndex={999}
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-    </Box>
-  );
-};
+import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 
 const ProjectFilterSection = ({
   t,
   projectsData,
   lng,
   currentCityId,
+  organizationId,
 }: {
-  t: Function;
+  t: TFunction;
   projectsData: ProjectWithCitiesResponse;
   lng: string;
   currentCityId?: string;
+  organizationId?: string;
 }) => {
   const router = useRouter();
   const [selectedProject, setSelectedProject] = useState<string>("");
@@ -345,7 +195,7 @@ const ProjectFilterSection = ({
   const searchResults = getSearchResults();
 
   // Handle city selection and navigation
-  const handleCitySelection = (cityId: string, projectId: string) => {
+  const handleCitySelection = (cityId: string) => {
     router.push(`/${lng}/cities/${cityId}`);
   };
 
@@ -356,13 +206,15 @@ const ProjectFilterSection = ({
       display="flex"
       flexDirection="column"
       gap={"24px"}
-      py="24px"
+      pb="6"
     >
       {/* Filter Section */}
-      <Box display="flex" flexDirection="column" gap={"24px"} w="full">
+      <Box display="flex" flexDirection="column" gap="6" w="full">
         {/* Search Input */}
         <InputGroup startElement={<Icon as={MdSearch} size="md" />}>
           <Input
+            h="12"
+            fontSize="md"
             placeholder={t("search-by-city-or-project")}
             borderRadius="4px"
             borderWidth="1px"
@@ -379,9 +231,8 @@ const ProjectFilterSection = ({
           <Box
             position="absolute"
             top="95px"
-            left="24px"
+            left="0"
             right="0"
-            w="347px"
             bg="base.light"
             border="1px solid"
             borderColor="border.neutral"
@@ -416,7 +267,7 @@ const ProjectFilterSection = ({
                       setSelectedProject(result.projectId);
                       setSelectedCity(result.value);
                       // Navigate to the city's inventory
-                      handleCitySelection(result.value, result.projectId);
+                      handleCitySelection(result.value);
                     }
                   }
                   setSearchTerm("");
@@ -446,7 +297,7 @@ const ProjectFilterSection = ({
           </Box>
         )}
         {/* Project dropdown */}
-        <Box display="flex" flexDirection="column" px={4} gap="24px">
+        <Box display="flex" flexDirection="column" gap="6">
           {/* Project Dropdown */}
           <CustomSelect
             options={filteredProjectOptions}
@@ -457,11 +308,39 @@ const ProjectFilterSection = ({
               setSearchTerm(""); // Clear search when project is selected
             }}
             placeholder={t("select-project")}
-            width="347px"
             height="300px"
             t={t}
             label={t("project")}
           />
+          {/* All Projects Button */}
+          <Box w="full" display="flex" justifyContent="flex-start">
+            <Button
+              variant="outline"
+              onClick={() =>
+                router.push(
+                  organizationId
+                    ? `/${lng}/organization/${organizationId}/project`
+                    : `/${lng}/cities`,
+                )
+              }
+              rounded="pill"
+              borderColor="interactive.secondary"
+              border="sm"
+              h="12"
+              px={6}
+              gap={2}
+              _hover={{ bg: "background.neutral" }}
+            >
+              <Icon as={LuLayoutGrid} color="interactive.secondary" boxSize={5} />
+              <Text
+                fontSize="button.md"
+                fontWeight="bold"
+                color="interactive.secondary"
+              >
+                {t("all-projects")}
+              </Text>
+            </Button>
+          </Box>
           {/* City Dropdown */}
           <CustomSelect
             options={filteredCityOptions}
@@ -471,44 +350,92 @@ const ProjectFilterSection = ({
               setSearchTerm(""); // Clear search when city is selected
               // Navigate to the city's inventory
               if (selectedProject && value) {
-                handleCitySelection(value, selectedProject);
+                handleCitySelection(value);
               }
             }}
             placeholder={t("select-city")}
-            width="347px"
             height="300px"
             t={t}
             label={t("city")}
           />
-          {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
-          {(userAccessStatus?.isOrgOwner ||
-            userAccessStatus?.isProjectAdmin) && (
-            <Box w="full" display="flex" justifyContent="flex-start">
+          <Box w="full" display="flex" gap={3}>
+            {/* Only show add city button for ORG_ADMIN and PROJECT_ADMIN */}
+            {(userAccessStatus?.isOrgOwner ||
+              userAccessStatus?.isProjectAdmin) && (
               <Button
-                variant="ghost"
+                variant="outline"
                 onClick={() => {
                   router.push(
                     `/${lng}/cities/onboarding?project=${selectedProject}`,
                   );
                 }}
-                rounded={0}
-                w="full"
-                h="48px"
-                display="flex"
-                justifyContent="flex-start"
-                textTransform="capitalize"
-                px={0}
-                ml={-1}
-                fontWeight="normal"
-                fontFamily="body"
+                rounded="pill"
+                borderColor="interactive.secondary"
+                border="sm"
+                minH="12"
+                h="auto"
+                py={2}
+                px={5}
+                gap={2}
+                flex={1}
+                minW={0}
+                _hover={{ bg: "background.neutral" }}
               >
-                <Icon as={MdAdd} color={"content.secondary"} boxSize={6} />
-                <Text fontSize="body.lg" color="content.secondary">
+                <Icon
+                  as={MdAdd}
+                  color="interactive.secondary"
+                  boxSize={5}
+                  flexShrink={0}
+                />
+                <Text
+                  fontSize="body.sm"
+                  lineHeight="1.2"
+                  fontWeight="bold"
+                  color="interactive.secondary"
+                  whiteSpace="normal"
+                  textAlign="center"
+                  lineClamp={2}
+                >
                   {t("add-new-city")}
                 </Text>
               </Button>
-            </Box>
-          )}
+            )}
+            {/* Go to the selected city's dashboard */}
+            <Button
+              variant="outline"
+              onClick={() => router.push(getDashboardPath(lng, selectedCity))}
+              disabled={!selectedCity}
+              rounded="pill"
+              borderColor="interactive.secondary"
+              border="sm"
+              minH="12"
+              h="auto"
+              py={2}
+              px={5}
+              gap={2}
+              flex={1}
+              minW={0}
+              _hover={{ bg: "background.neutral" }}
+            >
+              <Icon
+                as={MdInsertChart}
+                color="interactive.secondary"
+                boxSize={5}
+                flexShrink={0}
+              />
+              <Text
+                fontSize="body.sm"
+                lineHeight="1.2"
+                fontWeight="bold"
+                color="interactive.secondary"
+                whiteSpace="normal"
+                textAlign="center"
+                lineClamp={2}
+              >
+                {t("dashboard")}
+              </Text>
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Box>
@@ -531,16 +458,63 @@ const JNDrawer = ({
   currentCityId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
+  const router = useRouter();
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
+  const { organization, setOrganization } = useOrganizationContext();
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
+    undefined,
+    {
+      skip: !isOpen,
+    },
+  );
+  const organizations = useMemo(
+    () =>
+      rawOrganizations &&
+      uniqueBy(rawOrganizations, (org) => org.organizationId),
+    [rawOrganizations],
+  );
+  const [getProjectsForOrganization] = api.useLazyGetProjectsQuery();
+  const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
   const [selectedCity, setSelectedCity] = React.useState<string>("");
 
+  // Prefer explicit org context, then access-status prop, then first accessible project.
+  const resolvedOrganizationId =
+    organizationId ||
+    projectsData?.find((project) => project.organizationId)?.organizationId;
+
+  const hasMultipleOrganizations = !!organizations && organizations.length > 1;
+
+  const currentOrganizationName = organizations?.find(
+    (org) =>
+      org.organizationId ===
+      (organization?.organizationId ?? resolvedOrganizationId),
+  )?.name;
+
+  async function onChangeOrganization(newOrganizationId: string) {
+    if (newOrganizationId === organization?.organizationId) return;
+    setOrganization({ organizationId: newOrganizationId });
+    const projects = await getProjectsForOrganization({
+      organizationId: newOrganizationId,
+    })
+      .unwrap()
+      .catch(() => []);
+    const cityId = projects
+      .flatMap((project) => project.cities)
+      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
+    router.push(
+      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
+    );
+    onClose();
+  }
+
   // Module data fetching
-  const { data: allModules, isLoading: isAllModulesLoading } =
-    useGetModulesQuery();
-  const { data: projectModules, isLoading: isProjectModulesLoading } =
-    useGetProjectModulesQuery(selectedProject!, { skip: !selectedProject });
+  const { data: allModules } = useGetModulesQuery();
+  const { data: projectModules } = useGetProjectModulesQuery(
+    selectedProject!,
+    { skip: !selectedProject },
+  );
 
   // Initialize with current project and city based on currentCityId
   useEffect(() => {
@@ -571,15 +545,6 @@ const JNDrawer = ({
     );
   }, [allModules]);
 
-  const selectedProjectData = useMemo<ProjectWithCities | null>(() => {
-    if (!selectedProject) return null;
-
-    return (
-      projectsData?.find((project) => project.projectId === selectedProject) ||
-      null
-    );
-  }, [projectsData, selectedProject]);
-
   return (
     <DrawerRoot
       open={isOpen}
@@ -590,10 +555,162 @@ const JNDrawer = ({
       <DrawerBackdrop />
       <DrawerContent
         borderRadius="0px 8px 8px 0px"
-        h="calc(100vh - 100px)"
-        my="auto"
+        h="100dvh"
+        display="flex"
+        flexDirection="column"
       >
-        <DrawerBody paddingY={6}>
+        <Box
+          flexShrink={0}
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          bg="background.neutral"
+          px={6}
+          py={5}
+          borderTopRightRadius="8px"
+        >
+          {hasMultipleOrganizations ? (
+            <MenuRoot
+              open={isOrgMenuOpen}
+              onOpenChange={(details) => setOrgMenuOpen(details.open)}
+              variant="solid"
+            >
+              <Box display="flex" alignItems="center" gap={3}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  boxSize="40px"
+                  borderRadius="full"
+                  bg="content.alternative"
+                  color="base.light"
+                  flexShrink={0}
+                >
+                  <Icon as={MdCardTravel} boxSize={5} />
+                </Box>
+                <MenuTrigger asChild>
+                  <Box
+                    as="button"
+                    appearance="none"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    gap="8px"
+                    minW="160px"
+                    h="12"
+                    px="16px"
+                    bg="base.light"
+                    fontFamily="heading"
+                    border="1px solid"
+                    borderColor="border.neutral"
+                    borderRadius="4px"
+                    shadow="sm"
+                    outline="none"
+                    cursor="pointer"
+                    _hover={{ borderColor: "content.link" }}
+                    _focus={{
+                      outline: "none",
+                      borderColor: "content.link",
+                      boxShadow: "0 0 0 1px content.link",
+                    }}
+                  >
+                    <Text
+                      fontFamily="body"
+                      fontSize="md"
+                      fontWeight="normal"
+                      lineHeight="24"
+                      color="content.primary"
+                      maxW="160px"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      whiteSpace="nowrap"
+                    >
+                      {currentOrganizationName}
+                    </Text>
+                    <Icon
+                      as={BiCaretDown}
+                      color="interactive.control"
+                      boxSize={5}
+                      transition="transform 0.2s"
+                      transform={
+                        isOrgMenuOpen ? "rotate(180deg)" : "rotate(0deg)"
+                      }
+                    />
+                  </Box>
+                </MenuTrigger>
+              </Box>
+              <MenuContent minW="220px" zIndex={2000}>
+                {organizations!.map((org) => (
+                  <MenuItem
+                    value={org.organizationId}
+                    onClick={() => onChangeOrganization(org.organizationId)}
+                    key={org.organizationId}
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      w="full"
+                    >
+                      <Text
+                        fontSize="title.md"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                      >
+                        {org.name}
+                      </Text>
+                      {org.organizationId === organization?.organizationId && (
+                        <Icon
+                          as={MdCheck}
+                          boxSize={5}
+                          color="interactive.secondary"
+                        />
+                      )}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </MenuContent>
+            </MenuRoot>
+          ) : (
+            <Box display="flex" alignItems="center" gap={3}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                boxSize="40px"
+                borderRadius="full"
+                bg="content.alternative"
+                color="base.light"
+                flexShrink={0}
+              >
+                <Icon as={MdCardTravel} boxSize={5} />
+              </Box>
+              <Text
+                fontSize="title.md"
+                fontFamily="body"
+                fontWeight="regular"
+                lineHeight="24"
+                color="content.primary"
+                maxW="160px"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap"
+              >
+                {currentOrganizationName}
+              </Text>
+            </Box>
+          )}
+          <CloseButton onClick={onClose} color="content.alternative" />
+        </Box>
+        <DrawerBody
+          paddingY={6}
+          display="flex"
+          flexDirection="column"
+          flex="1"
+          minH={0}
+          overflowY="auto"
+        >
           {isLoading && (
             <Box
               display="flex"
@@ -621,65 +738,121 @@ const JNDrawer = ({
                 projectsData={projectsData}
                 lng={lng}
                 currentCityId={currentCityId}
+                organizationId={resolvedOrganizationId}
               />
-              <Box w="full" border="1px solid" borderColor="border.neutral" />
-              {/* Menu items */}
-              <NavigationLinks
-                items={[
-                  {
-                    label: "citycatalyst",
-                    icon: BiHomeAlt,
-                    href: `/${lng}/cities/${selectedCity}`,
-                  },
-                  {
-                    label: "dashboard",
-                    icon: BiSolidBarChartAlt2,
-                    href: getDashboardPath(lng, selectedCity),
-                  },
-                  {
-                    label: "all-projects",
-                    icon: LuLayoutGrid,
-                    href: `/${lng}/organization/${organizationId}/project`,
-                  },
-                ]}
-                t={t}
+              <Box
+                w="auto"
+                mx="-6"
+                borderBottom="1px solid"
+                borderColor="border.neutral"
+                flexShrink={0}
               />
-              <Box w="full" border="1px solid" borderColor="border.neutral" />
               {/* Dynamic Module Accordions - based on HomePage logic */}
               {modulesByStage && projectModules && selectedProject && (
-                <>
-                  {stageOrder.map((stage) => {
-                    const modules = projectModules.filter((mod) => {
-                      // Filter out CCRA module
-                      if (mod.id === Modules.CCRA.id) {
-                        return false;
-                      }
-                      return mod.stage === stage;
-                    });
+                <Box display="flex" flexDirection="column" flexShrink={0}>
+                  <Text
+                    fontSize="label.lg"
+                    color="content.tertiary"
+                    fontFamily="heading"
+                    fontWeight="semibold"
+                    pt={4}
+                    flexShrink={0}
+                  >
+                    {t("all-tools")}
+                  </Text>
+                  <Box maxH="500px" overflowY="auto">
+                    {stageOrder.map((stage) => {
+                      const modules = projectModules.filter((mod) => {
+                        // Filter out CCRA module unless feature flag is enabled
+                        if (
+                          mod.id === Modules.CCRA.id &&
+                          !hasFeatureFlag(FeatureFlags.CCRA_MODULE)
+                        ) {
+                          return false;
+                        }
+                        return mod.stage === stage;
+                      });
 
-                    if (modules.length === 0) return null;
+                      if (modules.length === 0) return null;
 
-                    return (
-                      <NavigationAccordion
-                        key={stage}
-                        title={t("journey." + stage)}
-                        icon={stageIcons[stage]}
-                        items={modules.map((mod) => ({
-                          label:
-                            mod.name[lng] ||
-                            mod.name.en ||
-                            mod.name[Object.keys(mod.name)[0]] ||
-                            mod.id,
-                          href: `/${lng}/cities/${selectedCity}${mod.url}`,
-                        }))}
-                        t={t}
-                      />
-                    );
-                  })}
-                </>
+                      return (
+                        <NavigationAccordion
+                          key={stage}
+                          title={t("journey." + stage)}
+                          icon={stageIcons[stage]}
+                          items={modules.map((mod) => {
+                            // External tool URLs (e.g. Replit apps) must not be
+                            // prefixed with the city path — that produced
+                            // .../cities/{id}https://... (CC-651).
+                            const isExternal =
+                              mod.url.startsWith("http://") ||
+                              mod.url.startsWith("https://");
+                            return {
+                              label:
+                                mod.name[lng] ||
+                                mod.name.en ||
+                                mod.name[Object.keys(mod.name)[0]] ||
+                                mod.id,
+                              href: isExternal
+                                ? mod.url
+                                : `/${lng}/cities/${selectedCity}${mod.url}`,
+                            };
+                          })}
+                          t={t}
+                        />
+                      );
+                    })}
+                  </Box>
+                </Box>
               )}
             </>
           )}
+
+          <Box
+            w="auto"
+            mx="-6"
+            borderBottom="1px solid"
+            borderColor="border.neutral"
+            flexShrink={0}
+          />
+          {/* Useful links */}
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="16px"
+            py={4}
+            flexShrink={0}
+          >
+            <Text
+              fontSize="label.lg"
+              color="content.tertiary"
+              fontFamily="heading"
+              fontWeight="semibold"
+            >
+              {t("useful-links")}
+            </Text>
+            <Link
+              href="https://citycatalyst.openearth.org/learning-hub"
+              target="_blank"
+              rel="help noopener"
+              display="flex"
+              alignItems="center"
+              gap="8px"
+              color="content.tertiary"
+            >
+              <Text
+                fontFamily="body"
+                fontSize="body.lg"
+                fontWeight="regular"
+                lineHeight="24"
+                letterSpacing="wide"
+                color="content.tertiary"
+              >
+                {t("learning-hub")}
+              </Text>
+              <Icon as={MdOpenInNew} boxSize="18px" color="content.link" />
+            </Link>
+          </Box>
         </DrawerBody>
       </DrawerContent>
     </DrawerRoot>

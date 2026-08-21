@@ -1,7 +1,6 @@
 import type { TFunction } from "i18next";
-import { Badge, Box, Button, Icon, Spacer, Text } from "@chakra-ui/react";
-import React, { MouseEventHandler } from "react";
-import { MdCheckCircleOutline, MdInfoOutline } from "react-icons/md";
+import { Badge, Box, Button, Icon, Text } from "@chakra-ui/react";
+import React from "react";
 import { FiDownload } from "react-icons/fi";
 
 import { Toaster, toaster } from "@/components/ui/toaster";
@@ -37,10 +36,8 @@ const DownloadButtons = ({
   const showToast = (
     title: string,
     description: string,
-    status: any,
+    status: STATUS,
     duration: number | null,
-    bgColor: string,
-    showAnimatedGradient: boolean = false,
   ) => {
     // Replace previous toast notifications
     if (duration == null) {
@@ -107,8 +104,6 @@ const DownloadButtons = ({
       "wait-fetch-data",
       STATUS.INFO,
       null,
-      "semantic.info",
-      true, // animated gradient
     );
     fetch(
       `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=${lng}`,
@@ -144,7 +139,6 @@ const DownloadButtons = ({
               "downloading-data",
               STATUS.SUCCESS,
               null,
-              "interactive.primary",
             );
             URL.revokeObjectURL(downloadLink.href);
             downloadLink.remove();
@@ -167,7 +161,6 @@ const DownloadButtons = ({
           "download-error",
           STATUS.ERROR,
           null,
-          "semantic.danger",
         );
       });
   };

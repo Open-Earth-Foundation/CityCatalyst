@@ -90,7 +90,7 @@ import ConfirmRegistrationTemplate from "@/lib/emails/confirmRegistrationTemplat
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { signupRequest } from "@/util/validation";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import bcrypt from "bcrypt";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

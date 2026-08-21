@@ -14,8 +14,17 @@ from app.models.db.stationary_energy_draft import (
     StationaryEnergyStagedReviewSelection,
 )
 from app.models.stationary_energy_drafts import ReviewStationaryEnergyDraftRequest
+from app.services.citycatalyst_client import CityCatalystClient
 from app.services.stationary_energy.stationary_energy_draft_repository import (
     StationaryEnergyDraftRepository,
+)
+from app.services.stationary_energy.stationary_energy_draft_review import (
+    latest_review_decisions,
+    notation_target_id,
+)
+from app.services.stationary_energy.stationary_energy_draft_auth import (
+    extract_bearer_token,
+    require_bearer_token,
 )
 from app.services.stationary_energy.stationary_energy_draft_service import (
     StationaryEnergyDraftService,
@@ -23,6 +32,9 @@ from app.services.stationary_energy.stationary_energy_draft_service import (
 from app.services.stationary_energy.stationary_energy_review_messages import (
     bulk_confirmation_message_payload,
     message_payload,
+    notation_bulk_confirmation_message_payload,
+    notation_rollback_result_message_payload,
+    notation_stage_message_payload,
     stage_message_payload,
     staged_change_confirmation_message_payload,
     staged_rollback_confirmation_message_payload,
@@ -34,6 +46,8 @@ from app.services.stationary_energy.stationary_energy_review_models import (
     StationaryEnergyAgentReviewChoiceInput,
     StationaryEnergyAgentReviewToolResult,
     StationaryEnergyBulkReviewConfirmationToolResult,
+    StationaryEnergyNotationKeyChoiceInput,
+    StationaryEnergyNotationKeyListToolResult,
     StationaryEnergyStagedReviewUpdateConfirmationToolResult,
 )
 from app.services.stationary_energy.stationary_energy_review_resolver import (
@@ -53,10 +67,16 @@ TERMINAL_DRAFT_STATUSES = {
 class StationaryEnergyAgentReviewService:
     """CA-owned tool backing service for Stationary Energy draft review staging."""
 
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(
+        self,
+        session: AsyncSession,
+        *,
+        cc_client: CityCatalystClient | None = None,
+    ) -> None:
         """Initialize review staging against one database session."""
         self.session = session
         self.repository = StationaryEnergyDraftRepository(session)
+        self.cc_client = cc_client or CityCatalystClient()
 
     async def list_review_options(
         self,
@@ -105,6 +125,234 @@ class StationaryEnergyAgentReviewService:
             draft_run_id,
             len(selected),
             len(pending),
+        )
+        return result
+
+    async def list_notation_keys(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+        authorization: str | None,
+    ) -> StationaryEnergyNotationKeyListToolResult:
+        """Return eligible Stationary Energy notation-key targets."""
+        token = require_bearer_token(extract_bearer_token(authorization))
+        draft_run, staged = await self._load_draft_with_staged(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        targets_payload = await self._load_notation_targets_payload(
+            draft_run=draft_run,
+            user_id=user_id,
+            token=token,
+        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        targets = resolver.notation_targets(targets_payload, staged=staged)
+        allowed_notation_keys = targets_payload.get("allowed_notation_keys")
+        result = StationaryEnergyNotationKeyListToolResult(
+            success=True,
+            draft_run_id=draft_run_id,
+            allowed_notation_keys=(
+                allowed_notation_keys
+                if isinstance(allowed_notation_keys, list)
+                else []
+            ),
+            targets=targets,
+            **message_payload(
+                "tool-message-notation-options-loaded",
+                targets=len(targets),
+            ),
+        )
+        logger.info(
+            "Loaded Stationary Energy notation-key targets draft_run_id=%s targets=%s",
+            draft_run_id,
+            len(targets),
+        )
+        return result
+
+    async def stage_notation_key(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+        choice: StationaryEnergyNotationKeyChoiceInput,
+        authorization: str | None,
+        tool_call_id: str | None = None,
+    ) -> StationaryEnergyAgentReviewToolResult:
+        """Stage one notation-key choice for the active review draft."""
+        return await self.apply_notation_choices(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+            choices=[choice],
+            authorization=authorization,
+            tool_call_id=tool_call_id,
+            action_name="stationary_energy_stage_notation_key",
+        )
+
+    async def preview_notation_choices(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+        choices: list[StationaryEnergyNotationKeyChoiceInput],
+        authorization: str | None,
+    ) -> StationaryEnergyBulkReviewConfirmationToolResult:
+        """Validate notation-key choices without staging them."""
+        token = require_bearer_token(extract_bearer_token(authorization))
+        draft_run, staged = await self._load_draft_with_staged(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        targets_payload = await self._load_notation_targets_payload(
+            draft_run=draft_run,
+            user_id=user_id,
+            token=token,
+        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        selected_choices, blocked_choices = resolver.resolve_notation_choice_inputs(
+            choices,
+            targets_payload,
+        )
+        pending = resolver.pending_required_proposals(
+            staged=staged,
+            extra_resolved_ids={choice.proposal_id for choice in selected_choices},
+        )
+        result = StationaryEnergyBulkReviewConfirmationToolResult(
+            success=bool(selected_choices) and not blocked_choices,
+            action="stationary_energy_request_bulk_notation_confirmation",
+            draft_run_id=draft_run_id,
+            pending_choices=selected_choices,
+            blocked_choices=blocked_choices,
+            pending_required_count=len(pending),
+            **notation_bulk_confirmation_message_payload(
+                selected_choices,
+                blocked_choices,
+            ),
+        )
+        logger.info(
+            "Prepared Stationary Energy notation-key preview draft_run_id=%s selected=%s blocked=%s",
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+        )
+        return result
+
+    async def apply_notation_choices(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+        choices: list[StationaryEnergyNotationKeyChoiceInput],
+        authorization: str | None,
+        tool_call_id: str | None = None,
+        action_name: str = "stationary_energy_apply_bulk_notation_choices",
+    ) -> StationaryEnergyAgentReviewToolResult:
+        """Stage validated notation-key choices in CA-owned review state."""
+        token = require_bearer_token(extract_bearer_token(authorization))
+        draft_run = await self._load_owned_reviewable_draft(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        targets_payload = await self._load_notation_targets_payload(
+            draft_run=draft_run,
+            user_id=user_id,
+            token=token,
+        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        selected_choices, blocked_choices = resolver.resolve_notation_choice_inputs(
+            choices,
+            targets_payload,
+        )
+        selections = self._selections_from_choices(
+            draft_run=draft_run,
+            user_id=user_id,
+            selected_choices=selected_choices,
+            tool_call_id=tool_call_id,
+        )
+        if selections:
+            await self.repository.upsert_staged_review_selections(selections)
+            await self._mark_review_step(draft_run)
+
+        staged = await self.repository.get_staged_review_selections(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        pending = resolver.pending_required_proposals(staged=staged)
+        result = StationaryEnergyAgentReviewToolResult(
+            success=bool(selected_choices) and not blocked_choices,
+            action=action_name,
+            draft_run_id=draft_run_id,
+            selected_choices=selected_choices,
+            blocked_choices=blocked_choices,
+            pending_required_count=len(pending),
+            **notation_stage_message_payload(selected_choices, blocked_choices),
+        )
+        logger.info(
+            "Staged Stationary Energy notation-key choices action=%s draft_run_id=%s selected=%s blocked=%s",
+            action_name,
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
+        )
+        return result
+
+    async def rollback_staged_notation_keys(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+        proposal_ids: list[UUID] | None = None,
+        target_ids: list[str] | None = None,
+    ) -> StationaryEnergyAgentReviewToolResult:
+        """Remove one or more active staged notation-key choices."""
+        draft_run, staged = await self._load_draft_with_staged(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        resolver = StationaryEnergyReviewChoiceResolver(draft_run)
+        resolved_proposal_ids = self._notation_rollback_proposal_ids(
+            draft_run=draft_run,
+            proposal_ids=proposal_ids,
+            target_ids=target_ids,
+        )
+        targeted, blocked_choices = resolver.target_active_staged_notation_selections(
+            staged=staged,
+            proposal_ids=resolved_proposal_ids,
+        )
+        selected_choices = [
+            resolver.rollback_choice_from_staged(selection)
+            for selection in targeted
+        ]
+        if targeted:
+            await self.repository.mark_staged_review_selections_rolled_back(
+                draft_run_id=draft_run_id,
+                user_id=user_id,
+                proposal_ids={selection.proposal_id for selection in targeted},
+            )
+            await self._mark_review_step(draft_run)
+
+        staged_after = await self.repository.get_staged_review_selections(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        pending = resolver.pending_required_proposals(staged=staged_after)
+        result = StationaryEnergyAgentReviewToolResult(
+            success=bool(selected_choices) and not blocked_choices,
+            action="stationary_energy_rollback_staged_notation_keys",
+            draft_run_id=draft_run_id,
+            selected_choices=selected_choices,
+            blocked_choices=blocked_choices,
+            pending_required_count=len(pending),
+            **notation_rollback_result_message_payload(
+                selected_choices,
+                blocked_choices,
+            ),
+        )
+        logger.info(
+            "Rolled back Stationary Energy staged notation keys draft_run_id=%s selected=%s blocked=%s",
+            draft_run_id,
+            len(selected_choices),
+            len(blocked_choices),
         )
         return result
 
@@ -533,6 +781,39 @@ class StationaryEnergyAgentReviewService:
         )
         return result
 
+    async def inventory_save_confirmation_summary(
+        self,
+        *,
+        draft_run_id: UUID,
+        user_id: str,
+    ) -> dict[str, int]:
+        """Count saved review decisions that are ready for inventory confirmation."""
+        draft_run = await self._load_owned_reviewable_draft(
+            draft_run_id=draft_run_id,
+            user_id=user_id,
+        )
+        latest_decisions = latest_review_decisions(draft_run.review_decisions)
+        active_staged = {
+            selection.proposal_id: selection
+            for selection in draft_run.staged_review_selections
+            if selection.status == "active"
+        }
+        ready_actions: dict[UUID, str] = {}
+        for decision in latest_decisions.values():
+            if decision.commit_status in {"pending_cc_commit", "staged_manual"}:
+                ready_actions[decision.proposal_id] = decision.action
+        for selection in active_staged.values():
+            ready_actions[selection.proposal_id] = selection.action
+
+        notation_count = sum(
+            1 for action in ready_actions.values() if action == "set_notation_key"
+        )
+        return {
+            "ready": len(ready_actions),
+            "notation": notation_count,
+            "source": len(ready_actions) - notation_count,
+        }
+
     async def _load_draft_with_staged(
         self,
         *,
@@ -575,6 +856,9 @@ class StationaryEnergyAgentReviewService:
                 action=choice.action,
                 selected_source_id=choice.selected_source_id,
                 selected_candidate_id=choice.selected_candidate_id,
+                notation_key=choice.notation_key,
+                unavailable_reason=choice.unavailable_reason,
+                unavailable_explanation=choice.unavailable_explanation,
                 rationale=choice.rationale,
                 tool_call_id=tool_call_id,
                 status="active",
@@ -609,3 +893,50 @@ class StationaryEnergyAgentReviewService:
                 detail="Stationary Energy draft generation is not complete",
             )
         return draft_run
+
+    async def _load_notation_targets_payload(
+        self,
+        *,
+        draft_run: StationaryEnergyDraftRun,
+        user_id: str,
+        token: str,
+    ) -> dict[str, object]:
+        """Load CC-authoritative notation-key targets for the draft scope."""
+        return await self.cc_client.list_stationary_energy_notation_keys(
+            request_payload={
+                "draft_run_id": str(draft_run.draft_run_id),
+                "user_id": user_id,
+                "city_id": draft_run.city_id,
+                "inventory_id": draft_run.inventory_id,
+                "sector_code": "stationary_energy",
+            },
+            token=token,
+        )
+
+    @staticmethod
+    def _notation_rollback_proposal_ids(
+        *,
+        draft_run: StationaryEnergyDraftRun,
+        proposal_ids: list[UUID] | None,
+        target_ids: list[str] | None,
+    ) -> list[UUID] | None:
+        """Resolve optional notation rollback target ids into proposal ids."""
+        if proposal_ids is None and target_ids is None:
+            return None
+
+        resolved: list[UUID] = []
+        seen: set[UUID] = set()
+        for proposal_id in proposal_ids or []:
+            if proposal_id not in seen:
+                seen.add(proposal_id)
+                resolved.append(proposal_id)
+
+        if target_ids:
+            target_set = {target_id for target_id in target_ids if target_id}
+            for proposal in draft_run.proposals:
+                target_id = notation_target_id(proposal.target_ref or {})
+                if target_id in target_set and proposal.proposal_id not in seen:
+                    seen.add(proposal.proposal_id)
+                    resolved.append(proposal.proposal_id)
+
+        return resolved

@@ -18,12 +18,12 @@
  *               currentPassword:
  *                 type: string
  *                 description: User's current password for verification
- *                 minLength: 4
+ *                 minLength: 8
  *                 maxLength: 64
  *               confirmPassword:
  *                 type: string
  *                 description: New password to set (must be at least 4 characters with one lowercase letter, one uppercase letter, and one number)
- *                 minLength: 4
+ *                 minLength: 8
  *                 maxLength: 64
  *     responses:
  *       200:
@@ -58,9 +58,9 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req, { session }) => {
   const body = updatePasswordRequest.parse(await req.json());
-  const user = await UserService.findUser(session?.user.id!, session);
+  const user = await UserService.findUser(session?.user.id ?? "", session);
 
   if (!user) {
     throw new createHttpError.NotFound(

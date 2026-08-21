@@ -98,7 +98,7 @@ export const PERMISSION_ERROR_MESSAGES: Record<PermissionErrorCode, string> = {
 export function createPermissionError(
   code: PermissionErrorCode,
   statusCode: number = 403,
-  additionalContext?: Record<string, any>
+  additionalContext?: Record<string, unknown>
 ): createHttpError.HttpError {
   const message = PERMISSION_ERROR_MESSAGES[code];
 
@@ -111,11 +111,14 @@ export function createPermissionError(
   }, 'Permission denied');
 
   // Create http-error that will be properly handled by Next.js
-  const error = createHttpError(statusCode, message);
-  (error as any).code = code;
+  const error = createHttpError(statusCode, message) as createHttpError.HttpError & {
+    code?: PermissionErrorCode;
+    data?: Record<string, unknown>;
+  };
+  error.code = code;
 
   if (additionalContext) {
-    (error as any).data = additionalContext;
+    error.data = additionalContext;
   }
 
   return error;

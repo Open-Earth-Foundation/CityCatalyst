@@ -1,4 +1,3 @@
-import React from "react";
 import { City } from "@/models/City";
 import {
   Body,
@@ -12,7 +11,7 @@ import {
   Preview,
   Section,
   Text,
-} from "@react-email/components";
+} from "react-email";
 import i18next from "@/i18n/server";
 import { LANGUAGES } from "@/util/types";
 
@@ -33,7 +32,6 @@ export function RemoveUserFromMultipleCitiesTemplate({
   language?: string;
 }) {
   const t = i18next.getFixedT(language || LANGUAGES.en, "emails");
-  const ImageURL = "https://citycatalyst.openearth.dev/assets/icon.png";
   return (
     <Html>
       <Head>
@@ -162,14 +160,6 @@ const brandHeading = {
   lineHeight: "1.5",
   fontWeight: "700",
   color: "#2351DC",
-};
-
-const heading = {
-  fontSize: "24px",
-  lineHeight: "1.3",
-  fontWeight: "700",
-  color: "#484848",
-  marginTop: "50px",
 };
 
 const greeting = {

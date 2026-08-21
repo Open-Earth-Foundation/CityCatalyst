@@ -17,6 +17,31 @@ k6 run --vus 30 --duration 10s city_catalyst.ts
 
 ## HIAP cron regression load test
 
+### Local Docker dataset
+
+Start an isolated PostgreSQL instance and apply the application's migrations:
+
+```powershell
+docker compose -f .\docker-compose.hiap.yml up -d
+cd ..\app
+$env:NODE_ENV = "development"
+$env:DATABASE_HOST = "127.0.0.1"
+$env:DATABASE_NAME = "citycatalyst_loadtest"
+$env:DATABASE_USER = "citycatalyst"
+$env:DATABASE_PASSWORD = "local-loadtest"
+$env:CC_CRON_JOB_API_KEY = "local-loadtest-key"
+npm run db:migrate
+$env:HIAP_LOAD_TEST_RANKINGS = "1000"
+$env:HIAP_LOAD_TEST_PLANS = "1000"
+$env:HIAP_LOAD_TEST_JSON_BYTES = "32768"
+npm run seed-hiap-load-test
+```
+
+The fixture is synthetic and deterministic. It creates successful rankings,
+ranked actions, and action plans with controlled JSONB payloads. It uses a
+reserved `ZZ-CC752-LOAD` prefix and can be safely reset and regenerated with
+the same command.
+
 `hiap_cron.js` exercises the internal `GET /api/v1/cron/check-hiap-jobs`
 endpoint at a constant arrival rate. It verifies the polling-only response
 contract and records latency, HTTP errors, 5xx responses, and unexpected

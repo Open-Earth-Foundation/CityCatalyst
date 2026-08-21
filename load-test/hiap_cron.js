@@ -15,7 +15,9 @@ const PRE_ALLOCATED_VUS = Number(__ENV.PRE_ALLOCATED_VUS || 5);
 const MAX_VUS = Number(__ENV.MAX_VUS || 20);
 
 if (!CRON_API_KEY) {
-  throw new Error("CRON_API_KEY is required; refusing to run unauthenticated load");
+  throw new Error(
+    "CRON_API_KEY is required; refusing to run unauthenticated load",
+  );
 }
 
 export const options = {
@@ -41,7 +43,7 @@ export const options = {
 };
 
 export default function () {
-  const response = http.get(`${BASE_URL}/api/v1/cron/check-hiap-jobs`, {
+  const response = http.get(`${BASE_URL}/api/v1/cron/check-hiap-jobs/`, {
     headers: {
       Authorization: `Bearer ${CRON_API_KEY}`,
       "X-Load-Test-Run": __ENV.RUN_ID || "hiap-cron-load-test",

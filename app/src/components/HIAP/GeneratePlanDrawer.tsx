@@ -56,7 +56,7 @@ export const GeneratePlanDrawer = ({
       return;
     }
 
-    // Inform the user immediately; success is confirmed by email after save.
+    // API returns 202 immediately; completion is notified by email after save.
     const startedToastId = toaster.create({
       title: t("plan-generation-started"),
       description: t("plan-generation-started-description"),
@@ -65,7 +65,7 @@ export const GeneratePlanDrawer = ({
     });
 
     try {
-      // Await so generation/save failures surface as an error toast (no email).
+      // Await only acceptance (202). Background poll/save/email failures are logged server-side.
       await generateActionPlan({
         action: action,
         cityId: cityData.cityId,
@@ -74,7 +74,7 @@ export const GeneratePlanDrawer = ({
         lng: action.lang,
       }).unwrap();
     } catch (error) {
-      console.error("Failed to generate action plan:", error);
+      console.error("Failed to start action plan generation:", error);
       toaster.remove(startedToastId);
       toaster.create({
         title: t("plan-generation-failed"),

@@ -14,7 +14,7 @@ dependencies = [
     "certifi==2025.10.5",
     "cffi==2.0.0",
     "charset-normalizer==3.4.7",
-    "click==8.3.0",
+    "click==8.4.2",
     "colorama==0.4.6",
     "cryptography==49.0.0",
     "distro==1.9.0",

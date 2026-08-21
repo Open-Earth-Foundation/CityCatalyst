@@ -4,7 +4,7 @@ from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
-from app.models.concept_note_application_context import (
+from app.models.cnb.concept_note_application_context import (
     ApplicationContextFunder,
     ApplicationContextIncludedSources,
     ApplicationContextOpportunity,
@@ -40,12 +40,18 @@ class ConceptNoteApplicationContextService:
     async def load_for_run(
         self,
         run: ConceptNoteRun,
+        *,
+        included_sources: ApplicationContextIncludedSources | None = None,
     ) -> ConceptNoteApplicationContextResponse:
         """Return the run envelope plus any reviewed funder, programme, and template."""
         response = ConceptNoteApplicationContextResponse(
             run_id=run.run_id,
             city_id=UUID(run.city_id),
-            included_sources=await self._load_included_sources(run.run_id),
+            included_sources=(
+                included_sources
+                if included_sources is not None
+                else await self._load_included_sources(run.run_id)
+            ),
         )
         if run.funder_id is None:
             return response
@@ -106,14 +112,7 @@ class ConceptNoteApplicationContextService:
         bundle = ConceptNoteContextBundle.model_validate(
             bundle_row.context_bundle if bundle_row is not None else {}
         )
-        context = bundle.cc_context
-        return ApplicationContextIncludedSources(
-            city=context.city is not None,
-            project=context.project is not None,
-            ghgi=context.ghgi is not None,
-            ccra=context.ccra is not None,
-            hiap=context.hiap is not None,
-        )
+        return included_sources_from_bundle(bundle)
 
     async def _load_funder(
         self,
@@ -147,20 +146,25 @@ class ConceptNoteApplicationContextService:
         *,
         funding_opportunity_id: UUID | None,
     ) -> CnbFunderTemplate | None:
-        """Return the first deterministic template for the selected opportunity."""
+        """Return the single template attached to the selected opportunity."""
         if funding_opportunity_id is None:
             return None
 
-        statement = (
-            select(CnbFunderTemplate)
-            .where(
-                CnbFunderTemplate.funding_opportunity_id == funding_opportunity_id
-            )
-            .order_by(
-                CnbFunderTemplate.template_name.asc(),
-                CnbFunderTemplate.template_id.asc(),
-            )
-            .limit(1)
+        statement = select(CnbFunderTemplate).where(
+            CnbFunderTemplate.funding_opportunity_id == funding_opportunity_id
         )
-        result = await session.execute(statement)
-        return result.scalars().first()
+        return await session.scalar(statement)
+
+
+def included_sources_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> ApplicationContextIncludedSources:
+    """Derive source-presence flags from one persisted bundle snapshot."""
+    context = bundle.cc_context
+    return ApplicationContextIncludedSources(
+        city=context.city is not None,
+        project=context.project is not None,
+        ghgi=context.ghgi is not None,
+        ccra=context.ccra is not None,
+        hiap=context.hiap is not None,
+    )

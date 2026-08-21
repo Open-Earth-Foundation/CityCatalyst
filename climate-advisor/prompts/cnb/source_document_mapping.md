@@ -23,6 +23,10 @@ Return `SourcePartitionMap` JSON only with:
 Do not invent or translate locators.
 </output>
 
-<example_output>
+<example_output format="pdf">
+{"summary":"The plan identifies flood risk and drainage upgrades.","topics":["flood risk","drainage"],"excerpts":[{"text":"Upgrade primary drainage channels","page":3}],"covered_segment_ids":["p3-s1"]}
+</example_output>
+
+<example_output format="markdown">
 {"summary":"The plan identifies flood risk and drainage upgrades.","topics":["flood risk","drainage"],"excerpts":[{"text":"Upgrade primary drainage channels","anchor":"priorities/drainage/block-a81bd152fa20"}],"covered_segment_ids":["priorities/drainage/block-a81bd152fa20-s1"]}
 </example_output>

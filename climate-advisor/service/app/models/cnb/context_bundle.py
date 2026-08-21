@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Literal
 from uuid import UUID
 
-from app.models.concept_note_markdown import ConceptNoteSourceFormat
+from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -40,6 +40,10 @@ class SelectedSource(ContextBundleContract):
     source_format: ConceptNoteSourceFormat = "pdf"
     page_count: int | None = Field(default=None, ge=1)
     block_count: int | None = Field(default=None, ge=1)
+    analysis_contract_version: str | None = Field(
+        default=None,
+        pattern=r"^[0-9a-f]{64}$",
+    )
     summary: str = Field(min_length=1, max_length=4000)
     topics: list[str] = Field(max_length=30)
     key_excerpts: list[SourceExcerpt] = Field(max_length=20)

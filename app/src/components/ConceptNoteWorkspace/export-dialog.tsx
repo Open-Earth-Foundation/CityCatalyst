@@ -147,22 +147,22 @@ export function ExportDialog({
                   gap={3}
                   border="1px solid"
                   borderColor={
-                    hasGroundedSources
+                    hasUploadedEvidence
                       ? "sentiment.positiveDefault"
                       : "sentiment.warningDefault"
                   }
                   borderRadius="rounded"
                   bg={
-                    hasGroundedSources
+                    hasUploadedEvidence
                       ? "sentiment.positiveOverlay"
                       : "sentiment.warningOverlay"
                   }
                   p={3}
                 >
                   <Icon
-                    as={hasGroundedSources ? LuCheck : LuCircleAlert}
+                    as={hasUploadedEvidence ? LuCheck : LuCircleAlert}
                     color={
-                      hasGroundedSources
+                      hasUploadedEvidence
                         ? "sentiment.positiveDefault"
                         : "sentiment.warningDefault"
                     }
@@ -173,12 +173,12 @@ export function ExportDialog({
                       fontWeight="semibold"
                       color="content.primary"
                     >
-                      {hasGroundedSources
+                      {hasUploadedEvidence
                         ? t("source-context-ready")
                         : t("source-context-recommended")}
                     </Text>
                     <Text fontSize="label.sm" color="content.secondary">
-                      {hasGroundedSources
+                      {hasUploadedEvidence
                         ? t("source-context-ready-export")
                         : t("source-context-recommended-export")}
                     </Text>

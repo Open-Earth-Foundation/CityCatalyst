@@ -395,7 +395,7 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
-              contextMode={bundle.contextMode}
+              documentGrounding={bundle.documentGrounding}
               lng={lng}
               onOpenContext={() => setTab("context")}
               threadId={run.thread_id}

@@ -5,9 +5,10 @@ import hashlib
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
+from app.config import get_settings
 from app.models.cnb.context_bundle import SelectedSource
 from app.persistence.concept_notes.context_bundle import ContextBundleBuildSnapshot
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
@@ -16,7 +17,11 @@ from app.services.cnb.context_bundle import (
     ContextBundleService,
     run_context_bundle_reconciler,
 )
-from app.services.cnb.source_analysis import SourceBlock, SourcePage
+from app.services.cnb.source_analysis import (
+    SourceBlock,
+    SourcePage,
+    source_analysis_contract_version,
+)
 
 
 def fake_verify_source_artifact(
@@ -173,7 +178,115 @@ async def test_source_build_completes_with_null_optional_sources(
 
 
 @pytest.mark.asyncio
-async def test_build_without_uploads_completes_with_thin_context(monkeypatch) -> None:
+async def test_incremental_build_analyzes_only_the_new_upload(monkeypatch) -> None:
+    """Reuse an unchanged source and preserve deterministic upload order."""
+    run_id = uuid4()
+    old_upload_id = uuid4()
+    new_upload_id = uuid4()
+    old_markdown = "<!-- page: 1 -->\nExisting evidence"
+    new_markdown = "<!-- page: 1 -->\nNew evidence"
+    old_digest = hashlib.sha256(old_markdown.encode()).hexdigest()
+    new_digest = hashlib.sha256(new_markdown.encode()).hexdigest()
+    now = datetime.now(UTC)
+
+    def upload(
+        upload_id: UUID,
+        filename: str,
+        digest: str,
+    ) -> ConceptNoteUploadSnapshot:
+        return ConceptNoteUploadSnapshot(
+            upload_id=upload_id,
+            run_id=run_id,
+            user_id="owner",
+            filename=filename,
+            source_label=filename,
+            markdown_s3_key=f"{upload_id}.md",
+            markdown_sha256=digest,
+            page_count=1,
+            status="ready",
+            error_code=None,
+            received_at=now,
+            completed_at=now,
+            source_format="pdf",
+        )
+
+    old_upload = upload(old_upload_id, "old.pdf", old_digest)
+    new_upload = upload(new_upload_id, "new.pdf", new_digest)
+    contract_version = source_analysis_contract_version(get_settings())
+    old_analysis = SelectedSource(
+        upload_id=old_upload_id,
+        source_label="old.pdf",
+        filename="old.pdf",
+        sha256=old_digest,
+        source_format="pdf",
+        page_count=1,
+        analysis_contract_version=contract_version,
+        summary="Accepted existing summary.",
+        topics=["existing"],
+        key_excerpts=[],
+    )
+    snapshot = ContextBundleBuildSnapshot(
+        run_id=run_id,
+        city_id=str(uuid4()),
+        build_id=uuid4(),
+        uploads=[old_upload, new_upload],
+        already_current=False,
+        previous_sources=[old_analysis],
+    )
+    analyze = AsyncMock(side_effect=fake_analyze_document)
+    complete_build = AsyncMock(return_value=True)
+    client = SimpleNamespace(
+        get_concept_note_markdown=AsyncMock(
+            return_value=ConceptNoteMarkdownArtifact(
+                markdown=new_markdown,
+                markdown_s3_key=f"{new_upload_id}.md",
+                sha256=new_digest,
+                source_format="pdf",
+                page_count=1,
+            )
+        ),
+        close=AsyncMock(),
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.load_accessible_inventory",
+        AsyncMock(return_value=None),
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.begin_build",
+        AsyncMock(return_value=snapshot),
+    )
+    monkeypatch.setattr(
+        "app.services.cnb.context_bundle.complete_build",
+        complete_build,
+    )
+    service = ContextBundleService(
+        None,  # type: ignore[arg-type]
+        analyze_document_fn=analyze,
+        verify_source_artifact_fn=fake_verify_source_artifact,
+        cc_client_factory=lambda: client,
+    )
+
+    assert await service.build(user_id="owner", run_id=run_id, token="token")
+
+    analyze.assert_awaited_once()
+    assert analyze.await_args.kwargs["upload_id"] == new_upload_id
+    client.get_concept_note_markdown.assert_awaited_once_with(
+        upload_id=str(new_upload_id),
+        token="token",
+    )
+    selected_sources = complete_build.await_args.kwargs["selected_sources"]
+    assert [source.upload_id for source in selected_sources] == [
+        old_upload_id,
+        new_upload_id,
+    ]
+    assert selected_sources[0].summary == "Accepted existing summary."
+    assert selected_sources[1].analysis_contract_version == contract_version
+
+
+@pytest.mark.asyncio
+async def test_build_without_uploads_completes_without_document_evidence(
+    monkeypatch,
+) -> None:
     """Treat missing documents as limited context instead of a build failure."""
     run_id = uuid4()
     snapshot = ContextBundleBuildSnapshot(

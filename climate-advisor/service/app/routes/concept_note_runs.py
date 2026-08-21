@@ -6,11 +6,11 @@ from typing import Annotated
 from uuid import UUID
 
 from app.db.session import get_session
-from app.models.concept_note_application_context import (
+from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
 )
-from app.models.concept_note_draft import ConceptNoteDraftResponse
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
+from app.models.cnb.concept_note_runs import (
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
@@ -29,7 +29,7 @@ from app.services.cnb.context_bundle import (
     get_context_bundle_service,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -167,6 +167,7 @@ async def start_concept_note_drafting(
         ConceptNoteChapterDraftService | None,
         Depends(get_chapter_draft_service),
     ],
+    http_response: Response,
     user_id: str = Query(..., min_length=1),
     authorization: str | None = Header(default=None),
     session: AsyncSession = Depends(get_session),
@@ -184,7 +185,7 @@ async def start_concept_note_drafting(
             detail="Concept Note chapter drafting is unavailable",
         )
     try:
-        response, build_id = await draft_service.start(run)
+        draft, build_id = await draft_service.start(run)
         if build_id is not None:
             schedule_chapter_drafting(
                 service=draft_service,
@@ -192,6 +193,8 @@ async def start_concept_note_drafting(
                 user_id=run.user_id,
                 build_id=build_id,
             )
-        return response
+        else:
+            http_response.status_code = status.HTTP_200_OK
+        return draft
     except ChapterDraftingError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc

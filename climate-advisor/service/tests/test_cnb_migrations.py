@@ -105,6 +105,8 @@ def test_cnb_offline_migration_preserves_explicit_constraint_names() -> None:
     assert "CREATE TABLE funded_projects" in sql
     assert "CONSTRAINT ck_funding_evidence_exactly_one_parent CHECK" in sql
     assert "ck_funding_evidence_ck_funding_evidence" not in sql
+    assert "DROP CONSTRAINT uq_funder_templates_opportunity_name" in sql
+    assert "CONSTRAINT uq_funder_templates_opportunity UNIQUE" in sql
 
 
 def test_cnb_metadata_contains_only_the_thirteen_owned_tables() -> None:
@@ -206,9 +208,11 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
     assert "uq_source_documents_content_hash_url" in source_uniques
     assert "uq_concept_note_chapter_revisions_number" in revision_uniques
     assert "uq_concept_note_matched_projects_run_project" in match_uniques
-    assert "uq_funder_templates_opportunity_name" in {
+    template_uniques = {
         item["name"] for item in inspector.get_unique_constraints("funder_templates")
     }
+    assert "uq_funder_templates_opportunity" in template_uniques
+    assert "uq_funder_templates_opportunity_name" not in template_uniques
 
     expected_fk_deletes = {
         "funding_opportunities": {("funder_id",): "RESTRICT"},
@@ -302,7 +306,7 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
         revision = connection.execute(
             text("SELECT version_num FROM cnb_alembic_version")
         ).scalar_one()
-    assert revision == "20260803_120000"
+    assert revision == "20260821_120000"
 
     _run_alembic(
         config="cnb-alembic.ini",

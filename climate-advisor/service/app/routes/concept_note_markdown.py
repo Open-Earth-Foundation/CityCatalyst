@@ -9,7 +9,7 @@ from typing import Any
 from uuid import UUID
 
 from app.config import get_settings
-from app.models.concept_note_markdown import (
+from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteMarkdownResponse,
     ConceptNoteUploadCreateRequest,

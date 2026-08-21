@@ -33,9 +33,9 @@ draft API materializes the selected template, then runs an independent
 server-side process that saves one immutable chapter revision before generating
 the next. CC accepts authorized PDFs through `PdfOcrJob` and native UTF-8
 Markdown through direct artifact storage, then exposes either result through its
-authenticated read boundary. Runs may begin with typed thin context and later
-rebuild as grounded; all optional CC, funding, matching, and source context may
-be absent.
+authenticated read boundary. Runs may begin without uploaded document evidence
+and later rebuild with it; all optional CC, funding, matching, and source
+context may be absent.
 
 In scope:
 
@@ -401,10 +401,10 @@ The active step decides which tools are available.
 ```mermaid
 flowchart TB
     Start([Start]) --> Scope["selecting_scope"]
-    Scope --> Context["assembling_context<br/>automatic thin bundle"]
+    Scope --> Context["assembling_context<br/>automatic context bundle"]
     Context --> Interview["interviewing"]
     Interview -. optional source upload .-> Ingest["ingesting_user_files<br/>receive + process Markdown"]
-    Ingest -. grounded rebuild .-> Interview
+    Ingest -. uploaded-evidence rebuild .-> Interview
     Interview -. optional enrichment .-> Funder["profiling_funder"]
     Funder -. optional enrichment .-> Match["matching_examples"]
     Match -. targeted rebuild .-> Interview
@@ -414,7 +414,7 @@ flowchart TB
     Draft --> Complete([completed])
 
     IngestNote["CC owns PDF conversion and Markdown storage.<br/>CA stores the object pointer and reads bytes through authenticated CC."]
-    ContextNote["Zero or more ready sources are allowed.<br/>Missing documents produce typed thin context;<br/>uploads later rebuild the same run as grounded."]
+    ContextNote["Zero or more ready sources are allowed.<br/>Document grounding is none without uploads;<br/>uploads rebuild it as uploaded evidence."]
     Ingest -.-> IngestNote
     Context -.-> ContextNote
 ```
@@ -439,8 +439,12 @@ and template.
 ## Context Bundle
 
 The authorized run may advance with no ready source by recording
-`context_mode: thin` and `missing_context: [source_documents]`. A ready upload
-rebuilds it as `grounded`; every other section has an explicit empty value.
+`document_grounding: none` and `missing_context: [source_documents]`. A ready
+upload records `document_grounding: uploaded_evidence`; every other section has
+an explicit empty value. Independent `available_context` flags report the
+presence of city, project, GHGI, CCRA, HIAP, and uploaded-document context. A
+rebuild keeps the last completed bundle and flags available to chat and
+selected-source queries until the replacement is committed.
 
 ```mermaid
 flowchart TB
@@ -1389,9 +1393,11 @@ flowchart TB
 How it works:
 
 - The selected funder template creates the chapter plan and initial empty
-  chapters.
+  chapters. Each funding opportunity has exactly one template.
 - The context bundle supplies drafting context: CC facts, funder criteria,
   matched project examples, and selected source excerpts.
+- Generated document Markdown reserves H1 for the final document title; every
+  template chapter starts at H2 and its subsections start at H3.
 - The workspace shows editable chapters as the main document surface.
 - Every add, delete, restore, reorder, or text edit creates a chapter revision.
   Revisions are an audit/history trail; they do not feed evidence links.
@@ -1399,6 +1405,8 @@ How it works:
   They do not create chapters by themselves.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
+- A five-minute reconciler marks chapter-drafting leases left `running` for more
+  than one hour as failed and retryable, without discarding completed chapters.
 
 Chapter fields should support the editable document surface:
 
@@ -1602,9 +1610,19 @@ Rules:
   than four, then GPT-5.4 for final document synthesis.
 - Requires every partition reader to acknowledge every segment and verifies
   every retained excerpt as an exact substring of its cited source location.
-- Completes with typed thin context when no ready upload exists. A pointer/digest
-  change, reader partition failure, or incomplete source coverage still fails
-  retryably.
+- Requires every factual sentence in a synthesized document summary to remain
+  self-contained and supported by an exact retained excerpt. Conflicting
+  evidence remains explicit instead of being silently reconciled.
+- Limits source-query caveats to material interpretation constraints such as
+  missing scope, time, units, definitions, coverage, conflicts, or indirect
+  support; an empty result alone is not a caveat.
+- Reuses an unchanged selected-source analysis only when the upload identity,
+  immutable Markdown digest, source metadata, and analysis-contract version all
+  match. Adding one upload therefore preserves unchanged analyses and sends only
+  the new document through the reader and synthesizer.
+- Completes with `document_grounding: none` when no ready upload exists. A
+  pointer/digest change, reader partition failure, or incomplete source coverage
+  still fails retryably.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.
@@ -2314,8 +2332,8 @@ file layout.
 
 | Failure                      | User-visible behavior                                                     | System behavior                                                                                                                |
 | ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| GHGI or HIAP unavailable | Continue with available thin or grounded context and show an optional-source warning. | Persist the optional status and `null`; do not block bundle readiness. |
-| No ready city source | Start chat with thin context and recommend adding a source for grounding. | Complete a `thin` bundle with `source_documents` missing and no selected sources. |
+| GHGI or HIAP unavailable | Continue with the available context and show an optional-source warning. | Persist the optional status and `null`; do not block bundle readiness. |
+| No ready city source | Start chat with available CityCatalyst context and show `Uploaded evidence: none`. | Complete with `document_grounding: none`, `source_documents` missing, and no selected sources. |
 | Source coverage/digest failure | Show that source analysis must be retried or the upload investigated. | Reject readiness; persist a retryable guarded build failure and never keep partial summaries. |
 | Stale background build       | No user-visible regression.                                               | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                 |
 | Interrupted background build | Offer the existing context-bundle retry.                                  | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |

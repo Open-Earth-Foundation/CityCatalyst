@@ -18,6 +18,7 @@ import { InputGroup } from "@/components/ui/input-group";
 import { LuLayoutGrid } from "react-icons/lu";
 import { BiCaretDown } from "react-icons/bi";
 import type { ProjectWithCitiesResponse } from "@/util/types";
+import { uniqueBy } from "@/util/array";
 import {
   api,
   useGetUserProjectsQuery,
@@ -460,9 +461,18 @@ const JNDrawer = ({
   const router = useRouter();
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
   const { organization, setOrganization } = useOrganizationContext();
-  const { data: organizations } = api.useGetUserOrganizationsQuery(undefined, {
-    skip: !isOpen,
-  });
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
+    undefined,
+    {
+      skip: !isOpen,
+    },
+  );
+  const organizations = useMemo(
+    () =>
+      rawOrganizations &&
+      uniqueBy(rawOrganizations, (org) => org.organizationId),
+    [rawOrganizations],
+  );
   const [getProjectsForOrganization] = api.useLazyGetProjectsQuery();
   const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 

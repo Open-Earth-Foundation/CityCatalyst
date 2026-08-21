@@ -84,13 +84,15 @@ def test_translate_plan_extracts_parsed_plan_response() -> None:
         translate_plan_module.openai_client.beta.chat.completions,
         "parse",
         return_value=_mock_completion(parsed_plan),
-    ):
+    ) as mock_parse:
         with warnings.catch_warnings(record=True) as captured:
             warnings.simplefilter("always")
             result = translate_plan(input_plan, "en", "pt")
 
     assert isinstance(result, PlanResponse)
     assert result.metadata.language == "pt"
+    assert mock_parse.call_args.kwargs["reasoning_effort"] == "none"
+    assert "temperature" not in mock_parse.call_args.kwargs
     warning_text = " ".join(str(item.message) for item in captured)
     assert "PydanticSerializationUnexpectedValue" not in warning_text
 

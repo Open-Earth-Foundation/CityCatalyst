@@ -1,6 +1,6 @@
 {
   "name": "city-catalyst",
-  "version": "1.25.0-dev.0",
+  "version": "1.26.0-dev.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -22,6 +22,9 @@
     "db:seed:one": "sequelize-cli db:seed --debug --seed",
     "db:seed:undo": "sequelize-cli db:seed:undo --debug",
     "db:seed:undo:all": "sequelize-cli db:seed:undo:all --debug",
+    "reconciliation:prepare": "tsx validation/native-input-catalog-reconciliation/prepare.ts",
+    "reconciliation:dry-run": "tsx validation/native-input-catalog-reconciliation/run-dry-run.ts",
+    "reconciliation:apply-rollback": "tsx validation/native-input-catalog-reconciliation/run-apply-and-rollback.ts",
     "db:gen-migration": "sequelize-cli migration:generate --name",
     "db:gen-seed": "sequelize-cli seed:generate --name",
     "sync-catalogue": "tsx scripts/catalogue-sync.ts",

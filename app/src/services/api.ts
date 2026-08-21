@@ -1493,7 +1493,7 @@ export const api = createApi({
         invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
-        { plan: string; timestamp: string; actionName: string },
+        { accepted: boolean; message: string },
         {
           action: HIAction;
           inventoryId: string;
@@ -1520,11 +1520,11 @@ export const api = createApi({
           body: { action, inventoryId, cityLocode, lng },
         }),
         transformResponse: (response: {
-          data: { plan: string; timestamp: string; actionName: string };
+          data: { accepted: boolean; message: string };
         }) => {
           return response.data;
         },
-        invalidatesTags: ["ActionPlan"],
+        // Plan is not ready yet (202); cache refresh happens when the user returns after email.
       }),
       getActionPlans: builder.query<
         { actionPlans: ActionPlanAttributes[] },

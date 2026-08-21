@@ -10,10 +10,6 @@ import {
 } from "../helpers/testDataCreationHelper";
 import { setupTests } from "../helpers";
 import { randomUUID } from "crypto";
-import {
-  createPermissionError,
-  PERMISSION_ERRORS,
-} from "@/util/permission-errors";
 import { City } from "@/models/City";
 
 describe("PermissionService", () => {

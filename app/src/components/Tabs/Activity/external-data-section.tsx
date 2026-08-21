@@ -63,7 +63,7 @@ const ExternalDataSection = ({
     onClose: onSourceDrawerClose,
     onOpen: onSourceDrawerOpen,
   } = useDisclosure();
-  const onSourceClick = (_source: DataSourceWithRelations, _data: any) => {
+  const onSourceClick = () => {
     onSourceDrawerOpen();
   };
   const [hovered, setHovered] = useState(false);
@@ -71,19 +71,26 @@ const ExternalDataSection = ({
   const handleMouseEnter = () => setHovered(true);
   const handleMouseLeave = () => setHovered(false);
 
-  const onDisconnectThirdPartyData = async (
-    _source: DataSourceWithRelations,
-  ) => {
-    await disconnectThirdPartyData({
-      inventoryId: inventoryValue.inventoryId,
-      datasourceId: inventoryValue.datasourceId,
-    });
-    toaster.create({
-      title: t("disconnected-data-source"),
-      type: "info",
-      duration: 5000,
-    });
-    onDisconnect?.(inventoryValue.datasourceId!);
+  const onDisconnectThirdPartyData = async () => {
+    try {
+      await disconnectThirdPartyData({
+        inventoryId: inventoryValue.inventoryId,
+        datasourceId: inventoryValue.datasourceId,
+      }).unwrap();
+      toaster.create({
+        title: t("disconnected-data-source"),
+        type: "info",
+        duration: 5000,
+      });
+      onDisconnect?.(inventoryValue.datasourceId!);
+    } catch (err) {
+      console.error("Failed to disconnect data source:", err);
+      toaster.create({
+        title: t("disconnect-data-source-error"),
+        type: "error",
+        duration: 5000,
+      });
+    }
   };
 
   if (!source) {
@@ -258,7 +265,7 @@ const ExternalDataSection = ({
                 textDecoration="underline"
                 mt={4}
                 mb={2}
-                onClick={() => onSourceClick(source, null)}
+                onClick={() => onSourceClick()}
                 alignSelf="flex-start"
                 fontSize="label.lg"
                 fontWeight="medium"
@@ -288,7 +295,7 @@ const ExternalDataSection = ({
                 }
                 fontWeight="semibold"
                 fontSize="14px"
-                onClick={() => onDisconnectThirdPartyData(source)}
+                onClick={() => onDisconnectThirdPartyData()}
                 loading={isDisconnectLoading}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
@@ -327,7 +334,9 @@ const ExternalDataSection = ({
       </Box>
       <SourceDrawer
         inventoryId={inventoryValue.inventoryId!}
-        source={{ ...inventoryValue, ...source } as any}
+        source={
+          { ...inventoryValue, ...source } as unknown as DataSourceWithRelations
+        }
         hideActions={true}
         totalEmissionsData={inventoryValue.co2eq as unknown as string}
         sourceData={null}

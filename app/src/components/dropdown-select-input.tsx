@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Text, Icon, Fieldset, CheckboxGroup } from "@chakra-ui/react";
 import { MdArrowDropDown, MdArrowDropUp, MdClose } from "react-icons/md";
 import { SubSectorWithRelations } from "@/components/GHGI/data-step/types";
-import {
-  UseFormRegister,
-  UseFormSetValue,
-  UseFormWatch,
-} from "react-hook-form";
+import { UseFormSetValue } from "react-hook-form";
 import { FileData } from "./Modals/add-file-data-dialog";
 import { TFunction } from "i18next";
 import { Tag } from "./ui/tag";
@@ -16,16 +12,12 @@ interface DropdownSelectProps {
   subsectors: SubSectorWithRelations[] | null;
   setValue: UseFormSetValue<FileData>;
   t: TFunction;
-  watch: UseFormWatch<FileData>;
-  register: UseFormRegister<FileData>;
 }
 
 const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
   subsectors,
   setValue,
   t,
-  watch,
-  register,
 }) => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
@@ -130,7 +122,7 @@ const DropdownSelectInput: React.FC<DropdownSelectProps> = ({
                         key={subsector.subsectorId}
                         p="16px"
                         w="full"
-                        onClick={(e) => {
+                        onClick={() => {
                           // Directly toggle the item in state
                           setSelectedItems((prev) => {
                             if (prev.includes(subsectorName)) {

@@ -3,6 +3,7 @@ import SubSectorCard from "@/components/Cards/SubSectorCard";
 import { InventoryResponse, SectorProgress } from "@/util/types";
 import { Box, Heading, Icon, Text, SimpleGrid } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import NextLink from "next/link";
 
 import { useState } from "react";
@@ -156,28 +157,26 @@ export function SectorCard({
               </NextLink>
               {showStationaryEnergyAgenticCta && (
                 <NextLink href={`${pathname}/draft/stationary-energy`}>
-                  <Button
-                    data-testid="stationary-energy-agentic-cta"
-                    variant="ghost"
-                    color="content.link"
-                    justifyContent="flex-start"
-                    w="256px"
-                    h="auto"
-                    minH="48px"
-                    py="10px"
-                    gap={2}
-                    ml={2}
+                  <Tooltip
+                    content={tAgentic("sector-card-draft-with-agent-tooltip")}
+                    showArrow
+                    positioning={{ placement: "top" }}
                   >
-                    <MdAutoAwesome />
-                    <Box textAlign="left">
+                    <Button
+                      data-testid="stationary-energy-agentic-cta"
+                      variant="solid"
+                      w="256px"
+                      h="48px"
+                      py="16px"
+                      gap={2}
+                      ml={2}
+                    >
+                      <MdAutoAwesome />
                       <Text fontFamily="heading" fontSize="button.md">
-                        {tAgentic("sector-card-let-agent-draft")}
+                        {tAgentic("sector-card-draft-with-agent")}
                       </Text>
-                      <Text color="content.tertiary" fontSize="label.sm">
-                        {tAgentic("sector-card-review-before-saving")}
-                      </Text>
-                    </Box>
-                  </Button>
+                    </Button>
+                  </Tooltip>
                 </NextLink>
               )}
             </Box>

@@ -1,5 +1,3 @@
-import type { DraftDecisionState } from "@/components/StationaryEnergyDraft/types";
-
 export type ChatTextMessage = {
   id: string;
   kind: "text";
@@ -20,6 +18,7 @@ export type ChatInventorySaveConfirmationMessage = {
 
 export type StationaryEnergyToolChoiceSummary = {
   proposal_id?: string | null;
+  target_id?: string | null;
   candidate_id?: string | null;
   selected_candidate_id?: string | null;
   selected_source_id?: string | null;
@@ -29,6 +28,9 @@ export type StationaryEnergyToolChoiceSummary = {
   source_meta?: string | null;
   value?: string | null;
   action?: string | null;
+  notation_key?: string | null;
+  unavailable_reason?: string | null;
+  unavailable_explanation?: string | null;
   rationale?: string | null;
   reason?: string | null;
 };

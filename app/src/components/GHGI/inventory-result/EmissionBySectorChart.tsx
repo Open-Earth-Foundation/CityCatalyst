@@ -1,5 +1,10 @@
 import { SectorEmission } from "@/util/types";
-import { BarCustomLayerProps, ResponsiveBar, BarDatum } from "@nivo/bar";
+import {
+  BarCustomLayerProps,
+  ResponsiveBar,
+  BarDatum,
+  ComputedBarDatum,
+} from "@nivo/bar";
 import { allSectorColors, SECTORS } from "@/util/constants";
 import { shortSectorNameToKebabCase, convertKgToTonnes } from "@/util/helpers";
 import { useTranslation } from "@/i18n/client";
@@ -15,28 +20,6 @@ interface EmissionBySectorChartProps {
   }[];
   lng: string;
   numberFormat?: string;
-}
-
-interface CustomBar {
-  absX: number;
-  absY: number;
-  color: string;
-  height: number;
-  width: number;
-  index: number;
-  key: string;
-  label: string;
-  x: number;
-  y: number;
-  data: {
-    formattedValue: string;
-    hidden: boolean;
-    id: string;
-    index: number;
-    indexValue: number;
-    value: number;
-    data: Record<string, any>;
-  };
 }
 
 const createRoundedTopRectPath = ({
@@ -92,31 +75,34 @@ function CustomCombinedBarLayer<D extends BarDatum>({
   const { showTooltipFromEvent, hideTooltip } = useTooltip();
   const [focusedBar, setFocusedBar] = useState<string>();
 
-  const barsByYear: Record<string, CustomBar[]> = useMemo(
+  const barsByYear: Record<string, ComputedBarDatum<D>[]> = useMemo(
     () =>
-      bars.reduce((acc: any, bar: any) => {
-        const year = bar.data.indexValue;
-        if (!acc[year]) {
-          acc[year] = [];
-        }
-        acc[year].push(bar);
-        return acc;
-      }, {}),
+      bars.reduce(
+        (acc: Record<string, ComputedBarDatum<D>[]>, bar) => {
+          const year = String(bar.data.indexValue);
+          if (!acc[year]) {
+            acc[year] = [];
+          }
+          acc[year].push(bar);
+          return acc;
+        },
+        {} as Record<string, ComputedBarDatum<D>[]>,
+      ),
     [bars],
   );
 
   return (
     <g>
       {Object.entries(barsByYear).map(([year, bars]) => {
-        const yTop = Math.min(...bars.map((bar: any) => bar.y));
-        const yBottom = Math.max(...bars.map((bar: any) => bar.y + bar.height));
+        const yTop = Math.min(...bars.map((bar) => bar.y));
+        const yBottom = Math.max(...bars.map((bar) => bar.y + bar.height));
         const height = yBottom - yTop;
 
         bars.sort((a, b) => a.y - b.y);
         const topSegment = bars[0];
 
         const totalEmission = bars.reduce(
-          (acc, bar) => acc + bar.data.value,
+          (acc, bar) => acc + (bar.data.value ?? 0),
           0,
         );
         // Create a combined point for the tooltip.
@@ -127,11 +113,11 @@ function CustomCombinedBarLayer<D extends BarDatum>({
             year,
             total: totalEmission,
             segments: bars.map((bar) => ({
-              id: bar.data.id,
+              id: String(bar.data.id),
               // Assuming each segment’s value is stored with key === bar.id
-              value: bar.data.value as number,
+              value: bar.data.value ?? 0,
               color: bar.color,
-              percentage: (bar.data.value / totalEmission) * 100,
+              percentage: ((bar.data.value ?? 0) / totalEmission) * 100,
             })),
           },
         };
@@ -174,7 +160,7 @@ function CustomCombinedBarLayer<D extends BarDatum>({
           >
             {bars
               .filter((bar) => bar.index !== topSegment.index)
-              .map((bar: any, index) => {
+              .map((bar) => {
                 return (
                   <rect
                     key={bar.data.id}
@@ -183,8 +169,6 @@ function CustomCombinedBarLayer<D extends BarDatum>({
                     width={bar.width}
                     height={bar.height}
                     fill={bar.color}
-                    stroke={bar.borderColor}
-                    strokeWidth={bar.borderWidth}
                   />
                 );
               })}
@@ -338,7 +322,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
     );
   };
 
-  const chartData: Record<string, any>[] = data
+  const chartData: Record<string, number>[] = data
     .map((item) => {
       const sectorBreakDown = item.bySector.reduce((acc, sector) => {
         return {

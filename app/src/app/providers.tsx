@@ -53,6 +53,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         href="https://fonts.gstatic.com"
         crossOrigin="anonymous"
       />
+      {/* eslint-disable-next-line @next/next/no-page-custom-font -- fallback for locally-hosted fonts, see ON-4761 */}
       <link
         href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Poppins:wght@400;500;600&display=swap"
         rel="stylesheet"
@@ -80,11 +81,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
         ]}
       >
         <ChakraProvider value={appTheme}>
-          <OrganizationContextProvider>
-            <SessionProvider>
-              <Provider store={store}>{children}</Provider>
-            </SessionProvider>
-          </OrganizationContextProvider>
+          <Provider store={store}>
+            <OrganizationContextProvider>
+              <SessionProvider>{children}</SessionProvider>
+            </OrganizationContextProvider>
+          </Provider>
         </ChakraProvider>
       </ThemeProvider>
     </div>

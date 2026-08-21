@@ -4,7 +4,6 @@ import createHttpError from "http-errors";
 import { db } from "@/models";
 import { logger } from "@/services/logger";
 import { z } from "zod";
-import { ACTION_TYPES } from "@/util/types";
 
 // Type for HighImpactActionRanking with included associations
 type HighImpactActionRankingWithIncludes = {

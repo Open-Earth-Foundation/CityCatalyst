@@ -24,8 +24,9 @@ import {
   MdArrowDropDown,
   MdArrowDropUp,
   MdAspectRatio,
+  MdCardTravel,
+  MdCheck,
   MdLogout,
-  MdOpenInNew,
   MdOutlineMenu,
 } from "react-icons/md";
 import Cookies from "js-cookie";
@@ -41,17 +42,15 @@ import { Avatar } from "@/components/ui/avatar";
 
 import { Button } from "@/components/ui/button";
 import { Roles } from "@/util/types";
-import ProjectDrawer from "@/components/GHGIHomePage/ProjectDrawer";
-import { TbSettingsCog } from "react-icons/tb";
+import { uniqueBy } from "@/util/array";
 import { useTheme } from "next-themes";
-import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
-import { getGhgiInventoryPath } from "@/util/ghgi-routes";
-import { getCityHomePath, getDashboardPath } from "@/util/routes";
+import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { getParamValue } from "@/util/helpers";
+import { env } from "@/lib/runtime-env";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -59,7 +58,6 @@ function countryFromLanguage(language: string) {
 
 export function NavigationBar({
   lng,
-  showNav = true,
   isPublic = false,
   showMenu = false,
   isAuth = false,
@@ -78,15 +76,12 @@ export function NavigationBar({
   const params = useParams();
   const activeLng = getParamValue(params.lng) ?? lng;
   const { t } = useTranslation(activeLng, "navigation");
-  const { organization, clearOrganization } = useOrganizationContext();
+  const { organization, setOrganization, clearOrganization } =
+    useOrganizationContext();
   const logoUrl = organization?.logoUrl;
   const isFrozen = organization != null && !organization.active;
   // Use custom hook to extract route params - more reliable for route changes
-  const {
-    cityId: cityIdFromRoute,
-    inventoryId: inventoryIdFromRoute,
-    pathname,
-  } = useRouteParams();
+  const { cityId: cityIdFromRoute, pathname } = useRouteParams();
 
   const { data: userAccessStatus } = useGetUserAccessStatusQuery(
     {},
@@ -97,6 +92,19 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
+  const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
+    undefined,
+    {
+      skip: isPublic || status !== "authenticated",
+    },
+  );
+  const organizations = useMemo(
+    () =>
+      rawOrganizations &&
+      uniqueBy(rawOrganizations, (org) => org.organizationId),
+    [rawOrganizations],
+  );
+  const [getProjects] = api.useLazyGetProjectsQuery();
   const router = useRouter();
 
   const onChangeLanguage = async (language: string) => {
@@ -118,45 +126,44 @@ export function NavigationBar({
     return null;
   }, [pathname, t]);
 
-  // Memoize city and inventory IDs to ensure they update when route changes
-  const currentInventoryId = useMemo(
-    () => inventoryIdFromRoute ?? userInfo?.defaultInventoryId,
-    [inventoryIdFromRoute, userInfo?.defaultInventoryId],
-  );
+  // Memoize city to ensure it updates when route changes
   const currentCityId = useMemo(
     () => cityIdFromRoute ?? userInfo?.defaultCityId ?? undefined,
     [cityIdFromRoute, userInfo?.defaultCityId],
   );
 
   // Memoize paths to recompute when pathname or IDs change
-  const dashboardPath = useMemo(
-    () => getDashboardPath(lng, currentCityId ?? ""),
-    [lng, currentCityId],
-  );
   const homePath = useMemo(
     () => getCityHomePath(lng, currentCityId ?? ""),
     [lng, currentCityId],
-  );
-  const settingsPath = useMemo(
-    () =>
-      currentCityId && currentInventoryId
-        ? getGhgiInventoryPath(
-            lng,
-            currentCityId,
-            currentInventoryId,
-            "/settings",
-          )
-        : null,
-    [lng, currentCityId, currentInventoryId],
   );
   const { setTheme } = useTheme();
 
   const [isUserMenuOpen, setUserMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 
   const [userMenuHighlight, setUserMenuHighlight] = useState<string | null>();
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const currentOrganizationName = organizations?.find(
+    (org) => org.organizationId === organization?.organizationId,
+  )?.name;
+
+  async function onChangeOrganization(organizationId: string) {
+    if (organizationId === organization?.organizationId) return;
+    setOrganization({ organizationId });
+    const projects = await getProjects({ organizationId })
+      .unwrap()
+      .catch(() => []);
+    const cityId = projects
+      .flatMap((project) => project.cities)
+      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
+    router.push(
+      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
+    );
+  }
 
   function logOut() {
     setTheme("blue_theme");
@@ -172,10 +179,10 @@ export function NavigationBar({
         display="flex"
         justifyContent="space-between"
         flexDirection="row"
-        px={8}
+        px={{ base: 4, md: 8 }}
         py={4}
         alignItems="center"
-        gap={12}
+        gap={{ base: 2, md: 12 }}
         position="relative"
         zIndex={50}
         w="full"
@@ -195,9 +202,11 @@ export function NavigationBar({
           )}
           {logoUrl && !isAuth ? (
             <Link href={homePath}>
-              <img
+              <Image
                 src={logoUrl}
                 alt="Org logo"
+                width={250}
+                height={50}
                 style={{
                   objectFit: "cover",
                   height: "50px",
@@ -217,13 +226,13 @@ export function NavigationBar({
                   />
                 </Link>
               )}
-              <Link href={homePath}>
+              <Link href={homePath} display={{ base: "none", md: "block" }}>
                 <Heading size="lg" color="base.light">
                   {t("title")}
                 </Heading>
               </Link>
               {moduleName && (
-                <>
+                <Box display={{ base: "none", md: "flex" }} alignItems="center" gap={2}>
                   <Separator
                     orientation="vertical"
                     height="5"
@@ -232,107 +241,171 @@ export function NavigationBar({
                   <Heading size="lg" color="base.light" fontWeight="normal">
                     {moduleName}
                   </Heading>
-                </>
+                </Box>
               )}
             </HStack>
           )}
         </Box>
 
         {/* Menu Items */}
-        <Box display="flex" gap="48px" alignItems="center">
-          {showNav && !isPublic && (
-            <>
-              {" "}
-              <Link href={dashboardPath} variant={"nav" as "plain"}>
-                <Heading size="md" ml={6}>
-                  {t("dashboard")}
-                </Heading>
-              </Link>
-              <Link
-                variant={"nav" as "plain"}
-                rel="help noopener"
-                target="_blank"
-                href="https://citycatalyst.openearth.org/learning-hub"
-              >
-                <Heading size="md" whiteSpace="nowrap">
-                  {t("learning-hub")}
-                </Heading>
-                <Icon as={MdOpenInNew} boxSize={4} />
-              </Link>
-              <Separator
-                orientation="vertical"
-                height="6"
-                backgroundColor="background.overlay"
-              />
-            </>
-          )}
+        <Box display="flex" gap={{ base: "12px", md: "48px" }} alignItems="center">
           {children}
-          <Box display="flex">
-            <Box display="flex">
-              <MenuRoot
-                onOpenChange={(details) => {
-                  setLanguageMenuOpen(details.open);
-                }}
-                open={isLanguageMenuOpen}
-                variant="solid"
-              >
-                <MenuTrigger asChild>
-                  <Button
-                    color="base.light"
-                    minW="120px"
-                    variant="ghost"
-                    textTransform="none"
-                    whiteSpace="nowrap"
+          <Box display="flex" gap={{ base: "8px", md: "32px" }}>
+            <MenuRoot
+              onOpenChange={(details) => {
+                setLanguageMenuOpen(details.open);
+              }}
+              open={isLanguageMenuOpen}
+              variant="solid"
+            >
+              <MenuTrigger asChild>
+                <Button
+                  color="base.light"
+                  minW="auto"
+                  minH="48px"
+                  variant="ghost"
+                  textTransform="none"
+                  whiteSpace="nowrap"
+                  justifyContent="space-between"
+                  px="8px"
+                  gap="16px"
+                >
+                  <Box display="flex" alignItems="center" gap="3">
+                    <CircleFlag
+                      countryCode={
+                        countryFromLanguage(i18next.language) === "pt"
+                          ? "br"
+                          : countryFromLanguage(i18next.language)
+                      }
+                      width="24"
+                    />
+
+                    <Text
+                      display={{ base: "none", md: "block" }}
+                      fontSize="title.sm"
+                      fontWeight="medium"
+                      letterSpacing="wide"
+                      lineHeight="20"
+                    >
+                      {i18next.language.toUpperCase()}
+                    </Text>
+
+                    <Icon
+                      as={isLanguageMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                      boxSize={6}
+                    />
+                  </Box>
+                </Button>
+              </MenuTrigger>
+              <MenuContent minW="140px" zIndex={2000}>
+                {languages.map((language) => (
+                  <MenuItem
+                    value={language}
+                    onClick={() => onChangeLanguage(language)}
+                    key={language}
                   >
-                    <Box display="flex" alignItems="center" gap="3">
+                    <Box display="flex" alignItems="center">
                       <CircleFlag
                         countryCode={
-                          countryFromLanguage(i18next.language) === "pt"
+                          countryFromLanguage(language) === "pt"
                             ? "br"
-                            : countryFromLanguage(i18next.language)
+                            : countryFromLanguage(language)
                         }
                         width="24"
+                        style={{ marginRight: "16px" }}
                       />
-
-                      <Text fontSize="title.md" fontWeight="bold">
-                        {i18next.language.toUpperCase()}
+                      <Text fontSize="title.md">{language.toUpperCase()}</Text>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </MenuContent>
+            </MenuRoot>
+            {organizations && organizations.length > 1 && (
+              <Box display={{ base: "none", md: "flex" }}>
+                <MenuRoot
+                  onOpenChange={(details) => {
+                    setOrgMenuOpen(details.open);
+                  }}
+                  open={isOrgMenuOpen}
+                  variant="solid"
+                >
+                  <MenuTrigger asChild>
+                    <Button
+                      color="base.light"
+                      minW="auto"
+                      minH="48px"
+                      variant="ghost"
+                      textTransform="none"
+                      whiteSpace="nowrap"
+                      px="8px"
+                      justifyContent="space-between"
+                      gap="16px"
+                    >
+                      <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                        boxSize="32px"
+                        borderRadius="full"
+                        bg="interactive.connected"
+                        color="base.light"
+                      >
+                        <Icon as={MdCardTravel} boxSize={4} />
+                      </Box>
+                      <Text
+                        maxW="140px"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        whiteSpace="nowrap"
+                        fontSize="title.sm"
+                        fontWeight="medium"
+                        letterSpacing="wide"
+                        lineHeight="20"
+                      >
+                        {currentOrganizationName}
                       </Text>
-
                       <Icon
-                        as={
-                          isLanguageMenuOpen ? MdArrowDropUp : MdArrowDropDown
-                        }
+                        as={isOrgMenuOpen ? MdArrowDropUp : MdArrowDropDown}
                         boxSize={6}
                       />
-                    </Box>
-                  </Button>
-                </MenuTrigger>
-                <MenuContent minW="140px" zIndex={2000}>
-                  {languages.map((language) => (
-                    <MenuItem
-                      value={language}
-                      onClick={() => onChangeLanguage(language)}
-                      key={language}
-                    >
-                      <Box display="flex" alignItems="center">
-                        <CircleFlag
-                          countryCode={
-                            countryFromLanguage(language) === "pt"
-                              ? "br"
-                              : countryFromLanguage(language)
-                          }
-                          width="24"
-                          style={{ marginRight: "16px" }}
-                        />
-                        <Text fontSize="title.md">
-                          {language.toUpperCase()}
-                        </Text>
-                      </Box>
-                    </MenuItem>
-                  ))}
-                </MenuContent>
-              </MenuRoot>
-            </Box>
+                    </Button>
+                  </MenuTrigger>
+                  <MenuContent minW="220px" zIndex={2000}>
+                    {organizations.map((org) => (
+                      <MenuItem
+                        value={org.organizationId}
+                        onClick={() => onChangeOrganization(org.organizationId)}
+                        key={org.organizationId}
+                      >
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="space-between"
+                          w="full"
+                        >
+                          <Text
+                            fontSize="title.md"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                            whiteSpace="nowrap"
+                          >
+                            {org.name}
+                          </Text>
+                          {org.organizationId ===
+                            organization?.organizationId && (
+                            <Icon
+                              as={MdCheck}
+                              boxSize={5}
+                              color="interactive.secondary"
+                            />
+                          )}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </MenuContent>
+                </MenuRoot>
+              </Box>
+            )}
             <Box>
               {!isPublic && status === "authenticated" && session.user && (
                 <MenuRoot
@@ -345,34 +418,40 @@ export function NavigationBar({
                     setUserMenuHighlight(value.highlightedValue)
                   }
                 >
-                  <MenuTrigger
-                    asChild
-                    minW="220px"
-                    whiteSpace="nowrap"
-                    textTransform="none"
-                  >
-                    <Button variant="ghost" ml={8}>
-                      <Avatar
-                        size="sm"
-                        bg="interactive.connected"
-                        color="base.light"
-                        name={session.user?.name!}
-                        src={session.user?.image!}
-                      />
-                      <Text
-                        w="120px"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                        whiteSpace="nowrap"
-                        fontSize="title.md"
-                        fontWeight="bold"
-                      >
-                        {session.user?.name}
-                      </Text>
-                      <Icon
-                        as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
-                        boxSize={6}
-                      />
+                  <MenuTrigger asChild whiteSpace="nowrap" textTransform="none">
+                    <Button
+                      variant="ghost"
+                      px="8px"
+                      minW={{ base: "auto", md: "220px" }}
+                      minH="48px"
+                    >
+                      <Box display="flex" alignItems="center" gap="4">
+                        <Avatar
+                          height="32px"
+                          width="32px"
+                          bg="interactive.connected"
+                          color="base.light"
+                          name={session.user?.name ?? ""}
+                          src={session.user?.image}
+                        />
+                        <Text
+                          display={{ base: "none", md: "block" }}
+                          w="120px"
+                          overflow="hidden"
+                          textOverflow="ellipsis"
+                          whiteSpace="nowrap"
+                          fontSize="title.sm"
+                          fontWeight="medium"
+                          letterSpacing="wide"
+                          lineHeight="20"
+                        >
+                          {session.user?.name}
+                        </Text>
+                        <Icon
+                          as={isUserMenuOpen ? MdArrowDropUp : MdArrowDropDown}
+                          boxSize={6}
+                        />
+                      </Box>
                     </Button>
                   </MenuTrigger>
 
@@ -380,7 +459,7 @@ export function NavigationBar({
                     paddingTop="8px"
                     paddingBottom="8px"
                     shadow="2dp"
-                    minW="150px"
+                    minW="220px"
                     display="flex"
                     flexDirection="column"
                     justifyContent="space-around"
@@ -446,9 +525,7 @@ export function NavigationBar({
                         paddingTop="12px"
                         paddingBottom="12px"
                         px="16px"
-                        onClick={() =>
-                          settingsPath && router.push(settingsPath)
-                        }
+                        onClick={() => router.push(`/${lng}/settings`)}
                       >
                         <Box display="flex" alignItems="center">
                           {" "}
@@ -466,37 +543,6 @@ export function NavigationBar({
                         </Box>
                       </MenuItem>
                     )}
-                    {userAccessStatus?.isOrgOwner &&
-                      !restrictAccess &&
-                      hasFeatureFlag(FeatureFlags.ACCOUNT_SETTINGS_ENABLED) && (
-                        <MenuItem
-                          paddingTop="12px"
-                          paddingBottom="12px"
-                          value="account-settings"
-                          px="16px"
-                          onClick={() => {
-                            router.push(
-                              `/${lng}/organization/${userAccessStatus.organizationId}/account-settings`,
-                            );
-                          }}
-                        >
-                          <Box display="flex" alignItems="center">
-                            <Icon
-                              as={TbSettingsCog}
-                              boxSize={6}
-                              color={
-                                userMenuHighlight === "account-settings"
-                                  ? "background.neutral"
-                                  : "content.alternative"
-                              }
-                              mr={4}
-                            />
-                            <Text fontSize="title.md">
-                              {t("account-settings")}
-                            </Text>
-                          </Box>
-                        </MenuItem>
-                      )}
                     <MenuItem
                       paddingTop="12px"
                       paddingBottom="12px"
@@ -525,31 +571,17 @@ export function NavigationBar({
           </Box>
         </Box>
         {/* JN Drawer */}
-        {/* Should be shown if JN is enabled */}
-        {hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
-          <JNDrawer
-            lng={activeLng}
-            currentCityId={currentCityId}
-            organizationId={
-              (organization?.organizationId ??
-                userAccessStatus?.organizationId) as string
-            }
-            isOpen={isDrawerOpen}
-            onClose={() => setIsDrawerOpen(false)}
-            onOpenChange={({ open }) => setIsDrawerOpen(open)}
-          />
-        )}
-        {/* TODO: [ON-4452] Remove project drawer and replace with JN drawer after JN is live */}
-        {/* Project Drawer */}
-        {!hasFeatureFlag(FeatureFlags.JN_ENABLED) && (
-          <ProjectDrawer
-            lng={activeLng}
-            currentInventoryId={currentInventoryId as string}
-            isOpen={isDrawerOpen}
-            onClose={() => setIsDrawerOpen(false)}
-            onOpenChange={({ open }) => setIsDrawerOpen(open)}
-          />
-        )}
+        <JNDrawer
+          lng={activeLng}
+          currentCityId={currentCityId}
+          organizationId={
+            (organization?.organizationId ??
+              userAccessStatus?.organizationId) as string
+          }
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          onOpenChange={({ open }) => setIsDrawerOpen(open)}
+        />
       </Box>
       {isFrozen && !isPublic && !isAuth && (
         <Box py={2} px={16} bg="sentiment.warningDefault" w="full" zIndex={50}>
@@ -558,9 +590,8 @@ export function NavigationBar({
               i18nKey="account-frozen-warning-text"
               values={{
                 email:
-                  process.env.NEXT_PUBLIC_SUPPORT_EMAILS?.split(",").join(
-                    " or ",
-                  ) || "info@openearth.org",
+                  env("NEXT_PUBLIC_SUPPORT_EMAILS")?.split(",").join(" or ") ||
+                  "info@openearth.org",
               }}
               t={t}
               components={{

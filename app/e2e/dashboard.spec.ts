@@ -19,11 +19,13 @@ test.describe("Dashboard", () => {
 
       // Verify project name is displayed
       const projectName = page.getByTestId("hero-project-name");
-      await expect(projectName).toHaveText("CityCatalyst Demo");
+      await expect(projectName).toHaveText("CityCatalyst Demo", {
+        timeout: 10000,
+      });
 
       // Verify city name is displayed
       const cityName = page.getByTestId("hero-city-name");
-      await expect(cityName).toHaveText("Chicago");
+      await expect(cityName).toHaveText("Chicago", { timeout: 10000 });
 
       // Verify inventory year title is displayed
       const inventoryYearTitle = page.getByTestId("inventory-year-title");

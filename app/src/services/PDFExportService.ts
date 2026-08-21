@@ -2,7 +2,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { TFunction } from "i18next";
 
-interface ActionPlanPDFData {
+export interface ActionPlanPDFData {
   metadata?: {
     cityName?: string | null;
     actionName?: string | null;
@@ -262,7 +262,10 @@ export class PDFExportService {
       // Description
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...INK_TERTIARY);
-      const descLines = doc.splitTextToSize(item.description, CONTENT_WIDTH - 8);
+      const descLines = doc.splitTextToSize(
+        item.description,
+        CONTENT_WIDTH - 8,
+      );
       doc.text(descLines, MARGIN_X + 8, currentY);
       currentY += descLines.length * 5 + 9;
     });
@@ -300,7 +303,10 @@ export class PDFExportService {
       // Description
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...INK_TERTIARY);
-      const descLines = doc.splitTextToSize(item.description, CONTENT_WIDTH - 6);
+      const descLines = doc.splitTextToSize(
+        item.description,
+        CONTENT_WIDTH - 6,
+      );
       doc.text(descLines, MARGIN_X + 6, currentY);
       currentY += descLines.length * 5 + 9;
     });
@@ -456,12 +462,7 @@ export class PDFExportService {
         `${t("pdf.sections.sustainable-development-goals")} (${planData.content.sdgs.items.length})`,
         yPosition + 4,
       );
-      yPosition = this.addBulletList(
-        doc,
-        planData.content.sdgs.items,
-        yPosition,
-        t,
-      );
+      this.addBulletList(doc, planData.content.sdgs.items, yPosition, t);
     }
 
     this.addFooter(doc, t);

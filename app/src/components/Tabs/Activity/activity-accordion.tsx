@@ -66,7 +66,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
       // create a map of everything else except activityData
       const activityGroups = methodology.activities?.reduce(
         (acc, curr) => {
-          let key = curr.activitySelectedOption as string;
+          const key = curr.activitySelectedOption as string;
           acc[key] = {
             activityData: activityData?.filter(
               (activity) =>
@@ -91,12 +91,12 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
       );
 
       return {
-        activityGroups,
+        activityGroups: activityGroups ?? {},
       };
     }
 
-    let groupBy = methodology?.activities?.[0]["group-by"];
-    let extraFields = (methodology as Methodology)?.activities?.[0]?.[
+    const groupBy = methodology?.activities?.[0]["group-by"];
+    const extraFields = (methodology as Methodology)?.activities?.[0]?.[
       "extra-fields"
     ] as ExtraField[];
 
@@ -110,12 +110,13 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
 
     const title = methodology?.activities?.[0]["activity-title"] as string;
     const tag = referenceNumber.includes("II") ? "-transport-types" : "";
-    let activityGroups = null;
+    let activityGroups: Record<string, IActivityGroup>;
     if (!groupBy) {
       activityGroups = {
         "default-key": {
-          activityData,
+          activityData: activityData ?? [],
           extraFields,
+          groupBy,
           sourceField,
           filteredFields,
           title,
@@ -123,22 +124,26 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
         },
       };
     } else {
-      activityGroups = activityData?.reduce((acc: any, activity: any) => {
-        // TODO extend for groupby with multiple values
-        const key = activity.activityData[groupBy];
-        if (!acc[key]) {
-          acc[key] = {
-            activityData: [],
-            extraFields,
-            sourceField,
-            filteredFields,
-            title,
-            tag,
-          };
-        }
-        acc[key].activityData.push(activity);
-        return acc;
-      }, {});
+      activityGroups = (activityData ?? []).reduce(
+        (acc, activity) => {
+          // TODO extend for groupby with multiple values
+          const key = activity.activityData?.[groupBy] as string;
+          if (!acc[key]) {
+            acc[key] = {
+              activityData: [],
+              extraFields,
+              groupBy,
+              sourceField,
+              filteredFields,
+              title,
+              tag,
+            };
+          }
+          acc[key].activityData.push(activity);
+          return acc;
+        },
+        {} as Record<string, IActivityGroup>,
+      );
     }
     return {
       activityGroups,
@@ -196,7 +201,7 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           fontWeight="bold"
         >
           <Table.Row>
-            {filteredFields?.length! > 0 && (
+            {filteredFields.length > 0 && (
               <Table.ColumnHeader
                 title={t(filteredFields[0].id)}
                 maxWidth="200px"
@@ -256,17 +261,23 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {list?.map((activity: any, i: number) => {
+          {list?.map((activity, i: number) => {
             return (
               <Table.Row
-                title={t(activity.activityData?.[filteredFields[0].id])}
+                title={t(
+                  String(activity.activityData?.[filteredFields[0].id] ?? ""),
+                )}
                 maxWidth="200px"
                 key={i}
                 truncate
               >
-                {filteredFields?.length! > 0 && (
+                {filteredFields.length > 0 && (
                   <Table.Cell>
-                    {t(activity.activityData?.[filteredFields[0].id])}
+                    {t(
+                      String(
+                        activity.activityData?.[filteredFields[0].id] ?? "",
+                      ),
+                    )}
                   </Table.Cell>
                 )}
                 <Table.Cell>
@@ -284,22 +295,22 @@ const ActivityAccordion: FC<ActivityAccordionProps> = ({
                     borderRadius="lg"
                   >
                     <TagLabel textTransform="capitalize">
-                      {t(activity?.metadata?.dataQuality)}
+                      {t(String(activity?.metadata?.dataQuality ?? ""))}
                     </TagLabel>
                   </Tag>
                 </Table.Cell>
                 <Table.Cell maxWidth="100px" truncate>
-                  {activity?.activityData[sourceField as string]}
+                  {activity?.activityData?.[sourceField as string]}
                 </Table.Cell>
                 <Table.Cell>
                   {formatNumber(
-                    parseFloat(activity?.activityData[title]),
+                    parseFloat(String(activity?.activityData?.[title] ?? "")),
                     numberFormat,
                   )}{" "}
-                  {t(activity?.activityData[title + "-unit"])}
+                  {t(String(activity?.activityData?.[title + "-unit"] ?? ""))}
                 </Table.Cell>
                 <Table.Cell>
-                  {convertKgToTonnes(activity?.co2eq, numberFormat)}
+                  {convertKgToTonnes(activity?.co2eq ?? 0n, numberFormat)}
                 </Table.Cell>
                 <Table.Cell>
                   <MenuRoot>

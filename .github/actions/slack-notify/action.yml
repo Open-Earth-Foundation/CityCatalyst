@@ -4,7 +4,7 @@ author: "isaacbello"
 
 inputs:
   type:
-    description: "Type of notification (migration_failure, deployment_failure)"
+    description: "Type of notification (migration_failure, deployment_failure, deployment_success)"
     required: true
   webhook-url:
     description: "Slack webhook URL"
@@ -145,3 +145,4 @@ runs:
       if: always()
       shell: bash
       run: rm -f /tmp/slack-payload.json
+

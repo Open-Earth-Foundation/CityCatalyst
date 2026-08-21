@@ -1,17 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
-import {
-  Box,
-  Input,
-  Tag,
-  TagLabel,
-  ListItem,
-  Spinner,
-  List,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Input, Tag, Spinner, List, Text } from "@chakra-ui/react";
 import { useGetOCCityQuery } from "@/services/api";
-import { useOutsideClick } from "@/lib/use-outside-click";
 
 type GeoPath = {
   actor_id: string;
@@ -80,7 +70,7 @@ const CityAutocompleteInput: React.FC<CityAutocompleteInputProps> = ({
     pathCopy
       ?.reverse()
       .slice(1)
-      .map((parent: any) => {
+      .map((parent) => {
         if (pathString) {
           pathString = pathString + " > ";
         }

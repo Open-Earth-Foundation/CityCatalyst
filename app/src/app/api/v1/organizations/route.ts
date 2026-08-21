@@ -10,6 +10,10 @@ import {
   OrganizationErrorCodes,
 } from "@/lib/custom-errors/organization-error";
 import { Op } from "sequelize";
+import {
+  resolveOrganizationPlanType,
+  resolveOrganizationTrialEndsAt,
+} from "@/util/plan-details";
 
 /**
  * @swagger
@@ -65,6 +69,7 @@ import { Op } from "sequelize";
 export const POST = apiHandler(async (req, { session }) => {
   UserService.validateIsAdmin(session);
   const orgData = createOrganizationRequest.parse(await req.json());
+  const planType = resolveOrganizationPlanType(orgData.planType);
 
   // Check if organization name already exists (case insensitive)
   const existingOrg = await Organization.findOne({
@@ -82,7 +87,10 @@ export const POST = apiHandler(async (req, { session }) => {
   const newOrg = await Organization.create({
     organizationId: randomUUID(),
     active: true,
-    ...orgData,
+    name: orgData.name,
+    contactEmail: orgData.contactEmail,
+    planType,
+    trialEndsAt: resolveOrganizationTrialEndsAt({ planType }),
   });
   return NextResponse.json(newOrg, { status: 201 });
 });

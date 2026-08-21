@@ -4,11 +4,11 @@ import { use, useEffect, useRef } from "react";
 import { useTranslation } from "@/i18n/client";
 import { Box, Button, Heading, HStack, Text } from "@chakra-ui/react";
 import Image from "next/image";
-import NextLink from "next/link";
-import { MdArrowForward, MdUpload } from "react-icons/md";
-import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
-import { useRouter, useSearchParams } from "next/navigation";
+import { MdArrowForward } from "react-icons/md";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { api } from "@/services/api";
+import { logger } from "@/services/logger";
 
 export default function Onboarding(props: {
   params: Promise<{ lng: string }>;
@@ -16,7 +16,9 @@ export default function Onboarding(props: {
   const { lng } = use(props.params);
   const { t } = useTranslation(lng, "onboarding");
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { status } = useSession();
   const [acceptOrgInvite] = api.useAcceptOrganizationAdminInviteMutation();
   const acceptedOnce = useRef(false);
 
@@ -26,71 +28,105 @@ export default function Onboarding(props: {
     const organizationId = searchParams.get("organizationId");
 
     if (!token || !email || !organizationId || acceptedOnce.current) return;
+
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      acceptedOnce.current = true;
+      const callbackUrl = `${pathname}?${searchParams.toString()}`;
+      router.push(`/auth/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
+    }
+
     acceptedOnce.current = true;
 
     const cleanedEmail = email.replace(/ /g, "+").replace(/%40/g, "@");
-    acceptOrgInvite({ token, email: cleanedEmail, organizationId }).unwrap().catch(() => {
-      // Silently ignore errors (e.g. already accepted) and let onboarding proceed
-    });
-  }, [searchParams, acceptOrgInvite]);
+    acceptOrgInvite({ token, email: cleanedEmail, organizationId })
+      .unwrap()
+      .catch((err) => {
+        // Ignore "already accepted" and let onboarding proceed; log anything else
+        logger.error(err, "Failed to accept organization admin invite");
+      });
+  }, [searchParams, acceptOrgInvite, status, pathname, router]);
 
-  const steps = [1, 2, 3, 4];
+  const steps = [1, 2, 3];
   const projectId = searchParams.get("project");
-  const setupHref = projectId ? `setup?project=${projectId}` : "setup";
-  const uploadSetupHref = projectId
-    ? `setup?project=${projectId}&mode=upload`
-    : "setup?mode=upload";
+  const setupHref = projectId
+    ? `${pathname}/setup?project=${projectId}`
+    : `${pathname}/setup`;
 
   return (
-    <>
-      <Box w={"1090px"} maxW="full" mx="auto">
-        <Box display="flex" gap="55px" alignItems="center">
-          <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
-            <Text
-              fontFamily="heading"
-              fontWeight="600"
-              lineHeight="16px"
-              letterSpacing="1.5px"
-              textTransform="uppercase"
-              color="content.tertiary"
-              fontSize="title.sm"
-              data-testid="start-page-title"
-            >
-              {t("welcome-top")}
-            </Text>
-            <Heading
-              as="h1"
-              color="content.alternative"
-              fontSize="display.sm"
-              lineHeight="44px"
-              fontWeight="600"
-              fontStyle="normal"
-              data-testid="start-page-heading"
-            >
-              {t("welcome-title")}
-            </Heading>
-            <Text
-              color="content.tertiary"
-              fontSize="body.lg"
-              lineHeight="24px"
-              fontWeight="400"
-              letterSpacing="wide"
-              data-testid="start-page-description"
-            >
-              {t("welcome-description")}
-            </Text>
-          </Box>
-          <Box>
-            <Image
-              src="/assets/onboarding-buildings-image.png"
-              alt="buildings.png"
-              height={420}
-              width={900}
-            />
+    <Box
+      w="full"
+      h="calc(100vh - 80px)"
+      display="flex"
+      flexDirection="column"
+      justifyContent={{ base: "space-between", md: "center" }}
+    >
+      <Box
+        w="full"
+        pt={{ base: "32px", md: 0 }}
+        display="flex"
+        alignItems={{ base: "flex-start", md: "center" }}
+        justifyContent="center"
+      >
+        <Box w={"1090px"} maxW="full" mx="auto">
+          <Box display="flex" gap="55px" alignItems="center">
+            <Box w="full" h="full" display="flex" flexDir="column" gap="24px">
+              <Text
+                fontFamily="heading"
+                fontWeight="600"
+                lineHeight="16px"
+                letterSpacing="1.5px"
+                textTransform="uppercase"
+                color="content.tertiary"
+                fontSize="title.sm"
+                data-testid="start-page-title"
+              >
+                {t("welcome-top")}
+              </Text>
+              <Heading
+                as="h1"
+                color="content.alternative"
+                fontSize="display.sm"
+                lineHeight="44px"
+                fontWeight="600"
+                fontStyle="normal"
+                data-testid="start-page-heading"
+              >
+                {t("welcome-title")}
+              </Heading>
+              <Text
+                color="content.tertiary"
+                fontSize="body.lg"
+                lineHeight="24px"
+                fontWeight="400"
+                letterSpacing="wide"
+                data-testid="start-page-description"
+              >
+                {t("welcome-description")}
+              </Text>
+            </Box>
+            <Box display={{ base: "none", md: "block" }}>
+              <Image
+                src="/assets/onboarding-building-illustration.png"
+                alt="buildings.png"
+                height={420}
+                width={900}
+              />
+            </Box>
           </Box>
         </Box>
       </Box>
-      <Box bg="base.light" h="145px" w="full" pos="fixed" bottom="0" left="0" data-onboarding-bottom-bar>
+      <Box
+        bg="base.light"
+        h="145px"
+        w="full"
+        pos={{ base: "static", md: "fixed" }}
+        bottom="0"
+        left="0"
+        data-onboarding-bottom-bar
+      >
         {/* Place holder steppers */}
         <HStack p="4px">
           {steps.map((step) => (
@@ -109,24 +145,9 @@ export default function Onboarding(props: {
           display="flex"
           justifyContent="end"
           py="32px"
-          px="175px"
+          px={{ base: 4, md: "175px" }}
           gap="16px"
         >
-          <Button
-            w="auto"
-            gap="8px"
-            py="16px"
-            px="24px"
-            h="64px"
-            variant="outline"
-            onClick={() => router.push(uploadSetupHref)}
-            data-testid="upload-inventory-button"
-          >
-            <MdUpload height="24px" width="24px" />
-            <Text fontFamily="button.md" fontWeight="600" letterSpacing="wider">
-              {t("upload-existing-inventory")}
-            </Text>
-          </Button>
           <Button
             w="auto"
             gap="8px"
@@ -143,6 +164,6 @@ export default function Onboarding(props: {
           </Button>
         </Box>
       </Box>
-    </>
+    </Box>
   );
 }

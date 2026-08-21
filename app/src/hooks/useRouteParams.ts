@@ -76,7 +76,7 @@ export function useRouteParams() {
       try {
         lastVisitedCityId = sessionStorage.getItem(LAST_VISITED_CITY_KEY);
         lastVisitedInventoryId = sessionStorage.getItem(LAST_VISITED_INVENTORY_KEY);
-      } catch (e) {
+      } catch {
         // SessionStorage might not be available in some contexts
       }
     }

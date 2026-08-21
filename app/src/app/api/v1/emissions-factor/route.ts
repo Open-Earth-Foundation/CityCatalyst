@@ -7,7 +7,7 @@
  *       - factors
  *     operationId: postEmissionsFactor
  *     summary: Query emissions factors filtered by location, methodology, and metadata.
- *     description: Looks up emissions factors by reference number, methodology, and optional metadata, deriving location context from either an inventoryId or a regionLocode. Public endpoint (no authentication enforced) in current implementation. Returns results wrapped in { data: EmissionsFactor[] }.
+ *     description: "Looks up emissions factors by reference number, methodology, and optional metadata, deriving location context from either an inventoryId or a regionLocode. Public endpoint (no authentication enforced) in current implementation. Returns results wrapped in { data: EmissionsFactor[] }."
  *     requestBody:
  *       required: true
  *       content:
@@ -116,14 +116,6 @@
  *                     description: Emissions factor with complete metadata and associated data sources
  *       400:
  *         description: Invalid parameters (e.g., both inventoryId and regionLocode provided).
- *     examples:
- *       application/json:
- *         inventoryId: "550e8400-e29b-41d4-a716-446655440000"
- *         referenceNumber: "1.1.1"
- *         methodologyId: "550e8400-e29b-41d4-a716-446655440001"
- *         metadata:
- *           sector: "Energy"
- *           category: "Fuel Combustion"
  */
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
@@ -133,11 +125,11 @@ import { Op } from "sequelize";
 import { fetchEmissionsFactorRequest } from "@/util/validation";
 import { logger } from "@/services/logger";
 
-const filterMappings: Record<string, any> = {
+const filterMappings: Record<string, string> = {
   "fuel-type-wood/wood-waste": "fuel-type-wood-wood-waste",
 };
 
-export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
+export const POST = apiHandler(async (req: NextRequest) => {
   const body = fetchEmissionsFactorRequest.parse(await req.json());
   const {
     inventoryId,
@@ -166,7 +158,7 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
   }
 
   if (inventoryId && !regionLocode) {
-    let city = await db.models.City.findOne({
+    const city = await db.models.City.findOne({
       include: [
         {
           model: db.models.Inventory,
@@ -188,20 +180,20 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
 
   // use units from the emission factors first
 
-  let whereClause: { [k: string]: any } = {};
+  let whereClause: { [k: string]: unknown } = {};
   // don't return emissions factors from specific inventories
 
   if (!!metadata) {
-    let andCondition = [];
-    for (let key in metadata) {
-      let clause = {
+    const andCondition = [];
+    for (const key in metadata) {
+      const clause = {
         [Op.or]: [
           {
             [`metadata.${key}`]: "nan",
           },
         ],
       };
-      let orConditions = clause[Op.or];
+      const orConditions = clause[Op.or];
       if (Array.isArray(metadata[key])) {
         metadata[key].forEach((value) => {
           orConditions.push({
@@ -284,7 +276,5 @@ export const POST = apiHandler(async (req: NextRequest, _context: {}) => {
     "actor Id used to filter emissionsFactors ",
   );
 
-  let output = emissionsFactors;
-
-  return NextResponse.json({ data: output });
+  return NextResponse.json({ data: emissionsFactors });
 });

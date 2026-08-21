@@ -188,6 +188,21 @@ def test_hard_filter_block_with_mock_api_data() -> None:
     assert len(result.valid_actions) == len(actions) - len(discarded_legal_ids)
 
     assert result.evidence["c40_0013"]["discard_reason"] == "legal_verdict_blocked"
+    blocked_summary = result.evidence["c40_0013"]["legal_assessment_summary"]
+    blocked_assessment = legal_assessments["c40_0013"]
+    assert blocked_summary["ownership_description"] == (
+        blocked_assessment.ownership_description_i18n
+    )
+    assert blocked_summary["restrictions_description"] == (
+        blocked_assessment.restrictions_description_i18n
+    )
+    assert blocked_summary["legal_justification"] == (
+        blocked_assessment.legal_justification_i18n
+    )
+    assert "ownership_description_es" not in blocked_summary
+    assert "restrictions_description_es" not in blocked_summary
+    assert "legal_justification_en" not in blocked_summary
+    assert blocked_summary["legal_references"] == blocked_assessment.legal_references
     assert result.evidence["c40_0012"]["legal_verdict_category"] == "enabled"
     missing_action_id = next(
         action.action_id
@@ -827,11 +842,7 @@ def test_feasibility_block_with_mock_api_data() -> None:
     )
     assert (
         first_action_evidence["ownership_description"]
-        == first_action_legal_assessment.ownership_description
-    )
-    assert (
-        first_action_evidence["ownership_description_es"]
-        == first_action_legal_assessment.ownership_description_i18n["es"]
+        == first_action_legal_assessment.ownership_description_i18n
     )
     assert (
         first_action_evidence["restrictions_category"]
@@ -843,20 +854,15 @@ def test_feasibility_block_with_mock_api_data() -> None:
     )
     assert (
         first_action_evidence["restrictions_description"]
-        == first_action_legal_assessment.restrictions_description
-    )
-    assert (
-        first_action_evidence["restrictions_description_es"]
-        == first_action_legal_assessment.restrictions_description_i18n["es"]
+        == first_action_legal_assessment.restrictions_description_i18n
     )
     assert (
         first_action_evidence["legal_justification"]
-        == first_action_legal_assessment.legal_justification_i18n["es"]
+        == first_action_legal_assessment.legal_justification_i18n
     )
-    assert (
-        first_action_evidence["legal_justification_en"]
-        == first_action_legal_assessment.legal_justification_i18n["en"]
-    )
+    assert "ownership_description_es" not in first_action_evidence
+    assert "restrictions_description_es" not in first_action_evidence
+    assert "legal_justification_en" not in first_action_evidence
     assert first_action_evidence["legal_references"] == (
         first_action_legal_assessment.legal_references
     )

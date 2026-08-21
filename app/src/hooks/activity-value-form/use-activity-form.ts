@@ -1,7 +1,12 @@
-import { useForm } from "react-hook-form";
+import { Path, useForm } from "react-hook-form";
 import { useEffect, useMemo } from "react";
 import { ActivityValue } from "@/models/ActivityValue";
-import { ExtraField, Methodology, SuggestedActivity } from "@/util/form-schema";
+import {
+  Activity,
+  ExtraField,
+  Methodology,
+  SuggestedActivity,
+} from "@/util/form-schema";
 import { Inputs } from "@/components/Modals/activity-modal/activity-modal-body";
 
 export const generateDefaultActivityFormValues = (
@@ -13,7 +18,7 @@ export const generateDefaultActivityFormValues = (
     activityType: selectedActivity?.id,
     ...(fields
       ? {
-          ...fields.reduce((acc: Record<string, any>, field) => {
+          ...fields.reduce((acc: Record<string, unknown>, field) => {
             acc[field.id] = field.multiselect
               ? []
               : field.type === "number"
@@ -75,40 +80,41 @@ const useActivityForm = ({
     control,
     getValues,
     formState: { errors },
-  } = useForm<Inputs | any>();
+  } = useForm<Inputs>();
 
   const selectedActivityOption = watch(
-    `activity.${methodology.activitySelectionField?.id as string}`,
+    `activity.${methodology.activitySelectionField?.id as string}` as Path<Inputs>,
   );
 
   const { fields, units, title, activityId, hideEmissionFactors } =
     useMemo(() => {
       let fields: ExtraField[] = [];
-      let units = null;
+      let units: string[] | undefined = undefined;
       let title = "";
       let activityId = null;
-      let hideEmissionFactors = false;
+      let hideEmissionFactors: boolean | undefined = false;
 
       if (methodology?.id.includes("direct-measure")) {
         fields = methodology.fields as ExtraField[];
       } else {
+        const activityFields = methodology.fields as Activity[] | undefined;
         const foundIndex =
-          methodology.fields?.findIndex(
+          activityFields?.findIndex(
             (ac) => ac.activitySelectedOption === selectedActivityOption,
           ) ?? 0;
 
         const selectedActivityIndex = foundIndex >= 0 ? foundIndex : 0;
 
         hideEmissionFactors =
-          methodology?.fields?.[selectedActivityIndex].hideEmissionFactorsInput;
-        fields = methodology?.fields?.[selectedActivityIndex][
+          activityFields?.[selectedActivityIndex].hideEmissionFactorsInput;
+        fields = activityFields?.[selectedActivityIndex][
           "extra-fields"
         ] as ExtraField[];
-        units = methodology?.fields?.[selectedActivityIndex].units;
-        title = methodology?.fields?.[selectedActivityIndex][
+        units = activityFields?.[selectedActivityIndex].units;
+        title = activityFields?.[selectedActivityIndex][
           "activity-title"
         ] as string;
-        activityId = methodology?.fields?.[selectedActivityIndex]["id"];
+        activityId = activityFields?.[selectedActivityIndex]["id"];
       }
 
       return {
@@ -131,33 +137,42 @@ const useActivityForm = ({
                 methodology.activitySelectionField.id
               ],
           }),
-          dataQuality: targetActivityValue?.metadata?.dataQuality,
-          dataComments: targetActivityValue?.metadata?.sourceExplanation,
-          CH4EmissionFactor:
-            methodology.id === "direct-measure"
-              ? targetActivityValue?.activityData?.ch4_amount
-              : extractGasAmount("CH4", targetActivityValue).amount,
-          CO2EmissionFactor:
-            methodology.id === "direct-measure"
-              ? targetActivityValue?.activityData?.co2_amount
-              : extractGasAmount("CO2", targetActivityValue).amount,
-          N2OEmissionFactor:
-            methodology.id === "direct-measure"
-              ? targetActivityValue?.activityData?.n2o_amount
-              : extractGasAmount("N2O", targetActivityValue).amount,
-          emissionFactorType: targetActivityValue.metadata?.emissionFactorType,
-          emissionFactorTypeReference:
-            targetActivityValue.metadata?.emissionFactorTypeReference,
-          emissionsFactorName:
-            targetActivityValue.metadata?.emissionsFactorName,
+          dataQuality: targetActivityValue?.metadata?.dataQuality as
+            | string
+            | undefined,
+          dataComments: targetActivityValue?.metadata?.sourceExplanation as
+            | string
+            | undefined,
+          CH4EmissionFactor: (methodology.id === "direct-measure"
+            ? targetActivityValue?.activityData?.ch4_amount
+            : extractGasAmount("CH4", targetActivityValue).amount) as
+            | number
+            | undefined,
+          CO2EmissionFactor: (methodology.id === "direct-measure"
+            ? targetActivityValue?.activityData?.co2_amount
+            : extractGasAmount("CO2", targetActivityValue).amount) as
+            | number
+            | undefined,
+          N2OEmissionFactor: (methodology.id === "direct-measure"
+            ? targetActivityValue?.activityData?.n2o_amount
+            : extractGasAmount("N2O", targetActivityValue).amount) as
+            | number
+            | undefined,
+          emissionFactorType: targetActivityValue.metadata?.emissionFactorType as
+            | string
+            | undefined,
+          emissionFactorReference: targetActivityValue.metadata
+            ?.emissionFactorTypeReference as string | undefined,
+          emissionFactorName: targetActivityValue.metadata
+            ?.emissionFactorName as string | undefined,
           co2EmissionFactorUnit: extractGasAmount("CO2", targetActivityValue)
             .units,
           n2oEmissionFactorUnit: extractGasAmount("N2O", targetActivityValue)
             .units,
           ch4EmissionFactorUnit: extractGasAmount("CH4", targetActivityValue)
             .units,
-          wasteCompositionType:
-            targetActivityValue.metadata?.wasteCompositionType || null,
+          wasteCompositionType: (targetActivityValue.metadata
+            ?.wasteCompositionType || null) as string | null,
         },
       });
     } else {

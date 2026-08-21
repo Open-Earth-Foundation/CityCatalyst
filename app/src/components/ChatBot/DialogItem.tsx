@@ -1,4 +1,4 @@
-import { Box, Flex, Icon, Text, Link } from "@chakra-ui/react";
+import { Box, Flex, Icon, Text } from "@chakra-ui/react";
 import { ReactElement } from "react";
 import { BodyLarge } from "@/components/package/Texts/Body";
 

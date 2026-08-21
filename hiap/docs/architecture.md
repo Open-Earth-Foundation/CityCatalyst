@@ -49,6 +49,7 @@ flowchart TB
 - **Docs-first usage**: once the server is running, the canonical interface is `GET /docs` (Swagger UI).
 - **Async workflow**: many endpoints return a `taskId` and require polling a progress endpoint before fetching results.
 - **Task persistence**: task state is stored **in memory**, so restarting the server loses tasks.
+- **LLM tracing**: prioritizer/plan structured-output helpers keep LangSmith `@traceable` on the function, but use an unwrapped OpenAI client for `chat.completions.parse` so Completion objects with a populated `parsed` field are not auto-serialized.
 - **Upstream dependencies**:
   - Actions/context/CCRA data is fetched from the Global API host configured via `CCGLOBAL_API_BASE_URL` (defaults to `ccglobal.openearth.dev`; production uses `api.citycatalyst.io`).
   - LLM functionality requires OpenAI-related env vars from `.env`.

@@ -11,7 +11,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Remove error_message column
     await queryInterface.removeColumn("HighImpactActionRanking", "error_message");
   },

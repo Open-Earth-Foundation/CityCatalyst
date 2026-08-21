@@ -51,11 +51,6 @@ const invalidProject: CreateProjectRequest = {
   description: "",
 };
 
-const mockUserSession: AppSession = {
-  user: { id: testUserID, role: Roles.User },
-  expires: "1h",
-};
-
 const mockAdminSession: AppSession = {
   user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
@@ -63,7 +58,7 @@ const mockAdminSession: AppSession = {
 
 describe("Project API", () => {
   let organization: Organization;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();
@@ -114,7 +109,7 @@ describe("Project API", () => {
     });
 
     it("should return 400 if invalid project data is provided", async () => {
-      const req = await mockRequest({
+      const req = mockRequest({
         ...invalidProject,
         organizationId: organization.organizationId,
       });
@@ -137,7 +132,7 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
 
-      const req = await mockRequest();
+      const req = mockRequest();
       const response = await getProjects(req, {
         params: Promise.resolve({
           organization: organization.organizationId,
@@ -164,7 +159,7 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
 
-      const req = await mockRequest();
+      const req = mockRequest();
       const response = await getProject(req, {
         params: Promise.resolve({ project: project.projectId }),
       });
@@ -179,11 +174,11 @@ describe("Project API", () => {
     });
 
     it("should return 404 if project does not exist", async () => {
-      const req = await mockRequest();
+      const req = mockRequest();
       const response = await getProject(req, {
         params: Promise.resolve({ project: randomUUID() }),
       });
-      const data = await response.json();
+      await response.json();
       await expectStatusCode(response, 404);
     });
   });
@@ -201,7 +196,7 @@ describe("Project API", () => {
         name: "Updated Project",
       };
 
-      const req = await mockRequest(updatedProject);
+      const req = mockRequest(updatedProject);
       const response = await updateProject(req, {
         params: Promise.resolve({ project: project.projectId }),
       });
@@ -225,7 +220,7 @@ describe("Project API", () => {
         organizationId: organization.organizationId,
       });
 
-      const req = await mockRequest();
+      const req = mockRequest();
       const response = await deleteProject(req, {
         params: Promise.resolve({ project: project.projectId }),
       });

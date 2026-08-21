@@ -21,7 +21,6 @@ import HeadingText from "@/components/heading-text";
 import { MdAdd, MdMoreVert } from "react-icons/md";
 import { FaNetworkWired } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
-import { useParams } from "next/navigation";
 import {
   MenuContent,
   MenuItem,
@@ -38,7 +37,6 @@ interface EmissionDataSectionProps {
   refNumberWithScope: string;
   activityValues: ActivityValue[];
   suggestedActivities: SuggestedActivity[];
-  totalEmissions: number;
   changeMethodology: () => void;
   inventoryValue: InventoryValue | null;
   numberFormat?: string;
@@ -52,7 +50,6 @@ const EmissionDataSection = ({
   refNumberWithScope,
   activityValues,
   suggestedActivities,
-  totalEmissions,
   changeMethodology,
   inventoryValue,
   numberFormat,
@@ -100,12 +97,13 @@ const EmissionDataSection = ({
     setOpenChangeMethodology(false);
   };
 
-  const closeModals = () => {
-    setSelectedActivityValue(undefined);
-    setAddActivityDataDialogOpen(false);
-    setActivityDeleteAllDataDialogOpen(false);
-    setActivityDeleteDataDialogOpen(false);
-  };
+  // Sum the emissions of the activities actually shown in this scope, instead of
+  // relying on inventoryValue.co2eq (which can be stale/0 and made the footer
+  // "Total emissions" show 0 t CO2e even when activities had emissions). See ON-6043.
+  const totalScopeEmissions = activityValues.reduce(
+    (sum, activity) => sum + BigInt(activity.co2eq ?? 0),
+    0n,
+  );
 
   const handleActivityAdded = (suggestedActivity?: SuggestedActivity) => {
     setSelectedActivity(suggestedActivity);
@@ -117,7 +115,6 @@ const EmissionDataSection = ({
     setAddActivityDataDialogOpen(true);
   };
 
-  const { lng } = useParams();
   const { isFrozenCheck } = useOrganizationContext();
 
   const renderSuggestedActivities = () => (
@@ -137,12 +134,10 @@ const EmissionDataSection = ({
               const { id, prefills } = suggestedActivity;
               return (
                 <SuggestedActivityCard
-                  id={id}
                   key={`${id}-${prefills[0]?.key ?? "no-key"}-${prefills[0]?.value ?? "no-value"}`}
                   prefillKey={prefills[0]?.key}
                   prefillValue={prefills[0]?.value}
                   t={t}
-                  isSelected={selectedActivity?.id === id}
                   onActivityAdded={() =>
                     isFrozenCheck()
                       ? null
@@ -334,7 +329,8 @@ const EmissionDataSection = ({
               renderSuggestedActivities()
             ) : (
               <Box>
-                {getInputMethodology(methodology?.id!) === "direct-measure" ? (
+                {getInputMethodology(methodology?.id ?? "") ===
+                "direct-measure" ? (
                   <DirectMeasureTable
                     t={t}
                     referenceNumber={refNumberWithScope}
@@ -377,10 +373,7 @@ const EmissionDataSection = ({
                       fontWeight="semibold"
                       fontSize="headline.md"
                     >
-                      {convertKgToTonnes(
-                        inventoryValue?.co2eq as bigint,
-                        numberFormat,
-                      )}
+                      {convertKgToTonnes(totalScopeEmissions, numberFormat)}
                     </Text>
                   </Box>
                 </Box>

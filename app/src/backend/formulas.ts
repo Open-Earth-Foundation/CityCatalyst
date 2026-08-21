@@ -221,13 +221,6 @@ export function handleDirectMeasureFormula(
       );
     }
 
-    // Ensure the amount is not negative (optional, based on business rules)
-    if (amount.isNegative()) {
-      throw new createHttpError.BadRequest(
-        `Gas amount cannot be negative for ${key}`,
-      );
-    }
-
     return { gas: gasName, amount: amount };
   });
 

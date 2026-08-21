@@ -150,6 +150,16 @@ function ensureScope(scope: HiapCatalogScope): void {
   }
 }
 
+export async function resolveHIAPCatalogScope(input: {
+  inventoryId?: string | null;
+  cityId?: string | null;
+  userId?: string | null;
+}): Promise<HiapCatalogScope> {
+  const scope = await resolveScope(input);
+  ensureScope(scope);
+  return scope;
+}
+
 async function supersedePreviousVersions(
   sourceType: string,
   sourcePrefix: string,
@@ -171,7 +181,7 @@ async function supersedePreviousVersions(
   }
 }
 
-async function buildHIAPRankingInput(
+export async function buildHIAPRankingInput(
   ranking: HighImpactActionRanking,
 ): Promise<RegisterNativeInputInput> {
   if (ranking.status !== HighImpactActionRankingStatus.SUCCESS) {
@@ -397,7 +407,7 @@ function actionPlanSourceId(plan: ActionPlan): string {
   return `${plan.id}:${digest(planContent(plan))}`;
 }
 
-async function buildHIAPActionPlanInput(
+export async function buildHIAPActionPlanInput(
   plan: ActionPlan,
 ): Promise<RegisterNativeInputInput> {
   if (!plan.id)
@@ -508,15 +518,15 @@ function selectionSourceId(
   return `${inventoryId}:${actionType}:${actionId}`;
 }
 
-async function registerSelection(
+export function buildHIAPSelectionInput(
   sourceType: SelectionSourceType,
   inventoryId: string,
   actionType: ACTION_TYPES,
   actionId: string,
   scope: HiapCatalogScope,
   rankingId?: string,
-): Promise<SelectionRegistration> {
-  const input: RegisterNativeInputInput = {
+): RegisterNativeInputInput {
+  return {
     kind: "hiap_selection",
     owningModule: HIAP_MODULE,
     sourceType,
@@ -536,6 +546,24 @@ async function registerSelection(
       rankingId: rankingId ?? null,
     },
   };
+}
+
+async function registerSelection(
+  sourceType: SelectionSourceType,
+  inventoryId: string,
+  actionType: ACTION_TYPES,
+  actionId: string,
+  scope: HiapCatalogScope,
+  rankingId?: string,
+): Promise<SelectionRegistration> {
+  const input = buildHIAPSelectionInput(
+    sourceType,
+    inventoryId,
+    actionType,
+    actionId,
+    scope,
+    rankingId,
+  );
   const registration = await registerNativeInput(input);
   return {
     input,

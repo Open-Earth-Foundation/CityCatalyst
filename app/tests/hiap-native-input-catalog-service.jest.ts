@@ -67,6 +67,10 @@ jest.unstable_mockModule("@/services/logger", () => ({
 }));
 
 let registerHIAPRanking: typeof import("@/backend/hiap/HiapNativeInputCatalogService").registerHIAPRanking;
+let resolveHIAPCatalogScope: typeof import("@/backend/hiap/HiapNativeInputCatalogService").resolveHIAPCatalogScope;
+let buildHIAPRankingInput: typeof import("@/backend/hiap/HiapNativeInputCatalogService").buildHIAPRankingInput;
+let buildHIAPActionPlanInput: typeof import("@/backend/hiap/HiapNativeInputCatalogService").buildHIAPActionPlanInput;
+let buildHIAPSelectionInput: typeof import("@/backend/hiap/HiapNativeInputCatalogService").buildHIAPSelectionInput;
 let backfillMissingHIAPRankingsPage: typeof import("@/backend/hiap/HiapNativeInputCatalogService").backfillMissingHIAPRankingsPage;
 let backfillMissingHIAPActionPlansPage: typeof import("@/backend/hiap/HiapNativeInputCatalogService").backfillMissingHIAPActionPlansPage;
 let registerHIAPSelections: typeof import("@/backend/hiap/HiapNativeInputCatalogService").registerHIAPSelections;
@@ -77,6 +81,10 @@ let withdrawHIAPCatalogForCity: typeof import("@/backend/hiap/HiapNativeInputCat
 beforeAll(async () => {
   ({
     registerHIAPRanking,
+    resolveHIAPCatalogScope,
+    buildHIAPRankingInput,
+    buildHIAPActionPlanInput,
+    buildHIAPSelectionInput,
     backfillMissingHIAPRankingsPage,
     backfillMissingHIAPActionPlansPage,
     registerHIAPSelections,
@@ -128,6 +136,59 @@ const ranking = {
 } as never;
 
 describe("HiapNativeInputCatalogService", () => {
+  it("keeps the public HIAP input builders available", async () => {
+    rankedModel.findAll.mockResolvedValue([
+      {
+        actionId: "action-1",
+        rank: 1,
+        lang: "en",
+        type: "mitigation",
+        isSelected: false,
+      },
+    ]);
+    const scope = await resolveHIAPCatalogScope({
+      inventoryId: "inventory-1",
+      userId: "user-1",
+    });
+
+    await expect(buildHIAPRankingInput(ranking)).resolves.toEqual(
+      expect.objectContaining({
+        kind: "hiap_ranking",
+        sourceType: "hiap_ranking",
+      }),
+    );
+    await expect(
+      buildHIAPActionPlanInput({
+        id: "plan-1",
+        actionId: "action-1",
+        highImpactActionRankedId: "ranked-1",
+        inventoryId: "inventory-1",
+        createdBy: "user-1",
+      } as never),
+    ).resolves.toEqual(
+      expect.objectContaining({
+        kind: "hiap_action_plan",
+        sourceType: "action_plan",
+      }),
+    );
+    expect(
+      buildHIAPSelectionInput(
+        "hiap_ranked_selection",
+        "inventory-1",
+        "mitigation" as never,
+        "action-1",
+        scope,
+        "ranking-1",
+      ),
+    ).toEqual(
+      expect.objectContaining({
+        kind: "hiap_selection",
+        sourceType: "hiap_ranked_selection",
+        sourceId: "ranking-1:action-1",
+      }),
+    );
+  });
+
   it("processes rankings in a bounded keyset-paginated page", async () => {
     const first = {
       ...ranking,

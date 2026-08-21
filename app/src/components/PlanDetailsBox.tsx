@@ -1,69 +1,84 @@
 import React from "react";
 import { useTranslation } from "@/i18n/client";
-import { Box, Link } from "@chakra-ui/react";
-import { Trans } from "react-i18next";
+import { Box, Text, Link, HStack, Icon } from "@chakra-ui/react";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import i18next from "i18next";
 import { OrganizationResponse } from "@/util/types";
+import { env } from "@/lib/runtime-env";
+import { BiFolder } from "react-icons/bi";
+import { CitiesBuildingIcon, CityLimitIcon } from "./icons";
+import { PlanBadge } from "@/components/PlanBadge";
+import { getOrganizationPlanDisplay } from "@/util/plan-details";
+import { OrganizationPlanType } from "@/util/enums";
 
 interface PlanDetailsBoxProps {
   organization?: OrganizationResponse;
 }
-
-interface ProjectStats {
-  numCities: number;
-  totalCityLimit: bigint;
-}
-
-const calculateProjectStats = (
-  projects: OrganizationResponse["projects"],
-): ProjectStats => {
-  return projects.reduce(
-    (acc, project) => ({
-      numCities: acc.numCities + project.cities.length,
-      totalCityLimit: acc.totalCityLimit + BigInt(project.cityCountLimit),
-    }),
-    { numCities: 0, totalCityLimit: 0n },
-  );
-};
 
 const PlanDetailsBox: React.FC<PlanDetailsBoxProps> = ({ organization }) => {
   const { t } = useTranslation(i18next.language, "settings");
 
   if (!organization) return null;
 
-  const { numCities, totalCityLimit } = organization.projects
-    ? calculateProjectStats(organization.projects)
-    : { numCities: 0, totalCityLimit: 0n };
+  const {
+    planType,
+    projectCount,
+    numCities,
+    citySlotsRemaining,
+    trialDaysRemaining,
+  } = getOrganizationPlanDisplay({
+    ...organization,
+    planType: organization.planType ?? OrganizationPlanType.FULL,
+  });
 
   return (
-    <Box backgroundColor="white" p={6} marginTop={4}>
-      <TitleMedium color="content.secondary">{t("plan-details")}</TitleMedium>
-      <BodyLarge color="content.tertiary">
-        <Trans
-          i18nKey="plan-details-caption"
-          t={t}
-          values={{
-            name: organization?.name,
-            num_projects: organization?.projects.length ?? 0,
-            num_cities: numCities,
-            total_cities: totalCityLimit,
-          }}
-          components={{
-            bold: <strong />,
-          }}
-        />
-      </BodyLarge>
-      <BodyLarge color="content.tertiary">
-        {t("contact-us-to-upgrade")}{" "}
-        <Link href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}>
-          <BodyLarge color="content.link">
-            {process.env.NEXT_PUBLIC_SUPPORT_EMAILS}
-          </BodyLarge>
-        </Link>
-      </BodyLarge>
-    </Box>
+    <HStack
+      align="flex-start"
+      backgroundColor="white"
+      p={6}
+      marginTop={4}
+      gap="24px"
+    >
+      <PlanBadge
+        planType={planType}
+        trialDaysRemaining={trialDaysRemaining}
+        t={t}
+      />
+      <Box flex={1}>
+        <TitleMedium color="content.secondary" mb="16px">
+          {organization.name}
+        </TitleMedium>
+        <HStack gap="24px" flexWrap="wrap">
+          <HStack>
+            <Icon as={BiFolder} />
+            <BodyLarge color="content.secondary">
+              {projectCount} {t("projects")}
+            </BodyLarge>
+          </HStack>
+          <HStack>
+            <Icon as={CitiesBuildingIcon} />
+            <BodyLarge color="content.secondary">
+              {numCities} {t("cities-in-use")}
+            </BodyLarge>
+          </HStack>
+          <HStack>
+            <Icon as={CityLimitIcon} />
+            <BodyLarge color="content.secondary">
+              {citySlotsRemaining} {t("city-slots-remaining")}
+            </BodyLarge>
+          </HStack>
+        </HStack>
+        <BodyLarge color="content.tertiary" mt="24px">
+          {t("contact-us-to-upgrade")}{" "}
+          <Link href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}>
+            <Text as="span" color="content.link">
+              {env("NEXT_PUBLIC_SUPPORT_EMAILS")}
+            </Text>
+          </Link>
+        </BodyLarge>
+      </Box>
+    </HStack>
   );
 };
 

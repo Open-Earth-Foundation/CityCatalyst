@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import sys
 from contextlib import nullcontext
+from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
+from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
 
 
@@ -17,6 +19,7 @@ def _reset_mlflow_state(monkeypatch) -> None:
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
     monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
     monkeypatch.setattr(mlflow_logging, "_EXPERIMENT_IDS", {})
+    monkeypatch.delenv("MLFLOW_ENVIRONMENT", raising=False)
     monkeypatch.delenv("MLFLOW_RUN_USER", raising=False)
 
 
@@ -88,15 +91,15 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
 
     with mlflow_logging.start_run(
         run_name="test-run",
-        experiment_name="clima",
+        experiment_name="Clima",
         tags={"workflow": "stationary_energy_draft"},
         params={"records": 2},
     ) as run:
         assert run is not None
 
     assert recorded["tracking_uri"] == "https://mlflow.example"
-    assert recorded["looked_up"] == "clima"
-    assert recorded["created"] == "clima"
+    assert recorded["looked_up"] == "Clima"
+    assert recorded["created"] == "Clima"
     assert recorded["experiment_id"] == "exp-created"
     assert recorded["run_name"] == "test-run"
     assert recorded["closed"] is True
@@ -116,6 +119,13 @@ def test_mlflow_run_user_defaults_and_overrides(monkeypatch) -> None:
 
     monkeypatch.setenv("MLFLOW_RUN_USER", "ca-local-smoke")
     assert mlflow_logging.mlflow_run_user() == "ca-local-smoke"
+
+
+def test_mlflow_experiment_name_matches_active_server_name(monkeypatch) -> None:
+    """The default preserves the case-sensitive active MLflow experiment name."""
+    monkeypatch.delenv("MLFLOW_EXPERIMENT_NAME", raising=False)
+
+    assert mlflow_logging.climate_advisor_experiment_name() == "Clima"
 
 
 def test_live_span_set_tag_compatibility_uses_span_attributes(monkeypatch) -> None:
@@ -149,6 +159,7 @@ def test_redact_payload_removes_credentials_without_redacting_token_counts() -> 
             "token_count": 42,
             "nested": {
                 "OPENAI_API_KEY": "sk-secretvalue",
+                "OPENROUTER_API_KEY": "sk-secretvalue",
                 "text": "Use Bearer abcdefghijklmnopqrstuvwxyz.abcdefghijkl.abcdef",
             },
         }
@@ -158,6 +169,7 @@ def test_redact_payload_removes_credentials_without_redacting_token_counts() -> 
     assert payload["authorization"] == mlflow_logging.REDACTED_VALUE
     assert payload["token_count"] == 42
     assert payload["nested"]["OPENAI_API_KEY"] == mlflow_logging.REDACTED_VALUE
+    assert payload["nested"]["OPENROUTER_API_KEY"] == mlflow_logging.REDACTED_VALUE
     assert mlflow_logging.REDACTED_VALUE in payload["nested"]["text"]
 
 
@@ -187,6 +199,87 @@ def test_log_json_artifact_redacts_before_logging(monkeypatch) -> None:
     assert recorded["payload"] == {
         "access_token": mlflow_logging.REDACTED_VALUE,
         "token_count": 7,
+    }
+
+
+def test_trace_span_records_redacted_inputs_and_outputs(monkeypatch) -> None:
+    """Manual spans should preserve nesting data without leaking credentials."""
+    recorded: dict[str, object] = {}
+
+    class Span:
+        def set_inputs(self, inputs: object) -> None:
+            recorded["inputs"] = inputs
+
+        def set_outputs(self, outputs: object) -> None:
+            recorded["outputs"] = outputs
+
+    class SpanContext:
+        def __enter__(self) -> Span:
+            return Span()
+
+        def __exit__(self, exc_type, exc, tb) -> None:
+            recorded["closed"] = True
+
+    class RecordingMlflow:
+        @staticmethod
+        def start_span(**kwargs: object) -> SpanContext:
+            recorded["span_kwargs"] = kwargs
+            return SpanContext()
+
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
+    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
+
+    with mlflow_logging.start_trace_span(
+        name="workflow",
+        span_type="CHAIN",
+        inputs={"api_key": "secret", "turns": 15},
+    ) as span:
+        mlflow_logging.set_span_outputs(span, {"status": "complete"})
+
+    assert recorded["span_kwargs"] == {
+        "name": "workflow",
+        "span_type": "CHAIN",
+        "attributes": {},
+    }
+    assert recorded["inputs"] == {
+        "api_key": mlflow_logging.REDACTED_VALUE,
+        "turns": 15,
+    }
+    assert recorded["outputs"] == {"status": "complete"}
+    assert recorded["closed"] is True
+
+
+def test_log_directory_artifacts_uploads_exact_source_directory(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    """Source snapshots should be uploaded beneath the MLflow sources folder."""
+    source_directory = tmp_path / "sources"
+    source_directory.mkdir()
+    (source_directory / "source-001.md").write_text("# Source", encoding="utf-8")
+    recorded: dict[str, object] = {}
+
+    class RecordingMlflow:
+        @staticmethod
+        def active_run() -> object:
+            return object()
+
+        @staticmethod
+        def log_artifacts(local_dir: str, *, artifact_path: str) -> None:
+            recorded["local_dir"] = local_dir
+            recorded["artifact_path"] = artifact_path
+
+    monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
+    monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
+
+    mlflow_logging.log_directory_artifacts(
+        source_directory,
+        artifact_path="sources",
+    )
+
+    assert recorded == {
+        "local_dir": str(source_directory),
+        "artifact_path": "sources",
     }
 
 
@@ -252,7 +345,7 @@ def test_streaming_handler_uses_single_experiment_with_agentic_tags(
     monkeypatch,
 ) -> None:
     """General and agentic chat traffic should share one experiment and split by tags."""
-    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "clima")
+    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "Clima")
     handler = StreamingHandler(
         thread_id=uuid4(),
         user_id="user-1",
@@ -269,17 +362,29 @@ def test_streaming_handler_uses_single_experiment_with_agentic_tags(
         user_id="user-1",
         content="Review this draft",
         inventory_id="inventory-1",
-        context={"stationary_energy_draft_run_id": "draft-1"},
     )
 
-    assert handler._mlflow_experiment_name(general_payload) == "clima"
-    assert handler._mlflow_experiment_name(agentic_payload) == "clima"
+    assert handler._mlflow_experiment_name(general_payload) == "Clima"
+    assert handler._mlflow_experiment_name(agentic_payload) == "Clima"
     assert handler._mlflow_tags(general_payload)["prompt_name"] == "chat"
+    handler.workflow_context = ChatWorkflowContext(
+        stationary_energy_draft_run_id=str(uuid4())
+    )
     assert handler._mlflow_tags(agentic_payload)["ca_agentic_flow"] is True
     assert (
         handler._mlflow_tags(agentic_payload)["workflow"]
         == "stationary_energy_context_chat"
     )
+
+
+def test_concept_note_context_uses_the_shared_chat_routing() -> None:
+    """Concept Note context should classify the existing chat stream consistently."""
+    context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+
+    assert context.mlflow_run_name == "concept_note_context_chat_request"
+    assert context.trace_workflow_name == "Climate Advisor Concept Note Context Chat"
+    assert context.telemetry()["workflow"] == "concept_note_context_chat"
+    assert context.telemetry()["context_mode"] == "concept_note_run"
 
 
 def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
@@ -298,7 +403,7 @@ def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
         user_id="user-1",
         session_factory=None,
     )
-    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "clima")
+    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "Clima")
     monkeypatch.setattr(
         "app.utils.streaming_handler.start_run",
         fake_start_run,
@@ -322,7 +427,7 @@ def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
     chunks = asyncio.run(collect())
 
     assert chunks == [b"event: done\ndata: {\"ok\": true}\n\n"]
-    assert recorded["experiment_name"] == "clima"
+    assert recorded["experiment_name"] == "Clima"
     assert recorded["run_name"] == "climate_advisor_message_request"
 
 
@@ -340,15 +445,17 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     async def fake_stream_response_with_mlflow(**kwargs):
         yield b"event: done\ndata: {\"ok\": true}\n\n"
 
-    async def fake_load_thread_stationary_energy_draft_run_id() -> str:
-        return str(draft_run_id)
+    async def fake_load_thread_workflow_context() -> ChatWorkflowContext:
+        return ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(draft_run_id)
+        )
 
     handler = StreamingHandler(
         thread_id=uuid4(),
         user_id="user-1",
         session_factory=None,
     )
-    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "clima")
+    monkeypatch.setenv("MLFLOW_EXPERIMENT_NAME", "Clima")
     monkeypatch.setattr(
         "app.utils.streaming_handler.start_run",
         fake_start_run,
@@ -360,8 +467,8 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     )
     monkeypatch.setattr(
         handler,
-        "_load_thread_stationary_energy_draft_run_id",
-        fake_load_thread_stationary_energy_draft_run_id,
+        "_load_thread_workflow_context",
+        fake_load_thread_workflow_context,
     )
 
     async def collect() -> list[bytes]:
@@ -377,7 +484,7 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     chunks = asyncio.run(collect())
 
     assert chunks == [b"event: done\ndata: {\"ok\": true}\n\n"]
-    assert recorded["experiment_name"] == "clima"
+    assert recorded["experiment_name"] == "Clima"
     assert recorded["run_name"] == "stationary_energy_context_chat_request"
     assert recorded["tags"]["workflow"] == "stationary_energy_context_chat"
     assert recorded["tags"]["stationary_energy_draft_run_id"] == str(draft_run_id)
@@ -411,7 +518,9 @@ def test_streaming_handler_assigns_mlflow_trace_session(monkeypatch) -> None:
         session_factory=None,
         inventory_id="inventory-1",
     )
-    handler.stationary_energy_draft_run_id = str(draft_run_id)
+    handler.workflow_context = ChatWorkflowContext(
+        stationary_energy_draft_run_id=str(draft_run_id)
+    )
     monkeypatch.setattr(
         "app.utils.streaming_handler.Runner.run_streamed",
         fake_run_streamed,

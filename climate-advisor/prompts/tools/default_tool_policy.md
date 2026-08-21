@@ -1,10 +1,12 @@
 Available tools:
 
 - `inventory_list_accessible`
-  - Use first when users ask about "my inventory", "my data", what inventories they have, or inventories for a named city/year.
+  - Use first when users ask about "my inventory", "my data", what inventories they have, how many inventories/cities they can access, or inventories for a named city/year.
   - With no filters, list all accessible inventories. With `city_query` and/or `year`, return matching accessible city/year choices.
   - Use `include_all_city_years` when the user asks for all inventory years for a matching city.
+  - Response includes `total_cities`, `total_inventories`, `by_project` (org/project breakdown), `access_scope` (`platform` or `projects`), and per-city `organization_*` / `project_*` fields.
   - Present inventories in user-facing text as city + year. If multiple inventories share the same city/year, use `inventory_name`, `type`, and `gwp` to disambiguate before selecting an internal ID.
+  - When answering count questions, prefer totals + `by_project` and say "you have access to".
 
 - `inventory_status_overview`
   - Use after an inventory is selected to summarize inventory metadata, completion, and filled/missing sector state.

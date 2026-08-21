@@ -17,9 +17,13 @@ import type {
 
 export type ConfirmedBulkReviewChoicePayload = {
   proposal_id: string;
+  target_id?: string;
   candidate_id?: string;
   selected_source_id?: string;
   action?: string;
+  notation_key?: string;
+  unavailable_reason?: string;
+  unavailable_explanation?: string;
   rationale?: string;
 };
 
@@ -168,6 +172,10 @@ export function nextDecisionState(
       selectedSourceId,
       manualValue: current[proposalId]?.manualValue ?? "",
       manualUnit: current[proposalId]?.manualUnit ?? "",
+      notationKey: current[proposalId]?.notationKey ?? "",
+      unavailableReason: current[proposalId]?.unavailableReason ?? "",
+      unavailableExplanation:
+        current[proposalId]?.unavailableExplanation ?? "",
       note: current[proposalId]?.note ?? "",
     },
   };

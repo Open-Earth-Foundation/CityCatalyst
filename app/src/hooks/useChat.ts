@@ -33,7 +33,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
   const [createChatThread] = useCreateChatThreadMutation();
   const [createThreadId] = useCreateThreadIdMutation();
 
-  const handleError = (_error: any, errorMessage: string) => {
+  const handleError = (_error: unknown, errorMessage: string) => {
     const { showErrorToast } = UseErrorToast({
       title: t("an-error-occurred"),
       description: errorMessage,
@@ -82,9 +82,10 @@ export function useChat({ inventoryId, t }: UseChatProps) {
             setMessages((prev) => appendMessage(prev, "assistant", ""));
             setIsGenerating(true);
           },
-          onTextDelta: (delta: any) => {
-            if (delta.value != null) {
-              setMessages((prev) => appendToLastMessage(prev, delta.value));
+          onTextDelta: (delta: unknown) => {
+            const value = (delta as { value?: string } | undefined)?.value;
+            if (value != null) {
+              setMessages((prev) => appendToLastMessage(prev, value));
             }
           },
           onRunCompleted: () => {
@@ -92,7 +93,7 @@ export function useChat({ inventoryId, t }: UseChatProps) {
             setIsGenerating(false);
             setAssistantStartedResponding(false);
           },
-          onRequiresAction: async (event: any) => {
+          onRequiresAction: async (event: unknown) => {
             // Handle function calls for legacy implementation
             // This would need the full function call handling logic
             console.log("Requires action:", event);
@@ -153,8 +154,8 @@ export function useChat({ inventoryId, t }: UseChatProps) {
           content: text,
         }),
       });
-    } catch (error: any) {
-      if (error.name !== "AbortError") {
+    } catch (error: unknown) {
+      if (!(error instanceof Error) || error.name !== "AbortError") {
         // Remove empty assistant message if no response was received
         if (!assistantStartedResponding) {
           setMessages((prev) => removeLastEmptyAssistantMessage(prev));

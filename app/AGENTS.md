@@ -121,72 +121,73 @@ app/src/
 
 ## Key Backend Services (`src/backend/`)
 
-| Service | Responsibility |
-|---------|---------------|
-| `UserService` | User CRUD, invites, org/project scoping |
-| `InventoryService` | Inventory lookups by city, locode, permissions |
-| `ActivityService` | Activity/gas value CRUD, emissions factors, versioning |
-| `CalculationService` | Emissions math using methodology-specific formulas |
-| `DataSourceService` | Data source management per inventory |
-| `GPCService` | Resolves GPC reference numbers to sector/subsector/subcategory |
-| `PermissionService` | `canAccessInventory`, `canCreateCity`, role-based checks |
-| `EmailService` | All email flows (invites, password, projects) via React Email |
-| `NotificationService` | Nodemailer singleton, admin notifications |
-| `AdminService` | Bulk inventory creation, OpenClimate wiring |
-| `ResultsService` | Emissions results aggregation, forecasts |
-| `PopulationService` | Population data for city/year |
-| `HiapService` | HIAP orchestration (S3, rankings, bulk jobs) |
-| `HiapApiService` | HTTP client to external HIAP API |
-| `ActionPlanService` | Action plan creation and management |
-| `CcraService` | Climate risk normalization and scoring |
-| `CcraApiService` | CCRA API client (Global API) |
-| `ECRFDownloadService` | eCRF Excel template export |
-| `ECRFImportService` | eCRF import parsing |
-| `FileParserService` | XLSX/CSV parsing |
-| `FileUploadService` | Generic file upload (S3 provider) |
-| `FileValidatorService` | Import validation (size, format, CIRIS) |
-| `AIInterpretationService` | LLM column mapping for tabular imports |
-| `InventoryExtractionService` | LLM extraction from PDF documents |
-| `CDPService` | CDP Green Star API client |
-| `CityBoundaryService` | City GeoJSON from Global API |
-| `UnitConversionService` | Unit conversion tables |
-| `VersionHistoryService` | Inventory version diff/history |
-| `ModuleService` | Module access management |
-| `ModuleDashboardService` | Dashboard aggregation (GHGI/HIAP/CCRA) |
+| Service                      | Responsibility                                                 |
+| ---------------------------- | -------------------------------------------------------------- |
+| `UserService`                | User CRUD, invites, org/project scoping                        |
+| `InventoryService`           | Inventory lookups by city, locode, permissions                 |
+| `ActivityService`            | Activity/gas value CRUD, emissions factors, versioning         |
+| `CalculationService`         | Emissions math using methodology-specific formulas             |
+| `DataSourceService`          | Data source management per inventory                           |
+| `GPCService`                 | Resolves GPC reference numbers to sector/subsector/subcategory |
+| `PermissionService`          | `canAccessInventory`, `canCreateCity`, role-based checks       |
+| `EmailService`               | All email flows (invites, password, projects) via React Email  |
+| `NotificationService`        | Nodemailer singleton, admin notifications                      |
+| `AdminService`               | Bulk inventory creation, OpenClimate wiring                    |
+| `ResultsService`             | Emissions results aggregation, forecasts                       |
+| `PopulationService`          | Population data for city/year                                  |
+| `HiapService`                | HIAP orchestration (S3, rankings, bulk jobs)                   |
+| `HiapApiService`             | HTTP client to external HIAP API                               |
+| `ActionPlanService`          | Action plan creation and management                            |
+| `CcraService`                | Climate risk normalization and scoring                         |
+| `CcraApiService`             | CCRA API client (Global API)                                   |
+| `ECRFDownloadService`        | eCRF Excel template export                                     |
+| `ECRFImportService`          | eCRF import parsing                                            |
+| `FileParserService`          | XLSX/CSV parsing                                               |
+| `FileUploadService`          | Generic file upload (S3 provider)                              |
+| `FileValidatorService`       | Import validation (size, format, CIRIS)                        |
+| `AIInterpretationService`    | LLM column mapping for tabular imports                         |
+| `InventoryExtractionService` | LLM extraction from PDF documents                              |
+| `CDPService`                 | CDP Green Star API client                                      |
+| `CityBoundaryService`        | City GeoJSON from Global API                                   |
+| `UnitConversionService`      | Unit conversion tables                                         |
+| `VersionHistoryService`      | Inventory version diff/history                                 |
+| `ModuleService`              | Module access management                                       |
+| `ModuleDashboardService`     | Dashboard aggregation (GHGI/HIAP/CCRA)                         |
 
 ---
 
 ## Custom Hooks (`src/hooks/`)
 
-| Hook | Purpose |
-|------|---------|
-| `useLogin` | Wraps NextAuth `signIn("credentials")`, analytics, redirect |
-| `useUserPermissions` | Check user permissions for resources |
-| `useAdminGuard` | Redirect non-admin users |
-| `useModuleAccess` | Check if current project has a module enabled |
-| `useModuleAccessLayout` | Module access for layout gating |
-| `useRouteParams` | Extract typed route params |
-| `use-latest-inventory` | Get the latest inventory for a city |
-| `use-inventory-organization` | Get org context for an inventory |
-| `use-organizational-context` | Org context provider (Context + localStorage) |
-| `useChat` | Chat with AI assistant |
-| `useSSEStream` | Server-Sent Events streaming |
-| `useFuzzySearch` | Client-side fuzzy search |
-| `usePollUntil` | Polling with stop condition |
-| `useScrollSpy` | Scroll position tracking |
-| `useEnterSubmit` | Submit form on Enter |
-| `use-copy-to-clipboard` | Clipboard copy helper |
-| `use-action-plan` | Action plan management |
-| `use-activity-form` | Complex activity value form (react-hook-form wrapper) |
-| `use-activity-validation` | Activity data validation |
-| `use-emission-factors` | Emission factor fetching for forms |
-| `Toasts` | Toast notification helpers |
+| Hook                         | Purpose                                                     |
+| ---------------------------- | ----------------------------------------------------------- |
+| `useLogin`                   | Wraps NextAuth `signIn("credentials")`, analytics, redirect |
+| `useUserPermissions`         | Check user permissions for resources                        |
+| `useAdminGuard`              | Redirect non-admin users                                    |
+| `useModuleAccess`            | Check if current project has a module enabled               |
+| `useModuleAccessLayout`      | Module access for layout gating                             |
+| `useRouteParams`             | Extract typed route params                                  |
+| `use-latest-inventory`       | Get the latest inventory for a city                         |
+| `use-inventory-organization` | Get org context for an inventory                            |
+| `use-organizational-context` | Org context provider (Context + localStorage)               |
+| `useChat`                    | Chat with AI assistant                                      |
+| `useSSEStream`               | Server-Sent Events streaming                                |
+| `useFuzzySearch`             | Client-side fuzzy search                                    |
+| `usePollUntil`               | Polling with stop condition                                 |
+| `useScrollSpy`               | Scroll position tracking                                    |
+| `useEnterSubmit`             | Submit form on Enter                                        |
+| `use-copy-to-clipboard`      | Clipboard copy helper                                       |
+| `use-action-plan`            | Action plan management                                      |
+| `use-activity-form`          | Complex activity value form (react-hook-form wrapper)       |
+| `use-activity-validation`    | Activity data validation                                    |
+| `use-emission-factors`       | Emission factor fetching for forms                          |
+| `Toasts`                     | Toast notification helpers                                  |
 
 ---
 
 ## API Route Pattern (Critical)
 
 Every API route MUST use `apiHandler` from `@/util/api`. It provides:
+
 - **Auth resolution** (NextAuth session → Bearer JWT → PAT → OAuth → service-to-service)
 - **DB initialization** (`db.initialize()` on first request)
 - **Organization frozen check** (blocks mutations on frozen orgs)
@@ -197,27 +198,29 @@ Every API route MUST use `apiHandler` from `@/util/api`. It provides:
 ### Handler Signature
 
 ```typescript
-export const GET = apiHandler(async (req, { session, params, searchParams }) => {
-  // session: AppSession | null (already resolved from any auth method)
-  // params: Record<string, string> (route params, already awaited)
-  // searchParams: Record<string, string> (query string)
-  if (!session) throw new createHttpError.Unauthorized("Unauthorized");
-  return NextResponse.json({ data: result });
-});
+export const GET = apiHandler(
+  async (req, { session, params, searchParams }) => {
+    // session: AppSession | null (already resolved from any auth method)
+    // params: Record<string, string> (route params, already awaited)
+    // searchParams: Record<string, string> (query string)
+    if (!session) throw new createHttpError.Unauthorized("Unauthorized");
+    return NextResponse.json({ data: result });
+  },
+);
 ```
 
 ### Error Handling Hierarchy
 
-| Error Type | HTTP Status | Behavior |
-|-----------|-------------|----------|
-| `createHttpError.*` (http-errors) | Varies (400, 401, 403, 404, 500) | Returns `{ error: { message, code?, data? } }` |
-| `ZodError` | 400 | Returns `{ error: { message, issues } }` |
-| `ManualInputValidationError` | 400 | Returns `{ error: { type, message, issues } }` |
-| `CustomOrganizationError` / `CustomInviteError` | 409 | Returns `err.data` |
-| `SyntaxError` (bad JSON) | 400 | Returns `{ error: { message } }` |
-| `SequelizeUniqueConstraintError` | 400 | Returns "Entity exists already." |
-| `OpenAI.APIError` | Forwarded | Forwards OpenAI error shape |
-| Any other error | 500 | Returns "Internal server error" (logged) |
+| Error Type                                      | HTTP Status                      | Behavior                                       |
+| ----------------------------------------------- | -------------------------------- | ---------------------------------------------- |
+| `createHttpError.*` (http-errors)               | Varies (400, 401, 403, 404, 500) | Returns `{ error: { message, code?, data? } }` |
+| `ZodError`                                      | 400                              | Returns `{ error: { message, issues } }`       |
+| `ManualInputValidationError`                    | 400                              | Returns `{ error: { type, message, issues } }` |
+| `CustomOrganizationError` / `CustomInviteError` | 409                              | Returns `err.data`                             |
+| `SyntaxError` (bad JSON)                        | 400                              | Returns `{ error: { message } }`               |
+| `SequelizeUniqueConstraintError`                | 400                              | Returns "Entity exists already."               |
+| `OpenAI.APIError`                               | Forwarded                        | Forwards OpenAI error shape                    |
+| Any other error                                 | 500                              | Returns "Internal server error" (logged)       |
 
 ### Swagger JSDoc
 
@@ -326,13 +329,24 @@ Most API responses wrap data in `{ data: ... }` — use `transformResponse` to u
 
 ```
 ENTERPRISE_MODE, PROJECT_OVERVIEW_ENABLED, ACCOUNT_SETTINGS_ENABLED,
-UPLOAD_OWN_DATA_ENABLED, JN_ENABLED, OAUTH_ENABLED, ANALYTICS_ENABLED,
+UPLOAD_OWN_DATA_ENABLED, OAUTH_ENABLED, ANALYTICS_ENABLED,
 CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
 ```
 
-- Parsed from `NEXT_PUBLIC_FEATURE_FLAGS` env (comma-separated)
+- Parsed from `NEXT_PUBLIC_FEATURE_FLAGS` env (comma-separated) via `env()` from `@/lib/runtime-env`
 - QA override via `localStorage` key `qa_feature_flags`
 - Use `hasFeatureFlag(flag)` on client, `hasServerFeatureFlag(flag)` on server
+
+---
+
+## Runtime public env (`src/lib/runtime-env/`)
+
+Replaces `next-runtime-env`. Injects allowlisted `NEXT_PUBLIC_*` vars into
+`window.__ENV` at request time so k8s/runtime values are not frozen at build time.
+
+- Client/shared: `import { env } from "@/lib/runtime-env"` then `env("NEXT_PUBLIC_…")`
+- Add new browser-facing keys to `PUBLIC_RUNTIME_ENV_KEYS` in `keys.ts`
+- Full guide: [docs/RUNTIME_ENV.md](./docs/RUNTIME_ENV.md)
 
 ---
 
@@ -379,38 +393,38 @@ CCRA_MODULE, CA_SERVICE_INTEGRATION, HIGHLIGHT_ENABLED
 
 ## Domain Glossary
 
-| Term | Meaning |
-|------|---------|
-| GPC | Global Protocol for Community-Scale Greenhouse Gas Emissions |
-| GHGI | Greenhouse Gas Inventory — a city's emissions profile |
-| Inventory | A specific city's emissions data for a given year |
-| Sector | Top-level GPC category (Stationary Energy, Transportation, Waste, IPPU, AFOLU) |
-| SubSector | Second-level GPC category within a sector |
-| SubCategory | Third-level GPC category (most granular) |
-| Scope | Emissions scope (1: direct, 2: indirect energy, 3: other indirect) |
-| ActivityValue | An individual emissions data entry (e.g., fuel consumption) |
-| GasValue | Gas-specific emissions for an activity (CO2, CH4, N2O, etc.) |
-| InventoryValue | Aggregated emissions per sub-category |
-| EmissionsFactor | Factor to convert activity data to emissions |
-| DataSource | External data provider for emissions factors/activity data |
-| HIAP | High Impact Action Prioritization — ranking climate actions |
-| CCRA | Climate Change Risk Assessment |
-| Locode | UN/LOCODE city identifier (e.g., "BR RIO") |
-| eCRF | Electronic Common Reporting Framework (GPC Excel format) |
-| AR5/AR6 | IPCC Assessment Report versions for Global Warming Potential values |
-| GWP | Global Warming Potential — converts gases to CO2 equivalent |
+| Term            | Meaning                                                                        |
+| --------------- | ------------------------------------------------------------------------------ |
+| GPC             | Global Protocol for Community-Scale Greenhouse Gas Emissions                   |
+| GHGI            | Greenhouse Gas Inventory — a city's emissions profile                          |
+| Inventory       | A specific city's emissions data for a given year                              |
+| Sector          | Top-level GPC category (Stationary Energy, Transportation, Waste, IPPU, AFOLU) |
+| SubSector       | Second-level GPC category within a sector                                      |
+| SubCategory     | Third-level GPC category (most granular)                                       |
+| Scope           | Emissions scope (1: direct, 2: indirect energy, 3: other indirect)             |
+| ActivityValue   | An individual emissions data entry (e.g., fuel consumption)                    |
+| GasValue        | Gas-specific emissions for an activity (CO2, CH4, N2O, etc.)                   |
+| InventoryValue  | Aggregated emissions per sub-category                                          |
+| EmissionsFactor | Factor to convert activity data to emissions                                   |
+| DataSource      | External data provider for emissions factors/activity data                     |
+| HIAP            | High Impact Action Prioritization — ranking climate actions                    |
+| CCRA            | Climate Change Risk Assessment                                                 |
+| Locode          | UN/LOCODE city identifier (e.g., "BR RIO")                                     |
+| eCRF            | Electronic Common Reporting Framework (GPC Excel format)                       |
+| AR5/AR6         | IPCC Assessment Report versions for Global Warming Potential values            |
+| GWP             | Global Warming Potential — converts gases to CO2 equivalent                    |
 
 ---
 
 ## Sibling Services (same monorepo, different stacks)
 
-| Service | Path | Stack | Purpose |
-|---------|------|-------|---------|
-| global-api | `global-api/` | Python FastAPI + SQLAlchemy + Alembic | Data services, GIS |
-| climate-advisor | `climate-advisor/` | Python FastAPI + LangChain + pgvector | RAG chat agent |
-| hiap | `hiap/` | Python FastAPI + XGBoost + ChromaDB | Action prioritization ML |
-| hiap-meed | `hiap-meed/` | Python FastAPI | MEED scoring pipeline |
-| api-demo | `api-demo/` | Static HTML + nginx | OAuth demo SPA |
+| Service         | Path               | Stack                                 | Purpose                  |
+| --------------- | ------------------ | ------------------------------------- | ------------------------ |
+| global-api      | `global-api/`      | Python FastAPI + SQLAlchemy + Alembic | Data services, GIS       |
+| climate-advisor | `climate-advisor/` | Python FastAPI + LangChain + pgvector | RAG chat agent           |
+| hiap            | `hiap/`            | Python FastAPI + XGBoost + ChromaDB   | Action prioritization ML |
+| hiap-meed       | `hiap-meed/`       | Python FastAPI                        | MEED scoring pipeline    |
+| api-demo        | `api-demo/`        | Static HTML + nginx                   | OAuth demo SPA           |
 
 ---
 

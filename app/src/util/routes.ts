@@ -1,5 +1,3 @@
-import { hasFeatureFlag } from "./feature-flags";
-import { FeatureFlags } from "./feature-flags";
 import { getGhgiInventoryPath } from "./ghgi-routes";
 
 /** Build the city home path used by top-level navigation. */
@@ -28,9 +26,8 @@ export const getHomePath = (
   }
 
   const cityPath = `/${lng}/cities/${firstCityId ?? ""}`;
-  const inventoryPath = `/${lng}/${firstInventoryId ?? ""}`;
 
-  return hasFeatureFlag(FeatureFlags.JN_ENABLED) ? cityPath : inventoryPath;
+  return cityPath;
 };
 
 /** Build the city dashboard path used by global navigation. */

@@ -1,18 +1,16 @@
 import { Box, Icon, Link, Text, VStack } from "@chakra-ui/react";
 import * as React from "react";
-import { BiHomeAlt, BiSolidBarChartAlt2 } from "react-icons/bi";
-import { LuLayoutGrid } from "react-icons/lu";
 
 interface NavigationItem {
   label: string;
   href?: string;
   onClick?: () => void;
-  icon: React.ComponentType<any>;
+  icon: React.ElementType;
 }
 
 interface NavigationLinksProps {
   items: NavigationItem[];
-  t: Function;
+  t: (key: string) => string;
 }
 
 export const NavigationLinks: React.FC<NavigationLinksProps> = ({

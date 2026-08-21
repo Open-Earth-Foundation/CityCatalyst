@@ -130,10 +130,11 @@ import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { logger } from "@/services/logger";
-import { DEFAULT_PROJECT_ID } from "@/util/constants";
+import { DEFAULT_PROJECT_ID, Modules } from "@/util/constants";
 import EmailService from "@/backend/EmailService";
 import UserService from "@/backend/UserService";
 import { PermissionService } from "@/backend/permissions/PermissionService";
+import { ModuleAccessService } from "@/backend/ModuleAccessService";
 import { Project } from "@/models/Project";
 
 export const POST = apiHandler(async (req, { session }) => {
@@ -145,8 +146,54 @@ export const POST = apiHandler(async (req, { session }) => {
   const projectId = body.projectId;
 
   if (!projectId) {
-    logger.info("Project ID is not provided, defaulting to Default Project ");
-    body.projectId = DEFAULT_PROJECT_ID;
+    const orgAdmin = await db.models.OrganizationAdmin.findOne({
+      where: { userId: session.user.id },
+    });
+
+    if (orgAdmin) {
+      // Attach to any existing project in the admin's own organization, or
+      // create one, rather than falling back to the unrelated global
+      // default project/organization.
+      const [defaultProject] = await Project.findOrCreate({
+        where: { organizationId: orgAdmin.organizationId },
+        defaults: {
+          projectId: randomUUID(),
+          name: "Default Project",
+          description: "Default project created automatically during onboarding",
+          cityCountLimit: 999999,
+          organizationId: orgAdmin.organizationId,
+        },
+      });
+      logger.info(
+        {
+          organizationId: orgAdmin.organizationId,
+          projectId: defaultProject.projectId,
+        },
+        "Project ID is not provided, defaulting to organization's default project",
+      );
+
+      // GHGI is the baseline module every project should have access to, so
+      // the GHG Inventory module shows up on the dashboard right after
+      // onboarding instead of requiring a manual admin step. Check rather
+      // than relying solely on `projectCreated` so projects that were
+      // created without any ProjectModules rows (e.g. by this same code
+      // path before this fix) get self-healed on next use too.
+      const hasGhgiAccess = await ModuleAccessService.hasModuleAccess(
+        defaultProject.projectId,
+        Modules.GHGI.id,
+      );
+      if (!hasGhgiAccess) {
+        await ModuleAccessService.enableModuleAccess(
+          defaultProject.projectId,
+          Modules.GHGI.id,
+        );
+      }
+
+      body.projectId = defaultProject.projectId;
+    } else {
+      logger.info("Project ID is not provided, defaulting to Default Project ");
+      body.projectId = DEFAULT_PROJECT_ID;
+    }
   }
 
   // Check permission to create city in this project (ORG_ADMIN or PROJECT_ADMIN required)
@@ -276,7 +323,7 @@ export const POST = apiHandler(async (req, { session }) => {
  *       - city
  *     operationId: getCities
  *     summary: List cities that the current user is a member of.
- *     description: Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: City[] '}'.
+ *     description: "Returns all cities linked to the authenticated user via CityUser membership. Requires a signed‑in session; unauthorized users receive 401. Response is wrapped in '{' data: City[] '}'."
  *     responses:
  *       200:
  *         description: Cities wrapped in data.

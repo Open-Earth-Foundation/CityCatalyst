@@ -31,8 +31,8 @@ function release_test() {
   git checkout main
   # merge rc version tag into main branch
   git merge "$MAIN_VERSION"
-  # resolve merge conflicts because of changed version number
-  git checkout --theirs -- package.json package-lock.json
+  # resolve merge conflicts by preferring dev version
+  git checkout --theirs ..
   git commit -am "chore(release): merge rc version $MAIN_VERSION into main"
   git push
 }

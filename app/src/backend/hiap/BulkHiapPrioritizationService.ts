@@ -5,11 +5,11 @@ import {
   LANGUAGES,
   HighImpactActionRankingStatus,
 } from "@/util/types";
-import { hiapServiceWrapper, checkBulkActionRankingJob } from "./HiapService";
+import { hiapServiceWrapper } from "./HiapService";
 import { hiapApiWrapper } from "./HiapApiService";
 import { Op, QueryTypes } from "sequelize";
 
-interface CityInventoryData {
+export interface CityInventoryData {
   cityId: string;
   inventoryId: string;
   locode: string;
@@ -21,20 +21,6 @@ interface BulkPrioritizationParams {
   year: number;
   actionType: ACTION_TYPES;
   languages: LANGUAGES[];
-}
-
-interface BulkPrioritizationResult {
-  totalCities: number;
-  totalBatches: number;
-  successfulCities: number;
-  failedCities: number;
-  batchResults: Array<{
-    batchNumber: number;
-    taskId: string;
-    cityCount: number;
-    status: "completed" | "failed";
-    error?: string;
-  }>;
 }
 
 export class BulkHiapPrioritizationService {
@@ -183,7 +169,7 @@ export class BulkHiapPrioritizationService {
 
     // Build cities data for the batch
     const citiesData: CityInventoryData[] = todoRankings.map((ranking) => {
-      const inventory = (ranking as any).inventory;
+      const inventory = ranking.inventory;
       const city = inventory.city;
       return {
         cityId: city.cityId,
@@ -242,7 +228,7 @@ export class BulkHiapPrioritizationService {
       `c.locode = ANY(ARRAY[:cityLocodes])`,
     ];
 
-    const replacements: any = {
+    const replacements: Record<string, unknown> = {
       status: HighImpactActionRankingStatus.FAILURE,
       actionType,
       projectId,
@@ -276,7 +262,7 @@ export class BulkHiapPrioritizationService {
       },
     );
 
-    const excludedCount = (result as any)[1] || 0;
+    const excludedCount = result[1] || 0;
 
     logger.info(
       { excludedCount, cityLocodes },
@@ -325,7 +311,7 @@ export class BulkHiapPrioritizationService {
       `c.project_id = :projectId`,
     ];
 
-    const replacements: any = {
+    const replacements: Record<string, unknown> = {
       status: HighImpactActionRankingStatus.FAILURE,
       actionType,
       projectId,
@@ -365,7 +351,7 @@ export class BulkHiapPrioritizationService {
     );
 
     // Result is [undefined, rowCount] for UPDATE queries
-    const retriedCount = (result as any)[1] || 0;
+    const retriedCount = result[1] || 0;
 
     logger.info(
       { retriedCount, excludedCount, projectId, actionType },
@@ -425,7 +411,7 @@ export class BulkHiapPrioritizationService {
       },
     );
 
-    const unexcludedCount = (result as any)[1] || 0;
+    const unexcludedCount = result[1] || 0;
 
     logger.info(
       { unexcludedCount, projectId, actionType },
@@ -671,13 +657,13 @@ export class BulkHiapPrioritizationService {
             city.inventoryId,
           );
         citiesContextData.push(contextData);
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error(
           {
             cityId: city.cityId,
             inventoryId: city.inventoryId,
             locode: city.locode,
-            error: error.message,
+            error: error instanceof Error ? error.message : String(error),
           },
           "Failed to get context data for city",
         );

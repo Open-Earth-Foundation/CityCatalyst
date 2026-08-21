@@ -1,13 +1,20 @@
-import { Box, Icon, List, ListIndicator, Text } from "@chakra-ui/react";
-import { FieldError } from "react-hook-form";
-import { CheckListIcon, CloseListIcon } from "./icons";
+import { Box, Icon, Text } from "@chakra-ui/react";
+import {
+  FieldError,
+  FieldValues,
+  Path,
+  UseFormRegister,
+} from "react-hook-form";
 import { TFunction } from "i18next";
 import { Field } from "@/components/ui/field";
 import { PasswordInput as ChakraPasswordInput } from "@/components/ui/password-input";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import LabelLarge from "@/components/package/Texts/Label";
+import { isPasswordPatternValid } from "@/util/validation";
 
-export default function PasswordInput({
+export default function PasswordInput<
+  TFieldValues extends FieldValues = FieldValues,
+>({
   children,
   error,
   register,
@@ -17,24 +24,29 @@ export default function PasswordInput({
   w,
   shouldValidate = false,
   watchPassword = "",
+  isSubmitted = true,
+  validate,
 }: {
   children?: React.ReactNode;
   error: FieldError | undefined;
-  register: Function;
+  register: UseFormRegister<TFieldValues>;
   t: TFunction;
-  name?: String;
-  id?: String;
+  name?: string;
+  id?: string;
   w?: string;
   shouldValidate?: boolean;
   watchPassword?: string;
+  isSubmitted?: boolean;
+  validate?: (value: string) => string | boolean;
 }) {
-  // Password checks
-  const password = watchPassword || "";
   const labelName = name || t("password");
-  const hasLowercase = /[a-z]/.test(password);
-  const hasMinLength = password.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasNumber = /\d/.test(password);
+
+  const passwordValid = isPasswordPatternValid(watchPassword);
+
+  // Hint is always visible as guidance; it's only styled as an error once
+  // the user has attempted to submit and the password still doesn't match.
+  const showHint = shouldValidate && !passwordValid;
+  const passwordInvalid = shouldValidate && isSubmitted && !passwordValid;
 
   return (
     <Field
@@ -49,6 +61,9 @@ export default function PasswordInput({
         shadow="2dp"
         placeholder={t("password")}
         background={error ? "sentiment.negativeOverlay" : "background.default"}
+        borderColor={
+          passwordInvalid ? "sentiment.negativeDefault" : undefined
+        }
         visibilityIcon={{
           on: (
             <Icon as={IoMdEyeOff} color="content.tertiary" boxSize={6} mr={2} />
@@ -57,109 +72,26 @@ export default function PasswordInput({
             <Icon as={IoMdEye} color="content.tertiary" boxSize={6} mr={2} />
           ),
         }}
-        {...register(id, {
-          required: t("password-required"),
-          minLength: { value: 4, message: t("min-length", { length: 4 }) },
-          pattern: shouldValidate
-            ? {
-                hasMinLength: (value: string) =>
-                  value.length >= 8 || t("password-min-length"),
-                hasUpperCase: (value: string) =>
-                  /[A-Z]/.test(value) || t("password-upper-case"),
-                hasLowerCase: (value: string) =>
-                  /[a-z]/.test(value) || t("password-lower-case"),
-                hasNumber: (value: string) =>
-                  /[0-9]/.test(value) || t("password-number"),
-              }
-            : undefined,
+        {...register(id as Path<TFieldValues>, {
+          required: t("please-enter-password"),
+          validate,
         })}
       />
 
       <Box>{children}</Box>
-      {/* Password Checklist */}
-      {shouldValidate && (
-        <List.Root gap={1} mt={2}>
-          <List.Item display="flex" alignItems="center" gap="6px">
-            <List.Indicator
-              color={
-                hasMinLength
-                  ? "sentiment.positiveDefault"
-                  : "sentiment.negativeDefault"
-              }
-            >
-              {hasMinLength ? <CheckListIcon /> : <CloseListIcon />}
-            </List.Indicator>
-            <Text
-              color={
-                hasMinLength ? "content.tertiary" : "sentiment.negativeDefault"
-              }
-              fontSize="body.md"
-              letterSpacing="wide"
-            >
-              {t("password-min-length-check", { length: 8 })}
-            </Text>
-          </List.Item>
-          <List.Item display="flex" alignItems="center" gap="6px">
-            <List.Indicator
-              color={
-                hasUppercase
-                  ? "sentiment.positiveDefault"
-                  : "sentiment.negativeDefault"
-              }
-            >
-              {hasUppercase ? <CheckListIcon /> : <CloseListIcon />}
-            </List.Indicator>
-            <Text
-              color={
-                hasUppercase ? "content.tertiary" : "sentiment.negativeDefault"
-              }
-              fontSize="body.md"
-              letterSpacing="wide"
-            >
-              {t("password-upper-case-check")}
-            </Text>
-          </List.Item>
-          <List.Item display="flex" alignItems="center" gap="6px">
-            <ListIndicator
-              color={
-                hasLowercase
-                  ? "sentiment.positiveDefault"
-                  : "sentiment.negativeDefault"
-              }
-            >
-              {hasLowercase ? <CheckListIcon /> : <CloseListIcon />}
-            </ListIndicator>
-            <Text
-              color={
-                hasLowercase ? "content.tertiary" : "sentiment.negativeDefault"
-              }
-              fontSize="body.md"
-              letterSpacing="wide"
-            >
-              {t("password-lower-case-check")}
-            </Text>
-          </List.Item>
-          <List.Item display="flex" alignItems="center" gap="6px">
-            <List.Indicator
-              color={
-                hasNumber
-                  ? "sentiment.positiveDefault"
-                  : "sentiment.negativeDefault"
-              }
-            >
-              {hasNumber ? <CheckListIcon /> : <CloseListIcon />}
-            </List.Indicator>
-            <Text
-              color={
-                hasNumber ? "content.tertiary" : "sentiment.negativeDefault"
-              }
-              fontSize="body.md"
-              letterSpacing="wide"
-            >
-              {t("password-number-check")}
-            </Text>
-          </List.Item>
-        </List.Root>
+
+      {/* Password pattern hint — hidden once the password is valid */}
+      {showHint && (
+        <Text
+          mt="s"
+          fontFamily="body"
+          fontSize="body.sm"
+          fontWeight="regular"
+          lineHeight="16px"
+          color={passwordInvalid ? "fg.error" : "content.tertiary"}
+        >
+          {t("password-hint")}
+        </Text>
       )}
     </Field>
   );

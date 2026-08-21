@@ -1,19 +1,21 @@
-import {
-  Box,
-  HStack,
-  Icon,
-  Input,
-  Text,
-} from "@chakra-ui/react";
+import { Box, HStack, Icon, Input, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
+import React from "react";
 import {
   Control,
   Controller,
+  FieldError,
+  FieldErrors,
+  FieldValues,
+  Path,
+  UseFormClearErrors,
   UseFormGetValues,
   UseFormRegister,
+  UseFormSetError,
   UseFormSetValue,
 } from "react-hook-form";
 import BuildingTypeSelectInput from "../../../building-select-input";
+import { Inputs } from "../activity-modal-body";
 import { ExtraField, SuggestedActivity } from "@/util/form-schema";
 import FormattedNumberInput from "@/components/formatted-number-input";
 import PercentageBreakdownInput from "@/components/percentage-breakdown-input";
@@ -27,15 +29,15 @@ import {
 
 interface DynamicFieldsSectionProps {
   t: TFunction;
-  register: UseFormRegister<any>;
-  control: Control<any, any>;
+  register: UseFormRegister<Inputs>;
+  control: Control<FieldValues>;
   fields: ExtraField[];
-  errors: Record<string, any>;
-  setError: Function;
-  clearErrors: Function;
+  errors: FieldErrors<FieldValues>;
+  setError: UseFormSetError<Inputs>;
+  clearErrors: UseFormClearErrors<Inputs>;
   selectedActivity?: SuggestedActivity;
-  setValue: UseFormSetValue<any>;
-  getValues: UseFormGetValues<any>;
+  setValue: UseFormSetValue<Inputs>;
+  getValues: UseFormGetValues<Inputs>;
   inventoryId?: string;
   methodologyId: string;
 }
@@ -57,6 +59,10 @@ export const DynamicFieldsSection = ({
   const filteredFields = fields.filter((f) => {
     return !(f.id.includes("-source") && f.type === "text");
   });
+
+  const activityErrors = errors?.activity as
+    | Record<string, { message?: string } | undefined>
+    | undefined;
 
   if (filteredFields.length === 0) {
     return null;
@@ -96,14 +102,16 @@ export const DynamicFieldsSection = ({
               label={t(f.id)}
               tooltipInfo={t(f["info-text"] as string)}
               defaultMode={f["default-composition-available"]}
-              register={register}
-              getValues={getValues}
+              register={register as unknown as UseFormRegister<FieldValues>}
+              getValues={getValues as unknown as UseFormGetValues<FieldValues>}
               control={control}
-              setValue={setValue}
-              setError={setError}
-              clearErrors={clearErrors}
+              setValue={setValue as unknown as UseFormSetValue<FieldValues>}
+              setError={setError as unknown as UseFormSetError<FieldValues>}
+              clearErrors={
+                clearErrors as unknown as UseFormClearErrors<FieldValues>
+              }
               breakdownCategories={f.subtypes as string[]}
-              error={errors?.activity?.[f.id]}
+              error={activityErrors?.[f.id] as FieldError | undefined}
               t={t}
               inventoryId={inventoryId}
               methodologyName={methodologyId}
@@ -116,17 +124,13 @@ export const DynamicFieldsSection = ({
                 borderRadius="4px"
                 h="48px"
                 shadow="1dp"
-                borderWidth={errors?.activity?.[f.id] ? "1px" : 0}
+                borderWidth={activityErrors?.[f.id] ? "1px" : 0}
                 border="inputBox"
                 borderColor={
-                  errors?.activity?.[f.id]
-                    ? "sentiment.negativeDefault"
-                    : ""
+                  activityErrors?.[f.id] ? "sentiment.negativeDefault" : ""
                 }
                 background={
-                  errors?.activity?.[f.id]
-                    ? "sentiment.negativeOverlay"
-                    : ""
+                  activityErrors?.[f.id] ? "sentiment.negativeOverlay" : ""
                 }
                 bgColor="base.light"
                 _focus={{
@@ -134,25 +138,16 @@ export const DynamicFieldsSection = ({
                   shadow: "none",
                   borderColor: "content.link",
                 }}
-                {...register(`activity.${f.id}` as any, {
-                  required:
-                    f.required === false ? false : t("value-required"),
+                {...register(`activity.${f.id}` as Path<Inputs>, {
+                  required: f.required === false ? false : t("value-required"),
                 })}
               />
 
-              {errors?.activity?.[f.id] && (
-                <Box
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  mt="6px"
-                >
-                  <Icon
-                    as={MdWarning}
-                    color="sentiment.negativeDefault"
-                  />
+              {activityErrors?.[f.id] && (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {errors?.activity?.[f.id]?.message}
+                    {activityErrors?.[f.id]?.message}
                   </Text>
                 </Box>
               )}
@@ -165,8 +160,6 @@ export const DynamicFieldsSection = ({
                   placeholder={t("activity-data-amount-placeholder")}
                   max={f.max!}
                   id={f.id}
-                  setError={setError}
-                  clearErrors={clearErrors}
                   min={f.min!}
                   control={control}
                   name={`activity.${f.id}`}
@@ -177,32 +170,28 @@ export const DynamicFieldsSection = ({
                 {f.units && (
                   <Controller
                     control={control}
-                    name={`activity.${f.id}-unit` as any}
+                    name={`activity.${f.id}-unit`}
                     defaultValue=""
                     rules={{
                       required:
-                        f.required === false
-                          ? false
-                          : t("option-required"),
+                        f.required === false ? false : t("option-required"),
                     }}
                     render={({ field }) => (
                       <NativeSelectRoot
                         borderRadius="4px"
                         borderWidth={
-                          errors?.activity?.[`${f.id}-unit`]
-                            ? "1px"
-                            : 0
+                          activityErrors?.[`${f.id}-unit`] ? "1px" : 0
                         }
                         border="inputBox"
                         h="42px"
                         shadow="1dp"
                         borderColor={
-                          errors?.activity?.[`${f.id}-unit`]
+                          activityErrors?.[`${f.id}-unit`]
                             ? "sentiment.negativeDefault"
                             : ""
                         }
                         background={
-                          errors?.activity?.[`${f.id}-unit`]
+                          activityErrors?.[`${f.id}-unit`]
                             ? "sentiment.negativeOverlay"
                             : ""
                         }
@@ -213,16 +202,19 @@ export const DynamicFieldsSection = ({
                         }}
                         bgColor="base.light"
                         {...field}
-                        onChange={(e: any) => {
-                          field.onChange(e.currentTarget.value);
+                        onChange={(e: React.ChangeEvent<HTMLDivElement>) => {
+                          const value = (
+                            e.target as unknown as HTMLSelectElement
+                          ).value;
+                          field.onChange(value);
                           setValue(
-                            `activity.${f.id}-unit` as any,
-                            e.target.value,
+                            `activity.${f.id}-unit` as Path<Inputs>,
+                            value,
                           );
                         }}
                       >
                         <NativeSelectField
-                          value={field.value}
+                          value={field.value as string}
                           placeholder={t("select-unit")}
                         >
                           {f.units?.map((item: string) => (
@@ -236,50 +228,42 @@ export const DynamicFieldsSection = ({
                   />
                 )}
               </HStack>
-              {errors?.activity?.[f.id] && (
-                <Box
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  mt="6px"
-                >
-                  <Icon
-                    as={MdWarning}
-                    color="sentiment.negativeDefault"
-                  />
+              {activityErrors?.[f.id] && (
+                <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                  <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text fontSize="body.md">
-                    {errors?.activity?.[f.id]?.message}
+                    {activityErrors?.[f.id]?.message}
                   </Text>
                 </Box>
               )}
-              {errors?.activity?.[`${f.id}-unit`] && !errors?.activity?.[f.id] && (
-                <Box
-                  display="flex"
-                  gap="6px"
-                  alignItems="center"
-                  mt="6px"
-                >
-                  <Icon
-                    as={MdWarning}
-                    color="sentiment.negativeDefault"
-                  />
-                  <Text fontSize="body.md">
-                    {errors?.activity?.[`${f.id}-unit`]?.message}
-                  </Text>
-                </Box>
-              )}
+              {activityErrors?.[`${f.id}-unit`] &&
+                !activityErrors?.[f.id] && (
+                  <Box display="flex" gap="6px" alignItems="center" mt="6px">
+                    <Icon as={MdWarning} color="sentiment.negativeDefault" />
+                    <Text fontSize="body.md">
+                      {activityErrors?.[`${f.id}-unit`]?.message}
+                    </Text>
+                  </Box>
+                )}
             </Field>
           )}
           {f.dependsOn && (
             <Field w="full" label={t(f.id)}>
               <DependentSelectInput
                 field={f}
-                register={register}
-                setValue={setValue}
-                getValues={getValues}
+                register={register as unknown as UseFormRegister<FieldValues>}
+                setValue={
+                  setValue as unknown as (
+                    name: string,
+                    value: unknown,
+                  ) => void
+                }
+                getValues={
+                  getValues as unknown as UseFormGetValues<FieldValues>
+                }
                 control={control}
                 errors={errors}
-                setError={setError}
+                setError={setError as unknown as UseFormSetError<FieldValues>}
                 t={t}
               />
             </Field>

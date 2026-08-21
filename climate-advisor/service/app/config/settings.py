@@ -26,7 +26,7 @@ Usage:
 import logging
 import os
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Literal, Optional
 
 import yaml
 from dotenv import find_dotenv, load_dotenv, dotenv_values
@@ -119,9 +119,20 @@ class RoleModelConfig(BaseModel):
     temperature: float
 
 
+class ResearchModelConfig(BaseModel):
+    """OpenRouter model settings for bounded CNB workflows."""
+
+    name: str
+    reasoning_effort: Literal["low", "medium", "high"] = "medium"
+
+
 class ModelsConfig(BaseModel):
     orchestrator: RoleModelConfig
     agentic_flow: Optional[RoleModelConfig] = None
+    funding_research: ResearchModelConfig
+    funder_identity: ResearchModelConfig
+    cnb_source_reader: ResearchModelConfig
+    cnb_source_synthesizer: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -136,10 +147,23 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
     )
 
 
+class CnbSourcePromptBudgetConfig(BaseModel):
+    """Limits for page-preserving Concept Note source analysis."""
+
+    max_partition_tokens: int = Field(default=50000, ge=1000)
+    max_concurrency: int = Field(default=3, ge=1, le=3)
+    max_key_excerpts: int = Field(default=8, ge=1, le=20)
+    max_topics: int = Field(default=12, ge=1, le=30)
+    max_question_chars: int = Field(default=2000, ge=1, le=10000)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
         default_factory=StationaryEnergyPromptBudgetConfig,
+    )
+    cnb_sources: CnbSourcePromptBudgetConfig = Field(
+        default_factory=CnbSourcePromptBudgetConfig,
     )
 
 
@@ -155,6 +179,12 @@ class PromptsConfig(BaseModel):
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_funding_opportunity_research: str
+    cnb_funder_identity_matching: str
+    cnb_similar_project_matching: str
+    cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
+    cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
+    cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""
@@ -168,9 +198,14 @@ class PromptsConfig(BaseModel):
 
     def compose_prompt(self, workflow_prompt_type: str) -> str:
         """Compose the shared core prompt with one workflow-specific prompt."""
-        if workflow_prompt_type not in {"chat", "stationary_energy_review"}:
+        if workflow_prompt_type not in {
+            "chat",
+            "stationary_energy_review",
+            "concept_note",
+        }:
             raise ValueError(
-                "Workflow prompt type must be 'chat' or 'stationary_energy_review'"
+                "Workflow prompt type must be 'chat', 'stationary_energy_review', "
+                "or 'concept_note'"
             )
 
         core_prompt = self.get_prompt("core").strip()
@@ -286,11 +321,19 @@ class APIConfig(BaseModel):
     requests: Optional[Dict[str, Any]] = None
 
 
+class FirecrawlToolConfig(BaseModel):
+    """Connection settings for the offline Firecrawl research tool."""
+
+    base_url: str = "https://api.firecrawl.dev/v2"
+    timeout_seconds: int = 120
+
+
 class ToolConfig(BaseModel):
     climate_vector_search: Dict[str, Any] = Field(
         default={"top_k": 3, "min_score": 0.6},
         description="Climate vector search tool configuration (loaded from llm_config.yaml if present, otherwise uses this fallback default)",
     )
+    firecrawl: FirecrawlToolConfig = Field(default_factory=FirecrawlToolConfig)
     # Numbers here are just a fallback if the llm_config.yaml is not present
 
 
@@ -398,6 +441,9 @@ class Settings(BaseModel):
     # OpenAI configuration for embeddings
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
 
+    # Firecrawl is used only by the offline CNB research CLI.
+    firecrawl_api_key: str | None = os.getenv("FIRECRAWL_API_KEY")
+
     # LangSmith tracing configuration
     # Only API key comes from .env for security
     # All other settings (endpoint, project, tracing_enabled) must be in llm_config.yaml
@@ -408,6 +454,7 @@ class Settings(BaseModel):
 
     # Database configuration
     database_url: str | None = os.getenv("CA_DATABASE_URL")
+    cnb_database_url: str | None = os.getenv("CNB_DATABASE_URL")
     database_pool_size: Optional[int] = _parse_int(
         os.getenv("CA_DATABASE_POOL_SIZE"), 5
     )
@@ -429,6 +476,9 @@ class Settings(BaseModel):
     cc_oauth_client_id: str | None = os.getenv("CC_OAUTH_CLIENT_ID")
     cc_oauth_client_secret: str | None = os.getenv("CC_OAUTH_CLIENT_SECRET")
     cc_oauth_token_url: str | None = os.getenv("CC_OAUTH_TOKEN_URL")
+    cnb_markdown_request_max_bytes: int = _parse_int(
+        os.getenv("CNB_MARKDOWN_REQUEST_MAX_BYTES"), 20 * 1024 * 1024
+    )
 
     def model_post_init(self, __context: Any) -> None:
         """Load non-secret OpenRouter and observability settings from llm_config.yaml."""

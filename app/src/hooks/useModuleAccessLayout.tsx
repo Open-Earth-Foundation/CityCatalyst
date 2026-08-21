@@ -1,6 +1,5 @@
 import React, { use } from "react";
 import { Box } from "@chakra-ui/react";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "@/components/ProgressLoader";
 import { useModuleAccess } from "@/hooks/useModuleAccess";
 
@@ -19,10 +18,9 @@ export const useModuleAccessLayout = ({
 }: UseModuleAccessLayoutProps): React.ReactElement => {
   const { lng, cityId, inventory } = use(params);
 
-  // Skip module access check when JN_ENABLED feature flag is OFF
-  // Also skip for main module pages (when there's no inventory parameter)
+  // Skip module access check for main module pages (when there's no inventory parameter)
   // These pages typically just redirect to specific inventories
-  const shouldCheckAccess = hasFeatureFlag(FeatureFlags.JN_ENABLED) && !!inventory;
+  const shouldCheckAccess = !!inventory;
 
   const { hasAccess } = useModuleAccess({
     cityId,

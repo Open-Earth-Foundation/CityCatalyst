@@ -6,7 +6,7 @@
  *       - user
  *     operationId: getUserInventories
  *     summary: List inventories accessible to the current user with city info.
- *     description: Returns inventories for cities the user belongs to, including the city name and locode. Requires a signed‑in session. Response is wrapped in '{' data: [{ inventory fields…, city: { name, locode } }] '}'.
+ *     description: "Returns inventories for cities the user belongs to, including the city name and locode. Requires a signed‑in session. Response is wrapped in '{' data: [{ inventory fields…, city: { name, locode } }] '}'."
  *     responses:
  *       200:
  *         description: Inventories with city info wrapped in data.

@@ -8,8 +8,14 @@ import {
 } from "@/util/types";
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
+import {
+  backfillMissingHIAPActionPlans,
+  backfillMissingHIAPRankings,
+} from "@/backend/hiap/HiapNativeInputCatalogService";
 import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
+import type { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
+import type { Inventory } from "@/models/Inventory";
 
 /**
  * Cron job endpoint to check HIAP job statuses and start next batches
@@ -117,7 +123,7 @@ export async function GET(req: NextRequest) {
     // Step 2: Check status for each unique jobId
     for (const job of pendingJobs) {
       try {
-        const lang = (job.langs as any)[0] as LANGUAGES; // Get first language from array
+        const lang = job.langs[0] as LANGUAGES; // Get first language from array
 
         // Call appropriate function based on job type
         const isComplete = job.isBulk
@@ -155,7 +161,10 @@ export async function GET(req: NextRequest) {
             ],
           });
 
-          const projectId = (ranking as any)?.inventory?.city?.projectId;
+          const projectId = (
+            ranking as
+              (HighImpactActionRanking & { inventory: Inventory }) | null
+          )?.inventory?.city?.projectId;
           if (projectId) {
             // Step 4: Start next batch for this project if there are TO_DO rankings
             const nextBatch =
@@ -178,9 +187,11 @@ export async function GET(req: NextRequest) {
             }
           }
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
         logger.error(
-          { jobId: job.jobId, error: error.message },
+          { jobId: job.jobId, error: errorMessage },
           "Error checking/processing HIAP job - marking as FAILURE",
         );
 
@@ -189,7 +200,7 @@ export async function GET(req: NextRequest) {
           await db.models.HighImpactActionRanking.update(
             {
               status: HighImpactActionRankingStatus.FAILURE,
-              errorMessage: `Job check failed: ${error.message}`,
+              errorMessage: `Job check failed: ${errorMessage}`,
             },
             {
               where: {
@@ -204,15 +215,36 @@ export async function GET(req: NextRequest) {
             "Marked PENDING rankings as FAILURE due to job check error",
           );
           completedJobs++;
-        } catch (updateError: any) {
+        } catch (updateError: unknown) {
           logger.error(
-            { jobId: job.jobId, error: updateError.message },
+            {
+              jobId: job.jobId,
+              error:
+                updateError instanceof Error
+                  ? updateError.message
+                  : String(updateError),
+            },
             "Failed to mark rankings as FAILURE",
           );
         }
 
         // Continue with other jobs even if one fails
       }
+    }
+
+    const catalogBackfilled = await backfillMissingHIAPRankings();
+    const actionPlansBackfilled = await backfillMissingHIAPActionPlans();
+    if (catalogBackfilled > 0) {
+      logger.info(
+        { catalogBackfilled },
+        "Backfilled missing HIAP catalog entries",
+      );
+    }
+    if (actionPlansBackfilled > 0) {
+      logger.info(
+        { actionPlansBackfilled },
+        "Backfilled missing HIAP action-plan catalog entries",
+      );
     }
 
     // Step 3: Start ONE batch if no PENDING jobs exist system-wide
@@ -268,12 +300,12 @@ export async function GET(req: NextRequest) {
               "Started next batch",
             );
           }
-        } catch (error: any) {
+        } catch (error: unknown) {
           logger.error(
             {
               projectId: project.projectId,
               actionType: project.type,
-              error: error.message,
+              error: error instanceof Error ? error.message : String(error),
             },
             "Error starting batch",
           );
@@ -296,6 +328,8 @@ export async function GET(req: NextRequest) {
       {
         checkedJobs: pendingJobs.length,
         completedJobs,
+        catalogBackfilled,
+        actionPlansBackfilled,
         startedBatches,
         durationMs: duration,
       },
@@ -305,17 +339,24 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       checkedJobs: pendingJobs.length,
       completedJobs,
+      catalogBackfilled,
+      actionPlansBackfilled,
       startedBatches,
       durationMs: duration,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : String(error);
     logger.error(
-      { error: error.message, stack: error.stack, durationMs: duration },
+      {
+        error: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
+        durationMs: duration,
+      },
       "❌ Cron job FINISHED with error",
     );
     return NextResponse.json(
-      { error: "Internal server error - " + error.message },
+      { error: "Internal server error - " + errorMessage },
       { status: 500 },
     );
   }

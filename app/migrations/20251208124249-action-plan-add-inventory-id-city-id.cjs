@@ -18,7 +18,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Remove columns
     await queryInterface.removeColumn("ActionPlan", "inventory_id");
     await queryInterface.removeColumn("ActionPlan", "city_id");

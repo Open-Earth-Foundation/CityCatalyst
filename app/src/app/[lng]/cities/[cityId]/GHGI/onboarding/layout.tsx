@@ -1,5 +1,4 @@
 "use client";
-import { use } from "react";
 
 import { Toaster } from "@/components/ui/toaster";
 import { Box } from "@chakra-ui/react";

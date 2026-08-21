@@ -1,5 +1,4 @@
 "use client";
-import { use } from "react";
 
 import { useTranslation } from "@/i18n/client";
 import { useParams, usePathname } from "next/navigation";
@@ -116,7 +115,7 @@ export default function AddDataIntro() {
                       testId={testId}
                       title={t(name)}
                       description={t(description)}
-                      // @ts-ignore
+                      // @ts-expect-error icon type from data config doesn't match AddDataCard's expected icon prop type
                       icon={icon}
                       scopeText={`${t(scopesRequiredText)}: ${requiredScopes.join(", ")}`}
                       buttonText={t("add-data")}

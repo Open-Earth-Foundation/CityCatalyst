@@ -195,43 +195,16 @@ test("Inventory Onboarding", async ({ page }) => {
 
     await page.getByTestId("third-party-data-choice-no").click();
 
-    const continueButton = page.getByRole("button", { name: /Continue/i });
-    await expect(continueButton).toBeEnabled();
-    await continueButton.click();
-  }
+    const createInventoryButton = page.getByRole("button", {
+      name: /Create Inventory/i,
+    });
+    await expect(createInventoryButton).toBeEnabled();
 
-  /** "Confirm Step displays all information correctly" */
-  {
-    // Verify city heading
-    const heading = page.getByTestId("confirm-city-data-heading");
-    await expect(heading).toBeVisible();
-
-    // Verify that the city name is displayed
-    const cityName = page.getByTestId("confirm-city-data-heading");
-    await expect(cityName).toBeVisible();
-
-    const inventoryYear = page.getByTestId("confirm-city-data-year");
-    await expect(inventoryYear).toBeVisible();
-
-    const inventoryGoal = page.getByTestId(
-      "confirm-city-data-inventory-goal",
-    );
-    await expect(inventoryGoal).toBeVisible();
-
-    const populationData = page.getByTestId("confirm-city-data-population");
-    await expect(populationData).toBeVisible();
-
-    const cityMap = page.locator(".pigeon-overlays");
-    await expect(cityMap).toBeVisible();
-  }
-
-  /** "User can complete the onboarding process from Confirm Step" */
-  {
-    // Click the "Continue" button
-    const continueButton = page.getByRole("button", { name: /Continue/i });
-    await expect(continueButton).toBeEnabled();
-
-    await continueButton.click();
+    // Final step: creating the inventory navigates to GHGI home
+    await Promise.all([
+      page.waitForURL(/\/cities\/[^/]+\/GHGI\/[^/]+/, { timeout: 60000 }),
+      createInventoryButton.click(),
+    ]);
   }
 });
 

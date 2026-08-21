@@ -3,17 +3,20 @@
 
 models:
   alignment_other_preference:
-    name: "gpt-5.4-mini"
-    temperature: 0.0
+    name: "gpt-5.6-luna"
+    temperature: 1.0 # 5.6 requires temperature 1.0
   free_text_exclusions:
-    name: "gpt-5.4-mini"
-    temperature: 0.0
+    name: "gpt-5.6-luna"
+    temperature: 1.0 # 5.6 requires temperature 1.0
   explanations:
-    name: "gpt-5.4-mini"
-    temperature: 0.0
+    name: "gpt-5.6-luna"
+    temperature: 1.0 # 5.6 requires temperature 1.0
   explanation_translations:
-    name: "gpt-5.4-mini"
-    temperature: 0.0
+    name: "gpt-5.6-luna"
+    temperature: 1.0 # 5.6 requires temperature 1.0
+  output_plan:
+    name: "gpt-5.6-luna"
+    temperature: 1.0 # 5.6 requires temperature 1.0
 
 features:
   free_text_exclusions_enabled: true

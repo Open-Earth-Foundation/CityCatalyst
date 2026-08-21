@@ -1,12 +1,11 @@
 import { PermissionService } from "./PermissionService";
 import type { AppSession } from "@/lib/auth";
 import createHttpError from "http-errors";
-import { 
-  CityWithProject, 
+import {
+  CityWithProject,
   InventoryWithRelations,
   ProjectWithOrganization,
   AuthorizedOrganization,
-  TypedResourceAccess 
 } from "./ResourceTypes";
 
 

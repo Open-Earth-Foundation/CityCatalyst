@@ -16,7 +16,7 @@ export interface ProjectWithOrganization extends ProjectAttributes {
 }
 
 
-export interface AuthorizedOrganization extends OrganizationAttributes {}
+export type AuthorizedOrganization = OrganizationAttributes;
 
 export type AuthorizedResource = 
   | CityWithProject 

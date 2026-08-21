@@ -22,7 +22,6 @@ export function ChatInput({
   onSubmit,
   onStop,
   disabled,
-  isGenerating,
   placeholder,
   sendLabel,
   stopLabel,

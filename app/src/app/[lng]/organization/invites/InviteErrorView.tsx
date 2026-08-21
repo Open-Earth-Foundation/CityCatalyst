@@ -6,6 +6,7 @@ import { Button, Center, Icon, Box, Link } from "@chakra-ui/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { BodyXLarge } from "@/components/package/Texts/Body";
+import { env } from "@/lib/runtime-env";
 
 interface InviteErrorViewProps {
   lng: string;
@@ -52,7 +53,7 @@ const InviteErrorView = ({ lng }: InviteErrorViewProps) => {
                 whiteSpace="nowrap"
                 fontWeight="semibold"
                 color="content.link"
-                href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAILS}`}
+                href={`mailto:${env("NEXT_PUBLIC_SUPPORT_EMAILS")}`}
               >
                 {t("contact-us")}
               </Link>{" "}

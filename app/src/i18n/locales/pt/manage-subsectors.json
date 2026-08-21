@@ -1075,6 +1075,7 @@
   "classification-name-settlements-converted-to-other-land": "Assentamentos convertidos para outras terras",
   "land-source": "Fonte",
   "aggregate-sources-activity-type": "Tipo de atividade",
+  "aggregate-sources-source": "Fonte",
   "activity-type-biomass-burning": "Queima de biomassa",
   "activity-type-liming": "Calagem",
   "activity-type-urea-application": "Aplicação de ureia",

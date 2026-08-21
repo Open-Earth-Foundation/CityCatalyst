@@ -1,12 +1,5 @@
 import { TFunction } from "i18next";
-import {
-  ListOrganizationsResponse,
-  OrganizationResponse,
-  OrganizationRole,
-  ProjectUserResponse,
-  ProjectWithCities,
-  ProjectWithCitiesResponse,
-} from "@/util/types";
+import { ListOrganizationsResponse } from "@/util/types";
 import {
   DialogBackdrop,
   DialogCloseTrigger,
@@ -16,19 +9,9 @@ import {
   DialogRoot,
 } from "@/components/ui/dialog";
 import React, { useMemo, useState } from "react";
-import {
-  Badge,
-  Box,
-  Flex,
-  HStack,
-  Icon,
-  IconButton,
-  Text,
-} from "@chakra-ui/react";
-import { FiTrash2 } from "react-icons/fi";
+import { Box, Flex, HStack, Icon, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/button";
-import { api, useTransferCitiesMutation } from "@/services/api";
-import { Trans } from "react-i18next/TransWithoutContext";
+import { useTransferCitiesMutation } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { MdCheck, MdKeyboardArrowRight } from "react-icons/md";
 import SearchInput from "@/components/SearchInput";
@@ -49,7 +32,7 @@ const OrganizationList = ({
   data,
   selectOrganization,
 }: {
-  t: Function;
+  t: TFunction;
   data: ListOrganizationsResponse[] | undefined;
   selectOrganization: (organizationId: string) => void;
 }) => {
@@ -258,7 +241,7 @@ const MoveCityModal = (props: MoveCityModalProps) => {
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
       }}
       onExitComplete={closeModalActions}

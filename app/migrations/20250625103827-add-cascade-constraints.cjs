@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     // 1. Add CASCADE constraints for CityUser table
     await queryInterface.sequelize.query(`
       -- Drop existing constraints if they exist
@@ -94,7 +94,7 @@ module.exports = {
     `);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Revert all CASCADE constraints back to NO ACTION
     await queryInterface.sequelize.query(`
       -- Revert CityUser constraints

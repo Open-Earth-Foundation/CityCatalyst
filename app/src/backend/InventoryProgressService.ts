@@ -170,7 +170,7 @@ export default class InventoryProgressService {
               sectorConstant.referenceNumber === sector.referenceNumber,
           )?.inventoryTypes[inventory.inventoryType as InventoryTypeEnum]
             ?.scopes.length ?? 1;
-        let totalCount = Math.min(
+        const totalCount = Math.min(
           subCategoryCount,
           inventoryTypeSubCategoryCount,
         ); // TODO remove this when scope 3 is added back for SECTOR 1 and 2 in BASIC+;

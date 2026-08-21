@@ -139,11 +139,13 @@ export const POST = apiHandler(async (req, { session }) => {
         "X-Accel-Buffering": "no",
       },
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Chat service unavailable";
     logger.error(
       {
-        error: error.message,
-        stack: error.stack,
+        error: errorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
         user_id: session?.user?.id,
       },
       "Failed to send chat message",
@@ -151,7 +153,7 @@ export const POST = apiHandler(async (req, { session }) => {
 
     // Return error as SSE event for chat interface
     const errorEvent = `event: error\ndata: ${JSON.stringify({
-      message: error.message || "Chat service unavailable",
+      message: errorMessage,
       timestamp: new Date().toISOString(),
     })}\n\n`;
 
@@ -162,7 +164,7 @@ export const POST = apiHandler(async (req, { session }) => {
         // Send done event with error status
         const doneEvent = `event: done\ndata: ${JSON.stringify({
           ok: false,
-          error: error.message || "Chat service unavailable",
+          error: errorMessage,
         })}\n\n`;
 
         controller.enqueue(new TextEncoder().encode(doneEvent));

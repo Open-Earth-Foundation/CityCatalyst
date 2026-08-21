@@ -60,7 +60,7 @@
  *                       type: string
  *                     inventory:
  *                       type: object
- *                     total_emissions_tco2e:
+ *                     total_emissions_kgco2e:
  *                       type: string
  *                     by_sector:
  *                       type: array
@@ -91,15 +91,15 @@ import {
   inventoryCapabilityInputSchema,
 } from "@/backend/agentic/ghgi/inventory/registry";
 import {
+  requireClimateAdvisorIntegrationEnabled,
   requireClimateAdvisorServiceRequest,
-  requireStationaryEnergyAgenticEnabled,
 } from "@/backend/agentic/ghgi/stationary-energy/auth";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Inventory } from "@/models/Inventory";
 import { apiHandler } from "@/util/api";
 
 export const POST = apiHandler(async (req, { session }) => {
-  requireStationaryEnergyAgenticEnabled();
+  requireClimateAdvisorIntegrationEnabled();
   requireClimateAdvisorServiceRequest(req);
 
   const body = inventoryCapabilityInputSchema.parse(await req.json());

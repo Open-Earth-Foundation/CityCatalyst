@@ -16,6 +16,7 @@ on:
       - climate-advisor/prompts/**
       - climate-advisor/k8s/deployment-prod.yml
       - climate-advisor/k8s/migrate-prod.yml
+      - climate-advisor/k8s/cnb-migrate-prod.yml
       - climate-advisor/k8s/service-prod.yml
       - climate-advisor/k8s/db-configmap-prod.yml
       - k8s/prod/cc-prod-ca-smoke-fixture.yml
@@ -32,6 +33,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.ref, '-') }}
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: cnb_test
+          POSTGRES_USER: cnb_test
+          POSTGRES_PASSWORD: cnb_test
+        ports:
+          - 55432:5432
+        options: >-
+          --health-cmd "pg_isready -U cnb_test -d cnb_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY_CLIMATE_ADVISOR }}
@@ -39,6 +54,7 @@ jobs:
       CA_CORS_ORIGINS: "*"
       CC_BASE_URL: http://localhost:3000
       CA_DATABASE_URL: "sqlite+aiosqlite:///:memory:"
+      CNB_TEST_DATABASE_URL: "postgresql://cnb_test:cnb_test@localhost:55432/cnb_test"
 
     steps:
       - name: Checkout repository
@@ -84,6 +100,13 @@ jobs:
                  tests/test_agent_service.py \
                  tests/test_e2e_conversation.py \
                  --junit-xml=test-results-tier1.xml \
+                 -v --tb=short --color=yes
+
+      - name: Run CNB database and runtime tests
+        working-directory: climate-advisor
+        run: |
+          uv run --directory service pytest tests/cnb \
+                 tests/test_cnb_migrations.py \
                  -v --tb=short --color=yes
 
       - name: Generate test coverage report
@@ -171,7 +194,7 @@ jobs:
       SHA: ${{ github.sha }}
       REF: ${{ github.ref }}
       IMAGE: ghcr.io/open-earth-foundation/citycatalyst-climate-advisor
-      MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'clima' }}
+      MLFLOW_EXPERIMENT_NAME: ${{ vars.MLFLOW_EXPERIMENT_NAME || 'Clima' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -186,6 +209,20 @@ jobs:
           export VERSION=${REF#refs/tags/v}
           kubectl apply -f climate-advisor/k8s/db-configmap-prod.yml -n default
           kubectl create -f climate-advisor/k8s/migrate-prod.yml -n default
+          cnb_migration_job="$(
+            kubectl create -f climate-advisor/k8s/cnb-migrate-prod.yml \
+              -n default \
+              -o name
+          )"
+          if ! kubectl wait \
+            --for=condition=complete \
+            --timeout=300s \
+            "${cnb_migration_job}" \
+            -n default; then
+            kubectl logs "${cnb_migration_job}" --all-containers -n default
+            kubectl describe "${cnb_migration_job}" -n default
+            exit 1
+          fi
           kubectl apply -f climate-advisor/k8s/service-prod.yml -n default
           kubectl apply -f climate-advisor/k8s/deployment-prod.yml -n default
           kubectl set image deployment/climate-advisor-prod climate-advisor-prod=$IMAGE:$VERSION -n default
@@ -198,11 +235,31 @@ jobs:
             CC_BASE_URL=https://citycatalyst.io \
             CA_FEATURE_FLAGS=STATIONARY_ENERGY_AGENTIC \
             MLFLOW_EXPERIMENT_NAME="${MLFLOW_EXPERIMENT_NAME}" \
+            MLFLOW_TRACKING_USERNAME=${{secrets.MLFLOW_TRACKING_USERNAME}} \
+            MLFLOW_TRACKING_PASSWORD=${{secrets.MLFLOW_TRACKING_PASSWORD}} \
             LANGSMITH_API_KEY=${{secrets.LANGSMITH_API_KEY}} \
             LANGSMITH_WORKSPACE_ID=${{secrets.LANGSMITH_WORKSPACE_ID}} \
             -n default
           kubectl rollout restart deployment climate-advisor-prod -n default
           kubectl rollout status deployment/climate-advisor-prod -n default --timeout=300s
+
+  ccCaPostDeploySmoke:
+    name: CA/CC post-deploy smoke
+    needs: deployToEKS
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.ref, '-') }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_EKS_PROD_USER }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_EKS_PROD_USER }}
+      EKS_PROD_NAME: ${{ secrets.EKS_PROD_NAME }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Creating kubeconfig file
+        run: aws eks update-kubeconfig --name ${{secrets.EKS_PROD_NAME}} --region us-east-1
+
+      - name: Run CA/CC post-deploy smoke
+        run: |
           SMOKE_FIXTURE_MANIFEST=k8s/prod/cc-prod-ca-smoke-fixture.yml \
           CA_DEPLOYMENT_NAME=climate-advisor-prod \
           bash .github/scripts/cc-ca-post-deploy-smoke.sh

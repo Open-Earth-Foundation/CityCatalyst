@@ -77,6 +77,11 @@ export class OrganizationAdmin
             unique: true,
             fields: ["organization_admin_id"],
           },
+          {
+            name: "organization_admin_organization_id_user_id_unique",
+            unique: true,
+            fields: ["organization_id", "user_id"],
+          },
         ],
       },
     );

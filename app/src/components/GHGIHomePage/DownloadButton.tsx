@@ -1,16 +1,17 @@
 import React from "react";
-import { Card, useDisclosure } from "@chakra-ui/react";
+import { Box, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
-import type { TFunction } from "i18next";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
 import ModalPublish from "./DownloadAndShareModals/ModalPublish";
 import ActionCardSmall from "./ActionCardSmall";
 import { useTranslation } from "@/i18n/client";
+import type { CityAttributes } from "@/models/City";
+import type { InventoryResponse } from "@/util/types";
 
 interface DownloadButtonProps {
   inventoryId: string;
-  city: any;
-  inventory: any;
+  city?: CityAttributes;
+  inventory?: InventoryResponse;
   lng: string;
   children?: React.ReactNode;
 }
@@ -58,7 +59,9 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         inventory={inventory}
       />
       {children ? (
-        <button onClick={onDownloadShareOpen} data-testid="download-button">{children}</button>
+        <Box onClick={onDownloadShareOpen} data-testid="download-button">
+          {children}
+        </Box>
       ) : (
         <div data-testid="download-action-card">
           <ActionCardSmall

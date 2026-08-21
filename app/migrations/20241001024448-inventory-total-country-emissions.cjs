@@ -13,7 +13,7 @@ module.exports = {
     );
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.removeColumn('Inventory', 'total_country_emissions');
   }
 };

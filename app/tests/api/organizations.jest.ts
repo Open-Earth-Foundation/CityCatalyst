@@ -48,7 +48,7 @@ const emptyParams = { params: Promise.resolve({}) };
 
 describe("Organization API", () => {
   let organization: Organization;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
   let organizationData: CreateOrganizationRequest;
 
   beforeAll(async () => {

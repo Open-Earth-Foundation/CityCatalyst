@@ -88,7 +88,7 @@ const updateUserRequest = z.object({
  *       404:
  *         description: User not found.
  */
-export const PATCH = apiHandler(async (req, { params, session }) => {
+export const PATCH = apiHandler(async (req, { params }) => {
   const body = updateUserRequest.parse(await req.json());
   let user = await db.models.User.findOne({ where: { userId: params.user } });
 

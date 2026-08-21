@@ -14,7 +14,6 @@ export function AddCollaboratorButton({
 }) {
   const {
     open: isModalOpen,
-    setOpen: setIsModalOpen,
     onOpen: onModalOpen,
     onClose: onModalClose,
   } = useDisclosure();

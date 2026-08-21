@@ -1,16 +1,17 @@
-import { hasServerFeatureFlag, FeatureFlags } from "@/util/feature-flags";
+import type * as HighlightNextServer from "@highlight-run/next/server";
+import { env } from "@/lib/runtime-env";
 
 // Only import and initialize Highlight if not in test environment
-let H: any = null;
+let H: typeof HighlightNextServer.H | null = null;
 
 if (process.env.NODE_ENV !== "test" && typeof window === "undefined") {
   try {
-    const HighlightNext = require("@highlight-run/next/server");
+    const HighlightNext = await import("@highlight-run/next/server");
     H = HighlightNext.H;
 
     // Always initialize Highlight - feature flag control happens at usage sites
     H.init({
-      projectID: process.env.NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID! || "4d7yymxd",
+      projectID: env("NEXT_PUBLIC_HIGHLIGHT_PROJECT_ID") || "4d7yymxd",
       // backendUrl: process.env.NEXT_PUBLIC_HIGHLIGHT_BACKEND_URL!,
       serviceName: `CityCatalystAPI-${process.env.NODE_ENV || "development"}`,
       tracingOrigins: true,

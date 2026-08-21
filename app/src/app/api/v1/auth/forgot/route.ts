@@ -38,7 +38,7 @@ import { sendEmail } from "@/lib/email";
 import ForgotPasswordTemplate from "@/lib/emails/ForgotPasswordTemplate";
 import { apiHandler } from "@/util/api";
 import { forgotRequest } from "@/util/validation";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";

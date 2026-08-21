@@ -113,6 +113,9 @@ def build_stationary_energy_context_payload(
                 ),
                 "manual_value": decision.manual_value,
                 "manual_unit": decision.manual_unit,
+                "notation_key": decision.notation_key,
+                "unavailable_reason": decision.unavailable_reason,
+                "unavailable_explanation": decision.unavailable_explanation,
                 "note": decision.note,
                 "commit_status": decision.commit_status,
                 "commit_response": decision.commit_response,
@@ -138,6 +141,9 @@ def build_stationary_energy_context_payload(
                     if selection.selected_candidate_id
                     else None
                 ),
+                "notation_key": selection.notation_key,
+                "unavailable_reason": selection.unavailable_reason,
+                "unavailable_explanation": selection.unavailable_explanation,
                 "rationale": selection.rationale,
                 "tool_call_id": selection.tool_call_id,
                 "status": selection.status,
@@ -235,7 +241,7 @@ def format_stationary_energy_context_message(
             "If ui_context.focused_decision_state is present, it is the action currently "
             "selected in that right-side pane. "
             "If ui_context.confirmed_staged_review_rollback_choices is present, "
-            "it is the exact set of staged source choices the user approved for rollback."
+            "it is the exact set of staged choices the user approved for rollback."
         ),
     }
 

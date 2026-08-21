@@ -1,23 +1,33 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware import Middleware
-from starlette.responses import Response
-from starlette.exceptions import HTTPException as StarletteHTTPException
-from fastapi.staticfiles import StaticFiles
-from typing import Any, Dict
+import asyncio
+import logging
 from pathlib import Path
-import time
+from typing import Any
 
 from app.config.settings import get_settings
-from app.routes.health import router as health_router
-from app.routes.threads import router as threads_router
-from app.routes.messages import router as messages_router
-from app.routes.dev_inventory import router as dev_inventory_router
-from app.routes.stationary_energy_drafts import router as stationary_energy_drafts_router
 from app.middleware.request_context import RequestContextMiddleware, get_request_id
-import logging
+from app.routes.concept_note_city_context import (
+    router as concept_note_city_context_router,
+)
+from app.routes.concept_note_context_bundle import (
+    router as concept_note_context_bundle_router,
+)
+from app.routes.concept_note_markdown import router as concept_note_markdown_router
+from app.routes.concept_note_runs import router as concept_note_runs_router
+from app.routes.dev_inventory import router as dev_inventory_router
+from app.routes.health import router as health_router
+from app.routes.messages import router as messages_router
+from app.routes.stationary_energy_drafts import (
+    router as stationary_energy_drafts_router,
+)
+from app.routes.threads import router as threads_router
+from app.services.cnb.context_bundle import run_context_bundle_reconciler
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware import Middleware
 
 # Configure basic logging
 logging.basicConfig(
@@ -36,7 +46,7 @@ def create_problem_details(
     title: str,
     detail: str = "",
     type_: str = "about:blank",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     instance = str(request.url)
     return {
         "type": type_,
@@ -73,9 +83,19 @@ def get_app() -> FastAPI:
     @app.on_event("startup")
     async def _startup() -> None:
         logger.info("Service started", extra={"service": "climate-advisor"})
+        app.state.context_bundle_reconciler = asyncio.create_task(
+            run_context_bundle_reconciler()
+        )
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
+        reconciler = getattr(app.state, "context_bundle_reconciler", None)
+        if reconciler is not None:
+            reconciler.cancel()
+            try:
+                await reconciler
+            except asyncio.CancelledError:
+                pass
         logger.info("Service stopping", extra={"service": "climate-advisor"})
 
     # Routers
@@ -84,6 +104,10 @@ def get_app() -> FastAPI:
     app.include_router(messages_router, prefix="/v1")
     app.include_router(dev_inventory_router, prefix="/v1")
     app.include_router(stationary_energy_drafts_router, prefix="/v1")
+    app.include_router(concept_note_markdown_router, prefix="/v1")
+    app.include_router(concept_note_city_context_router, prefix="/v1")
+    app.include_router(concept_note_context_bundle_router, prefix="/v1")
+    app.include_router(concept_note_runs_router, prefix="/v1")
 
     # Static playground for manual testing
     static_dir = Path(__file__).resolve().parent / "static"

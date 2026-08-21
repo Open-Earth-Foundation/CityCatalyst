@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections.abc import AsyncIterator
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -11,6 +12,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.modules.prioritizer.scoring_config import resolve_top_n
 from app.modules.prioritizer.internal_models import CityActivityRow, CityEmissionsContext
 from app.modules.prioritizer.models import (
+    CityActionReportApiRequest,
+    CityActionReportApiResponse,
+    CityActionReportMetadata,
+    CityActionReportSourceContext,
     ExplanationTranslationApiRequest,
     ExplanationTranslationApiResponse,
     ExplanationTranslationResult,
@@ -24,6 +29,28 @@ from app.modules.prioritizer.models import (
     PrioritizerApiResponse,
 )
 from app.modules.prioritizer.orchestrator import run_prioritization
+from app.modules.prioritizer.report_artifacts import (
+    write_city_action_report_error_artifacts,
+    write_output_plan_llm_artifacts,
+    write_output_plan_markdown_artifact,
+)
+from app.modules.prioritizer.report_context import build_chapter_inputs
+from app.modules.prioritizer.services.report_context_enrichment import (
+    build_report_context_with_live_enrichment,
+)
+from app.modules.prioritizer.services.report_concurrency import (
+    ReportGenerationCapacityError,
+    reserve_report_generation_slot,
+)
+from app.modules.prioritizer.services.report_generation import (
+    aggregate_localized_chapters,
+    generate_output_plan_chapters,
+)
+from app.modules.prioritizer.services.report_translation import (
+    ReportTranslationProviderError,
+    ReportTranslationValidationError,
+    translate_output_plan,
+)
 from app.modules.prioritizer.utils.subsector_mapping import (
     normalize_gpc_reference_to_subsector_key,
 )
@@ -31,6 +58,7 @@ from app.modules.prioritizer.services.exclusion_resolution import (
     resolve_exclusion_preview_with_diagnostics,
 )
 from app.modules.prioritizer.services.translation import translate_explanations
+from app.services.action_pathways_api import select_prioritizable_actions
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -54,6 +82,7 @@ from app.services.data_clients import (
 )
 from app.services.http_client import UpstreamApiError
 from app.utils.artifacts import ArtifactWriter
+from app.utils.api_contract import build_response_meta
 from app.utils.mlflow_logging import (
     log_metrics,
     log_params,
@@ -64,6 +93,19 @@ from app.utils.mlflow_logging import (
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["prioritization"])
+REPORT_TRANSLATION_RETRY_AFTER_SECONDS = 5
+
+
+async def get_output_plan_generation_slot() -> AsyncIterator[None]:
+    """Asynchronously hold one per-pod slot for an output-plan request."""
+    try:
+        async with reserve_report_generation_slot():
+            yield
+    except ReportGenerationCapacityError as error:
+        raise HTTPException(
+            status_code=429,
+            detail={"error": str(error)},
+        ) from error
 
 
 def _error_payload(request_id: str, message: str) -> dict[str, str]:
@@ -129,7 +171,7 @@ def _extract_city_emissions_context(city_input: FrontendCityInput) -> CityEmissi
 
 
 def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
-    """Normalize requested languages while preserving caller intent order."""
+    """Normalize languages and make English the canonical first language."""
     normalized_languages: list[str] = []
     for language in requested_languages:
         normalized = language.strip().lower()
@@ -137,7 +179,7 @@ def _normalize_requested_languages(requested_languages: list[str]) -> list[str]:
             normalized_languages.append(normalized)
     if not normalized_languages:
         return ["en"]
-    return normalized_languages
+    return ["en", *[language for language in normalized_languages if language != "en"]]
 
 
 def _safe_artifact_name(value: str) -> str:
@@ -185,16 +227,20 @@ def _mlflow_environment_tag() -> str:
     response_model=ExclusionPreviewApiResponse,
     summary="Preview proposed action exclusions",
     description=(
-        "Evaluates raw exclusion preferences before ranking and returns a preview "
-        "of the actions that would likely be excluded. This endpoint does not run "
-        "the full prioritization pipeline and does not require confirmed "
-        "`excludedActionIds` yet."
+        "Validate proposed exclusion preferences before committing them to a ranking. "
+        "Pass `requestData.cityDataList`, including "
+        "each city's locode, emissions context, and proposed exclusion inputs. This "
+        "endpoint fetches the action catalogue but does not score actions or require "
+        "confirmed `excludedActionIds`. The response lists likely exclusions and "
+        "warnings for each requested city."
     ),
     responses={
         200: {
             "description": "Preview completed. Response contains proposed exclusions and warnings per city."
         },
-        422: {"description": "Validation error in the request envelope or exclusion values."},
+        404: {"description": "An upstream action-catalogue resource was not found."},
+        422: {"description": "The request or exclusion values are invalid."},
+        502: {"description": "The upstream action catalogue was unavailable or returned an invalid response."},
         500: {"description": "Internal server error while building the exclusion preview."},
     },
 )
@@ -221,12 +267,10 @@ def preview_exclusions(
             "endpoint": "/v1/prioritize/exclusions/preview",
             "frontend_request_id": request_trace_id,
             "internal_request_id": internal_request_id,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
         },
         params={
             **_mlflow_source_params(),
-            "total_records": request.meta.totalRecords,
+            "total_records": len(request.requestData.cityDataList),
         },
     ):
         try:
@@ -247,7 +291,9 @@ def preview_exclusions(
                 },
             )
             action_pathways_fetch_result = action_pathways_data_api_client.list_actions()
-            actions = action_pathways_fetch_result.actions
+            actions, _, _ = select_prioritizable_actions(
+                action_pathways_fetch_result.actions
+            )
             fetch_actions_event_index = artifact_writer.write_event(
                 "fetch_actions.completed",
                 {
@@ -295,7 +341,13 @@ def preview_exclusions(
                 internal_request_id,
                 len(results),
             )
-            response = ExclusionPreviewApiResponse(results=results)
+            response = ExclusionPreviewApiResponse(
+                results=results,
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=len(results),
+                ),
+            )
             total_proposed_exclusions = sum(
                 result.exclusionSummary.totalProposed for result in results
             )
@@ -365,16 +417,22 @@ def preview_exclusions(
     response_model=PrioritizerApiResponse,
     summary="Run action prioritization synchronously",
     description=(
-        "Ranks actions for one or more cities from the caller request envelope. "
-        "When `createExplanations=true`, the backend first generates canonical "
-        "English explanations and then translates them into any additionally "
-        "requested languages."
+        "Rank climate actions for one or more cities. Pass `requestData.cityDataList` "
+        "with each city's locode, country, "
+        "emissions data, and preferences; optionally provide `topN`, exclusions, "
+        "and explanation settings. When `createExplanations=true`, English is "
+        "generated as the canonical explanation language and requested non-English "
+        "languages are translated from it. The response contains ranked and removed "
+        "actions, scores, evidence summaries, explanations, warnings, and metadata "
+        "for every city."
     ),
     responses={
         200: {
             "description": "Ranking completed. Response contains ranked actions, metadata, and optional warnings."
         },
-        422: {"description": "Validation error in the request envelope or prioritization inputs."},
+        404: {"description": "A required upstream city or action resource was not found."},
+        422: {"description": "The request or prioritization inputs are invalid."},
+        502: {"description": "A required upstream data source was unavailable or returned an invalid response."},
         500: {"description": "Internal server error while running the prioritization pipeline."},
     },
 )
@@ -424,12 +482,10 @@ def prioritize(
             "request_kind": "prioritization",
             "endpoint": "/v1/prioritize",
             "frontend_request_id": request_trace_id,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
         },
         params={
             **_mlflow_source_params(),
-            "total_records": request.meta.totalRecords,
+            "total_records": len(request.requestData.cityDataList),
             "requested_top_n": request.requestData.topN,
             "create_explanations": int(request.requestData.createExplanations),
             "requested_languages_count": len(request.requestData.requestedLanguages),
@@ -477,6 +533,7 @@ def prioritize(
                         locode=city_input.locode,
                         ranked_action_ids=per_city_result.ranked_action_ids,
                         ranked_actions=per_city_result.ranked_actions,
+                        removed_actions=per_city_result.removed_actions,
                         metadata=per_city_result.metadata,
                         warnings=per_city_result.warnings,
                     )
@@ -496,7 +553,13 @@ def prioritize(
                     ),
                 }
             )
-            return PrioritizerApiResponse(results=results)
+            return PrioritizerApiResponse(
+                results=results,
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=len(results),
+                ),
+            )
         except ValueError as error:
             logger.warning(
                 "Invalid prioritization request request_id=%s error=%s",
@@ -527,20 +590,366 @@ def prioritize(
 
 
 @router.post(
+    "/v1/reports/output-plan",
+    response_model=CityActionReportApiResponse,
+    summary="Generate one City Action Report output plan",
+    description=(
+        "Generate one reader-facing City Action Report for a ranked action. Pass "
+        "`requestData` containing one `locode`, one "
+        "ranked `actionId`, a non-empty `language` list, and the complete original "
+        "prioritization request/response snapshot. The endpoint is stateless: it "
+        "validates the snapshot, refetches live context, generates canonical English "
+        "chapters, then translates the completed report into requested non-English "
+        "languages. The response contains localized Markdown chapters; English is "
+        "always first. Set `debugContextOnly=true` only for deterministic context "
+        "inspection without LLM calls."
+    ),
+    responses={
+        200: {"description": "Output plan generated for the selected action."},
+        404: {"description": "The selected city or action was not found in required source data."},
+        422: {"description": "The request, selected action, or prioritization snapshot is invalid."},
+        502: {
+            "description": "A required upstream source or report translation failed. Exhausted translation validation returns `error_code=report_translation_validation_failed` and `retryable=false`. Transient translation-provider failures return `error_code=report_translation_provider_unavailable`, `retryable=true`, and `Retry-After: 5`."
+        },
+        429: {"description": "The per-pod report generation queue is full or its wait timeout elapsed; retry later."},
+        500: {"description": "Internal server error while generating the output plan."},
+    },
+)
+def generate_output_plan(
+    request: CityActionReportApiRequest,
+    city_data_api_client: MockCityDataApiClient | ApiCityDataApiClient = Depends(
+        get_city_data_api_client
+    ),
+    action_pathways_data_api_client: MockActionPathwaysDataApiClient | ApiActionPathwaysDataApiClient = Depends(
+        get_action_pathways_data_api_client
+    ),
+    legal_data_api_client: (
+        MockLegalDataApiClient | ApiLegalDataApiClient | S3LegalDataApiClient
+    ) = Depends(get_legal_data_api_client),
+    action_policy_scores_data_api_client: (
+        MockActionPolicyScoresDataApiClient | ApiActionPolicyScoresDataApiClient
+    ) = Depends(get_action_policy_scores_data_api_client),
+    action_mitigation_feasibility_scores_data_api_client: (
+        MockActionMitigationFeasibilityScoresDataApiClient
+        | ApiActionMitigationFeasibilityScoresDataApiClient
+    ) = Depends(get_action_mitigation_feasibility_scores_data_api_client),
+    action_financial_feasibility_scores_data_api_client: (
+        MockActionFinancialFeasibilityScoresDataApiClient
+        | ApiActionFinancialFeasibilityScoresDataApiClient
+    ) = Depends(get_action_financial_feasibility_scores_data_api_client),
+    _generation_slot: None = Depends(get_output_plan_generation_slot),
+) -> CityActionReportApiResponse:
+    """
+    Generate one stateless output plan from a prioritization snapshot.
+
+    The route validates that the selected city/action belong to the supplied
+    snapshot, refetches live source context, generates the English chapters in
+    parallel, then translates the completed report into all target languages.
+    """
+    request_trace_id = request.meta.requestId
+    internal_request_id = uuid4()
+    internal_request_id_str = str(internal_request_id)
+    artifact_writer = ArtifactWriter(
+        request_id=internal_request_id,
+        request_kind="city_action_report",
+    )
+
+    with start_run(
+        run_name="city_action_report_request",
+        tags={
+            "service": "hiap-meed",
+            "environment": _mlflow_environment_tag(),
+            "request_kind": "city_action_report",
+            "endpoint": "/v1/reports/output-plan",
+            "frontend_request_id": request_trace_id,
+            "internal_request_id": internal_request_id_str,
+            "locode": request.requestData.locode,
+            "action_id": request.requestData.actionId,
+            "language": request.requestData.language,
+        },
+        params={
+            **_mlflow_source_params(),
+            "total_records": 1,
+            "debug_context_only": int(request.requestData.debugContextOnly),
+        },
+    ):
+        try:
+            logger.info(
+                "City action report request received frontend_request_id=%s internal_request_id=%s locode=%s action_id=%s language=%s debug_context_only=%s",
+                request_trace_id,
+                internal_request_id_str,
+                request.requestData.locode,
+                request.requestData.actionId,
+                request.requestData.language,
+                request.requestData.debugContextOnly,
+            )
+            artifact_writer.write_run_file(
+                "input_snapshot.json",
+                request.model_dump(mode="json"),
+            )
+
+            # Step 1: validate snapshot and enrich the selected action context.
+            report_context = build_report_context_with_live_enrichment(
+                request=request,
+                city_data_api_client=city_data_api_client,
+                action_pathways_data_api_client=action_pathways_data_api_client,
+                legal_data_api_client=legal_data_api_client,
+                action_policy_scores_data_api_client=action_policy_scores_data_api_client,
+                action_mitigation_feasibility_scores_data_api_client=(
+                    action_mitigation_feasibility_scores_data_api_client
+                ),
+                action_financial_feasibility_scores_data_api_client=(
+                    action_financial_feasibility_scores_data_api_client
+                ),
+            )
+            artifact_writer.write_run_file(
+                "report_context.json",
+                report_context.model_dump(mode="json"),
+            )
+
+            # Step 2: generate canonical English chapters, then translate once.
+            english_context = report_context.model_copy(update={"language": "en"})
+            english_chapter_inputs = build_chapter_inputs(english_context)
+            chapter_inputs_by_language = {"en": english_chapter_inputs}
+            english_generation = generate_output_plan_chapters(
+                chapter_inputs=english_chapter_inputs,
+                use_llm=not request.requestData.debugContextOnly,
+            )
+            generation_by_language = {"en": english_generation.chapters}
+            llm_io_payload: dict[str, object] = {
+                "languages": {"en": english_generation.llm_io}
+            }
+
+            target_chapter_inputs = {}
+            for language in report_context.requested_languages:
+                if language == "en":
+                    continue
+                localized_context = report_context.model_copy(
+                    update={"language": language}
+                )
+                target_chapter_inputs[language] = build_chapter_inputs(
+                    localized_context
+                )
+            chapter_inputs_by_language.update(target_chapter_inputs)
+
+            if request.requestData.debugContextOnly:
+                for language, chapter_inputs in target_chapter_inputs.items():
+                    generation_result = generate_output_plan_chapters(
+                        chapter_inputs=chapter_inputs,
+                        use_llm=False,
+                    )
+                    generation_by_language[language] = generation_result.chapters
+                llm_io_payload["translation"] = {
+                    "status": "skipped",
+                    "reason": "debug_context_only",
+                }
+            else:
+                translations, translation_llm_io = translate_output_plan(
+                    canonical_chapters=english_generation.chapters,
+                    target_chapter_inputs=target_chapter_inputs,
+                )
+                generation_by_language.update(translations)
+                llm_io_payload["translation"] = translation_llm_io
+
+            artifact_writer.write_run_file(
+                "chapter_inputs.json",
+                {
+                    language: [
+                        chapter.model_dump(mode="json") for chapter in chapter_inputs
+                    ]
+                    for language, chapter_inputs in chapter_inputs_by_language.items()
+                },
+            )
+            write_output_plan_llm_artifacts(
+                artifact_writer=artifact_writer,
+                llm_io=llm_io_payload,
+            )
+
+            # Step 3: aggregate only after every requested language is complete.
+            localized_chapters = aggregate_localized_chapters(
+                languages=report_context.requested_languages,
+                chapters_by_language=generation_by_language,
+            )
+
+            response = CityActionReportApiResponse(
+                locode=report_context.locode,
+                action_id=report_context.action_id,
+                language=report_context.requested_languages,
+                chapters=localized_chapters,
+                metadata=CityActionReportMetadata(
+                    frontend_request_id=request_trace_id,
+                    internal_request_id=internal_request_id_str,
+                    source_prioritization_request_id=(
+                        report_context.prioritization_request.meta.requestId
+                    ),
+                    source_context=CityActionReportSourceContext(
+                        staleness_notes=[
+                            "Ranking-specific context came from the frontend snapshot. Additional report context was fetched live by the backend.",
+                            "Staleness checks require product-defined comparison rules and are not fully implemented in this first slice.",
+                        ],
+                    ),
+                    required_sources_ok=True,
+                    limitations=report_context.limitations,
+                ),
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=1,
+                ),
+            )
+            response_payload = response.model_dump(mode="json")
+            write_output_plan_markdown_artifact(
+                artifact_writer=artifact_writer,
+                response=response,
+            )
+            artifact_writer.write_event(
+                "city_action_report.completed",
+                {
+                    "locode": response.locode,
+                    "action_id": response.action_id,
+                    "language": response.language,
+                    "chapters": len(response.chapters),
+                    "debug_context_only": request.requestData.debugContextOnly,
+                },
+            )
+            artifact_writer.write_run_file("response_full.json", response_payload)
+            artifact_writer.write_manifest(
+                {
+                    "counts": {
+                        "chapters": len(response.chapters),
+                        "limitations": len(response.metadata.limitations),
+                    },
+                    "artifact_pointers": {
+                        "summary_events": "summary.jsonl",
+                        "input_snapshot": "input_snapshot.json",
+                        "report_context": "report_context.json",
+                        "chapter_inputs": "chapter_inputs.json",
+                        "output_plan_llm_io": "llm/output_plan_io.json",
+                        "output_plan_markdown": [
+                            f"output_plan.{language}.md"
+                            for language in response.language
+                        ],
+                        "response_full": "response_full.json",
+                    },
+                }
+            )
+            log_metrics(
+                {
+                    "chapters": len(response.chapters),
+                    "limitations": len(response.metadata.limitations),
+                }
+            )
+            return response
+        except ReportTranslationValidationError as error:
+            logger.warning(
+                "City action report translation failed validation request_id=%s error=%s",
+                request_trace_id,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="translation_validation_error",
+                error_message=str(error),
+                status_code=502,
+            )
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    **_error_payload(request_trace_id, str(error)),
+                    "error_code": "report_translation_validation_failed",
+                    "retryable": False,
+                },
+            ) from error
+        except ReportTranslationProviderError as error:
+            logger.warning(
+                "City action report translation provider unavailable request_id=%s error=%s",
+                request_trace_id,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="translation_provider_error",
+                error_message=str(error),
+                status_code=502,
+            )
+            raise HTTPException(
+                status_code=502,
+                detail={
+                    **_error_payload(request_trace_id, str(error)),
+                    "error_code": "report_translation_provider_unavailable",
+                    "retryable": True,
+                },
+                headers={
+                    "Retry-After": str(REPORT_TRANSLATION_RETRY_AFTER_SECONDS)
+                },
+            ) from error
+        except ValueError as error:
+            logger.warning(
+                "Invalid city action report request request_id=%s error=%s",
+                request_trace_id,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="validation_error",
+                error_message=str(error),
+            )
+            raise HTTPException(
+                status_code=422,
+                detail=_error_payload(request_trace_id, str(error)),
+            ) from error
+        except UpstreamApiError as error:
+            logger.warning(
+                "City action report upstream dependency failed request_id=%s status_code=%s error=%s",
+                request_trace_id,
+                error.status_code,
+                error,
+            )
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="upstream_api_error",
+                error_message=error.message,
+                status_code=error.status_code,
+            )
+            raise HTTPException(
+                status_code=error.status_code,
+                detail=_upstream_error_payload(request_trace_id, error),
+            ) from error
+        except Exception as error:
+            logger.exception("City action report failed request_id=%s", request_trace_id)
+            write_city_action_report_error_artifacts(
+                artifact_writer=artifact_writer,
+                request_trace_id=request_trace_id,
+                error_type="internal_error",
+                error_message=str(error),
+                status_code=500,
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=_error_payload(request_trace_id, "Internal server error"),
+            ) from error
+
+
+@router.post(
     "/v1/explanations/translate",
     response_model=ExplanationTranslationApiResponse,
     summary="Translate canonical explanations synchronously",
     description=(
-        "Accepts canonical English explanations and returns translations for the "
-        "requested non-English target languages without rerunning prioritization. "
-        "The endpoint is stateless: callers must provide the source explanation "
-        "text in the request body."
+        "Translate caller-supplied canonical English ranking explanations without "
+        "rerunning prioritization. Pass `requestData` "
+        "with `sourceLanguage` set to `en`, supported non-English `targetLanguages`, "
+        "and one `rankedActions` row per action containing its ID and canonical "
+        "explanation. The response returns translations keyed by target language and "
+        "any source-language warnings."
     ),
     responses={
         200: {
             "description": "Translation completed. Response contains translated explanations and aggregated warnings."
         },
-        422: {"description": "Validation error in the request envelope, source language, or target languages."},
+        422: {"description": "Validation error in the request, source language, or target languages."},
         500: {"description": "Internal server error while translating explanations."},
     },
 )
@@ -564,8 +973,6 @@ def translate_ranked_action_explanations(
             "endpoint": "/v1/explanations/translate",
             "frontend_request_id": request_trace_id,
             "internal_request_id": internal_request_id,
-            "backend_consumer": request.meta.backendConsumer,
-            "upstream_provider": request.meta.upstreamProvider,
         },
         params={
             "source_language": request.requestData.sourceLanguage,
@@ -628,6 +1035,10 @@ def translate_ranked_action_explanations(
             response = ExplanationTranslationApiResponse(
                 translations=translations,
                 warnings=warnings,
+                meta=build_response_meta(
+                    request_id=request_trace_id,
+                    total_records=len(translations),
+                ),
             )
             if warnings:
                 warning_action_ids = (

@@ -16,7 +16,19 @@ import { MdError, MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import type { ColumnInfo, RequiredMappingOption } from "@/util/types";
 
-const MANDATORY_KEYS = new Set(["gpcRefNo", "sector", "subsector", "activityAmount"]);
+const MANDATORY_KEYS = new Set([
+  "gpcRefNo",
+  "sector",
+  "subsector",
+  "activityAmount",
+]);
+
+const EMISSION_FACTOR_KEYS = new Set([
+  "emissionFactorCO2",
+  "emissionFactorCH4",
+  "emissionFactorN2O",
+  "emissionFactorTotalCO2e",
+]);
 
 interface InventoryMappingStepProps {
   t: TFunction;
@@ -53,8 +65,25 @@ export default function InventoryMappingStep({
     return requiredMappings.find((r) => r.label === label)?.key ?? "";
   };
 
+  const formatExampleValue = (col: ColumnInfo): string | null => {
+    if (!col.exampleValue) return null;
+    if (EMISSION_FACTOR_KEYS.has(getKeyForLabel(col.interpretedAs))) {
+      const num = parseFloat(col.exampleValue);
+      if (!isNaN(num)) {
+        const tonnes = num / 1000;
+        const formatted =
+          tonnes < 0.0001
+            ? tonnes.toExponential(2)
+            : parseFloat(tonnes.toFixed(4)).toString();
+        return `${formatted} t CO2e`;
+      }
+    }
+    return col.exampleValue;
+  };
+
   const getEffectiveKey = (col: ColumnInfo): string => {
-    if (col.columnName in mappingOverrides) return mappingOverrides[col.columnName];
+    if (col.columnName in mappingOverrides)
+      return mappingOverrides[col.columnName];
     return getKeyForLabel(col.interpretedAs);
   };
 
@@ -69,7 +98,8 @@ export default function InventoryMappingStep({
   const sortedColumns = [...columns].sort((a, b) => {
     const aReq = isMandatoryColumn(a) ? 0 : 1;
     const bReq = isMandatoryColumn(b) ? 0 : 1;
-    return aReq - bReq;
+    if (aReq !== bReq) return aReq - bReq;
+    return (b.interpretedAs ? 1 : 0) - (a.interpretedAs ? 1 : 0);
   });
 
   if (isLoading) {
@@ -77,11 +107,21 @@ export default function InventoryMappingStep({
       <Box w="full">
         <Box display="flex" flexDir="column" gap="24px" mb={6}>
           {cityName && (
-            <Text fontSize="body.md" color="content.tertiary" fontWeight="medium">
+            <Text
+              fontSize="body.md"
+              color="content.tertiary"
+              fontWeight="medium"
+            >
               {cityName}
             </Text>
           )}
-          <Heading size="lg">{t("inventory-mapping-heading")}</Heading>
+          <Text
+            fontSize="display.sm"
+            fontWeight="bold"
+            color="content.tertiary"
+          >
+            {t("inventory-mapping-heading")}
+          </Text>
           <Text fontSize="body.lg" color="content.tertiary">
             {t("inventory-mapping-description")}
           </Text>
@@ -96,7 +136,12 @@ export default function InventoryMappingStep({
           borderWidth="1px"
           borderColor="border.default"
         >
-          <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
+          <VStack
+            gap="16px"
+            py={12}
+            alignItems="center"
+            justifyContent="center"
+          >
             <Spinner size="lg" color="interactive.primary" />
             <Text fontSize="body.md" color="content.secondary">
               {t("loading-validation-results")}
@@ -115,7 +160,9 @@ export default function InventoryMappingStep({
             {cityName}
           </Text>
         )}
-        <Heading size="lg">{t("inventory-mapping-heading")}</Heading>
+        <Text fontSize="display.sm" fontWeight="bold">
+          {t("inventory-mapping-heading")}
+        </Text>
         <Text fontSize="body.lg" color="content.tertiary">
           {t("inventory-mapping-description")}
         </Text>
@@ -141,7 +188,11 @@ export default function InventoryMappingStep({
             flexShrink={0}
           />
           <Box>
-            <Text fontWeight="semibold" color="sentiment.negativeDefault" fontSize="body.md">
+            <Text
+              fontWeight="semibold"
+              color="sentiment.negativeDefault"
+              fontSize="body.md"
+            >
               {t("required-fields-not-mapped")}
             </Text>
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
@@ -171,7 +222,11 @@ export default function InventoryMappingStep({
             flexShrink={0}
           />
           <Box>
-            <Text fontWeight="semibold" color="sentiment.warningDefault" fontSize="body.md">
+            <Text
+              fontWeight="semibold"
+              color="sentiment.warningDefault"
+              fontSize="body.md"
+            >
               {t("some-columns-need-mapping")}
             </Text>
             <Text fontSize="body.sm" color="content.secondary" mt={1}>
@@ -195,7 +250,7 @@ export default function InventoryMappingStep({
           <Table.Header>
             <Table.Row>
               <Table.ColumnHeader>{t("field-name")}</Table.ColumnHeader>
-              <Table.ColumnHeader>{t("value")}</Table.ColumnHeader>
+              <Table.ColumnHeader>{t("example-value")}</Table.ColumnHeader>
               <Table.ColumnHeader>{t("map-to")}</Table.ColumnHeader>
             </Table.Row>
           </Table.Header>
@@ -211,16 +266,31 @@ export default function InventoryMappingStep({
                     <Text fontWeight="medium">
                       {col.columnName}
                       {isMandatory && (
-                        <Text as="span" color="sentiment.negativeDefault" ml="2px">
+                        <Text
+                          as="span"
+                          color="sentiment.negativeDefault"
+                          ml="2px"
+                        >
                           {" *"}
                         </Text>
                       )}
                     </Text>
                   </Table.Cell>
                   <Table.Cell>
-                    <Text color="content.secondary">
-                      {col.exampleValue || "-"}
-                    </Text>
+                    {(() => {
+                      const displayValue = formatExampleValue(col);
+                      return (
+                        <Text
+                          color={
+                            displayValue
+                              ? "content.secondary"
+                              : "content.tertiary"
+                          }
+                        >
+                          {displayValue || t("not-specified")}
+                        </Text>
+                      );
+                    })()}
                   </Table.Cell>
                   <Table.Cell>
                     <Box>

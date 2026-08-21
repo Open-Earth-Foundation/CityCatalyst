@@ -5,6 +5,7 @@ import cityReducer from "@/features/city/citySlice";
 import openclimateCityReducer from "@/features/city/openclimateCitySlice";
 import openclimateCityDataReducer from "@/features/city/openclimateCityDataSlice";
 import inventoryDataReducer from "@/features/city/inventoryDataSlice";
+import organizationReducer from "@/features/organization/organizationSlice";
 
 const reducer = combineReducers({
   inventoryData: inventoryDataReducer,
@@ -13,6 +14,7 @@ const reducer = combineReducers({
   city: cityReducer,
   openClimateCity: openclimateCityReducer,
   openClimateCityData: openclimateCityDataReducer,
+  organization: organizationReducer,
 });
 
 export const store = configureStore({

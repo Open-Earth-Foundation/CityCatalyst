@@ -18,7 +18,7 @@ import createHttpError from "http-errors";
 import { ProjectService } from "@/backend/ProjectsService";
 import { NextResponse } from "next/server";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (req, { session }) => {
   if (!session) {
     throw new createHttpError.Unauthorized("Unauthorized");
   }

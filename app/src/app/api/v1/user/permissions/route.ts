@@ -91,7 +91,7 @@ export const GET = apiHandler(async (req, { session }) => {
         context: context,
       },
     });
-  } catch (error) {
+  } catch {
     // User doesn't have access to this resource
     return NextResponse.json({
       data: {

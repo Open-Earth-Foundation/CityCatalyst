@@ -6,7 +6,7 @@
  *       - modules
  *     operationId: getModules
  *     summary: List all available modules with localized metadata.
- *     description: Public endpoint that retrieves every configured module record. No authentication is required. Response is wrapped in '{' data: Module[] '}' including localized fields.
+ *     description: "Public endpoint that retrieves every configured module record. No authentication is required. Response is wrapped in '{' data: Module[] '}' including localized fields."
  *     responses:
  *       200:
  *         description: Modules wrapped in data.
@@ -54,7 +54,7 @@ import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 
-export const GET = apiHandler(async (_req: Request) => {
+export const GET = apiHandler(async () => {
   const modules = await db.models.Module.findAll();
   return NextResponse.json({ data: modules });
 });

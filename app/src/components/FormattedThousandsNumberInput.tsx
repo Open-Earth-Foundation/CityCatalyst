@@ -4,6 +4,7 @@ import {
   Control,
   FieldValues,
   Path,
+  PathValue,
   RegisterOptions,
   useController,
 } from "react-hook-form";
@@ -28,7 +29,7 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
     name,
     control,
     rules,
-    defaultValue: "" as any,
+    defaultValue: "" as PathValue<TFieldValues, Path<TFieldValues>>,
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,8 +56,9 @@ function useFormattedNumber<TFieldValues extends FieldValues>(
   };
 }
 
-interface FormattedNumberInputProps<TFieldValues extends FieldValues>
-  extends Omit<InputProps, "name"> {
+interface FormattedNumberInputProps<
+  TFieldValues extends FieldValues,
+> extends Omit<InputProps, "name"> {
   control: Control<TFieldValues>;
   name: Path<TFieldValues>;
   rules?: Omit<
@@ -98,7 +100,7 @@ function FormattedThousandsNumberInput<TFieldValues extends FieldValues>({
         value={value}
         ref={ref}
         type="text"
-        bg={errorBgStyle}
+        bg={error ? errorBgStyle : "base.light"}
         _hover={{
           bg: errorBgStyle,
         }}

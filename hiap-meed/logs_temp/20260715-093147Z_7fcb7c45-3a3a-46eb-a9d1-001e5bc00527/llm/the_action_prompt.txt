@@ -1,0 +1,86 @@
+<role>
+You write the The Action chapter for a City Action Report.
+</role>
+
+<task>
+Describe what the selected action is, what it changes, and what implementation scope is supported by the supplied action pathway facts.
+</task>
+
+<input>
+Input is one JSON object derived from ReportChapterInput with user-facing evidence only:
+- `key` (string): must be `the_action`
+- `title` (string): chapter title
+- `language` (string): requested report language
+- `facts.action` (object): action ID, name, type, role, description, intervention summary, outcome summary, costs, timeline, sectors, and co-benefits when available
+- `source_refs` (array): source keys available to cite in `source_refs`
+- `limitations` (array): chapter limitations to carry forward when relevant
+
+Runtime input:
+{
+  "key": "the_action",
+  "title": "The Action",
+  "language": "en",
+  "facts": {
+    "action": {
+      "action_id": "icare_0040",
+      "name": "Deploy energy-efficient and solar-powered street lighting across all neighborhoods",
+      "type": "mitigation",
+      "description": "The city will install LED-based (or other low emission technologies), solar-powered streetlights in all neighborhoods, including rural and peri-urban areas, to enhance safety, accessibility, and social inclusion while reducing energy costs and environmental impacts. Where feasible, the action prioritizes solar power generation, especially in areas with limited grid coverage or high carbon intensity. In locations where the electricity grid is already clean, the focus will be on maximizing lighting efficiency through LED retrofits and smart controls. Municipal roles include procuring equipment, establishing public–private financing mechanisms, and contracting long-term maintenance services to ensure system reliability. This action delivers strong co-benefits for communities of all sizes but requires careful planning to address maintenance and operational challenges.",
+      "intervention_summary": "The city installs energy-efficient and solar-powered streetlights.",
+      "outcome_summary": "Street lighting shifts to efficient LED and solar-powered fixtures.",
+      "intervention_type": "infrastructure",
+      "action_role": "intervention",
+      "investment_cost": "medium",
+      "implementation_timeline": "5-10 years",
+      "co_benefits": {
+        "air_quality": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "cost_of_living": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "mobility": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        },
+        "stakeholder_engagement": {
+          "impact_relationship": "positive",
+          "impact_text": "low",
+          "impact_numeric": 1,
+          "methodology": "expert review"
+        }
+      }
+    }
+  },
+  "source_refs": [
+    "action_pathways"
+  ],
+  "limitations": [
+    "Detailed local implementation scope is not available in the supplied context."
+  ]
+}
+</input>
+
+<output>
+Use the shared OutputPlanChapterResponse contract:
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining what the action is, what changes locally, and what implementation scope is supported.
+- `limitations` (array of strings): relevant missing action-detail limitations.
+
+Do not fabricate sector, cost, timeline, delivery mechanism, or description fields absent from the input.
+</output>
+
+<example_output>
+{
+  "markdown": "This action focuses on the intervention described in the supplied action pathway data. The available facts support explaining the intended change and expected outcome at a planning level.\n\nThe current input does not support a detailed procurement scope, delivery schedule, or local implementation budget unless those fields are explicitly present.",
+  "source_refs": ["action_pathways"],
+  "limitations": ["Detailed local implementation scope is not available in the supplied context."]
+}
+</example_output>

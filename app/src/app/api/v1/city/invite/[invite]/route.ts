@@ -46,7 +46,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { InviteStatus } from "@/util/types";
 
-export const GET = apiHandler(async (req, { params, session }) => {
+export const GET = apiHandler(async (req, { params }) => {
   const invite = await db.models.CityInvite.findOne({
     where: {
       id: params.invite,

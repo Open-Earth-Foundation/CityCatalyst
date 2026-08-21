@@ -20,6 +20,7 @@ import { api } from "@/services/api";
 import { appendFileToFormData, getParamValueRequired } from "@/util/helpers";
 import { useState } from "react";
 import { logger } from "@/services/logger";
+import type { InventoryUserFileAttributes } from "@/features/city/inventoryDataSlice";
 
 export default function ReviewPage() {
   const params = useParams();
@@ -68,23 +69,26 @@ export default function ReviewPage() {
 
   const [isConfirming, setIsConfirming] = useState<boolean>(false);
 
-  const { data: userInfo, isLoading: isUserInfoLoading } =
-    api.useGetUserInfoQuery();
+  const { data: userInfo } = api.useGetUserInfoQuery();
 
   const { data: inventory } = api.useGetInventoryQuery(
-    userInfo?.defaultInventoryId!,
+    userInfo?.defaultInventoryId ?? "",
     { skip: !userInfo },
   );
   const cityId = inventory?.city.cityId;
 
   const onConfirm = async () => {
     setIsConfirming(true);
+    if (!cityId) {
+      return;
+    }
+
     try {
       for (const sector of getAllSectorData) {
         const formData = new FormData();
         for (const fileData of sector.files) {
           const file = appendFileToFormData(
-            fileData.data,
+            fileData.data!,
             `${fileData.fileName}`,
           );
           formData.append("userId", fileData.userId!);
@@ -287,12 +291,13 @@ export default function ReviewPage() {
                   gridTemplateColumns="auto auto auto"
                   gap="8px"
                 >
-                  {stationaryEnergy[0]?.files.map((file: any, i: number) => (
+                  {stationaryEnergy[0]?.files.map(
+                    (file: InventoryUserFileAttributes, i: number) => (
                     <FileDataCard
                       key={i}
                       fileName={file.fileName}
-                      fileSize={file.size}
-                      subsectors={file.subsectors}
+                      fileSize={file.size ?? 0}
+                      subsectors={file.subsectors ?? ""}
                     />
                   ))}
                 </Box>
@@ -412,12 +417,13 @@ export default function ReviewPage() {
                     gridTemplateColumns="auto auto auto"
                     gap="8px"
                   >
-                    {transportation[0]?.files.map((file: any, i: number) => (
+                    {transportation[0]?.files.map(
+                      (file: InventoryUserFileAttributes, i: number) => (
                       <FileDataCard
                         key={i}
                         fileName={file.fileName}
-                        fileSize={file.size}
-                        subsectors={file.subsectors}
+                        fileSize={file.size ?? 0}
+                        subsectors={file.subsectors ?? ""}
                       />
                     ))}
                   </Box>
@@ -560,12 +566,12 @@ export default function ReviewPage() {
                     gap="8px"
                   >
                     {waterAndWasteWater[0]?.files.map(
-                      (file: any, i: number) => (
+                      (file: InventoryUserFileAttributes, i: number) => (
                         <FileDataCard
                           key={i}
                           fileName={file.fileName}
-                          fileSize={file.size}
-                          subsectors={file.subsectors}
+                          fileSize={file.size ?? 0}
+                          subsectors={file.subsectors ?? ""}
                         />
                       ),
                     )}

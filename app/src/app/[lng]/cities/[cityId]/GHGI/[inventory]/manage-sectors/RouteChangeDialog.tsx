@@ -5,11 +5,7 @@ import { CloseButton } from "@/components/ui/close-button";
 import { Box, Dialog, Icon, Portal, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import React, { FC } from "react";
-import {
-  PiWarningCircle,
-  PiWarningCircleBold,
-  PiWarningCircleFill,
-} from "react-icons/pi";
+import { PiWarningCircleFill } from "react-icons/pi";
 
 interface RouteChangeDialogProps {
   showDialog: boolean;

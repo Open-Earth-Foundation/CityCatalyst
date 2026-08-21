@@ -17,7 +17,7 @@ export default function ConfirmStep({
   setStep,
   numberFormat,
 }: {
-  cityName: String;
+  cityName: string;
   t: TFunction;
   locode: string;
   population?: number;

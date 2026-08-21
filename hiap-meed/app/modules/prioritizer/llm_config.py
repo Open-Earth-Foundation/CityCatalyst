@@ -49,6 +49,19 @@ def get_explanation_translations_temperature() -> float:
     return get_llm_settings().models.explanation_translations.temperature
 
 
+def get_output_plan_model() -> str | None:
+    """Return configured output-plan report model name, if set."""
+    value = get_llm_settings().models.output_plan.name.strip()
+    if not value:
+        return None
+    return value
+
+
+def get_output_plan_temperature() -> float:
+    """Return configured output-plan report model temperature."""
+    return get_llm_settings().models.output_plan.temperature
+
+
 def is_free_text_exclusion_resolution_enabled() -> bool:
     """Return feature switch for preview-time LLM exclusion resolution."""
     return bool(get_llm_settings().features.free_text_exclusions_enabled)

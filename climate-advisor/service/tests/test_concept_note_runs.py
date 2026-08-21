@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )

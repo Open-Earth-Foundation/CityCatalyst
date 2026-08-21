@@ -279,10 +279,15 @@ The detailed bundle schema, persistence guards, source-analysis rules, and
 capability contract live in
 [`ConceptNoteBuilderArchitecture.md`](../../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
 Operationally, run creation schedules guarded background assembly. A run with
-no source becomes `thin`; a ready PDF or native Markdown source rebuilds it as
-`grounded`. Evidence keeps page or heading/block locators, optional GHGI/HIAP
-failures do not block readiness, and eligible turns get one scoped read-only
-source query. Reader configuration remains in `llm_config.yaml`.
+no uploaded source records `document_grounding: none`; a ready PDF or native
+Markdown source rebuilds it as `uploaded_evidence`. Separate
+`available_context` flags report CityCatalyst and uploaded-document presence.
+Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
+not block readiness, and eligible turns get one scoped read-only source query.
+During rebuilds, callers keep using the last completed bundle; unchanged
+document analyses are reused by digest and analysis-contract version. Reader
+and chapter-drafter configuration remains in `llm_config.yaml`, and the public
+CNB contracts live under `app/models/cnb`.
 
 ## SSE Contract
 

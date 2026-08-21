@@ -87,7 +87,15 @@ export function conceptNoteResumeHref(
 
 export interface ConceptNoteBundleProgress {
   status: string | null;
-  contextMode: "thin" | "grounded" | null;
+  documentGrounding: "none" | "uploaded_evidence" | null;
+  availableContext: {
+    city: boolean;
+    project: boolean;
+    ghgi: boolean;
+    ccra: boolean;
+    hiap: boolean;
+    uploadedDocuments: boolean;
+  };
   missingContext: string[];
   readySources: number;
   queuedSources: number;
@@ -114,19 +122,44 @@ function stringValue(value: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null;
 }
 
+function documentGroundingValue(
+  bundle: Record<string, unknown>,
+): "none" | "uploaded_evidence" | null {
+  if (
+    bundle.document_grounding === "none" ||
+    bundle.document_grounding === "uploaded_evidence"
+  ) {
+    return bundle.document_grounding;
+  }
+  if (bundle.context_mode === "thin") {
+    return "none";
+  }
+  return bundle.context_mode === "grounded" ? "uploaded_evidence" : null;
+}
+
 export function getConceptNoteBundleProgress(
   summary: Record<string, unknown>,
 ): ConceptNoteBundleProgress {
   const bundle = recordValue(summary.context_bundle);
   const sourceCounts = recordValue(bundle.source_counts);
   const optionalSources = recordValue(bundle.optional_sources);
+  const availableContext = recordValue(bundle.available_context);
+  const documentGrounding = documentGroundingValue(bundle);
 
   return {
     status: stringValue(bundle.status),
-    contextMode:
-      bundle.context_mode === "thin" || bundle.context_mode === "grounded"
-        ? bundle.context_mode
-        : null,
+    documentGrounding,
+    availableContext: {
+      city: availableContext.city === true,
+      project: availableContext.project === true,
+      ghgi: availableContext.ghgi === true,
+      ccra: availableContext.ccra === true,
+      hiap: availableContext.hiap === true,
+      uploadedDocuments:
+        availableContext.uploaded_documents === true ||
+        (availableContext.uploaded_documents === undefined &&
+          documentGrounding === "uploaded_evidence"),
+    },
     missingContext: Array.isArray(bundle.missing_context)
       ? bundle.missing_context.filter(
           (item): item is string => typeof item === "string",

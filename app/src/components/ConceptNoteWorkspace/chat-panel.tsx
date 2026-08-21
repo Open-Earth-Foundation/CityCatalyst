@@ -24,7 +24,7 @@ import { useConceptNoteChat } from "./use-concept-note-chat";
 
 interface ConceptNoteChatPanelProps {
   bundleStatus: string | null;
-  contextMode: "thin" | "grounded" | null;
+  documentGrounding: "none" | "uploaded_evidence" | null;
   lng: string;
   onOpenContext: () => void;
   threadId: string | null;
@@ -162,7 +162,7 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 
 export function ConceptNoteChatPanel({
   bundleStatus,
-  contextMode,
+  documentGrounding,
   lng,
   onOpenContext,
   threadId,
@@ -176,9 +176,9 @@ export function ConceptNoteChatPanel({
     messages,
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({ lng, threadId });
-  const groundedContext =
-    bundleStatus === "ready" && contextMode === "grounded";
-  const contextStatus = groundedContext
+  const hasUploadedEvidence =
+    bundleStatus === "ready" && documentGrounding === "uploaded_evidence";
+  const contextStatus = hasUploadedEvidence
     ? {
         actionIcon: LuArrowRight,
         actionLabel: t("review-context"),
@@ -192,10 +192,10 @@ export function ConceptNoteChatPanel({
         actionIcon: LuFilePlus2,
         actionLabel: t("add-recommended-source"),
         color: "content.link",
-        description: t("clima-thin-context-message"),
+        description: t("clima-no-uploaded-evidence-message"),
         icon: LuCircleAlert,
         surface: "background.neutral",
-        title: t("thin-context-ready"),
+        title: t("uploaded-evidence-none"),
       };
 
   async function submitMessage(
@@ -279,9 +279,11 @@ export function ConceptNoteChatPanel({
         p={4}
       >
         <ContextStatusNotice
-          key={groundedContext ? "grounded" : "thin"}
+          key={
+            hasUploadedEvidence ? "uploaded-evidence" : "no-uploaded-evidence"
+          }
           autoDismissAfterMs={
-            groundedContext ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
+            hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
           }
           onOpenContext={onOpenContext}
           status={contextStatus}

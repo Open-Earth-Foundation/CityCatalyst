@@ -56,8 +56,16 @@ describe("Concept Note dashboard presentation helpers", () => {
         unrelated: "preserved",
         context_bundle: {
           status: "ready",
-          context_mode: "thin",
-          missing_context: ["source_documents", 12],
+          document_grounding: "uploaded_evidence",
+          available_context: {
+            city: true,
+            project: false,
+            ghgi: true,
+            ccra: false,
+            hiap: false,
+            uploaded_documents: true,
+          },
+          missing_context: [12],
           source_counts: { ready: 2, queued: 1, failed: -1 },
           optional_sources: { ghgi: "included", hiap: "unavailable" },
           retryable: false,
@@ -66,8 +74,16 @@ describe("Concept Note dashboard presentation helpers", () => {
       }),
     ).toEqual({
       status: "ready",
-      contextMode: "thin",
-      missingContext: ["source_documents"],
+      documentGrounding: "uploaded_evidence",
+      availableContext: {
+        city: true,
+        project: false,
+        ghgi: true,
+        ccra: false,
+        hiap: false,
+        uploadedDocuments: true,
+      },
+      missingContext: [],
       readySources: 2,
       queuedSources: 1,
       processingSources: 0,
@@ -79,15 +95,36 @@ describe("Concept Note dashboard presentation helpers", () => {
     expect(
       getConceptNoteBundleProgress({
         context_bundle: {
-          context_mode: "future-mode",
+          document_grounding: "future-mode",
           missing_context: "source_documents",
         },
       }),
     ).toMatchObject({
       status: null,
-      contextMode: null,
+      documentGrounding: null,
+      availableContext: {
+        city: false,
+        project: false,
+        ghgi: false,
+        ccra: false,
+        hiap: false,
+        uploadedDocuments: false,
+      },
       missingContext: [],
       readySources: 0,
+    });
+
+    expect(
+      getConceptNoteBundleProgress({
+        context_bundle: {
+          context_mode: "grounded",
+        },
+      }),
+    ).toMatchObject({
+      documentGrounding: "uploaded_evidence",
+      availableContext: {
+        uploadedDocuments: true,
+      },
     });
   });
 

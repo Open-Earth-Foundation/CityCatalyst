@@ -166,10 +166,18 @@ export function ContextTab({
 }: ContextTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const ghgiIncluded = applicationContext?.included_sources.ghgi ?? false;
-  const ccraIncluded = applicationContext?.included_sources.ccra ?? false;
-  const hiapIncluded = applicationContext?.included_sources.hiap ?? false;
-  const cityIncluded = applicationContext?.included_sources.city ?? false;
+  const ghgiIncluded =
+    bundle.availableContext.ghgi ||
+    (applicationContext?.included_sources.ghgi ?? false);
+  const ccraIncluded =
+    bundle.availableContext.ccra ||
+    (applicationContext?.included_sources.ccra ?? false);
+  const hiapIncluded =
+    bundle.availableContext.hiap ||
+    (applicationContext?.included_sources.hiap ?? false);
+  const cityIncluded =
+    bundle.availableContext.city ||
+    (applicationContext?.included_sources.city ?? false);
   const hiapStatusLabel = bundle.hiapStatus
     ? t(getContextSourceStatusTranslationKey(bundle.hiapStatus))
     : t("not-available");

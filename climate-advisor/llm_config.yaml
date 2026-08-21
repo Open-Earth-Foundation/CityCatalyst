@@ -24,7 +24,7 @@ models:
     name: "openai/gpt-5.4"
     reasoning_effort: "medium"
   cnb_chapter_drafter:
-    name: "openai/gpt-5.4"
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
 
 # Generation Parameters

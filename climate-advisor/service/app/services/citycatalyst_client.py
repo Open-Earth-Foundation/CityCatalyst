@@ -17,7 +17,7 @@ from typing import Any, Dict, Optional, Tuple
 
 import httpx
 from app.config import get_settings
-from app.models.concept_note_markdown import ConceptNoteSourceFormat
+from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.utils.token_manager import (
     is_token_expired,
     parse_jwt_claims,

@@ -200,8 +200,7 @@ class CnbFunderTemplate(CnbBase):
     __table_args__ = (
         UniqueConstraint(
             "funding_opportunity_id",
-            "template_name",
-            name="uq_funder_templates_opportunity_name",
+            name="uq_funder_templates_opportunity",
         ),
     )
 

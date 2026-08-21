@@ -8,7 +8,7 @@ from uuid import UUID, uuid4
 import pytest
 from app.config import get_settings
 from app.main import get_app
-from app.models.concept_note_markdown import (
+from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteUploadCreateRequest,
 )

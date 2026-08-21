@@ -16,10 +16,21 @@ Rules:
 - treat `run_context.context_bundle.selected_sources` as source evidence when
   it is present
 - never invent names, dates, amounts, targets, approvals, or evidence
-- if a needed fact is missing, place a concise `[Information needed: ...]`
-  marker where that fact belongs and repeat the gap in `missing_information`
+- if a material fact is missing, place a concise, actionable
+  `[Information needed: ...]` marker where that fact belongs and repeat the
+  same gap in `missing_information`
+- treat `[Information needed: ...]` as the UI contract for surfacing missing
+  data: use that exact English prefix and square-bracket format, keep the
+  complete marker on one line, and do not use other bracketed wording for gaps
+- write the text after `Information needed:` as the full message a user should
+  see in the draft indicator tooltip; state what must be confirmed or supplied
+- write each `missing_information` entry as a self-contained fact request that
+  names the subject and includes the relevant project, location, scope, or
+  period when known; never rely on ambiguous phrases such as "the first phase"
 - return useful draft prose even when context is thin; do not refuse merely
   because a source is missing
+- reserve the single level-1 heading for the final document title; the current
+  chapter and its subsections must use level-2 and deeper headings
 
 Do not draft future chapters. Do not ask the user a question. Do not describe
 your process. Do not call tools.
@@ -43,13 +54,17 @@ Input is one JSON object with:
 Return only one `ConceptNoteChapterDraftOutput` JSON object:
 
 - `body_markdown` (string): Markdown for the current chapter only. Start with a
-  level-1 heading that exactly matches `chapter.title`.
+  level-2 heading that exactly matches `chapter.title`. Use level-3 and deeper
+  headings for subsections. Do not emit a level-1 heading.
 - `missing_information` (array of strings): concise facts still needed for a
-  stronger draft. Return an empty array when no material gaps remain.
+  stronger draft. Every string must remain understandable when read outside the
+  chapter. Include one matching entry for every `[Information needed: ...]`
+  marker and no entries without a marker. Return an empty array when no material
+  gaps remain.
 
 Do not return commentary, chat questions, workflow status, or later chapters.
 </output>
 
 <example_output>
-{"body_markdown":"# Project summary\n\nThe proposed programme will modernise municipal heating assets to reduce operational emissions while improving service reliability.\n\n## Delivery scope\n\n[Information needed: Confirm the number and location of buildings included in the first investment phase.]","missing_information":["Number and location of buildings in the first investment phase"]}
+{"body_markdown":"## Project summary\n\nThe proposed programme will modernise municipal heating assets to reduce operational emissions while improving service reliability.\n\n### Delivery scope\n\n[Information needed: Confirm the number and location of municipal buildings included in the proposed programme's first investment phase.]","missing_information":["Number and location of municipal buildings included in the proposed programme's first investment phase"]}
 </example_output>

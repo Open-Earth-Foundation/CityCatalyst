@@ -6,7 +6,7 @@ import asyncio
 import json
 import logging
 from collections.abc import Awaitable, Callable
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -14,10 +14,11 @@ from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
 from app.config import Settings, get_settings
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.db.session import get_session_factory
-from app.models.concept_note_application_context import (
+from app.models.cnb.concept_note_application_context import (
+    ApplicationContextIncludedSources,
     ConceptNoteApplicationContextResponse,
 )
-from app.models.concept_note_draft import (
+from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterDraftOutput,
     ConceptNoteDraftChapterResponse,
     ConceptNoteDraftResponse,
@@ -33,7 +34,10 @@ from app.persistence.concept_notes.workspace import (
     WorkspaceTemplateChapter,
     normalize_template_chapters,
 )
-from app.services.cnb.application_context import ConceptNoteApplicationContextService
+from app.services.cnb.application_context import (
+    ConceptNoteApplicationContextService,
+    included_sources_from_bundle,
+)
 from app.services.openrouter_client import build_openrouter_client_options
 from openai import AsyncOpenAI
 from sqlalchemy import select
@@ -44,10 +48,29 @@ ChapterGenerator = Callable[
     [dict[str, Any]], Awaitable[ConceptNoteChapterDraftOutput]
 ]
 _BACKGROUND_DRAFTS: set[asyncio.Task[None]] = set()
+CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS = 300
+CHAPTER_DRAFT_STALE_AFTER = timedelta(hours=1)
 
 
 class ChapterDraftingError(Exception):
     """Stable internal failure raised by the dedicated drafting workflow."""
+
+    code = "chapter_drafting_conflict"
+    status_code = 409
+
+
+class ChapterDraftingTemplateError(ChapterDraftingError):
+    """The selected application template cannot seed a drafting workspace."""
+
+    code = "concept_note_template_invalid"
+    status_code = 422
+
+
+class ChapterDraftingRunUnavailableError(ChapterDraftingError):
+    """The requested drafting run is missing or is not owned by the caller."""
+
+    code = "concept_note_run_unavailable"
+    status_code = 404
 
 
 class ConceptNoteChapterDraftService:
@@ -88,7 +111,11 @@ class ConceptNoteChapterDraftService:
         run: ConceptNoteRun,
     ) -> tuple[ConceptNoteDraftResponse, UUID | None]:
         """Materialize chapters and acquire a new resumable drafting lease."""
-        application_context = await self._application_context.load_for_run(run)
+        _, included_sources = await self._load_run_context(run.run_id, run.user_id)
+        application_context = await self._application_context.load_for_run(
+            run,
+            included_sources=included_sources,
+        )
         template_chapters = _require_template(application_context)
         await self._workspace.ensure_template_chapters(
             run_id=run.run_id,
@@ -120,13 +147,18 @@ class ConceptNoteChapterDraftService:
         """Generate every missing chapter, persisting each before continuing."""
         try:
             run = await self._load_owned_run(run_id, user_id)
-            application_context = await self._application_context.load_for_run(run)
+            run_context, included_sources = await self._load_run_context(
+                run_id,
+                user_id,
+            )
+            application_context = await self._application_context.load_for_run(
+                run,
+                included_sources=included_sources,
+            )
             template_chapters = _require_template(application_context)
             template_by_ref = {
                 chapter.chapter_ref: chapter for chapter in template_chapters
             }
-            run_context = await self._load_run_context(run_id, user_id)
-
             while await self._lease_is_active(run_id, user_id, build_id):
                 chapters = await self._workspace.list_chapters(run_id=run_id)
                 current = next(
@@ -292,7 +324,7 @@ class ConceptNoteChapterDraftService:
         self,
         run_id: UUID,
         user_id: str,
-    ) -> dict[str, Any]:
+    ) -> tuple[dict[str, Any], ApplicationContextIncludedSources]:
         """Snapshot the persisted run and complete source-aware bundle."""
         async with self._ca_session_factory() as session:
             run = await _require_owned_run(session, run_id, user_id)
@@ -300,7 +332,7 @@ class ConceptNoteChapterDraftService:
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            return {
+            run_context = {
                 "run": {
                     "run_id": str(run.run_id),
                     "name": run.name,
@@ -314,6 +346,7 @@ class ConceptNoteChapterDraftService:
                 ),
                 "context_bundle": bundle.model_dump(mode="json"),
             }
+            return run_context, included_sources_from_bundle(bundle)
 
     async def _lease_is_active(
         self,
@@ -463,6 +496,71 @@ def schedule_chapter_drafting(
     task.add_done_callback(release)
 
 
+async def recover_stale_drafts(
+    *,
+    session_factory: async_sessionmaker[AsyncSession],
+    stale_before: datetime,
+) -> int:
+    """Mark interrupted chapter-drafting leases retryable after their cutoff."""
+    async with session_factory() as session, session.begin():
+        query = (
+            select(ConceptNoteRun)
+            .where(
+                ConceptNoteRun.status == "active",
+                ConceptNoteRun.updated_at < stale_before,
+                (
+                    ConceptNoteRun.context_summary["draft_document"][
+                        "status"
+                    ].as_string()
+                    == "running"
+                ),
+            )
+            .with_for_update(skip_locked=True)
+        )
+        runs = list((await session.scalars(query)).all())
+        recovered_at = datetime.now(UTC)
+        recovered = 0
+        for run in runs:
+            progress = _draft_progress(run.context_summary)
+            if progress.get("status") != "running":
+                continue
+            run.context_summary = _replace_draft_progress(
+                run.context_summary,
+                {
+                    **progress,
+                    "status": "failed",
+                    "current_chapter_id": None,
+                    "error_code": "chapter_drafting_interrupted",
+                    "retryable": True,
+                },
+            )
+            run.updated_at = recovered_at
+            recovered += 1
+        return recovered
+
+
+async def run_chapter_drafting_reconciler(
+    *,
+    interval_seconds: float = CHAPTER_DRAFT_RECONCILE_INTERVAL_SECONDS,
+    stale_after: timedelta = CHAPTER_DRAFT_STALE_AFTER,
+) -> None:
+    """Periodically make interrupted chapter-drafting leases retryable."""
+    while True:
+        await asyncio.sleep(interval_seconds)
+        try:
+            recovered = await recover_stale_drafts(
+                session_factory=get_session_factory(),
+                stale_before=datetime.now(UTC) - stale_after,
+            )
+            if recovered:
+                logger.warning(
+                    "Recovered %s interrupted Concept Note chapter drafts",
+                    recovered,
+                )
+        except Exception:
+            logger.exception("Concept Note chapter-drafting reconciliation failed")
+
+
 def get_chapter_draft_service() -> ConceptNoteChapterDraftService | None:
     """Provide the drafting service, or an unavailable marker without storage."""
     try:
@@ -484,7 +582,7 @@ async def _require_owned_run(
         statement = statement.with_for_update()
     run = await session.scalar(statement)
     if run is None or run.user_id != user_id:
-        raise ChapterDraftingError("Concept Note run is unavailable")
+        raise ChapterDraftingRunUnavailableError("Concept Note run is unavailable")
     return run
 
 
@@ -492,15 +590,17 @@ def _require_template(
     application_context: ConceptNoteApplicationContextResponse,
 ) -> list[WorkspaceTemplateChapter]:
     if application_context.template is None:
-        raise ChapterDraftingError("A selected application template is required")
+        raise ChapterDraftingTemplateError(
+            "A selected application template is required"
+        )
     try:
         chapters = normalize_template_chapters(
             application_context.template.chapter_schema
         )
     except ValueError as exc:
-        raise ChapterDraftingError("The selected template is invalid") from exc
+        raise ChapterDraftingTemplateError("The selected template is invalid") from exc
     if not chapters:
-        raise ChapterDraftingError("The selected template has no chapters")
+        raise ChapterDraftingTemplateError("The selected template has no chapters")
     return chapters
 
 

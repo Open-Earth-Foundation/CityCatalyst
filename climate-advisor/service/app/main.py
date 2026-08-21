@@ -20,6 +20,7 @@ from app.routes.stationary_energy_drafts import (
     router as stationary_energy_drafts_router,
 )
 from app.routes.threads import router as threads_router
+from app.services.cnb.chapter_drafting import run_chapter_drafting_reconciler
 from app.services.cnb.context_bundle import run_context_bundle_reconciler
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -86,12 +87,22 @@ def get_app() -> FastAPI:
         app.state.context_bundle_reconciler = asyncio.create_task(
             run_context_bundle_reconciler()
         )
+        app.state.chapter_drafting_reconciler = asyncio.create_task(
+            run_chapter_drafting_reconciler()
+        )
 
     @app.on_event("shutdown")
     async def _shutdown() -> None:
-        reconciler = getattr(app.state, "context_bundle_reconciler", None)
-        if reconciler is not None:
-            reconciler.cancel()
+        reconcilers = [
+            getattr(app.state, "context_bundle_reconciler", None),
+            getattr(app.state, "chapter_drafting_reconciler", None),
+        ]
+        for reconciler in reconcilers:
+            if reconciler is not None:
+                reconciler.cancel()
+        for reconciler in reconcilers:
+            if reconciler is None:
+                continue
             try:
                 await reconciler
             except asyncio.CancelledError:

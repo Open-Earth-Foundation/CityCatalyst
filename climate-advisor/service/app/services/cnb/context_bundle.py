@@ -26,6 +26,7 @@ from app.services.cnb.source_analysis import (
     SourceUnit,
     analyze_document,
     gather_all_or_raise,
+    source_analysis_contract_version,
     verify_source_artifact,
 )
 from app.services.concept_note_city_context import (
@@ -88,7 +89,7 @@ class ContextBundleService:
         force: bool = False,
         snapshot: ContextBundleBuildSnapshot | None = None,
     ) -> bool:
-        """Build ready source context or a usable thin-context bundle."""
+        """Build a usable bundle with or without uploaded document evidence."""
         active = snapshot or await self.begin(
             user_id=user_id,
             run_id=run_id,
@@ -102,14 +103,33 @@ class ContextBundleService:
             cc_client = self.cc_client_factory()
             selected_sources: list[SelectedSource] = []
 
-            # Analyze every ready source when the run has grounded documents.
+            # Reuse unchanged source analyses and run the LLM only for new inputs.
             if active.uploads:
                 analysis_settings = get_settings()
+                contract_version = source_analysis_contract_version(
+                    analysis_settings
+                )
                 reader_limit = asyncio.Semaphore(
                     analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
                 )
-                selected_sources = list(
-                    await gather_all_or_raise(
+                previous_by_upload = {
+                    source.upload_id: source for source in active.previous_sources
+                }
+                selected_by_upload: dict[UUID, SelectedSource] = {}
+                uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
+                for upload in active.uploads:
+                    previous = previous_by_upload.get(upload.upload_id)
+                    if previous is not None and _can_reuse_source_analysis(
+                        upload,
+                        previous,
+                        contract_version,
+                    ):
+                        selected_by_upload[upload.upload_id] = previous
+                    else:
+                        uploads_to_analyze.append(upload)
+
+                if uploads_to_analyze:
+                    analyzed_sources = await gather_all_or_raise(
                         *(
                             self._analyze_upload(
                                 upload=upload,
@@ -117,13 +137,19 @@ class ContextBundleService:
                                 cc_client=cc_client,
                                 analysis_settings=analysis_settings,
                                 reader_limit=reader_limit,
+                                contract_version=contract_version,
                             )
-                            for upload in active.uploads
+                            for upload in uploads_to_analyze
                         )
                     )
-                )
+                    selected_by_upload.update(
+                        {source.upload_id: source for source in analyzed_sources}
+                    )
+                selected_sources = [
+                    selected_by_upload[upload.upload_id] for upload in active.uploads
+                ]
 
-            # Enrich both grounded and thin runs with best-effort city context.
+            # Enrich every run with best-effort CityCatalyst context.
             ghgi, hiap, optional_statuses, warnings = await self._load_optional_context(
                 user_id=user_id,
                 city_id=UUID(active.city_id),
@@ -136,7 +162,7 @@ class ContextBundleService:
                     "No source document is attached; responses use limited context until a source is added.",
                 )
 
-            # A thin bundle is ready for interviewing and can be rebuilt after upload.
+            # A bundle without uploads is ready and can be rebuilt after an upload.
             return await complete_build(
                 session_factory=self.session_factory,
                 user_id=user_id,
@@ -181,6 +207,7 @@ class ContextBundleService:
         cc_client: CityCatalystClient,
         analysis_settings: Settings,
         reader_limit: asyncio.Semaphore,
+        contract_version: str,
     ) -> SelectedSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
         # Require the immutable metadata needed for the declared source format.
@@ -212,7 +239,7 @@ class ContextBundleService:
             page_count=upload.page_count,
         )
         # Analyze only the verified source units under the shared reader limit.
-        return await self.analyze_document_fn(
+        analysis = await self.analyze_document_fn(
             upload_id=upload.upload_id,
             filename=upload.filename,
             source_label=upload.source_label,
@@ -221,6 +248,9 @@ class ContextBundleService:
             pages=source_units,
             settings=analysis_settings,
             reader_limit=reader_limit,
+        )
+        return analysis.model_copy(
+            update={"analysis_contract_version": contract_version}
         )
 
     async def _load_optional_context(
@@ -350,6 +380,23 @@ class ContextBundleService:
             error_code=error_code,
             warning=warning,
         )
+
+
+def _can_reuse_source_analysis(
+    upload: ConceptNoteUploadSnapshot,
+    previous: SelectedSource,
+    contract_version: str,
+) -> bool:
+    """Return whether a persisted analysis matches this immutable source input."""
+    return (
+        upload.markdown_sha256 is not None
+        and previous.upload_id == upload.upload_id
+        and previous.sha256 == upload.markdown_sha256
+        and previous.source_format == upload.source_format
+        and previous.filename == upload.filename
+        and previous.source_label == (upload.source_label or upload.filename)
+        and previous.analysis_contract_version == contract_version
+    )
 
 
 def schedule_context_bundle_build(

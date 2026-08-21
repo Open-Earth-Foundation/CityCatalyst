@@ -176,6 +176,8 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
 
     assert config.models.cnb_source_reader.name == "openai/gpt-5.4-mini"
     assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.4"
+    assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"
+    assert config.models.cnb_chapter_drafter.reasoning_effort == "medium"
     assert budget.max_partition_tokens == 50000
     assert budget.max_concurrency == 3
     for prompt_name in (
@@ -186,3 +188,25 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
         assert "untrusted evidence" in prompt
         assert "exact contiguous" in prompt
         assert "substring" in prompt
+
+    for prompt_name in (
+        "cnb_source_document_mapping",
+        "cnb_source_summary_synthesis",
+    ):
+        prompt = config.prompts.get_prompt(prompt_name)
+        assert '"page":3' in prompt
+        assert '"anchor":' in prompt
+
+
+def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:
+    prompts = _load_llm_config().prompts
+    question_prompt = prompts.get_prompt("cnb_source_question_reading")
+    synthesis_prompt = prompts.get_prompt("cnb_source_summary_synthesis")
+
+    assert "materially changes how the returned evidence" in question_prompt
+    assert "Do not use caveats to restate" in question_prompt
+    assert "self-contained material limitations" in question_prompt
+    assert "Every factual sentence" in synthesis_prompt
+    assert "supported by at least one excerpt retained" in synthesis_prompt
+    assert "Do not combine values or qualifications" in synthesis_prompt
+    assert "Do not silently choose one version" in synthesis_prompt

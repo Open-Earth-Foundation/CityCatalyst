@@ -22,6 +22,7 @@ import {
 } from "../helpers/testDataCreationHelper";
 import { hiapApiWrapper } from "@/backend/hiap/HiapApiService";
 import { hiapServiceWrapper } from "@/backend/hiap/HiapService";
+import ActionPlanService from "@/backend/hiap/ActionPlanService";
 import ActionPlanEmailService from "@/backend/ActionPlanEmailService";
 import {
   ACTION_TYPES,
@@ -60,16 +61,20 @@ const MOCK_PLAN_RESPONSE = {
   },
 };
 
-const makeMockAction = (rankedActionId: string): AdaptationAction => ({
+const makeMockAction = (
+  rankedActionId: string,
+  rankingId: string,
+): AdaptationAction => ({
   actionId: "test-action-123",
   name: "Solar Rooftop",
-  hiaRankingId: rankedActionId,
+  // Match production HIAction shape from ActionService / HIAP status.
+  id: rankedActionId,
+  hiaRankingId: rankingId,
   type: ACTION_TYPES.Adaptation,
   lang: "en",
   GHGReductionPotential: null,
   adaptationEffectiveness: "",
 
-  id: randomUUID(),
   hazards: [],
   sectors: [],
   subsectors: [],
@@ -273,7 +278,7 @@ describe("Action Plan Generation", () => {
   describe("startActionPlanJob - success flow", () => {
     it("calls HIAP API in correct order: start, check_progress, get_plan", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -316,8 +321,14 @@ describe("Action Plan Generation", () => {
     });
 
     it("sends correct payload to start_plan_creation", async () => {
+      // Locode mismatch would fail DB validation; this test only covers HIAP payload.
+      jest.spyOn(ActionPlanService, "upsertActionPlan").mockResolvedValueOnce({
+        actionPlan: { id: randomUUID() } as any,
+        created: false,
+      });
+
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "BR SAO",
         lng: LANGUAGES.es,
@@ -342,7 +353,7 @@ describe("Action Plan Generation", () => {
 
     it("saves action plan to database", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -365,7 +376,7 @@ describe("Action Plan Generation", () => {
       });
 
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -380,7 +391,7 @@ describe("Action Plan Generation", () => {
 
     it("returns plan, timestamp, and actionName", async () => {
       const result = await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -405,7 +416,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -426,7 +437,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -447,7 +458,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -465,7 +476,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -483,7 +494,7 @@ describe("Action Plan Generation", () => {
 
       await expect(
         hiapApiWrapper.startActionPlanJob({
-          action: makeMockAction(rankedActionId),
+          action: makeMockAction(rankedActionId, rankingId),
           cityId: testData.cityId,
           cityLocode: "XX APT",
           lng: LANGUAGES.en,
@@ -493,12 +504,33 @@ describe("Action Plan Generation", () => {
 
       globalThis.fetch = mockFetch as typeof fetch;
     });
+
+    it("throws on DB save failure and does not send email", async () => {
+      jest
+        .spyOn(ActionPlanService, "upsertActionPlan")
+        .mockRejectedValueOnce(new Error("Ranked HIAP action not found"));
+
+      await expect(
+        hiapApiWrapper.startActionPlanJob({
+          action: makeMockAction(rankedActionId, rankingId),
+          cityId: testData.cityId,
+          cityLocode: "XX APT",
+          lng: LANGUAGES.en,
+          inventoryId,
+          createdBy: testData.userId,
+        }),
+      ).rejects.toThrow(/Failed to generate plan|Ranked HIAP action not found/);
+
+      expect(
+        ActionPlanEmailService.sendActionPlanReadyEmailWithUrl,
+      ).not.toHaveBeenCalled();
+    });
   });
 
   describe("startActionPlanJob - data flow", () => {
     it("uses getCityContextAndEmissionsData for payload", async () => {
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "XX APT",
         lng: LANGUAGES.en,
@@ -511,8 +543,14 @@ describe("Action Plan Generation", () => {
     });
 
     it("extracts country code from locode (first 2 chars)", async () => {
+      // Locode mismatch would fail DB validation; this test only covers countryCode.
+      jest.spyOn(ActionPlanService, "upsertActionPlan").mockResolvedValueOnce({
+        actionPlan: { id: randomUUID() } as any,
+        created: false,
+      });
+
       await hiapApiWrapper.startActionPlanJob({
-        action: makeMockAction(rankedActionId),
+        action: makeMockAction(rankedActionId, rankingId),
         cityId: testData.cityId,
         cityLocode: "CR SJ",
         lng: LANGUAGES.en,

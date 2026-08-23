@@ -303,23 +303,24 @@ describe("Bulk HIAP Prioritization API", () => {
   });
 
   afterEach(async () => {
-    // Clean up only rankings owned by this suite. Other API suites run in
-    // parallel against the same database and may have ranked actions in use.
-    const suiteRankings = await db.models.HighImpactActionRanking.findAll({
-      attributes: ["id"],
-      where: { inventoryId: inventoryIds },
-    });
-    const suiteRankingIds = suiteRankings.map((ranking) => ranking.id);
-    if (suiteRankingIds.length > 0) {
-      await db.models.HighImpactActionRanked.destroy({
-        where: { hiaRankingId: suiteRankingIds },
+    // Only wipe this suite's rankings. `where: {}` on Ranked deletes every
+    // worker's HIAP fixtures and races with city-hiap-action_plan.jest.ts in CI.
+    if (inventoryIds.length > 0) {
+      const rankings = await db.models.HighImpactActionRanking.findAll({
+        attributes: ["id"],
+        where: { inventoryId: inventoryIds },
+      });
+      const rankingIds = rankings.map((ranking) => ranking.id);
+      if (rankingIds.length > 0) {
+        await db.models.HighImpactActionRanked.destroy({
+          where: { hiaRankingId: rankingIds },
+        });
+      }
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId: inventoryIds },
       });
     }
-    await db.models.HighImpactActionRanking.destroy({
-      where: { inventoryId: inventoryIds },
-    });
 
-    // Reset all mocks to ensure clean state
     jest.clearAllMocks();
   });
 

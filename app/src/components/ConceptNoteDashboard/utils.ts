@@ -3,7 +3,7 @@ export type RunStatusTone =
 
 interface RunStatusPresentation {
   tone: RunStatusTone;
-  translationKey?: string;
+  translationKey: string;
 }
 
 const statusPresentations: Record<string, RunStatusPresentation> = {
@@ -21,20 +21,51 @@ const statusPresentations: Record<string, RunStatusPresentation> = {
   succeeded: { tone: "positive", translationKey: "status-completed" },
 };
 
+const workflowStepTranslationKeys: Record<string, string> = {
+  assembling_context: "workflow-assembling-context",
+  draft: "workflow-draft",
+  drafting_document: "workflow-drafting-document",
+  editing_document: "workflow-editing-document",
+  interviewing: "workflow-interviewing",
+};
+
+const contextSourceStatusTranslationKeys: Record<string, string> = {
+  available: "bundle-source-available",
+  failed: "bundle-source-failed",
+  included: "bundle-source-included",
+  missing: "bundle-source-missing",
+  partial: "bundle-source-partial",
+  pending: "bundle-source-pending",
+  unavailable: "bundle-source-unavailable",
+};
+
+function normalizeLifecycleValue(value: string): string {
+  return value.trim().toLowerCase();
+}
+
 export function getRunStatusPresentation(
   status: string,
 ): RunStatusPresentation {
   return (
-    statusPresentations[status.trim().toLowerCase()] ?? { tone: "neutral" }
+    statusPresentations[normalizeLifecycleValue(status)] ?? {
+      tone: "neutral",
+      translationKey: "status-unknown",
+    }
   );
 }
 
-export function humanizeLifecycleValue(value: string): string {
-  const normalized = value.trim().replaceAll(/[_-]+/g, " ");
-  if (!normalized) {
-    return "";
-  }
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+export function getWorkflowStepTranslationKey(value: string): string {
+  return (
+    workflowStepTranslationKeys[normalizeLifecycleValue(value)] ??
+    "workflow-unknown"
+  );
+}
+
+export function getContextSourceStatusTranslationKey(value: string): string {
+  return (
+    contextSourceStatusTranslationKeys[normalizeLifecycleValue(value)] ??
+    "bundle-source-status-unknown"
+  );
 }
 
 export function conceptNoteResumeHref(
@@ -42,8 +73,90 @@ export function conceptNoteResumeHref(
   cityId: string,
   runId: string,
 ): string {
-  const query = new URLSearchParams({ runId });
-  return `/${lng}/cities/${cityId}/concept-notes/wiring?${query}`;
+  return `/${lng}/cities/${cityId}/concept-notes/${runId}`;
+}
+
+export interface ConceptNoteBundleProgress {
+  status: string | null;
+  contextMode: "thin" | "grounded" | null;
+  missingContext: string[];
+  readySources: number;
+  queuedSources: number;
+  processingSources: number;
+  failedSources: number;
+  ghgiStatus: string | null;
+  hiapStatus: string | null;
+  retryable: boolean;
+}
+
+function recordValue(value: unknown): Record<string, unknown> {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function countValue(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value)
+    ? Math.max(0, value)
+    : 0;
+}
+
+function stringValue(value: unknown): string | null {
+  return typeof value === "string" && value.trim() ? value : null;
+}
+
+export function getConceptNoteBundleProgress(
+  summary: Record<string, unknown>,
+): ConceptNoteBundleProgress {
+  const bundle = recordValue(summary.context_bundle);
+  const sourceCounts = recordValue(bundle.source_counts);
+  const optionalSources = recordValue(bundle.optional_sources);
+
+  return {
+    status: stringValue(bundle.status),
+    contextMode:
+      bundle.context_mode === "thin" || bundle.context_mode === "grounded"
+        ? bundle.context_mode
+        : null,
+    missingContext: Array.isArray(bundle.missing_context)
+      ? bundle.missing_context.filter(
+          (item): item is string => typeof item === "string",
+        )
+      : [],
+    readySources: countValue(sourceCounts.ready),
+    queuedSources: countValue(sourceCounts.queued),
+    processingSources: countValue(sourceCounts.processing),
+    failedSources: countValue(sourceCounts.failed),
+    ghgiStatus: stringValue(optionalSources.ghgi),
+    hiapStatus: stringValue(optionalSources.hiap),
+    retryable: bundle.retryable === true,
+  };
+}
+
+export function getRunProgressPercent(
+  status: string,
+  workflowStep: string,
+  summary: Record<string, unknown>,
+): number {
+  const normalizedStatus = status.trim().toLowerCase();
+  if (["completed", "exported", "succeeded"].includes(normalizedStatus)) {
+    return 100;
+  }
+
+  const bundle = getConceptNoteBundleProgress(summary);
+  if (workflowStep === "interviewing" || bundle.status === "ready") {
+    return 40;
+  }
+  if (bundle.status === "building") {
+    return 28;
+  }
+  if (bundle.readySources > 0) {
+    return 18;
+  }
+  if (bundle.processingSources > 0 || bundle.queuedSources > 0) {
+    return 10;
+  }
+  return 4;
 }
 
 export function formatRelativeTime(

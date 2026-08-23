@@ -26,19 +26,16 @@ data and configuration, not by rebuilding the workflow.
 
 ## Scope
 
-Implementation baseline (2026-08-12): the repository owns an independent CNB
-schema migration chain and connects the reviewed-reference importer and
-similar-project reader to it. The initial migration provisions the planned
-workspace/reference schema but does not add workspace HTTP services or seed
-curated data. On the existing Climate Advisor chain, CA owns run,
-context-bundle, and pointer-only upload persistence. CC accepts authorized
-run-scoped PDF uploads, reuses the shared `PdfOcrJob` worker, stores source and
-result objects under deterministic keys, and exposes verified Markdown to CA
-through an authenticated internal read boundary. CC-513 adds automatic
-PDF-first context-bundle assembly and a run-scoped selected-document query
-capability. At least one verified ready city PDF is the sole required bundle
-input. GHGI, HIAP, city/project summaries, CCRA, funder research, comparable
-projects, and document-workspace context may all be absent.
+Implementation baseline (2026-08-18): the repository owns the CNB schema chain,
+reviewed-reference importer, similar-project reader, and persisted chapter
+workspace. CA owns run, bundle, pointer, and drafting-progress persistence. Its
+draft API materializes the selected template, then runs an independent
+server-side process that saves one immutable chapter revision before generating
+the next. CC accepts authorized PDFs through `PdfOcrJob` and native UTF-8
+Markdown through direct artifact storage, then exposes either result through its
+authenticated read boundary. Runs may begin with typed thin context and later
+rebuild as grounded; all optional CC, funding, matching, and source context may
+be absent.
 
 In scope:
 
@@ -50,7 +47,7 @@ In scope:
 - A curated research ingest pipeline for funder profiles and funded-project
   examples.
 - Runtime matching between the user's project and similar funded projects.
-- PDF upload ingestion using the shared CityCatalyst Markdown converter.
+- PDF conversion plus direct native Markdown ingestion in CityCatalyst.
 - Reuse of current CityCatalyst-to-Climate-Advisor connection for CC data.
 
 Out of scope:
@@ -76,14 +73,12 @@ workflow, following the same direction as the Stationary Energy workflow:
 4. `CNB_DATABASE_URL` stores the document workspace and reusable funding
    reference corpus on an independent `cnb_alembic_version` chain owned by this
    repository. Infrastructure and curated data remain externally managed.
-5. PDF ingestion uses the shared CC converter. CC owns Mistral OCR and storage,
-   hands CA the stable result pointer, and serves verified Markdown through the
-   authenticated internal read route.
+5. CC owns PDF OCR and direct native `.md` storage, then serves the verified
+   artifact to CA by stable pointer through the authenticated internal route.
 6. The agent gets a scoped tool pack for the active workflow step, not a flat
    list of every possible operation.
-7. A bundle becomes ready only after every ready PDF has been completely read.
-   Missing or unusable optional sources are represented by typed nulls or an
-   empty list and never block PDF readiness.
+7. Every ready source is read completely; PDFs retain pages, native Markdown
+   retains anchors, and missing optional sources never block readiness.
 
 ```mermaid
 flowchart TB
@@ -159,15 +154,17 @@ flowchart TB
 
 ## Product Shape
 
-The user experience is not a step-by-step questionnaire. It is a guided
-interview with a live document workspace.
+The user experience is not a step-by-step questionnaire. It combines an
+optional manual interview with a live document workspace. Draft generation is
+not driven through chat: starting a draft invokes a dedicated persisted process,
+and chat remains available only for user-led questions and clarification.
 
 The first part of the workflow is context bundle building. The
 `ContextBundleService` assembles the reusable run context by:
 
-- Re-fetching and verifying every ready city PDF after pointer delivery.
-- Reading every page and persisting only compact per-document summaries,
-  topics, and exact page-cited excerpts.
+- Re-fetching and verifying every ready source upload after pointer delivery.
+- Reading each source in its native evidence mode and persisting only compact
+  per-document summaries, topics, and exact source-cited excerpts.
 - Attempting GHGI and persisted HIAP context without making either mandatory.
 - Initializing explicit empty sections for later funder, similar-project, and
   document-workspace workflows.
@@ -181,9 +178,11 @@ Matching is internal preparation. Completing a match does not immediately show
 the user a list of projects. A stored example is surfaced only when it is useful
 for the current interview question, chapter draft, or evidence review.
 
-The agent and document workspace then use that context bundle to:
+The drafting service and document workspace then use that context bundle to:
 
-- Draft document chapters and show evidence links for user review.
+- Draft exactly one template chapter at a time and persist it before continuing.
+- Give each chapter call the complete Markdown of every earlier chapter so the
+  document remains consistent without turning drafting into a chat exchange.
 - Ask only for the identified decisions or missing facts.
 - Let the user edit, add, delete, restore, and reorder chapters.
 - Export DOCX and PDF documents plus a reusable context bundle.
@@ -191,13 +190,13 @@ The agent and document workspace then use that context bundle to:
 ```mermaid
 flowchart LR
     Context["Assemble context bundle"]
-    Context --> Interview["Guided interview"]
-    Interview --> Draft["Draft chapters"]
+    Context --> Interview["Optional manual interview"]
+    Context --> Draft["Independent sequential drafting"]
     Draft --> Review["User review + edits"]
     Review --> Revise["Revise chapters"]
     Revise --> Export["Generate DOCX/PDF export"]
 
-    Upload["User uploads files<br/>any time"] --> Convert["CC converts PDF<br/>and stores Markdown"]
+    Upload["User uploads files<br/>any time"] --> Convert["CC stores Markdown artifact<br/>OCR for PDF, direct for .md"]
     Convert --> Ingest["Deliver verified pointer to CA"]
     Ingest --> Context
     Ingest --> Draft
@@ -223,7 +222,7 @@ flowchart LR
 | Funder profiles and criteria                                       | `CNB_DATABASE_URL`                  | Shared curated corpus, reusable across cities and agents.                                            |
 | Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Separate programme and awarded-project tables with explicit foreign keys.                            |
 | Exported DOCX/PDF file references                                  | `CNB_DATABASE_URL`                  | Workflow output artifacts.                                                                           |
-| PDF-to-Markdown conversion                                         | CityCatalyst                        | Owns Mistral OCR, queueing, retries, validation, authoritative storage, and result pointers.         |
+| Source-to-Markdown storage | CityCatalyst | Owns PDF OCR and direct native Markdown validation, storage, and result pointers. |
 | Pointer-only Markdown handoff                                      | CityCatalyst to Climate Advisor     | CC sends a stable result key and immutable metadata; CA reads content only through authenticated CC. |
 
 ## Data Infrastructure Boundary
@@ -261,7 +260,7 @@ URL-encoded in the final DSN.
 
 ## Tables and Data Placement
 
-PDF ingestion and document authoring span CityCatalyst PostgreSQL, the Climate
+Source ingestion and document authoring span CityCatalyst PostgreSQL, the Climate
 Advisor database, the CNB database, and the existing CC S3 bucket. Identifiers
 cross these boundaries through authenticated application contracts; databases
 do not create cross-database foreign keys.
@@ -275,7 +274,7 @@ flowchart LR
     end
 
     subgraph CCS3["Existing CityCatalyst S3"]
-        Source["Immutable source PDF"]
+        Source["Immutable source PDF<br/>(PDF uploads only)"]
         Markdown["Authoritative combined Markdown"]
     end
 
@@ -291,9 +290,11 @@ flowchart LR
     end
 
     Inventory -.->|"inventory_import + id"| OCR
-    Upload -.->|"concept_note_upload + upload_id"| OCR
-    Upload -.->|"UUID v4 upload_id key"| Source
-    OCR --> Markdown
+    Upload -.->|"PDF: concept_note_upload + upload_id"| OCR
+    Upload -.->|"PDF: UUID v4 upload_id key"| Source
+    Source -->|"OCR"| Markdown
+    Upload -->|"native .md: direct UTF-8 result"| Markdown
+    OCR -.->|"result catalog + delivery state"| Markdown
     Chat -.->|"thread_id integration identifier"| Run
     Run --> Upload
     Run --> Bundle
@@ -348,7 +349,8 @@ Rules:
 - `source_type = inventory_import` resolves `source_id` through the existing
   `ImportedInventoryFile` table.
 - `source_type = concept_note_upload` resolves its deterministic source key
-  directly from the CA-owned `upload_id`.
+  directly from the CA-owned `upload_id` for PDFs; native Markdown has only a
+  content-addressed final result object.
 - Because the source relationship is polymorphic, `source_id` is resolved and
   authorized by application code rather than a database foreign key.
 - OCR state, retries, leases, and result metadata are independent from optional
@@ -368,10 +370,14 @@ Markdown to `InventoryExtractionService` before the import advances to
 | ----------------------- | ----------------------------- | ----------------------------------------- |
 | Inventory source PDF    | `ImportedInventoryFile.s3Key` | Existing inventory import lifecycle.      |
 | Concept Note source PDF | UUID v4 `upload_id` key       | CNB upload lifecycle coordinated with CA. |
-| Combined Markdown       | `PdfOcrJob.result_s3_key`     | Same lifecycle as its immutable source.   |
+| PDF-derived Markdown    | `PdfOcrJob.result_s3_key`     | Produced by the shared OCR lifecycle.     |
+| Native Markdown         | `PdfOcrJob.result_s3_key`     | Stored directly as the final artifact.    |
 
-The combined Markdown key follows
+PDF-derived Markdown follows
 `pdf-ocr/results/{source_type}/{source_id}/{attempt_count}/combined_markdown.md`.
+Native Markdown follows
+`pdf-ocr/results/concept_note_upload/{upload_id}/direct-{sha256}/combined_markdown.md`,
+so a replay with different bytes cannot replace an already registered artifact.
 
 ### Climate Advisor Workflow Database
 
@@ -395,9 +401,10 @@ The active step decides which tools are available.
 ```mermaid
 flowchart TB
     Start([Start]) --> Scope["selecting_scope"]
-    Scope --> Ingest["ingesting_user_files<br/>receive + process Markdown"]
-    Ingest --> Context["assembling_context<br/>automatic PDF-first bundle"]
+    Scope --> Context["assembling_context<br/>automatic thin bundle"]
     Context --> Interview["interviewing"]
+    Interview -. optional source upload .-> Ingest["ingesting_user_files<br/>receive + process Markdown"]
+    Ingest -. grounded rebuild .-> Interview
     Interview -. optional enrichment .-> Funder["profiling_funder"]
     Funder -. optional enrichment .-> Match["matching_examples"]
     Match -. targeted rebuild .-> Interview
@@ -407,7 +414,7 @@ flowchart TB
     Draft --> Complete([completed])
 
     IngestNote["CC owns PDF conversion and Markdown storage.<br/>CA stores the object pointer and reads bytes through authenticated CC."]
-    ContextNote["One or more ready PDFs are required.<br/>GHGI, HIAP, funder data, matches,<br/>and document context are optional."]
+    ContextNote["Zero or more ready sources are allowed.<br/>Missing documents produce typed thin context;<br/>uploads later rebuild the same run as grounded."]
     Ingest -.-> IngestNote
     Context -.-> ContextNote
 ```
@@ -420,9 +427,9 @@ flowchart TB
 | `ingesting_user_files` | CC OCR/delivery status, CA Markdown-ingest status, candidate source excerpts | deterministic document ingest operations; no LLM  |
 | `profiling_funder`     | selected funder, template, criteria                                          | CNB reference table tools                         |
 | `matching_examples`    | ingested project-upload fields, funder profile, project KB filters           | internal `ProjectMatchingService`; no agent tools |
-| `assembling_context`   | every ready PDF, optional GHGI/HIAP, explicit typed empty sections           | internal `ContextBundleService`; no agent tools   |
+| `assembling_context` | zero or more ready sources, optional GHGI/HIAP, typed empty sections | internal `ContextBundleService`; no agent tools |
 | `interviewing`         | per-document summaries, optional CC context, gaps and known facts            | interview tools plus `concept_note.sources.query` |
-| `drafting_document`    | chapter plan, evidence map, examples, per-document summaries                 | chapter/evidence tools plus selected-source query |
+| `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time |
 | `editing_document`     | selected chapter/revision and per-document summaries                         | document edit tools plus selected-source query    |
 
 Export is not a workflow step for the LLM. It is a document workspace button
@@ -431,9 +438,9 @@ and template.
 
 ## Context Bundle
 
-The context bundle is built for the authorized run. Its sole mandatory content
-source is at least one ready city PDF. All other sections have an explicit empty
-representation so callers never need to infer whether a key was omitted.
+The authorized run may advance with no ready source by recording
+`context_mode: thin` and `missing_context: [source_documents]`. A ready upload
+rebuilds it as `grounded`; every other section has an explicit empty value.
 
 ```mermaid
 flowchart TB
@@ -462,6 +469,7 @@ Recommended high-level shape:
       "source_label": "City climate plan",
       "filename": "plan.pdf",
       "sha256": "64 lowercase hexadecimal characters",
+      "source_format": "pdf",
       "page_count": 42,
       "summary": "Short document summary",
       "topics": ["adaptation", "transport"],
@@ -474,12 +482,11 @@ Recommended high-level shape:
 }
 ```
 
-The bundle never contains raw Markdown, PDFs, S3 keys, credentials, or derived
-chunks. `context_summary.context_bundle` records the current build ID, ready
-source fingerprint, status, source counts, GHGI/HIAP statuses, warnings,
-retryability, and the single completion event. A commit is accepted only when
-its build ID is still active, preventing an older build from overwriting a
-newer upload set.
+The bundle contains no raw source, storage key, credential, or derived chunk.
+Its summary records build/fingerprint identity, mode, missing context, source and
+optional-context statuses, warnings, retryability, and completion. Only the
+active build may commit; later rebuilds or retryable failures keep serving the
+last completed bundle.
 
 ### CNB City Context API
 
@@ -579,7 +586,7 @@ The current caller supplies `city_id`, opts into HIAP with
 CityCatalyst UI should list accessible choices through
 `GET /api/v1/user/projects`, bind the city selection when starting the run, and
 submit that same UUID and HIAP preference to the compatible route. Automatic
-PDF-first assembly always attempts both GHGI and HIAP; missing, pending, failed,
+Source-aware assembly always attempts both GHGI and HIAP; missing, pending, failed,
 malformed, or unavailable optional results are persisted as `null` and do not
 block readiness. Partial GHGI and HIAP with usable persisted actions are kept.
 
@@ -1270,15 +1277,19 @@ If the user project or funder profile is missing a field needed for the future
 scoring concept, the workflow should not invent it. It should record a match
 caveat and create a gap if the missing field matters for drafting.
 
-## PDF Conversion and Optional Markdown Handoff
+## PDF Conversion and Native Markdown Handoff
 
-CityCatalyst owns the shared PDF-to-Markdown converter. CC owns source-file
-authorization and storage, the durable OCR queue, Mistral requests, retries,
-ordered page merge, schema validation, and the authoritative Markdown artifact.
-The converter does not depend on CA or
-`Open-Earth-Foundation/PDF_converter` at runtime.
+CityCatalyst owns both source-to-Markdown paths:
 
-The converted artifact follows these Markdown-shape requirements:
+- PDF uploads use the shared PDF-to-Markdown converter. CC owns source-file
+  authorization and storage, the durable OCR queue, Mistral requests, retries,
+  ordered page merge, schema validation, and the authoritative Markdown
+  artifact.
+- Native `.md` uploads bypass OCR entirely. CC validates UTF-8, rejects NUL or
+  empty content, removes an optional BOM, normalizes line endings, and stores
+  that Markdown directly in the final result namespace that CA reads later.
+
+The PDF-derived artifact follows these Markdown-shape requirements:
 
 - all pages are merged in source order into one UTF-8 Markdown document;
 - tables retain Markdown structure, exact headers, aligned rows and columns,
@@ -1288,53 +1299,56 @@ The converted artifact follows these Markdown-shape requirements:
   present; and
 - narrative sections remain available for CNB evidence and context selection.
 
-These requirements govern converter output. CA verifies and consumes Markdown
-only through the authenticated CC read boundary and does not participate in OCR.
+Native Markdown preserves the text content after BOM and line-ending
+normalization and does not receive synthetic page markers or a synthetic
+`page_count`. CA verifies and consumes both PDF
+and native Markdown only through the authenticated CC read boundary and does
+not participate in OCR.
 
-Each PDF has a durable CC-derived `upload_id`. Identical run, user, immutable
-filename/label, and PDF bytes derive the same ID, making request replay
-idempotent without allowing different content to overwrite the source. CC
-converts it internally with `source_type = concept_note_upload` and
-`source_id = upload_id`. A run may contain many distinct uploads. The upload
-route enforces the shared 20 MB source-PDF upload limit, and the CC processor
-enforces the ten-minute job timeout. The 20 MB limit does not apply to the
-resulting Markdown artifact. There is no page-count acceptance limit.
-`page_count` remains result metadata validated against the ordered Markdown page
-markers.
+Each accepted upload request receives a fresh UUID v4 `upload_id`; uploading the
+same file again intentionally creates another source identity. Replaying the
+same CA create request with that ID and unchanged metadata is idempotent, while
+changing its immutable identity is rejected. PDF uploads use
+`source_type = concept_note_upload` and `source_id = upload_id` inside the shared
+OCR queue. A run may contain many distinct uploads. The shared 20 MiB upload
+limit applies to the uploaded source file, not to the final Markdown artifact.
+PDF-derived Markdown includes `page_count` metadata; native Markdown does not
+use page counts.
 
-The browser sends PDF bytes only to the authenticated CC upload route. CA
+The browser sends source bytes only to the authenticated CC upload route. CA
 receives the stable Markdown **object key** as pointer metadata, but never the
-source PDF, bucket credentials, AWS access keys, signed URLs, Mistral
+source file, bucket credentials, AWS access keys, signed URLs, Mistral
 configuration, or OCR retry instructions. The object key is not an access
 credential: CA cannot read CC S3 directly. It retrieves Markdown by `upload_id`
-through CC's authenticated internal read route; CC resolves the stored
-`PdfOcrJob.result_s3_key`, reads S3, verifies SHA-256, and streams the bytes.
+through CC's authenticated internal read route; CC resolves the stored result
+key, reads S3, verifies SHA-256, and streams the bytes.
 
 Each upload is handled independently:
 
-1. `POST .../{run_id}/uploads` verifies run access, generates a UUID v4 upload
-   identity, creates the authoritative CA row, stores the PDF in CC, creates the
-   CC OCR job, and returns `202`.
-2. The CC processor converts the PDF, validates the Markdown shape, stores the
-   authoritative `.md` in CC S3, and records its pointer and SHA-256 digest in
-   CC PostgreSQL.
-3. CC marks OCR `succeeded`. Conversion is complete even if CA is unavailable.
-4. CC calls
+1. `POST .../{run_id}/uploads` verifies run access, creates or replays the
+   authoritative CA row, stores the user file in CC, and wakes the shared OCR
+   and delivery processors after the durable work record exists. The route
+   still returns `202` without waiting for OCR or context rebuilding; the
+   scheduled worker remains the recovery and retry path.
+2. For a PDF upload, CC creates or reuses the OCR job, converts the file, and
+   stores the authoritative Markdown artifact in CC S3. For a native Markdown
+   upload, CC stores the validated, normalized UTF-8 artifact directly in the
+   final Markdown namespace without queuing or running OCR; the same
+   `PdfOcrJob` table records the completed result and delivery state.
+3. CC calls
    `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown` with the stable
-   Markdown object key, filename, source label, page count, and digest. It sends
-   no Markdown bytes in this pointer-delivery request and uses the existing
-   CC-issued user-scoped bearer token.
-5. CA rechecks run permission and calls CC's authenticated internal Markdown
-   read route by `upload_id`. CC reads the object and returns verified bytes plus
-   the stable key, digest, and page-count headers.
-6. CA validates those bytes against the delivered metadata, rejects an upload ID
-   already bound to another run, durably registers the pointer, and returns
-   `202`.
-7. CA can then perform excerpt selection, indexing, summarization, and context
+   Markdown object key, filename, source label, and digest. PDF-derived
+   artifacts may also include page metadata; native Markdown does not.
+4. CA rechecks run permission and calls CC's authenticated internal Markdown
+   read route by `upload_id`.
+5. CA validates the returned bytes against the delivered identity metadata,
+   rejects an upload ID already bound to another run, durably registers the
+   pointer, and returns `202`.
+6. CA can then perform excerpt selection, indexing, summarization, and context
    bundle rebuilding. These steps are not part of conversion.
-8. A failed OCR retry may call Mistral again. A failed pointer delivery or
-   authenticated read retries the stored result only and never repeats
-   successful OCR.
+7. A failed OCR retry may call Mistral again for PDF uploads only. A failed
+   pointer delivery or authenticated read retries the stored result only and
+   never repeats successful OCR or native Markdown storage.
 
 Repeated handoff with the same upload and digest is idempotent. A different
 digest for the same immutable upload returns
@@ -1535,8 +1549,8 @@ Always-on context should include:
 - current run state
 - current workflow step
 - blockers
-- one short summary and topic list for every ready city PDF, including its
-  `upload_id`, label, filename, and page count
+- one short summary and topic list for every ready source upload, including its
+  `upload_id`, label, filename, and source-type-specific locator metadata
 - chapter counts
 - open gaps
 - matched project counts
@@ -1547,15 +1561,21 @@ workflow is in before deciding what to do next.
 
 ### Context Bundle Build Responsibilities
 
-Context bundle building is not an agent tool group. When a PDF reaches `ready`,
-`ContextBundleService` automatically snapshots the current ready-upload set,
-assembles the bundle in retained in-process background work, and injects the
-completed compact bundle as always-on context.
+Context bundle building is not an agent tool group. `ContextBundleService`
+builds at run creation and whenever a source reaches `ready`. It snapshots the
+ready-upload set, assembles it in retained background work, and injects only the
+completed compact bundle.
+
+The authorized application-context read reports presence flags for the
+persisted `cc_context` sections. The workspace uses those flags for its status
+badges; it does not infer that city or project context is included merely
+because the corresponding record is available elsewhere in CityCatalyst.
 
 Context loaded:
 
-- Every ready PDF's immutable identity, page count, short summary, topics, and
-  bounded exact page-cited key excerpts. Queued and failed uploads are excluded.
+- Every ready upload's identity, summary, topics, and bounded exact excerpts,
+  using pages for PDFs and deterministic heading/block anchors for Markdown.
+  Queued and failed uploads are excluded.
 - City profile summary if another workflow has populated it.
 - Project summary if another workflow has populated it.
 - GHGI summary if available.
@@ -1572,15 +1592,19 @@ Rules:
 - Returns summarized payloads, not raw route dumps.
 - Stores the context bundle snapshot under `CA_DATABASE_URL` for
   reproducibility.
-- Parses existing page markers and creates page-preserving partitions capped at
-  50,000 input tokens. An oversized page is split by headings/paragraphs and
-  then exact character spans without dropping content.
+- For PDF-derived Markdown, parses existing page markers and creates
+  page-preserving partitions capped at 50,000 input tokens. An oversized page
+  is split by headings/paragraphs and then exact character spans without
+  dropping content. For native Markdown, derives deterministic heading/block
+  anchors from the stored UTF-8 bytes and partitions without inventing
+  synthetic pagination.
 - Uses configured GPT-5.4 mini readers with process-wide concurrency no greater
   than four, then GPT-5.4 for final document synthesis.
 - Requires every partition reader to acknowledge every segment and verifies
-  every retained excerpt as an exact substring of its cited source page.
-- Fails retryably when no ready PDF exists, a pointer/digest changes, a reader
-  partition fails, or complete coverage cannot be proven.
+  every retained excerpt as an exact substring of its cited source location.
+- Completes with typed thin context when no ready upload exists. A pointer/digest
+  change, reader partition failure, or incomplete source coverage still fails
+  retryably.
 - Reconciles every five minutes and marks builds left in `building` for more
   than one hour as `context_bundle_build_interrupted`, preserving the existing
   retry route without storing a durable access token in a job queue.
@@ -1590,14 +1614,14 @@ Rules:
 - Does not expose arbitrary context bundle replacement. Bundle edits must come
   from a known workflow trigger and preserve the rest of the assembled context.
 - Replaces only `selected_sources`, `cc_context.ghgi`, and `cc_context.hiap` on a
-  PDF rebuild, preserving all unrelated sections populated later.
+  source-triggered rebuild, preserving all unrelated sections populated later.
 - Does not register CC context loading or context bundle editing as
   agent-callable tools. The separate source-query capability is read-only.
 
 ### Selected-document source query
 
-`concept_note.sources.query` is the only agent capability that can read PDF
-content. Climate Advisor registers its function-tool implementation
+`concept_note.sources.query` is the only agent capability that can read uploaded
+source content. Climate Advisor registers its function-tool implementation
 `concept_note_sources_query` only for the authorized `concept_note_run_id`, only
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.
@@ -1605,12 +1629,12 @@ after the bundle is ready, and only during `interviewing`,
 The main CNB agent selects one `upload_id` from the always-on summaries and asks
 one bounded natural-language question. Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.4 mini readers over every page-preserving partition using
+tool-free GPT-5.4 mini readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
-partition succeeds. Its result contains the source label, verified page-cited
-excerpts, page/segment coverage counts, and reader caveats for the calling agent
+partition succeeds. Its result contains the source label, verified page- or
+block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
 to combine. If no passage supports the question it returns an explicit
-`found: false` result. PDF text is untrusted evidence; embedded instructions are
+`found: false` result. Source text is untrusted evidence; embedded instructions are
 ignored and reader agents receive no external tools.
 
 ### Internal Research Capabilities
@@ -1669,7 +1693,7 @@ Finds comparable funded projects as an internal operation during
 `matching_examples`, after the user's project upload has been ingested, so
 context assembly and chapter drafting can use grounded examples when relevant.
 
-Input:
+Example PDF-derived input:
 
 ```json
 {
@@ -1721,8 +1745,8 @@ Rules:
 #### `POST /v1/concept-notes/{run_id}/uploads/{upload_id}/markdown`
 
 Receives the stable CC object key and immutable metadata after CC has finished
-and persisted PDF conversion. This is a service-to-service pointer handoff, not
-an LLM tool and not an OCR trigger.
+persisting the authoritative Markdown artifact. This is a service-to-service
+pointer handoff, not an LLM tool and not an OCR trigger.
 
 Input:
 
@@ -1736,9 +1760,9 @@ Input:
 }
 ```
 
-CA does not trust the pointer alone. It requests the Markdown by `upload_id`
-from CC's authenticated internal read route, verifies the returned key, digest,
-page count, page markers, and content, then persists the pointer.
+Native payloads use `source_format: markdown`, `block_count`, and excerpt
+anchors. CA fetches and validates both source formats through the authenticated
+CC boundary described in the handoff contract above.
 
 Output:
 
@@ -1756,8 +1780,9 @@ Rules:
 - Rejects an `upload_id` already associated with another run.
 - Fetches the stored object through authenticated CC and validates the supplied
   SHA-256 digest before durably registering its pointer.
+- Treats `page_count` as optional metadata for PDF-derived artifacts only.
 - Requires the completed Markdown to satisfy the
-  [Markdown-shape requirements](#pdf-conversion-and-optional-markdown-handoff)
+  [source-specific Markdown requirements](#pdf-conversion-and-native-markdown-handoff)
   before CNB source processing begins.
 - Returns `202 Accepted` only after CA durably registers the Markdown for
   downstream processing.
@@ -1773,11 +1798,10 @@ Rules:
 
 After CA has registered the pointer and marked the upload `ready`, it
 automatically schedules summary extraction and context-bundle rebuilding. The
-operation re-fetches every ready upload, verifies each run binding, pointer,
-digest, page count, and page sequence, then stores compact selected-source
-context. It emits only `concept_note_context_bundle_ready` after the guarded
-bundle commit succeeds. The scoped context-bundle retry route reruns this
-downstream work without calling CityCatalyst OCR or Mistral.
+operation re-fetches and verifies every ready upload, then stores compact
+selected-source context with page locators for PDFs or anchors for native
+Markdown. It emits `concept_note_context_bundle_ready` only after the guarded
+commit; the scoped retry reruns downstream work without OCR or Mistral.
 
 #### `concept_note_extract_facts_from_context`
 
@@ -2279,8 +2303,8 @@ file layout.
 | Document tools                | Climate Advisor                  | Mutates draft document state through the CNB storage contract only.                                                                                                                                                                                            |
 | Source and OCR result storage | CityCatalyst                     | Authenticates the user, stores source PDFs and authoritative Markdown in CC S3, and owns all source/result objects. CA receives only the stable Markdown key and immutable metadata, never bucket credentials, a source-PDF key, or a presigned URL.           |
 | PDF-to-Markdown execution     | CityCatalyst                     | Owns the PostgreSQL queue, authenticated processor endpoint, Mistral configuration and calls, retries, validation, result persistence, and pointer delivery.                                                                                                   |
-| CNB Markdown ingestion        | Climate Advisor                  | Creates the run-bound upload row, verifies completed Markdown through authenticated CC, and durably registers its stable key, digest, page count, and lifecycle status. Later context assembly owns excerpt selection; CA owns no OCR state or Markdown bytes. |
-| Context-bundle assembly       | Climate Advisor                  | Automatically re-fetches every ready upload, runs page-complete reader fan-out, attempts optional GHGI/HIAP, persists guarded progress and the typed bundle, and exposes a downstream retry without storing source text or chunks.                             |
+| CNB Markdown ingestion | Climate Advisor | Verifies completed Markdown through CC and registers its key, digest, source locator metadata, and lifecycle status; CA stores no source bytes. |
+| Context-bundle assembly | Climate Advisor | Re-fetches every ready upload, runs source-aware readers, attempts optional GHGI/HIAP, and persists guarded progress plus the typed bundle. |
 | CC context loading            | CityCatalyst                     | Provides bounded city, project, GHGI, CCRA, and read-only persisted HIAP summaries through internal capabilities; HIAP assembly never starts or repairs prioritization.                                                                                        |
 | CC bridge routes              | CityCatalyst                     | Authenticated browser-facing proxy into CA workflow routes.                                                                                                                                                                                                    |
 | Capability registry           | CityCatalyst and Climate Advisor | Defines step-scoped capability exposure; no flat tool bag.                                                                                                                                                                                                     |
@@ -2290,9 +2314,9 @@ file layout.
 
 | Failure                      | User-visible behavior                                                     | System behavior                                                                                                                |
 | ---------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| GHGI or HIAP unavailable     | Continue with the ready PDF context and show an optional-source warning.  | Persist the optional status and `null`; do not block bundle readiness.                                                         |
-| No ready city PDF            | Keep the run in context assembly and offer bundle retry after upload.     | Persist `no_ready_city_pdf` as a retryable build failure.                                                                      |
-| PDF coverage/digest failure  | Show that source analysis must be retried or the upload investigated.     | Reject readiness; persist a retryable guarded build failure and never keep partial summaries.                                  |
+| GHGI or HIAP unavailable | Continue with available thin or grounded context and show an optional-source warning. | Persist the optional status and `null`; do not block bundle readiness. |
+| No ready city source | Start chat with thin context and recommend adding a source for grounding. | Complete a `thin` bundle with `source_documents` missing and no selected sources. |
+| Source coverage/digest failure | Show that source analysis must be retried or the upload investigated. | Reject readiness; persist a retryable guarded build failure and never keep partial summaries. |
 | Stale background build       | No user-visible regression.                                               | Ignore the old build ID so it cannot replace a newer ready-upload fingerprint.                                                 |
 | Interrupted background build | Offer the existing context-bundle retry.                                  | A periodic database reconciler marks builds older than one hour failed with `context_bundle_build_interrupted` and `retryable: true`. |
 | Funder profile missing       | Block drafting against a real template.                                   | Mark `profiling_funder` blocked.                                                                                               |

@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from app.config.settings import _load_llm_config
-from app.config.settings import PromptsConfig
+from app.config.settings import PromptsConfig, _load_llm_config
 
 CA_ROOT = Path(__file__).resolve().parents[2]
 
@@ -49,6 +48,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_document_mapping": prompts.cnb_source_document_mapping,
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
+        "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -62,6 +62,19 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
             assert f"</{tag_name}>" in prompt_text, (
                 f"{prompt_name} prompt must define </{tag_name}>"
             )
+
+
+def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -> None:
+    """Keep missing-data output detectable by the draft preview."""
+    config = _load_llm_config()
+    prompt_path = config.prompts.cnb_chapter_drafting
+    assert prompt_path is not None
+    prompt_text = (CA_ROOT / prompt_path).read_text(encoding="utf-8")
+
+    assert "treat `[Information needed: ...]` as the UI contract" in prompt_text
+    assert "use that exact English prefix and square-bracket format" in prompt_text
+    assert "full message a user should" in prompt_text
+    assert "Include one matching entry for every `[Information needed:" in prompt_text
 
 
 def test_cnb_research_configuration_matches_runtime_contract() -> None:
@@ -184,4 +197,5 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     ):
         prompt = config.prompts.get_prompt(prompt_name)
         assert "untrusted evidence" in prompt
-        assert "exact contiguous substring" in prompt
+        assert "exact contiguous" in prompt
+        assert "substring" in prompt

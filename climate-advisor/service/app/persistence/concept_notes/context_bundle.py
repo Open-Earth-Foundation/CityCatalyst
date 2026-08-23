@@ -1,4 +1,4 @@
-"""Atomic persistence for PDF-first Concept Note context-bundle builds."""
+"""Atomic persistence for Concept Note context-bundle builds."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from typing import Any
 from uuid import UUID
 
 from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
+from app.models.concept_note_markdown import source_format_from_filename
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
@@ -66,6 +67,7 @@ async def begin_build(
     """Snapshot ready uploads and persist the active guarded build."""
     try:
         async with session_factory() as session, session.begin():
+            # Snapshot the owned run and its currently ready source set atomically.
             run = await _require_owned_run(
                 session=session,
                 user_id=user_id,
@@ -90,13 +92,15 @@ async def begin_build(
             ]
             fingerprint = source_fingerprint(ready_uploads)
             previous = _bundle_progress(run.context_summary)
+
+            # Reuse only a ready bundle built from this exact source set.
             already_current = bool(
                 not force
                 and previous.get("status") == "ready"
                 and previous.get("source_fingerprint") == fingerprint
-                and ready_uploads
             )
             if not already_current:
+                # Preserve the last usable mode while its replacement is building.
                 status_counts: dict[str, int] = {}
                 for upload in uploads:
                     status_counts[upload.ingest_status] = (
@@ -108,6 +112,16 @@ async def begin_build(
                         "build_id": str(build_id),
                         "source_fingerprint": fingerprint,
                         "status": "building",
+                        "context_mode": (
+                            previous.get("context_mode")
+                            if previous.get("context_mode") in {"thin", "grounded"}
+                            else None
+                        ),
+                        "missing_context": (
+                            previous.get("missing_context")
+                            if isinstance(previous.get("missing_context"), list)
+                            else []
+                        ),
                         "source_counts": {
                             "ready": len(ready_uploads),
                             "queued": status_counts.get("queued", 0),
@@ -158,6 +172,7 @@ async def complete_build(
     """Commit only the active build's owned bundle sections."""
     try:
         async with session_factory() as session, session.begin():
+            # Reject stale workers before writing any bundle state.
             run = await _require_owned_run(
                 session=session,
                 user_id=user_id,
@@ -177,19 +192,20 @@ async def complete_build(
                     build_id,
                 )
                 return False
+
+            # Require one result per ready source; zero is valid for thin mode.
             ready_count = progress.get("source_counts", {}).get("ready")
             selected_upload_ids = {source.upload_id for source in selected_sources}
-            if (
-                not selected_sources
-                or ready_count != len(selected_sources)
-                or len(selected_upload_ids) != len(selected_sources)
+            if ready_count != len(selected_sources) or len(selected_upload_ids) != len(
+                selected_sources
             ):
                 raise ContextBundlePersistenceError(
                     "incomplete_source_coverage",
                     409,
-                    "Every ready city PDF must be analyzed exactly once",
+                    "Every ready city source must be analyzed exactly once",
                 )
 
+            # Replace derived bundle sections while retaining unrelated context.
             bundle_row = await session.get(
                 ConceptNoteContextBundleRow,
                 run_id,
@@ -207,11 +223,14 @@ async def complete_build(
             bundle.cc_context.hiap = hiap
             bundle_row.context_bundle = bundle.model_dump(mode="json")
 
+            # Publish typed readiness and advance new runs into interviewing.
             run.context_summary = _replace_bundle_progress(
                 run.context_summary,
                 {
                     **progress,
                     "status": "ready",
+                    "context_mode": "grounded" if selected_sources else "thin",
+                    "missing_context": [] if selected_sources else ["source_documents"],
                     "optional_sources": optional_sources,
                     "warnings": warnings,
                     "retryable": False,
@@ -304,8 +323,9 @@ async def recover_stale_builds(
                     ConceptNoteRun.status == "active",
                     ConceptNoteRun.updated_at < stale_before,
                     (
-                        ConceptNoteRun.context_summary["context_bundle"]["status"]
-                        .as_string()
+                        ConceptNoteRun.context_summary["context_bundle"][
+                            "status"
+                        ].as_string()
                         == "building"
                     ),
                 )
@@ -423,9 +443,10 @@ async def load_agent_context(
     user_id: str,
     run_id: UUID,
 ) -> dict[str, Any] | None:
-    """Return compact ready bundle context for the authorized CNB agent."""
+    """Return compact ready grounded or thin context for the authorized CNB agent."""
     try:
         async with session_factory() as session:
+            # Keep the last usable bundle available during a later rebuild.
             run = await _require_owned_run(
                 session=session,
                 user_id=user_id,
@@ -433,8 +454,12 @@ async def load_agent_context(
                 lock=False,
             )
             bundle_progress = _bundle_progress(run.context_summary)
-            if bundle_progress.get("status") != "ready":
+            if bundle_progress.get("status") != "ready" and bundle_progress.get(
+                "context_mode"
+            ) not in {"thin", "grounded"}:
                 return None
+
+            # Return only the compact context needed by the agent runtime.
             bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
@@ -448,7 +473,9 @@ async def load_agent_context(
                         "upload_id": str(source.upload_id),
                         "source_label": source.source_label,
                         "filename": source.filename,
+                        "source_format": source.source_format,
                         "page_count": source.page_count,
+                        "block_count": source.block_count,
                         "summary": source.summary,
                         "topics": source.topics,
                     }
@@ -504,6 +531,7 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
         {
             "upload_id": str(upload.upload_id),
             "sha256": upload.markdown_sha256,
+            "source_format": upload.source_format,
             "page_count": upload.page_count,
         }
         for upload in uploads
@@ -572,6 +600,7 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         user_id=upload.uploaded_by_user_id,
         filename=upload.filename,
         source_label=upload.source_label,
+        source_format=source_format_from_filename(upload.filename),
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,

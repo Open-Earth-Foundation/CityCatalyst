@@ -74,7 +74,11 @@ def test_cnb_chapter_drafting_prompt_defines_missing_information_ui_contract() -
     assert "treat `[Information needed: ...]` as the UI contract" in prompt_text
     assert "use that exact English prefix and square-bracket format" in prompt_text
     assert "full message a user should" in prompt_text
-    assert "Include one matching entry for every `[Information needed:" in prompt_text
+    assert "one item for every marker" in prompt_text
+    assert "`field_key` (string)" in prompt_text
+    assert "`why_asking` (string)" in prompt_text
+    assert "`critical` or `noncritical`" in prompt_text
+    assert "`source_refs`" in prompt_text
 
 
 def test_cnb_research_configuration_matches_runtime_contract() -> None:

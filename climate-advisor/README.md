@@ -633,6 +633,28 @@ Operationally:
   template chapter at H2. A separate reconciler marks drafting leases left
   `running` for more than one hour as retryable.
 
+### Concept Note missing-information lifecycle
+
+`GET` and `POST /v1/concept-notes/{run_id}/draft` expose the persisted chapter
+workspace. Draft responses include structured gaps, open/caveat counts,
+current/confirmed/proposed revision numbers, the confirmed body used for proposal
+comparison, and regeneration state.
+
+`POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` records an idempotent,
+version-checked `answer`, `correction`, `not_a_gap`, or non-critical
+`defer_as_caveat` action and then regenerates only the affected chapter. The
+answer remains audited if regeneration fails. Grounded answer suggestions keep
+their selected-source references; unsupported suggestions are removed.
+
+`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms one
+exact revision. Regeneration stops at Draft, and only this explicit user action
+sets Ready. Open critical gaps prevent confirmation and export, while persisted
+non-critical caveats remain visible and non-blocking. When a newly analyzed
+upload affects an already Ready chapter, the confirmed revision is preserved
+and a separate proposed revision requires renewed review. The CNB Alembic
+revision `20260823_120000` provisions the structured gap, append-only resolution,
+and exact-revision review contract.
+
 Run the focused contract test with:
 
 ```bash

@@ -27,7 +27,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type { ConceptNoteUploadResponse } from "@/util/types";
+import type {
+  ConceptNoteDraftChapter,
+  ConceptNoteGap,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 import {
   getConceptNoteBundleProgress,
@@ -79,6 +83,9 @@ export function ConceptNoteWorkspace({
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [workspaceMutationError, setWorkspaceMutationError] = useState<
+    string | null
+  >(null);
 
   const {
     data: run,
@@ -113,6 +120,10 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteContextBundleMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
+  const [resolveGapMutation, resolveGapState] =
+    api.useResolveConceptNoteGapMutation();
+  const [confirmChapterMutation, confirmChapterState] =
+    api.useConfirmConceptNoteChapterMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: activeUploadId ?? "" },
@@ -212,6 +223,47 @@ export function ConceptNoteWorkspace({
       await Promise.all([refetchDraft(), refetchRun()]);
     } catch {
       return;
+    }
+  }
+
+  async function resolveGap(
+    gap: ConceptNoteGap,
+    action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
+    answer?: string,
+  ): Promise<void> {
+    setWorkspaceMutationError(null);
+    try {
+      await resolveGapMutation({
+        runId,
+        gapId: gap.gap_id,
+        action,
+        answer,
+        expectedVersion: gap.version,
+        idempotencyKey: crypto.randomUUID(),
+      }).unwrap();
+      await refetchDraft();
+    } catch {
+      setWorkspaceMutationError(t("gap-resolution-error"));
+    }
+  }
+
+  async function confirmChapter(
+    chapter: ConceptNoteDraftChapter,
+  ): Promise<void> {
+    if (!chapter.revision_number) {
+      return;
+    }
+    setWorkspaceMutationError(null);
+    try {
+      await confirmChapterMutation({
+        runId,
+        chapterId: chapter.chapter_id,
+        expectedRevision: chapter.revision_number,
+        idempotencyKey: crypto.randomUUID(),
+      }).unwrap();
+      await refetchDraft();
+    } catch {
+      setWorkspaceMutationError(t("chapter-confirm-error"));
     }
   }
 
@@ -396,8 +448,14 @@ export function ConceptNoteWorkspace({
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
               documentGrounding={bundle.documentGrounding}
+              draft={draft ?? null}
+              isConfirmingChapter={confirmChapterState.isLoading}
+              isResolvingGap={resolveGapState.isLoading}
               lng={lng}
+              mutationError={workspaceMutationError}
+              onConfirmChapter={confirmChapter}
               onOpenContext={() => setTab("context")}
+              onResolveGap={resolveGap}
               threadId={run.thread_id}
             />
 
@@ -467,10 +525,12 @@ export function ConceptNoteWorkspace({
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
+                  isConfirmingChapter={confirmChapterState.isLoading}
                   isRetrying={retryBundleState.isLoading}
                   isStartingDraft={startDraftState.isLoading}
                   lng={lng}
                   noteName={run.name}
+                  onConfirmChapter={confirmChapter}
                   onOpenContext={() => setTab("context")}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
@@ -523,9 +583,7 @@ export function ConceptNoteWorkspace({
 
       <ExportDialog
         draft={draft ?? null}
-        hasGroundedSources={
-          bundle.contextMode === "grounded" && bundle.readySources > 0
-        }
+        hasGroundedSources={bundle.readySources > 0}
         lng={lng}
         noteName={run.name}
         open={exportOpen}

@@ -289,6 +289,13 @@ document analyses are reused by digest and analysis-contract version. Reader
 and chapter-drafter configuration remains in `llm_config.yaml`, and the public
 CNB contracts live under `app/models/cnb`.
 
+Chapter drafting persists structured information gaps in the CNB workspace.
+Versioned, idempotent gap resolutions append audit records and trigger an
+affected-chapter rewrite; a failed rewrite retains the user's resolution. A
+rewrite returns the chapter to Draft, and an exact-revision confirmation is the
+only transition to Ready. New source analyses run a bounded chapter-impact scan
+and append proposals without replacing the last user-confirmed revision.
+
 ## SSE Contract
 
 Climate Advisor streams these SSE event types today:

@@ -27,6 +27,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
+  ConceptNoteDraftChapter,
   ConceptNoteDraftChapterStatus,
   ConceptNoteDraftRunStatus,
   ConceptNoteDraftState,
@@ -49,10 +50,12 @@ interface DraftTabProps {
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
   isDraftRunning: boolean;
+  isConfirmingChapter: boolean;
   isRetrying: boolean;
   isStartingDraft: boolean;
   lng: string;
   noteName: string;
+  onConfirmChapter: (chapter: ConceptNoteDraftChapter) => Promise<void>;
   onOpenContext: () => void;
   onRetry: () => void;
   onStartDrafting: () => void;
@@ -249,10 +252,12 @@ export function DraftTab({
   draft,
   draftError,
   isDraftRunning,
+  isConfirmingChapter,
   isRetrying,
   isStartingDraft,
   lng,
   noteName,
+  onConfirmChapter,
   onOpenContext,
   onRetry,
   onStartDrafting,
@@ -702,20 +707,180 @@ export function DraftTab({
                     }}
                     scrollMarginTop={4}
                   >
-                    <Text
+                    <Flex
+                      align={{ base: "start", md: "center" }}
+                      justify="space-between"
+                      direction={{ base: "column", md: "row" }}
+                      gap={2}
                       mb={3}
                       pb={2}
                       borderBottom="1px solid"
                       borderColor="border.neutral"
-                      fontFamily="heading"
-                      fontSize="18px"
-                      fontWeight="semibold"
-                      lineHeight="28px"
-                      color="content.primary"
                     >
-                      {chapter.position + 1} · {chapter.title}
-                    </Text>
-                    {chapter.body_markdown ? (
+                      <Box>
+                        <Text
+                          fontFamily="heading"
+                          fontSize="18px"
+                          fontWeight="semibold"
+                          lineHeight="28px"
+                          color="content.primary"
+                        >
+                          {chapter.position + 1} · {chapter.title}
+                        </Text>
+                        <HStack mt={1} gap={2} flexWrap="wrap">
+                          <Text fontSize="10px" color="content.tertiary">
+                            {t(
+                              chapter.status === "needs_review"
+                                ? "chapter-status-needs-review"
+                                : chapter.status === "ready"
+                                  ? "chapter-status-ready"
+                                  : "chapter-status-draft",
+                            )}
+                          </Text>
+                          {chapter.open_gap_count > 0 && (
+                            <Text
+                              fontSize="10px"
+                              color="sentiment.warningDefault"
+                            >
+                              {t("chapter-open-gaps", {
+                                count: chapter.open_gap_count,
+                              })}
+                            </Text>
+                          )}
+                          {chapter.caveat_count > 0 && (
+                            <Text fontSize="10px" color="content.tertiary">
+                              {t("chapter-caveats", {
+                                count: chapter.caveat_count,
+                              })}
+                            </Text>
+                          )}
+                          {chapter.proposed_revision_number && (
+                            <Text fontSize="10px" color="content.link">
+                              {t("chapter-proposed-revision")}
+                            </Text>
+                          )}
+                        </HStack>
+                      </Box>
+                      {chapter.status === "draft" &&
+                        chapter.open_gap_count === 0 &&
+                        chapter.regeneration_status === "idle" && (
+                          <Button
+                            size="xs"
+                            variant="solid"
+                            loading={isConfirmingChapter}
+                            onClick={() => void onConfirmChapter(chapter)}
+                          >
+                            <Icon as={LuCheck} />
+                            {t("review-and-confirm")}
+                          </Button>
+                        )}
+                    </Flex>
+                    {chapter.regeneration_status === "processing" && (
+                      <Text mb={3} fontSize="label.sm" color="content.link">
+                        {t("chapter-regenerating")}
+                      </Text>
+                    )}
+                    {chapter.regeneration_status === "failed" && (
+                      <Text
+                        mb={3}
+                        fontSize="label.sm"
+                        color="sentiment.negativeDefault"
+                      >
+                        {t("chapter-regeneration-failed")}
+                      </Text>
+                    )}
+                    {chapter.proposed_revision_number &&
+                    chapter.confirmed_body_markdown &&
+                    chapter.body_markdown ? (
+                      <Box
+                        border="1px solid"
+                        borderColor="content.link"
+                        borderRadius="rounded"
+                        bg="background.neutral"
+                        p={3}
+                      >
+                        <Text
+                          fontSize="body.sm"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t("chapter-proposed-review-title")}
+                        </Text>
+                        <Text
+                          mt={1}
+                          fontSize="label.sm"
+                          color="content.secondary"
+                        >
+                          {t("chapter-proposed-review-description")}
+                        </Text>
+                        <Flex
+                          direction={{ base: "column", lg: "row" }}
+                          gap={3}
+                          mt={3}
+                        >
+                          <Box
+                            flex={1}
+                            minW={0}
+                            border="1px solid"
+                            borderColor="border.neutral"
+                            borderRadius="rounded"
+                            bg="base.light"
+                            p={3}
+                          >
+                            <Text
+                              mb={2}
+                              fontSize="10px"
+                              fontWeight="semibold"
+                              color="content.tertiary"
+                              textTransform="uppercase"
+                            >
+                              {t("chapter-confirmed-version", {
+                                revision: chapter.confirmed_revision_number,
+                              })}
+                            </Text>
+                            <ReactMarkdown
+                              components={markdownComponents}
+                              remarkPlugins={[remarkGfm]}
+                            >
+                              {chapterPreviewMarkdown(
+                                chapter.confirmed_body_markdown,
+                                chapter.title,
+                              )}
+                            </ReactMarkdown>
+                          </Box>
+                          <Box
+                            flex={1}
+                            minW={0}
+                            border="1px solid"
+                            borderColor="content.link"
+                            borderRadius="rounded"
+                            bg="base.light"
+                            p={3}
+                          >
+                            <Text
+                              mb={2}
+                              fontSize="10px"
+                              fontWeight="semibold"
+                              color="content.link"
+                              textTransform="uppercase"
+                            >
+                              {t("chapter-proposed-version", {
+                                revision: chapter.proposed_revision_number,
+                              })}
+                            </Text>
+                            <ReactMarkdown
+                              components={markdownComponents}
+                              remarkPlugins={[remarkGfm]}
+                            >
+                              {chapterPreviewMarkdown(
+                                chapter.body_markdown,
+                                chapter.title,
+                              )}
+                            </ReactMarkdown>
+                          </Box>
+                        </Flex>
+                      </Box>
+                    ) : chapter.body_markdown ? (
                       <ReactMarkdown
                         components={markdownComponents}
                         remarkPlugins={[remarkGfm]}

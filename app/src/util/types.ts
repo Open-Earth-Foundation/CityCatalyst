@@ -1076,6 +1076,41 @@ export type ConceptNoteDraftRunStatus =
 export type ConceptNoteDraftChapterStatus =
   "empty" | "draft" | "needs_review" | "ready";
 
+export type ConceptNoteGapSeverity = "critical" | "noncritical";
+export type ConceptNoteGapState =
+  "open" | "processing" | "resolved" | "dismissed" | "caveat";
+export type ConceptNoteGapResolutionAction =
+  "answer" | "correction" | "not_a_gap" | "defer_as_caveat" | "evidence_update";
+
+export interface ConceptNoteGapSuggestion {
+  value: string;
+  source_refs: string[];
+}
+
+export interface ConceptNoteGapResolution {
+  resolution_id: string;
+  action: ConceptNoteGapResolutionAction;
+  answer: string | null;
+  actor_user_id: string;
+  source_refs: string[];
+  created_at: string;
+}
+
+export interface ConceptNoteGap {
+  gap_id: string;
+  field_key: string;
+  question: string;
+  why_asking: string;
+  severity: ConceptNoteGapSeverity;
+  state: ConceptNoteGapState;
+  suggestions: ConceptNoteGapSuggestion[];
+  source_refs: string[];
+  version: number;
+  resolution: ConceptNoteGapResolution | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ConceptNoteDraftChapter {
   chapter_id: string;
   template_section_id: string | null;
@@ -1085,8 +1120,15 @@ export interface ConceptNoteDraftChapter {
   required: boolean;
   user_locked: boolean;
   body_markdown: string | null;
-  missing_information: string[];
+  gaps: ConceptNoteGap[];
+  open_gap_count: number;
+  caveat_count: number;
   revision_number: number | null;
+  confirmed_body_markdown: string | null;
+  confirmed_revision_number: number | null;
+  proposed_revision_number: number | null;
+  regeneration_status: "idle" | "processing" | "failed";
+  regeneration_error: string | null;
 }
 
 export interface ConceptNoteDraftState {
@@ -1095,8 +1137,25 @@ export interface ConceptNoteDraftState {
   completed_chapters: number;
   total_chapters: number;
   current_chapter_id: string | null;
+  focused_gap_id: string | null;
   error_code: string | null;
   chapters: ConceptNoteDraftChapter[];
+}
+
+export interface ResolveConceptNoteGapRequest {
+  runId: string;
+  gapId: string;
+  action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat";
+  answer?: string;
+  expectedVersion: number;
+  idempotencyKey: string;
+}
+
+export interface ConfirmConceptNoteChapterRequest {
+  runId: string;
+  chapterId: string;
+  expectedRevision: number;
+  idempotencyKey: string;
 }
 
 export interface StartConceptNoteRunRequest {

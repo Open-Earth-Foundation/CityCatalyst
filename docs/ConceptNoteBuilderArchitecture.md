@@ -786,6 +786,7 @@ important planning rules are:
 These are the logical workflow/document tables the CNB backend needs to use.
 `concept_note_chapters`, `concept_note_chapter_revisions`,
 `concept_note_evidence_links`, `concept_note_gaps`,
+`concept_note_gap_resolutions`, `concept_note_chapter_reviews`,
 `concept_note_matched_projects`, and `concept_note_exports` live under
 `CNB_DATABASE_URL`. Climate Advisor consumes them through typed
 service/repository contracts.
@@ -805,7 +806,9 @@ erDiagram
     concept_note_runs ||--o{ concept_note_matched_projects : "stores"
     concept_note_runs ||--o{ concept_note_exports : "produces"
     concept_note_chapters ||--o{ concept_note_chapter_revisions : "has"
+    concept_note_chapters ||--o{ concept_note_chapter_reviews : "confirms"
     concept_note_chapters ||--o{ concept_note_evidence_links : "cites"
+    concept_note_gaps ||--o{ concept_note_gap_resolutions : "records"
 
     concept_note_runs {
         uuid run_id
@@ -857,9 +860,14 @@ erDiagram
         uuid chapter_id
         string field_key
         string severity
-        text reason
+        text question
+        text why_asking
+        jsonb suggestions
+        jsonb source_refs
         string status
+        int version
         timestamp created_at
+        timestamp updated_at
     }
 
     concept_note_chapters {
@@ -871,6 +879,9 @@ erDiagram
         string status
         bool required
         bool user_locked
+        uuid confirmed_revision_id
+        string regeneration_status
+        string regeneration_error
         timestamp created_at
         timestamp updated_at
     }
@@ -883,6 +894,26 @@ erDiagram
         string change_type
         text body_markdown
         jsonb patch_summary
+        timestamp created_at
+    }
+
+    concept_note_gap_resolutions {
+        uuid resolution_id
+        uuid gap_id
+        string action
+        text answer
+        string actor_user_id
+        jsonb source_refs
+        uuid idempotency_key
+        timestamp created_at
+    }
+
+    concept_note_chapter_reviews {
+        uuid review_id
+        uuid chapter_id
+        uuid revision_id
+        string user_id
+        uuid idempotency_key
         timestamp created_at
     }
 
@@ -935,6 +966,12 @@ the identifier into the Climate Advisor workflow.
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
 revision.
+
+Gap resolutions and chapter reviews are append-only. A gap resolution is unique
+per `(gap_id, idempotency_key)`, and a chapter review is unique per
+`(chapter_id, idempotency_key)`. `concept_note_chapters.confirmed_revision_id`
+points to the exact revision that the user last confirmed; a newer source-driven
+revision therefore remains a proposal instead of replacing confirmed content.
 
 For uploads, the authenticated CityCatalyst upload route generates a new UUID v4
 `upload_id` for each accepted initial request. CA first creates the run-bound
@@ -1382,8 +1419,11 @@ flowchart TB
     Revisions --> Chapters
     DocService --> Gaps["Missing facts / gaps"]
     Gaps --> Workspace
-    Workspace --> UserAnswers["User answers<br/>or marks unavailable"]
+    Workspace --> UserAnswers["Answer, dismiss,<br/>or defer noncritical gap"]
     UserAnswers --> DocService
+    DocService --> Regenerate["Regenerate affected chapter"]
+    Regenerate --> DraftReview["Draft<br/>Review & confirm"]
+    DraftReview -->|"explicit user confirmation"| Ready["Ready"]
     Context --> EvidenceLinks["Evidence links<br/>claim -> selected source"]
     Chapters --> EvidenceLinks
     EvidenceLinks --> Workspace
@@ -1401,8 +1441,19 @@ How it works:
 - The workspace shows editable chapters as the main document surface.
 - Every add, delete, restore, reorder, or text edit creates a chapter revision.
   Revisions are an audit/history trail; they do not feed evidence links.
-- Missing facts are stored as gaps and surfaced to the user in the workspace.
-  They do not create chapters by themselves.
+- Missing facts are stored as structured gaps with a stable field key, focused
+  question, rationale, severity, state, grounded suggestions, source references,
+  and optimistic-concurrency version. They do not create chapters by themselves.
+- Answering or dismissing a gap appends an audit event and regenerates only its
+  chapter. A non-critical gap may instead remain visible as a non-blocking
+  caveat; a critical gap cannot be deferred.
+- Regeneration produces a Draft. Only explicit confirmation of the current
+  revision—through the Draft view or the equivalent chat action—sets Ready.
+  Clima may announce that a chapter is ready for review but cannot auto-promote
+  it.
+- A newly processed source runs an impact scan. Unaffected Ready chapters stay
+  unchanged; affected Ready chapters retain their confirmed revision and receive
+  a proposed revision or a newly opened blocking gap that requires review.
 - Evidence links are shown to the user to explain why a claim was grounded.
   They are review/audit UI only and are ignored by DOCX/PDF export.
 - A five-minute reconciler marks chapter-drafting leases left `running` for more
@@ -1418,6 +1469,9 @@ Chapter fields should support the editable document surface:
 - `status`: `empty`, `draft`, `needs_review`, `ready`, `deleted`
 - `required`
 - `user_locked`
+- `confirmed_revision_id`
+- `regeneration_status`: `idle`, `processing`, `failed`
+- `regeneration_error`
 
 `concept_note_chapters` stores chapter metadata only. Chapter Markdown is stored
 only in `concept_note_chapter_revisions.body_markdown`. The current chapter body
@@ -1439,6 +1493,27 @@ Revision fields should support history and conflict handling:
 Every revision stores the complete `body_markdown`, including revisions created
 for non-text chapter operations, so any historical chapter state can be
 reconstructed without reading Markdown from `concept_note_chapters`.
+
+### Structured gap lifecycle API
+
+The browser and Climate Advisor expose the same run-scoped mutations through
+CityCatalyst's authenticated proxies:
+
+- `GET /v1/concept-notes/{run_id}/draft` returns chapters, structured gaps,
+  open/caveat counts, current/confirmed/proposed revision numbers, the preserved
+  confirmed body for proposal comparison, regeneration state, and one focused
+  gap.
+- `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` accepts `action`, an
+  optional answer, `expected_version`, and an idempotency key. Valid actions are
+  `answer`, `correction`, `not_a_gap`, and `defer_as_caveat`.
+- `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` accepts the
+  expected current revision and an idempotency key.
+
+Both mutations recheck run ownership. Stale gap versions or chapter revisions
+return a conflict. An accepted answer remains in the append-only resolution log
+if regeneration fails; the chapter exposes a retryable failure state rather
+than losing user input. Existing draft polling reports processing and completion
+transitions, so this flow does not require SSE.
 
 ## Document Tool Deep Dive
 

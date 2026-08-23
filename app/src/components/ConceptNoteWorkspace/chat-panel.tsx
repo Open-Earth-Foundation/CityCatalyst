@@ -8,9 +8,13 @@ import type { IconType } from "react-icons";
 import {
   LuArrowRight,
   LuBot,
+  LuCheck,
   LuCircleAlert,
   LuDatabase,
   LuFilePlus2,
+  LuLightbulb,
+  LuPencil,
+  LuRefreshCw,
   LuSend,
 } from "react-icons/lu";
 import ReactMarkdown from "react-markdown";
@@ -19,14 +23,29 @@ import remarkGfm from "remark-gfm";
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
+import type {
+  ConceptNoteDraftChapter,
+  ConceptNoteDraftState,
+  ConceptNoteGap,
+} from "@/util/types";
 
 import { useConceptNoteChat } from "./use-concept-note-chat";
 
 interface ConceptNoteChatPanelProps {
   bundleStatus: string | null;
   documentGrounding: "none" | "uploaded_evidence" | null;
+  draft: ConceptNoteDraftState | null;
+  isConfirmingChapter: boolean;
+  isResolvingGap: boolean;
   lng: string;
+  mutationError: string | null;
+  onConfirmChapter: (chapter: ConceptNoteDraftChapter) => Promise<void>;
   onOpenContext: () => void;
+  onResolveGap: (
+    gap: ConceptNoteGap,
+    action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
+    answer?: string,
+  ) => Promise<void>;
   threadId: string | null;
 }
 
@@ -163,8 +182,14 @@ const assistantMarkdownComponents = createChatMarkdownComponents({
 export function ConceptNoteChatPanel({
   bundleStatus,
   documentGrounding,
+  draft,
+  isConfirmingChapter,
+  isResolvingGap,
   lng,
+  mutationError,
+  onConfirmChapter,
   onOpenContext,
+  onResolveGap,
   threadId,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
@@ -176,6 +201,35 @@ export function ConceptNoteChatPanel({
     messages,
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({ lng, threadId });
+  const [answeringGapId, setAnsweringGapId] = useState<string | null>(null);
+  const chapters = draft?.chapters ?? [];
+  const allGaps = chapters.flatMap((chapter) => chapter.gaps);
+  const focusedGap =
+    allGaps.find((gap) => gap.gap_id === draft?.focused_gap_id) ?? null;
+  const answeringGap =
+    allGaps.find((gap) => gap.gap_id === answeringGapId) ?? null;
+  const focusedChapter = focusedGap
+    ? chapters.find((chapter) =>
+        chapter.gaps.some((gap) => gap.gap_id === focusedGap.gap_id),
+      )
+    : null;
+  const reviewChapter =
+    chapters.find(
+      (chapter) =>
+        chapter.status === "draft" &&
+        chapter.open_gap_count === 0 &&
+        chapter.regeneration_status === "idle",
+    ) ?? null;
+  const latestResolvedGap = allGaps
+    .filter((gap) => gap.state === "resolved" || gap.state === "caveat")
+    .sort(
+      (left, right) =>
+        new Date(right.updated_at).getTime() -
+        new Date(left.updated_at).getTime(),
+    )[0];
+  const failedGap = chapters
+    .find((chapter) => chapter.regeneration_status === "failed")
+    ?.gaps.find((gap) => gap.state === "processing" && gap.resolution);
   const hasUploadedEvidence =
     bundleStatus === "ready" && documentGrounding === "uploaded_evidence";
   const contextStatus = hasUploadedEvidence
@@ -202,12 +256,38 @@ export function ConceptNoteChatPanel({
     event: FormEvent<HTMLDivElement>,
   ): Promise<void> {
     event.preventDefault();
-    if (!input.trim()) {
+    const content = input.trim();
+    if (!content) {
       return;
     }
-    const content = input;
     setInput("");
+    if (answeringGap) {
+      await onResolveGap(
+        answeringGap,
+        answeringGap.state === "open" ? "answer" : "correction",
+        content,
+      );
+      setAnsweringGapId(null);
+      return;
+    }
     await sendChatMessage(content);
+  }
+
+  function beginAnswer(gap: ConceptNoteGap, value = ""): void {
+    setAnsweringGapId(gap.gap_id);
+    setInput(value);
+  }
+
+  async function retryFailedGap(gap: ConceptNoteGap): Promise<void> {
+    const resolution = gap.resolution;
+    if (!resolution || resolution.action === "evidence_update") {
+      return;
+    }
+    const action =
+      resolution.action === "answer" || resolution.action === "correction"
+        ? "correction"
+        : resolution.action;
+    await onResolveGap(gap, action, resolution.answer ?? undefined);
   }
 
   return (
@@ -289,6 +369,287 @@ export function ConceptNoteChatPanel({
           status={contextStatus}
         />
 
+        {focusedGap && focusedChapter && (
+          <Box
+            border="1px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+            bg="base.light"
+            p={4}
+            data-testid="concept-note-focused-gap"
+          >
+            <HStack justify="space-between" gap={2} align="start">
+              <Box>
+                <Text
+                  fontSize="10px"
+                  fontWeight="semibold"
+                  color="sentiment.warningDefault"
+                  letterSpacing="1.5px"
+                  textTransform="uppercase"
+                >
+                  {t("gap-quick-decision")}
+                </Text>
+                <Text mt={1} fontSize="label.sm" color="content.tertiary">
+                  {focusedChapter.title}
+                </Text>
+              </Box>
+              <Text
+                borderRadius="pill"
+                bg="sentiment.warningOverlay"
+                px={2}
+                py={1}
+                fontSize="10px"
+                fontWeight="semibold"
+                color="sentiment.warningDefault"
+              >
+                {t(
+                  focusedGap.severity === "critical"
+                    ? "gap-critical"
+                    : "gap-noncritical",
+                )}
+              </Text>
+            </HStack>
+            <Text
+              mt={3}
+              fontFamily="heading"
+              fontSize="body.md"
+              fontWeight="semibold"
+              color="content.primary"
+            >
+              {focusedGap.question}
+            </Text>
+            <Box mt={3} borderRadius="rounded" bg="background.neutral" p={3}>
+              <Text
+                fontSize="label.sm"
+                fontWeight="semibold"
+                color="content.primary"
+              >
+                {t("gap-why-asking")}
+              </Text>
+              <Text
+                mt={1}
+                fontSize="label.sm"
+                lineHeight="20px"
+                color="content.secondary"
+              >
+                {focusedGap.why_asking}
+              </Text>
+            </Box>
+
+            {focusedGap.suggestions.length > 0 && (
+              <VStack align="stretch" mt={3} gap={2}>
+                <Text
+                  fontSize="label.sm"
+                  fontWeight="semibold"
+                  color="content.secondary"
+                >
+                  {t("gap-grounded-suggestions")}
+                </Text>
+                {focusedGap.suggestions.map((suggestion) => (
+                  <Button
+                    key={`${focusedGap.gap_id}-${suggestion.value}`}
+                    size="sm"
+                    variant="outline"
+                    justifyContent="flex-start"
+                    h="auto"
+                    py={2}
+                    whiteSpace="normal"
+                    disabled={isResolvingGap}
+                    onClick={() => beginAnswer(focusedGap, suggestion.value)}
+                  >
+                    <Icon as={LuLightbulb} flexShrink={0} />
+                    {suggestion.value}
+                  </Button>
+                ))}
+                <Text fontSize="10px" color="content.tertiary">
+                  {t("gap-suggestion-sources", {
+                    sources: focusedGap.source_refs.join(", "),
+                  })}
+                </Text>
+              </VStack>
+            )}
+
+            <HStack mt={4} gap={2} flexWrap="wrap">
+              <Button
+                size="sm"
+                variant="solid"
+                disabled={isResolvingGap}
+                onClick={() => beginAnswer(focusedGap)}
+              >
+                <Icon as={LuPencil} />
+                {t("gap-answer")}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                disabled={!threadId || isGenerating}
+                onClick={() =>
+                  void sendChatMessage(
+                    t("gap-show-examples-prompt", {
+                      question: focusedGap.question,
+                    }),
+                  )
+                }
+              >
+                {t("gap-show-examples")}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={isResolvingGap}
+                onClick={() => void onResolveGap(focusedGap, "not_a_gap")}
+              >
+                {t("gap-not-a-gap")}
+              </Button>
+              {focusedGap.severity === "noncritical" && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={isResolvingGap}
+                  onClick={() =>
+                    void onResolveGap(focusedGap, "defer_as_caveat")
+                  }
+                >
+                  {t("gap-not-clear-yet")}
+                </Button>
+              )}
+            </HStack>
+          </Box>
+        )}
+
+        {failedGap?.resolution && (
+          <Box
+            border="1px solid"
+            borderColor="sentiment.negativeDefault"
+            borderRadius="rounded"
+            bg="sentiment.negativeOverlay"
+            p={4}
+          >
+            <HStack gap={2} color="sentiment.negativeDefault">
+              <Icon as={LuCircleAlert} />
+              <Text fontSize="label.sm" fontWeight="semibold">
+                {t("gap-regeneration-failed-title")}
+              </Text>
+            </HStack>
+            <Text mt={2} fontSize="body.sm" color="content.primary">
+              {failedGap.question}
+            </Text>
+            {failedGap.resolution.answer && (
+              <Text mt={1} fontSize="label.sm" color="content.secondary">
+                {failedGap.resolution.answer}
+              </Text>
+            )}
+            <Text mt={2} fontSize="label.sm" color="content.secondary">
+              {t("gap-regeneration-failed-description")}
+            </Text>
+            <Button
+              mt={3}
+              size="sm"
+              variant="outline"
+              loading={isResolvingGap}
+              onClick={() => void retryFailedGap(failedGap)}
+            >
+              <Icon as={LuRefreshCw} />
+              {t("retry")}
+            </Button>
+          </Box>
+        )}
+
+        {latestResolvedGap?.resolution && (
+          <Box
+            border="1px solid"
+            borderColor="sentiment.positiveDefault"
+            borderRadius="rounded"
+            bg="sentiment.positiveOverlay"
+            p={4}
+          >
+            <HStack gap={2} color="sentiment.positiveDefault">
+              <Icon as={LuCheck} />
+              <Text fontSize="label.sm" fontWeight="semibold">
+                {t(
+                  latestResolvedGap.state === "caveat"
+                    ? "gap-caveat-kept"
+                    : "gap-resolved",
+                )}
+              </Text>
+            </HStack>
+            <Text mt={2} fontSize="body.sm" color="content.primary">
+              {latestResolvedGap.question}
+            </Text>
+            {latestResolvedGap.resolution.answer && (
+              <Text mt={1} fontSize="label.sm" color="content.secondary">
+                {latestResolvedGap.resolution.answer}
+              </Text>
+            )}
+            {latestResolvedGap.resolution.source_refs.length > 0 && (
+              <Text mt={1} fontSize="10px" color="content.tertiary">
+                {t("gap-suggestion-sources", {
+                  sources: latestResolvedGap.resolution.source_refs.join(", "),
+                })}
+              </Text>
+            )}
+            <Text mt={2} fontSize="10px" color="content.tertiary">
+              {t(
+                latestResolvedGap.resolution.actor_user_id === "system"
+                  ? "gap-updated-from-source"
+                  : "gap-confirmed-by-you",
+                {
+                  date: new Intl.DateTimeFormat(lng, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(new Date(latestResolvedGap.resolution.created_at)),
+                },
+              )}
+            </Text>
+            <Button
+              mt={3}
+              size="xs"
+              variant="ghost"
+              disabled={isResolvingGap}
+              onClick={() =>
+                beginAnswer(
+                  latestResolvedGap,
+                  latestResolvedGap.resolution?.answer ?? "",
+                )
+              }
+            >
+              <Icon as={LuPencil} />
+              {t("gap-correct-answer")}
+            </Button>
+          </Box>
+        )}
+
+        {reviewChapter && (
+          <Box
+            border="1px solid"
+            borderColor="content.link"
+            borderRadius="rounded"
+            bg="base.light"
+            p={4}
+          >
+            <Text
+              fontSize="body.sm"
+              fontWeight="semibold"
+              color="content.primary"
+            >
+              {t("chapter-ready-for-review", { chapter: reviewChapter.title })}
+            </Text>
+            <Text mt={1} fontSize="label.sm" color="content.secondary">
+              {t("chapter-review-required-description")}
+            </Text>
+            <Button
+              mt={3}
+              size="sm"
+              variant="solid"
+              loading={isConfirmingChapter}
+              onClick={() => void onConfirmChapter(reviewChapter)}
+            >
+              <Icon as={LuCheck} />
+              {t("review-and-confirm")}
+            </Button>
+          </Box>
+        )}
+
         {messages.map((message) => (
           <Box
             key={message.id}
@@ -332,6 +693,17 @@ export function ConceptNoteChatPanel({
             <Text fontSize="label.sm">{chatError}</Text>
           </HStack>
         )}
+        {mutationError && (
+          <HStack
+            role="alert"
+            align="start"
+            gap={2}
+            color="sentiment.negativeDefault"
+          >
+            <Icon as={LuCircleAlert} mt={0.5} />
+            <Text fontSize="label.sm">{mutationError}</Text>
+          </HStack>
+        )}
       </VStack>
 
       <Box
@@ -341,12 +713,61 @@ export function ConceptNoteChatPanel({
         p={3}
         onSubmit={submitMessage}
       >
+        {answeringGap && (
+          <Flex
+            align="start"
+            justify="space-between"
+            gap={3}
+            mb={2}
+            borderRadius="rounded"
+            bg="sentiment.warningOverlay"
+            p={2.5}
+          >
+            <Box minW={0}>
+              <Text
+                fontSize="10px"
+                fontWeight="semibold"
+                color="sentiment.warningDefault"
+              >
+                {t("gap-answer-mode")}
+              </Text>
+              <Text
+                truncate
+                mt={0.5}
+                fontSize="label.sm"
+                color="content.secondary"
+              >
+                {answeringGap.question}
+              </Text>
+            </Box>
+            <Button
+              type="button"
+              size="xs"
+              variant="ghost"
+              disabled={isResolvingGap}
+              onClick={() => {
+                setAnsweringGapId(null);
+                setInput("");
+              }}
+            >
+              {t("cancel")}
+            </Button>
+          </Flex>
+        )}
         <HStack gap={2}>
           <Input
             value={input}
-            disabled={!threadId || historyLoading || isGenerating}
+            disabled={
+              answeringGap
+                ? isResolvingGap
+                : !threadId || historyLoading || isGenerating
+            }
             placeholder={
-              threadId ? t("chat-input-placeholder") : t("chat-unavailable")
+              answeringGap
+                ? t("gap-answer-placeholder")
+                : threadId
+                  ? t("chat-input-placeholder")
+                  : t("chat-unavailable")
             }
             bg="background.neutral"
             borderColor="border.neutral"
@@ -354,16 +775,20 @@ export function ConceptNoteChatPanel({
           />
           <Button
             type="submit"
-            disabled={!threadId || !input.trim() || historyLoading}
-            loading={isGenerating}
+            disabled={
+              !input.trim() ||
+              (answeringGap ? isResolvingGap : !threadId || historyLoading)
+            }
+            loading={answeringGap ? isResolvingGap : isGenerating}
             size="sm"
             variant="solid"
-            aria-label={t("send-message")}
+            aria-label={t(answeringGap ? "submit-answer" : "send-message")}
           >
             <Icon as={LuSend} />
+            {answeringGap ? t("submit-answer") : null}
           </Button>
         </HStack>
-        {!threadId && (
+        {!threadId && !answeringGap && (
           <Text mt={2} fontSize="label.sm" color="content.tertiary">
             {t("chat-thread-unavailable")}
           </Text>

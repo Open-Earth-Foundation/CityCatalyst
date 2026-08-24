@@ -2,7 +2,9 @@
 
 This cron job endpoint checks the status of pending HIAP prioritization jobs and starts new batches when ready.
 
-**Schedule:** Runs every five minutes (configured in `k8s/cc-check-hiap-jobs.yml`)
+**Schedule:** Runs every five minutes. Development and production use
+`k8s/cc-check-hiap-jobs.yml`; the test deployment uses
+`k8s/test/cc-test-check-hiap-jobs.yml` so it targets the `cc-test-web` service.
 
 ---
 
@@ -222,5 +224,6 @@ kubectl logs -l job-name=citycatalyst-check-hiap-jobs --tail=20 | grep -E "START
 
 - **API Documentation**: [../../v1/admin/bulk-hiap-prioritization/README.md](../../v1/admin/bulk-hiap-prioritization/README.md) - Full system documentation
 - **Kubernetes Config**: `k8s/cc-check-hiap-jobs.yml` - CronJob definition
+- **Test Kubernetes Config**: `k8s/test/cc-test-check-hiap-jobs.yml` - Test CronJob targeting `cc-test-web`
 - **Ingress Security**: `k8s/cc-ingress.yml` - Network-level protection
 - **Tests**: `app/tests/api/bulk-hiap-prioritization.jest.ts` - Integration tests

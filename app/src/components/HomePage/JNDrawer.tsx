@@ -41,12 +41,11 @@ import type { TFunction } from "i18next";
 
 import { NavigationAccordion } from "../ui/navigation-accordion";
 import { CustomSelect } from "../ui/custom-select";
-import { Modules } from "@/util/constants";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import ProgressLoader from "../ProgressLoader";
 import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
+import { isModuleVisible } from "@/util/module-visibility";
 
 const ProjectFilterSection = ({
   t,
@@ -763,14 +762,7 @@ const JNDrawer = ({
                   <Box maxH="500px" overflowY="auto">
                     {stageOrder.map((stage) => {
                       const modules = projectModules.filter((mod) => {
-                        // Filter out CCRA module unless feature flag is enabled
-                        if (
-                          mod.id === Modules.CCRA.id &&
-                          !hasFeatureFlag(FeatureFlags.CCRA_MODULE)
-                        ) {
-                          return false;
-                        }
-                        return mod.stage === stage;
+                        return mod.stage === stage && isModuleVisible(mod.id);
                       });
 
                       if (modules.length === 0) return null;

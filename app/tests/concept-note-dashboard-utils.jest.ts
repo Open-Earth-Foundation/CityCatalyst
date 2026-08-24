@@ -8,6 +8,7 @@ import {
   getRunProgressPercent,
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
+  hasPrioritizedHiapActions,
 } from "@/components/ConceptNoteDashboard/utils";
 
 describe("Concept Note dashboard presentation helpers", () => {
@@ -88,6 +89,25 @@ describe("Concept Note dashboard presentation helpers", () => {
       missingContext: [],
       readySources: 0,
     });
+  });
+
+  it("reports HIAP context only when prioritized actions exist", () => {
+    expect(hasPrioritizedHiapActions(null)).toBe(false);
+    expect(
+      hasPrioritizedHiapActions({ error: "module-access-denied-hiap" }),
+    ).toBe(false);
+    expect(
+      hasPrioritizedHiapActions({
+        mitigation: { rankedActions: [] },
+        adaptation: { rankedActions: [] },
+      }),
+    ).toBe(false);
+    expect(
+      hasPrioritizedHiapActions({
+        mitigation: { rankedActions: [{ id: "action-1" }] },
+        adaptation: { rankedActions: [] },
+      }),
+    ).toBe(true);
   });
 
   it("derives conservative run progress without inventing document work", () => {

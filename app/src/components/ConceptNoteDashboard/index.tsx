@@ -42,6 +42,7 @@ import {
   getRunProgressPercent,
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
+  hasPrioritizedHiapActions,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -94,7 +95,7 @@ export function ConceptNoteDashboard({
     : t("no-inventory");
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
   const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
-  const hiapConnected = Boolean(cityDashboard?.widgets.hiap);
+  const hiapConnected = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
 
   return (
     <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
@@ -256,7 +257,9 @@ export function ConceptNoteDashboard({
                     t("not-available")
                   )
                 }
-                detail={t("hiap-detail")}
+                detail={t(
+                  hiapConnected ? "hiap-detail" : "hiap-impact-missing-summary",
+                )}
               />
               <ContextTile
                 icon={LuFolderOpen}

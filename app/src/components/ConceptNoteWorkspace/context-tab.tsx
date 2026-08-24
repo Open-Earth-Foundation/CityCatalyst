@@ -240,13 +240,54 @@ export function ContextTab({
           <ContextCard
             label={t("hiap-context")}
             value={hiapIncluded ? hiapStatusLabel : t("not-available")}
-            details={[t("hiap-optional")]}
+            details={[
+              t(hiapIncluded ? "hiap-optional" : "hiap-impact-missing-summary"),
+            ]}
             status={t(
               hiapIncluded ? "included-in-run" : "bundle-source-missing",
             )}
             tone={hiapIncluded ? "positive" : "warning"}
           />
         </Grid>
+
+        {!hiapIncluded && (
+          <Flex
+            data-testid="hiap-missing-impact"
+            role="status"
+            align="start"
+            gap={3}
+            border="1px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+            bg="sentiment.warningOverlay"
+            p={4}
+          >
+            <Icon
+              as={LuCircleAlert}
+              flexShrink={0}
+              mt={0.5}
+              color="sentiment.warningDefault"
+            />
+            <Box>
+              <Text
+                fontFamily="heading"
+                fontSize="body.sm"
+                fontWeight="semibold"
+                color="content.primary"
+              >
+                {t("hiap-impact-missing-title")}
+              </Text>
+              <Text
+                mt={1}
+                fontSize="label.sm"
+                lineHeight="20px"
+                color="content.secondary"
+              >
+                {t("hiap-impact-missing-description")}
+              </Text>
+            </Box>
+          </Flex>
+        )}
       </VStack>
 
       <VStack align="stretch" gap={2}>

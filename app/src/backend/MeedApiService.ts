@@ -284,6 +284,18 @@ export default class MeedApiService {
     return result;
   }
 
+  public static async getPolicyScores(cityId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const locode = city.locode;
+    const result = await this.makeRequest(
+      `cities/${locode}/action-policy-scores`,
+    );
+    return result;
+  }
+
   private static async makeRequest(route: string, data: object | null = null) {
     const method = data == null ? "GET" : "POST";
     const body =

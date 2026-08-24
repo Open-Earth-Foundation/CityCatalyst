@@ -14,6 +14,7 @@ on:
       - k8s/test/cc-test-ca-smoke-fixture.yml
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test-web.yml
+      - k8s/test/cc-test-check-hiap-jobs.yml
       - k8s/test/cc-test-process-pdf-ocr-jobs.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-test.yml
@@ -276,9 +277,9 @@ jobs:
           CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl create -f k8s/test/cc-test-create-admin.yml -n default
+          kubectl apply -f k8s/test/cc-test-check-hiap-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-test-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
-          kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl apply -f k8s/test/cc-test-process-pdf-ocr-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-test-process-pdf-ocr-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"

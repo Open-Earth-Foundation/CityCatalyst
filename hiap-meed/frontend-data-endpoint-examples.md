@@ -1,10 +1,10 @@
-# Proposed HIAP-MEED Reference-Data API Examples
+# HIAP-MEED Reference-Data API Examples
 
-These detailed examples support the backend implementation proposed in [`implementation-plan-proposal.md`](implementation-plan-proposal.md). For the lightweight product review, see [`reference-data-api-product-contract.md`](reference-data-api-product-contract.md). The seven HIAP-MEED endpoints are not implemented yet and should be finalized through the CC-594 contract review. Changes to CityCatalyst consumer code are outside this proposal.
+These detailed examples document the backend implementation in [`implementation-plan-proposal.md`](implementation-plan-proposal.md). For the lightweight product contract, see [`reference-data-api-product-contract.md`](reference-data-api-product-contract.md). Changes to CityCatalyst consumer code remain outside this backend implementation.
 
 Each route has a direct Global API data-family mapping. HIAP-MEED owns technical query parameters, upstream validation, normalization, and post-fetch selection; responses are not raw passthroughs.
 
-These examples use the proposed **same rules and current data** guarantee. They do not include a snapshot identifier: a later prioritize or output-plan request applies the same canonical HIAP-MEED logic but may observe newer Global API data. An exact-snapshot guarantee would require a separately approved contract change.
+These examples use the **same rules and current data** guarantee. They do not include a snapshot identifier: a later prioritize or output-plan request applies the same canonical HIAP-MEED logic but may observe newer Global API data. An exact-snapshot guarantee would require a separately approved contract change.
 
 ## 1. City attributes
 
@@ -28,19 +28,15 @@ GET /v1/cities/CL%20IQQ/attributes
       {
         "key": "unemployment_rate",
         "value": 8.1,
-        "unit": "%"
+        "unit": "%",
+        "category": "economic"
       }
     ]
   },
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/attributes",
-      "locode": "CL IQQ"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -48,7 +44,7 @@ GET /v1/cities/CL%20IQQ/attributes
 
 ## 2. Action pathways
 
-Maps Global API `GET /api/v1/action-pathways`. HIAP-MEED keeps the current canonical `lang=all` upstream query, applies the same prioritizable-action selector used by exclusion preview, prioritization, and output-plan generation, and then projects the requested localization set. The shared selector returns only actions whose normalized `action_type` is `mitigation`.
+Maps Global API `GET /api/v1/action-pathways`. HIAP-MEED keeps the current canonical `lang=all` upstream query, applies the same prioritizable-action selector used by exclusion preview, prioritization, and output-plan generation, and then projects the requested localization set. The selector includes only actions whose normalized `action_type` is `mitigation`.
 
 ```http
 GET /v1/action-pathways?language=es
@@ -71,21 +67,39 @@ With no `language` query, the response includes all available localizations. Rep
         "es": "Rehabilitar edificios municipales y mejorar la gestión energética."
       },
       "investment_cost": "medium",
-      "implementation_timeline": "5-10 years"
+      "implementation_timeline": "5-10 years",
+      "co_benefits": {
+        "air_quality": {
+          "impact_relationship": "direct",
+          "impact_text": "Cleaner urban air",
+          "impact_numeric": 2,
+          "methodology": "Source assessment"
+        }
+      },
+      "emissions": {
+        "sector_number": "I",
+        "subsector_number": [1],
+        "gpc_reference_number": ["I.1.1"],
+        "impact_relationship": "reduces",
+        "impact_text": "Lower building emissions",
+        "impact_numeric": -2,
+        "methodology": "Source assessment"
+      }
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/action-pathways"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
 ```
+
+`missing_action_type_count` is normally `0`. If Global API returns an action
+without `action_type`, HIAP-MEED excludes that malformed row and returns both a
+non-zero count and a warning. Valid non-mitigation actions are intentionally
+excluded without a warning.
 
 ## 3. Action policy scores
 
@@ -107,9 +121,14 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
       "document_count": 2,
       "policy_evidence": [
         {
+          "document_type": "framework",
           "scope": "national",
           "document_name": "National Energy Efficiency Plan",
-          "relevance": "supporting"
+          "signal_type": "funding",
+          "signal_relation": "funds",
+          "signal_strength": "high",
+          "doc_relevance": "medium",
+          "evidence_strength": 0.8
         }
       ]
     }
@@ -120,18 +139,15 @@ GET /v1/cities/CL%20IQQ/action-policy-scores
     "municipal": 0.69
   },
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/action-policy-scores",
-      "locode": "CL IQQ"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
 ```
+
+`document_type`, `signal_type`, `signal_relation`, `signal_strength`, `doc_relevance`, and `evidence_strength` are passed through from Global API without combining or relabelling their values. `scope` is derived only for recognized document types: `framework` and `sector_plan` are national, `parcc` is regional, and `paccc` is municipal. Matching ignores case and surrounding whitespace. Evidence with a missing or unknown document type remains in the response with `scope: null` and does not contribute to regional or municipal aggregates.
 
 ## 4. Action mitigation-feasibility scores
 
@@ -159,15 +175,9 @@ The caller supplies both city and country scope. HIAP-MEED normalizes and valida
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/action-mitigation-feasibility-scores",
-      "locode": "CL IQQ",
-      "country_code": "CL"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }
@@ -196,7 +206,23 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
       "sector": "stationary_energy",
       "financial_feasibility": 0.66,
       "route": "technical_assistance",
-      "reason": "Several municipal support routes are available."
+      "reason": "Several municipal support routes are available.",
+      "inputs": {
+        "action": {
+          "capital_intensity": 0.8,
+          "preparation_complexity": 0.9
+        },
+        "city": {
+          "profile": "delivery-ready"
+        },
+        "finance": {
+          "fund_access": "direct",
+          "n_reachable_opportunities": 17
+        },
+        "evidence": {
+          "n_existing_projects": 6
+        }
+      }
     },
     {
       "action_id": "c40_0099",
@@ -204,25 +230,35 @@ The caller supplies both city and country scope. HIAP-MEED validates and forward
       "sector": "stationary_energy",
       "financial_feasibility": null,
       "route": null,
-      "reason": "No current finance score is available."
+      "reason": "No current finance score is available.",
+      "inputs": {
+        "action": {
+          "capital_intensity": null,
+          "preparation_complexity": null
+        },
+        "city": {
+          "profile": null
+        },
+        "finance": {
+          "fund_access": null,
+          "n_reachable_opportunities": null
+        },
+        "evidence": {
+          "n_existing_projects": null
+        }
+      }
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/cities/{locode}/climate-finance/feasibility",
-      "locode": "CL IQQ",
-      "country_code": "CL"
-    },
-    "total_records": 2
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 2
   },
   "warnings": []
 }
 ```
 
-Every normalized source row is returned. Rows with a numeric score are sorted from highest to lowest, followed by rows without a source score; a missing score is returned as `financial_feasibility: null`. The prioritizer's neutral `0.5` fallback remains an internal scoring rule and is never presented as Global API data. The response does not expose Global API opportunity/project links; the two explicit HIAP-MEED endpoints below provide those resources.
+Every normalized financial row is returned. Numeric scores appear from highest to lowest and rows without a source score appear last with `financial_feasibility: null`. `inputs` contains the upstream explanation values used by the frontend; unknown diagnostic input keys and Global API links are not exposed. The prioritizer's neutral `0.5` fallback remains an algorithm rule and is not returned as source data. The two explicit HIAP-MEED endpoints below provide opportunity and project resources.
 
 ## 6. Climate-finance opportunities
 
@@ -254,16 +290,9 @@ GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&r
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/climate-finance/opportunities",
-      "country_code": "CL",
-      "sector": "stationary_energy",
-      "route": "technical_assistance"
-    },
-    "total_records": 2
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 2
   },
   "warnings": []
 }
@@ -284,21 +313,36 @@ GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012
   "projects": [
     {
       "project_name": "Municipal Building Retrofit Programme",
+      "project_name_i18n": {
+        "en": "Municipal Building Retrofit Programme",
+        "es": "Programa municipal de rehabilitación de edificios"
+      },
+      "sector": "stationary_energy",
       "jurisdiction": "Valparaíso",
       "lifecycle_stage": "implementation",
-      "funding_channel": "public investment"
+      "funding_channel": "public investment",
+      "cost_total": 71987,
+      "amount_unit": "CLP_thousands",
+      "funding_sources": [
+        {
+          "cycle": "2025",
+          "amount": 71987,
+          "amount_unit": "CLP_thousands",
+          "funder_name": "Regional Development Fund"
+        }
+      ],
+      "action_matches": [
+        {
+          "action_id": "c40_0012",
+          "confidence": "goal_aligned"
+        }
+      ]
     }
   ],
   "meta": {
-    "generated_at_utc": "2026-08-05T12:00:00Z",
-    "backend_consumer": "hiap-meed",
-    "upstream_provider": "global-api",
-    "api_context": {
-      "endpoint": "GET /v1/climate-finance/projects",
-      "country_code": "CL",
-      "action_id": "c40_0012"
-    },
-    "total_records": 1
+    "requestId": "example-request-id",
+    "generatedAtUtc": "2026-08-05T12:00:00Z",
+    "totalRecords": 1
   },
   "warnings": []
 }

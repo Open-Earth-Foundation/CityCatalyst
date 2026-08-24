@@ -232,11 +232,11 @@ def load_canonical_funders(path: Path) -> list[Any]:
     return canonical_funders
 
 
-def build_research_payload(bundle: Any, funding_records: list[Any]) -> dict[str, Any]:
-    """Replace funding records with review-ready funded-project candidate links."""
+def build_research_payload(bundle: Any, funded_projects: list[Any]) -> dict[str, Any]:
+    """Replace funded projects with review-ready candidate links."""
     payload = bundle.model_dump(mode="json")
-    payload["funding_records"] = [
-        record.model_dump(mode="json") for record in funding_records
+    payload["funded_projects"] = [
+        project.model_dump(mode="json") for project in funded_projects
     ]
     return payload
 
@@ -294,7 +294,7 @@ def rewrite_research_artifact_from_bundle(
     """Re-enrich a validated bundle and rewrite its review artifact locally."""
     # Rebuild only code-owned candidate fields; do not repeat provider research.
     review_ready_records = propose_candidates(
-        funding_records=bundle.funding_records,
+        funded_projects=bundle.funded_projects,
         canonical_funders=canonical_funders,
         dossier_funder_name=bundle.request.funder_name,
     )

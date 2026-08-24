@@ -310,6 +310,11 @@ export interface GetUserCityInvitesResponse {
 export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
+  cities?: Array<{
+    cityId: string;
+    name: string | null;
+    countryLocode: string | null;
+  }>;
 }
 
 export interface AcceptInviteRequest {
@@ -1019,7 +1024,7 @@ export interface ConceptNoteRun {
   city_id: string;
   project_id: string | null;
   funder_id: string | null;
-  selected_funding_record_id: string | null;
+  selected_funding_opportunity_id: string | null;
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;
@@ -1031,10 +1036,77 @@ export interface ConceptNoteRunListResponse {
   runs: ConceptNoteRun[];
 }
 
+export interface ConceptNoteTemplateChapter {
+  chapter_ref: string;
+  title: string;
+  description?: string | null;
+  required?: boolean | null;
+}
+
+export interface ConceptNoteApplicationContext {
+  run_id: string;
+  city_id: string;
+  funder: {
+    id: string;
+    name: string;
+  } | null;
+  opportunity: {
+    id: string;
+    name: string;
+  } | null;
+  template: {
+    id: string;
+    name: string;
+    output_format: string | null;
+    chapter_schema: ConceptNoteTemplateChapter[];
+    required_fields: string[];
+  } | null;
+  included_sources: {
+    city: boolean;
+    project: boolean;
+    ghgi: boolean;
+    ccra: boolean;
+    hiap: boolean;
+  };
+}
+
+export type ConceptNoteDraftRunStatus =
+  "not_started" | "running" | "failed" | "complete";
+
+export type ConceptNoteDraftChapterStatus =
+  "empty" | "draft" | "needs_review" | "ready";
+
+export interface ConceptNoteDraftChapter {
+  chapter_id: string;
+  template_section_id: string | null;
+  title: string;
+  position: number;
+  status: ConceptNoteDraftChapterStatus;
+  required: boolean;
+  user_locked: boolean;
+  body_markdown: string | null;
+  missing_information: string[];
+  revision_number: number | null;
+}
+
+export interface ConceptNoteDraftState {
+  run_id: string;
+  status: ConceptNoteDraftRunStatus;
+  completed_chapters: number;
+  total_chapters: number;
+  current_chapter_id: string | null;
+  error_code: string | null;
+  chapters: ConceptNoteDraftChapter[];
+}
+
 export interface StartConceptNoteRunRequest {
   cityId: string;
   idempotencyKey: string;
   name: string;
+  projectId?: string | null;
+  funderId?: string | null;
+  selectedFundingOpportunityId?: string | null;
+  threadId?: string | null;
 }
 
 export type ConceptNoteUploadStatus =
@@ -1046,6 +1118,13 @@ export interface ConceptNoteUploadResponse {
   status: ConceptNoteUploadStatus;
   pageCount?: number | null;
   errorCode?: string;
+  stage?: string;
+  canRetry?: boolean;
+  retryKind?: string | null;
+  filename?: string;
+  sourceLabel?: string | null;
+  receivedAt?: string;
+  completedAt?: string | null;
 }
 
 export interface ConceptNoteUploadRequest {
@@ -1057,4 +1136,9 @@ export interface ConceptNoteUploadRequest {
 export interface ConceptNoteUploadStatusRequest {
   runId: string;
   uploadId: string;
+}
+
+export interface ConceptNoteContextBundleRetryResponse {
+  run_id: string;
+  status: "queued";
 }

@@ -182,12 +182,12 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     )
     run_directory = tmp_path / bundle.run_id
 
-    assert bundle.schema_version == "2.0"
-    assert bundle.run_metadata.pipeline_version == "2.0"
+    assert bundle.schema_version == "3.0"
+    assert bundle.run_metadata.pipeline_version == "3.0"
     assert bundle.review.status == "pending_review"
     assert bundle.funder.name == "Example Funder"
-    assert bundle.funding_records[0].name == "Example Program"
-    assert bundle.funding_records[0].is_opportunity is True
+    assert bundle.funding_opportunities[0].name == "Example Program"
+    assert bundle.funded_projects == []
     assert len(bundle.sources) == 2
     assert (run_directory / "research_bundle.json").exists()
     assert sorted(path.name for path in run_directory.glob("*.json")) == [
@@ -204,7 +204,7 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
     assert fake_openai.responses.calls[0]["reasoning"] == {"effort": "medium"}
     assert "tools" not in fake_openai.responses.calls[0]
     model_input = json.loads(fake_openai.responses.calls[0]["input"])
-    assert model_input["current_filled_object"]["funding_records"][0]["name"] == (
+    assert model_input["current_filled_object"]["funding_opportunities"][0]["name"] == (
         "Example Program"
     )
     assert "current_filled_object" not in model_input["research_request"]

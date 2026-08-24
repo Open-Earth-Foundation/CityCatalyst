@@ -43,9 +43,7 @@ def write_research_artifacts(
 def render_review(bundle: FundingOpportunityResearchBundle) -> str:
     """Render a concise human review view from the canonical bundle."""
     # Build the run summary and architecture-shaped reference-data dossier.
-    opportunity = next(
-        record for record in bundle.funding_records if record.is_opportunity
-    )
+    opportunity = bundle.funding_opportunities[0]
     lines = [
         f"# Funding Opportunity Research: {opportunity.name}",
         "",
@@ -62,20 +60,25 @@ def render_review(bundle: FundingOpportunityResearchBundle) -> str:
         f"- Review status: `{bundle.review.status}`",
         f"- Funder: {bundle.funder.name}",
         f"- Program URL: {bundle.request.program_url}",
-        f"- Funding records: {len(bundle.funding_records)}",
+        f"- Funding opportunities: {len(bundle.funding_opportunities)}",
+        f"- Funded projects: {len(bundle.funded_projects)}",
         f"- Sources: {len(bundle.sources)}",
         f"- Evidence records: {len(bundle.evidence)}",
         f"- Gaps: {len(bundle.gaps)}",
         f"- Conflicts: {len(bundle.conflicts)}",
         "",
-        "## Funding reference records",
+        "## Funding reference data",
         "",
         "```json",
         json.dumps(
             {
                 "funder": bundle.funder.model_dump(mode="json"),
-                "funding_records": [
-                    record.model_dump(mode="json") for record in bundle.funding_records
+                "funding_opportunities": [
+                    item.model_dump(mode="json")
+                    for item in bundle.funding_opportunities
+                ],
+                "funded_projects": [
+                    item.model_dump(mode="json") for item in bundle.funded_projects
                 ],
                 "funder_templates": [
                     template.model_dump(mode="json")

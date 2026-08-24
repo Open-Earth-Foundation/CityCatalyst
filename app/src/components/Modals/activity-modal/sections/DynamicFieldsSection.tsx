@@ -160,10 +160,6 @@ export const DynamicFieldsSection = ({
                   placeholder={t("activity-data-amount-placeholder")}
                   max={f.max!}
                   id={f.id}
-                  setError={setError as unknown as UseFormSetError<FieldValues>}
-                  clearErrors={
-                    clearErrors as unknown as UseFormClearErrors<FieldValues>
-                  }
                   min={f.min!}
                   control={control}
                   name={`activity.${f.id}`}

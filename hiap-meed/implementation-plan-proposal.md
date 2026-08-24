@@ -1,8 +1,8 @@
-# HIAP-MEED Reference-Data Backend Implementation Plan Proposal
+# HIAP-MEED Reference-Data Backend Implementation Plan
 
 ## Purpose
 
-This document proposes the backend work inside `hiap-meed` required to expose stable MEED reference-data APIs backed by Global API. It is intended for product, frontend, full-stack, and HIAP-MEED backend discussion before the HIAP-MEED contracts and routes are implemented.
+This document records the backend work inside `hiap-meed` used to expose stable MEED reference-data APIs backed by Global API. It remains the implementation rationale for product, frontend, full-stack, and HIAP-MEED backend review.
 
 The prototype and CityCatalyst are referenced only to identify consumer requirements and the existing system boundary. This plan does not include changes to the CityCatalyst frontend, CityCatalyst backend, or their integration code.
 
@@ -15,7 +15,7 @@ The desired outcome is:
 - the new reference-data routes, prioritization, exclusion preview, and output-plan generation reuse the same internal Python services
 - the existing processing APIs keep their current request/response contracts and behavior
 
-This is a proposal, not an implemented API. The lightweight product contract is in [`reference-data-api-product-contract.md`](reference-data-api-product-contract.md); full example payloads are in [`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md).
+Implementation status: the strict public contracts, seven GET routes, reuse of existing data-client operations, and automated tests are implemented on the CC-603 branch. Deployment and CityCatalyst consumer integration remain separate work. The lightweight product contract is in [`reference-data-api-product-contract.md`](reference-data-api-product-contract.md); full example payloads are in [`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md).
 
 ### Governing implementation rule
 
@@ -29,7 +29,7 @@ For every data family, use this precedence order:
 
 ## Scope and ticket boundary
 
-The live CC-594 description asks for stable contracts for frontend consumption. A prior team clarification narrowed CC-594 to consumer-facing Pydantic contracts inside `hiap-meed`, with route and shared-service implementation handed to CC-603. Both parts of this proposal remain backend-only:
+The live CC-594 description asks for stable contracts for frontend consumption. A prior team clarification narrowed CC-594 to consumer-facing Pydantic contracts inside `hiap-meed`, with route and shared-service implementation handed to CC-603. Both parts of this implementation remain backend-only:
 
 1. **CC-594:** agree and implement strict consumer-facing Pydantic contracts, examples, and contract tests.
 2. **CC-603:** implement the shared services and HIAP-MEED routes and refactor internal callers to reuse them.
@@ -100,10 +100,10 @@ These are HIAP-MEED reference-data APIs; they do not expose or mirror raw Global
 | Current Global API request                                                           | New HIAP-MEED endpoint                                                                  | Backend-owned behavior                                                                                                                                      |
 | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `GET /api/v0/city_attributes/{locode}`                                               | `GET /v1/cities/{locode}/attributes`                                                    | Normalize locode, validate/map the city response, and return stable city fields and indicators                                                              |
-| `GET /api/v1/action-pathways`                                                        | `GET /v1/action-pathways?language={language}`                                            | Keep the current backend `lang=all` fetch, validate/map actions, apply the shared mitigation-only selector, then project the requested localization set       |
+| `GET /api/v1/action-pathways`                                                        | `GET /v1/action-pathways?language={language}`                                            | Keep the current backend `lang=all` fetch, apply the shared prioritizable-action selector, then project the requested localization set                       |
 | `GET /api/v1/cities/{locode}/action-policy-scores?top_evidence_limit=5`              | `GET /v1/cities/{locode}/action-policy-scores`                                          | Use the canonical backend evidence query, validate/map rows, enforce duplicate-ID handling, and compute the current frontend evidence-scope aggregates in the backend |
 | `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code={CC}` | `GET /v1/cities/{locode}/action-mitigation-feasibility-scores?country_code={CC}`        | Forward the caller-selected city/country scope after validation, construct the canonical backend query, validate/map rows, and preserve no-release warnings |
-| `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code={CC}`          | `GET /v1/cities/{locode}/climate-finance/feasibility?country_code={CC}`                 | Forward the caller-selected city/country scope after validation, retain every normalized row, and order numeric scores descending with missing scores last |
+| `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code={CC}`          | `GET /v1/cities/{locode}/climate-finance/feasibility?country_code={CC}`                 | Forward the caller-selected city/country scope after validation, retain every normalized row, and order scored rows before rows with no source score        |
 | `GET /api/v1/climate-finance/opportunities?...`                                      | `GET /v1/climate-finance/opportunities?country_code={CC}&sector={sector}&route={route}` | Forward caller-selected domain scope, force municipal eligibility and the backend screening limit, then apply the existing backend selector                |
 | `GET /api/v1/climate-finance/projects?...`                                           | `GET /v1/climate-finance/projects?country_code={CC}&action_id={action_id}`              | Forward caller-selected country/action scope, force the current backend result limit, validate/map rows, and return the existing backend-selected set       |
 
@@ -121,13 +121,13 @@ The paths intentionally resemble the upstream resource names, but callers receiv
 
 | New endpoint | Shared backend implementation | Canonical query, filtering, and mapping | Existing internal consumers to reuse it |
 | --- | --- | --- | --- |
-| `GET /v1/cities/{locode}/attributes` | Existing city data client and `CityAttributesApiService.get_city()` | Normalize locode; use the current city-attributes URL/version behavior and Pydantic mapping; build the frontend indicator list/counts from the same normalized city result | Prioritization and output-plan context enrichment |
-| `GET /v1/action-pathways` | Existing action pathways data client, `ActionPathwaysApiService.list_actions()`, and shared `select_prioritizable_actions()` selector | Production always fetches Global API with `lang=all`; validate/map the current `Action` model; include only rows whose normalized `action_type` is `mitigation`; project zero, one, or many requested languages only in the public DTO; mock selection remains configuration-driven for tests/local mock runs | Exclusion preview, prioritization, and output-plan context enrichment |
-| `GET /v1/cities/{locode}/action-policy-scores` | Existing policy data client and `ActionPolicyScoresApiService.get_scores_by_action_id()` | Keep the current backend query without `top_evidence_limit`; preserve duplicate-ID validation and 404-as-empty warning behavior; compute the frontend's evidence-scope aggregates from this same normalized result | Prioritization alignment and output-plan context enrichment |
+| `GET /v1/cities/{locode}/attributes` | Existing city data client and `CityAttributesApiService.get_city()` | Normalize locode; use the current city-attributes URL/version behavior and Pydantic mapping; expose each indicator's value, unit, and upstream category from the same normalized city result | Prioritization and output-plan context enrichment |
+| `GET /v1/action-pathways` | Existing action pathways data client, `ActionPathwaysApiService.list_actions()`, and `select_prioritizable_actions()` | Production always fetches Global API with `lang=all`; the shared selector keeps only actions whose normalized type is `mitigation`; project requested languages plus source emissions and co-benefits in the public DTO | Exclusion preview, prioritization, and output-plan context enrichment |
+| `GET /v1/cities/{locode}/action-policy-scores` | Existing policy data client and `ActionPolicyScoresApiService.get_scores_by_action_id()` | Keep the current backend query without `top_evidence_limit`; preserve duplicate-ID validation and 404-as-empty warning behavior; pass through source document type, signal, and relevance fields without combining them; derive scope only for recognized document types and keep unknown types with null scope; compute the frontend's evidence-scope aggregates from this same normalized result | Prioritization alignment and output-plan context enrichment |
 | `GET /v1/cities/{locode}/action-mitigation-feasibility-scores` | Existing mitigation data client and `ActionMitigationFeasibilityScoresApiService.get_scores_by_action_id()` | Normalize and validate caller-provided locode/country; keep the current query, action-ID mapping, and 404-as-empty warning; do not add neutral scoring defaults to the source response | Prioritization feasibility and output-plan context enrichment |
-| `GET /v1/cities/{locode}/climate-finance/feasibility` | Existing financial data client and `ActionFinancialFeasibilityScoresApiService.get_scores_by_action_id()` | Normalize and validate caller-provided locode/country; keep the current query, mapping, and 404-as-empty warning; retain every normalized source row; order numeric scores descending and place missing scores last in the public projection | Prioritization feasibility and output-plan context enrichment |
+| `GET /v1/cities/{locode}/climate-finance/feasibility` | Existing financial data client and `ActionFinancialFeasibilityScoresApiService.get_scores_by_action_id()` | Normalize and validate caller-provided locode/country; keep the current query, mapping, every normalized row, typed explanation inputs, and 404-as-empty warning; order numeric scores descending and missing scores last without changing membership | Prioritization feasibility and output-plan context enrichment |
 | `GET /v1/climate-finance/opportunities` | Existing `ClimateFinanceOpportunitiesApiService.get_opportunities()` and `_screen_report_opportunities()` | Normalize caller-provided country, sector, and route; force `eligible_actor=municipality` and the backend limit; reuse current status, recurrence, climate-relevance, city-application, route, technical-assistance, ordering, and 5-current/5-monitor rules | Output-plan finance enrichment |
-| `GET /v1/climate-finance/projects` | Existing `ClimateFinanceProjectsApiService.get_projects()` | Normalize caller-provided country/action scope; reuse the current query, validation, mapping, and limit of five | Output-plan finance enrichment |
+| `GET /v1/climate-finance/projects` | Existing `ClimateFinanceProjectsApiService.get_projects()` | Normalize caller-provided country/action scope; reuse the current query, validation, mapping, and limit of five; project source names, sector, cost/unit, funding sources, and action-match confidence for display | Output-plan finance enrichment |
 
 “Reuse” means the route and internal workflow receive results from the same Python implementation. Route-specific serialization, including localization projection and public metadata, wraps that shared result but must not refetch, re-filter, or alter the information used by prioritization or output-plan generation.
 
@@ -142,7 +142,7 @@ Keep two model layers:
 
 Do not return `raw` payloads or require API consumers to interpret upstream metadata, relative links, or provider-specific field names. Public records should use stable HIAP-MEED names and include only agreed consumer fields.
 
-The strict contracts belong with the current endpoint models in `app/modules/prioritizer/models.py`, unless the implementation introduces a separately owned module with its own `models.py`. Normalized records shared inside the pipeline remain in `internal_models.py`.
+The strict public contracts live in `app/modules/reference_data/models.py`. Additive-tolerant upstream DTOs remain in `app/modules/prioritizer/models.py`, and normalized records shared inside the pipeline remain in `internal_models.py`.
 
 ### Inputs express business intent
 
@@ -184,7 +184,8 @@ Do not introduce a second API style for these GET routes. Use the current FastAP
 - let Pydantic/FastAPI reject malformed or unsupported query values consistently with existing request models
 - translate `UpstreamApiError` through the existing request-trace error helpers rather than defining a new error envelope
 - retain current source-specific missing-data behavior, including `200` plus warnings where the existing client treats a missing release as empty data
-- use one shared reference-data metadata model across the seven endpoints where possible, based on existing fields: `generated_at_utc`, `backend_consumer`, `upstream_provider`, `api_context`, and `total_records`
+- use the shared business-response metadata model across the seven endpoints:
+  server-owned `requestId`, `generatedAtUtc`, and `totalRecords`
 - keep warnings in the same response position and naming style chosen for the shared reference-data contracts
 - keep raw payloads and diagnostic source details in existing logs/artifacts; expose only source/provenance fields already considered part of a public contract
 
@@ -192,7 +193,7 @@ The same shared function must produce the data and metadata used by an HTTP resp
 
 ### Proposed consistency guarantee: same rules and current data
 
-This proposal guarantees **logical consistency**: for the same caller-provided domain scope, the new reference-data routes and processing workflows use the same canonical upstream query construction, normalization, filtering, ordering, and selection functions.
+This implementation guarantees **logical consistency**: for the same caller-provided domain scope, the new reference-data routes and processing workflows use the same canonical upstream query construction, normalization, filtering, ordering, and selection functions.
 
 It does not guarantee that two requests made at different times use an identical Global API snapshot. If Global API changes between a public reference-data read and later plan generation, the later request may use newer data even though both requests apply the same rules. `generated_at_utc` records when a response was assembled; it is not a reusable snapshot identifier.
 
@@ -216,27 +217,27 @@ Continue using the endpoint-specific services in `app/services/`:
 
 These services remain the only place that knows Global API paths and query parameters.
 
-### 2. Expose shared endpoint-specific operations
+### 2. Use existing data-client methods as the shared operations
 
-Expose the existing endpoint-specific data services through small shared operations used by routes and processing workflows. Suggested operations are:
+The existing methods in `app/services/data_clients.py` are the shared boundary used by the new routes and processing workflows:
 
-- `list_action_pathways()`
-- `get_city_attributes(locode)`
+- `get_city(locode)`
+- `list_actions()`
 - `get_action_policy_scores(locode)`
 - `get_action_mitigation_feasibility_scores(locode, country_code)`
 - `get_action_financial_feasibility_scores(locode, country_code)`
-- `get_climate_finance_opportunities(country_code, sector, route)`
-- `get_climate_finance_projects(country_code, action_id)`
+- `get_report_finance_opportunities(country_code, sector, route)`
+- `get_report_finance_projects(country_code, action_id)`
 
-These functions should receive injected data clients so mock/API source switching and existing FastAPI dependency overrides continue to work.
+The route dependencies inject the same mock/API clients already used by prioritization and output-plan generation. No additional forwarding service is needed: it would add indirection without adding validation, filtering, or data ownership.
 
-The city-scoped and finance-catalogue operations should normalize caller-provided domain inputs and use them consistently in their upstream queries. Policy, mitigation, and financial results should retain deterministic ordering and expose no-release warnings without inventing scores. Required policy evidence-scope aggregates should move from the prototype behavior into tested backend projections only where the existing backend does not already define that behavior. Financial projections retain all normalized records and apply display ordering only; they do not remove source records.
+The city-scoped and finance-catalogue operations normalize caller-provided domain inputs and use them consistently in their upstream queries. Policy, mitigation, and financial results retain every normalized source record and expose no-release warnings without inventing scores. Public projections may calculate policy evidence-scope aggregates and apply deterministic display ordering, but they must not remove records used by processing workflows.
 
 Neutral `0.5` defaults are scoring rules, not source data. They stay inside the prioritization blocks and should not be emitted as if they came from Global API.
 
 The opportunities operation must reuse the current HIAP-MEED `ClimateFinanceOpportunitiesApiService` query and `_screen_report_opportunities()` behavior: municipal eligibility, screening limit, current/monitor split, recurrence rules, climate relevance, application route, technical-assistance handling, ordering, and caps. The projects operation must reuse the current `ClimateFinanceProjectsApiService` country/action query and limit. The new GET routes and output-plan enrichment must call these exact functions; neither path may maintain a second selector.
 
-### 3. Reuse the shared functions from existing workflows
+### 3. Reuse the shared data-client methods from existing workflows
 
 After characterization tests are in place:
 
@@ -262,11 +263,19 @@ The production contract uses Global API through the current HIAP-MEED action-pat
 
 ### Action catalogue membership
 
-`select_prioritizable_actions()` is the single membership rule for the action-pathways read API, exclusion preview, prioritization, and output-plan generation. It returns only actions whose normalized `action_type` is `mitigation`. Rows with another or missing type are excluded; missing types may be retained in backend diagnostics but are not returned to consumers.
+`select_prioritizable_actions()` in `app/services/action_pathways_api.py` is the
+single membership rule. It keeps only actions whose normalized action type is
+`mitigation`. Other and missing action types are excluded, while prioritization
+artifacts retain missing-type diagnostics. The action GET, exclusion preview, prioritization,
+and output-plan enrichment all call this selector.
 
 ### Financial rows without a source score
 
-The shared financial operation retains every normalized source row. The read API sorts numeric scores from highest to lowest and places rows without a score last, returning `financial_feasibility: null`. Prioritization may continue applying its internal neutral `0.5` fallback, but that fallback is not source data and must not appear in the read API.
+The shared financial operation retains every normalized row. The GET response
+orders numeric scores from highest to lowest and places missing scores last, with
+`financial_feasibility: null`. Prioritization may interpret a missing score as its
+existing neutral `0.5` fallback, but that algorithm value is never presented as
+Global API data.
 
 ### Policy evidence limit
 
@@ -278,7 +287,7 @@ Preserve the current HIAP-MEED policy query used by prioritization and output-pl
 
 The existing backend selector returns up to five current and five recurring closed programmes, gives priority to climate relevance and direct municipal application, and can narrow current rows to technical assistance when the action route indicates it.
 
-Use this exact selector for both the new reference-data route and output-plan generation. The public response must not expose raw opportunity links that require a consumer to reproduce the selector.
+Use this exact selector for both the new reference-data route and output-plan generation. The public response may expose the selected programme's user-facing `source_url`, but it must not expose upstream API URLs or raw link maps that require a consumer to reproduce the selector.
 
 ### Comparable-project volume
 
@@ -311,42 +320,42 @@ Specifically, the work must not change:
 
 Internal refactoring is allowed only when regression tests show identical outputs for fixed inputs. Any necessary deviation should be proposed separately with a before/after example and explicit product approval.
 
-## Delivery plan
+## Delivery record
 
-### Phase 1: agree contracts
+### Phase 1: agree contracts - implemented
 
 1. Review the seven endpoint mappings with product, frontend, full-stack, and backend owners.
 2. Agree the frontend-required fields and remove upstream/debug-only fields.
-3. Confirm the proposed **same rules and current data** consistency guarantee, or explicitly expand the scope to versioned snapshots before contracts are finalized.
+3. Confirm the **same rules and current data** consistency guarantee, or explicitly expand the scope to versioned snapshots before contracts are finalized.
 4. Encode the resolved localization, production source, policy evidence, finance selection, and metadata decisions in the contracts.
 5. Reuse existing empty, warning, and error semantics.
 6. Implement strict Pydantic request/response models and OpenAPI examples.
 7. Add schema/serialization tests using current fixtures.
 
-### Phase 2: expose shared data operations
+### Phase 2: reuse shared data-client operations - implemented
 
-1. Add the shared endpoint-specific operations with dependency-injected clients.
-2. Move opportunity and project query/post-filter logic behind their shared operations.
+1. Inject and call the existing endpoint-specific data clients from the new routes.
+2. Keep opportunity and project query/post-filter logic in their existing services.
 3. Add deterministic ordering and the agreed policy/financial response projections.
 4. Add unit tests for exact upstream URLs, normalization, duplicate IDs, missing records, warnings, and finance selection.
 
-### Phase 3: add HIAP-MEED routes
+### Phase 3: add HIAP-MEED routes - implemented
 
 1. Add the seven GET routes to the existing FastAPI router or a dedicated router included by `app/main.py`.
 2. Map internal records to strict consumer DTOs; never serialize `raw` fields.
 3. Add integration tests with dependency overrides for success, empty data, partial data, unknown action/city, and upstream failure.
 4. Confirm the generated OpenAPI document contains all seven contracts and examples.
 
-### Phase 4: refactor internal consumers with parity protection
+### Phase 4: refactor internal consumers with parity protection - implemented
 
 1. Capture current outputs for exclusion preview, prioritization, and output-plan fixtures.
 2. Change those workflows to call the shared Python operations.
 3. Assert byte-equivalent or model-equivalent responses for the fixed fixtures.
 4. Keep the existing route handlers and external DTOs untouched.
 
-### Phase 5: deploy and observe HIAP-MEED
+### Phase 5: deploy and observe HIAP-MEED - pending deployment
 
-1. Deploy the new HIAP-MEED contracts, shared operations, and routes.
+1. Deploy the new HIAP-MEED contracts and routes using the shared data clients.
 2. Exercise each route in test/QA and compare action IDs, counts, warnings, and selected finance evidence with the corresponding internal processing operation for fixed inputs.
 3. Log route latency, upstream failures, empty datasets, and selection counts without logging sensitive request data.
 4. Verify that every new route reaches Global API only through the canonical endpoint-specific HIAP-MEED client.
@@ -359,17 +368,18 @@ The work is complete when all of the following are true:
 - the new reference-data routes and processing workflows call the same internal data/selection operations
 - policy, mitigation-feasibility, financial-feasibility, opportunities, and projects use the same canonical queries and post-filtering as prioritization or output-plan generation where those workflows consume them
 - upstream URLs and query parameters are asserted in unit tests
-- consumer contracts contain no raw Global API links or payloads
+- consumer contracts contain no raw Global API request URLs or payloads; agreed user-facing programme source links remain allowed
 - empty, partial, and failed source states are distinguishable in responses
 - fixed-input regression tests show no behavior or contract change for the four existing processing endpoints
 - for the same domain scope and fixed upstream data, the public route and processing workflow produce the same normalized and selected records
 - the generated OpenAPI document exposes the agreed strict contracts for downstream type generation
 
-## Remaining contract details to confirm during implementation
+## Implemented contract details
 
-- exact public field subset for each normalized DTO
-- whether repeated `language` query parameters or a comma-separated list should be represented in the HIAP-MEED OpenAPI contract; semantics remain zero, one, or many languages as defined above
-- the exact shared metadata model name and which currently public provenance fields apply to every data family
+- Public field subsets are encoded as strict models in `app/modules/reference_data/models.py`; internal `raw`, score-input, finance diagnostic-link maps, and upstream request details are not serialized. The selected opportunity `source_url` remains an agreed user-facing field.
+- Action localization uses repeated `language` query parameters. Omitting the parameter returns all available localizations; one or more values project exactly the requested supported languages.
+- All successful routes use `ApiResponseMeta` with server-owned `requestId`,
+  `generatedAtUtc`, and `totalRecords`, plus a top-level `warnings` list.
 
 ## Explicitly out of scope
 

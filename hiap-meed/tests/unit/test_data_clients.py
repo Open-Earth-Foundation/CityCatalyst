@@ -1,4 +1,4 @@
-﻿"""Unit tests for data source selection and mock loading."""
+"""Unit tests for data source selection and mock loading."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ import pytest
 from botocore.exceptions import ClientError, NoCredentialsError, PartialCredentialsError
 from pydantic import ValidationError
 
+from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.scoring_config import is_activity_data_level_mapping_enabled
 from app.modules.prioritizer.models import (
     ActionLegalAssessmentS3CsvRow,
@@ -34,6 +35,7 @@ from app.services.action_financial_feasibility_scores_api import (
 from app.services.action_pathways_api import (
     ACTION_PATHWAYS_ENDPOINT,
     ActionPathwaysApiService,
+    select_prioritizable_actions,
 )
 from app.services.city_attributes_api import (
     DEFAULT_CITY_ATTRIBUTES_BASE_URL,
@@ -103,6 +105,34 @@ def test_mock_action_client_loads_actions_from_file() -> None:
     assert isinstance(actions[0].emissions, dict)
     assert isinstance(actions[0].emissions.get("subsector_number"), list)
     assert isinstance(actions[0].co_benefits, dict)
+
+
+@pytest.mark.unit
+def test_select_prioritizable_actions_owns_action_membership() -> None:
+    """Shared selection keeps only mitigation and reports other or missing types."""
+    mitigation = Action(
+        action_id="mitigation",
+        action_name="Mitigation action",
+        action_type="Mitigation",
+    )
+    missing_type = Action(
+        action_id="missing",
+        action_name="Untyped action",
+        action_type=None,
+    )
+    adaptation = Action(
+        action_id="adaptation",
+        action_name="Adaptation action",
+        action_type="adaptation",
+    )
+
+    selected, excluded, missing = select_prioritizable_actions(
+        [mitigation, missing_type, adaptation]
+    )
+
+    assert [action.action_id for action in selected] == ["mitigation"]
+    assert [action.action_id for action in excluded] == ["adaptation"]
+    assert [action.action_id for action in missing] == ["missing"]
 
 
 @pytest.mark.unit
@@ -1401,9 +1431,30 @@ def test_finance_catalogue_services_fetch_named_opportunities_and_projects(
                 "data": [
                     {
                         "project_name": "Street lighting upgrade",
+                        "project_name_i18n": {
+                            "en": "Street lighting upgrade",
+                            "es": "Mejora del alumbrado publico",
+                        },
+                        "sector": "stationary_energy",
                         "jurisdiction": "Santa Cruz",
                         "lifecycle_stage": "in-execution",
                         "funding_channel": "public investment",
+                        "cost_total": 1200,
+                        "amount_unit": "CLP_thousands",
+                        "funding_sources": [
+                            {
+                                "cycle": "2025",
+                                "amount": 1200,
+                                "amount_unit": "CLP_thousands",
+                                "funder_name": "Regional Fund",
+                            }
+                        ],
+                        "action_matches": [
+                            {
+                                "action_id": "icare_0040",
+                                "confidence": "goal_aligned",
+                            }
+                        ],
                     }
                 ],
             }
@@ -1446,6 +1497,15 @@ def test_finance_catalogue_services_fetch_named_opportunities_and_projects(
     )
     assert projects_result.projects[0].project_name == "Street lighting upgrade"
     assert projects_result.projects[0].jurisdiction == "Santa Cruz"
+    assert projects_result.projects[0].sector == "stationary_energy"
+    assert projects_result.projects[0].cost_total == 1200
+    assert projects_result.projects[0].funding_sources[0]["funder_name"] == (
+        "Regional Fund"
+    )
+    assert projects_result.projects[0].action_matches[0] == {
+        "action_id": "icare_0040",
+        "confidence": "goal_aligned",
+    }
     assert projects_result.source_metadata["total"] == 1
     assert (
         projects_result.source_metadata["upstream_endpoint"]
@@ -1907,15 +1967,7 @@ def test_prioritizer_request_accepts_activity_type_field() -> None:
     request = PrioritizerApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "req-1",
-                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "city_catalyst_frontend",
-                "apiContext": {
-                    "endpoint": "POST /v1/prioritize",
-                    "locodes": ["CL-SCL"],
-                },
-                "totalRecords": 1,
+              "requestId": "req-1"
             },
             "requestData": {
                 "requestedLanguages": ["en"],
@@ -1960,15 +2012,7 @@ def test_prioritizer_request_rejects_unexpected_frontend_field() -> None:
         PrioritizerApiRequest.model_validate(
             {
                 "meta": {
-                    "requestId": "req-1",
-                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/prioritize",
-                        "locodes": ["CL-SCL"],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-1"
                 },
                 "requestData": {
                     "requestedLanguages": ["en"],
@@ -1997,15 +2041,7 @@ def test_prioritizer_request_rejects_negative_non_afolu_total_emissions() -> Non
         PrioritizerApiRequest.model_validate(
             {
                 "meta": {
-                    "requestId": "req-1",
-                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/prioritize",
-                        "locodes": ["CL-SCL"],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-1"
                 },
                 "requestData": {
                     "requestedLanguages": ["en"],
@@ -2041,15 +2077,7 @@ def test_prioritizer_request_accepts_negative_afolu_total_emissions() -> None:
     request = PrioritizerApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "req-1",
-                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "city_catalyst_frontend",
-                "apiContext": {
-                    "endpoint": "POST /v1/prioritize",
-                    "locodes": ["CL-SCL"],
-                },
-                "totalRecords": 1,
+              "requestId": "req-1"
             },
             "requestData": {
                 "requestedLanguages": ["en"],

@@ -45,10 +45,10 @@ class ConceptNoteRun(Base):
         nullable=True,
         comment="External funder identifier validated against managed CNB reference data",
     )
-    selected_funding_record_id: Mapped[UUID | None] = mapped_column(
+    selected_funding_opportunity_id: Mapped[UUID | None] = mapped_column(
         PGUUID(as_uuid=True),
         nullable=True,
-        comment="External funding-record identifier validated against managed CNB reference data",
+        comment="External funding-opportunity identifier validated against managed CNB reference data",
     )
     status: Mapped[str] = mapped_column(
         String(64),

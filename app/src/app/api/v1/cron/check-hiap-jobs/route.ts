@@ -8,6 +8,10 @@ import {
 } from "@/util/types";
 import { checkBulkActionRankingJob } from "@/backend/hiap/HiapService";
 import { BulkHiapPrioritizationService } from "@/backend/hiap/BulkHiapPrioritizationService";
+import {
+  backfillMissingHIAPActionPlans,
+  backfillMissingHIAPRankings,
+} from "@/backend/hiap/HiapNativeInputCatalogService";
 import { QueryTypes } from "sequelize";
 import { checkSingleActionRankingJob } from "@/backend/hiap/HiapService";
 import type { HighImpactActionRanking } from "@/models/HighImpactActionRanking";
@@ -159,8 +163,7 @@ export async function GET(req: NextRequest) {
 
           const projectId = (
             ranking as
-              | (HighImpactActionRanking & { inventory: Inventory })
-              | null
+              (HighImpactActionRanking & { inventory: Inventory }) | null
           )?.inventory?.city?.projectId;
           if (projectId) {
             // Step 4: Start next batch for this project if there are TO_DO rankings
@@ -227,6 +230,21 @@ export async function GET(req: NextRequest) {
 
         // Continue with other jobs even if one fails
       }
+    }
+
+    const catalogBackfilled = await backfillMissingHIAPRankings();
+    const actionPlansBackfilled = await backfillMissingHIAPActionPlans();
+    if (catalogBackfilled > 0) {
+      logger.info(
+        { catalogBackfilled },
+        "Backfilled missing HIAP catalog entries",
+      );
+    }
+    if (actionPlansBackfilled > 0) {
+      logger.info(
+        { actionPlansBackfilled },
+        "Backfilled missing HIAP action-plan catalog entries",
+      );
     }
 
     // Step 3: Start ONE batch if no PENDING jobs exist system-wide
@@ -310,6 +328,8 @@ export async function GET(req: NextRequest) {
       {
         checkedJobs: pendingJobs.length,
         completedJobs,
+        catalogBackfilled,
+        actionPlansBackfilled,
         startedBatches,
         durationMs: duration,
       },
@@ -319,6 +339,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       checkedJobs: pendingJobs.length,
       completedJobs,
+      catalogBackfilled,
+      actionPlansBackfilled,
       startedBatches,
       durationMs: duration,
     });

@@ -120,6 +120,7 @@
   "geographical-boundaries": "Geographical boundaries",
   "done-heading": "Your city is all set up!",
   "done-description": "Great job! You can create and manage your GHG emissions inventory anytime from your dashboard.",
+  "add-new-city": "Add new city",
   "add-new-inventory": "Add new inventory",
   "inventory-title": "GPC Basic Emission Inventory - Year {{year}}",
   "done-details": "You created your city profile to start your GPC Basic GHG inventory.",

@@ -56,29 +56,26 @@ export const GeneratePlanDrawer = ({
       return;
     }
 
+    // API returns 202 immediately; completion is notified by email after save.
+    const startedToastId = toaster.create({
+      title: t("plan-generation-started"),
+      description: t("plan-generation-started-description"),
+      type: "info",
+      duration: 5000,
+    });
+
     try {
-      // Start the plan generation process
-      generateActionPlan({
+      // Await only acceptance (202). Background poll/save/email failures are logged server-side.
+      await generateActionPlan({
         action: action,
-        cityId: cityData?.cityId || "",
+        cityId: cityData.cityId,
         inventoryId: inventoryId || "",
         cityLocode: cityLocode,
         lng: action.lang,
-        rankingId: action.hiaRankingId,
-      });
-
-      // Show immediate toast notification that generation has started
-      toaster.create({
-        title: t("plan-generation-started"),
-        description: t("plan-generation-started-description"),
-        type: "info",
-        duration: 5000,
-      });
-
-      // Note: Plan generation happens in the background
-      // User will be notified via email when it's complete
+      }).unwrap();
     } catch (error) {
-      console.error("Failed to start plan generation:", error);
+      console.error("Failed to start action plan generation:", error);
+      toaster.remove(startedToastId);
       toaster.create({
         title: t("plan-generation-failed"),
         description: t("plan-generation-failed-description"),

@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from uuid import UUID, uuid4
 
 import pytest
@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )
@@ -18,6 +18,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.services.cnb.context_bundle import ContextBundleService
 from app.services.cnb.funding_references import FundingReferenceValidator
 from app.services.concept_note_runs import (
     ConceptNoteRunService,
@@ -60,7 +61,7 @@ def _persisted_run(
         city_id=str(payload.city_id),
         project_id=payload.project_id,
         funder_id=payload.funder_id,
-        selected_funding_record_id=payload.selected_funding_record_id,
+        selected_funding_opportunity_id=payload.selected_funding_opportunity_id,
         status=status,
         workflow_step=workflow_step,
         context_summary=context_summary or {},
@@ -133,8 +134,53 @@ async def test_start_run_creates_after_scope_and_reference_validation() -> None:
     )
     funding_validator.validate.assert_awaited_once_with(
         funder_id=None,
-        selected_funding_record_id=None,
+        selected_funding_opportunity_id=None,
     )
+
+
+@pytest.mark.parametrize("created", [True, False])
+async def test_start_run_schedules_only_new_context_after_commit(
+    monkeypatch,
+    created: bool,
+) -> None:
+    """Commit every accepted start and schedule only newly created runs."""
+    payload = _start_request()
+    service, repository, _, _ = _run_service()
+    repository.create_or_get.return_value = (
+        _persisted_run(
+            payload,
+            request_fingerprint=_request_fingerprint(payload),
+        ),
+        created,
+    )
+    context_bundle_service = Mock(spec=ContextBundleService)
+    schedule = Mock()
+    events: list[str] = []
+    service.session.commit.side_effect = lambda: events.append("commit")
+    schedule.side_effect = lambda **_: events.append("schedule")
+    monkeypatch.setattr(
+        "app.services.concept_note_runs.schedule_context_bundle_build",
+        schedule,
+    )
+
+    response = await service.start_run_and_schedule_context(
+        payload,
+        authorization="Bearer token",
+        context_bundle_service=context_bundle_service,
+    )
+
+    assert response.created is created
+    assert events == (["commit", "schedule"] if created else ["commit"])
+    service.session.commit.assert_awaited_once_with()
+    if created:
+        schedule.assert_called_once_with(
+            service=context_bundle_service,
+            user_id=payload.user_id,
+            run_id=response.run_id,
+            token="token",
+        )
+    else:
+        schedule.assert_not_called()
 
 
 async def test_start_run_rejects_reused_key_with_different_fingerprint() -> None:
@@ -449,7 +495,16 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
             await connection.run_sync(Thread.__table__.create)
 
         async with session_factory() as session:
-            session.add(Thread(thread_id=owned_thread_id, user_id="owner-1"))
+            session.add(
+                Thread(
+                    thread_id=owned_thread_id,
+                    user_id="owner-1",
+                    context={
+                        "access_token": "preserved-token",
+                        "stationary_energy_draft_run_id": str(uuid4()),
+                    },
+                )
+            )
             await session.commit()
             repository = ConceptNoteRunRepository(session)
 
@@ -465,5 +520,19 @@ async def test_thread_ownership_rejects_missing_and_wrong_user_threads() -> None
                 thread_id=uuid4(),
                 user_id="owner-1",
             )
+            concept_note_run_id = uuid4()
+            await repository.bind_thread_context(
+                thread_id=owned_thread_id,
+                user_id="owner-1",
+                run_id=concept_note_run_id,
+            )
+            await session.commit()
+            stored_thread = await session.get(Thread, owned_thread_id)
+            assert stored_thread is not None
+            assert stored_thread.context["concept_note_run_id"] == str(
+                concept_note_run_id
+            )
+            assert "stationary_energy_draft_run_id" not in stored_thread.context
+            assert stored_thread.context["access_token"] == "preserved-token"
     finally:
         await engine.dispose()

@@ -109,10 +109,9 @@ class CnbSimilarProjectEvidence(SimilarProjectsModel):
 class CnbSimilarProjectCandidate(SimilarProjectsModel):
     """One funded-project candidate retrieved from reviewed reference data."""
 
-    funding_record_id: UUID
+    funded_project_id: UUID
     funder_id: UUID
     funder_name: str | None = None
-    is_opportunity: bool
     is_funded_award: bool
     award_status: str | None = None
     award_amount: Decimal | None = None
@@ -149,7 +148,7 @@ class CnbSimilarProjectCandidate(SimilarProjectsModel):
 class CnbSimilarProjectLlmDecision(SimilarProjectsModel):
     """Structured decision that the LLM must return for every shortlist item."""
 
-    funding_record_id: UUID
+    funded_project_id: UUID
     decision: Literal["selected", "rejected"]
     fit_rationale: str = Field(min_length=1)
     matched_tags: list[str] = Field(default_factory=list)
@@ -170,11 +169,11 @@ class CnbSimilarProjectLlmDecisionSet(SimilarProjectsModel):
     decisions: list[CnbSimilarProjectLlmDecision]
 
     @model_validator(mode="after")
-    def validate_unique_funding_record_ids(self) -> "CnbSimilarProjectLlmDecisionSet":
-        """Require exactly one LLM decision per shortlisted funding record."""
+    def validate_unique_funded_project_ids(self) -> "CnbSimilarProjectLlmDecisionSet":
+        """Require exactly one LLM decision per shortlisted funded project."""
         _ensure_unique(
-            [str(item.funding_record_id) for item in self.decisions],
-            "decisions.funding_record_id",
+            [str(item.funded_project_id) for item in self.decisions],
+            "decisions.funded_project_id",
         )
         return self
 
@@ -182,7 +181,7 @@ class CnbSimilarProjectLlmDecisionSet(SimilarProjectsModel):
 class CnbSimilarProjectMatch(SimilarProjectsModel):
     """Final selected similar project retained in the context bundle."""
 
-    funding_record_id: UUID
+    funded_project_id: UUID
     decision: Literal["selected"] = "selected"
     fit_rationale: str = Field(min_length=1)
     matched_tags: list[str] = Field(default_factory=list)
@@ -209,10 +208,10 @@ class CnbSimilarProjectSearchResult(SimilarProjectsModel):
 
     @model_validator(mode="after")
     def validate_unique_match_ids(self) -> "CnbSimilarProjectSearchResult":
-        """Keep stored similar projects one-to-one with funding records."""
+        """Keep stored similar projects one-to-one with funded projects."""
         _ensure_unique(
-            [str(item.funding_record_id) for item in self.matches],
-            "matches.funding_record_id",
+            [str(item.funded_project_id) for item in self.matches],
+            "matches.funded_project_id",
         )
         return self
 
@@ -308,8 +307,8 @@ class CnbSimilarProjectReviewRunInput(SimilarProjectsModel):
     def validate_input_consistency(self) -> "CnbSimilarProjectReviewRunInput":
         """Keep candidate and source identity aligned with the search request."""
         _ensure_unique(
-            [str(item.funding_record_id) for item in self.candidates],
-            "candidates.funding_record_id",
+            [str(item.funded_project_id) for item in self.candidates],
+            "candidates.funded_project_id",
         )
         _ensure_unique(
             [item.source_ref for item in self.sources],
@@ -331,7 +330,7 @@ class CnbSimilarProjectReviewRunArtifact(SimilarProjectsModel):
     artifact_type: Literal["cnb_similar_project_search"] = (
         "cnb_similar_project_search"
     )
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["2.0"] = "2.0"
     run_id: UUID
     generated_at: datetime
     run_metadata: CnbSimilarProjectReviewRunMetadata
@@ -359,14 +358,14 @@ class CnbSimilarProjectReviewRunArtifact(SimilarProjectsModel):
             )
 
         candidate_map = {
-            item.funding_record_id: item
+            item.funded_project_id: item
             for item in self.candidates
         }
         for match in self.result.matches:
-            candidate = candidate_map.get(match.funding_record_id)
+            candidate = candidate_map.get(match.funded_project_id)
             if candidate is None:
                 raise ValueError(
-                    "result.matches.funding_record_id must reference a candidate"
+                    "result.matches.funded_project_id must reference a candidate"
                 )
             candidate_evidence_refs = {item.evidence_ref for item in candidate.evidence}
             invalid_refs = {

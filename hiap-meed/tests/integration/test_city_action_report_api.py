@@ -116,6 +116,7 @@ def _configure_output_plan_dependency_overrides() -> None:
                 Action(
                     action_id="A_1",
                     action_name="Bus electrification",
+                    action_type="mitigation",
                     name_i18n={
                         "en": "Bus electrification",
                         "es": "Electrificación de autobuses",
@@ -156,6 +157,8 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     assert body["action_id"] == "A_1"
     assert body["language"] == ["en", "es"]
     assert body["format"] == "json_chapters_markdown_i18n"
+    assert body["meta"]["requestId"] == "report-req-1"
+    assert body["meta"]["totalRecords"] == 1
     assert len(body["chapters"]) == 8
     assert body["chapters"][0]["title"] == {"en": "Snapshot", "es": "Resumen"}
     for chapter in body["chapters"]:
@@ -263,7 +266,7 @@ def _report_request_payload(*, action_id: str = "A_1") -> dict[str, object]:
             "requestId": "report-req-1",
             "generatedAtUtc": "2026-07-14T00:00:00Z",
             "backendConsumer": "hiap-meed",
-            "upstreamProvider": "test",
+            "upstreamProvider": "city_catalyst_frontend",
             "apiContext": {"endpoint": "POST /v1/reports/output-plan"},
             "totalRecords": 1,
         },
@@ -275,15 +278,7 @@ def _report_request_payload(*, action_id: str = "A_1") -> dict[str, object]:
             "prioritizationSnapshot": {
                 "request": {
                     "meta": {
-                        "requestId": "prioritize-req-1",
-                        "generatedAtUtc": "2026-07-14T00:00:00Z",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "test",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                        "requestId": "prioritize-req-1"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],

@@ -2,15 +2,13 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import replace
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.config import get_settings
 from app.main import get_app
-from app.models.concept_note_markdown import (
+from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteUploadCreateRequest,
 )
@@ -28,7 +26,8 @@ from app.services.citycatalyst_client import (
     CityCatalystClientError,
     ConceptNoteMarkdownArtifact,
 )
-
+from app.services.cnb.context_bundle import get_context_bundle_service
+from fastapi.testclient import TestClient
 
 MARKDOWN = "<!-- page: 1 -->\n# Plan"
 SHA256 = hashlib.sha256(MARKDOWN.encode()).hexdigest()
@@ -94,6 +93,7 @@ class FakeMarkdownRepository(ConceptNoteMarkdownRepository):
             if (
                 existing.filename != payload.filename
                 or existing.source_label != payload.source_label
+                or existing.source_format != payload.source_format
             ):
                 raise ConceptNoteMarkdownRepositoryError(
                     "upload_identity_conflict", 409, "Upload changed"
@@ -105,12 +105,13 @@ class FakeMarkdownRepository(ConceptNoteMarkdownRepository):
             user_id=user_id,
             filename=payload.filename,
             source_label=payload.source_label,
+            source_format=payload.source_format,
             markdown_s3_key=None,
             markdown_sha256=None,
             page_count=None,
             status="queued",
             error_code=None,
-            received_at=datetime.now(timezone.utc),
+            received_at=datetime.now(UTC),
             completed_at=None,
         )
         self.uploads[payload.upload_id] = snapshot
@@ -157,9 +158,10 @@ class FakeMarkdownRepository(ConceptNoteMarkdownRepository):
             current,
             markdown_s3_key=payload.markdown_s3_key,
             markdown_sha256=payload.sha256,
+            source_format=payload.source_format,
             page_count=payload.page_count,
             status="ready",
-            completed_at=datetime.now(timezone.utc),
+            completed_at=datetime.now(UTC),
         )
         self.uploads[upload_id] = updated
         return updated
@@ -220,6 +222,7 @@ def create_payload(upload_id: UUID) -> dict[str, object]:
         "user_id": "owner-user",
         "filename": "plan.pdf",
         "source_label": "Climate Action Plan",
+        "source_format": "pdf",
     }
 
 
@@ -228,6 +231,7 @@ def pointer_payload(**overrides: object) -> dict[str, object]:
         "markdown_s3_key": S3_KEY,
         "filename": "plan.pdf",
         "source_label": "Climate Action Plan",
+        "source_format": "pdf",
         "page_count": 1,
         "sha256": SHA256,
     }
@@ -236,13 +240,20 @@ def pointer_payload(**overrides: object) -> dict[str, object]:
 
 
 @pytest.fixture
-def ingest_client():
+def ingest_client(monkeypatch):
     run_id = uuid4()
     repository = FakeMarkdownRepository(run_id, "owner-user")
     cc_client = FakeCityCatalystClient()
     app = get_app()
     app.dependency_overrides[get_citycatalyst_client] = lambda: cc_client
     app.dependency_overrides[get_concept_note_markdown_repository] = lambda: repository
+    app.dependency_overrides[get_context_bundle_service] = lambda: object()
+    scheduled_builds: list[dict[str, object]] = []
+    monkeypatch.setattr(
+        "app.routes.concept_note_markdown.schedule_context_bundle_build",
+        lambda **kwargs: scheduled_builds.append(kwargs),
+    )
+    cc_client.scheduled_builds = scheduled_builds
     settings = get_settings()
     original_key = settings.cc_api_key
     settings.cc_api_key = "service-key"
@@ -340,7 +351,7 @@ def test_json_body_limit_rejects_declared_oversize_before_reading(
 
 
 def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None:
-    client, repository, _, run_id = ingest_client
+    client, repository, cc_client, run_id = ingest_client
     upload_id = uuid4()
     create_upload(client, run_id, upload_id)
     path = f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown"
@@ -352,6 +363,55 @@ def test_pointer_delivery_verifies_cc_then_persists_ready(ingest_client) -> None
     assert first.json() == {"upload_id": str(upload_id), "status": "ready"}
     assert repository.uploads[upload_id].markdown_s3_key == S3_KEY
     assert repository.uploads[upload_id].status == "ready"
+    assert [item["run_id"] for item in cc_client.scheduled_builds] == [
+        run_id,
+        run_id,
+    ]
+    assert all(item["token"] == "owner-user" for item in cc_client.scheduled_builds)
+
+
+def test_native_markdown_delivery_has_no_synthetic_page_count(ingest_client) -> None:
+    client, repository, cc_client, run_id = ingest_client
+    upload_id = uuid4()
+    native_markdown = "# Plan\n\nDirect source context"
+    digest = hashlib.sha256(native_markdown.encode()).hexdigest()
+    create = create_payload(upload_id)
+    create.update(
+        {
+            "filename": "plan.md",
+            "source_format": "markdown",
+        }
+    )
+    created = client.post(
+        f"/v1/concept-notes/{run_id}/uploads",
+        json=create,
+        headers=auth(),
+    )
+    assert created.status_code == 200
+    cc_client.artifact = ConceptNoteMarkdownArtifact(
+        markdown=native_markdown,
+        markdown_s3_key=S3_KEY,
+        sha256=digest,
+        source_format="markdown",
+        page_count=None,
+    )
+
+    response = client.post(
+        f"/v1/concept-notes/{run_id}/uploads/{upload_id}/markdown",
+        json={
+            "markdown_s3_key": S3_KEY,
+            "filename": "plan.md",
+            "source_label": "Climate Action Plan",
+            "source_format": "markdown",
+            "page_count": None,
+            "sha256": digest,
+        },
+        headers=auth(),
+    )
+
+    assert response.status_code == 202
+    assert repository.uploads[upload_id].source_format == "markdown"
+    assert repository.uploads[upload_id].page_count is None
 
 
 def test_pointer_or_fetched_bytes_conflict_is_rejected(ingest_client) -> None:

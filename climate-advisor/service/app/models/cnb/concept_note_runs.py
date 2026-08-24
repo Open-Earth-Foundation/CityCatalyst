@@ -17,7 +17,7 @@ class ConceptNoteStartRequest(BaseModel):
     city_id: UUID
     project_id: str | None = Field(default=None, min_length=1, max_length=255)
     funder_id: UUID | None = None
-    selected_funding_record_id: UUID | None = None
+    selected_funding_opportunity_id: UUID | None = None
     thread_id: UUID | None = None
     idempotency_key: UUID
 
@@ -44,9 +44,9 @@ class ConceptNoteStartRequest(BaseModel):
     @model_validator(mode="after")
     def validate_scope_references(self) -> "ConceptNoteStartRequest":
         """Require a funder whenever a funding opportunity is supplied."""
-        if self.selected_funding_record_id is not None and self.funder_id is None:
+        if self.selected_funding_opportunity_id is not None and self.funder_id is None:
             raise ValueError(
-                "funder_id is required when selected_funding_record_id is provided"
+                "funder_id is required when selected_funding_opportunity_id is provided"
             )
         return self
 
@@ -60,7 +60,7 @@ class ConceptNoteRunListItemResponse(BaseModel):
     city_id: UUID
     project_id: str | None = None
     funder_id: UUID | None = None
-    selected_funding_record_id: UUID | None = None
+    selected_funding_opportunity_id: UUID | None = None
     status: str = Field(min_length=1)
     workflow_step: str = Field(min_length=1)
     progress_summary: dict[str, Any] = Field(default_factory=dict)

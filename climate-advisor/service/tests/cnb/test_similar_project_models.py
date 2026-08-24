@@ -43,7 +43,7 @@ def test_llm_contract_is_strict_and_has_no_score() -> None:
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         CnbSimilarProjectLlmDecision.model_validate(
             {
-                "funding_record_id": str(uuid4()),
+                "funded_project_id": str(uuid4()),
                 "decision": "selected",
                 "fit_rationale": "Relevant project.",
                 "matched_tags": ["stormwater"],

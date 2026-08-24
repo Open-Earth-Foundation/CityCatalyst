@@ -10,14 +10,20 @@ const {
 
 const FUNDER_ID = "11111111-1111-4111-8111-111111111111";
 const PROJECT_REF = "project-001";
-const SELECTION_PATH = `funding_records[${PROJECT_REF}].selected_funder_id`;
+const SELECTION_PATH = `funded_projects[${PROJECT_REF}].selected_funder_id`;
 const bundle = {
   run_id: "run-001",
-  schema_version: "2.0",
-  funding_records: [
+  schema_version: "3.0",
+  funder: { funder_ref: "funder-001", name: "Example Funder" },
+  funding_opportunities: [
     {
-      funding_record_ref: PROJECT_REF,
-      is_opportunity: false,
+      funding_opportunity_ref: "opportunity-001",
+      name: "Example Program",
+    },
+  ],
+  funded_projects: [
+    {
+      funded_project_ref: PROJECT_REF,
       name: "Evidence-backed project",
       candidate_funders: [{ funder_id: FUNDER_ID }],
     },
@@ -53,7 +59,7 @@ test("approved reviews save with a proposed canonical funder selection", () => {
       SELECTION_PATH,
       {
         target_path: SELECTION_PATH,
-        segments: ["funding_records", 0, "selected_funder_id"],
+        segments: ["funded_projects", 0, "selected_funder_id"],
         selected: true,
         original_value: null,
         reviewed_value: FUNDER_ID,

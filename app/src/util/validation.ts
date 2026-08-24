@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum, OrganizationPlanType } from "./enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+  OrganizationPlanType,
+} from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
 
 export const emailPattern =
@@ -194,10 +198,12 @@ export const AcceptOrganizationInvite = z.object({
 export const CreateUsersInvite = z.object({
   projectId: z.string().uuid(),
   cityIds: z.array(z.string()).min(1),
-  invites: z.array(z.object({
-    email: z.string().email(),
-    role: z.enum(["admin", "collaborator"]),
-  })),
+  invites: z.array(
+    z.object({
+      email: z.string().email(),
+      role: z.enum(["admin", "collaborator"]),
+    }),
+  ),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
@@ -260,8 +266,8 @@ export const fetchEmissionsFactorRequest = z.object({
 });
 
 export const updatePasswordRequest = z.object({
-  currentPassword: z.string().min(4).max(64),
-  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
+  currentPassword: z.string().min(8).max(64),
+  confirmPassword: z.string().min(8).max(64).regex(passwordRegex),
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
@@ -365,16 +371,16 @@ export const conceptNoteStartRequest = z
     city_id: z.string().uuid(),
     project_id: z.string().trim().min(1).max(255).nullable().optional(),
     funder_id: z.string().uuid().nullable().optional(),
-    selected_funding_record_id: z.string().uuid().nullable().optional(),
+    selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
     thread_id: z.string().uuid().nullable().optional(),
     idempotency_key: z.string().uuid(),
   })
   .superRefine((request, context) => {
-    if (request.selected_funding_record_id && !request.funder_id) {
+    if (request.selected_funding_opportunity_id && !request.funder_id) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         message:
-          "funder_id is required when selected_funding_record_id is provided",
+          "funder_id is required when selected_funding_opportunity_id is provided",
         path: ["funder_id"],
       });
     }
@@ -399,4 +405,14 @@ export const nativeInputCatalogRegisterRequest = z.object({
 
 export type NativeInputCatalogRegisterRequest = z.infer<
   typeof nativeInputCatalogRegisterRequest
+>;
+
+export const nativeInputCatalogReconciliationRequest = z.object({
+  mode: z.enum(["dry-run", "apply"]),
+  limit: z.number().int().min(1).max(1000).optional(),
+  maxPages: z.number().int().min(1).max(1000).optional(),
+});
+
+export type NativeInputCatalogReconciliationRequest = z.infer<
+  typeof nativeInputCatalogReconciliationRequest
 >;

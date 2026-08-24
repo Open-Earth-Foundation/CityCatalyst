@@ -34,7 +34,7 @@
  *                       - city_id
  *                       - project_id
  *                       - funder_id
- *                       - selected_funding_record_id
+ *                       - selected_funding_opportunity_id
  *                       - status
  *                       - workflow_step
  *                       - progress_summary
@@ -60,7 +60,7 @@
  *                         type: string
  *                         format: uuid
  *                         nullable: true
- *                       selected_funding_record_id:
+ *                       selected_funding_opportunity_id:
  *                         type: string
  *                         format: uuid
  *                         nullable: true
@@ -109,7 +109,7 @@ const runListItemSchema = z.object({
   city_id: uuidSchema,
   project_id: z.string().nullable(),
   funder_id: uuidSchema.nullable(),
-  selected_funding_record_id: uuidSchema.nullable(),
+  selected_funding_opportunity_id: uuidSchema.nullable(),
   status: z.string().min(1),
   workflow_step: z.string().min(1),
   progress_summary: z.record(z.string(), z.unknown()),

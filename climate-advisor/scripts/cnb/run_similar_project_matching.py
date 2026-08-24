@@ -120,9 +120,8 @@ class LocalReviewReferenceDataClient:
         self,
         *,
         funder_id: UUID | None,
-        limit: int,
     ) -> list[Any]:
-        """Return a bounded all-funder or same-funder candidate view."""
+        """Return the complete all-funder or same-funder candidate view."""
         candidates = self.candidates
         if funder_id is not None:
             candidates = [
@@ -130,7 +129,7 @@ class LocalReviewReferenceDataClient:
                 for candidate in candidates
                 if candidate.funder_id == funder_id
             ]
-        return candidates[:limit]
+        return candidates
 
 
 def parse_args() -> argparse.Namespace:

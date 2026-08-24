@@ -1,4 +1,4 @@
-﻿# HIAP-MEED
+# HIAP-MEED
 
 `hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
 
@@ -232,6 +232,42 @@ Verify the service:
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
+Reference-data endpoints:
+
+- `GET /v1/cities/{locode}/attributes`
+- `GET /v1/action-pathways?language=es&language=en`
+- `GET /v1/cities/{locode}/action-policy-scores`
+- `GET /v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=CL`
+- `GET /v1/cities/{locode}/climate-finance/feasibility?country_code=CL`
+- `GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&route=technical_assistance`
+- `GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012`
+
+These routes expose stable response fields rather than raw Global API payloads.
+Callers choose domain scope such as city, country, language, action, sector, and
+route. HIAP-MEED owns upstream URLs, technical query parameters, validation,
+normalization, missing-release behavior, ordering, and post-filtering. The routes,
+exclusion preview, prioritization, and output-plan generation call the same
+existing data-client methods and shared selectors; processing workflows do not
+call these HTTP routes. `select_prioritizable_actions()` defines the action
+membership used by all four action consumers.
+See
+[`reference-data-api-product-contract.md`](reference-data-api-product-contract.md)
+for the request/response contract and
+[`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md) for
+complete examples.
+
+Where the reference-data rules live:
+
+| Responsibility | Authoritative code |
+| --- | --- |
+| Caller-selectable parameters and HTTP errors | `app/modules/reference_data/api.py` |
+| Public request and response fields | `app/modules/reference_data/models.py` |
+| Public field mapping, localization, policy averages, and display-only ordering | `app/modules/reference_data/response_builders.py` |
+| Prioritizable action membership: actions explicitly typed as mitigation | `app/services/action_pathways_api.py` (`select_prioritizable_actions`) |
+| City, action, policy, mitigation, and financial Global API queries and missing-release behavior | Matching modules under `app/services/*_api.py` |
+| Opportunity eligibility, current/monitor selection, priority, and limits | `app/services/climate_finance_opportunities_api.py` |
+| Comparable-project country/action query and five-project limit | `app/services/climate_finance_projects_api.py` |
+
 For deployed workloads, use the hosted MLflow URLs directly.
 
 Example Kubernetes values:
@@ -249,35 +285,52 @@ Example Kubernetes values:
   - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
   - `MLFLOW_ENVIRONMENT=prod`
 
-### External API contracts
+### API contracts
 
-The repository now includes explicit Pydantic contracts for upcoming request and
-upstream response integrations in `app/modules/prioritizer/models.py`.
+The repository includes strict public reference-data contracts in
+`app/modules/reference_data/models.py`, plus the existing processing request and
+additive-tolerant upstream response contracts in
+`app/modules/prioritizer/models.py`.
 
 Key models:
 
-- Frontend request envelope: `PrioritizerApiRequest`
-- Output-plan request envelope: `CityActionReportApiRequest`
+- Prioritization request: `PrioritizerApiRequest`
+- Output-plan request: `CityActionReportApiRequest`
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
 - Global action pathways API response: `ActionPathwaysApiResponse`
 - Global legal assessment API row: `ActionLegalAssessmentApiItem`
 - Global policy alignment API response: `ActionPolicyScoresApiResponse`
+- Public reference-data response models: `CityAttributesResponse`,
+  `ActionPathwaysResponse`, `ActionPolicyScoresResponse`,
+  `ActionMitigationScoresResponse`, `ActionFinancialScoresResponse`,
+  `ClimateFinanceOpportunitiesResponse`, and `ClimateFinanceProjectsResponse`
 
 Design note:
 
-- For the upcoming frontend contract, single-city and multi-city payloads both
+- Workflow POST bodies contain `requestData` and caller metadata with only
+  `meta.requestId`.
+  Callers no longer
+  provide timestamps, endpoint names, service/provider labels, or record counts.
+  Legacy fields in `meta` are temporarily ignored so this backend-only contract
+  change does not require a coordinated frontend release.
+- Every successful workflow and reference-data response contains server-owned
+  `meta` with `requestId`, `generatedAtUtc`, and `totalRecords`. Workflow
+  responses echo `meta.requestId`; reference-data GET responses use a
+  server-generated ID.
+- For the processing frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
-- Boundary validation note: incoming frontend request contracts and upstream/mock
-  response contracts are handled differently by design. Frontend request DTOs
-  reject unexpected fields, while upstream response DTOs ignore unexpected extra
-  fields and still validate the fields we actually use.
+- Boundary validation note: public domain payloads and response DTOs reject
+  unexpected fields. The small workflow `meta` object and upstream/mock response
+  DTOs remain additive-tolerant while validating the fields HIAP-MEED uses.
 - Action API note: `ActionPathwaysApiResponse` now matches `GET /api/v1/action-pathways`
   without query parameters. The action payload includes the fields used by the
   current prioritization flow and action-pathways client.
-  The action client returns the full upstream catalog; the prioritization
-  pipeline then keeps only mitigation actions and records the filtered count in
-  fetch artifacts.
+  The action client returns the full upstream catalog. The shared
+  `select_prioritizable_actions()` function then keeps only actions explicitly
+  typed as mitigation. The action GET, exclusion preview, prioritization, and
+  output-plan enrichment all use that same set. Prioritization records the
+  filtered count in fetch artifacts.
 - Legal source note: legal assessments now come from the internal S3 legal
   classification CSV by default. The old public
   `GET /api/v1/action-legal-assessments?countryCode=...` path remains in code
@@ -294,6 +347,9 @@ Design note:
 - `requestData.language`: a non-empty list of requested report languages; currently `en` and `es` are supported. The backend normalizes this list to include canonical English first.
 - `requestData.prioritizationSnapshot.request`: the full original `/v1/prioritize` request
 - `requestData.prioritizationSnapshot.response`: the full `/v1/prioritize` response returned to the frontend
+
+Snapshots stored before response metadata was introduced remain accepted; all
+new `/v1/prioritize` responses include `meta`.
 
 The endpoint validates that the requested city and action exist in the supplied prioritization snapshot before it fetches live enrichment data. Report languages are output choices: they do not need to be a subset of the original prioritization `requestedLanguages`. If they differ, response metadata keeps a limitation note because action explanations from the original ranking may not exist in every requested language. The endpoint remains stateless: the prototype frontend stores the snapshot in browser local storage and sends it with the report request. When this frontend is later moved into CityCatalyst, snapshot persistence is expected to move into the CityCatalyst database, not into `hiap-meed`.
 
@@ -319,7 +375,7 @@ Run commands from a Bash shell (Git Bash, WSL, Linux, macOS).
 
 Request body:
 
-- The endpoint accepts the frontend envelope `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
+- The endpoint accepts `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
@@ -490,15 +546,7 @@ Example JSON request bodies (using mock data from `data/`):
 ```json
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize/exclusions/preview",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": ["en"],
@@ -542,7 +590,12 @@ Example exclusion preview response:
       },
       "warnings": []
     }
-  ]
+  ],
+  "meta": {
+    "requestId": "1234567890",
+    "generatedAtUtc": "2026-08-19T10:00:00Z",
+    "totalRecords": 1
+  }
 }
 ```
 
@@ -551,15 +604,7 @@ Example ranking request after review:
 ```json
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": ["en"],
@@ -614,14 +659,20 @@ Example response:
                 "component_source": "verdict_score",
                 "ownership_category": "enabled",
                 "ownership_score": 1.0,
-                "ownership_description": "Municipality has explicit legal authority to act directly.",
-                "ownership_description_es": "El municipio cuenta con competencia legal expresa para actuar de forma directa.",
+                "ownership_description": {
+                  "en": "Municipality has explicit legal authority to act directly.",
+                  "es": "El municipio cuenta con competencia legal expresa para actuar de forma directa."
+                },
                 "restrictions_category": "conditional",
                 "restrictions_score": 0.5,
-                "restrictions_description": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
-                "restrictions_description_es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial.",
-                "legal_justification": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal.",
-                "legal_justification_en": "English legal reasoning text from the legal classification source.",
+                "restrictions_description": {
+                  "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                  "es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial."
+                },
+                "legal_justification": {
+                  "en": "English legal reasoning text from the legal classification source.",
+                  "es": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal."
+                },
                 "legal_references": ["Ley 18.695 (LOCM) - BCN"]
               },
               "mitigation_feasibility": {
@@ -647,12 +698,18 @@ Example response:
           "legal": {
             "verdict_category": "blocked",
             "verdict_score": 0.0,
-            "ownership_description": "Authority belongs to another level of government; municipality cannot act alone.",
-            "ownership_description_es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo.",
-            "restrictions_description": "There is a legal prohibition/restriction, or legal reform is needed.",
-            "restrictions_description_es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa.",
-            "legal_justification": "Texto de razonamiento juridico en espanol.",
-            "legal_justification_en": "English legal reasoning text.",
+            "ownership_description": {
+              "en": "Authority belongs to another level of government; municipality cannot act alone.",
+              "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo."
+            },
+            "restrictions_description": {
+              "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+              "es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa."
+            },
+            "legal_justification": {
+              "en": "English legal reasoning text.",
+              "es": "Texto de razonamiento juridico en espanol."
+            },
             "legal_references": ["Ley 18.695 (LOCM) - BCN"]
           }
         }
@@ -686,16 +743,21 @@ Example response:
         }
       }
     }
-  ]
+  ],
+  "meta": {
+    "requestId": "1234567890",
+    "generatedAtUtc": "2026-08-19T10:00:01Z",
+    "totalRecords": 1
+  }
 }
 ```
 
 When actions are removed before ranking, the prioritization response includes
 them in `removed_actions` for frontend display. Legally blocked rows include a
-`legal` object with the same public legal detail fields used by ranked actions,
-including `ownership_description`, `ownership_description_es`,
-`restrictions_description`, `restrictions_description_es`,
-`legal_justification`, `legal_justification_en`, and `legal_references`.
+`legal` object with the same public legal detail fields used by ranked actions.
+`ownership_description`, `restrictions_description`, and `legal_justification`
+are objects keyed by available language code (for example, `en` and `es`), and
+`legal_references` remains a list.
 The diagnostic `metadata.hard_filter_evidence_by_action_id` map remains
 available for artifact/debug views.
 
@@ -705,7 +767,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The legal client resolves to `s3` by default, still supports `mock`, and keeps `api` only as a deprecated failure path. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways?lang=all` so the returned catalog includes every available upstream localization plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client downloads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`, parses multiline CSV fields, and maps rows into the existing legal assessment contract. Legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return HTTP `503` with a specific upstream dependency error rather than ranking with neutral legal defaults. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`. Output-plan generation calls the opportunities and projects catalogues through separate services for capped reader-facing detail, so either optional catalogue can fail without clearing data returned by the other. The API-backed clients default to `api`, except legal which defaults to `s3`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts include S3 source metadata such as the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available after a successful legal fetch.
+Note: city, action, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The legal client resolves to `s3` by default, still supports `mock`, and keeps `api` only as a deprecated failure path. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways?lang=all` so the returned catalog includes every available upstream localization plus fetch metadata. The shared action selector then keeps only actions explicitly typed as mitigation for the action GET, exclusion preview, prioritization, and output-plan enrichment; prioritization records fetched-versus-kept counts and missing action types in the `fetch_actions` artifacts. The legal client downloads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`, parses multiline CSV fields, and maps rows into the existing legal assessment contract. Legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return HTTP `503` with a specific upstream dependency error rather than ranking with neutral legal defaults. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; its public response retains missing scores as `null`, while prioritization applies its existing neutral fallback internally. Output-plan generation calls the opportunities and projects catalogues through separate services for capped reader-facing detail, so either optional catalogue can fail without clearing data returned by the other. The API-backed clients default to `api`, except legal which defaults to `s3`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts include S3 source metadata such as the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available after a successful legal fetch.
 
 ### 7. Logging and artifacts
 

@@ -13,7 +13,8 @@ from app.models.cnb.research import (
     AgentTurn,
     FunderProfileResearchResult,
     FunderResearchResult,
-    FundingRecordResearchResult,
+    FundedProjectResearchResult,
+    FundingOpportunityResearchResultRow,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
     ResearchGap,
@@ -33,7 +34,7 @@ from app.tools.firecrawl import (
 )
 
 logger = logging.getLogger(__name__)
-TARGET_FUNDED_PROJECTS_GAP_PATH = "funding_records.target_funded_projects"
+TARGET_FUNDED_PROJECTS_GAP_PATH = "funded_projects.target_funded_projects"
 MAX_STRUCTURED_OUTPUT_RETRIES = 2
 
 FINAL_GAP_AUDIT = (
@@ -329,36 +330,40 @@ def preserve_evidence_qualified_funded_projects(
     target_funded_projects: int,
 ) -> FundingOpportunityResearchResult:
     """Restore omitted rows with only facts supported by current-run evidence."""
-    candidate_record_refs = {
-        record.funding_record_ref for record in candidate_result.funding_records
+    candidate_project_refs = {
+        project.funded_project_ref for project in candidate_result.funded_projects
     }
-    omitted_records = [
-        record
-        for record in previous_result.funding_records
-        if not record.is_opportunity
-        and record.funding_record_ref not in candidate_record_refs
+    omitted_projects = [
+        project
+        for project in previous_result.funded_projects
+        if project.funded_project_ref not in candidate_project_refs
     ]
-    if not omitted_records:
+    if not omitted_projects:
         return candidate_result
 
     # Derive material paths with the same rules used by final bundle validation.
-    funder, funding_records, funder_templates, funder_criteria = convert_agent_result(
-        previous_result
-    )
+    (
+        funder,
+        funding_opportunities,
+        funded_projects,
+        funder_templates,
+        funder_criteria,
+    ) = convert_agent_result(previous_result)
     previous_material_paths = list(
         material_paths(
             funder=funder,
-            funding_records=funding_records,
+            funding_opportunities=funding_opportunities,
+            funded_projects=funded_projects,
             funder_templates=funder_templates,
             funder_criteria=funder_criteria,
         )
     )
 
     # Require a supported project name, then retain only supported optional facts.
-    restored_records: list[FundingRecordResearchResult] = []
+    restored_projects: list[FundedProjectResearchResult] = []
     restored_evidence = []
-    for record in omitted_records:
-        row_path = f"funding_records[{record.funding_record_ref}]"
+    for project in omitted_projects:
+        row_path = f"funded_projects[{project.funded_project_ref}]"
         name_path = f"{row_path}.name"
         row_material_paths = [
             path
@@ -368,7 +373,7 @@ def preserve_evidence_qualified_funded_projects(
         qualifying_evidence = [
             evidence
             for evidence in previous_result.evidence
-            if evidence.funding_record_ref == record.funding_record_ref
+            if evidence.funded_project_ref == project.funded_project_ref
             and evidence.source_ref in captured_source_refs
             and bool(evidence.quote_or_summary.strip())
             and (
@@ -379,7 +384,7 @@ def preserve_evidence_qualified_funded_projects(
         ]
         evidence_paths = {evidence.target_path for evidence in qualifying_evidence}
         parent_evidence = row_path in evidence_paths
-        if not record.name.strip() or not (
+        if not project.name.strip() or not (
             parent_evidence or name_path in evidence_paths
         ):
             continue
@@ -389,18 +394,19 @@ def preserve_evidence_qualified_funded_projects(
             for path in row_material_paths
             if path in evidence_paths
         }
-        record_data = {
-            "funding_record_ref": record.funding_record_ref,
-            "funder_ref": record.funder_ref,
-            "is_opportunity": False,
-            "name": record.name,
+        project_data = {
+            "funded_project_ref": project.funded_project_ref,
+            "funder_ref": project.funder_ref,
+            "name": project.name,
         }
-        previous_record_data = record.model_dump(mode="python")
-        for field_name in FundingRecordResearchResult.model_fields:
+        previous_project_data = project.model_dump(mode="python")
+        for field_name in FundedProjectResearchResult.model_fields:
             field_path = f"{row_path}.{field_name}"
             if field_path in retained_material_paths:
-                record_data[field_name] = previous_record_data[field_name]
-        restored_records.append(FundingRecordResearchResult.model_validate(record_data))
+                project_data[field_name] = previous_project_data[field_name]
+        restored_projects.append(
+            FundedProjectResearchResult.model_validate(project_data)
+        )
 
         relevant_evidence_paths = {
             row_path,
@@ -413,7 +419,7 @@ def preserve_evidence_qualified_funded_projects(
             if evidence.target_path in relevant_evidence_paths
         )
 
-    if not restored_records:
+    if not restored_projects:
         return candidate_result
 
     # Re-key retained evidence deterministically if the candidate reused an ID.
@@ -444,10 +450,10 @@ def preserve_evidence_qualified_funded_projects(
         and assessment.source_ref not in candidate_assessment_refs
     ]
 
-    # Validate the merged checkpoint against all record and evidence invariants.
+    # Validate the merged checkpoint against all project and evidence invariants.
     merged_data = candidate_result.model_dump(mode="python")
-    merged_data["funding_records"].extend(
-        record.model_dump(mode="python") for record in restored_records
+    merged_data["funded_projects"].extend(
+        project.model_dump(mode="python") for project in restored_projects
     )
     merged_data["evidence"].extend(
         evidence.model_dump(mode="python") for evidence in rekeyed_evidence
@@ -456,10 +462,7 @@ def preserve_evidence_qualified_funded_projects(
         assessment.model_dump(mode="python") for assessment in restored_assessments
     )
     # Clear the shortfall only when the merged checkpoint actually reaches its target.
-    funded_record_count = sum(
-        not record["is_opportunity"] for record in merged_data["funding_records"]
-    )
-    if funded_record_count >= target_funded_projects:
+    if len(merged_data["funded_projects"]) >= target_funded_projects:
         merged_data["gaps"] = [
             gap
             for gap in merged_data["gaps"]
@@ -478,14 +481,14 @@ def empty_result(
             name=request.funder_name,
             profile=FunderProfileResearchResult(),
         ),
-        funding_records=[
-            FundingRecordResearchResult(
-                funding_record_ref="opportunity-001",
+        funding_opportunities=[
+            FundingOpportunityResearchResultRow(
+                funding_opportunity_ref="opportunity-001",
                 funder_ref="funder-001",
-                is_opportunity=True,
                 name=request.program_name,
             )
         ],
+        funded_projects=[],
     )
 
 
@@ -629,8 +632,10 @@ def find_missing_data(
 ) -> list[str]:
     """List unresolved coverage targets using current-run source provenance."""
     funder = result.funder
-    opportunity = next(item for item in result.funding_records if item.is_opportunity)
-    opportunity_path = f"funding_records[{opportunity.funding_record_ref}]"
+    opportunity = result.funding_opportunities[0]
+    opportunity_path = (
+        f"funding_opportunities[{opportunity.funding_opportunity_ref}]"
+    )
     missing: list[str] = []
 
     # Check the core scalar opportunity fields.
@@ -672,11 +677,10 @@ def find_missing_data(
             missing.append("Find selection/evaluation criteria or record a gap.")
 
     # Require one complete funded-project row and explicit monetary coverage.
-    funded_records = [
-        item for item in result.funding_records if not item.is_opportunity
-    ]
-    funded_record_refs = {item.funding_record_ref for item in funded_records}
-    if len(funded_record_refs) < request.target_funded_projects and not gap_covers(
+    funded_project_refs = {
+        item.funded_project_ref for item in result.funded_projects
+    }
+    if len(funded_project_refs) < request.target_funded_projects and not gap_covers(
         result, TARGET_FUNDED_PROJECTS_GAP_PATH
     ):
         if request.target_funded_projects == 1:
@@ -687,16 +691,16 @@ def find_missing_data(
                 f"target of {request.target_funded_projects} is met, or record a "
                 f"precise gap at {TARGET_FUNDED_PROJECTS_GAP_PATH}."
             )
-    for record in funded_records:
+    for project in result.funded_projects:
         target_path = (
-            f"funding_records[{record.funding_record_ref}].reported_funder_name"
+            f"funded_projects[{project.funded_project_ref}].reported_funder_name"
         )
-        if not record.reported_funder_name and not gap_covers(result, target_path):
+        if not project.reported_funder_name and not gap_covers(result, target_path):
             missing.append(
                 f"Resolve {target_path} from a project source or record a precise gap."
             )
     if not has_deep_project(result) and not gap_covers(
-        result, "funding_records.deep_funded_project"
+        result, "funded_projects.deep_funded_project"
     ):
         missing.append(
             "Build one complete funded-project row with interventions, summary, award "
@@ -704,11 +708,12 @@ def find_missing_data(
         )
     has_monetary_fact = any(
         value is not None
-        for record in result.funding_records
-        for value in (record.min_award, record.max_award, record.award_amount)
+        for value in (opportunity.min_award, opportunity.max_award)
+    ) or any(
+        project.award_amount is not None for project in result.funded_projects
     )
     if not has_monetary_fact and not gap_covers(
-        result, "funding_records.financial_coverage"
+        result, "funding_opportunities.financial_coverage"
     ):
         missing.append(
             "Capture opportunity award bounds or a funded-project award amount with "
@@ -756,13 +761,18 @@ def find_missing_data(
         )
 
     # Require every populated material field to survive bundle provenance checks.
-    funder, funding_records, funder_templates, funder_criteria = convert_agent_result(
-        result
-    )
+    (
+        funder,
+        funding_opportunities,
+        funded_projects,
+        funder_templates,
+        funder_criteria,
+    ) = convert_agent_result(result)
     prior_evidence_paths = set(prior_sources_by_target)
     for target_path in uncovered_material_paths(
         funder=funder,
-        funding_records=funding_records,
+        funding_opportunities=funding_opportunities,
+        funded_projects=funded_projects,
         funder_templates=funder_templates,
         funder_criteria=funder_criteria,
         evidence=retained_evidence,
@@ -783,13 +793,12 @@ def find_missing_data(
 def has_deep_project(result: FundingOpportunityResearchResult) -> bool:
     """Return whether one funded-project row contains action and award context."""
     return any(
-        not record.is_opportunity
-        and bool(record.interventions)
-        and bool(record.summary)
-        and record.award_amount is not None
-        and bool(record.currency)
-        and bool(record.status)
-        for record in result.funding_records
+        bool(project.interventions)
+        and bool(project.summary)
+        and project.award_amount is not None
+        and bool(project.currency)
+        and bool(project.status)
+        for project in result.funded_projects
     )
 
 

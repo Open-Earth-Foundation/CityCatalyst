@@ -21,6 +21,10 @@ from app.modules.prioritizer.models import (
 )
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
+from app.services.action_pathways_api import (
+    PRIORITIZABLE_ACTION_TYPE,
+    select_prioritizable_actions,
+)
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -43,35 +47,12 @@ from app.utils.timing import time_block
 
 
 logger = logging.getLogger(__name__)
-SUPPORTED_ACTION_TYPE = "mitigation"
 
 
 def _sorted_action_ids(actions: list[Action]) -> list[str]:
     """Return all action IDs in deterministic sorted order."""
     action_ids = [action.action_id for action in actions]
     return sorted(action_ids)
-
-
-def _filter_supported_action_type(
-    actions: list[Action],
-    *,
-    action_type: str,
-) -> tuple[list[Action], list[Action], list[Action]]:
-    """Split fetched actions into supported, filtered-out, and missing-type groups."""
-    normalized_action_type = action_type.strip().lower()
-    kept_actions: list[Action] = []
-    filtered_actions: list[Action] = []
-    missing_action_type_actions: list[Action] = []
-    for action in actions:
-        if action.action_type is None or not action.action_type.strip():
-            missing_action_type_actions.append(action)
-            kept_actions.append(action)
-            continue
-        if action.action_type.strip().lower() == normalized_action_type:
-            kept_actions.append(action)
-            continue
-        filtered_actions.append(action)
-    return kept_actions, filtered_actions, missing_action_type_actions
 
 
 def _score_stats(score_by_action_id: dict[str, float]) -> dict[str, float | int | bool]:
@@ -156,14 +137,13 @@ def _build_removed_action_legal_evidence(
         "verdict_score": evidence.get("legal_verdict_score"),
         "ownership_category": summary.get("ownership_category"),
         "ownership_score": summary.get("ownership_score"),
-        "ownership_description": summary.get("ownership_description"),
-        "ownership_description_es": summary.get("ownership_description_es"),
+        "ownership_description": dict(summary.get("ownership_description", {})),
         "restrictions_category": summary.get("restrictions_category"),
         "restrictions_score": summary.get("restrictions_score"),
-        "restrictions_description": summary.get("restrictions_description"),
-        "restrictions_description_es": summary.get("restrictions_description_es"),
-        "legal_justification": summary.get("legal_justification"),
-        "legal_justification_en": summary.get("legal_justification_en"),
+        "restrictions_description": dict(
+            summary.get("restrictions_description", {})
+        ),
+        "legal_justification": dict(summary.get("legal_justification", {})),
         "legal_references": list(summary.get("legal_references", [])),
     }
 
@@ -208,14 +188,15 @@ def _group_feasibility_evidence(evidence: dict[str, object]) -> dict[str, object
             ),
             "ownership_category": evidence.get("ownership_category"),
             "ownership_score": evidence.get("ownership_score"),
-            "ownership_description": evidence.get("ownership_description"),
-            "ownership_description_es": evidence.get("ownership_description_es"),
+            "ownership_description": dict(
+                evidence.get("ownership_description", {})
+            ),
             "restrictions_category": evidence.get("restrictions_category"),
             "restrictions_score": evidence.get("restrictions_score"),
-            "restrictions_description": evidence.get("restrictions_description"),
-            "restrictions_description_es": evidence.get("restrictions_description_es"),
-            "legal_justification": evidence.get("legal_justification"),
-            "legal_justification_en": evidence.get("legal_justification_en"),
+            "restrictions_description": dict(
+                evidence.get("restrictions_description", {})
+            ),
+            "legal_justification": dict(evidence.get("legal_justification", {})),
             "analysis_date": evidence.get("legal_analysis_date"),
             "generation_method": evidence.get("legal_generation_method"),
             "legal_references": list(evidence.get("legal_references", [])),
@@ -374,29 +355,26 @@ def _build_evidence_summary(
                 "ownership_score": feasibility_evidence.get("legal", {}).get(
                     "ownership_score"
                 ),
-                "ownership_description": feasibility_evidence.get("legal", {}).get(
-                    "ownership_description"
+                "ownership_description": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "ownership_description", {}
+                    )
                 ),
-                "ownership_description_es": feasibility_evidence.get(
-                    "legal", {}
-                ).get("ownership_description_es"),
                 "restrictions_category": feasibility_evidence.get("legal", {}).get(
                     "restrictions_category"
                 ),
                 "restrictions_score": feasibility_evidence.get("legal", {}).get(
                     "restrictions_score"
                 ),
-                "restrictions_description": feasibility_evidence.get("legal", {}).get(
-                    "restrictions_description"
+                "restrictions_description": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "restrictions_description", {}
+                    )
                 ),
-                "restrictions_description_es": feasibility_evidence.get(
-                    "legal", {}
-                ).get("restrictions_description_es"),
-                "legal_justification": feasibility_evidence.get("legal", {}).get(
-                    "legal_justification"
-                ),
-                "legal_justification_en": feasibility_evidence.get("legal", {}).get(
-                    "legal_justification_en"
+                "legal_justification": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "legal_justification", {}
+                    )
                 ),
                 "legal_references": list(
                     feasibility_evidence.get("legal", {}).get("legal_references", [])
@@ -583,16 +561,13 @@ def run_prioritization(
             actions,
             filtered_out_action_type_actions,
             missing_action_type_actions,
-        ) = _filter_supported_action_type(
-            fetched_actions,
-            action_type=SUPPORTED_ACTION_TYPE,
-        )
+        ) = select_prioritizable_actions(fetched_actions)
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
     fetch_actions_payload = {
         "total_fetched_actions": len(fetched_actions),
         "total_actions": len(actions),
-        "supported_action_type": SUPPORTED_ACTION_TYPE,
+        "supported_action_type": PRIORITIZABLE_ACTION_TYPE,
         "filtered_out_action_type_actions_count": len(filtered_out_action_type_actions),
         "missing_action_type_actions_count": len(missing_action_type_actions),
         "source": (
@@ -613,7 +588,7 @@ def run_prioritization(
         {
             "total_fetched_actions": len(fetched_actions),
             "total_actions": len(actions),
-            "supported_action_type": SUPPORTED_ACTION_TYPE,
+            "supported_action_type": PRIORITIZABLE_ACTION_TYPE,
             "filtered_out_action_type_actions_count": len(
                 filtered_out_action_type_actions
             ),
@@ -642,7 +617,7 @@ def run_prioritization(
         len(actions),
         len(filtered_out_action_type_actions),
         len(missing_action_type_actions),
-        SUPPORTED_ACTION_TYPE,
+        PRIORITIZABLE_ACTION_TYPE,
         block.elapsed_seconds,
     )
 

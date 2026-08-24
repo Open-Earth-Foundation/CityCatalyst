@@ -4,6 +4,7 @@ import {
   expectText,
   expectFieldInvalid,
   waitForAuthFormReady,
+  dismissCookieConsent,
 } from "./helpers";
 
 test.use({ storageState: { cookies: [], origins: [] } });
@@ -31,7 +32,7 @@ test.describe("Signup", () => {
     await expect(link).toBeVisible();
     await link.click();
     await expect(
-      page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
+      page.getByRole("heading", { name: "Create your account" }),
     ).toBeVisible();
   });
 
@@ -42,7 +43,7 @@ test.describe("Signup", () => {
     await page.goto(signupUrlWithEmail(email));
 
     await expect(
-      page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
+      page.getByRole("heading", { name: "Create your account" }),
     ).toBeVisible();
 
     await page.getByPlaceholder("Your full name").fill("Test User");
@@ -69,7 +70,7 @@ test.describe("Signup", () => {
     await page.goto(signupUrlWithEmail("testopenearthorg"));
 
     await expect(
-      page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
+      page.getByRole("heading", { name: "Create your account" }),
     ).toBeVisible();
     // Button starts disabled until all fields are valid (new UX)
     await waitForAuthFormReady(page, { expectEnabled: false });
@@ -105,23 +106,28 @@ test.describe("Signup", () => {
     // Prefill the email field via the invitation URL pattern. The email is
     // valid, so on submit only the password-mismatch error should surface.
     await page.goto(signupUrlWithEmail("e2e-test-fail@example.com"));
+    await dismissCookieConsent(page);
 
     await expect(
-      page.getByRole("heading", { name: "Sign Up to City Catalyst" }),
+      page.getByRole("heading", { name: "Create your account" }),
     ).toBeVisible();
-    // Button starts disabled until all fields are valid (new UX)
-    await waitForAuthFormReady(page, { expectEnabled: false });
+    // Validation only fires on submit — the button stays enabled beforehand
+    // so the user can trigger it.
+    await waitForAuthFormReady(page, { expectEnabled: true });
 
     await page.getByPlaceholder("Your full name").fill("Test Account");
     await page.getByLabel("Password", { exact: true }).fill("Password1");
     await page.getByLabel("Confirm Password").fill("Password2");
+    // The visible checkbox control overlays the native (accessible) input;
+    // click the control directly rather than the input it decorates.
+    await page.locator('[data-scope="checkbox"][data-part="control"]').click();
 
-    // Mismatch message is shown reactively — no submit needed
-    await expectText(page, "Passwords do not match");
-
-    // Button must remain disabled while passwords do not match
     const submitButton = page.getByRole("button", { name: "Create Account" });
-    await expect(submitButton).toBeDisabled();
+    await expect(submitButton).toBeEnabled();
+    await submitButton.click();
+
+    // Mismatch message only appears after the submit attempt
+    await expectText(page, "Passwords do not match");
   });
 
   test.skip("should correctly handle and pass callbackUrl", () => {});

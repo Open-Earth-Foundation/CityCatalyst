@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Terra UI ↔ CityCatalyst — parity playground</title>
+<style>
+  :root{
+    --ink:#18181b; --ink-2:#52525b; --ink-3:#8a8a94;
+    --page:#fbfbfc; --card:#fff; --rule:#e4e4e7; --chip:#f4f4f5; --hair:#efeff1;
+    --ok:#1a8c00; --ok-bg:#eaf7e5; --warn:#a06800; --warn-bg:#fdf4e0; --bad:#c3261d; --bad-bg:#fdecea;
+    --info:#2351DC;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+    --sans:"Poppins",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    --body:"Open Sans",ui-sans-serif,system-ui,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--ink:#f4f4f5;--ink-2:#a1a1aa;--ink-3:#71717a;--page:#0b0b0d;--card:#141417;--rule:#27272a;--chip:#1c1c20;--hair:#202024;
+      --ok:#5fdc44;--ok-bg:#13260f;--warn:#e0a83a;--warn-bg:#2a2110;--bad:#ff7b72;--bad-bg:#2b1512;--info:#7391e9;}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;padding:0;background:var(--page);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:34px 24px 72px}
+  header{margin-bottom:26px}
+  h1{font-size:29px;font-weight:600;letter-spacing:-0.025em;margin:0 0 8px}
+  .lede{color:var(--ink-2);font-size:14.5px;line-height:1.62;margin:0;max-width:74ch;font-family:var(--body)}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .banner{margin:22px 0 0;border-left:2px solid var(--info);background:color-mix(in srgb,var(--info) 7%,transparent);
+    padding:13px 16px;border-radius:0 9px 9px 0;font-family:var(--body);font-size:13.5px;line-height:1.6;color:var(--ink-2)}
+  .banner b{color:var(--ink);font-weight:600}
+
+  .scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:24px 0 6px}
+  .score{border:1px solid var(--rule);border-radius:12px;padding:16px 17px;background:var(--card)}
+  .score .n{font-size:28px;font-weight:600;letter-spacing:-0.03em;line-height:1.1}
+  .score .l{font-size:12.5px;color:var(--ink-3);margin-top:5px;font-family:var(--body);line-height:1.45}
+
+  nav{display:flex;gap:6px;flex-wrap:wrap;margin:30px 0 4px;border-bottom:1px solid var(--rule);padding-bottom:12px}
+  nav button{font:inherit;font-size:13px;font-weight:500;cursor:pointer;padding:8px 14px;border-radius:8px;
+    border:1px solid transparent;background:transparent;color:var(--ink-2)}
+  nav button:hover{background:var(--chip);color:var(--ink)}
+  nav button[aria-selected="true"]{background:var(--card);border-color:var(--rule);color:var(--ink);font-weight:600}
+
+  .toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:18px 0 12px;font-family:var(--body);font-size:13px;color:var(--ink-2)}
+  .toolbar label{display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+  .toolbar input{accent-color:var(--info);width:15px;height:15px}
+  .count{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+
+  section{display:none}
+  section.on{display:block}
+  h2{font-size:12px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);
+     margin:30px 0 6px;padding-bottom:9px;border-bottom:1px solid var(--rule)}
+  .note{font-size:13.5px;color:var(--ink-2);line-height:1.62;margin:10px 0 16px;max-width:78ch;font-family:var(--body)}
+  .note b{color:var(--ink);font-weight:600}
+
+  .scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:11px;background:var(--card)}
+  table{width:100%;border-collapse:collapse;min-width:720px;font-size:13.5px}
+  thead th{text-align:left;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-3);padding:12px 14px;border-bottom:1px solid var(--rule);white-space:nowrap;background:var(--card);
+    position:sticky;top:0}
+  td{padding:10px 14px;border-bottom:1px solid var(--hair);vertical-align:middle;line-height:1.45}
+  tbody tr:last-child td{border-bottom:none}
+  td.mono{font-family:var(--mono);font-size:12px}
+  td.num{font-family:var(--mono);font-size:12px;text-align:right;color:var(--ink-2);white-space:nowrap}
+  td.dim{color:var(--ink-3)}
+  td.note{font-family:var(--body);font-size:12.5px;color:var(--ink-2);line-height:1.5}
+  .sw{display:inline-block;width:13px;height:13px;border-radius:3px;border:1px solid rgba(128,128,128,.32);
+    vertical-align:-2px;margin-right:8px}
+
+  .tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    padding:3px 8px;border-radius:5px;white-space:nowrap}
+  .t-ok{background:var(--ok-bg);color:var(--ok)}
+  .t-warn{background:var(--warn-bg);color:var(--warn)}
+  .t-bad{background:var(--bad-bg);color:var(--bad)}
+  .t-dim{background:var(--chip);color:var(--ink-3)}
+
+  .zero{color:var(--bad);font-weight:600}
+  .flag{border-left:2px solid var(--bad);background:color-mix(in srgb,var(--bad) 7%,transparent);
+    padding:13px 16px;border-radius:0 9px 9px 0;font-size:13.5px;line-height:1.62;color:var(--ink-2);
+    margin:16px 0 0;font-family:var(--body)}
+  .flag.amber{border-color:var(--warn);background:color-mix(in srgb,var(--warn) 8%,transparent)}
+  .flag.good{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 8%,transparent)}
+  .flag b{color:var(--ink);font-weight:600}
+  code{font-family:var(--mono);font-size:.9em;background:var(--chip);padding:1.5px 5px;border-radius:4px}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);font-family:var(--body);
+    font-size:12.5px;color:var(--ink-3);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Terra UI ↔ CityCatalyst</h1>
+  <p class="lede">Structural parity between the <b>CC Terra UI Guidelines</b> Figma library and the Chakra v3 theme in <code>app/src/lib/theme/</code>. Every code-side number is a measured occurrence count across 833 source files; every Figma-side entry was read from the published library.</p>
+  <div class="banner"><b>Scope.</b> This covers the <b>CityCatalyst brand theme</b> only. The five other <code>data-theme</code> palettes are per-organization white-labelling — a product feature, not a design-system concern — and are deliberately out of scope here. Code values shown are the ones that render under the default theme.<br><br>
+  <b>And a limit worth stating:</b> this compares <b>names and structure</b>, not values. The Figma REST search exposes style names and descriptions but not resolved hex or font specs, so <span class="tag t-ok">match</span> means <i>the token exists on both sides under corresponding names</i> — not that the hex agrees. Confirming values needs a Desktop Bridge extraction. Treat green as "wired up", not "verified identical".</div>
+</header>
+
+<div class="scores">
+  <div class="score"><div class="n" style="color:var(--ok)">25/25</div><div class="l">Figma color tokens present in code</div></div>
+  <div class="score"><div class="n" style="color:var(--warn)">21/24</div><div class="l">Figma text styles implemented</div></div>
+  <div class="score"><div class="n" style="color:var(--bad)">0/6</div><div class="l">Figma breakpoints implemented</div></div>
+  <div class="score"><div class="n">28</div><div class="l">code tokens with no Figma counterpart</div></div>
+  <div class="score"><div class="n" style="color:var(--bad)">19</div><div class="l">code refs to tokens that don't exist</div></div>
+</div>
+
+<nav id="nav"></nav>
+<div class="toolbar">
+  <label><input type="checkbox" id="only"> Show only rows that need attention</label>
+  <span class="count" id="count"></span>
+</div>
+
+<!-- ============ COLOR ============ -->
+<section id="s-color">
+  <h2>Figma color tokens → code</h2>
+  <p class="note">The <b>strongest result in the whole audit</b>: all 25 color variables in Terra UI's <code>Colors</code> collection exist in the theme under corresponding names. The vocabulary is genuinely shared — alignment here is bookkeeping, not a rewrite.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Figma variable / style</th><th>Code token</th><th>Value in code</th><th>Status</th><th style="text-align:right">Uses</th>
+  </tr></thead><tbody id="t-color"></tbody></table></div>
+  <div class="flag good"><b>100% coverage, one naming inconsistency.</b> Figma writes <code>background/alternative-light</code> (kebab); the theme writes <code>background.alternativeLight</code> (camel). Everything else transliterates cleanly. Worth fixing so the mapping is mechanical rather than remembered.</div>
+
+  <div class="flag amber"><b>Careful reading <code>app-theme.ts</code>: several colors are defined twice, and the raw value is not the one that renders.</b> The file has a raw <code>content.*</code> block <i>and</i> a semantic <code>content.*</code> block. Semantic tokens win, so the raw values are shadowed — and for one token they disagree.
+  <div class="scroll" style="margin-top:12px"><table style="min-width:560px"><thead><tr>
+    <th>Token</th><th>Raw token says</th><th>Actually renders</th><th></th>
+  </tr></thead><tbody>
+    <tr><td class="mono">content.primary</td><td class="mono"><span class="sw" style="background:#00001F"></span>#00001F</td><td class="mono"><span class="sw" style="background:#00001F"></span>#00001F</td><td><span class="tag t-ok">agrees</span></td></tr>
+    <tr><td class="mono">content.secondary</td><td class="mono"><span class="sw" style="background:#232640"></span>#232640</td><td class="mono"><span class="sw" style="background:#232640"></span>#232640</td><td><span class="tag t-ok">agrees</span></td></tr>
+    <tr><td class="mono">content.tertiary</td><td class="mono"><span class="sw" style="background:#7A7B9A"></span>#7A7B9A</td><td class="mono"><span class="sw" style="background:#4B4C63"></span>#4B4C63</td><td><span class="tag t-bad">disagrees</span></td></tr>
+    <tr><td class="mono">content.link</td><td class="mono"><span class="sw" style="background:#2351DC"></span>#2351DC</td><td class="mono"><span class="sw" style="background:#2351DC"></span>#2351DC</td><td><span class="tag t-ok">agrees</span></td></tr>
+    <tr><td class="mono">content.alternative</td><td class="mono"><span class="sw" style="background:#001EA7"></span>#001EA7</td><td class="mono"><span class="sw" style="background:#001EA7"></span>#001EA7</td><td><span class="tag t-ok">agrees</span></td></tr>
+  </tbody></table></div>
+  <div style="margin-top:12px"><code>content.tertiary</code> is the most-used color token in the product — <b>377 references</b>. The raw block says <code>#7A7B9A</code>; what actually paints is <code>#4B4C63</code>. Anyone reading the token file to answer "what colour is tertiary text?" gets the wrong answer — and the raw line is annotated <code>// validated</code>.<br><br>
+  <code>#7A7B9A</code> is meanwhile hardcoded 5 times across 3 component files (<code>PublicDashboard</code>, <code>CityDashboard</code>, <code>auth/check-email</code>), twice more in email templates where a literal hex is legitimate, and <b>roughly 80 times inside <code>icons.tsx</code></b> as SVG <code>stroke</code>/<code>fill</code>. So the icon set is painted with a colour the theme no longer resolves to, and no icon follows <code>content.tertiary</code> if it ever moves. It is also still live as <code>interactive.control</code> (108 uses) — both values ship, under different names.<br><br>
+  Separately, <code>content.tertiary-light</code> is defined as <code>#4B4C63</code> — identical to what <code>content.tertiary</code> already resolves to. It is a duplicate of the thing it was meant to be lighter than.</div></div>
+
+  <h2>Code color tokens with no Figma counterpart</h2>
+  <p class="note">These exist only in code. Some are legitimate implementation details; the <code>semantic.*</code> namespace is not.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Code token</th><th>Value</th><th>Status</th><th>Assessment</th><th style="text-align:right">Uses</th>
+  </tr></thead><tbody id="t-codeonly"></tbody></table></div>
+  <div class="flag"><b><code>semantic.*</code> is a shadow copy of <code>sentiment.*</code>.</b> Six of its seven values are byte-identical to a <code>sentiment.*</code> token that Terra UI actually defines — <code>semantic.danger</code> and <code>sentiment.negativeDefault</code> are both <code>#F23D33</code>; success, successOverlay, dangerOverlay and warningOverlay likewise. Two vocabularies for one concept, 44 usages on the undocumented one.<br><br>And they <b>disagree</b> where it matters: <code>semantic.warning</code> is <code>#C98300</code> while <code>sentiment.warningDefault</code> is <code>#F9A200</code>. Two different warning colors depending on which name a developer reached for. Terra UI has no opinion because it has never seen <code>semantic.*</code>.</div>
+</section>
+
+<!-- ============ TYPE ============ -->
+<section id="s-type">
+  <h2>Figma text styles → code</h2>
+  <p class="note">21 of 24 implemented. The gaps run in both directions, and the naming gap between them is doing real damage — see below.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Figma text style</th><th>Code token</th><th>Size</th><th>Status</th><th style="text-align:right">Uses</th>
+  </tr></thead><tbody id="t-type"></tbody></table></div>
+
+  <div class="flag"><b>19 references in code point at font-size tokens that do not exist — and most are Figma's names typed verbatim.</b>
+  This is not a scatter of random typos. Figma names its styles <code>Body/large</code>, <code>Body/extra-large</code>, <code>Label/large</code>, <code>Headline/small</code>. The theme abbreviates: <code>body.lg</code>, <code>body.xl</code>, <code>label.lg</code>, <code>headline.sm</code>. Someone read the spec and wrote down what it said.
+  <div class="scroll" style="margin-top:12px"><table style="min-width:560px"><thead><tr>
+    <th>Written in code</th><th>Figma style it came from</th><th>Should be</th><th style="text-align:right">×</th>
+  </tr></thead><tbody id="t-broken"></tbody></table></div>
+  <div style="margin-top:12px">Nothing catches these. They aren't type errors, no lint rule covers them, and Chakra silently drops an unresolvable token — so the text renders at browser default and review sees nothing wrong. <b>This is the single best argument for the playground.</b></div></div>
+
+  <div class="flag amber"><b>Cross-namespace misuse.</b> <code>fontFamily="button.md"</code> appears 14 times across the onboarding and setup pages — <code>button.md</code> is a font <i>size</i>, there is no such font family. <code>lineHeight="headline.sm"</code> appears 3 times with the same confusion. Both silently no-op.</div>
+</section>
+
+<!-- ============ SPACE ============ -->
+<section id="s-space">
+  <h2>Spacing</h2>
+  <p class="note"><b>Terra UI ships two competing spacing systems.</b> A <code>Spacing &amp; Radius</code> collection using t-shirt names that map 1:1 to the theme, and a <code>Primitives</code> collection using bare numbers that maps to nothing. One of them is legacy; nobody has said which.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Figma — Spacing &amp; Radius</th><th>Figma — Primitives</th><th>Code token</th><th>Value</th><th>Status</th>
+  </tr></thead><tbody id="t-space"></tbody></table></div>
+  <div class="flag amber"><b>The scale is agreed and unused.</b> Design defined it twice, the theme implements it once, and components reference it 63 times against <b>1,117 hardcoded pixel literals</b> — 5% adoption. Color sits at 93% and typography at 94%. Spacing is where the shared vocabulary breaks down in practice.</div>
+
+  <h2>Radius</h2>
+  <div class="scroll"><table><thead><tr>
+    <th>Figma — Spacing &amp; Radius</th><th>Figma — Primitives</th><th>Code token</th><th>Value</th><th>Status</th>
+  </tr></thead><tbody id="t-radius"></tbody></table></div>
+  <div class="flag amber">Same duplication: <code>radius-minimal…radius-full</code> maps cleanly to the theme, while <code>Radius/s…xxl</code> is a parallel naming with no counterpart. Note the theme's <code>button</code> recipe hardcodes <code>borderRadius: 50</code> — bypassing every one of these.</div>
+</section>
+
+<!-- ============ ELEVATION + GRID ============ -->
+<section id="s-other">
+  <h2>Elevation</h2>
+  <p class="note">The cleanest correspondence in the system — five effect styles, five shadow tokens, identical names.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Figma effect style</th><th>Code token</th><th>Status</th><th style="text-align:right">Uses</th>
+  </tr></thead><tbody id="t-elev"></tbody></table></div>
+  <div class="flag amber"><b>Perfect naming parity, 40% adoption.</b> <code>4dp</code>, <code>8dp</code> and <code>12dp</code> are defined on both sides and used by neither. Either the product genuinely only needs two elevation levels — in which case Terra UI should drop three — or components are reaching for raw <code>box-shadow</code> instead.</div>
+
+  <h2>Breakpoints</h2>
+  <p class="note">Terra UI defines six responsive grids. The theme defines none.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Figma grid style</th><th>Code breakpoint</th><th>Status</th><th>Note</th>
+  </tr></thead><tbody id="t-grid"></tbody></table></div>
+  <div class="flag"><b>This one was implemented and then switched off.</b> <code>app-theme.ts</code> lines 694–702 contain a five-step breakpoint scale — <code>sm 600</code>, <code>md 905</code>, <code>lg 1240</code>, <code>xl 1440</code> — sitting inside a block comment. Those boundaries match Terra UI's grid definitions exactly. Somebody did the handoff correctly, and the result was commented out rather than deleted, so no history explains why. Chakra's defaults apply instead, and Terra UI's 1600+ tier was never implemented at all.</div>
+</section>
+
+<!-- ============ COMPONENTS ============ -->
+<section id="s-comp">
+  <h2>Component vocabulary</h2>
+  <p class="note">Sampled from the guidelines page (253 component nodes). This is a structural read of variant APIs, not a visual diff — that needs the in-app playground.</p>
+  <div class="scroll"><table><thead><tr>
+    <th>Component</th><th>Figma variant API</th><th>Code reality</th><th>Status</th>
+  </tr></thead><tbody id="t-comp"></tbody></table></div>
+
+  <div class="flag"><b>A large share of the library is Chakra v2, against a Chakra v3 implementation.</b> Switch and Checkbox carry <code>colorScheme=blue|cyan|green|pink|purple|teal</code> — a prop that does not exist in v3, where the theme uses <code>colorPalette: "brand"</code>. Alert uses <code>variant=left-accent|solid|subtle|top-accent</code>; the code has no Alert at all. Table uses <code>variant=Simple|Striped|Unstyled</code> against an in-house <code>data-table</code>. These read as inherited from a Chakra v2 Figma kit rather than authored for Terra, and they cannot be handed off as specified.</div>
+
+  <div class="flag"><b>Design specifies disabled everywhere. Code implements it nowhere.</b> Figma models <code>State=Disabled</code> across tabs, inputs, checkboxes and switches. Across every recipe in the theme there are 10 <code>_hover</code>, 6 <code>_active</code>, 5 <code>_loading</code> and <b>zero</b> <code>_disabled</code>. The button wrapper sets the attribute but no variant says what disabled looks like.</div>
+
+  <div class="flag amber"><b>Nine of fifteen recipes are inert.</b> Independent of Figma: <code>tag</code>, <code>card</code>, <code>tooltip</code>, <code>accordion</code>, <code>progress</code> and <code>switch</code> are Chakra slot recipes registered under the single-part <code>recipes</code> key; <code>tab</code> and <code>form</code> use keys Chakra doesn't have; <code>text</code> isn't a v3 recipe. They have never taken effect. Left in place deliberately — activating them would change six components at once. Any Figma spec for those components currently has no implementation to disagree with.</div>
+</section>
+
+<footer>
+  Generated from the CC Terra UI Guidelines published library and <code>app/src/lib/theme/</code>. Code counts measured per-occurrence with word-boundary matching across 833 <code>.ts</code>/<code>.tsx</code> files, excluding the theme directory itself. Structural parity only — see the scope note at the top.
+</footer>
+</div>
+
+<script>
+const OK='<span class="tag t-ok">match</span>', WARN='<span class="tag t-warn">naming</span>',
+      MISS='<span class="tag t-bad">not in code</span>', EXTRA='<span class="tag t-warn">code only</span>',
+      DUP='<span class="tag t-bad">duplicate</span>', UNUSED='<span class="tag t-bad">unused</span>',
+      DIM='<span class="tag t-dim">—</span>';
+
+const COLOR=[
+ ["content/primary","content.primary","#00001F",OK,153],["content/secondary","content.secondary","#232640",OK,260],
+ ["content/tertiary","content.tertiary","#4B4C63",OK,377],["content/alternative","content.alternative","#001EA7",OK,38],
+ ["content/link","content.link","#2351DC",OK,250],
+ ["background/default","background.default","#FFFFFF",OK,16],["background/neutral","background.neutral","#E8EAFB",OK,136],
+ ["background/overlay","background.overlay","#C5CBF5",OK,24],["background/alternative","background.alternative","#EFFDE5",OK,5],
+ ["background/alternative-light","background.alternativeLight","#F9FAFE",WARN,5],
+ ["border/neutral","border.neutral","#D7D8FA",OK,117],["border/overlay","border.overlay","#E6E7FF",OK,112],
+ ["interactive/primary","interactive.primary","#008600",OK,49],["interactive/secondary","interactive.secondary","#2351DC",OK,86],
+ ["interactive/tertiary","interactive.tertiary","#24BE00",OK,47],["interactive/accent","interactive.accent","#5FE500",OK,1],
+ ["interactive/control","interactive.control","#7A7B9A",OK,108],
+ ["base/dark","base.dark","#00001F",OK,24],["base/light","base.light","#FFFFFF",OK,170],
+ ["sentiment/positive/default","sentiment.positiveDefault","#24BE00",OK,17],
+ ["sentiment/positive/overlay","sentiment.positiveOverlay","#EFFDE5",OK,15],
+ ["sentiment/negative/default","sentiment.negativeDefault","#F23D33",OK,144],
+ ["sentiment/negative/overlay","sentiment.negativeOverlay","#FFEAEE",OK,38],
+ ["sentiment/warning/default","sentiment.warningDefault","#F9A200",OK,15],
+ ["sentiment/warning/overlay","sentiment.warningOverlay","#FEF8E1",OK,19],
+];
+const CODEONLY=[
+ ["semantic.danger","#F23D33",DUP,"Identical to sentiment.negativeDefault",20],
+ ["semantic.success","#24BE00",DUP,"Identical to sentiment.positiveDefault",12],
+ ["semantic.dangerOverlay","#FFEAEE",DUP,"Identical to sentiment.negativeOverlay",4],
+ ["semantic.successOverlay","#EFFDE5",DUP,"Identical to sentiment.positiveOverlay",3],
+ ["semantic.warningOverlay","#FEF8E1",DUP,"Identical to sentiment.warningOverlay",2],
+ ["semantic.info","#2351DC",DUP,"Identical to content.link",2],
+ ["semantic.warning","#C98300",'<span class="tag t-bad">conflict</span>',"Disagrees with sentiment.warningDefault (#F9A200)",1],
+ ["background.backgroundLight","#FAFAFA",EXTRA,"Page background — set in globalCss, legitimate",52],
+ ["interactive.quaternary","#F17105",EXTRA,"No Figma counterpart",27],
+ ["background.backgroundGreyFlat","#FAFBFE",EXTRA,"No Figma counterpart",15],
+ ["interactive.connected","#FA7200",EXTRA,"No Figma counterpart",8],
+ ["background.backgroundLoading","#E8EAFB",EXTRA,"Same value as background.neutral",7],
+ ["background.graySubtle","#F4F4F5",EXTRA,"No Figma counterpart",5],
+ ["background.radioUnselected","#E4E4E7",EXTRA,"Hardcoded in semanticTokens; used by radio.tsx",4],
+ ["divider.neutral","#F0F0F0",EXTRA,"Overlaps border.neutral conceptually",3],
+ ["content.tertiary-light","#4B4C63",EXTRA,"Hardcoded hex in semanticTokens",3],
+ ["body","#232640",EXTRA,"Same value as content.secondary",3],
+ ["background.transparentGrey","rgba(232,234,251,.2)",EXTRA,"Used by ghost button hovers",2],
+ ["sentiment.backgroundOverlay","#E8FBEC",EXTRA,"No Figma counterpart",1],
+ ["sentiment.positiveLight","#f0f7eb",UNUSED,"Only reachable via button.recipe.ts",0],
+ ["sentiment.positiveDark","#b9cfa9",UNUSED,"Only reachable via button.recipe.ts",0],
+ ["interactive.primaryLight","#61c261",UNUSED,"Only reachable via button.recipe.ts",0],
+ ["background.backgroundDisabled","#D9D9D9",UNUSED,"Defined twice, consumed nowhere",0],
+ ["brand.50 / 400 / 600 / 800 / 900","—",UNUSED,"Orphaned — not even aliased",0],
+ ["brandScheme.100 / 500","—",UNUSED,"Orphaned entirely",0],
+ ["sectors.I – sectors.V","—",UNUSED,"Charts import the SectorColors enum directly; token path never used",0],
+];
+const TYPE=[
+ ["Display/large","display.lg","57px",OK,3],["Display/medium","display.md","45px",OK,9],
+ ["Display/small","display.sm","36px",OK,6],["—","display.xl","140px",EXTRA,1],
+ ["Headline/large","headline.lg","32px",OK,9],["Headline/medium","headline.md","28px",OK,7],
+ ["Headline/small","headline.sm","24px",OK,63],
+ ["Title/large","title.lg","22px",OK,30],["Title/medium","title.md","16px",OK,119],["Title/small","title.sm","14px",OK,19],
+ ["Body/extra-large","body.xl","22px",WARN,5],["Body/large","body.lg","16px",WARN,144],
+ ["Body/medium","body.md","14px",WARN,168],["Body/small","body.sm","12px",WARN,49],
+ ["Label/large","label.lg","14px",WARN,57],["Label/medium","label.md","12px",WARN,75],["Label/small","label.sm","11px",WARN,34],
+ ["Label/underline large","—","—",MISS,0],["Label/underline medium","—","—",MISS,0],["Label/underline small","—","—",MISS,0],
+ ["Button/large","button.lg","20px",WARN,1],["Button/medium","button.md","14px",WARN,31],["Button/small","button.sm","12px",WARN,3],
+ ["Caption","caption","12px",UNUSED,0],["Overline","overline","10px",OK,6],
+];
+const BROKEN=[
+ ["body.large","Body/large","body.lg",6],["Headline.sm","Headline/small","headline.sm",3],
+ ["body.extralarge","Body/extra-large","body.xl",2],["label.large","Label/large","label.lg",2],
+ ["body.ls","Body/large (slip)","body.lg",2],["body.small","Body/small","body.sm",1],
+ ["Heading.sm","Headline/small","headline.sm",1],["body.xs","— (no such style)","body.sm",1],
+ ["lable.lg","— (typo)","label.lg",1],
+];
+const SPACE=[
+ ["Spacing/space-xs","Spacing/1","xs","4px",OK],["Spacing/space-s","Spacing/2","s","8px",OK],
+ ["Spacing/space-m","Spacing/3","m","16px",OK],["Spacing/space-l","Spacing/4","l","24px",OK],
+ ["Spacing/space-xl","Spacing/5","xl","32px",OK],["Spacing/space-xxl","Spacing/6","xxl","40px",OK],
+ ["Spacing/space-xxl-2","Spacing/7","xxl-2","48px",OK],["Spacing/space-xxl-3","Spacing/8","xxl-3","56px",OK],
+ ["Spacing/space-xxl-4","Spacing/9","xxl-4","64px",OK],["Spacing/space-xxl-5","Spacing/10","xxl-5","72px",OK],
+ ["Spacing/space-xxl-6","Spacing/11","xxl-6","80px",OK],
+];
+const RADIUS=[
+ ["Radius/radius-minimal","Radius/s","minimal","4px",OK],["Radius/radius-rounded","Radius/m","rounded","8px",OK],
+ ["Radius/radius-rounded-xl","Radius/l","rounded-xl","16px",OK],["Radius/radius-rounded-xxl","Radius/xl","rounded-xxl","20px",OK],
+ ["Radius/radius-full","Radius/xxl","full","50%",OK],
+];
+const ELEV=[["1dp","1dp",OK,36],["2dp","2dp",OK,26],["4dp","4dp",UNUSED,0],["8dp","8dp",UNUSED,0],["12dp","12dp",UNUSED,0]];
+const GRID=[
+ ["Extra Small (0-599dp)","—",MISS,"Commented out as xs 360px"],
+ ["Small (600-904dp)","—",MISS,"Commented out as sm 600px — boundary matches"],
+ ["Medium (905-1239)","—",MISS,"Commented out as md 905px — boundary matches"],
+ ["Medium (1240-1439)","—",MISS,"Commented out as lg 1240px — boundary matches"],
+ ["Large (1440+)","—",MISS,"Commented out as xl 1440px — boundary matches"],
+ ["Large-expanded(1600+)","—",MISS,"Never implemented at all"],
+];
+const COMP=[
+ ["Button","Priority · Type=Filled|Outlined|Text · Status · Size=s|m","variant= solid|outline|ghost|ghostLink|lightGhost|danger|solidPrimary|solidIcon · size=sm|lg",'<span class="tag t-bad">no shared language</span>'],
+ ["Switch","colorScheme=blue|cyan|green|pink|purple|teal × size × isChecked × isDisabled (72)","Ark wrapper; switch recipe is dead; colorScheme does not exist in v3",'<span class="tag t-bad">chakra v2</span>'],
+ ["Checkbox","Checkbox=Yes|No × Status=Default|Hover","Ark wrapper, no recipe",'<span class="tag t-warn">partial</span>'],
+ ["Alert","status=error|info|success|warning × variant=left-accent|solid|subtle|top-accent (16)","No Alert component — Callout and toaster instead",'<span class="tag t-bad">chakra v2</span>'],
+ ["Table","variant=Simple|Striped|Unstyled","In-house data-table + one @tanstack/react-table usage",'<span class="tag t-bad">chakra v2</span>'],
+ ["Tabs","State=Default|Disabled|Error × Active × Location × Orientation × Icon (48)","tab recipe registered under a key Chakra does not have — inert",'<span class="tag t-bad">dead recipe</span>'],
+ ["Accordion","AccordionButton/AccordionPanel, open?=true|false","accordion recipe is a slot recipe in the wrong bucket — inert",'<span class="tag t-bad">dead recipe</span>'],
+ ["Chip / Tag","Chip","tag recipe inert; ui/tag.tsx used 9×",'<span class="tag t-bad">dead recipe</span>'],
+ ["Card","Card","card recipe inert; many bespoke card components",'<span class="tag t-bad">dead recipe</span>'],
+ ["Tooltip","Tooltip","tooltip recipe inert; ui/tooltip.tsx used 14×",'<span class="tag t-bad">dead recipe</span>'],
+ ["Stepper","Progress=Not started|In progress|Completed × Status","components/steps/progress-steps.tsx — bespoke, no recipe",'<span class="tag t-warn">partial</span>'],
+ ["Dropdown / Select","Status=Default|Hover|Active|Error|Filled|Disabled × Device","ui/select.tsx, ui/native-select.tsx — no disabled styling",'<span class="tag t-warn">partial</span>'],
+ ["Popover","Pop-over","ui/popover.tsx used 2×",'<span class="tag t-warn">partial</span>'],
+];
+
+const TABS=[["s-color","Color"],["s-type","Typography"],["s-space","Spacing & radius"],["s-other","Elevation & grid"],["s-comp","Components"]];
+const needsAttention = html => !html.includes('t-ok');
+let onlyBad=false, current="s-color";
+
+const row=(cells,cls=[])=>`<tr data-bad="${cells.some(c=>typeof c==='string'&&c.includes('tag')&&needsAttention(c))?1:0}">`
+  +cells.map((c,i)=>`<td class="${cls[i]||''}">${c}</td>`).join('')+`</tr>`;
+const uses=n=>n===0?'<span class="zero">0</span>':n;
+
+function fill(id,rows){document.getElementById(id).innerHTML=rows.join('')}
+
+fill('t-color',COLOR.map(([f,c,v,s,u])=>row(
+  [f,c,`<span class="sw" style="background:${v}"></span>${v}`,s,uses(u)],['mono','mono','mono','','num'])));
+fill('t-codeonly',CODEONLY.map(([c,v,s,a,u])=>row(
+  [c, v.startsWith('#')||v.startsWith('rgba')?`<span class="sw" style="background:${v}"></span>${v}`:v, s,a,uses(u)],
+  ['mono','mono','','note','num'])));
+fill('t-type',TYPE.map(([f,c,v,s,u])=>row([f,c,v,s,uses(u)],['mono','mono','mono','','num'])));
+fill('t-broken',BROKEN.map(([w,o,s,n])=>row([`<span class="zero">${w}</span>`,o,s,n],['mono','mono','mono','num'])));
+fill('t-space',SPACE.map(([a,b,c,v,s])=>row([a,`<span class="tag t-dim">${b}</span>`,c,v,s],['mono','','mono','mono',''])));
+fill('t-radius',RADIUS.map(([a,b,c,v,s])=>row([a,`<span class="tag t-dim">${b}</span>`,c,v,s],['mono','','mono','mono',''])));
+fill('t-elev',ELEV.map(([f,c,s,u])=>row([f,c,s,uses(u)],['mono','mono','','num'])));
+fill('t-grid',GRID.map(([f,c,s,n])=>row([f,c,s,n],['mono','mono','','note'])));
+fill('t-comp',COMP.map(([n,f,c,s])=>row([`<b>${n}</b>`,f,c,s],['','mono','note',''])));
+
+const nav=document.getElementById('nav');
+TABS.forEach(([id,label])=>{
+  const b=document.createElement('button');
+  b.textContent=label; b.setAttribute('aria-selected',String(id===current));
+  b.onclick=()=>{current=id;render()};
+  nav.appendChild(b);
+});
+
+function render(){
+  [...nav.children].forEach((b,i)=>b.setAttribute('aria-selected',String(TABS[i][0]===current)));
+  TABS.forEach(([id])=>document.getElementById(id).classList.toggle('on',id===current));
+  let shown=0,total=0;
+  document.querySelectorAll('section.on tbody tr').forEach(tr=>{
+    total++;
+    const hide=onlyBad&&tr.dataset.bad!=='1';
+    tr.style.display=hide?'none':'';
+    if(!hide)shown++;
+  });
+  document.getElementById('count').textContent=onlyBad?`${shown} of ${total} rows`:`${total} rows`;
+}
+document.getElementById('only').onchange=e=>{onlyBad=e.target.checked;render()};
+render();
+</script>
+</body>
+</html>

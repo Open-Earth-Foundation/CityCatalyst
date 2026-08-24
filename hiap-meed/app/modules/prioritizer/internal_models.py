@@ -264,10 +264,14 @@ class ClimateFinanceProjectRecord(BaseModel):
 
     project_name: str
     project_name_i18n: dict[str, str] = Field(default_factory=dict)
+    sector: str | None = None
     jurisdiction: str | None = None
     lifecycle_stage: str | None = None
     funding_channel: str | None = None
+    cost_total: float | None = None
+    amount_unit: str | None = None
     funding_sources: list[dict[str, Any]] = Field(default_factory=list)
+    action_matches: list[dict[str, Any]] = Field(default_factory=list)
 
 
 class ClimateFinanceOpportunitiesFetchResult(BaseModel):

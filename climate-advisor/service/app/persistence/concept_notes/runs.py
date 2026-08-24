@@ -2,12 +2,19 @@ from __future__ import annotations
 
 from uuid import UUID
 
+from app.models.cnb.context_bundle import ConceptNoteContextBundle
+from app.models.db.concept_note import (
+    ConceptNoteContextBundle as ConceptNoteContextBundleRow,
+)
+from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.thread import Thread
+from app.utils.chat_workflow_context import (
+    CONCEPT_NOTE_RUN_ID_KEY,
+    bind_workflow_context,
+)
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.models.db.concept_note import ConceptNoteContextBundle, ConceptNoteRun
-from app.models.db.thread import Thread
 
 
 class ConceptNoteRunRepository:
@@ -55,7 +62,7 @@ class ConceptNoteRunRepository:
         city_id: str,
         project_id: str | None,
         funder_id: UUID | None,
-        selected_funding_record_id: UUID | None,
+        selected_funding_opportunity_id: UUID | None,
         thread_id: UUID | None,
         idempotency_key: UUID,
         request_fingerprint: str,
@@ -75,7 +82,7 @@ class ConceptNoteRunRepository:
             city_id=city_id,
             project_id=project_id,
             funder_id=funder_id,
-            selected_funding_record_id=selected_funding_record_id,
+            selected_funding_opportunity_id=selected_funding_opportunity_id,
             thread_id=thread_id,
             status="active",
             workflow_step="assembling_context",
@@ -85,7 +92,10 @@ class ConceptNoteRunRepository:
             idempotency_key=idempotency_key,
             request_fingerprint=request_fingerprint,
         )
-        bundle = ConceptNoteContextBundle(run=run, context_bundle={})
+        bundle = ConceptNoteContextBundleRow(
+            run=run,
+            context_bundle=ConceptNoteContextBundle().model_dump(mode="json"),
+        )
 
         try:
             async with self.session.begin_nested():
@@ -137,3 +147,26 @@ class ConceptNoteRunRepository:
         )
         result = await self.session.execute(query)
         return list(result.scalars().all())
+
+    async def bind_thread_context(
+        self,
+        *,
+        thread_id: UUID,
+        user_id: str,
+        run_id: UUID,
+    ) -> None:
+        """Persist the authorized Concept Note run on its owning chat thread."""
+        result = await self.session.execute(
+            select(Thread).where(
+                Thread.thread_id == thread_id,
+                Thread.user_id == user_id,
+            )
+        )
+        thread = result.scalar_one_or_none()
+        if thread is None:
+            return
+        thread.context = bind_workflow_context(
+            thread.context,
+            workflow_key=CONCEPT_NOTE_RUN_ID_KEY,
+            run_id=run_id,
+        )

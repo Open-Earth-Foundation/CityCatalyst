@@ -10,6 +10,7 @@ from uuid import uuid4
 
 from app.models.requests import MessageCreateRequest
 from app.utils import mlflow_logging
+from app.utils.chat_workflow_context import ChatWorkflowContext
 from app.utils.streaming_handler import StreamingHandler
 
 
@@ -361,17 +362,29 @@ def test_streaming_handler_uses_single_experiment_with_agentic_tags(
         user_id="user-1",
         content="Review this draft",
         inventory_id="inventory-1",
-        context={"stationary_energy_draft_run_id": "draft-1"},
     )
 
     assert handler._mlflow_experiment_name(general_payload) == "Clima"
     assert handler._mlflow_experiment_name(agentic_payload) == "Clima"
     assert handler._mlflow_tags(general_payload)["prompt_name"] == "chat"
+    handler.workflow_context = ChatWorkflowContext(
+        stationary_energy_draft_run_id=str(uuid4())
+    )
     assert handler._mlflow_tags(agentic_payload)["ca_agentic_flow"] is True
     assert (
         handler._mlflow_tags(agentic_payload)["workflow"]
         == "stationary_energy_context_chat"
     )
+
+
+def test_concept_note_context_uses_the_shared_chat_routing() -> None:
+    """Concept Note context should classify the existing chat stream consistently."""
+    context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+
+    assert context.mlflow_run_name == "concept_note_context_chat_request"
+    assert context.trace_workflow_name == "Climate Advisor Concept Note Context Chat"
+    assert context.telemetry()["workflow"] == "concept_note_context_chat"
+    assert context.telemetry()["context_mode"] == "concept_note_run"
 
 
 def test_streaming_handler_wraps_stream_in_mlflow_run(monkeypatch) -> None:
@@ -432,8 +445,10 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     async def fake_stream_response_with_mlflow(**kwargs):
         yield b"event: done\ndata: {\"ok\": true}\n\n"
 
-    async def fake_load_thread_stationary_energy_draft_run_id() -> str:
-        return str(draft_run_id)
+    async def fake_load_thread_workflow_context() -> ChatWorkflowContext:
+        return ChatWorkflowContext(
+            stationary_energy_draft_run_id=str(draft_run_id)
+        )
 
     handler = StreamingHandler(
         thread_id=uuid4(),
@@ -452,8 +467,8 @@ def test_streaming_handler_tags_agentic_flow_from_thread_context(
     )
     monkeypatch.setattr(
         handler,
-        "_load_thread_stationary_energy_draft_run_id",
-        fake_load_thread_stationary_energy_draft_run_id,
+        "_load_thread_workflow_context",
+        fake_load_thread_workflow_context,
     )
 
     async def collect() -> list[bytes]:
@@ -503,7 +518,9 @@ def test_streaming_handler_assigns_mlflow_trace_session(monkeypatch) -> None:
         session_factory=None,
         inventory_id="inventory-1",
     )
-    handler.stationary_energy_draft_run_id = str(draft_run_id)
+    handler.workflow_context = ChatWorkflowContext(
+        stationary_energy_draft_run_id=str(draft_run_id)
+    )
     monkeypatch.setattr(
         "app.utils.streaming_handler.Runner.run_streamed",
         fake_run_streamed,

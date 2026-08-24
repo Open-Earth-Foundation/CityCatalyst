@@ -35,7 +35,7 @@ import {
   PATCH as updateActionPlan,
   DELETE as deleteActionPlan,
 } from "@/app/api/v1/city/[city]/hiap/action-plan/[id]/route";
-import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/[rankingId]/route";
+import { POST as generateActionPlan } from "@/app/api/v1/city/[city]/hiap/action-plan/generate/route";
 
 import * as HiapApiService from "@/backend/hiap/HiapApiService";
 
@@ -99,14 +99,28 @@ describe("City HIAP Prioritization API", () => {
   });
 
   afterAll(async () => {
-    // Cleanup any remaining action plans
     if (inventoryId) {
+      await db.models.ActionPlan.destroy({
+        where: { cityLocode: "XX-APT" },
+      });
+      const rankings = await db.models.HighImpactActionRanking.findAll({
+        where: { inventoryId },
+      });
+      const rankingIds = rankings.map((ranking) => ranking.id);
+      if (rankingIds.length > 0) {
+        await db.models.HighImpactActionRanked.destroy({
+          where: { hiaRankingId: rankingIds },
+        });
+      }
+      await db.models.HighImpactActionRanking.destroy({
+        where: { inventoryId },
+      });
       try {
-        await db.models.ActionPlan.destroy({
-          where: { cityLocode: "XX-APT" },
+        await db.models.NativeInputCatalog.destroy({
+          where: { inventoryId },
         });
       } catch {
-        // Table might not exist, that's okay
+        // Table might not exist in older test DBs
       }
       await db.models.Inventory.destroy({ where: { inventoryId } });
     }
@@ -212,6 +226,90 @@ describe("City HIAP Prioritization API", () => {
   });
 
   describe("POST /api/v0/city/[city]/hiap/action-plan", () => {
+    it("requires authentication for direct action-plan saves", async () => {
+      jest.spyOn(Auth, "getServerSession").mockResolvedValueOnce(null);
+
+      const req = mockRequest({
+        actionId: "test-action",
+        inventoryId,
+        hiActionRankingId: randomUUID(),
+        cityLocode: "XX-APT",
+        actionName: "Test Action",
+        language: "en",
+        planData: {},
+      });
+      const res = await createActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId }),
+      });
+
+      await expectStatusCode(res, 401);
+    });
+
+    it("rejects an inventory that belongs to another city", async () => {
+      const req = mockRequest({
+        actionId: "test-action",
+        inventoryId,
+        hiActionRankingId: randomUUID(),
+        cityLocode: "XX-APT",
+        actionName: "Test Action",
+        language: "en",
+        planData: {},
+      });
+      const res = await createActionPlan(req, {
+        params: Promise.resolve({ city: randomUUID() }),
+      });
+
+      await expectStatusCode(res, 400);
+      const body = await res.json();
+      expect(body?.error?.message).toMatch(/inventory.*city/i);
+    });
+
+    it("rejects an action that does not match the ranked action", async () => {
+      const ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId,
+        locode: "XX-APT",
+        type: ACTION_TYPES.Mitigation,
+        langs: ["en"],
+        status: HighImpactActionRankingStatus.SUCCESS,
+      });
+      const rankedAction = await db.models.HighImpactActionRanked.create({
+        id: randomUUID(),
+        hiaRankingId: ranking.id,
+        actionId: "stored-action",
+        rank: 1,
+        explanation: { explanations: { en: "Test" } },
+        lang: "en",
+        type: "mitigation",
+        name: "Stored Action",
+        isSelected: true,
+      });
+
+      const req = mockRequest({
+        actionId: "different-action",
+        inventoryId,
+        hiActionRankingId: rankedAction.id,
+        cityLocode: "XX-APT",
+        actionName: "Test Action",
+        language: "en",
+        planData: {},
+      });
+      const res = await createActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId }),
+      });
+
+      await expectStatusCode(res, 400);
+      const body = await res.json();
+      expect(body?.error?.message).toMatch(/does not match/i);
+
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
+    });
+
     it("returns 400 when required fields are missing", async () => {
       const req = mockRequest({
         actionId: "test-action",
@@ -385,6 +483,17 @@ describe("City HIAP Prioritization API", () => {
   });
 
   describe("PATCH /api/v0/city/[city]/hiap/action-plan/[id]", () => {
+    it("requires authentication", async () => {
+      jest.spyOn(Auth, "getServerSession").mockResolvedValueOnce(null);
+
+      const req = mockRequest({ planData: {} });
+      const res = await updateActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId, id: randomUUID() }),
+      });
+
+      await expectStatusCode(res, 401);
+    });
+
     it("updates action plan successfully", async () => {
       // Create ranking, ranked action, and action plan
       const ranking = await db.models.HighImpactActionRanking.create({
@@ -414,6 +523,8 @@ describe("City HIAP Prioritization API", () => {
         actionId: rankedAction.actionId,
         highImpactActionRankedId: rankedAction.id,
         cityLocode: "XX-APT",
+        cityId: testData.cityId,
+        inventoryId,
         actionName: "Patch Action",
         language: "en",
         subactions: [{ name: "Original subaction" }],
@@ -426,6 +537,11 @@ describe("City HIAP Prioritization API", () => {
       };
 
       const req = mockRequest(updateData);
+      const wrongCityRes = await updateActionPlan(req, {
+        params: Promise.resolve({ city: randomUUID(), id: actionPlan.id }),
+      });
+      await expectStatusCode(wrongCityRes, 400);
+
       const res = await updateActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });
@@ -461,6 +577,17 @@ describe("City HIAP Prioritization API", () => {
   });
 
   describe("DELETE /api/v0/city/[city]/hiap/action-plan/[id]", () => {
+    it("requires authentication", async () => {
+      jest.spyOn(Auth, "getServerSession").mockResolvedValueOnce(null);
+
+      const req = mockRequest();
+      const res = await deleteActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId, id: randomUUID() }),
+      });
+
+      await expectStatusCode(res, 401);
+    });
+
     it("deletes action plan successfully", async () => {
       // Create ranking, ranked action, and action plan
       const ranking = await db.models.HighImpactActionRanking.create({
@@ -490,6 +617,8 @@ describe("City HIAP Prioritization API", () => {
         actionId: rankedAction.actionId,
         highImpactActionRankedId: rankedAction.id,
         cityLocode: "XX-APT",
+        cityId: testData.cityId,
+        inventoryId,
         actionName: "Delete Action",
         language: "en",
         subactions: [{ name: "Test subaction" }],
@@ -497,6 +626,11 @@ describe("City HIAP Prioritization API", () => {
       });
 
       const req = mockRequest();
+      const wrongCityRes = await deleteActionPlan(req, {
+        params: Promise.resolve({ city: randomUUID(), id: actionPlan.id }),
+      });
+      await expectStatusCode(wrongCityRes, 400);
+
       const res = await deleteActionPlan(req, {
         params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
       });
@@ -556,9 +690,10 @@ describe("City HIAP Prioritization API", () => {
 
       const requestBody = {
         action: {
+          id: rankedAction.id,
           actionId: rankedAction.actionId,
           name: "Generate Action",
-          hiaRankingId: rankedAction.id,
+          hiaRankingId: ranking.id,
         },
         inventoryId,
         cityLocode: "XX-APT",
@@ -569,16 +704,18 @@ describe("City HIAP Prioritization API", () => {
       const res = await generateActionPlan(req, {
         params: Promise.resolve({
           city: testData.cityId,
-          rankingId: ranking.id,
         }),
       });
 
-      await expectStatusCode(res, 200);
+      // Generation is accepted immediately; HIAP work continues in the background.
+      await expectStatusCode(res, 202);
       const body = await res.json();
-      expect(body.data).toBeTruthy();
-      expect(body.data.actionName).toBe("Mock Action");
+      expect(body.data).toEqual({
+        accepted: true,
+        message:
+          "Action plan generation started; you will receive an email when it is ready.",
+      });
 
-      // Verify the mock was called
       expect(
         HiapApiService.hiapApiWrapper.startActionPlanJob,
       ).toHaveBeenCalled();
@@ -603,7 +740,6 @@ describe("City HIAP Prioritization API", () => {
       const res = await generateActionPlan(req, {
         params: Promise.resolve({
           city: testData.cityId,
-          rankingId: randomUUID(),
         }),
       });
 

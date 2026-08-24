@@ -145,7 +145,7 @@ export function ConceptNoteUploadPanel({
             ref={fileInput}
             display="none"
             type="file"
-            accept="application/pdf,.pdf"
+            accept="application/pdf,.pdf,text/markdown,text/plain,text/x-markdown,.md"
             aria-label={t("choose-pdf")}
             onChange={controller.onFileChange}
           />

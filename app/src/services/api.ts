@@ -65,11 +65,14 @@ import {
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteApplicationContext,
+  ConceptNoteDraftState,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
   ConceptNoteUploadRequest,
   ConceptNoteUploadResponse,
   ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
@@ -139,6 +142,7 @@ export const api = createApi({
     "AdminModules",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
+    "ConceptNoteDraft",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -1906,7 +1910,10 @@ export const api = createApi({
       }),
 
       // Climate Advisor Chat Endpoints (CA Integration)
-      createChatThread: builder.mutation({
+      createChatThread: builder.mutation<
+        { threadId: string },
+        { inventory_id?: string; title?: string }
+      >({
         query: (data: { inventory_id?: string; title?: string }) => ({
           url: `/chat/threads`,
           method: "POST",
@@ -2162,24 +2169,49 @@ export const api = createApi({
       getConceptNoteRun: builder.query<ConceptNoteRun, string>({
         query: (runId) => `concept-notes/${runId}`,
       }),
+      getConceptNoteApplicationContext: builder.query<
+        ConceptNoteApplicationContext,
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/application-context`,
+      }),
+      getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
+        query: (runId) => `concept-notes/${runId}/draft`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
       startConceptNoteRun: builder.mutation<
         ConceptNoteRun,
         StartConceptNoteRunRequest
       >({
-        query: ({ cityId, idempotencyKey, name }) => ({
+        query: ({
+          cityId,
+          idempotencyKey,
+          name,
+          projectId,
+          funderId,
+          selectedFundingOpportunityId,
+          threadId,
+        }) => ({
           url: "concept-notes/start",
           method: "POST",
           body: {
             city_id: cityId,
             idempotency_key: idempotencyKey,
             name,
+            project_id: projectId ?? null,
+            funder_id: funderId ?? null,
+            selected_funding_opportunity_id:
+              selectedFundingOpportunityId ?? null,
+            thread_id: threadId ?? null,
           },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      uploadConceptNotePdf: builder.mutation<
+      uploadConceptNoteSource: builder.mutation<
         ConceptNoteUploadResponse,
         ConceptNoteUploadRequest
       >({
@@ -2212,6 +2244,25 @@ export const api = createApi({
         }),
         invalidatesTags: (_result, _error, { uploadId }) => [
           { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
+      startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/draft`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
         ],
       }),
     };
@@ -2364,9 +2415,13 @@ export const {
   useDeleteModuleMutation,
   useGetConceptNoteRunsQuery,
   useGetConceptNoteRunQuery,
+  useGetConceptNoteApplicationContextQuery,
+  useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
-  useUploadConceptNotePdfMutation,
+  useStartConceptNoteDraftMutation,
+  useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,
+  useRetryConceptNoteContextBundleMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

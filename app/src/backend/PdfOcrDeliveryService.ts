@@ -4,6 +4,10 @@ import { db } from "@/models";
 import type { PdfOcrJob } from "@/models/PdfOcrJob";
 import { issueClimateAdvisorUserToken } from "@/backend/chat/climate-advisor";
 import {
+  getConceptNoteSourceFormat,
+  type ConceptNoteSourceFormat,
+} from "@/backend/PdfOcrService";
+import {
   joinServiceUrl,
   requireServiceEnv,
 } from "@/backend/climate-advisor-connection";
@@ -16,6 +20,7 @@ export type PdfOcrDeliverySource = {
   userId: string;
   filename: string;
   sourceLabel?: string | null;
+  sourceFormat: ConceptNoteSourceFormat;
 };
 
 export type PdfOcrDeliveryResolver = (
@@ -36,20 +41,30 @@ export function serializeMarkdownDeliveryPayload(
   job: PdfOcrJob,
   source: PdfOcrDeliverySource,
 ): string {
-  if (!job.resultS3Key || !job.resultSha256 || !job.pageCount) {
+  const jobSourceFormat = getConceptNoteSourceFormat(job);
+  const sourceFormat = source.sourceFormat;
+  if (
+    !job.resultS3Key ||
+    !job.resultSha256 ||
+    sourceFormat !== jobSourceFormat ||
+    (sourceFormat === "pdf" && !job.pageCount) ||
+    (sourceFormat === "markdown" && job.pageCount != null)
+  ) {
     throw new PdfOcrDeliveryError(
       "ocr_result_incomplete",
       false,
-      "OCR result metadata is incomplete",
+      "Source result metadata is incomplete",
     );
   }
-  return JSON.stringify({
+  const payload = {
     markdown_s3_key: job.resultS3Key,
     filename: source.filename,
     source_label: source.sourceLabel || null,
-    page_count: job.pageCount,
+    source_format: sourceFormat,
+    page_count: sourceFormat === "pdf" ? job.pageCount : null,
     sha256: job.resultSha256,
-  });
+  };
+  return JSON.stringify(payload);
 }
 
 async function issueDeliveryToken(
@@ -126,7 +141,7 @@ export async function deliverPdfOcrJob(
     throw new PdfOcrDeliveryError(
       "ocr_result_unavailable",
       false,
-      "OCR result is not available for delivery",
+      "Source result is not available for delivery",
     );
   }
   await postClimateAdvisorDelivery(
@@ -156,7 +171,7 @@ async function recordDeliveryFailure(
   });
 }
 
-/** Process due terminal OCR outcomes without ever repeating successful OCR. */
+/** Process due source outcomes without repeating successful source processing. */
 export async function processPdfOcrDeliveries(
   resolveSource: PdfOcrDeliveryResolver,
 ): Promise<number> {
@@ -199,7 +214,10 @@ export async function processPdfOcrDeliveries(
         deliveryErrorMessage: null,
       });
     } catch (error) {
-      logger.warn({ error, sourceId: job.sourceId }, "PDF OCR delivery failed");
+      logger.warn(
+        { error, sourceId: job.sourceId },
+        "Concept Note artifact delivery failed",
+      );
       await recordDeliveryFailure(job, error);
     }
   }
@@ -254,7 +272,8 @@ export const resolvePdfOcrDeliverySource: PdfOcrDeliveryResolver = async (
     source.upload_id !== job.sourceId ||
     typeof source.run_id !== "string" ||
     typeof source.user_id !== "string" ||
-    typeof source.filename !== "string"
+    typeof source.filename !== "string" ||
+    (source.source_format !== "pdf" && source.source_format !== "markdown")
   ) {
     return null;
   }
@@ -265,5 +284,6 @@ export const resolvePdfOcrDeliverySource: PdfOcrDeliveryResolver = async (
     filename: source.filename,
     sourceLabel:
       typeof source.source_label === "string" ? source.source_label : null,
+    sourceFormat: source.source_format,
   };
 };

@@ -4,6 +4,7 @@ import {
   supersedeNativeInput,
   withdrawNativeInput,
   type RegisterNativeInputInput,
+  type NativeInputCatalogRegistration,
 } from "@/backend/NativeInputCatalogService";
 import { logger } from "@/services/logger";
 
@@ -173,7 +174,7 @@ async function supersedePreviousVersions(
 
 export async function registerMEEDRanking(
   rankingId: string,
-): Promise<{ catalog: Record<string, unknown>; created: boolean }> {
+): Promise<NativeInputCatalogRegistration> {
   const ranking = await loadRanking(rankingId);
   const input = await buildMEEDRankingInput(ranking);
   const existing = await models().NativeInputCatalog.findOne({

@@ -1,0 +1,221 @@
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
+
+const catalogModel = {
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+};
+const rankingModel = {
+  findAll: jest.fn(),
+  findByPk: jest.fn(),
+};
+const rankedModel = {
+  findAll: jest.fn(),
+};
+const removedModel = {
+  findAll: jest.fn(),
+};
+const inventoryModel = {
+  findByPk: jest.fn(),
+};
+const registerNativeInput = jest.fn();
+const supersedeNativeInput = jest.fn();
+const withdrawNativeInput = jest.fn();
+
+const mockDb = {
+  models: {
+    NativeInputCatalog: catalogModel,
+    MeedRanking: rankingModel,
+    MeedActionRanked: rankedModel,
+    MeedActionRemoved: removedModel,
+    Inventory: inventoryModel,
+    City: {},
+    Project: {},
+    Organization: {},
+  },
+};
+
+jest.unstable_mockModule("@/models", () => ({ db: mockDb }));
+jest.mock("@/models", () => ({ db: mockDb }));
+jest.unstable_mockModule("@/backend/NativeInputCatalogService", () => ({
+  registerNativeInput,
+  supersedeNativeInput,
+  withdrawNativeInput,
+}));
+jest.mock("@/backend/NativeInputCatalogService", () => ({
+  registerNativeInput,
+  supersedeNativeInput,
+  withdrawNativeInput,
+}));
+jest.unstable_mockModule("@/services/logger", () => ({
+  logger: { error: jest.fn(), info: jest.fn() },
+}));
+
+let registerMEEDRanking: typeof import("@/backend/meed/MeedNativeInputCatalogService").registerMEEDRanking;
+let backfillMissingMEEDRankings: typeof import("@/backend/meed/MeedNativeInputCatalogService").backfillMissingMEEDRankings;
+let withdrawMEEDCatalogForInventory: typeof import("@/backend/meed/MeedNativeInputCatalogService").withdrawMEEDCatalogForInventory;
+
+beforeAll(async () => {
+  ({
+    registerMEEDRanking,
+    backfillMissingMEEDRankings,
+    withdrawMEEDCatalogForInventory,
+  } = await import("@/backend/meed/MeedNativeInputCatalogService"));
+});
+
+beforeEach(() => {
+  inventoryModel.findByPk.mockResolvedValue({
+    inventoryId: "inventory-1",
+    cityId: "city-1",
+    city: {
+      cityId: "city-1",
+      projectId: "project-1",
+      project: {
+        projectId: "project-1",
+        organizationId: "organization-1",
+        organization: { organizationId: "organization-1" },
+      },
+    },
+  });
+  rankingModel.findByPk.mockResolvedValue(completedRanking);
+  rankingModel.findAll.mockResolvedValue([]);
+  rankedModel.findAll.mockResolvedValue([
+    {
+      id: "ranked-row-1",
+      rankingId: "ranking-1",
+      actionId: "action-1",
+      rank: 1,
+    },
+  ]);
+  removedModel.findAll.mockResolvedValue([]);
+  catalogModel.findAll.mockResolvedValue([]);
+  catalogModel.findOne.mockResolvedValue(null);
+  registerNativeInput.mockResolvedValue({
+    catalog: { id: "catalog-new" },
+    created: true,
+  });
+  supersedeNativeInput.mockResolvedValue({});
+  withdrawNativeInput.mockResolvedValue({});
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+const completedRanking = {
+  id: "ranking-1",
+  inventoryId: "inventory-1",
+  userId: "user-1",
+  inputDigest: "input-digest",
+  contentDigest: "result-digest",
+  status: "completed",
+  requestedLanguages: ["en"],
+  topN: 10,
+  created: new Date("2026-08-24T12:00:00.000Z"),
+};
+
+describe("MeedNativeInputCatalogService", () => {
+  it("registers a completed ranking as a pointer-only catalog entry", async () => {
+    await registerMEEDRanking("ranking-1");
+
+    expect(registerNativeInput).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "hiap_meed_ranking",
+        owningModule: "hiap_meed",
+        sourceType: "hiap_meed_ranking",
+        sourceId: expect.stringMatching(/^inventory-1:user-1:/),
+        inventoryId: "inventory-1",
+        cityId: "city-1",
+        projectId: "project-1",
+        organizationId: "organization-1",
+        contentDigest: "result-digest",
+        labels: expect.objectContaining({
+          rankingId: "ranking-1",
+          actionCount: 1,
+        }),
+      }),
+    );
+
+    const registrationInput = registerNativeInput.mock.calls[0][0];
+    expect(registrationInput).not.toHaveProperty("rankedActions");
+    expect(registrationInput).not.toHaveProperty("removedActions");
+    expect(registrationInput).not.toHaveProperty("explanations");
+    expect(registrationInput).not.toHaveProperty("evidence");
+  });
+
+  it("rejects non-completed and incomplete rankings", async () => {
+    rankingModel.findByPk.mockResolvedValueOnce({
+      ...completedRanking,
+      status: "running",
+    });
+    await expect(registerMEEDRanking("ranking-1")).rejects.toThrow(
+      "Only completed MEED rankings",
+    );
+
+    rankingModel.findByPk.mockResolvedValueOnce(completedRanking);
+    rankedModel.findAll.mockResolvedValueOnce([]);
+    removedModel.findAll.mockResolvedValueOnce([]);
+    await expect(registerMEEDRanking("ranking-1")).rejects.toThrow(
+      "Only persisted MEED rankings",
+    );
+    expect(registerNativeInput).not.toHaveBeenCalled();
+  });
+
+  it("is idempotent for an active source identity and supersedes changed versions", async () => {
+    catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-existing" });
+    await expect(registerMEEDRanking("ranking-1")).resolves.toEqual({
+      catalog: { id: "catalog-existing" },
+      created: false,
+    });
+    expect(registerNativeInput).not.toHaveBeenCalled();
+
+    catalogModel.findOne.mockResolvedValueOnce(null);
+    catalogModel.findAll.mockResolvedValueOnce([
+      {
+        id: "catalog-old",
+        sourceId: "inventory-1:user-1:old-input:old-result",
+        availability: "active",
+      },
+    ]);
+    await registerMEEDRanking("ranking-1");
+    expect(supersedeNativeInput).toHaveBeenCalledWith(
+      "catalog-old",
+      expect.objectContaining({ sourceType: "hiap_meed_ranking" }),
+    );
+  });
+
+  it("backfills missing rankings and retries transient catalog failures", async () => {
+    rankingModel.findAll.mockResolvedValue([completedRanking]);
+    catalogModel.findOne.mockResolvedValue(null);
+    registerNativeInput.mockRejectedValueOnce(new Error("temporary failure"));
+
+    await expect(backfillMissingMEEDRankings()).resolves.toBe(0);
+
+    registerNativeInput.mockResolvedValue({
+      catalog: { id: "catalog-recovered" },
+      created: true,
+    });
+    await expect(backfillMissingMEEDRankings()).resolves.toBe(1);
+    expect(registerNativeInput).toHaveBeenCalledTimes(2);
+  });
+
+  it("withdraws active MEED catalog entries for an inventory without deleting history", async () => {
+    catalogModel.findAll.mockResolvedValue([
+      { id: "catalog-1" },
+      { id: "catalog-2" },
+    ]);
+
+    await expect(
+      withdrawMEEDCatalogForInventory("inventory-1"),
+    ).resolves.toBe(2);
+    expect(withdrawNativeInput).toHaveBeenNthCalledWith(1, "catalog-1");
+    expect(withdrawNativeInput).toHaveBeenNthCalledWith(2, "catalog-2");
+  });
+});

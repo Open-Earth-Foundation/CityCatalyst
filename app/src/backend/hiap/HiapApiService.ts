@@ -183,7 +183,11 @@ const getPrioritizationResultImpl = async (
   return json;
 };
 
-/** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
+/**
+ * Poll HIAP for plan completion, persist the plan, and email on first create.
+ * Intended to run in the background after the generate route returns 202.
+ * In development, run: kubectl port-forward svc/hiap-service-dev 8080:80
+ */
 const startActionPlanJobImpl = async ({
   action,
   cityId,

@@ -309,6 +309,34 @@ export default class MeedApiService {
     return result;
   }
 
+  public static async getFinanceOpportunities(
+    cityId: string,
+    sector: string,
+    financeRoute: string,
+  ) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `climate-finance/opportunities?country_code=${countryLocode}&sector=${sector}&route=${financeRoute}`,
+    );
+    return result;
+  }
+
+  public static async getFinanceProjects(cityId: string, actionId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `climate-finance/projects?country_code=${countryLocode}&action_id=${actionId}`,
+    );
+    return result;
+  }
+
   private static async makeRequest(route: string, data: object | null = null) {
     const method = data == null ? "GET" : "POST";
     const body =

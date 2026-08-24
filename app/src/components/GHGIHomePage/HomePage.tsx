@@ -286,15 +286,15 @@ export default function HomePage({
                     justifyContent="space-between"
                   >
                     <Text
-                      color="content.primary"
-                      fontWeight="bold"
-                      lineHeight="24px"
+                      color="content.secondary"
+                      fontWeight="semibold"
+                      lineHeight="32px"
                       fontSize="headline.sm"
                       fontFamily="heading"
                       fontStyle="normal"
                       data-testid="inventory-year-title"
                     >
-                      {t("inventory-year")}
+                      {t("inventories")}
                     </Text>
                     {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
                     {userRole !== UserRole.COLLABORATOR &&

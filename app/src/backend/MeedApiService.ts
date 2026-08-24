@@ -64,17 +64,12 @@ type MeedResponseActionRemoved = {
     verdict_category?: string;
     ownership_category?: string;
     restrictions_category?: string;
-    // TODO use this once MEED API returns translation objects
-    /* ownership_description?: Record<string, string>;
-    restrictions_description?: Record<string, string>;
-    legal_justification?: Record<string, string>; */
-    ownership_description?: string;
-    ownership_description_es?: string;
-    restrictions_description?: string;
-    restrictions_description_es?: string;
-    legal_justification_en?: string;
-    legal_justification?: string;
     legal_references?: string[];
+
+    // these have a key for each requested language
+    ownership_description?: Record<string, string>;
+    restrictions_description?: Record<string, string>;
+    legal_justification?: Record<string, string>;
   };
 };
 
@@ -192,11 +187,6 @@ export default class MeedApiService {
         requestData: fullRequest,
         meta: {
           requestId: randomUUID(),
-          generatedAtUtc: new Date().toISOString(),
-          backendConsumer: "CityCatalyst",
-          upstreamProvider: "CityCatalyst",
-          apiContext: { endpoint: "/v1/prioritize" },
-          totalRecords: 1,
         },
       }),
       headers: {
@@ -257,19 +247,9 @@ export default class MeedApiService {
             verdictCategory: action.legal.verdict_category,
             ownershipCategory: action.legal.ownership_category,
             restrictionsCategory: action.legal.restrictions_category,
-            // TODO adjust once the MEED API returns translation objects for these
-            ownershipDescription: {
-              en: action.legal.ownership_description,
-              es: action.legal.ownership_description_es,
-            },
-            restrictionsDescription: {
-              en: action.legal.restrictions_description,
-              es: action.legal.restrictions_description_es,
-            },
-            legalJustification: {
-              en: action.legal.legal_justification_en,
-              es: action.legal.legal_justification,
-            },
+            ownershipDescription: action.legal.ownership_description,
+            restrictionsDescription: action.legal.restrictions_description,
+            legalJustification: action.legal.legal_justification,
             legalReferences: action.legal.legal_references,
           }),
           { transaction },

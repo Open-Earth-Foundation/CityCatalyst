@@ -82,6 +82,7 @@ import { PermissionService } from "@/backend/permissions/PermissionService";
 import { Inventory } from "@/models/Inventory";
 import { withdrawGHGICatalogForInventory } from "@/backend/GHGINativeInputCatalogService";
 import { withdrawHIAPCatalogForInventory } from "@/backend/hiap/HiapNativeInputCatalogService";
+import { withdrawMEEDCatalogForInventory } from "@/backend/meed/MeedNativeInputCatalogService";
 
 function hasIsPublicProperty(
   inventory:
@@ -212,6 +213,7 @@ export const DELETE = apiHandler(async (_req, { params, session }) => {
 
   await withdrawGHGICatalogForInventory(inventory.inventoryId);
   await withdrawHIAPCatalogForInventory(inventory.inventoryId);
+  await withdrawMEEDCatalogForInventory(inventory.inventoryId);
   await inventory.destroy();
   return NextResponse.json({ data: inventory, deleted: true });
 });

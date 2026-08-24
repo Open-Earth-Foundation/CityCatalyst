@@ -160,7 +160,11 @@ export const POST = apiHandler(async (req, { session }) => {
   const { inventoryId, ...requestBody } = body;
   await PermissionService.canAccessInventory(session, inventoryId);
 
-  const result = await MeedApiService.runRanking(inventoryId, requestBody);
+  const result = await MeedApiService.runRanking(
+    inventoryId,
+    requestBody,
+    session?.user?.id,
+  );
   return NextResponse.json({ data: result });
 });
 

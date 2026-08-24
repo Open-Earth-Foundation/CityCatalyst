@@ -1,22 +1,48 @@
-import { QueryTypes } from "sequelize";
+import { QueryTypes, type Sequelize } from "sequelize";
 
 import { db } from "@/models";
 import {
   backfillMissingHIAPActionPlansPage,
   backfillMissingHIAPRankingsPage,
+  type HIAPCatalogBackfillCursor,
   type HIAPCatalogBackfillPage,
   type HIAPCatalogBackfillPageOptions,
 } from "@/backend/hiap/HiapNativeInputCatalogService";
 import { logger } from "@/services/logger";
 
 const LOCK_KEY = "citycatalyst:hiap-catalog-backfill";
+const CHECKPOINT_KEY = LOCK_KEY;
 const DEFAULT_BATCH_SIZE = 25;
 const MAX_BATCH_SIZE = 1000;
 
 export type HIAPCatalogBackfillConfig = {
   batchSize: number;
-  maxBatches?: number;
+  maxBatchesPerType?: number;
   dryRun: boolean;
+};
+
+export type HIAPCatalogBackfillProgress = {
+  cursor: HIAPCatalogBackfillCursor | null;
+  completed: boolean;
+};
+
+export type HIAPCatalogBackfillCheckpoint = {
+  rankings: HIAPCatalogBackfillProgress;
+  actionPlans: HIAPCatalogBackfillProgress;
+};
+
+export type HIAPCatalogBackfillPooledConnection = Awaited<
+  ReturnType<Sequelize["connectionManager"]["getConnection"]>
+> & {
+  query: (
+    sql: string,
+    values?: readonly unknown[],
+  ) => Promise<{ rows: Array<Record<string, unknown>> }>;
+};
+
+export type HIAPCatalogBackfillLock = {
+  sequelize: Sequelize;
+  connection: HIAPCatalogBackfillPooledConnection;
 };
 
 type BackfillTotals = {
@@ -33,8 +59,10 @@ export type HIAPCatalogBackfillResult = {
 };
 
 export type HIAPCatalogBackfillRunnerDeps = {
-  acquireLock: () => Promise<boolean>;
-  releaseLock: () => Promise<void>;
+  acquireLock: () => Promise<HIAPCatalogBackfillLock | null>;
+  releaseLock: (lock: HIAPCatalogBackfillLock) => Promise<void>;
+  loadCheckpoint: () => Promise<HIAPCatalogBackfillCheckpoint>;
+  saveCheckpoint: (checkpoint: HIAPCatalogBackfillCheckpoint) => Promise<void>;
   processRankingsPage: (
     options: HIAPCatalogBackfillPageOptions,
   ) => Promise<HIAPCatalogBackfillPage>;
@@ -67,7 +95,7 @@ export function parseHIAPCatalogBackfillConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): HIAPCatalogBackfillConfig {
   const maxBatchesRaw = env.HIAP_CATALOG_BACKFILL_MAX_BATCHES;
-  const maxBatches =
+  const maxBatchesPerType =
     maxBatchesRaw === undefined || maxBatchesRaw.trim() === ""
       ? undefined
       : parsePositiveInteger(env, "HIAP_CATALOG_BACKFILL_MAX_BATCHES", 1);
@@ -79,36 +107,171 @@ export function parseHIAPCatalogBackfillConfig(
       DEFAULT_BATCH_SIZE,
       MAX_BATCH_SIZE,
     ),
-    maxBatches,
+    maxBatchesPerType,
     dryRun: env.HIAP_CATALOG_BACKFILL_DRY_RUN?.toLowerCase() === "true",
   };
 }
 
-async function acquireHIAPCatalogBackfillLock(): Promise<boolean> {
+export async function acquireHIAPCatalogBackfillLock(
+  sequelize: Sequelize | null | undefined = db.sequelize,
+): Promise<HIAPCatalogBackfillLock | null> {
+  if (!sequelize) throw new Error("Database not initialized");
+
+  const connection = (await sequelize.connectionManager.getConnection({
+    type: "write",
+  })) as HIAPCatalogBackfillPooledConnection;
+
+  try {
+    const result = await connection.query(
+      "SELECT pg_try_advisory_lock(hashtext($1)) AS locked",
+      [LOCK_KEY],
+    );
+    if (result.rows[0]?.locked !== true) {
+      sequelize.connectionManager.releaseConnection(connection);
+      return null;
+    }
+
+    return { sequelize, connection };
+  } catch (error) {
+    sequelize.connectionManager.releaseConnection(connection);
+    throw error;
+  }
+}
+
+export async function releaseHIAPCatalogBackfillLock(
+  lock: HIAPCatalogBackfillLock,
+): Promise<void> {
+  try {
+    await lock.connection.query("SELECT pg_advisory_unlock(hashtext($1))", [
+      LOCK_KEY,
+    ]);
+  } finally {
+    lock.sequelize.connectionManager.releaseConnection(lock.connection);
+  }
+}
+
+function emptyCheckpoint(): HIAPCatalogBackfillCheckpoint {
+  return {
+    rankings: { cursor: null, completed: false },
+    actionPlans: { cursor: null, completed: false },
+  };
+}
+
+type HIAPCatalogBackfillCheckpointRow = {
+  rankings_cursor_created: Date | string | null;
+  rankings_cursor_id: string | null;
+  rankings_completed: boolean;
+  action_plans_cursor_created: Date | string | null;
+  action_plans_cursor_id: string | null;
+  action_plans_completed: boolean;
+};
+
+function rowCursor(
+  created: Date | string | null,
+  id: string | null,
+): HIAPCatalogBackfillCursor | null {
+  if (created === null || id === null) return null;
+
+  const date = created instanceof Date ? created : new Date(created);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error("HIAP catalog backfill checkpoint has an invalid cursor");
+  }
+
+  return { created: date.toISOString(), id };
+}
+
+async function loadHIAPCatalogBackfillCheckpoint(): Promise<HIAPCatalogBackfillCheckpoint> {
   if (!db.sequelize) throw new Error("Database not initialized");
 
-  const rows = await db.sequelize.query<{ locked: boolean }>(
-    "SELECT pg_try_advisory_lock(hashtext(:lockKey)) AS locked",
+  const rows = await db.sequelize.query<HIAPCatalogBackfillCheckpointRow>(
+    `
+      SELECT
+        rankings_cursor_created,
+        rankings_cursor_id,
+        rankings_completed,
+        action_plans_cursor_created,
+        action_plans_cursor_id,
+        action_plans_completed
+      FROM "HiapCatalogBackfillCheckpoint"
+      WHERE job_key = :jobKey
+    `,
     {
-      replacements: { lockKey: LOCK_KEY },
+      replacements: { jobKey: CHECKPOINT_KEY },
       type: QueryTypes.SELECT,
     },
   );
-  return rows[0]?.locked === true;
+  const row = rows[0];
+  if (!row) return emptyCheckpoint();
+
+  return {
+    rankings: {
+      cursor: rowCursor(row.rankings_cursor_created, row.rankings_cursor_id),
+      completed: row.rankings_completed,
+    },
+    actionPlans: {
+      cursor: rowCursor(
+        row.action_plans_cursor_created,
+        row.action_plans_cursor_id,
+      ),
+      completed: row.action_plans_completed,
+    },
+  };
 }
 
-async function releaseHIAPCatalogBackfillLock(): Promise<void> {
-  if (!db.sequelize) return;
+async function saveHIAPCatalogBackfillCheckpoint(
+  checkpoint: HIAPCatalogBackfillCheckpoint,
+): Promise<void> {
+  if (!db.sequelize) throw new Error("Database not initialized");
 
-  await db.sequelize.query("SELECT pg_advisory_unlock(hashtext(:lockKey))", {
-    replacements: { lockKey: LOCK_KEY },
-    type: QueryTypes.SELECT,
-  });
+  await db.sequelize.query(
+    `
+      INSERT INTO "HiapCatalogBackfillCheckpoint" (
+        job_key,
+        rankings_cursor_created,
+        rankings_cursor_id,
+        rankings_completed,
+        action_plans_cursor_created,
+        action_plans_cursor_id,
+        action_plans_completed
+      ) VALUES (
+        :jobKey,
+        :rankingsCursorCreated,
+        :rankingsCursorId,
+        :rankingsCompleted,
+        :actionPlansCursorCreated,
+        :actionPlansCursorId,
+        :actionPlansCompleted
+      )
+      ON CONFLICT (job_key) DO UPDATE SET
+        rankings_cursor_created = EXCLUDED.rankings_cursor_created,
+        rankings_cursor_id = EXCLUDED.rankings_cursor_id,
+        rankings_completed = EXCLUDED.rankings_completed,
+        action_plans_cursor_created = EXCLUDED.action_plans_cursor_created,
+        action_plans_cursor_id = EXCLUDED.action_plans_cursor_id,
+        action_plans_completed = EXCLUDED.action_plans_completed,
+        last_updated = NOW()
+    `,
+    {
+      replacements: {
+        jobKey: CHECKPOINT_KEY,
+        rankingsCursorCreated: checkpoint.rankings.cursor?.created ?? null,
+        rankingsCursorId: checkpoint.rankings.cursor?.id ?? null,
+        rankingsCompleted: checkpoint.rankings.completed,
+        actionPlansCursorCreated:
+          checkpoint.actionPlans.cursor?.created ?? null,
+        actionPlansCursorId: checkpoint.actionPlans.cursor?.id ?? null,
+        actionPlansCompleted: checkpoint.actionPlans.completed,
+      },
+      type: QueryTypes.INSERT,
+    },
+  );
 }
 
 const defaultDeps: HIAPCatalogBackfillRunnerDeps = {
   acquireLock: acquireHIAPCatalogBackfillLock,
   releaseLock: releaseHIAPCatalogBackfillLock,
+  loadCheckpoint: loadHIAPCatalogBackfillCheckpoint,
+  saveCheckpoint: saveHIAPCatalogBackfillCheckpoint,
   processRankingsPage: backfillMissingHIAPRankingsPage,
   processActionPlansPage: backfillMissingHIAPActionPlansPage,
 };
@@ -124,62 +287,100 @@ function addPage(totals: BackfillTotals, page: HIAPCatalogBackfillPage): void {
 }
 
 async function processPages(
+  kind: "rankings" | "actionPlans",
   processPage: HIAPCatalogBackfillRunnerDeps["processRankingsPage"],
   config: HIAPCatalogBackfillConfig,
-  state: { pages: number },
-): Promise<BackfillTotals> {
+  checkpoint: HIAPCatalogBackfillCheckpoint,
+  saveCheckpoint: HIAPCatalogBackfillRunnerDeps["saveCheckpoint"],
+): Promise<{
+  totals: BackfillTotals;
+  checkpoint: HIAPCatalogBackfillCheckpoint;
+  pages: number;
+}> {
   const totals = emptyTotals();
-  let cursor: HIAPCatalogBackfillPageOptions["cursor"];
+  let progress = checkpoint[kind];
+  let pages = 0;
 
-  while (config.maxBatches === undefined || state.pages < config.maxBatches) {
+  if (progress.completed) return { totals, checkpoint, pages };
+
+  while (
+    config.maxBatchesPerType === undefined ||
+    pages < config.maxBatchesPerType
+  ) {
     const page = await processPage({
       limit: config.batchSize,
-      cursor,
+      cursor: progress.cursor ?? undefined,
       dryRun: config.dryRun,
     });
-    state.pages++;
+    pages++;
     addPage(totals, page);
 
-    if (!page.hasMore) break;
-    if (!page.nextCursor) {
+    if (page.hasMore && !page.nextCursor) {
       throw new Error("HIAP catalog backfill page hasMore without nextCursor");
     }
-    cursor = page.nextCursor;
+
+    progress = {
+      cursor:
+        page.failed > 0
+          ? progress.cursor
+          : page.hasMore
+            ? page.nextCursor
+            : null,
+      completed: page.failed === 0 && !page.hasMore,
+    };
+    checkpoint =
+      kind === "rankings"
+        ? { ...checkpoint, rankings: progress }
+        : { ...checkpoint, actionPlans: progress };
+    await saveCheckpoint(checkpoint);
+
+    if (page.failed > 0 || !page.hasMore) break;
   }
 
-  return totals;
+  return { totals, checkpoint, pages };
 }
 
 export async function runHIAPCatalogBackfill(
   config: HIAPCatalogBackfillConfig,
   deps: HIAPCatalogBackfillRunnerDeps = defaultDeps,
 ): Promise<HIAPCatalogBackfillResult> {
-  if (!(await deps.acquireLock())) {
+  const lock = await deps.acquireLock();
+  if (!lock) {
     logger.info("HIAP catalog backfill skipped because another run is active");
     return { skipped: true, pages: 0 };
   }
 
-  const state = { pages: 0 };
   try {
-    const rankings = await processPages(
+    const saveCheckpoint: HIAPCatalogBackfillRunnerDeps["saveCheckpoint"] =
+      config.dryRun ? async () => undefined : deps.saveCheckpoint;
+    let checkpoint = config.dryRun
+      ? emptyCheckpoint()
+      : await deps.loadCheckpoint();
+    const rankingsRun = await processPages(
+      "rankings",
       deps.processRankingsPage,
       config,
-      state,
+      checkpoint,
+      saveCheckpoint,
     );
-    const actionPlans =
-      config.maxBatches !== undefined && state.pages >= config.maxBatches
-        ? emptyTotals()
-        : await processPages(deps.processActionPlansPage, config, state);
+    checkpoint = rankingsRun.checkpoint;
+    const actionPlansRun = await processPages(
+      "actionPlans",
+      deps.processActionPlansPage,
+      config,
+      checkpoint,
+      saveCheckpoint,
+    );
 
     const result = {
       skipped: false,
-      pages: state.pages,
-      rankings,
-      actionPlans,
+      pages: rankingsRun.pages + actionPlansRun.pages,
+      rankings: rankingsRun.totals,
+      actionPlans: actionPlansRun.totals,
     } satisfies HIAPCatalogBackfillResult;
     logger.info(result, "HIAP catalog backfill completed");
     return result;
   } finally {
-    await deps.releaseLock();
+    await deps.releaseLock(lock);
   }
 }

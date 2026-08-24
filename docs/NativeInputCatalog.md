@@ -42,7 +42,7 @@ All endpoints require non-empty `X-Service-Name` and a matching `X-Service-Key` 
 - `DELETE /api/v1/internal/native-input-catalog/{id}` — withdraw a pointer.
 - `POST /api/v1/internal/native-input-catalog/{id}/supersede` — create a replacement and supersede the current row.
 
-Producer modules will call this contract in follow-up work. CC-636 intentionally does not wire GHGI, HIAP, HIAP-MEED, CNB, or Clima discovery call sites.
+Producer modules call this contract at their durable write boundaries. CC-636 established the shared contract; producer mappings below document the follow-up integrations.
 
 ## GHGI producer mapping (CC-637)
 
@@ -70,3 +70,15 @@ Legacy HIAP remains authoritative in its existing CityCatalyst tables. The adapt
 Selection identities use logical action IDs rather than language-specific row UUIDs because legacy HIAP mirrors ranked selection flags across languages. The catalog stores scope, source identity, digest, and small provenance labels; it does not copy ranking, selection, or plan content.
 
 Action-plan deletion withdraws all active versions before the source row is removed. Inventory and city deletion withdraw all active HIAP rows before the owning records are removed. Failed, pending, incomplete, or temporary HIAP results are never registered. The HIAP cron backfills successful rankings and persisted action plans that are missing their current active catalog entry, so a transient catalog failure can be retried on a later run. HIAP-MEED uses a separate adapter and is intentionally not covered by CC-638.
+
+## HIAP-MEED ranking producer mapping (CC-736)
+
+The first CC-736 slice registers the completed MEED ranking artifact produced by the CityCatalyst ranking route. `MeedRanking` is the durable source record; `MeedActionRanked` and `MeedActionRemoved` are version-linked child rows.
+
+| Catalog kind | Source type / identity | Registration boundary | Version / withdrawal |
+|---|---|---|---|
+| `hiap_meed_ranking` | `hiap_meed_ranking` / `inventoryId:userId-or-anonymous:inputDigest:contentDigest` | After a successful MEED response is persisted as a completed `MeedRanking` with at least one child action | Identical retries reuse the source/version; changed result digests create a new parent and supersede the prior active catalog row for that inventory/user stream |
+
+The catalog stores the parent pointer, digests, action count, language/top-N metadata, and resolved inventory/city/project/organization scope. It does not copy ranked actions, removed actions, explanations, evidence, or legal payloads. Incomplete, failed, empty, or request-local results are not registered. Inventory and city deletion withdraw active MEED ranking entries while retaining catalog audit rows. A backfill scans completed rankings in creation order and retries failed catalog writes.
+
+Report/output-plan artifacts and caller-provided city data, context, preferences, and exclusions remain out of scope until each has a durable, reusable CityCatalyst source record.

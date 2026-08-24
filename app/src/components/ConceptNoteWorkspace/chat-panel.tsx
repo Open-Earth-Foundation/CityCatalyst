@@ -29,6 +29,11 @@ import type {
   ConceptNoteGap,
 } from "@/util/types";
 
+import {
+  getGapInterviewPresentation,
+  getGapSummaryQuestions,
+  getOpenConceptNoteGaps,
+} from "./gap-interview";
 import { useConceptNoteChat } from "./use-concept-note-chat";
 
 interface ConceptNoteChatPanelProps {
@@ -41,6 +46,7 @@ interface ConceptNoteChatPanelProps {
   mutationError: string | null;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => Promise<void>;
   onOpenContext: () => void;
+  onReviewDraft: () => void;
   onResolveGap: (
     gap: ConceptNoteGap,
     action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
@@ -189,6 +195,7 @@ export function ConceptNoteChatPanel({
   mutationError,
   onConfirmChapter,
   onOpenContext,
+  onReviewDraft,
   onResolveGap,
   threadId,
 }: ConceptNoteChatPanelProps) {
@@ -202,8 +209,15 @@ export function ConceptNoteChatPanel({
     sendMessage: sendChatMessage,
   } = useConceptNoteChat({ lng, threadId });
   const [answeringGapId, setAnsweringGapId] = useState<string | null>(null);
+  const [gapInterviewActive, setGapInterviewActive] = useState(false);
   const chapters = draft?.chapters ?? [];
   const allGaps = chapters.flatMap((chapter) => chapter.gaps);
+  const openGaps = getOpenConceptNoteGaps(allGaps);
+  const gapInterviewPresentation = getGapInterviewPresentation(
+    openGaps.length,
+    gapInterviewActive,
+  );
+  const showFocusedGap = gapInterviewPresentation === "question";
   const focusedGap =
     allGaps.find((gap) => gap.gap_id === draft?.focused_gap_id) ?? null;
   const answeringGap =
@@ -358,18 +372,84 @@ export function ConceptNoteChatPanel({
         bg="background.alternativeLight"
         p={4}
       >
-        <ContextStatusNotice
-          key={
-            hasUploadedEvidence ? "uploaded-evidence" : "no-uploaded-evidence"
-          }
-          autoDismissAfterMs={
-            hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
-          }
-          onOpenContext={onOpenContext}
-          status={contextStatus}
-        />
+        {gapInterviewPresentation === "hidden" && (
+          <ContextStatusNotice
+            key={
+              hasUploadedEvidence ? "uploaded-evidence" : "no-uploaded-evidence"
+            }
+            autoDismissAfterMs={
+              hasUploadedEvidence ? CONTEXT_READY_NOTICE_DURATION_MS : undefined
+            }
+            onOpenContext={onOpenContext}
+            status={contextStatus}
+          />
+        )}
 
-        {focusedGap && focusedChapter && (
+        {gapInterviewPresentation === "summary" && (
+          <Box
+            border="1px solid"
+            borderColor="sentiment.positiveDefault"
+            borderRadius="rounded"
+            bg="base.light"
+            p={4}
+            data-testid="concept-note-gap-summary"
+          >
+            <HStack gap={2} color="sentiment.positiveDefault">
+              <Icon as={LuCheck} />
+              <Text
+                fontSize="10px"
+                fontWeight="semibold"
+                letterSpacing="1.5px"
+                textTransform="uppercase"
+              >
+                {t("gap-context-assembled")}
+              </Text>
+            </HStack>
+            <Text
+              mt={2}
+              fontFamily="heading"
+              fontSize="body.md"
+              fontWeight="semibold"
+              color="content.primary"
+            >
+              {t("gap-summary-title", { count: openGaps.length })}
+            </Text>
+            <Text
+              mt={3}
+              fontSize="10px"
+              fontWeight="semibold"
+              color="sentiment.positiveDefault"
+              letterSpacing="1.5px"
+              textTransform="uppercase"
+            >
+              {t("gap-summary-missing")}
+            </Text>
+            <Text
+              mt={1}
+              fontSize="label.sm"
+              lineHeight="20px"
+              color="content.secondary"
+            >
+              {t("gap-summary-description", {
+                gaps: getGapSummaryQuestions(openGaps),
+              })}
+            </Text>
+            <HStack mt={4} gap={2} flexWrap="wrap">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setGapInterviewActive(true)}
+              >
+                {t("gap-start-interview")}
+              </Button>
+              <Button size="sm" variant="outline" onClick={onReviewDraft}>
+                {t("gap-review-draft-first")}
+              </Button>
+            </HStack>
+          </Box>
+        )}
+
+        {showFocusedGap && focusedGap && focusedChapter && (
           <Box
             border="1px solid"
             borderColor="sentiment.warningDefault"

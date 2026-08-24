@@ -267,6 +267,20 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  function reviewDraftFirst(): void {
+    setTab("draft");
+    window.requestAnimationFrame(() => {
+      const preview = document.querySelector<HTMLElement>(
+        '[data-testid="concept-note-draft-preview"]',
+      );
+      preview?.scrollIntoView({
+        behavior: reducedMotion ? "auto" : "smooth",
+        block: "nearest",
+      });
+      preview?.focus({ preventScroll: true });
+    });
+  }
+
   if (runLoading) {
     return (
       <Box
@@ -455,6 +469,7 @@ export function ConceptNoteWorkspace({
               mutationError={workspaceMutationError}
               onConfirmChapter={confirmChapter}
               onOpenContext={() => setTab("context")}
+              onReviewDraft={reviewDraftFirst}
               onResolveGap={resolveGap}
               threadId={run.thread_id}
             />

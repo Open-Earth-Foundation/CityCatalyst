@@ -676,6 +676,7 @@ export function DraftTab({
             <Box
               ref={previewElement}
               data-testid="concept-note-draft-preview"
+              tabIndex={-1}
               flex={1}
               minW={0}
               minH="360px"
@@ -686,6 +687,11 @@ export function DraftTab({
               borderRadius="rounded"
               bg="base.light"
               p={{ base: 4, md: 5 }}
+              _focus={{
+                outline: "2px solid",
+                outlineColor: "content.link",
+                outlineOffset: "2px",
+              }}
             >
               <Box position="sticky" zIndex={1} top={-1} bg="base.light" pb={3}>
                 <Text

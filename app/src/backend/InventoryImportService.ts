@@ -358,7 +358,8 @@ export default class InventoryImportService {
 
         // Priority: Emission values take precedence over notation keys
         // Only use notation keys if there are NO emission values
-        if (totalCO2e && totalCO2e > 0) {
+        // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
+        if (totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0) {
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing emissions: totalCO2e=${totalCO2e} tonnes -> ${new Decimal(totalCO2e).mul(1000)} kg`,
           );
@@ -679,8 +680,9 @@ export default class InventoryImportService {
               metadata.emissionFactorType = "";
 
               // Convert activity CO2e to kilograms (if available)
+              // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
               const activityCO2eq =
-                totalCO2e && totalCO2e > 0
+                totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0
                   ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
                   : undefined;
 

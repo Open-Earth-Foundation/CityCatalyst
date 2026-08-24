@@ -4,6 +4,7 @@ import type { FormEvent } from "react";
 import { useEffect, useState } from "react";
 
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
+import { keyframes } from "@emotion/react";
 import type { IconType } from "react-icons";
 import {
   LuArrowRight,
@@ -45,6 +46,40 @@ interface ContextStatusNoticeProps {
 }
 
 const CONTEXT_READY_NOTICE_DURATION_MS = 30_000;
+const typingDotBounce = keyframes`
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+`;
+
+function TypingIndicator({ label }: { label: string }) {
+  return (
+    <HStack
+      role="status"
+      aria-label={label}
+      data-testid="concept-note-typing-indicator"
+      gap={1}
+      minH="22px"
+    >
+      {[0, 1, 2].map((index) => (
+        <Box
+          as="span"
+          key={index}
+          aria-hidden="true"
+          data-testid="concept-note-typing-dot"
+          boxSize="6px"
+          borderRadius="full"
+          bg="content.secondary"
+          animation={`${typingDotBounce} 900ms ease-in-out ${index * 120}ms infinite`}
+          _motionReduce={{ animation: "none" }}
+        />
+      ))}
+    </HStack>
+  );
+}
 
 function ContextStatusNotice({
   autoDismissAfterMs,
@@ -299,13 +334,15 @@ export function ConceptNoteChatPanel({
             px={3}
             py={2.5}
           >
-            {message.role === "assistant" ? (
+            {message.role === "assistant" && message.text ? (
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={assistantMarkdownComponents}
               >
-                {message.text || t("chat-thinking")}
+                {message.text}
               </ReactMarkdown>
+            ) : message.role === "assistant" ? (
+              <TypingIndicator label={t("chat-generating")} />
             ) : (
               <Text
                 fontSize="body.sm"
@@ -313,7 +350,7 @@ export function ConceptNoteChatPanel({
                 color="content.primary"
                 whiteSpace="pre-wrap"
               >
-                {message.text || t("chat-thinking")}
+                {message.text}
               </Text>
             )}
           </Box>

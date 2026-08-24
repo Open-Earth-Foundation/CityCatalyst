@@ -195,7 +195,7 @@
   "chat-thread-unavailable": "This older run has no connected chat thread. Create a new concept note to start a conversation.",
   "chat-history-error": "The conversation history could not be loaded. You can still send a new message.",
   "chat-send-error": "Clima could not answer that message. Please try again.",
-  "chat-thinking": "...",
+  "chat-generating": "Generating response",
   "draft-canvas": "Draft canvas",
   "draft-sections": "Sections",
   "draft-preview-document-title": "{{name}} — Concept note",

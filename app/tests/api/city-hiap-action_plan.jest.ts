@@ -707,12 +707,15 @@ describe("City HIAP Prioritization API", () => {
         }),
       });
 
-      await expectStatusCode(res, 200);
+      // Generation is accepted immediately; HIAP work continues in the background.
+      await expectStatusCode(res, 202);
       const body = await res.json();
-      expect(body.data).toBeTruthy();
-      expect(body.data.actionName).toBe("Mock Action");
+      expect(body.data).toEqual({
+        accepted: true,
+        message:
+          "Action plan generation started; you will receive an email when it is ready.",
+      });
 
-      // Verify the mock was called
       expect(
         HiapApiService.hiapApiWrapper.startActionPlanJob,
       ).toHaveBeenCalled();

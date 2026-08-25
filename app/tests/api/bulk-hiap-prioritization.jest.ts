@@ -307,6 +307,7 @@ describe("Bulk HIAP Prioritization API", () => {
     // worker's HIAP fixtures and races with city-hiap-action_plan.jest.ts in CI.
     if (inventoryIds.length > 0) {
       const rankings = await db.models.HighImpactActionRanking.findAll({
+        attributes: ["id"],
         where: { inventoryId: inventoryIds },
       });
       const rankingIds = rankings.map((ranking) => ranking.id);

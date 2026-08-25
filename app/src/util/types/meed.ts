@@ -52,10 +52,7 @@ export interface MeedCityEmissionsData {
 }
 
 export type MeedTimeframePreference =
-  | "short"
-  | "medium"
-  | "long"
-  | "no_preference";
+  "short" | "medium" | "long" | "no_preference";
 
 export interface MeedCityInput {
   locode: string;
@@ -333,4 +330,203 @@ export interface MeedRunRankingRequest {
   topN?: number;
   createExplanations?: boolean;
   cityDataList: MeedRunRankingCityData[];
+}
+
+// ─── MEED reference-data routes (CityCatalyst) ───────────────────────────────
+//
+// GET /api/v1/city/{cityId}/meed/actions
+//                          /city-attributes
+//                          /policy-scores
+//                          /finance/feasibility
+//                          /finance/opportunities?sector=&financeRoute=
+//                          /finance/projects?actionId=
+//
+// These six routes are pure pass-throughs — each is a `makeRequest` with no
+// CityCatalyst model in between — so the payload is hiap-meed's reference-data
+// contract verbatim: **snake_case** bodies, each wrapped with `meta` and
+// `warnings`.
+//
+// That is the opposite of the ranking route above, which goes through
+// CityCatalyst models and is therefore camelCase. Two shapes from the same
+// service; do not assume one convention covers both.
+//
+// Declared here rather than imported: the route's own Zod/Sequelize types are
+// not exported, and redeclaring is what Milan asked us to do.
+
+/** Server-owned envelope metadata. camelCase even though bodies are not. */
+export interface MeedReferenceMeta {
+  requestId: string;
+  generatedAtUtc: string;
+  totalRecords: number;
+}
+
+/** Every reference-data response carries these two. */
+export interface MeedReferenceEnvelope {
+  meta: MeedReferenceMeta;
+  warnings: string[];
+}
+
+// — actions —
+
+export interface MeedReferenceActionImpact {
+  sector_number: string;
+  subsector_number: number[];
+  gpc_reference_number: string[];
+  impact_relationship: string | null;
+  impact_text: string | null;
+  impact_numeric: number | null;
+  methodology: string | null;
+}
+
+export interface MeedReferenceActionCoBenefit {
+  impact_relationship: string | null;
+  impact_text: string | null;
+  impact_numeric: number | null;
+  methodology: string | null;
+}
+
+export interface MeedReferenceActionPathway {
+  action_id: string;
+  action_name: string;
+  action_type: string | null;
+  description: string | null;
+  name_i18n: Record<string, string>;
+  description_i18n: Record<string, string>;
+  investment_cost: string | null;
+  implementation_timeline: string | null;
+  co_benefits: Record<string, MeedReferenceActionCoBenefit>;
+  emissions: MeedReferenceActionImpact | null;
+}
+
+export interface MeedReferenceActionsResponse extends MeedReferenceEnvelope {
+  actions: MeedReferenceActionPathway[];
+}
+
+// — city attributes —
+
+export interface MeedReferenceCityIndicator {
+  key: string;
+  value: number | string | null;
+  unit: string | null;
+  category: string | null;
+}
+
+export interface MeedReferenceCity {
+  locode: string;
+  city_name: string;
+  country_code: string | null;
+  region_name: string;
+  population_size: number | null;
+  area_km2: number | null;
+  population_density: number | null;
+  indicators: MeedReferenceCityIndicator[];
+}
+
+export interface MeedReferenceCityAttributesResponse extends MeedReferenceEnvelope {
+  city: MeedReferenceCity;
+}
+
+// — policy scores —
+
+export interface MeedReferencePolicyEvidence {
+  document_type: string | null;
+  scope: "national" | "regional" | "municipal" | null;
+  document_name: string | null;
+  signal_type: string | null;
+  signal_relation: string | null;
+  signal_strength: string | null;
+  doc_relevance: string | null;
+  evidence_strength: number | null;
+}
+
+export interface MeedReferenceActionPolicyScore {
+  action_id: string;
+  policy_support_score: number | null;
+  policy_support_category: string | null;
+  finding_count: number | null;
+  document_count: number | null;
+  policy_evidence: MeedReferencePolicyEvidence[];
+}
+
+export interface MeedReferencePolicyScoresResponse extends MeedReferenceEnvelope {
+  locode: string;
+  scores: MeedReferenceActionPolicyScore[];
+  aggregates: {
+    national: number | null;
+    regional: number | null;
+    municipal: number | null;
+  };
+}
+
+// — financial feasibility —
+
+export interface MeedReferenceFinancialInputs {
+  action: {
+    capital_intensity: number | null;
+    preparation_complexity: number | null;
+  };
+  city: { profile: string | null };
+  finance: {
+    fund_access: string | null;
+    n_reachable_opportunities: number | null;
+  };
+  evidence: { n_existing_projects: number | null };
+}
+
+export interface MeedReferenceActionFinancialScore {
+  action_id: string;
+  action_name: string | null;
+  sector: string | null;
+  financial_feasibility: number | null;
+  /** The finance route, e.g. "own-budget feasible". Not the query param. */
+  route: string | null;
+  reason: string | null;
+  inputs: MeedReferenceFinancialInputs;
+}
+
+/** Note the payload's own `data` key — the CC route wraps this again. */
+export interface MeedReferenceFinanceFeasibilityResponse extends MeedReferenceEnvelope {
+  locode: string;
+  country_code: string;
+  data: MeedReferenceActionFinancialScore[];
+}
+
+// — finance opportunities —
+
+export interface MeedReferenceFinanceOpportunity {
+  opportunity_name: string;
+  funder_name: string | null;
+  instrument: string | null;
+  status: string | null;
+  source_url: string | null;
+  /** Present only on `monitor` entries. */
+  recurrence?: string | null;
+}
+
+export interface MeedReferenceFinanceOpportunitiesResponse extends MeedReferenceEnvelope {
+  current: MeedReferenceFinanceOpportunity[];
+  monitor: MeedReferenceFinanceOpportunity[];
+}
+
+// — finance projects —
+
+export interface MeedReferenceFinanceProject {
+  project_name: string;
+  sector: string | null;
+  jurisdiction: string | null;
+  lifecycle_stage: string | null;
+  funding_channel: string | null;
+  cost_total: number | null;
+  amount_unit: string | null;
+  funding_sources: {
+    cycle: string | number | null;
+    amount: number | null;
+    amount_unit: string | null;
+    funder_name: string | null;
+  }[];
+  action_matches: { action_id: string; confidence: string | null }[];
+}
+
+export interface MeedReferenceFinanceProjectsResponse extends MeedReferenceEnvelope {
+  projects: MeedReferenceFinanceProject[];
 }

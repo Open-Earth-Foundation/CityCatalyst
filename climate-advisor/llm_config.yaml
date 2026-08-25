@@ -26,6 +26,9 @@ models:
   cnb_chapter_drafter:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
+  cnb_gap_impact_reviewer:
+    name: "openai/gpt-5.4"
+    reasoning_effort: "medium"
 
 # Generation Parameters
 generation:
@@ -44,6 +47,9 @@ generation:
       max_key_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
+    cnb_gap_impact:
+      max_prompt_tokens: 50000
+      max_chapter_slice_tokens: 12000
 
 # System Prompts
 prompts:
@@ -69,6 +75,7 @@ prompts:
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
+  cnb_gap_impact_review: "prompts/cnb/gap_impact_review.md"
 
 # API Configuration
 api:

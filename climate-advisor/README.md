@@ -501,8 +501,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 All non-secret LLM settings are centralized in `llm_config.yaml`, including the
 orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
-CNB source reader/synthesizer roles, chapter drafter, and partition limits. The
-chapter drafter uses GPT-5.6 Terra with medium reasoning.
+CNB source reader/synthesizer roles, chapter drafter, gap-impact reviewer, and
+partition limits. The chapter drafter uses GPT-5.6 Terra with medium reasoning.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -515,6 +515,8 @@ Prompt paths are also configured in `llm_config.yaml`:
   Stationary Energy draft review chat
 - the three `prompts.cnb_source_*` entries map document partitions, reduce them
   to compact document summaries, and read focused questions for exact evidence
+- `prompts.cnb_gap_impact_review` is loaded only after a user answer is accepted;
+  its single tool returns the chapter numbers that require propagated rewrites
 
 At runtime, CA composes the final system instructions as:
 
@@ -642,9 +644,19 @@ comparison, and regeneration state.
 
 `POST /v1/concept-notes/{run_id}/gaps/{gap_id}/resolve` records an idempotent,
 version-checked `answer`, `correction`, `not_a_gap`, or non-critical
-`defer_as_caveat` action and then regenerates only the affected chapter. The
-answer remains audited if regeneration fails. Grounded answer suggestions keep
-their selected-source references; unsupported suggestions are removed.
+`defer_as_caveat` action and first regenerates the affected chapter. For an
+`answer` or `correction`, a separate review-only agent then inspects every other
+chapter. It receives all chapter bodies in one prompt when they fit; otherwise
+it receives deterministic, token-bounded slices covering the full document.
+Its only tool response is a sorted chapter-number array. Only those chapters
+are regenerated with the confirmed answer, and confirmed revisions remain
+preserved as reviewable proposals. The answer remains audited if any rewrite
+fails. Grounded answer suggestions keep their selected-source references;
+unsupported suggestions are removed.
+Every model-generated gap includes a fact-specific `why_asking` rationale in
+the same structured item as its question. Legacy string-only gaps are displayed
+with a question- and chapter-specific grounded-evidence rationale instead of
+the original generic migration text.
 
 `POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/confirm` confirms one
 exact revision. Regeneration stops at Draft, and only this explicit user action

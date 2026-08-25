@@ -47,6 +47,7 @@ from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
     included_sources_from_bundle,
 )
+from app.services.cnb.gap_impact_review import ConceptNoteGapImpactReviewer
 from app.services.openrouter_client import build_openrouter_client_options
 from openai import AsyncOpenAI
 from sqlalchemy import select
@@ -92,6 +93,7 @@ class ConceptNoteChapterDraftService:
         cnb_session_factory: async_sessionmaker[AsyncSession] | None = None,
         settings: Settings | None = None,
         generate_chapter: ChapterGenerator | None = None,
+        impact_reviewer: ConceptNoteGapImpactReviewer | None = None,
         runner: Any = Runner,
     ) -> None:
         self._ca_session_factory = ca_session_factory
@@ -104,6 +106,7 @@ class ConceptNoteChapterDraftService:
         )
         self._settings = settings or get_settings()
         self._generate_chapter_override = generate_chapter
+        self._impact_reviewer = impact_reviewer
         self._runner = runner
 
     async def load_state(self, run: ConceptNoteRun) -> ConceptNoteDraftResponse:
@@ -294,6 +297,16 @@ class ConceptNoteChapterDraftService:
             )
             if current is None:
                 raise ChapterDraftingError("Concept Note chapter is unavailable")
+            source_gap = next(
+                (item for item in current.gaps if item.gap_id == gap_id),
+                None,
+            )
+            if (
+                source_gap is None
+                or source_gap.resolution is None
+                or source_gap.resolution.resolution_id != resolution_id
+            ):
+                raise ChapterDraftingError("Concept Note gap resolution is unavailable")
 
             # The accepted resolution is part of the prompt contract and provenance.
             generated = await self._generate_chapter(
@@ -306,7 +319,7 @@ class ConceptNoteChapterDraftService:
                 )
             )
             generated = _sanitize_generated_output(generated, run_context)
-            await self._workspace.complete_gap_regeneration(
+            completed = await self._workspace.complete_gap_regeneration(
                 chapter_id=chapter_id,
                 gap_id=gap_id,
                 resolution_id=resolution_id,
@@ -323,6 +336,124 @@ class ConceptNoteChapterDraftService:
                 gap_id=gap_id,
                 resolution_id=resolution_id,
             )
+            return
+
+        if (
+            completed
+            and source_gap.resolution.action in {"answer", "correction"}
+            and source_gap.resolution.answer
+        ):
+            try:
+                await self._propagate_resolved_information(
+                    run_id=run_id,
+                    user_id=user_id,
+                    source_chapter=current,
+                    source_gap=source_gap,
+                    application_context=application_context,
+                    run_context=run_context,
+                    template_by_ref=template_by_ref,
+                )
+            except Exception:
+                # The originating answer and rewrite are already durable. A review
+                # failure must not roll them back or mark their chapter failed.
+                logger.exception(
+                    "Concept Note gap impact review failed run_id=%s gap_id=%s",
+                    run_id,
+                    gap_id,
+                )
+
+    async def _propagate_resolved_information(
+        self,
+        *,
+        run_id: UUID,
+        user_id: str,
+        source_chapter: WorkspaceChapterSnapshot,
+        source_gap: WorkspaceGapSnapshot,
+        application_context: ConceptNoteApplicationContextResponse,
+        run_context: dict[str, Any],
+        template_by_ref: dict[str, WorkspaceTemplateChapter],
+    ) -> None:
+        """Review all other chapters and rewrite only the selected numbers."""
+        resolution = source_gap.resolution
+        if resolution is None or not resolution.answer:
+            return
+        chapters = await self._workspace.list_chapters(run_id=run_id)
+        candidates = [
+            chapter
+            for chapter in chapters
+            if chapter.chapter_id != source_chapter.chapter_id
+            and chapter.body_markdown is not None
+        ]
+        if not candidates:
+            return
+        new_information = {
+            "source_chapter_number": source_chapter.position + 1,
+            "field_key": source_gap.field_key,
+            "question": source_gap.question,
+            "answer": resolution.answer,
+            "action": resolution.action,
+        }
+        reviewer = self._impact_reviewer or ConceptNoteGapImpactReviewer(
+            self._settings,
+            runner=self._runner,
+        )
+        selected_numbers = await reviewer.select_chapters(
+            chapters=candidates,
+            new_information=new_information,
+        )
+
+        for chapter_number in selected_numbers:
+            refreshed = await self._workspace.list_chapters(run_id=run_id)
+            current = next(
+                (
+                    chapter
+                    for chapter in refreshed
+                    if chapter.position + 1 == chapter_number
+                    and chapter.chapter_id != source_chapter.chapter_id
+                ),
+                None,
+            )
+            if current is None or current.revision_number is None:
+                continue
+            expected_revision = current.revision_number
+            started = await self._workspace.begin_gap_impact_regeneration(
+                chapter_id=current.chapter_id,
+                expected_revision_number=expected_revision,
+            )
+            if not started:
+                continue
+            try:
+                generated = await self._generate_chapter(
+                    _build_chapter_input(
+                        application_context=application_context,
+                        run_context=run_context,
+                        current=current,
+                        template_chapter=template_by_ref.get(current.chapter_ref or ""),
+                        chapters=refreshed,
+                        propagated_information=[new_information],
+                    )
+                )
+                generated = _sanitize_generated_output(generated, run_context)
+                await self._workspace.save_gap_impact_regeneration(
+                    chapter_id=current.chapter_id,
+                    expected_revision_number=expected_revision,
+                    generated=generated,
+                    source_gap_id=source_gap.gap_id,
+                    source_resolution_id=resolution.resolution_id,
+                    actor_user_id=user_id,
+                    answer=resolution.answer,
+                    source_refs=resolution.source_refs,
+                )
+            except Exception:
+                logger.exception(
+                    "Concept Note propagated rewrite failed run_id=%s chapter=%s",
+                    run_id,
+                    chapter_number,
+                )
+                await self._workspace.fail_gap_impact_regeneration(
+                    chapter_id=current.chapter_id,
+                    expected_revision_number=expected_revision,
+                )
 
     async def revalidate_after_new_sources(
         self,
@@ -825,6 +956,7 @@ def _build_chapter_input(
     current: WorkspaceChapterSnapshot,
     template_chapter: WorkspaceTemplateChapter | None,
     chapters: list[WorkspaceChapterSnapshot],
+    propagated_information: list[dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     """Build the exact prompt payload, including every earlier chapter body."""
     return {
@@ -851,6 +983,7 @@ def _build_chapter_input(
             if gap.state in {"resolved", "dismissed", "caveat", "processing"}
             and gap.resolution is not None
         ],
+        "propagated_information": propagated_information or [],
         "existing_open_gaps": [
             {
                 "field_key": gap.field_key,

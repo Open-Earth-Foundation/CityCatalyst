@@ -31,6 +31,7 @@ import type {
   ConceptNoteDraftChapterStatus,
   ConceptNoteDraftRunStatus,
   ConceptNoteDraftState,
+  ConceptNoteGap,
 } from "@/util/types";
 
 import type { ConceptNoteBundleProgress } from "../ConceptNoteDashboard/utils";
@@ -40,6 +41,7 @@ import {
   MISSING_INFORMATION_LINK,
   replaceMissingInformationMarkers,
 } from "./draft-markdown";
+import { getConceptNoteGapForMarker } from "./gap-interview";
 
 interface DraftTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -57,6 +59,10 @@ interface DraftTabProps {
   noteName: string;
   onConfirmChapter: (chapter: ConceptNoteDraftChapter) => Promise<void>;
   onOpenContext: () => void;
+  onReviewChapterGaps: (
+    chapter: ConceptNoteDraftChapter,
+    gap?: ConceptNoteGap,
+  ) => void;
   onRetry: () => void;
   onStartDrafting: () => void;
 }
@@ -122,66 +128,72 @@ const baseMarkdownComponents = createChatMarkdownComponents({
   },
 });
 
-const markdownComponents = {
-  ...baseMarkdownComponents,
-  a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
-    const missingInformation =
-      href === MISSING_INFORMATION_LINK
-        ? decodeMissingInformationMessage(title)
-        : null;
+function createDraftMarkdownComponents(
+  onMissingInformationClick: (message: string) => void,
+) {
+  return {
+    ...baseMarkdownComponents,
+    a: ({ children, href, title }: React.ComponentPropsWithoutRef<"a">) => {
+      const missingInformation =
+        href === MISSING_INFORMATION_LINK
+          ? decodeMissingInformationMessage(title)
+          : null;
 
-    if (missingInformation) {
-      return (
-        <Tooltip
-          showArrow
-          portalled
-          content={missingInformation}
-          contentProps={{
-            maxW: "360px",
-            px: 3,
-            py: 2,
-            fontSize: "label.sm",
-            lineHeight: "20px",
-          }}
-        >
-          <chakra.button
-            type="button"
-            aria-label={missingInformation}
-            display="inline-flex"
-            alignItems="center"
-            justifyContent="center"
-            boxSize="18px"
-            mx={1}
-            borderRadius="full"
-            bg="sentiment.warningOverlay"
-            color="sentiment.warningDefault"
-            verticalAlign="text-bottom"
-            cursor="help"
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "1px",
+      if (missingInformation) {
+        return (
+          <Tooltip
+            showArrow
+            portalled
+            content={missingInformation}
+            contentProps={{
+              maxW: "360px",
+              px: 3,
+              py: 2,
+              fontSize: "label.sm",
+              lineHeight: "20px",
             }}
           >
-            <Icon as={LuCircleAlert} boxSize="12px" />
-          </chakra.button>
-        </Tooltip>
-      );
-    }
+            <chakra.button
+              type="button"
+              aria-label={missingInformation}
+              display="inline-flex"
+              alignItems="center"
+              justifyContent="center"
+              boxSize="18px"
+              mx={1}
+              borderRadius="full"
+              bg="sentiment.warningOverlay"
+              color="sentiment.warningDefault"
+              verticalAlign="text-bottom"
+              cursor="pointer"
+              onClick={() => onMissingInformationClick(missingInformation)}
+              _hover={{ bg: "sentiment.warningOverlay" }}
+              _focusVisible={{
+                outline: "2px solid",
+                outlineColor: "content.link",
+                outlineOffset: "1px",
+              }}
+            >
+              <Icon as={LuCircleAlert} boxSize="12px" />
+            </chakra.button>
+          </Tooltip>
+        );
+      }
 
-    return (
-      <chakra.a
-        href={href}
-        color="interactive.primary"
-        fontWeight="semibold"
-        textDecoration="underline"
-        display="inline"
-      >
-        {children}
-      </chakra.a>
-    );
-  },
-};
+      return (
+        <chakra.a
+          href={href}
+          color="interactive.primary"
+          fontWeight="semibold"
+          textDecoration="underline"
+          display="inline"
+        >
+          {children}
+        </chakra.a>
+      );
+    },
+  };
+}
 
 function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
   switch (status) {
@@ -259,6 +271,7 @@ export function DraftTab({
   noteName,
   onConfirmChapter,
   onOpenContext,
+  onReviewChapterGaps,
   onRetry,
   onStartDrafting,
 }: DraftTabProps) {
@@ -296,6 +309,14 @@ export function DraftTab({
       : t("drafting-setup-missing", {
           requirements: missingDraftingRequirements.join(", "),
         });
+
+  function reviewMissingInformationMarker(
+    chapter: ConceptNoteDraftChapter,
+    markerMessage: string,
+  ): void {
+    const gap = getConceptNoteGapForMarker(chapter, markerMessage);
+    onReviewChapterGaps(chapter, gap ?? undefined);
+  }
 
   let status: DraftStatusPresentation = {
     background: "background.neutral",
@@ -631,6 +652,9 @@ export function DraftTab({
                       }}
                       onClick={() => {
                         setFocusedChapterId(chapter.chapter_id);
+                        if (chapter.open_gap_count > 0) {
+                          onReviewChapterGaps(chapter);
+                        }
                         const preview = previewElement.current;
                         const chapterElement =
                           chapterElements.current[chapter.chapter_id];
@@ -845,7 +869,13 @@ export function DraftTab({
                               })}
                             </Text>
                             <ReactMarkdown
-                              components={markdownComponents}
+                              components={createDraftMarkdownComponents(
+                                (message) =>
+                                  reviewMissingInformationMarker(
+                                    chapter,
+                                    message,
+                                  ),
+                              )}
                               remarkPlugins={[remarkGfm]}
                             >
                               {chapterPreviewMarkdown(
@@ -875,7 +905,13 @@ export function DraftTab({
                               })}
                             </Text>
                             <ReactMarkdown
-                              components={markdownComponents}
+                              components={createDraftMarkdownComponents(
+                                (message) =>
+                                  reviewMissingInformationMarker(
+                                    chapter,
+                                    message,
+                                  ),
+                              )}
                               remarkPlugins={[remarkGfm]}
                             >
                               {chapterPreviewMarkdown(
@@ -888,7 +924,9 @@ export function DraftTab({
                       </Box>
                     ) : chapter.body_markdown ? (
                       <ReactMarkdown
-                        components={markdownComponents}
+                        components={createDraftMarkdownComponents((message) =>
+                          reviewMissingInformationMarker(chapter, message),
+                        )}
                         remarkPlugins={[remarkGfm]}
                       >
                         {chapterPreviewMarkdown(

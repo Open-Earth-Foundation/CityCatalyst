@@ -266,6 +266,65 @@ async def test_critical_gap_cannot_be_deferred(workspace) -> None:
         )
 
 
+async def test_gap_impact_rewrite_appends_revision_and_answer_provenance(
+    workspace,
+) -> None:
+    """Turn a reviewer-selected chapter into a proposal without overwriting it."""
+    source_gap_id = uuid4()
+    source_resolution_id = uuid4()
+    started = await workspace.begin_gap_impact_regeneration(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+    )
+    assert started is True
+
+    changed = await workspace.save_gap_impact_regeneration(
+        chapter_id=CHAPTER_ID,
+        expected_revision_number=1,
+        generated=ConceptNoteChapterDraftOutput(
+            body_markdown=(
+                "## Implementation\n\nThe municipality confirmed it will lead delivery."
+            ),
+            missing_information=[],
+        ),
+        source_gap_id=source_gap_id,
+        source_resolution_id=source_resolution_id,
+        actor_user_id="owner",
+        answer="The municipality will lead delivery.",
+        source_refs=["project-plan.pdf"],
+    )
+
+    assert changed is True
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    assert chapter.revision_number == 2
+    assert chapter.status == "draft"
+    assert chapter.regeneration_status == "idle"
+    assert chapter.gaps[0].state == "resolved"
+    assert chapter.gaps[0].resolution is not None
+    assert chapter.gaps[0].resolution.action == "answer"
+    assert chapter.gaps[0].resolution.answer == "The municipality will lead delivery."
+    assert chapter.gaps[0].resolution.actor_user_id == "owner"
+    assert chapter.gaps[0].resolution.source_refs == ["project-plan.pdf"]
+
+
+async def test_legacy_gap_rationale_is_specific_to_the_missing_fact(
+    workspace,
+) -> None:
+    """Replace the old migration sentinel without changing model rationales."""
+    async with workspace._session_factory() as session, session.begin():
+        gap = await session.get(ConceptNoteGap, GAP_ID)
+        assert gap is not None
+        gap.why_asking = "This information is required to complete the chapter."
+
+    [chapter] = await workspace.list_chapters(run_id=RUN_ID)
+    rationale = chapter.gaps[0].why_asking
+
+    assert "Confirm the lead partner" in rationale
+    assert "Implementation chapter" in rationale
+    assert "grounded evidence" in rationale
+    assert rationale != "This information is required to complete the chapter."
+
+
 async def test_noncritical_gap_can_remain_visible_as_confirmed_caveat(
     workspace,
 ) -> None:

@@ -26,7 +26,11 @@ from app.models.cnb.concept_note_draft import (
     ConceptNoteGapSuggestion,
 )
 from app.models.db.concept_note import ConceptNoteRun
-from app.persistence.concept_notes.workspace import WorkspaceChapterSnapshot
+from app.persistence.concept_notes.workspace import (
+    WorkspaceChapterSnapshot,
+    WorkspaceGapResolutionSnapshot,
+    WorkspaceGapSnapshot,
+)
 from app.routes.concept_note_runs import (
     confirm_concept_note_chapter,
     resolve_concept_note_gap,
@@ -192,6 +196,128 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         service._load_owned_run.return_value,
         included_sources=included_sources,
     )
+
+
+async def test_confirmed_answer_rewrites_only_review_selected_other_chapters() -> None:
+    """Review every other chapter but regenerate only returned chapter numbers."""
+    source_chapter_id = uuid4()
+    target_chapter_id = uuid4()
+    untouched_chapter_id = uuid4()
+    resolution_id = uuid4()
+    gap = WorkspaceGapSnapshot(
+        gap_id=uuid4(),
+        field_key="opening_date",
+        question="Confirm the opening date.",
+        why_asking="The delivery schedule depends on it.",
+        severity="critical",
+        state="resolved",
+        suggestions=[],
+        source_refs=[],
+        version=2,
+        resolution=WorkspaceGapResolutionSnapshot(
+            resolution_id=resolution_id,
+            action="answer",
+            answer="1 January 2029",
+            actor_user_id="owner",
+            source_refs=["schedule.pdf"],
+            created_at=datetime.now(UTC),
+        ),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
+    )
+
+    def chapter(chapter_id: UUID, position: int, title: str):
+        return WorkspaceChapterSnapshot(
+            chapter_id=chapter_id,
+            chapter_ref=f"chapter-{position + 1}",
+            title=title,
+            position=position,
+            status="draft",
+            required=True,
+            user_locked=False,
+            body_markdown=f"## {title}\n\nCurrent text.",
+            gaps=[gap] if position == 0 else [],
+            revision_id=uuid4(),
+            revision_number=1,
+            confirmed_body_markdown=None,
+            confirmed_revision_number=None,
+            proposed_revision_number=None,
+            regeneration_status="idle",
+            regeneration_error=None,
+        )
+
+    chapters = [
+        chapter(source_chapter_id, 0, "Summary"),
+        chapter(target_chapter_id, 1, "Timeline"),
+        chapter(untouched_chapter_id, 2, "Climate impact"),
+    ]
+
+    class PropagationWorkspace:
+        def __init__(self):
+            self.started: list[UUID] = []
+            self.saved: list[dict[str, Any]] = []
+
+        async def list_chapters(self, *, run_id: UUID):
+            assert run_id == RUN_ID
+            return chapters
+
+        async def begin_gap_impact_regeneration(self, **kwargs):
+            self.started.append(kwargs["chapter_id"])
+            return True
+
+        async def save_gap_impact_regeneration(self, **kwargs):
+            self.saved.append(kwargs)
+            return True
+
+        async def fail_gap_impact_regeneration(self, **kwargs):
+            raise AssertionError(f"Unexpected failure: {kwargs}")
+
+    reviewer = SimpleNamespace(select_chapters=AsyncMock(return_value=[2]))
+    payloads: list[dict[str, Any]] = []
+
+    async def generate(payload: dict[str, Any]) -> ConceptNoteChapterDraftOutput:
+        payloads.append(payload)
+        return ConceptNoteChapterDraftOutput(
+            body_markdown="## Timeline\n\nOpening is planned for 1 January 2029."
+        )
+
+    workspace = PropagationWorkspace()
+    service = cast(
+        ConceptNoteChapterDraftService,
+        object.__new__(ConceptNoteChapterDraftService),
+    )
+    service._workspace = workspace
+    service._impact_reviewer = reviewer
+    service._generate_chapter_override = generate
+
+    await service._propagate_resolved_information(
+        run_id=RUN_ID,
+        user_id="owner",
+        source_chapter=chapters[0],
+        source_gap=gap,
+        application_context=cast(
+            ConceptNoteApplicationContextResponse,
+            SimpleNamespace(model_dump=lambda **_: {}),
+        ),
+        run_context={"context_bundle": {}},
+        template_by_ref={},
+    )
+
+    reviewed = reviewer.select_chapters.await_args.kwargs["chapters"]
+    assert [item.position + 1 for item in reviewed] == [2, 3]
+    assert workspace.started == [target_chapter_id]
+    assert len(workspace.saved) == 1
+    assert workspace.saved[0]["chapter_id"] == target_chapter_id
+    assert workspace.saved[0]["source_resolution_id"] == resolution_id
+    assert payloads[0]["propagated_information"] == [
+        {
+            "source_chapter_number": 1,
+            "field_key": "opening_date",
+            "question": "Confirm the opening date.",
+            "answer": "1 January 2029",
+            "action": "answer",
+        }
+    ]
 
 
 def test_only_source_grounded_suggestions_survive_sanitization() -> None:

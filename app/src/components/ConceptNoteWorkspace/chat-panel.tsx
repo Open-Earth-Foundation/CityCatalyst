@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Box, Flex, HStack, Icon, Input, Text, VStack } from "@chakra-ui/react";
 import type { IconType } from "react-icons";
@@ -30,6 +30,7 @@ import type {
 } from "@/util/types";
 
 import {
+  getFocusedConceptNoteGap,
   getGapInterviewPresentation,
   getGapSummaryQuestions,
   getOpenConceptNoteGaps,
@@ -52,6 +53,8 @@ interface ConceptNoteChatPanelProps {
     action: "answer" | "correction" | "not_a_gap" | "defer_as_caveat",
     answer?: string,
   ) => Promise<void>;
+  reviewGapChapterId: string | null;
+  reviewGapId: string | null;
   threadId: string | null;
 }
 
@@ -197,6 +200,8 @@ export function ConceptNoteChatPanel({
   onOpenContext,
   onReviewDraft,
   onResolveGap,
+  reviewGapChapterId,
+  reviewGapId,
   threadId,
 }: ConceptNoteChatPanelProps) {
   const { t } = useTranslation(lng, "concept-notes");
@@ -210,6 +215,7 @@ export function ConceptNoteChatPanel({
   } = useConceptNoteChat({ lng, threadId });
   const [answeringGapId, setAnsweringGapId] = useState<string | null>(null);
   const [gapInterviewActive, setGapInterviewActive] = useState(false);
+  const focusedGapCardRef = useRef<HTMLDivElement | null>(null);
   const chapters = draft?.chapters ?? [];
   const allGaps = chapters.flatMap((chapter) => chapter.gaps);
   const openGaps = getOpenConceptNoteGaps(allGaps);
@@ -218,8 +224,13 @@ export function ConceptNoteChatPanel({
     gapInterviewActive,
   );
   const showFocusedGap = gapInterviewPresentation === "question";
-  const focusedGap =
-    allGaps.find((gap) => gap.gap_id === draft?.focused_gap_id) ?? null;
+  const focusedGap = getFocusedConceptNoteGap(
+    chapters,
+    draft?.focused_gap_id,
+    reviewGapId,
+    reviewGapChapterId,
+  );
+  const focusedGapId = focusedGap?.gap_id ?? null;
   const answeringGap =
     allGaps.find((gap) => gap.gap_id === answeringGapId) ?? null;
   const focusedChapter = focusedGap
@@ -265,6 +276,31 @@ export function ConceptNoteChatPanel({
         surface: "background.neutral",
         title: t("uploaded-evidence-none"),
       };
+
+  useEffect(() => {
+    if (!reviewGapChapterId || !focusedGapId) {
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      setGapInterviewActive(true);
+      setAnsweringGapId(null);
+      setInput("");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [focusedGapId, reviewGapChapterId, reviewGapId]);
+
+  useEffect(() => {
+    if (!showFocusedGap || !focusedGapId) {
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      focusedGapCardRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [focusedGapId, showFocusedGap]);
 
   async function submitMessage(
     event: FormEvent<HTMLDivElement>,
@@ -451,6 +487,7 @@ export function ConceptNoteChatPanel({
 
         {showFocusedGap && focusedGap && focusedChapter && (
           <Box
+            ref={focusedGapCardRef}
             border="1px solid"
             borderColor="sentiment.warningDefault"
             borderRadius="rounded"

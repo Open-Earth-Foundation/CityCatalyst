@@ -21,6 +21,8 @@ from app.models.db.cnb_workspace import (
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+LEGACY_GENERIC_GAP_RATIONALE = "This information is required to complete the chapter."
+
 
 class WorkspaceConflictError(Exception):
     """Raised when a versioned workspace mutation is no longer valid."""
@@ -474,6 +476,117 @@ class ConceptNoteWorkspaceRepository:
             chapter.updated_at = datetime.now(UTC)
             return True
 
+    async def begin_gap_impact_regeneration(
+        self,
+        *,
+        chapter_id: UUID,
+        expected_revision_number: int,
+    ) -> bool:
+        """Mark one reviewer-selected chapter as regenerating if still current."""
+        async with self._session_factory() as session, session.begin():
+            chapter = await _require_chapter(session, chapter_id, lock=True)
+            latest = await _latest_revision(session, chapter_id)
+            if (
+                latest is None
+                or latest.revision_number != expected_revision_number
+                or chapter.regeneration_status == "processing"
+            ):
+                return False
+            chapter.regeneration_status = "processing"
+            chapter.regeneration_error = None
+            chapter.updated_at = datetime.now(UTC)
+            return True
+
+    async def save_gap_impact_regeneration(
+        self,
+        *,
+        chapter_id: UUID,
+        expected_revision_number: int,
+        generated: ConceptNoteChapterDraftOutput,
+        source_gap_id: UUID,
+        source_resolution_id: UUID,
+        actor_user_id: str,
+        answer: str,
+        source_refs: list[str],
+    ) -> bool:
+        """Append a reviewer-selected rewrite with the user's answer provenance."""
+        async with self._session_factory() as session, session.begin():
+            chapter = await _require_chapter(session, chapter_id, lock=True)
+            latest = await _latest_revision(session, chapter_id)
+            if (
+                latest is None
+                or latest.revision_number != expected_revision_number
+                or chapter.regeneration_status != "processing"
+            ):
+                return False
+
+            gaps_changed = await _reconcile_generated_gaps(
+                session,
+                chapter,
+                generated.missing_information,
+                close_action="answer",
+                close_answer=answer,
+                close_actor_user_id=actor_user_id,
+                source_refs=source_refs,
+            )
+            body_changed = (
+                latest.body_markdown.strip() != generated.body_markdown.strip()
+            )
+            if not body_changed and not gaps_changed:
+                chapter.regeneration_status = "idle"
+                chapter.regeneration_error = None
+                chapter.updated_at = datetime.now(UTC)
+                return False
+
+            session.add(
+                ConceptNoteChapterRevision(
+                    chapter_id=chapter_id,
+                    revision_number=latest.revision_number + 1,
+                    author_type="agent",
+                    change_type="rewrite",
+                    body_markdown=generated.body_markdown,
+                    patch_summary={
+                        "gap_impact_review": True,
+                        "source_gap_id": str(source_gap_id),
+                        "source_resolution_id": str(source_resolution_id),
+                        "confirmed_revision_id": (
+                            str(chapter.confirmed_revision_id)
+                            if chapter.confirmed_revision_id
+                            else None
+                        ),
+                    },
+                )
+            )
+            chapter.status = (
+                "needs_review"
+                if await _has_blocking_gaps(session, chapter_id)
+                else "draft"
+            )
+            chapter.regeneration_status = "idle"
+            chapter.regeneration_error = None
+            chapter.updated_at = datetime.now(UTC)
+            return True
+
+    async def fail_gap_impact_regeneration(
+        self,
+        *,
+        chapter_id: UUID,
+        expected_revision_number: int,
+    ) -> None:
+        """Expose a retryable cross-chapter rewrite failure without replacing text."""
+        async with self._session_factory() as session, session.begin():
+            chapter = await _require_chapter(session, chapter_id, lock=True)
+            latest = await _latest_revision(session, chapter_id)
+            if (
+                latest is None
+                or latest.revision_number != expected_revision_number
+                or chapter.regeneration_status != "processing"
+            ):
+                return
+            chapter.regeneration_status = "failed"
+            chapter.regeneration_error = "gap_impact_regeneration_failed"
+            chapter.updated_at = datetime.now(UTC)
+
 
 async def _require_chapter(
     session: AsyncSession,
@@ -532,7 +645,9 @@ async def _snapshot_chapter(
             )
         ).all()
     )
-    gap_snapshots = [await _snapshot_gap(session, gap) for gap in gaps]
+    gap_snapshots = [
+        await _snapshot_gap(session, gap, chapter_title=chapter.title) for gap in gaps
+    ]
     confirmed: ConceptNoteChapterRevision | None = None
     confirmed_number = None
     if chapter.confirmed_revision_id is not None:
@@ -573,6 +688,8 @@ async def _snapshot_chapter(
 async def _snapshot_gap(
     session: AsyncSession,
     gap: ConceptNoteGap,
+    *,
+    chapter_title: str,
 ) -> WorkspaceGapSnapshot:
     """Detach one gap and its latest resolution."""
     resolution = await _latest_resolution(session, gap.gap_id)
@@ -592,7 +709,11 @@ async def _snapshot_gap(
         gap_id=gap.gap_id,
         field_key=gap.field_key,
         question=gap.question,
-        why_asking=gap.why_asking,
+        why_asking=_specific_gap_rationale(
+            question=gap.question,
+            rationale=gap.why_asking,
+            chapter_title=chapter_title,
+        ),
         severity=gap.severity,
         state=gap.status,
         suggestions=list(gap.suggestions or []),
@@ -601,6 +722,23 @@ async def _snapshot_gap(
         resolution=resolution_snapshot,
         created_at=gap.created_at,
         updated_at=gap.updated_at,
+    )
+
+
+def _specific_gap_rationale(
+    *,
+    question: str,
+    rationale: str,
+    chapter_title: str,
+) -> str:
+    """Replace the legacy migration sentinel with a gap-specific rationale."""
+    if rationale.strip() != LEGACY_GENERIC_GAP_RATIONALE:
+        return rationale
+    missing_fact = question.strip().rstrip(".")
+    return (
+        "The available context does not provide grounded evidence for "
+        f"“{missing_fact}”. Confirm it so Clima can update the {chapter_title} "
+        "chapter without inventing this detail."
     )
 
 
@@ -663,6 +801,28 @@ async def _reconcile_evidence_gaps(
     source_refs: list[str],
 ) -> bool:
     """Resolve filled gaps and reopen evidence-backed gaps without losing history."""
+    return await _reconcile_generated_gaps(
+        session,
+        chapter,
+        outputs,
+        close_action="evidence_update",
+        close_answer=None,
+        close_actor_user_id="system",
+        source_refs=source_refs,
+    )
+
+
+async def _reconcile_generated_gaps(
+    session: AsyncSession,
+    chapter: ConceptNoteChapter,
+    outputs: list[ConceptNoteDraftGapOutput],
+    *,
+    close_action: str,
+    close_answer: str | None,
+    close_actor_user_id: str,
+    source_refs: list[str],
+) -> bool:
+    """Reconcile one generated gap set while retaining append-only provenance."""
     existing = list(
         (
             await session.scalars(
@@ -686,9 +846,9 @@ async def _reconcile_evidence_gaps(
             session.add(
                 ConceptNoteGapResolution(
                     gap_id=gap.gap_id,
-                    action="evidence_update",
-                    answer=None,
-                    actor_user_id="system",
+                    action=close_action,
+                    answer=close_answer,
+                    actor_user_id=close_actor_user_id,
                     source_refs=source_refs,
                     idempotency_key=uuid4(),
                 )

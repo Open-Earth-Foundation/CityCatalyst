@@ -432,6 +432,11 @@ flowchart TB
 | `drafting_document`    | application context, complete run bundle, current chapter, all earlier chapter Markdown | no tools; one structured chapter call at a time |
 | `editing_document`     | selected chapter/revision and per-document summaries                         | document edit tools plus selected-source query    |
 
+The chapter drafter remains tool-free. After an accepted gap `answer` or
+`correction`, a separate review-only invocation temporarily loads only
+`select_chapters_for_rewrite`; that tool returns a chapter-number array and is
+not registered for drafting or ordinary Concept Note chat.
+
 Export is not a workflow step for the LLM. It is a document workspace button
 that calls export preflight and generation routes against the current chapters
 and template.
@@ -1422,7 +1427,10 @@ flowchart TB
     Workspace --> UserAnswers["Answer, dismiss,<br/>or defer noncritical gap"]
     UserAnswers --> DocService
     DocService --> Regenerate["Regenerate affected chapter"]
+    Regenerate --> ImpactReview["For answers/corrections:<br/>review every other chapter"]
+    ImpactReview --> Selected["Rewrite selected<br/>chapter numbers"]
     Regenerate --> DraftReview["Draft<br/>Review & confirm"]
+    Selected --> DraftReview
     DraftReview -->|"explicit user confirmation"| Ready["Ready"]
     Context --> EvidenceLinks["Evidence links<br/>claim -> selected source"]
     Chapters --> EvidenceLinks
@@ -1444,9 +1452,15 @@ How it works:
 - Missing facts are stored as structured gaps with a stable field key, focused
   question, rationale, severity, state, grounded suggestions, source references,
   and optimistic-concurrency version. They do not create chapters by themselves.
-- Answering or dismissing a gap appends an audit event and regenerates only its
-  chapter. A non-critical gap may instead remain visible as a non-blocking
-  caveat; a critical gap cannot be deferred.
+- Answering or dismissing a gap appends an audit event and first regenerates its
+  chapter. After an `answer` or `correction`, a separate review-only LLM call
+  inspects every other chapter. It receives all chapter bodies when they fit the
+  configured prompt budget; otherwise deterministic token slices cover every
+  body. Its only tool returns the sorted chapter numbers that need the confirmed
+  information, and only those chapters are rewritten. The new revisions retain
+  the source gap/resolution provenance and preserve confirmed revisions as
+  reviewable proposals. A non-critical gap may instead remain visible as a
+  non-blocking caveat; a critical gap cannot be deferred.
 - Regeneration produces a Draft. Only explicit confirmation of the current
   revision—through the Draft view or the equivalent chat action—sets Ready.
   Clima may announce that a chapter is ready for review but cannot auto-promote

@@ -79,6 +79,10 @@ export function ConceptNoteWorkspace({
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [exportOpen, setExportOpen] = useState(false);
+  const [reviewGapChapterId, setReviewGapChapterId] = useState<string | null>(
+    null,
+  );
+  const [reviewGapId, setReviewGapId] = useState<string | null>(null);
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -281,6 +285,18 @@ export function ConceptNoteWorkspace({
     });
   }
 
+  function reviewChapterGaps(
+    chapter: ConceptNoteDraftChapter,
+    selectedGap?: ConceptNoteGap,
+  ): void {
+    const firstOpenGap = chapter.gaps.find((gap) => gap.state === "open");
+    if (!firstOpenGap) {
+      return;
+    }
+    setReviewGapChapterId(chapter.chapter_id);
+    setReviewGapId(selectedGap?.gap_id ?? firstOpenGap.gap_id);
+  }
+
   if (runLoading) {
     return (
       <Box
@@ -471,6 +487,8 @@ export function ConceptNoteWorkspace({
               onOpenContext={() => setTab("context")}
               onReviewDraft={reviewDraftFirst}
               onResolveGap={resolveGap}
+              reviewGapChapterId={reviewGapChapterId}
+              reviewGapId={reviewGapId}
               threadId={run.thread_id}
             />
 
@@ -547,6 +565,7 @@ export function ConceptNoteWorkspace({
                   noteName={run.name}
                   onConfirmChapter={confirmChapter}
                   onOpenContext={() => setTab("context")}
+                  onReviewChapterGaps={reviewChapterGaps}
                   onRetry={() => void retryContextBundle()}
                   onStartDrafting={() => void startDrafting()}
                 />

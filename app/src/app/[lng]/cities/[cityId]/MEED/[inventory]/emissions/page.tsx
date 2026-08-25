@@ -27,7 +27,7 @@ import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { Overline } from "@/components/package/Texts/Overline";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../components/MeedButton";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MeedStatusTag } from "../../components/MeedStatusTag";
 import { MeedErrorCard } from "../../components/MeedErrorCard";
@@ -36,14 +36,9 @@ import {
   MeedTableSkeleton,
 } from "../../components/MeedSkeletons";
 import { setMeedStepState } from "../../meedLocalState";
+import { FOCUS_RING } from "../../focusRing";
 
 /** Applied to every focusable control on this screen. */
-const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
-
 /** Column widths, summing to 100%, so the header and rows line up. */
 const COLUMN_WIDTHS = {
   sector: "46%",
@@ -166,7 +161,7 @@ function SectorRow({
               <BodyMedium color="content.secondary">
                 {t("breakdown-error")}
               </BodyMedium>
-              <CCTerraButton
+              <MeedButton
                 variant="text"
                 minW="auto"
                 h="24px"
@@ -175,7 +170,7 @@ function SectorRow({
                 _focusVisible={FOCUS_RING}
               >
                 {t("retry")}
-              </CCTerraButton>
+              </MeedButton>
             </HStack>
           </Table.Cell>
         </Table.Row>

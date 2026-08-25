@@ -3,9 +3,10 @@ import React from "react";
 import { Box, HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuArrowDown } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodySmall } from "@/components/package/Texts/Body";
+import { FOCUS_RING_INVERSE } from "../../../focusRing";
 
 /**
  * Filled band that tells the user what to do with the ranking now that they
@@ -22,7 +23,7 @@ export function NextStepsBanner({
   t: TFunction;
 }) {
   return (
-    <Box bg="content.link" borderRadius="12px" px="l" py="l">
+    <Box bg="content.link" borderRadius="rounded" px="l" py="l">
       <HStack
         justifyContent="space-between"
         alignItems="center"
@@ -37,7 +38,7 @@ export function NextStepsBanner({
               : t("next-steps-body")}
           </BodySmall>
         </VStack>
-        <CCTerraButton
+        <MeedButton
           variant="filled"
           minW="auto"
           px="l"
@@ -46,14 +47,10 @@ export function NextStepsBanner({
           _hover={{ bg: "background.neutral" }}
           rightIcon={<Icon as={LuArrowDown} boxSize="16px" />}
           onClick={onBrowseFullRanking}
-          _focusVisible={{
-            outline: "2px solid",
-            outlineColor: "base.light",
-            outlineOffset: "2px",
-          }}
+          _focusVisible={FOCUS_RING_INVERSE}
         >
           {t("next-steps-action")}
-        </CCTerraButton>
+        </MeedButton>
       </HStack>
     </Box>
   );

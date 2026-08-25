@@ -14,8 +14,9 @@ import {
 import { TitleLarge, TitleMedium } from "@/components/package/Texts/Title";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import { Caption } from "@/components/package/Texts/Caption";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../components/MeedButton";
 import { Slider } from "@/components/ui/slider";
+import { useGetMeedActionsQuery } from "@/services/api";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS, getMeedPath } from "../../steps";
 import { stepHref } from "../../navigation";
@@ -34,10 +35,18 @@ import {
   DEFAULT_MEED_WEIGHTS,
   getMeedConfirmedExclusions,
   getMeedPreferences,
+  setMeedConfirmedExclusions,
   setMeedPreferences,
   setMeedStepState,
   type MeedStrategicPreferences,
 } from "../../meedLocalState";
+import { buildActionIndex } from "../results/components/actionCatalog";
+import {
+  computeExclusionMatches,
+  toProposedExclusions,
+} from "./exclusionProposals";
+import { ExclusionPreviewPanel } from "./ExclusionPreviewPanel";
+import { FOCUS_RING } from "../../focusRing";
 
 type WeightKey = "impact" | "alignment" | "feasibility";
 type Weights = Record<WeightKey, number>;
@@ -54,19 +63,15 @@ const SUMMARY_STEPS = MEED_WIZARD_STEPS.filter((s) => s.key !== "preflight");
  */
 const CONFIDENCE_BASE = 40;
 const CONFIDENCE_CAP = 98;
+/**
+ * Only the two inputs the city supplies move this number. The read-only areas
+ * used to carry 33 points between them, which meant confidence rose by a third
+ * for opening pages the user could not change.
+ */
 const CONFIDENCE_POINTS: { key: string; points: number }[] = [
-  { key: "emissions", points: 25 },
-  { key: "context", points: 18 },
-  { key: "regulations", points: 10 },
-  { key: "preferences", points: 5 },
-  { key: "policy", points: 5 },
+  { key: "emissions", points: 40 },
+  { key: "preferences", points: 18 },
 ];
-
-const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
 
 /** API option keys use snake_case; locale keys are kebab-case. */
 function kebab(key: string): string {
@@ -264,6 +269,62 @@ function PreflightContent(props: {
   const gate = useMemo(() => computeMeedGate(states), [states]);
   const confidence = useMemo(() => computeConfidence(states), [states]);
 
+  // The catalog is what the exclusion criteria are matched against. Five other
+  // MEED screens already run this query, and it shares the "Meed" cache tag, so
+  // by the time the user reaches pre-flight it is normally already warm.
+  const {
+    data: catalog,
+    isLoading: isCatalogLoading,
+    isError: isCatalogError,
+  } = useGetMeedActionsQuery({ cityId });
+  const actionIndex = useMemo(() => buildActionIndex(catalog), [catalog]);
+
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewSelectedIds, setPreviewSelectedIds] = useState<string[]>([]);
+
+  const proposals = useMemo(
+    () =>
+      preferences == null
+        ? []
+        : toProposedExclusions(
+            computeExclusionMatches(actionIndex, preferences),
+            actionIndex,
+            t,
+          ),
+    [actionIndex, preferences, t],
+  );
+
+  function openPreview() {
+    const proposedIds = proposals.map((proposal) => proposal.actionId);
+    // Re-opening must not silently re-tick actions the user rejected last time,
+    // so an existing confirmation narrows the seed rather than being ignored.
+    setPreviewSelectedIds(
+      confirmedExclusions.length > 0
+        ? proposedIds.filter((id) => confirmedExclusions.includes(id))
+        : proposedIds,
+    );
+    setIsPreviewOpen(true);
+  }
+
+  function togglePreviewSelection(actionId: string) {
+    setPreviewSelectedIds((previous) =>
+      previous.includes(actionId)
+        ? previous.filter((id) => id !== actionId)
+        : [...previous, actionId],
+    );
+  }
+
+  function confirmExclusions() {
+    setMeedConfirmedExclusions(inventoryId, previewSelectedIds);
+    setConfirmedExclusions(previewSelectedIds);
+    setIsPreviewOpen(false);
+  }
+
+  function clearExclusions() {
+    setMeedConfirmedExclusions(inventoryId, []);
+    setConfirmedExclusions([]);
+  }
+
   function persistWeights(next: Weights) {
     const existing = getMeedPreferences(inventoryId) ?? emptyPreferences();
     setMeedPreferences(inventoryId, { ...existing, weights: next });
@@ -313,6 +374,26 @@ function PreflightContent(props: {
     (preferences.excludedSectors.length > 0 ||
       preferences.excludedCoBenefits.length > 0 ||
       preferences.excludeText.trim().length > 0);
+
+  /**
+   * Only sector and co-benefit criteria can be resolved here. Free text is
+   * matched upstream by an LLM when the ranking runs, so a free-text-only
+   * criterion cannot produce a preview — hence a separate flag from
+   * `hasExclusionCriteria`, which the summary above still uses.
+   */
+  const hasStructuralExclusionCriteria =
+    preferences != null &&
+    (preferences.excludedSectors.length > 0 ||
+      preferences.excludedCoBenefits.length > 0);
+
+  const hasFreeTextCriterion =
+    preferences != null && preferences.excludeText.trim().length > 0;
+
+  const previewHintKey = !hasStructuralExclusionCriteria
+    ? "preview-exclusions-hint"
+    : hasFreeTextCriterion
+      ? "preview-free-text-note"
+      : null;
 
   function generateRanking() {
     setMeedStepState(inventoryId, "preflight", {
@@ -414,6 +495,65 @@ function PreflightContent(props: {
                   <BodySmall color="content.tertiary" fontStyle="italic">
                     {t("no-exclusion-criteria")}
                   </BodySmall>
+                )}
+
+                <VStack alignItems="stretch" gap="xs">
+                  <HStack gap="s" flexWrap="wrap">
+                    <MeedButton
+                      variant="outlined"
+                      minW="auto"
+                      px="l"
+                      disabled={
+                        !hasStructuralExclusionCriteria || isPreviewOpen
+                      }
+                      aria-describedby={
+                        previewHintKey
+                          ? "meed-exclusion-preview-hint"
+                          : undefined
+                      }
+                      onClick={openPreview}
+                      _focusVisible={FOCUS_RING}
+                    >
+                      {t("preview-exclusions-cta")}
+                    </MeedButton>
+                    {confirmedExclusions.length > 0 && (
+                      <MeedButton
+                        variant="text"
+                        minW="auto"
+                        px="m"
+                        onClick={clearExclusions}
+                        _focusVisible={FOCUS_RING}
+                      >
+                        {t("clear-confirmed-exclusions")}
+                      </MeedButton>
+                    )}
+                  </HStack>
+                  {/* The gate explains itself next to the button it disables. */}
+                  {previewHintKey && (
+                    <Caption
+                      id="meed-exclusion-preview-hint"
+                      color="content.tertiary"
+                    >
+                      {t(previewHintKey)}
+                    </Caption>
+                  )}
+                </VStack>
+
+                {isPreviewOpen && (
+                  <ExclusionPreviewPanel
+                    proposals={proposals}
+                    selectedIds={previewSelectedIds}
+                    onToggle={togglePreviewSelection}
+                    onSelectAll={() =>
+                      setPreviewSelectedIds(proposals.map((p) => p.actionId))
+                    }
+                    onDeselectAll={() => setPreviewSelectedIds([])}
+                    onConfirm={confirmExclusions}
+                    onCancel={() => setIsPreviewOpen(false)}
+                    isLoading={isCatalogLoading}
+                    isError={isCatalogError}
+                    t={t}
+                  />
                 )}
 
                 {confirmedExclusions.length > 0 ? (
@@ -558,7 +698,7 @@ function PreflightContent(props: {
                     {t("weights-total", { total: totalWeight })}
                   </MeedStatusTag>
                   {isCustomWeights && (
-                    <CCTerraButton
+                    <MeedButton
                       variant="text"
                       minW="auto"
                       px="m"
@@ -566,7 +706,7 @@ function PreflightContent(props: {
                       _focusVisible={FOCUS_RING}
                     >
                       {t("reset-to-defaults")}
-                    </CCTerraButton>
+                    </MeedButton>
                   )}
                 </HStack>
               </VStack>
@@ -577,13 +717,20 @@ function PreflightContent(props: {
           <Card.Root borderColor="border.overlay">
             <Card.Body>
               <VStack alignItems="stretch" gap="m">
-                <MeedGateNotice gate={gate} t={t} id="meed-preflight-gate" />
+                <MeedGateNotice
+                  gate={gate}
+                  lng={lng}
+                  cityId={cityId}
+                  inventoryId={inventoryId}
+                  from="preflight"
+                  id="meed-preflight-gate"
+                />
                 {/*
                  * Full width rather than auto: this is the primary action of
                  * the whole flow, and in a 380px column an auto-width button
                  * with a long label overflowed the card instead of wrapping.
                  */}
-                <CCTerraButton
+                <MeedButton
                   variant="filled"
                   minW="auto"
                   w="full"
@@ -595,7 +742,7 @@ function PreflightContent(props: {
                   _focusVisible={FOCUS_RING}
                 >
                   {t("generate-ranking-cta")}
-                </CCTerraButton>
+                </MeedButton>
               </VStack>
             </Card.Body>
           </Card.Root>

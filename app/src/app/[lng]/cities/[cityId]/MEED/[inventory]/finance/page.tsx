@@ -10,7 +10,7 @@ import {
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../components/MeedButton";
 import { pillarPercent } from "../../scoringWeights";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS } from "../../steps";
@@ -40,8 +40,7 @@ import { extractFeasibilityRows } from "./types";
 const INITIAL_ROWS = 15;
 const TABLE_ID = "meed-finance-table";
 
-const FINANCE_RANKING_WEIGHT =
-  pillarPercent("feasibility");
+const FINANCE_RANKING_WEIGHT = pillarPercent("feasibility");
 
 function FinancialFeasibilityContent(props: {
   lng: string;
@@ -252,7 +251,7 @@ function FinancialFeasibilityContent(props: {
           })}
         </Caption>
         {filtered.length > INITIAL_ROWS && (
-          <CCTerraButton
+          <MeedButton
             variant="text"
             onClick={() => setShowAll((v) => !v)}
             _focusVisible={FOCUS_RING}
@@ -260,7 +259,7 @@ function FinancialFeasibilityContent(props: {
             {showAll
               ? t("show-fewer-actions")
               : t("show-more-actions", { n: filtered.length })}
-          </CCTerraButton>
+          </MeedButton>
         )}
       </HStack>
     </VStack>

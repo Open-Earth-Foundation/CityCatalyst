@@ -4,12 +4,13 @@ import { HStack, Icon, SimpleGrid, VStack } from "@chakra-ui/react";
 import { LuArrowDown } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { BodySmall } from "@/components/package/Texts/Body";
 import { MeedCardSkeleton } from "../../../components/MeedSkeletons";
 import { TopPickCard } from "./TopPickCard";
 import type { MeedActionIndex } from "./actionCatalog";
+import { FOCUS_RING } from "../../../focusRing";
 
 /**
  * The three hero cards, their heading and the shortcut to the full table.
@@ -53,20 +54,16 @@ export function TopPicks({
             {t("top-picks-description")}
           </BodySmall>
         </VStack>
-        <CCTerraButton
+        <MeedButton
           variant="text"
           px="0"
           minW="auto"
           rightIcon={<Icon as={LuArrowDown} boxSize="14px" />}
           onClick={onBrowseFullRanking}
-          _focusVisible={{
-            outline: "2px solid",
-            outlineColor: "content.link",
-            outlineOffset: "2px",
-          }}
+          _focusVisible={FOCUS_RING}
         >
           {t("see-full-ranking")}
-        </CCTerraButton>
+        </MeedButton>
       </HStack>
 
       <SimpleGrid columns={{ base: 1, md: 3 }} gap="m" alignItems="stretch">

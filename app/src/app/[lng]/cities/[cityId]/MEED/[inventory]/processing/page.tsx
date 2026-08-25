@@ -1,25 +1,46 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { Box, Card, HStack, Icon, Spinner, VStack } from "@chakra-ui/react";
-import { LuCircleCheck } from "react-icons/lu";
+import { LuCircleAlert, LuCircleCheck } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import type { TFunction } from "i18next";
 import { useTranslation } from "@/i18n/client";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { LabelMedium } from "@/components/package/Texts/Label";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
-import { useGetMeedActionsQuery } from "@/services/api";
+import { MeedButton } from "../../components/MeedButton";
+import {
+  useGetMeedActionsQuery,
+  useRunMeedRankingMutation,
+} from "@/services/api";
 import { FeatureFlags, hasFeatureFlag } from "@/util/feature-flags";
 import { getMeedPath } from "../../steps";
-import { setMeedRanking } from "../../meedLocalState";
+import {
+  getMeedConfirmedExclusions,
+  getMeedPreferences,
+  setMeedRanking,
+} from "../../meedLocalState";
+import { buildRunRankingRequest } from "../../meedRankingRequest";
+import {
+  rankingGeneratedAt,
+  toMeedPrioritizeCityResult,
+} from "../../meedRankingAdapter";
 import { useMeedSectionStates, inputsFingerprint } from "../../meedStatus";
+import { computeMeedGate } from "../../meedGate";
 import { buildMockRanking } from "../../meedMockRanking";
 import { buildActionIndex } from "../results/components/actionCatalog";
 import { api } from "@/services/api";
 
 /** Total scripted animation time before navigating to the results screen. */
 const ANIMATION_MS = 8000;
+/**
+ * Where the scripted curve stops when a real request is in flight.
+ *
+ * The clock must never reach 100 on its own: only the resolved response is
+ * allowed to say the ranking is done. Parking just short of the end reads as
+ * "nearly there" rather than as a stall.
+ */
+const REQUEST_CEILING_PCT = 90;
 /** Delay after completion before navigating, so the "done" state is visible. */
 const NAVIGATE_DELAY_MS = 900;
 
@@ -125,14 +146,14 @@ function StageRow({
             mt="s"
             h="4px"
             bg="background.neutral"
-            borderRadius="3px"
+            borderRadius="full"
             overflow="hidden"
           >
             <Box
               h="full"
               w={`${pct}%`}
               bg="content.link"
-              borderRadius="3px"
+              borderRadius="full"
               transition="width 0.3s ease"
             />
           </Box>
@@ -151,22 +172,47 @@ export default function Page(props: {
 
   const [overall, setOverall] = useState(0);
   const [done, setDone] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const startTime = useRef(Date.now());
   const mockWritten = useRef(false);
+  const runStarted = useRef(false);
+
+  const isMockMode = hasFeatureFlag(FeatureFlags.MEED_MOCK_RANKING);
 
   // Review aid only: with MEED_MOCK_RANKING on, completing this screen stores a
   // ranking built from the live action catalog so the results screens can be
   // exercised before the prioritization service exists. Off by default.
-  const { states } = useMeedSectionStates(inventoryId);
+  const { states, isReady: statesReady } = useMeedSectionStates(inventoryId);
+
+  /**
+   * A URL must not be able to start a ranking the inputs cannot support.
+   *
+   * The screen fires a real request on mount, so reaching it directly without
+   * the readiness gate passing would spend a full prioritization run — and land
+   * the user on results with nothing to show. Waits for the store to be read
+   * before judging, or it would bounce on first paint.
+   */
+  const gateBlocked = statesReady && !computeMeedGate(states).canGenerate;
+  useEffect(() => {
+    if (gateBlocked) {
+      router.replace(getMeedPath(lng, cityId, inventoryId, "preflight"));
+    }
+  }, [gateBlocked, router, lng, cityId, inventoryId]);
   const { data: catalog } = useGetMeedActionsQuery({ cityId });
   const { data: inventory } = api.useGetInventoryQuery(inventoryId, {
     skip: !inventoryId,
   });
 
-  // Scripted progress animation: 0 → 100 over ~8 seconds with ease-in-out.
-  // TODO(meed backend): once the prioritization call is wired in, gate the
-  // completion (and the navigation below) on the real request finishing, as
-  // the prototype did.
+  /**
+   * Scripted progress, ease-in-out.
+   *
+   * With the mock flag on this is the whole story and still completes on the
+   * clock. Against the real service the curve is only a waiting animation: it
+   * stops at REQUEST_CEILING_PCT and the response decides the ending, so the
+   * screen can never claim a ranking finished when the request is still open
+   * — or, worse, when it failed.
+   */
   useEffect(() => {
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime.current;
@@ -175,7 +221,15 @@ export default function Page(props: {
         raw < 0.5 ? 2 * raw * raw : -1 + (4 - 2 * raw) * raw,
         0.99,
       );
-      setOverall(Math.round(eased * 100));
+      const pct = Math.round(eased * 100);
+
+      if (!isMockMode) {
+        setOverall(Math.min(pct, REQUEST_CEILING_PCT));
+        if (elapsed >= ANIMATION_MS) clearInterval(interval);
+        return;
+      }
+
+      setOverall(pct);
       if (elapsed >= ANIMATION_MS) {
         clearInterval(interval);
         setOverall(100);
@@ -183,19 +237,98 @@ export default function Page(props: {
       }
     }, 60);
     return () => clearInterval(interval);
-  }, []);
+  }, [isMockMode, attempt]);
+
+  // Read inside the request callback without making the request depend on
+  // them — the fingerprint is a snapshot taken as the ranking is stored.
+  const statesRef = useRef(states);
+  const locodeRef = useRef("");
+  useEffect(() => {
+    statesRef.current = states;
+    locodeRef.current = inventory?.city?.locode ?? "";
+  });
+
+  const [runMeedRanking] = useRunMeedRankingMutation();
+
+  /**
+   * Run the ranking, exactly once per attempt.
+   *
+   * The one-shot ref matters more than it looks: storing the result dispatches
+   * a state-changed event, which recreates `states`, which would otherwise
+   * re-enter here and fire a second full ranking.
+   */
+  useEffect(() => {
+    if (isMockMode || runStarted.current || !cityId || !inventoryId) return;
+    if (!statesReady || gateBlocked) return;
+    runStarted.current = true;
+
+    const body = buildRunRankingRequest({
+      inventoryId,
+      preferences: getMeedPreferences(inventoryId),
+      // The exclusions the user reviewed and confirmed on pre-flight — never
+      // the raw criteria.
+      excludedActionIds: getMeedConfirmedExclusions(inventoryId),
+    });
+
+    let cancelled = false;
+    runMeedRanking({ cityId, body })
+      .unwrap()
+      .then((payload) => {
+        if (cancelled) return;
+        const result = toMeedPrioritizeCityResult(payload, {
+          locode: locodeRef.current,
+        });
+        // A 200 that carries no ranked actions is not a ranking. Treating it as
+        // success would store an empty result and send the user to a results
+        // screen with nothing on it — the error state is the honest answer.
+        if ((result.ranked_actions?.length ?? 0) === 0) {
+          setHasError(true);
+          return;
+        }
+        setMeedRanking(inventoryId, {
+          result,
+          generatedAtUtc:
+            rankingGeneratedAt(payload) ?? new Date().toISOString(),
+          inputsFingerprint: inputsFingerprint(statesRef.current),
+          isMock: false,
+        });
+        setOverall(100);
+        setDone(true);
+      })
+      .catch(() => {
+        if (!cancelled) setHasError(true);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    isMockMode,
+    cityId,
+    inventoryId,
+    runMeedRanking,
+    attempt,
+    statesReady,
+    gateBlocked,
+  ]);
+
+  function retryRanking() {
+    runStarted.current = false;
+    startTime.current = Date.now();
+    setHasError(false);
+    setOverall(0);
+    setDone(false);
+    setAttempt((n) => n + 1);
+  }
 
   // Navigate to the results screen shortly after the animation completes.
+  // A failed ranking never gets here: there would be nothing to show.
   useEffect(() => {
-    if (!done) return;
+    if (!done || hasError) return;
 
     // Guarded: storing the ranking dispatches a state-changed event, which
     // recreates `states`, which would re-enter this effect forever.
-    if (
-      !mockWritten.current &&
-      hasFeatureFlag(FeatureFlags.MEED_MOCK_RANKING) &&
-      catalog
-    ) {
+    if (!mockWritten.current && isMockMode && catalog) {
       mockWritten.current = true;
       const result = buildMockRanking(buildActionIndex(catalog), {
         locode: inventory?.city?.locode ?? "",
@@ -217,7 +350,17 @@ export default function Page(props: {
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `states` is read
     // once behind the one-shot guard above; including it would re-enter.
-  }, [done, router, lng, cityId, inventoryId, catalog, inventory]);
+  }, [
+    done,
+    hasError,
+    isMockMode,
+    router,
+    lng,
+    cityId,
+    inventoryId,
+    catalog,
+    inventory,
+  ]);
 
   const displayPct = done ? 100 : overall;
 
@@ -241,7 +384,13 @@ export default function Page(props: {
           borderBottomWidth="1px"
           borderColor="border.overlay"
         >
-          {done ? (
+          {hasError ? (
+            <Icon
+              as={LuCircleAlert}
+              boxSize="36px"
+              color="sentiment.negativeDefault"
+            />
+          ) : done ? (
             <Icon
               as={LuCircleCheck}
               boxSize="36px"
@@ -252,11 +401,23 @@ export default function Page(props: {
           )}
           <VStack alignItems="flex-start" gap="xs">
             <TitleMedium
-              color={done ? "sentiment.positiveDefault" : "content.primary"}
+              color={
+                hasError
+                  ? "sentiment.negativeDefault"
+                  : done
+                    ? "sentiment.positiveDefault"
+                    : "content.primary"
+              }
             >
-              {done ? t("header-done") : t("header-running")}
+              {hasError
+                ? t("header-error")
+                : done
+                  ? t("header-done")
+                  : t("header-running")}
             </TitleMedium>
-            <BodySmall color="content.secondary">{t("header-sub")}</BodySmall>
+            <BodySmall color="content.secondary">
+              {hasError ? t("error-sub") : t("header-sub")}
+            </BodySmall>
           </VStack>
         </HStack>
 
@@ -265,14 +426,20 @@ export default function Page(props: {
           <Box
             h="6px"
             bg="background.neutral"
-            borderRadius="4px"
+            borderRadius="full"
             overflow="hidden"
           >
             <Box
               h="full"
               w={`${displayPct}%`}
-              bg={done ? "sentiment.positiveDefault" : "content.link"}
-              borderRadius="4px"
+              bg={
+                hasError
+                  ? "sentiment.negativeDefault"
+                  : done
+                    ? "sentiment.positiveDefault"
+                    : "content.link"
+              }
+              borderRadius="full"
               transition="width 0.2s ease, background 0.4s ease"
             />
           </Box>
@@ -284,52 +451,109 @@ export default function Page(props: {
           >
             {t("percent-complete", { pct: displayPct })}
             {" — "}
-            {done
-              ? t("all-complete")
-              : t("stage-in-progress", {
-                  stage: t(currentStageKey(displayPct)),
-                })}
+            {hasError
+              ? t("error-stopped")
+              : done
+                ? t("all-complete")
+                : t("stage-in-progress", {
+                    stage: t(currentStageKey(displayPct)),
+                  })}
           </BodySmall>
         </Box>
 
         {/* Stage rows */}
         <Box pt="xs">
-          {STAGES.map((stageId, i) => (
-            <StageRow
-              key={stageId}
-              stageId={stageId}
-              status={done ? "complete" : stageStatus(i, displayPct)}
-              pct={done ? 100 : stageProgress(i, displayPct)}
-              t={t}
-            />
-          ))}
+          {STAGES.map((stageId, i) => {
+            const status = done ? "complete" : stageStatus(i, displayPct);
+            return (
+              <StageRow
+                key={stageId}
+                stageId={stageId}
+                // A spinner after a failure would claim work is still going on.
+                status={hasError && status === "running" ? "pending" : status}
+                pct={done ? 100 : stageProgress(i, displayPct)}
+                t={t}
+              />
+            );
+          })}
         </Box>
 
         {/* Footer */}
-        <HStack
-          gap="s"
-          mx="m"
-          mb="m"
-          mt="m"
-          bg="background.neutral"
-          borderRadius="8px"
-          px="m"
-          py="m"
-        >
-          <Icon
-            as={LuCircleCheck}
-            boxSize="16px"
-            color="sentiment.positiveDefault"
-            flexShrink={0}
-          />
-          <BodyMedium color="content.secondary">{t("footer-note")}</BodyMedium>
-        </HStack>
+        {hasError ? (
+          <VStack
+            alignItems="stretch"
+            gap="m"
+            mx="m"
+            mb="m"
+            mt="m"
+            bg="sentiment.negativeOverlay"
+            borderRadius="rounded"
+            px="m"
+            py="m"
+          >
+            <HStack gap="s" alignItems="flex-start">
+              <Icon
+                as={LuCircleAlert}
+                boxSize="16px"
+                color="sentiment.negativeDefault"
+                flexShrink={0}
+                mt="2px"
+              />
+              <BodyMedium color="content.secondary">
+                {t("error-detail")}
+              </BodyMedium>
+            </HStack>
+            <HStack gap="s" flexWrap="wrap">
+              <MeedButton
+                variant="filled"
+                minW="auto"
+                px="l"
+                onClick={retryRanking}
+              >
+                {t("error-retry")}
+              </MeedButton>
+              <MeedButton
+                variant="text"
+                minW="auto"
+                px="m"
+                onClick={() =>
+                  router.push(
+                    getMeedPath(lng, cityId, inventoryId, "preflight"),
+                  )
+                }
+              >
+                {t("error-back")}
+              </MeedButton>
+            </HStack>
+          </VStack>
+        ) : (
+          <HStack
+            gap="s"
+            mx="m"
+            mb="m"
+            mt="m"
+            bg="background.neutral"
+            borderRadius="rounded"
+            px="m"
+            py="m"
+          >
+            <Icon
+              as={LuCircleCheck}
+              boxSize="16px"
+              color="sentiment.positiveDefault"
+              flexShrink={0}
+            />
+            <BodyMedium color="content.secondary">
+              {t("footer-note")}
+            </BodyMedium>
+          </HStack>
+        )}
       </Card.Root>
 
       {/* An unattended progress screen with no exit is a trap. */}
-      {!done && (
+      {!done && !hasError && (
         <Box mt="l">
-          <CCTerraButton
+          <MeedButton
             variant="text"
             minW="auto"
             px="m"
@@ -338,7 +562,7 @@ export default function Page(props: {
             }
           >
             {t("cancel")}
-          </CCTerraButton>
+          </MeedButton>
         </Box>
       )}
     </Box>

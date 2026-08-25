@@ -16,7 +16,7 @@ import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { Overline } from "@/components/package/Texts/Overline";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { MeedCardSkeleton } from "../../../components/MeedSkeletons";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import {
@@ -206,7 +206,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
               <OpportunityCard key={`opp-${i}`} opp={opp} t={t} />
             ))}
             {opportunities.rows.length > INITIAL_OPPS && (
-              <CCTerraButton
+              <MeedButton
                 variant="text"
                 alignSelf="flex-start"
                 minW="auto"
@@ -218,7 +218,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
                 {showAllOpps
                   ? t("show-fewer-funds")
                   : t("show-all-funds", { n: opportunities.rows.length })}
-              </CCTerraButton>
+              </MeedButton>
             )}
           </>
         )}
@@ -250,7 +250,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
               <ProjectCard key={`proj-${i}`} proj={proj} t={t} />
             ))}
             {projects.rows.length > INITIAL_PROJECTS && (
-              <CCTerraButton
+              <MeedButton
                 variant="text"
                 alignSelf="flex-start"
                 minW="auto"
@@ -262,7 +262,7 @@ export function RowDetail({ row, cityId, cityName, t }: RowDetailProps) {
                 {showAllProjects
                   ? t("show-fewer-projects")
                   : t("show-all-projects", { n: projects.rows.length })}
-              </CCTerraButton>
+              </MeedButton>
             )}
             {projects.total > projects.rows.length && (
               <Caption>

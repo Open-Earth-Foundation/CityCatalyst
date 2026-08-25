@@ -3,9 +3,10 @@ import React from "react";
 import { HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuSparkles } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { LabelLarge } from "@/components/package/Texts/Label";
 import { Caption } from "@/components/package/Texts/Caption";
+import { FOCUS_RING } from "../../../focusRing";
 
 /**
  * Census line plus the screen's single report entry point.
@@ -56,26 +57,26 @@ export function ResultsHeader({
       <LabelLarge color="content.tertiary">{census}</LabelLarge>
 
       <VStack alignItems="flex-end" gap="xs" flexShrink={0} maxW="320px">
-        <CCTerraButton
+        <MeedButton
           variant="filled"
           minW="auto"
           px="l"
           disabled
           leftIcon={<Icon as={LuSparkles} boxSize="16px" />}
-          _focusVisible={{
-            outline: "2px solid",
-            outlineColor: "content.link",
-            outlineOffset: "2px",
-          }}
+          _focusVisible={FOCUS_RING}
         >
           {selectedCount > 0
             ? t("generate-report-count", { count: selectedCount })
             : t("generate-report")}
-        </CCTerraButton>
+        </MeedButton>
+        {/*
+          The unavailability is stated up front. This used to invite the user
+          to "select one or more actions to build a report" and only admit the
+          feature did not exist *after* they had selected some — the promise
+          first and the retraction second.
+        */}
         <Caption color="content.tertiary" textAlign="end">
-          {selectedCount > 0
-            ? t("generate-report-pending")
-            : t("generate-report-hint")}
+          {t("generate-report-pending")}
         </Caption>
       </VStack>
     </HStack>

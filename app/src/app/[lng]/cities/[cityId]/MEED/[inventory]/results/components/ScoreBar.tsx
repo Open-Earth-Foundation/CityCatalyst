@@ -36,10 +36,10 @@ export function ScoreBar({
           flex="1"
           h="7px"
           bg="background.neutral"
-          borderRadius="4px"
+          borderRadius="full"
           overflow="hidden"
         >
-          <Box h="full" w={`${pct}%`} bg={color} borderRadius="4px" />
+          <Box h="full" w={`${pct}%`} bg={color} borderRadius="full" />
         </Box>
         <BodyMedium
           color="content.primary"

@@ -143,12 +143,18 @@ export interface MeedPrioritizationWeights {
   feasibility: number;
 }
 
+/**
+ * Every field is optional: a top-N response can state how many actions it
+ * ranked and how many it dropped, but not how many the catalog held or how
+ * many survived the filter. Consumers already fall back when a count is
+ * absent, which is a better answer than a confident wrong number.
+ */
 export interface MeedPrioritizationCounts {
-  total_actions: number;
-  valid_actions: number;
-  discarded_excluded: number;
-  discarded_legal: number;
-  ranked_actions: number;
+  total_actions?: number;
+  valid_actions?: number;
+  discarded_excluded?: number;
+  discarded_legal?: number;
+  ranked_actions?: number;
 }
 
 /**
@@ -253,4 +259,78 @@ export interface MeedPrioritizationSnapshot {
   request: Record<string, unknown>;
   response: Record<string, unknown>;
   storedAtUtc: string;
+}
+
+// ─── CityCatalyst ranking route ──────────────────────────────────────────────
+//
+// POST /api/v1/city/{cityId}/meed/rank   — runs the ranking and stores it
+// GET  /api/v1/city/{cityId}/meed/rank?inventoryId={uuid}
+//
+// This is the only MEED boundary the frontend touches: the route owns the call
+// to hiap-meed. Its model is camelCase, which is correct for CityCatalyst and
+// deliberately unlike the snake_case prioritizer types above — the two are
+// bridged in `MEED/meedRankingAdapter.ts` and nowhere else.
+
+/** Multilingual field on the route's model, e.g. `{ en: "…", es: "…" }`. */
+export type MeedRouteI18nText = Record<string, string | null | undefined>;
+
+export interface MeedRankRouteRankedAction {
+  actionId?: string;
+  rank?: number;
+  finalScore?: number;
+  impactScore?: number;
+  alignmentScore?: number;
+  feasibilityScore?: number;
+  explanations?: Record<string, string>;
+  /** Already snake_case inside — see MeedRankedActionResult.evidence_summary. */
+  evidenceSummary?: Record<string, unknown>;
+  weights?: Partial<MeedPrioritizationWeights>;
+}
+
+export interface MeedRankRouteRemovedAction {
+  actionId?: string;
+  actionName?: string;
+  removalReason?: string | null;
+  removalSource?: string | null;
+  verdictCategory?: string | null;
+  ownershipCategory?: string | null;
+  restrictionsCategory?: string | null;
+  ownershipDescription?: MeedRouteI18nText | null;
+  restrictionsDescription?: MeedRouteI18nText | null;
+  legalJustification?: MeedRouteI18nText | null;
+  legalReferences?: string[] | null;
+}
+
+/** The `data` payload both verbs return. */
+export interface MeedRankRouteResponse {
+  rankedActions?: MeedRankRouteRankedAction[];
+  removedActions?: MeedRankRouteRemovedAction[];
+}
+
+/**
+ * Per-city preferences for a ranking run.
+ *
+ * Locode, country code, population and emissions are deliberately absent: the
+ * route builds all of them from the CityCatalyst database using `inventoryId`.
+ * Do not add them here.
+ */
+export interface MeedRunRankingCityData {
+  excludedActionIds: string[];
+  /** `{}` means "use the backend defaults". Required by the route's schema. */
+  weightsOverride: Record<string, number>;
+  cityStrategicPreferenceSectors: string[];
+  cityStrategicPreferenceTimeframes: MeedTimeframePreference[];
+  cityStrategicPreferenceCoBenefitKeys: string[];
+}
+
+/**
+ * POST body. `cityDataList` is an array even though one inventory means one
+ * city — that is the upstream prioritizer's batch shape showing through.
+ */
+export interface MeedRunRankingRequest {
+  inventoryId: string;
+  requestedLanguages: string[];
+  topN?: number;
+  createExplanations?: boolean;
+  cityDataList: MeedRunRankingCityData[];
 }

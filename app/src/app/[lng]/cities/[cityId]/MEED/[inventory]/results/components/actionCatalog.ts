@@ -8,6 +8,11 @@ import type { TFunction } from "i18next";
 
 export interface MeedCatalogCoBenefit {
   impact_relationship?: string | null;
+  /**
+   * Signed magnitude of the same fact. The prioritizer's own negativity test
+   * is numeric (`impact_numeric < 0`); the catalog populates both fields.
+   */
+  impact_numeric?: number | null;
 }
 
 export interface MeedCatalogAction {
@@ -192,7 +197,8 @@ export function sectorTagOf(
 ): string | null {
   if (!emissions) return null;
   const direct = emissions.sector_number?.trim().toUpperCase();
-  if (direct && SECTOR_NUMBER_TO_TAG[direct]) return SECTOR_NUMBER_TO_TAG[direct];
+  if (direct && SECTOR_NUMBER_TO_TAG[direct])
+    return SECTOR_NUMBER_TO_TAG[direct];
   const ref = emissions.gpc_reference_number?.[0];
   const prefix = ref?.split(".")[0]?.trim().toUpperCase();
   return (prefix && SECTOR_NUMBER_TO_TAG[prefix]) || null;

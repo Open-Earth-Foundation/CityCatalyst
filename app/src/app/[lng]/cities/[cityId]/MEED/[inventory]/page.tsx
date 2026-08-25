@@ -13,7 +13,7 @@ import { formatEmissions } from "@/util/helpers";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../components/MeedButton";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MeedModuleHeader } from "../components/MeedModuleHeader";
 import { MeedRankingCard } from "../components/MeedRankingCard";
@@ -119,13 +119,13 @@ export default function MEEDInventoryPage(props: {
         <BodyLarge color="content.secondary" textAlign="center" maxW="520px">
           {t("inventory-not-found")}
         </BodyLarge>
-        <CCTerraButton
+        <MeedButton
           minW="auto"
           px="l"
           onClick={() => router.push(`/${lng}/cities/${cityId}`)}
         >
           {t("back-to-city")}
-        </CCTerraButton>
+        </MeedButton>
       </Box>
     );
   }
@@ -150,7 +150,7 @@ export default function MEEDInventoryPage(props: {
         toolsLabel={tDashboard("breadcrumb-tools")}
         t={t}
         action={
-          <CCTerraButton
+          <MeedButton
             minW="auto"
             px="l"
             disabled={!gate.canGenerate}
@@ -160,7 +160,7 @@ export default function MEEDInventoryPage(props: {
             }
           >
             {ranking ? t("ranking-rerun") : t("generate-recommendations")}
-          </CCTerraButton>
+          </MeedButton>
         }
       />
 
@@ -224,7 +224,14 @@ export default function MEEDInventoryPage(props: {
                     tone={gate.canGenerate ? "positive" : "warning"}
                     ariaLabel={t("readiness-title")}
                   />
-                  <MeedGateNotice gate={gate} t={t} id="meed-gate-notice" />
+                  <MeedGateNotice
+                    gate={gate}
+                    lng={lng}
+                    cityId={cityId}
+                    inventoryId={inventoryId}
+                    from="overview"
+                    id="meed-gate-notice"
+                  />
                 </VStack>
               </Card.Body>
             </Card.Root>

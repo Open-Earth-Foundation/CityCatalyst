@@ -1,7 +1,7 @@
 "use client";
 import { Card, HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuRotateCw, LuTriangleAlert } from "react-icons/lu";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "./MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium } from "@/components/package/Texts/Body";
 import { FOCUS_RING } from "../focusRing";
@@ -37,7 +37,7 @@ export function MeedErrorCard({
 }: MeedErrorCardProps) {
   const isPanel = variant === "panel";
   const retry = retryLabel && onRetry && (
-    <CCTerraButton
+    <MeedButton
       variant="outlined"
       minW="auto"
       px="l"
@@ -47,7 +47,7 @@ export function MeedErrorCard({
       _focusVisible={FOCUS_RING}
     >
       {retryLabel}
-    </CCTerraButton>
+    </MeedButton>
   );
 
   if (isPanel) {

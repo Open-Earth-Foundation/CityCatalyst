@@ -22,12 +22,13 @@ import {
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelMedium } from "@/components/package/Texts/Label";
 import { Caption } from "@/components/package/Texts/Caption";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../components/MeedButton";
 import type { MeedTimeframePreference } from "@/util/types/meed";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { getMeedPath } from "../../steps";
 import { MeedChipGroup } from "../../components/MeedChipGroup";
 import { MeedStatusTag, type MeedTone } from "../../components/MeedStatusTag";
+import { FOCUS_RING } from "../../focusRing";
 import {
   DEFAULT_MEED_WEIGHTS,
   getMeedPreferences,
@@ -69,12 +70,6 @@ const TEXT_DEBOUNCE_MS = 500;
 function kebab(key: string): string {
   return key.replace(/_/g, "-");
 }
-
-const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
 
 /**
  * A checkbox rendered as a bordered card.
@@ -121,7 +116,7 @@ function CheckCard({
         mt="xs"
         flexShrink={0}
         borderWidth="2px"
-        borderRadius="4px"
+        borderRadius="minimal"
         borderColor="border.neutral"
         bg="base.light"
         _checked={{
@@ -560,7 +555,6 @@ function StrategicPreferencesContent(props: {
           </BodySmall>
         )}
       </Section>
-
     </VStack>
   );
 }

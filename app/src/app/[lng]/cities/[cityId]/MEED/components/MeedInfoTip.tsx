@@ -2,6 +2,7 @@
 import { Icon, IconButton } from "@chakra-ui/react";
 import { LuInfo } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
+import { FOCUS_RING } from "../focusRing";
 
 export interface MeedInfoTipProps {
   /** Plain-language explanation. Already localized. */
@@ -24,11 +25,7 @@ export function MeedInfoTip({ content, ariaLabel }: MeedInfoTipProps) {
         size="2xs"
         color="content.tertiary"
         _hover={{ color: "content.link", bg: "background.neutral" }}
-        _focusVisible={{
-          outline: "2px solid",
-          outlineColor: "content.link",
-          outlineOffset: "1px",
-        }}
+        _focusVisible={FOCUS_RING}
       >
         <Icon as={LuInfo} boxSize="14px" />
       </IconButton>

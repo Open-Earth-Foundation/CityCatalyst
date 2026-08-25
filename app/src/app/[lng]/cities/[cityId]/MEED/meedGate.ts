@@ -21,10 +21,16 @@ export interface MeedGate {
 
 /** Emissions is the only hard requirement — it drives the impact score. */
 const REQUIRED_STEP = "emissions";
-const MIN_COMPLETE_SECTIONS = 3;
+
+/**
+ * Inputs the city actually supplies. Legal screening, policy alignment,
+ * financial feasibility and socioeconomic context are computed by the model,
+ * so counting them here rewarded opening a read-only page and told the user
+ * nothing about whether the ranking would be any good.
+ */
+const SCORED_INPUTS = ["emissions", "preferences"];
 
 export function computeMeedGate(states: MeedSectionStates): MeedGate {
-  const values = Object.values(states);
   const emissions = states[REQUIRED_STEP];
   const emissionsReady =
     emissions?.status === "complete" ||
@@ -40,21 +46,18 @@ export function computeMeedGate(states: MeedSectionStates): MeedGate {
     };
   }
 
-  const settled = values.filter(
-    (s) => s.status === "complete" || s.status === "needs-review",
-  );
+  const outstanding = SCORED_INPUTS.filter((key) => {
+    const status = states[key]?.status;
+    return status !== "complete" && status !== "needs-review";
+  });
 
-  if (settled.length < MIN_COMPLETE_SECTIONS) {
-    // Name the sections rather than only counting them. "2 more sections
-    // needed" tells the user nothing actionable — they still have to work out
-    // which ones, from six cards that all look equally unfinished.
-    const outstanding = values
-      .filter((s) => s.status !== "complete" && s.status !== "needs-review")
-      .map((s) => s.key);
+  if (outstanding.length > 0) {
+    // Name what is missing rather than only counting it — with two inputs,
+    // a count tells the user nothing a name would not tell them better.
     return {
       canGenerate: false,
       reasonKey: "gate-sections-needed",
-      reasonValues: { count: MIN_COMPLETE_SECTIONS - settled.length },
+      reasonValues: { count: outstanding.length },
       tone: "warning",
       missing: outstanding,
     };

@@ -14,11 +14,7 @@ import type { MeedTone } from "../../components/MeedStatusTag";
  */
 
 export type IndicatorCategory =
-  | "very high"
-  | "high"
-  | "medium"
-  | "low"
-  | "very low";
+  "very high" | "high" | "medium" | "low" | "very low";
 
 export type IndicatorConcern = "risk" | "opportunity" | "neutral";
 

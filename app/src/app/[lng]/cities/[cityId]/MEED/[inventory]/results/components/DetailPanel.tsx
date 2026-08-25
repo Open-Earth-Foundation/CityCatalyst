@@ -4,7 +4,7 @@ import { Box, Icon, HStack, VStack } from "@chakra-ui/react";
 import { LuArrowLeft, LuCircleCheck, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { LabelLarge, LabelMedium } from "@/components/package/Texts/Label";
 import {
@@ -116,14 +116,14 @@ export function DetailPanel({
           borderColor="border.overlay"
           flexShrink={0}
         >
-          <CCTerraButton
+          <MeedButton
             variant="text"
             px="0"
             leftIcon={<Icon as={LuArrowLeft} />}
             onClick={onClose}
           >
             {t("detail-close")}
-          </CCTerraButton>
+          </MeedButton>
           <LabelMedium
             color="content.link"
             textTransform="uppercase"
@@ -188,7 +188,7 @@ export function DetailPanel({
                 justifyContent="space-between"
                 gap="m"
                 bg="background.neutral"
-                borderRadius="8px"
+                borderRadius="rounded"
                 px="m"
                 py="m"
               >

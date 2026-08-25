@@ -11,6 +11,7 @@ import { MeedMeter } from "../../../components/MeedMeter";
 import { MeedStatusTag } from "../../../components/MeedStatusTag";
 import type { MeedActionIndex } from "../../results/components/actionCatalog";
 import { docScope } from "../policyAggregates";
+import { FOCUS_RING } from "../../../focusRing";
 import {
   evidenceStrengthNum,
   scoreTone,
@@ -23,12 +24,6 @@ import {
   type ActionPolicyRow,
   type PolicyEvidence,
 } from "../policyRows";
-
-const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
 
 /** Five aligned columns — the evidence rows used to be a flex-wrap soup. */
 const EVIDENCE_GRID = "minmax(200px, 2fr) 108px 132px 108px 64px";

@@ -4,6 +4,7 @@ import { LuArrowDown, LuArrowUp, LuArrowUpDown } from "react-icons/lu";
 import { Overline } from "@/components/package/Texts/Overline";
 import { MeedInfoTip } from "../../../components/MeedInfoTip";
 import type { SortDirection } from "../policyRows";
+import { FOCUS_RING } from "../../../focusRing";
 
 const HEADER_CELL = {
   bg: "background.neutral",
@@ -68,14 +69,10 @@ export function PolicyColumnHeader({
             alignItems="center"
             gap="xs"
             cursor="pointer"
-            borderRadius="4px"
+            borderRadius="minimal"
             px="xs"
             _hover={{ "& *": { color: "content.link" } }}
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "2px",
-            }}
+            _focusVisible={FOCUS_RING}
           >
             <Overline color={active ? "content.link" : "content.tertiary"}>
               {label}

@@ -57,7 +57,7 @@ export function OpportunityCard({ opp, t }: OpportunityCardProps) {
               rel="noopener noreferrer"
               color="content.link"
               alignSelf="flex-start"
-              borderRadius="4px"
+              borderRadius="minimal"
               _focusVisible={FOCUS_RING}
             >
               <LabelMedium color="content.link">{t("view-fund")}</LabelMedium>

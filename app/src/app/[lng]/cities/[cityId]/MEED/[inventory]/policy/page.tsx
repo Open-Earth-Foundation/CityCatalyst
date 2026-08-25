@@ -17,7 +17,7 @@ import {
 import { BodyLarge, BodyMedium } from "@/components/package/Texts/Body";
 import { Caption } from "@/components/package/Texts/Caption";
 import { TitleMedium } from "@/components/package/Texts/Title";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../components/MeedButton";
 import { pillarPercent } from "../../scoringWeights";
 import { MeedWizardPage } from "../../MeedWizardPage";
 import { MEED_WIZARD_STEPS } from "../../steps";
@@ -34,6 +34,7 @@ import { computePolicyAggregates } from "./policyAggregates";
 import { PolicyActionRow } from "./components/PolicyActionRow";
 import { PolicyColumnHeader } from "./components/PolicyColumnHeader";
 import { ScopeScoreCard } from "./components/ScopeScoreCard";
+import { FOCUS_RING } from "../../focusRing";
 import {
   derivePolicyRows,
   extractScores,
@@ -45,14 +46,7 @@ import {
 
 const INITIAL_ROWS = 15;
 
-const POLICY_RANKING_WEIGHT =
-  pillarPercent("alignment");
-
-const FOCUS_RING = {
-  outline: "2px solid",
-  outlineColor: "content.link",
-  outlineOffset: "2px",
-} as const;
+const POLICY_RANKING_WEIGHT = pillarPercent("alignment");
 
 function PolicyAlignmentContent(props: {
   lng: string;
@@ -320,7 +314,7 @@ function PolicyAlignmentContent(props: {
           })}
         </Caption>
         {rows.length > INITIAL_ROWS && (
-          <CCTerraButton
+          <MeedButton
             variant="text"
             onClick={() => setShowAll((v) => !v)}
             _focusVisible={FOCUS_RING}
@@ -328,7 +322,7 @@ function PolicyAlignmentContent(props: {
             {showAll
               ? t("show-fewer-actions")
               : t("show-more-actions", { n: rows.length })}
-          </CCTerraButton>
+          </MeedButton>
         )}
       </HStack>
     </VStack>

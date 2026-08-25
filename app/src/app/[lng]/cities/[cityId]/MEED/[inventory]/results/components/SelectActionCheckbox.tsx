@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { Checkbox } from "@chakra-ui/react";
+import { FOCUS_RING } from "../../../focusRing";
 
 /**
  * The one selection control on this screen. Top-pick cards and ranking rows
@@ -38,11 +39,7 @@ export function SelectActionCheckbox({
           borderColor: "content.link",
           color: "base.light",
         }}
-        _focusVisible={{
-          outline: "2px solid",
-          outlineColor: "content.link",
-          outlineOffset: "2px",
-        }}
+        _focusVisible={FOCUS_RING}
       >
         <Checkbox.Indicator />
       </Checkbox.Control>

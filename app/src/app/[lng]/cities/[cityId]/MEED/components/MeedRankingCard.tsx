@@ -3,7 +3,7 @@ import { Box, Card, HStack, Icon, VStack } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuArrowRight, LuRotateCw, LuTriangleAlert } from "react-icons/lu";
 import type { TFunction } from "i18next";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "./MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
@@ -122,25 +122,20 @@ export function MeedRankingCard({
           )}
 
           <HStack gap="m" flexWrap="wrap" alignItems="center">
-            <CCTerraButton asChild minW="auto" px="l">
+            <MeedButton asChild minW="auto" px="l">
               <NextLink href={resultsHref}>
                 <HStack gap="s">
                   <Box as="span">{t("ranking-view")}</Box>
                   <Icon as={LuArrowRight} boxSize="16px" />
                 </HStack>
               </NextLink>
-            </CCTerraButton>
-            <CCTerraButton
-              variant="outlined"
-              minW="auto"
-              px="l"
-              onClick={onRerun}
-            >
+            </MeedButton>
+            <MeedButton variant="outlined" minW="auto" px="l" onClick={onRerun}>
               <HStack gap="s">
                 <Icon as={LuRotateCw} boxSize="16px" />
                 <Box as="span">{t("ranking-rerun")}</Box>
               </HStack>
-            </CCTerraButton>
+            </MeedButton>
             {generatedLabel && (
               <BodySmall color="content.tertiary">
                 {t("ranking-generated-at", { when: generatedLabel })}

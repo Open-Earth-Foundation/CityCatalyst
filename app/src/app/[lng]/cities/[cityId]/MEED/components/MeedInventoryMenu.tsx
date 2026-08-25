@@ -9,6 +9,7 @@ import {
   MenuTrigger,
 } from "@/components/ui/menu";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
+import { FOCUS_RING } from "../focusRing";
 
 export interface MeedInventoryMenuProps {
   inventories: YearSelectorItem[];
@@ -53,11 +54,7 @@ export function MeedInventoryMenu({
           color="content.secondary"
           cursor="pointer"
           _hover={{ borderColor: "content.link", color: "content.link" }}
-          _focusVisible={{
-            outline: "2px solid",
-            outlineColor: "content.link",
-            outlineOffset: "2px",
-          }}
+          _focusVisible={FOCUS_RING}
         >
           <Icon as={LuCalendar} boxSize="14px" />
           <Box

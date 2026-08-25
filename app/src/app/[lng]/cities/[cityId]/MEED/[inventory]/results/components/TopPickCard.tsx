@@ -4,7 +4,7 @@ import { Box, Card, HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuArrowRight, LuBookmark } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { Overline } from "@/components/package/Texts/Overline";
@@ -12,6 +12,7 @@ import { Caption } from "@/components/package/Texts/Caption";
 import { MeedInfoTip } from "../../../components/MeedInfoTip";
 import { ReductionBar } from "./ReductionBar";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
+import { FOCUS_RING } from "../../../focusRing";
 import {
   actionDescription,
   actionName,
@@ -148,21 +149,17 @@ export function TopPickCard({
           </VStack>
         </Box>
 
-        <CCTerraButton
+        <MeedButton
           variant="text"
           px="0"
           minW="auto"
           justifyContent="flex-start"
           rightIcon={<Icon as={LuArrowRight} boxSize="14px" />}
           onClick={() => onOpenDetail(action)}
-          _focusVisible={{
-            outline: "2px solid",
-            outlineColor: "content.link",
-            outlineOffset: "2px",
-          }}
+          _focusVisible={FOCUS_RING}
         >
           {t("view-details")}
-        </CCTerraButton>
+        </MeedButton>
       </Card.Body>
     </Card.Root>
   );

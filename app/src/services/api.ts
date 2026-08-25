@@ -90,6 +90,10 @@ import type {
   OCCityDataResponse,
   ProjectBoundary,
 } from "@/util/types";
+import type {
+  MeedRankRouteResponse,
+  MeedRunRankingRequest,
+} from "@/util/types/meed";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -138,6 +142,7 @@ export const api = createApi({
     "PersonalAccessToken",
     "AdminModules",
     "Meed",
+    "MeedRanking",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
   ],
@@ -246,6 +251,35 @@ export const api = createApi({
           `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
         transformResponse: (response: { data: unknown }) => response.data,
         providesTags: ["Meed"],
+      }),
+      /**
+       * The stored ranking for one inventory. Separate cache tag from "Meed"
+       * so running a ranking does not invalidate the catalog and reference
+       * data, which do not change when it runs.
+       */
+      getMeedRanking: builder.query<
+        MeedRankRouteResponse,
+        { cityId: string; inventoryId: string }
+      >({
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/meed/rank?inventoryId=${encodeURIComponent(inventoryId)}`,
+        transformResponse: (response: { data: MeedRankRouteResponse }) =>
+          response.data,
+        providesTags: ["MeedRanking"],
+      }),
+      /** Runs the ranking, stores it, and returns the same envelope as the GET. */
+      runMeedRanking: builder.mutation<
+        MeedRankRouteResponse,
+        { cityId: string; body: MeedRunRankingRequest }
+      >({
+        query: ({ cityId, body }) => ({
+          url: `city/${cityId}/meed/rank`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: { data: MeedRankRouteResponse }) =>
+          response.data,
+        invalidatesTags: ["MeedRanking"],
       }),
       getEmissionsForecast: builder.query<EmissionsForecastData, string>({
         query: (inventoryId: string) =>
@@ -2331,6 +2365,8 @@ export const {
   useGetMeedPolicyScoresQuery,
   useGetMeedFinanceFeasibilityQuery,
   useGetMeedFinanceLinkQuery,
+  useGetMeedRankingQuery,
+  useRunMeedRankingMutation,
   useGetEmissionsForecastQuery,
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,

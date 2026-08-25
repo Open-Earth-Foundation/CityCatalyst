@@ -10,6 +10,7 @@ import type { MeedStep } from "../steps";
 import type { MeedSectionState } from "../meedStatus";
 import { MeedStatusTag, STATUS_LABEL_KEY, STATUS_TONE } from "./MeedStatusTag";
 import { MeedMeter } from "./MeedMeter";
+import { FOCUS_RING } from "../focusRing";
 
 export interface MeedSectionCardProps {
   step: MeedStep;
@@ -57,11 +58,7 @@ export function MeedSectionCard({
       borderColor="border.overlay"
       transition="border-color 0.15s, box-shadow 0.15s"
       _hover={{ borderColor: "content.link", boxShadow: "2dp" }}
-      _focusWithin={{
-        outline: "2px solid",
-        outlineColor: "content.link",
-        outlineOffset: "2px",
-      }}
+      _focusWithin={FOCUS_RING}
     >
       <NextLink href={href}>
         <Card.Body display="flex" flexDirection="column" gap="s" h="full">

@@ -95,6 +95,11 @@ export function setMeedConfirmedExclusions(
   actionIds: string[],
 ): void {
   write(key(inventoryId, "exclusions"), actionIds);
+  // Every other writer here announces itself; this one staying silent is how a
+  // future reader of the exclusions would miss updates made in the same tab.
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event(MEED_STATE_CHANGED_EVENT));
+  }
 }
 
 export function getMeedStepState(

@@ -3,6 +3,7 @@ import { HStack, Icon, Link as ChakraLink } from "@chakra-ui/react";
 import NextLink from "next/link";
 import { LuChevronRight } from "react-icons/lu";
 import { Overline } from "@/components/package/Texts/Overline";
+import { FOCUS_RING } from "../focusRing";
 
 export interface MeedCrumb {
   label: string;
@@ -37,11 +38,7 @@ export function MeedBreadcrumb({ crumbs }: { crumbs: MeedCrumb[] }) {
                 color="content.tertiary"
                 textDecoration="underline"
                 _hover={{ color: "content.link" }}
-                _focusVisible={{
-                  outline: "2px solid",
-                  outlineColor: "content.link",
-                  outlineOffset: "2px",
-                }}
+                _focusVisible={FOCUS_RING}
               >
                 <NextLink href={crumb.href}>
                   <Overline>{crumb.label}</Overline>

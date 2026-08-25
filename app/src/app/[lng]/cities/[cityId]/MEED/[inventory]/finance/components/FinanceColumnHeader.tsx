@@ -68,7 +68,7 @@ export function FinanceColumnHeader({
             alignItems="center"
             gap="xs"
             cursor="pointer"
-            borderRadius="4px"
+            borderRadius="minimal"
             px="xs"
             _hover={{ "& *": { color: "content.link" } }}
             _focusVisible={FOCUS_RING}

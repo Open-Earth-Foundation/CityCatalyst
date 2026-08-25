@@ -16,7 +16,7 @@ export function ReductionBar({ level }: { level: number }) {
           key={i}
           flex="1"
           h="6px"
-          borderRadius="3px"
+          borderRadius="full"
           bg={i < level ? color : "background.neutral"}
         />
       ))}

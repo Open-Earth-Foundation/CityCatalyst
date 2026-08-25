@@ -4,11 +4,12 @@ import { Box, Card, HStack, Icon, IconButton, Table } from "@chakra-ui/react";
 import { LuDownload, LuSquareArrowOutUpRight } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedRankedActionResult } from "@/util/types/meed";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
 import { ReductionBar } from "./ReductionBar";
 import { SelectActionCheckbox } from "./SelectActionCheckbox";
+import { FOCUS_RING } from "../../../focusRing";
 import {
   actionName,
   sectorLabel,
@@ -65,19 +66,15 @@ export function RankingTable({
           </BodySmall>
         </Box>
         {onExport && (
-          <CCTerraButton
+          <MeedButton
             variant="outlined"
             flexShrink={0}
             leftIcon={<Icon as={LuDownload} boxSize="16px" />}
             onClick={onExport}
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "2px",
-            }}
+            _focusVisible={FOCUS_RING}
           >
             {t("export-csv")}
-          </CCTerraButton>
+          </MeedButton>
         )}
       </HStack>
       <Table.Root size="md">
@@ -146,11 +143,7 @@ export function RankingTable({
                     size="2xs"
                     variant="ghost"
                     onClick={() => onSelect(action)}
-                    _focusVisible={{
-                      outline: "2px solid",
-                      outlineColor: "content.link",
-                      outlineOffset: "2px",
-                    }}
+                    _focusVisible={FOCUS_RING}
                   >
                     <Icon as={LuSquareArrowOutUpRight} color="content.link" />
                   </IconButton>

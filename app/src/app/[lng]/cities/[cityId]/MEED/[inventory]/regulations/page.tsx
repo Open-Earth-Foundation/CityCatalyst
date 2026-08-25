@@ -24,8 +24,13 @@ import { MeedStatusTag, type MeedTone } from "../../components/MeedStatusTag";
 import { setMeedStepState } from "../../meedLocalState";
 import { useMeedSectionStates } from "../../meedStatus";
 import { useMeedRanking } from "../../useMeedRanking";
+import { MeedCardSkeleton } from "../../components/MeedSkeletons";
+import { MeedErrorCard } from "../../components/MeedErrorCard";
 import { buildActionIndex } from "../results/components/actionCatalog";
-import { deriveLegalScreening, type LegalScreenedAction } from "./legalScreening";
+import {
+  deriveLegalScreening,
+  type LegalScreenedAction,
+} from "./legalScreening";
 
 /** Screening verdict for an action that did not pass cleanly. */
 type ScreenedStatus = "blocked" | "flagged";
@@ -140,7 +145,12 @@ function RegulationsContent({
   // ranking. `useMeedRanking` is the module's single read point for that.
   const { states } = useMeedSectionStates(inventoryId);
   const { ranking, isReady } = useMeedRanking(inventoryId, states);
-  const { data: catalog } = useGetMeedActionsQuery({ cityId });
+  const {
+    data: catalog,
+    isLoading: isCatalogLoading,
+    isError: isCatalogError,
+    refetch: refetchCatalog,
+  } = useGetMeedActionsQuery({ cityId });
 
   const screening = useMemo(
     () => deriveLegalScreening(ranking?.result, buildActionIndex(catalog)),
@@ -189,7 +199,22 @@ function RegulationsContent({
         </HStack>
       </VStack>
 
-      {!hasScreening ? (
+      {/*
+        Until the ranking has been read and the catalog has arrived we know
+        nothing — showing the "no screening yet" card in the meantime tells a
+        user who *does* have a ranking the opposite of the truth, then swaps it
+        out a frame later.
+      */}
+      {!isReady || isCatalogLoading ? (
+        <MeedCardSkeleton lines={6} />
+      ) : isCatalogError ? (
+        <MeedErrorCard
+          title={t("error-title")}
+          body={t("error-body")}
+          retryLabel={t("error-retry")}
+          onRetry={() => refetchCatalog()}
+        />
+      ) : !hasScreening ? (
         <Card.Root borderColor="border.neutral">
           <Card.Body>
             <VStack gap="m" py="xxl" px="l" textAlign="center">

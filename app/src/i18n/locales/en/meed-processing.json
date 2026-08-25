@@ -13,6 +13,12 @@
   "stage-alignment-desc": "Matching actions to national, regional and local frameworks and strategic preferences",
   "stage-feasibility": "Feasibility analysis",
   "stage-feasibility-desc": "Assessing socioeconomic context and regulations and laws",
+  "header-error": "Ranking could not be generated",
+  "error-sub": "Nothing has been saved — your inputs are untouched.",
+  "error-stopped": "stopped",
+  "error-detail": "The ranking service did not return a result. This is usually temporary; try again, or go back to the pre-flight check to review your inputs first.",
+  "error-retry": "Try again",
+  "error-back": "Back to pre-flight check",
   "footer-note": "Results will be ready shortly!",
   "cancel": "Cancel and go back"
 }

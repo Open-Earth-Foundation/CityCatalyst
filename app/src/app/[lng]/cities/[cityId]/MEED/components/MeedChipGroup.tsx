@@ -1,5 +1,6 @@
 "use client";
 import { Checkbox, HStack } from "@chakra-ui/react";
+import { FOCUS_RING } from "../focusRing";
 
 export interface MeedChipOption {
   value: string;
@@ -68,11 +69,7 @@ export function MeedChipGroup({
             borderColor={isSelected ? activeBorder : "border.neutral"}
             color={isSelected ? activeColor : "content.secondary"}
             _hover={{ borderColor: activeBorder }}
-            _focusWithin={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "2px",
-            }}
+            _focusWithin={FOCUS_RING}
           >
             <Checkbox.HiddenInput />
             <Checkbox.Label

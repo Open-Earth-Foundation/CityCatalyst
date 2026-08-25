@@ -1,4 +1,7 @@
 {
+  "error-title": "Legal screening could not load",
+  "error-body": "The action catalog did not load, so blocked actions cannot be named. This is usually temporary.",
+  "error-retry": "Try again",
   "intro": "Every candidate action is checked against the laws that apply to your municipality. Actions your city lacks the legal authority to implement independently are excluded from the ranking before scoring begins.",
   "feasibility-note": "Legal verdict shapes 34% of the feasibility score · feasibility shapes 23% of the ranking",
   "precondition-title": "Legal screening runs when your ranking is generated",

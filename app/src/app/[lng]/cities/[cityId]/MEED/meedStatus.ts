@@ -5,7 +5,7 @@ import {
   MEED_STATE_CHANGED_EVENT,
   type MeedStepState,
 } from "./meedLocalState";
-import { MEED_WIZARD_STEPS } from "./steps";
+import { MEED_ALL_SECTIONS, MEED_WIZARD_STEPS } from "./steps";
 
 /**
  * Four-state model for a wizard section.
@@ -16,10 +16,7 @@ import { MEED_WIZARD_STEPS } from "./steps";
  * user still has to acknowledge them — which is what `confirmed` records.
  */
 export type MeedSectionStatus =
-  | "not-started"
-  | "in-progress"
-  | "needs-review"
-  | "complete";
+  "not-started" | "in-progress" | "needs-review" | "complete";
 
 export function statusOf(state: MeedStepState): MeedSectionStatus {
   const progress = state.progress ?? 0;
@@ -38,7 +35,9 @@ export type MeedSectionStates = Record<string, MeedSectionState>;
 
 function readAll(inventoryId: string): MeedSectionStates {
   const out: MeedSectionStates = {};
-  for (const step of MEED_WIZARD_STEPS) {
+  // Output areas are read too: the results cards quote the detail line those
+  // screens wrote, even though they are no longer steps in the wizard.
+  for (const step of MEED_ALL_SECTIONS) {
     const state = getMeedStepState(inventoryId, step.key);
     out[step.key] = { ...state, key: step.key, status: statusOf(state) };
   }

@@ -69,7 +69,9 @@ export function readRankingWeights(
   if (!w) return fallback;
   const { impact, alignment, feasibility } = w;
   const values = [impact, alignment, feasibility];
-  if (!values.every((v) => typeof v === "number" && Number.isFinite(v) && v > 0))
+  if (
+    !values.every((v) => typeof v === "number" && Number.isFinite(v) && v > 0)
+  )
     return fallback;
   const total = values.reduce((a, b) => a + b, 0);
   if (total <= 0) return fallback;

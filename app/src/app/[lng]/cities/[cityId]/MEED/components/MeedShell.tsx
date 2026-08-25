@@ -1,14 +1,15 @@
 "use client";
 import React from "react";
-import { Box, HStack, Icon } from "@chakra-ui/react";
+import { Box, HStack, Icon, VStack } from "@chakra-ui/react";
 import { LuArrowLeft, LuArrowRight } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import { formatEmissions } from "@/util/helpers";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "./MeedButton";
 import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import { BodyLarge } from "@/components/package/Texts/Body";
+import { Caption } from "@/components/package/Texts/Caption";
 import type { YearSelectorItem } from "@/components/shared/YearSelector";
 import { MEED_WIZARD_STEPS, getMeedPath } from "../steps";
 import { useMeedSectionStates } from "../meedStatus";
@@ -138,6 +139,22 @@ export function MeedShell({
    * is exactly the needs-review → complete transition. It is idempotent, and
    * `setMeedStepState` never lets `confirmed` go back to false.
    */
+  /**
+   * Steps the flow must not move past until they are done.
+   *
+   * The footer used to advance unconditionally, so a user could walk the whole
+   * wizard having entered nothing and only discover at pre-flight that the
+   * ranking could not run. These are the same two inputs the readiness gate
+   * scores — the ones the city actually supplies.
+   */
+  const REQUIRED_TO_ADVANCE = ["emissions", "preferences"];
+  const currentStatus = step ? states[step.key]?.status : undefined;
+  const isStepIncomplete =
+    !!step &&
+    REQUIRED_TO_ADVANCE.includes(step.key) &&
+    currentStatus !== "complete" &&
+    currentStatus !== "needs-review";
+
   const goForward = (href: string) => {
     if (step) setMeedStepState(inventoryId, step.key, { confirmed: true });
     router.push(href);
@@ -171,16 +188,23 @@ export function MeedShell({
         t={t}
       />
 
-      <MeedStepper
-        activeIndex={stepIndex}
-        states={states}
-        lng={lng}
-        cityId={cityId}
-        inventoryId={inventoryId}
-        t={t}
-        from={ret.isExplicit ? ret.target : undefined}
-        disabled={stepperDisabled}
-      />
+      {/*
+        The stepper is wizard chrome. Results and the read-only output areas are
+        not steps, and rendering a 3-step progress bar with nothing active there
+        implied they sat somewhere in a flow they had already left.
+      */}
+      {step && (
+        <MeedStepper
+          activeIndex={stepIndex}
+          states={states}
+          lng={lng}
+          cityId={cityId}
+          inventoryId={inventoryId}
+          t={t}
+          from={ret.isExplicit ? ret.target : undefined}
+          disabled={stepperDisabled}
+        />
+      )}
 
       <Box
         display="flex"
@@ -223,7 +247,7 @@ export function MeedShell({
              * "Financial feasibility" alone gives no clue which direction it
              * goes or that it is navigation at all.
              */}
-            <CCTerraButton
+            <MeedButton
               variant="outlined"
               minW="auto"
               px="l"
@@ -231,17 +255,29 @@ export function MeedShell({
               onClick={() => router.push(previousHref)}
             >
               {previousLabel}
-            </CCTerraButton>
+            </MeedButton>
 
             {forwardAction && (
-              <CCTerraButton
-                minW="auto"
-                px="l"
-                rightIcon={<Icon as={LuArrowRight} boxSize="16px" />}
-                onClick={() => goForward(forwardAction.href)}
-              >
-                {forwardAction.label}
-              </CCTerraButton>
+              <VStack alignItems="flex-end" gap="xs">
+                <MeedButton
+                  minW="auto"
+                  px="l"
+                  rightIcon={<Icon as={LuArrowRight} boxSize="16px" />}
+                  disabled={isStepIncomplete}
+                  aria-describedby={
+                    isStepIncomplete ? "meed-step-block" : undefined
+                  }
+                  onClick={() => goForward(forwardAction.href)}
+                >
+                  {forwardAction.label}
+                </MeedButton>
+                {/* The gate explains itself beside the control it disables. */}
+                {isStepIncomplete && (
+                  <Caption id="meed-step-block" color="content.tertiary">
+                    {t("step-blocked")}
+                  </Caption>
+                )}
+              </VStack>
             )}
           </HStack>
         )}

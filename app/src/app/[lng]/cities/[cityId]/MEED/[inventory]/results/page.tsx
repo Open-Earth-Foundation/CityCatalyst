@@ -1,7 +1,7 @@
 "use client";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Tabs, VStack } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
+import { VStack } from "@chakra-ui/react";
 import { useTranslation } from "@/i18n/client";
 import { api, useGetMeedActionsQuery } from "@/services/api";
 import { formatEmissions } from "@/util/helpers";
@@ -19,7 +19,6 @@ import { ResultsHeader } from "./components/ResultsHeader";
 import { TopPicks } from "./components/TopPicks";
 import { CoBenefitStrip } from "./components/CoBenefitStrip";
 import { ContextCardGrid } from "./components/ContextCardGrid";
-import { ContextBreakdown } from "./components/ContextBreakdown";
 import { NextStepsBanner } from "./components/NextStepsBanner";
 import { buildActionIndex } from "./components/actionCatalog";
 import { buildRankingCsv } from "./components/rankingCsv";
@@ -33,34 +32,14 @@ import {
 } from "./components/rankingFacts";
 import { PILLAR_WEIGHTS } from "../../scoringWeights";
 import { MeedCardSkeleton } from "../../components/MeedSkeletons";
-
-const TAB_RESULTS = "results";
-const TAB_CONTEXT = "context";
-
-const TAB_TRIGGER_STYLES = {
-  _selected: {
-    color: "content.link",
-    borderColor: "content.link",
-    borderBottomWidth: "2px",
-    fontWeight: "bold",
-    borderRadius: "0",
-    boxShadow: "none",
-  },
-  _focusVisible: {
-    outline: "2px solid",
-    outlineColor: "content.link",
-    outlineOffset: "2px",
-  },
-};
+import { MeedErrorCard } from "../../components/MeedErrorCard";
 
 export default function Page(props: {
   params: Promise<{ lng: string; cityId: string; inventory: string }>;
 }) {
   const { lng, cityId, inventory: inventoryId } = React.use(props.params);
   const { t } = useTranslation(lng, "meed-results");
-  const { t: tMeed } = useTranslation(lng, "meed");
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   // Read through the shared hook so this screen and the landing screen can
   // never disagree about whether a ranking exists.
@@ -69,6 +48,7 @@ export default function Page(props: {
     ranking: stored,
     isReady: rankingReady,
     isStale,
+    isError: rankingError,
   } = useMeedRanking(inventoryId, states);
   const ranking: MeedPrioritizeCityResult | null = stored?.result ?? null;
 
@@ -97,14 +77,8 @@ export default function Page(props: {
     );
   }, []);
 
-  // Returning from an input screen lands on the tab the user left from.
-  const [tab, setTab] = useState<string>(
-    searchParams.get("tab") === TAB_CONTEXT ? TAB_CONTEXT : TAB_RESULTS,
-  );
-
   const rankingRef = useRef<HTMLDivElement | null>(null);
   const showFullRanking = useCallback(() => {
-    setTab(TAB_RESULTS);
     rankingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
@@ -166,9 +140,9 @@ export default function Page(props: {
     states,
   };
 
-  // Every context deep link comes back to this screen's context tab.
+  // Rationale deep links come back here, not into the wizard.
   const hrefFor = (segment: string) =>
-    stepHref(lng, cityId, inventoryId, segment, "results", TAB_CONTEXT);
+    stepHref(lng, cityId, inventoryId, segment, "results");
 
   return (
     <MeedShell
@@ -182,6 +156,16 @@ export default function Page(props: {
       <>
         {!isReady ? (
           <MeedCardSkeleton lines={6} />
+        ) : rankingError ? (
+          // A failed fetch is not "no ranking yet" — telling the user to go
+          // generate one they may already have is the wrong instruction.
+          <MeedErrorCard
+            variant="panel"
+            title={t("error-title")}
+            body={t("error-body")}
+            retryLabel={t("error-retry")}
+            onRetry={() => window.location.reload()}
+          />
         ) : ranked.length === 0 ? (
           <EmptyState
             title={t("empty-title")}
@@ -203,61 +187,39 @@ export default function Page(props: {
               t={t}
             />
 
-            <Tabs.Root
-              value={tab}
-              onValueChange={(details) => setTab(details.value)}
-              variant="line"
-            >
-              <Tabs.List mb="l" borderColor="border.overlay">
-                <Tabs.Trigger value={TAB_RESULTS} {...TAB_TRIGGER_STYLES}>
-                  {t("tab-results")}
-                </Tabs.Trigger>
-                <Tabs.Trigger value={TAB_CONTEXT} {...TAB_TRIGGER_STYLES}>
-                  {t("tab-context")}
-                </Tabs.Trigger>
-              </Tabs.List>
-
-              <Tabs.Content value={TAB_RESULTS}>
-                <VStack alignItems="stretch" gap="xl">
-                  <TopPicks
-                    actions={topPicks}
-                    index={index}
-                    t={t}
-                    isCatalogLoading={isCatalogLoading}
-                    selectedIds={selectedIds}
-                    onToggleSelect={toggleSelect}
-                    onOpenDetail={setSelected}
-                    onBrowseFullRanking={showFullRanking}
-                  />
-                  <CoBenefitStrip
-                    benefits={coBenefits}
-                    total={topPicks.length}
-                    t={t}
-                  />
-                  <ContextCardGrid
-                    facts={facts}
-                    t={t}
-                    hrefFor={hrefFor}
-                    onShowFullRanking={showFullRanking}
-                  />
-                  <NextStepsBanner
-                    selectedCount={selectedIds.length}
-                    onBrowseFullRanking={showFullRanking}
-                    t={t}
-                  />
-                </VStack>
-              </Tabs.Content>
-
-              <Tabs.Content value={TAB_CONTEXT}>
-                <ContextBreakdown
-                  facts={facts}
-                  backing={backing}
-                  t={t}
-                  tMeed={tMeed}
-                  hrefFor={hrefFor}
-                />
-              </Tabs.Content>
-            </Tabs.Root>
+            {/*
+              One scroll, in the order the user reasons in: what to do, what it
+              also buys you, and only then why. The rationale areas used to sit
+              behind a "Context" tab, which put the explanation of the ranking
+              somewhere most users never opened.
+            */}
+            <TopPicks
+              actions={topPicks}
+              index={index}
+              t={t}
+              isCatalogLoading={isCatalogLoading}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              onOpenDetail={setSelected}
+              onBrowseFullRanking={showFullRanking}
+            />
+            <CoBenefitStrip
+              benefits={coBenefits}
+              total={topPicks.length}
+              t={t}
+            />
+            <ContextCardGrid
+              facts={facts}
+              backing={backing}
+              t={t}
+              hrefFor={hrefFor}
+              onShowFullRanking={showFullRanking}
+            />
+            <NextStepsBanner
+              selectedCount={selectedIds.length}
+              onBrowseFullRanking={showFullRanking}
+              t={t}
+            />
 
             <FullRanking
               ref={rankingRef}

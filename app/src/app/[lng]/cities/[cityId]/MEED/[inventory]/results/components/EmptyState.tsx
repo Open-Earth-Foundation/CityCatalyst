@@ -4,7 +4,7 @@ import { Card, Icon, VStack } from "@chakra-ui/react";
 import { LuInbox } from "react-icons/lu";
 import { TitleMedium } from "@/components/package/Texts/Title";
 import { BodyMedium } from "@/components/package/Texts/Body";
-import { CCTerraButton } from "@/components/package/Button/CCTerraButton";
+import { MeedButton } from "../../../components/MeedButton";
 
 /**
  * Precondition / no-data state for the results screen: shown while no
@@ -31,9 +31,9 @@ export function EmptyState({
             {body}
           </BodyMedium>
           {actionLabel && onAction && (
-            <CCTerraButton mt="m" variant="filled" onClick={onAction}>
+            <MeedButton mt="m" variant="filled" onClick={onAction}>
               {actionLabel}
-            </CCTerraButton>
+            </MeedButton>
           )}
         </VStack>
       </Card.Body>

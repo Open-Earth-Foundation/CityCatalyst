@@ -11,3 +11,13 @@ export const FOCUS_RING = {
   outlineColor: "content.link",
   outlineOffset: "2px",
 } as const;
+
+/**
+ * The same ring for controls sitting on a saturated background, where
+ * `content.link` would disappear into the fill. Same geometry, inverted colour
+ * — the only legitimate reason to deviate from FOCUS_RING.
+ */
+export const FOCUS_RING_INVERSE = {
+  ...FOCUS_RING,
+  outlineColor: "base.light",
+} as const;

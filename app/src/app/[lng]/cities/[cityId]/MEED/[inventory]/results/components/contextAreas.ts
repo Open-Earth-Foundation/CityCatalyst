@@ -17,6 +17,8 @@ import {
 } from "react-icons/lu";
 import type { TFunction } from "i18next";
 import type { MeedSectionStates } from "../../../meedStatus";
+import { MEED_OUTPUT_AREAS } from "../../../steps";
+import type { MeedPolicyBacking } from "./rankingFacts";
 
 export interface MeedContextArea {
   key: string;
@@ -121,7 +123,106 @@ export function contextSummary(
         : (stepSub ?? t("context-summary-none"));
     case "ranking":
       return t("context-summary-ranking", { count: facts.rankedCount });
-    default:
-      return stepSub ?? t("context-summary-none");
+    default: {
+      if (stepSub) return stepSub;
+      // "Not entered yet" is only true of something the city enters. These
+      // areas are produced by the model or the Global API, so saying the user
+      // has not filled them in is both wrong and the input framing this
+      // section exists to drop.
+      const isComputed = MEED_OUTPUT_AREAS.some((a) => a.key === area.key);
+      return t(
+        isComputed ? "context-summary-computed" : "context-summary-none",
+      );
+    }
   }
+}
+
+// ─── Headline indicators ─────────────────────────────────────────────────────
+// Each area leads with one number so the grid can be read at a glance. These
+// were previously buried in a separate breakdown tab; promoting them is the
+// whole point of the summary cards, since a sentence alone does not tell the
+// user whether an area is worth opening.
+
+export interface MeedContextStat {
+  label: string;
+  value: string;
+  sub?: string;
+  tone?: "positive" | "negative";
+}
+
+/** The stats an area can quote, or an empty list when it has none of its own. */
+export function contextStats(
+  area: MeedContextArea,
+  facts: MeedContextFacts,
+  backing: MeedPolicyBacking,
+  t: TFunction,
+): MeedContextStat[] {
+  const unknown = t("stat-unknown");
+  switch (area.key) {
+    case "emissions":
+      return [
+        {
+          label: t("stat-total-emissions"),
+          value: facts.emissionsText ?? unknown,
+        },
+        {
+          label: t("stat-inventory-year"),
+          value: facts.inventoryYear ? String(facts.inventoryYear) : unknown,
+        },
+      ];
+    case "regulations":
+      return [
+        {
+          label: t("stat-excluded"),
+          value:
+            facts.excludedCount !== null
+              ? String(facts.excludedCount)
+              : unknown,
+          sub: t("stat-excluded-sub"),
+          tone: facts.excludedCount ? "negative" : undefined,
+        },
+        {
+          label: t("stat-included"),
+          value: String(facts.rankedCount),
+          sub: t("stat-included-sub"),
+          tone: "positive",
+        },
+      ];
+    case "policy":
+      return [
+        {
+          label: t("stat-strongly-backed"),
+          value: String(backing.strong),
+          sub: t("stat-strongly-backed-sub"),
+        },
+        {
+          label: t("stat-moderate-backing"),
+          value: String(backing.moderate),
+          sub: t("stat-moderate-backing-sub"),
+        },
+      ];
+    case "ranking":
+      return [
+        {
+          label: t("stat-ranked"),
+          value: String(facts.rankedCount),
+        },
+      ];
+    default:
+      return [];
+  }
+}
+
+/**
+ * The single number a summary card leads with, or `null` when the prioritizer
+ * reports none for that area — in which case the card shows the area's status
+ * instead of inventing a figure.
+ */
+export function contextIndicator(
+  area: MeedContextArea,
+  facts: MeedContextFacts,
+  backing: MeedPolicyBacking,
+  t: TFunction,
+): MeedContextStat | null {
+  return contextStats(area, facts, backing, t)[0] ?? null;
 }

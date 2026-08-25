@@ -6,6 +6,7 @@ import type { TFunction } from "i18next";
 import { MEED_WIZARD_STEPS } from "../steps";
 import { stepHref, type MeedReturnTarget } from "../navigation";
 import type { MeedSectionStates, MeedSectionStatus } from "../meedStatus";
+import { FOCUS_RING } from "../focusRing";
 
 export interface MeedStepperProps {
   /** Index into MEED_WIZARD_STEPS, or -1 when on a non-step screen. */
@@ -104,11 +105,7 @@ export function MeedStepper({
                       _hover={
                         disabled ? undefined : { bg: "background.neutral" }
                       }
-                      _focusVisible={{
-                        outline: "2px solid",
-                        outlineColor: "content.link",
-                        outlineOffset: "2px",
-                      }}
+                      _focusVisible={FOCUS_RING}
                     >
                       <Box
                         w="28px"

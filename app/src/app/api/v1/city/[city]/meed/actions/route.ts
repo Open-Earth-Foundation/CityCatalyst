@@ -1,4 +1,5 @@
 import MeedApiService from "@/backend/MeedApiService";
+import { PermissionService } from "@/backend/permissions/PermissionService";
 import { apiHandler } from "@/util/api";
 import { NextResponse } from "next/server";
 
@@ -102,7 +103,10 @@ import { NextResponse } from "next/server";
  *                              methodology:
  *                                type: string
  */
-export const GET = apiHandler(async (_req) => {
+export const GET = apiHandler(async (_req, { session, params }) => {
+  const { city: cityId } = params;
+  await PermissionService.canAccessCity(session, cityId);
+
   const result = await MeedApiService.getActions();
   return NextResponse.json({ data: result });
 });

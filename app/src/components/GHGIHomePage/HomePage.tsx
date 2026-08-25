@@ -21,7 +21,9 @@ import InventoryCalculationTab from "./InventoryCalculationTab";
 import InventoryReportTab from "@/components/GHGI/inventory-result";
 import NotAvailable from "@/components/NotAvailable";
 import { Hero } from "./Hero";
-import { ActionCards } from "./ActionCards";
+import { AddCollaboratorButton } from "./AddCollaboratorButton";
+import DownloadButton from "./DownloadButton";
+import { PublishButton } from "./PublishButton";
 import { InventoryPreferencesCard } from "./InventoryPreferencesCard";
 import { YearSelectorCard } from "@/components/Cards/years-selection-card";
 import { Button } from "@/components/ui/button";
@@ -255,16 +257,6 @@ export default function HomePage({
           <Box display="flex" mx="auto" mt="80px" w="full" maxW="1090px">
             <VStack align="start">
               <InventoryPreferencesCard t={t} isPublic={isPublic} />
-              {!isPublic && (
-                <ActionCards
-                  inventoryId={inventory?.inventoryId}
-                  t={t}
-                  lng={language}
-                  city={city}
-                  inventory={inventory}
-                  organizationId={organization?.organizationId}
-                />
-              )}
             </VStack>
           </Box>
           <Box
@@ -296,28 +288,45 @@ export default function HomePage({
                     >
                       {t("inventories")}
                     </Text>
-                    {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
-                    {userRole !== UserRole.COLLABORATOR &&
-                      userRole !== UserRole.NO_ACCESS && (
-                        <Button
-                          data-testid="add-new-inventory-button"
-                          title={t("add-new-inventory")}
-                          h="48px"
-                          aria-label="activity-button"
-                          fontSize="button.md"
-                          gap="8px"
-                          onClick={() => {
-                            if (isFrozenCheck()) {
-                              return;
-                            }
+                    <Box display="flex" alignItems="center" gap="16px">
+                      <AddCollaboratorButton
+                        lng={language}
+                        organizationId={organization?.organizationId}
+                      />
+                      <DownloadButton
+                        lng={language}
+                        inventoryId={inventory.inventoryId}
+                        city={city}
+                        inventory={inventory}
+                      />
+                      <PublishButton
+                        lng={language}
+                        inventoryId={inventory.inventoryId}
+                        inventory={inventory}
+                      />
+                      {/* Only show add inventory button for ORG_ADMIN and PROJECT_ADMIN */}
+                      {userRole !== UserRole.COLLABORATOR &&
+                        userRole !== UserRole.NO_ACCESS && (
+                          <Button
+                            data-testid="add-new-inventory-button"
+                            title={t("add-new-inventory")}
+                            h="48px"
+                            aria-label="activity-button"
+                            fontSize="button.md"
+                            gap="8px"
+                            onClick={() => {
+                              if (isFrozenCheck()) {
+                                return;
+                              }
 
-                            redirectToOnboarding();
-                          }}
-                        >
-                          <Icon as={BsPlus} h="16px" w="16px" />
-                          {t("add-new-inventory")}
-                        </Button>
-                      )}
+                              redirectToOnboarding();
+                            }}
+                          >
+                            <Icon as={BsPlus} h="16px" w="16px" />
+                            {t("add-new-inventory")}
+                          </Button>
+                        )}
+                    </Box>
                   </Box>
                   <YearSelectorCard
                     cityId={inventory.cityId as string}

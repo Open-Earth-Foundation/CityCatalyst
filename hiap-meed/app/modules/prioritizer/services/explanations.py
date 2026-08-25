@@ -783,23 +783,20 @@ def _localized_legal_description(
     key: str,
     language: str,
 ) -> str | None:
-    """Select an upstream legal description in the requested language."""
+    """Select a nested legal description in the requested language."""
     component = _feasibility_component(feasibility_evidence, component_name)
+    raw_localized = component.get(key)
+    if not isinstance(raw_localized, dict):
+        return None
     localized = {
-        "es": str(component.get(f"{key}_es") or ""),
+        str(language_code): text
+        for language_code, text in raw_localized.items()
+        if isinstance(text, str)
     }
-    fallback = _clean_optional_string(
-        _feasibility_component_value(
-            feasibility_evidence,
-            component_name,
-            key,
-            key,
-        )
-    )
     return localized_source_value(
         language=language,
         localized=localized,
-        fallback=fallback,
+        fallback=localized.get("en"),
     )
 
 

@@ -55,3 +55,18 @@ GHGI registers three durable identities through the shared service:
 | `inventory_ocr` | `pdf_ocr_job` / `PdfOcrJob.id` | After the OCR job is `succeeded` with result digest, page count, and stored Markdown | `true` |
 
 `PdfOcrJob.id` is the stable OCR-result identity across retries. A new uploaded source creates a new imported-file row and a new OCR job, while repeated registration of an existing identity remains idempotent. Catalog failures are logged and retried from normal status polling or the OCR cron without rerunning import extraction or OCR. Inventory and city deletion withdraws active GHGI rows before the owning records are removed.
+
+## Legacy HIAP producer mapping (CC-638)
+
+Legacy HIAP remains authoritative in its existing CityCatalyst tables. The adapter registers only durable, reusable pointers after the corresponding write boundary completes.
+
+| Catalog kind | Source type / identity | Registration boundary | Version / withdrawal |
+|---|---|---|---|
+| `hiap_ranking` | `hiap_ranking` / `HighImpactActionRanking.id + ranked-content-digest` | Ranking status is `SUCCESS` and ranked rows exist | A changed persisted result gets a new source identity; older versions are superseded |
+| `hiap_selection` | `hiap_ranked_selection` / `rankingId + actionId` | Ranked selection commit completes | One row per selected action; stale selections are withdrawn |
+| `hiap_selection` | `hiap_unranked_selection` / `inventoryId + actionType + actionId` | Unranked selection commit completes | One row per selected action; stale selections are withdrawn |
+| `hiap_action_plan` | `action_plan` / `ActionPlan.id + content-digest` | Action plan row is created or updated | A changed upsert gets a new catalog ID and supersedes the previous version |
+
+Selection identities use logical action IDs rather than language-specific row UUIDs because legacy HIAP mirrors ranked selection flags across languages. The catalog stores scope, source identity, digest, and small provenance labels; it does not copy ranking, selection, or plan content.
+
+Action-plan deletion withdraws all active versions before the source row is removed. Inventory and city deletion withdraw all active HIAP rows before the owning records are removed. Failed, pending, incomplete, or temporary HIAP results are never registered. The HIAP cron backfills successful rankings and persisted action plans that are missing their current active catalog entry, so a transient catalog failure can be retried on a later run. HIAP-MEED uses a separate adapter and is intentionally not covered by CC-638.

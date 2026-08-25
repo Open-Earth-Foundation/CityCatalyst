@@ -310,6 +310,11 @@ export interface GetUserCityInvitesResponse {
 export interface AcceptInviteResponse {
   success: boolean;
   error?: string;
+  cities?: Array<{
+    cityId: string;
+    name: string | null;
+    countryLocode: string | null;
+  }>;
 }
 
 export interface AcceptInviteRequest {

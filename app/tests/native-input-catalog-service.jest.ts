@@ -25,6 +25,7 @@ const mockDb = {
 };
 
 jest.unstable_mockModule("@/models", () => ({ db: mockDb }));
+jest.mock("@/models", () => ({ db: mockDb }));
 
 let registerNativeInput: typeof import("@/backend/NativeInputCatalogService").registerNativeInput;
 let supersedeNativeInput: typeof import("@/backend/NativeInputCatalogService").supersedeNativeInput;

@@ -256,7 +256,8 @@ jobs:
             "NEXTAUTH_URL=https://citycatalyst-test.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" \
             "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" \
-            "HIAP_API_URL=http://hiap-service-dev" \
+            "HIAP_API_URL=http://hiap-service-test" \
+            "HIAP_MEED_API_URL=http://hiap-meed-service-test" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \

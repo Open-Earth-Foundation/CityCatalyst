@@ -327,6 +327,8 @@ erDiagram
         string doc_relevance
         string signal_summary
         string evidence_text
+        string match_type
+        string match_reason
         int page
         string release_id "FK"
         datetime created_at

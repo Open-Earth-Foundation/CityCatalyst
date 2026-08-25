@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.pool import StaticPool
 
 from app.db.cnb import CnbBase
-from app.models.concept_note_runs import ConceptNoteRenameRequest
+from app.models.cnb.concept_note_runs import ConceptNoteRenameRequest
 from app.models.db.cnb_reference import CnbFundedProject, CnbFunder  # noqa: F401
 from app.models.db.cnb_workspace import (
     ConceptNoteChapter,

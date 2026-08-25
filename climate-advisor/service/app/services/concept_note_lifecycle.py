@@ -12,7 +12,7 @@ from uuid import UUID, uuid4
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.context_bundle import ConceptNoteContextBundle
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
     ConceptNoteRenameRequest,
     ConceptNoteRunResponse,
 )

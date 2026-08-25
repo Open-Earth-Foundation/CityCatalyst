@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from app.db.session import get_session_factory
-from app.models.concept_note_markdown import (
+from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteSourceFormat,
     ConceptNoteUploadCreateRequest,

@@ -501,7 +501,8 @@ uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --rel
 All non-secret LLM settings are centralized in `llm_config.yaml`, including the
 orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
-CNB source reader/synthesizer roles and partition limits.
+CNB source reader/synthesizer roles, chapter drafter, and partition limits. The
+chapter drafter uses GPT-5.6 Terra with medium reasoning.
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -614,16 +615,23 @@ contract lives in
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
 Operationally:
 
-- A new run becomes `thin` with `source_documents` missing when no source is
-  ready; later uploads rebuild it as `grounded`. PDFs remain page-cited and
-  native Markdown remains anchor-cited. Optional GHGI/HIAP failures do not block
-  readiness, stale builds cannot win, and chat keeps the last completed bundle
-  during rebuilds. The reconciler marks builds older than one hour retryable.
+- A new run records `document_grounding: none` when no uploaded source is ready;
+  later uploads rebuild it as `uploaded_evidence`. `available_context` reports
+  city, project, GHGI, CCRA, HIAP, and uploaded-document presence independently.
+  PDFs remain page-cited and native Markdown remains anchor-cited. Optional
+  GHGI/HIAP failures do not block readiness, stale builds cannot win, and chat
+  keeps the last completed bundle during rebuilds. Unchanged source analyses are
+  reused only while their upload digest and analysis-contract version match, so
+  an incremental rebuild analyzes only new or changed documents. The reconciler
+  marks builds older than one hour retryable.
 - `POST /v1/concept-notes/{run_id}/context-bundle/retry` and its CityCatalyst
   proxy rerun bundle assembly without rerunning OCR.
 - Eligible Concept Note chat turns receive compact summaries and the read-only,
   single-document `concept_note.sources.query` capability. Raw Markdown, PDFs,
   storage keys, credentials, and derived chunks are not persisted in the bundle.
+- Chapter drafting reserves H1 for the final document title and generates each
+  template chapter at H2. A separate reconciler marks drafting leases left
+  `running` for more than one hour as retryable.
 
 Run the focused contract test with:
 

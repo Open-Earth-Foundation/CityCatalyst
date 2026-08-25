@@ -264,8 +264,7 @@ export function DraftTab({
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
-  const isThinContext =
-    isReady && (bundle.contextMode === "thin" || bundle.readySources === 0);
+  const hasNoUploadedEvidence = isReady && bundle.documentGrounding === "none";
   const draftStarted = Boolean(draft && draft.status !== "not_started");
   const showDraftSetup = !draftStarted || draft?.status === "failed";
   const activeChapterTitle = currentChapter(draft);
@@ -296,9 +295,9 @@ export function DraftTab({
   let status: DraftStatusPresentation = {
     background: "background.neutral",
     border: "content.link",
-    description: t("thin-context-starting-description"),
+    description: t("context-starting-description"),
     icon: LuDatabase,
-    title: t("thin-context-starting-title"),
+    title: t("context-starting-title"),
   };
 
   if (isBuilding) {
@@ -317,13 +316,13 @@ export function DraftTab({
       icon: LuCircleAlert,
       title: t("context-needs-attention"),
     };
-  } else if (isThinContext) {
+  } else if (hasNoUploadedEvidence) {
     status = {
       background: "background.neutral",
       border: "content.link",
-      description: t("thin-context-draft-description"),
+      description: t("no-uploaded-evidence-draft-description"),
       icon: LuDatabase,
-      title: t("thin-context-ready"),
+      title: t("uploaded-evidence-none"),
     };
   } else if (isReady) {
     status = {

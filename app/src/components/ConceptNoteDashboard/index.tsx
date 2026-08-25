@@ -51,6 +51,7 @@ import {
   getRunProgressPercent,
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
+  hasPrioritizedHiapActions,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -115,7 +116,7 @@ export function ConceptNoteDashboard({
     : t("no-inventory");
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
   const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
-  const hiapConnected = Boolean(cityDashboard?.widgets.hiap);
+  const hiapConnected = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
   const exportBundle = exportRun
     ? getConceptNoteBundleProgress(exportRun.progress_summary)
     : null;
@@ -313,7 +314,9 @@ export function ConceptNoteDashboard({
                     t("not-available")
                   )
                 }
-                detail={t("hiap-detail")}
+                detail={t(
+                  hiapConnected ? "hiap-detail" : "hiap-impact-missing-summary",
+                )}
               />
               <ContextTile
                 icon={LuFolderOpen}
@@ -464,9 +467,8 @@ export function ConceptNoteDashboard({
       {exportRun && (
         <ExportDialog
           draft={exportDraft ?? null}
-          hasGroundedSources={
-            exportBundle?.contextMode === "grounded" &&
-            exportBundle.readySources > 0
+          hasUploadedEvidence={
+            exportBundle?.availableContext.uploadedDocuments ?? false
           }
           lng={lng}
           noteName={exportRun.name}

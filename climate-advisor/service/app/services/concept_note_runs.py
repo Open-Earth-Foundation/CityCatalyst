@@ -9,7 +9,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.middleware.request_context import get_request_id
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
     ConceptNoteRunListItemResponse,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
@@ -75,12 +75,12 @@ class ConceptNoteRunService:
         # Commit before the background build opens an independent session.
         await self.session.commit()
 
-        # Only a newly created run needs its initial thin-context build.
+        # Only a newly created run needs its initial context build.
         if not response.created:
             return response
         if context_bundle_service is None:
             logger.warning(
-                "Concept Note thin-context build was not scheduled because "
+                "Concept Note context build was not scheduled because "
                 "storage is unavailable run_id=%s",
                 response.run_id,
             )

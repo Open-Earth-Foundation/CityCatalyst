@@ -2,7 +2,9 @@
 
 This cron job endpoint checks the status of pending HIAP prioritization jobs and starts new batches when ready.
 
-**Schedule:** Runs every minute (configured in `k8s/cc-check-hiap-jobs.yml`)
+**Schedule:** Runs every five minutes. Development and production use
+`k8s/cc-check-hiap-jobs.yml`; the test deployment uses
+`k8s/test/cc-test-check-hiap-jobs.yml` so it targets the `cc-test-web` service.
 
 ---
 
@@ -19,11 +21,15 @@ This cron job endpoint checks the status of pending HIAP prioritization jobs and
 
 ## Overview
 
-**Purpose:** 
+**Purpose:**
+
 - Check PENDING jobs for completion
 - Save results when jobs finish
-- Backfill successful rankings and persisted action plans that are missing their NativeInputCatalog entry
 - Start the next batch when no PENDING jobs exist
+
+NativeInputCatalog reconciliation is intentionally handled by the isolated
+`hiap-catalog-backfill` command and manual Kubernetes Job. It is not part of
+this polling endpoint.
 
 **Critical Constraint:** HIAP API can only handle **1 bulk job at a time, system-wide**. This cron enforces that limit.
 
@@ -31,40 +37,26 @@ This cron job endpoint checks the status of pending HIAP prioritization jobs and
 
 ## How It Works
 
-Every minute, this cron does 2 main steps:
+Every five minutes, this cron does 2 main steps:
 
 ### Step 1: Check PENDING Jobs
+
 ```
 Query database for rankings with status = PENDING
 For each unique jobId:
   → Call HIAP API: /check_progress/{taskId}
-  → If "pending": Do nothing, check again next minute
+  → If "pending": Do nothing, check again on the next run
   → If "completed": Save results → PENDING → SUCCESS
   → If "failed": Mark as FAILURE with error message
   → If error (404, timeout, etc): Mark as FAILURE to unblock queue
 ```
 
-**Critical:** When HIAP API throws an error (404 Task Not Found, timeout, etc.), 
-the cron job marks all PENDING rankings with that jobId as FAILURE. This prevents 
+**Critical:** When HIAP API throws an error (404 Task Not Found, timeout, etc.),
+the cron job marks all PENDING rankings with that jobId as FAILURE. This prevents
 stuck jobs from blocking the entire queue indefinitely.
 
-### Step 2: Backfill Missing HIAP Catalog Entries
+### Step 2: Start Next Batch (if idle)
 
-```
-Query successful rankings with an inventory
-For each ranking without an active hiap_ranking catalog entry:
-  → Retry NativeInputCatalog registration
-  → Keep the ranking SUCCESS even if this attempt fails
-
-Query persisted action plans with an inventory and ranked action
-For each action plan without a catalog entry for its current content version:
-  → Retry NativeInputCatalog registration
-  → Keep the action plan persisted even if this attempt fails
-```
-
-This makes catalog registration recoverable after a transient database or service failure. The next cron execution retries any ranking or action plan that is still missing its current active catalog entry.
-
-### Step 3: Start Next Batch (if idle)
 ```
 If NO PENDING jobs exist anywhere:
   → Find ONE project with TO_DO rankings (oldest first, FIFO)
@@ -77,12 +69,11 @@ If ANY PENDING jobs exist:
 ```
 
 ### Response Metrics
+
 ```json
 {
   "checkedJobs": 2,
   "completedJobs": 1,
-  "catalogBackfilled": 1,
-  "actionPlansBackfilled": 1,
   "startedBatches": 1,
   "durationMs": 1250
 }
@@ -107,6 +98,7 @@ Every successful run produces these logs:
 ```
 
 **Key markers:**
+
 - ✅ `🔄 Cron job STARTED` - Job execution began
 - ✅ `✅ Cron job FINISHED successfully` - Job completed normally
 - ✅ `durationMs: 1245` - Execution time (1-10 seconds is normal)
@@ -134,17 +126,18 @@ Every successful run produces these logs:
 ### Quick Health Check (30 seconds)
 
 ```bash
-# 1. Is cron running? (LAST SCHEDULE should be < 1 minute ago)
+# 1. Is cron running? (LAST SCHEDULE should be < 5 minutes ago)
 kubectl get cronjob citycatalyst-check-hiap-jobs
 
 # 2. Recent jobs succeeding? (COMPLETIONS should be 1/1)
 kubectl get jobs | grep check-hiap | head -5
 
-# 3. Logs showing START/FINISH? (should see pairs every minute)
+# 3. Logs showing START/FINISH? (should see pairs every five minutes)
 kubectl logs -l job-name=citycatalyst-check-hiap-jobs --tail=20 | grep -E "STARTED|FINISHED"
 ```
 
 **Expected output:**
+
 ```
 ... "🔄 Cron job STARTED: Checking HIAP jobs"
 ... "✅ Cron job FINISHED successfully"
@@ -152,7 +145,7 @@ kubectl logs -l job-name=citycatalyst-check-hiap-jobs --tail=20 | grep -E "START
 ... "✅ Cron job FINISHED successfully"
 ```
 
-You should see pairs of START/FINISH logs every ~1 minute.
+You should see pairs of START/FINISH logs every ~5 minutes.
 
 ---
 
@@ -165,17 +158,19 @@ kubectl get cronjobs citycatalyst-check-hiap-jobs
 ```
 
 **Expected output:**
+
 ```
 NAME                          SCHEDULE      SUSPEND   ACTIVE   LAST SCHEDULE   AGE
-citycatalyst-check-hiap-jobs  */1 * * * *   False     0        42s             5d
+citycatalyst-check-hiap-jobs  */5 * * * *   False     0        42s             5d
 ```
 
 **What to check:**
+
 - ✅ `SUSPEND: False` - CronJob is active
-- ✅ `LAST SCHEDULE: <1 minute ago` - Recently executed
+- ✅ `LAST SCHEDULE: <5 minutes ago` - Recently executed
 - ❌ `SUSPEND: True` - CronJob is paused!
 - ❌ `LAST SCHEDULE: -` - Never ran!
-- ❌ `LAST SCHEDULE: 10m ago` - Hasn't run in 10 minutes!
+- ❌ `LAST SCHEDULE: 15m ago` - Hasn't run in 15 minutes!
 
 #### 2. Recent Executions
 
@@ -188,6 +183,7 @@ kubectl get jobs -l job=check-hiap-jobs --sort-by=.metadata.creationTimestamp | 
 ```
 
 **Expected output:**
+
 ```
 NAME                                    COMPLETIONS   DURATION   AGE
 citycatalyst-check-hiap-jobs-28934710   1/1          5s         2m
@@ -195,6 +191,7 @@ citycatalyst-check-hiap-jobs-28934709   1/1          4s         3m
 ```
 
 **What to check:**
+
 - ✅ `COMPLETIONS: 1/1` - Job succeeded
 - ✅ `DURATION: 4-10s` - Normal execution time
 - ❌ `COMPLETIONS: 0/1` - Job failed or still running
@@ -207,7 +204,7 @@ citycatalyst-check-hiap-jobs-28934709   1/1          4s         3m
 ### 30-Second Health Check
 
 ```bash
-# 1. Cron running? (LAST SCHEDULE < 1 minute ago)
+# 1. Cron running? (LAST SCHEDULE < 5 minutes ago)
 kubectl get cronjob citycatalyst-check-hiap-jobs
 
 # 2. Recent jobs succeeding? (COMPLETIONS: 1/1)
@@ -227,5 +224,6 @@ kubectl logs -l job-name=citycatalyst-check-hiap-jobs --tail=20 | grep -E "START
 
 - **API Documentation**: [../../v1/admin/bulk-hiap-prioritization/README.md](../../v1/admin/bulk-hiap-prioritization/README.md) - Full system documentation
 - **Kubernetes Config**: `k8s/cc-check-hiap-jobs.yml` - CronJob definition
+- **Test Kubernetes Config**: `k8s/test/cc-test-check-hiap-jobs.yml` - Test CronJob targeting `cc-test-web`
 - **Ingress Security**: `k8s/cc-ingress.yml` - Network-level protection
 - **Tests**: `app/tests/api/bulk-hiap-prioritization.jest.ts` - Integration tests

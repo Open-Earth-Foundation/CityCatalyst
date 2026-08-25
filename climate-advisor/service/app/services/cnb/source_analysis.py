@@ -22,7 +22,7 @@ from app.models.cnb.context_bundle import (
     SourceQueryResult,
     SourceQuestionReading,
 )
-from app.models.concept_note_markdown import ConceptNoteSourceFormat
+from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens
@@ -83,6 +83,39 @@ class SourceSegment:
     page: int | None
     text: str
     anchor: str | None = None
+
+
+def source_analysis_contract_version(settings: Settings) -> str:
+    """Hash every configured input that can change persisted source analysis."""
+    budget = settings.llm.generation.prompt_budget.cnb_sources
+    reader = settings.llm.models.cnb_source_reader
+    synthesizer = settings.llm.models.cnb_source_synthesizer
+    contract = {
+        "reader": {
+            "model": reader.name,
+            "reasoning_effort": reader.reasoning_effort,
+            "prompt": settings.llm.prompts.get_prompt(
+                "cnb_source_document_mapping"
+            ),
+        },
+        "synthesizer": {
+            "model": synthesizer.name,
+            "reasoning_effort": synthesizer.reasoning_effort,
+            "prompt": settings.llm.prompts.get_prompt(
+                "cnb_source_summary_synthesis"
+            ),
+        },
+        "limits": {
+            "max_partition_tokens": budget.max_partition_tokens,
+            "max_key_excerpts": budget.max_key_excerpts,
+            "max_topics": budget.max_topics,
+            "tokenizer_encoding": (
+                settings.llm.generation.prompt_budget.tokenizer_encoding
+            ),
+        },
+    }
+    encoded = json.dumps(contract, sort_keys=True, ensure_ascii=False).encode()
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def verify_source_artifact(

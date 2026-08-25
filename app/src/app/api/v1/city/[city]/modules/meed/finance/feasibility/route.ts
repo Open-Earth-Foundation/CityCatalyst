@@ -5,7 +5,7 @@
  *     tags:
  *       - city
  *       - modules
- *     operationId: getMeedFinanceFeasibility
+ *     operationId: getMeedModuleFinanceFeasibility
  *     summary: Get climate-finance feasibility rows per action for the MEED+ module.
  *     description: Proxies the Global API climate-finance feasibility endpoint for the city's locode and country code. Requires a signed-in user with access to the city. Response is wrapped in '{' data '}'; data is null when the upstream has no data for this city.
  *     parameters:

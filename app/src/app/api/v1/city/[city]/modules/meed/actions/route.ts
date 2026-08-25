@@ -5,7 +5,7 @@
  *     tags:
  *       - city
  *       - modules
- *     operationId: getMeedActions
+ *     operationId: getMeedModuleActions
  *     summary: Get the live mitigation action catalog for the MEED+ module.
  *     description: Proxies the Global API action-pathways catalog. Requires a signed-in user with access to the city. Response is wrapped in '{' data '}'; data is null when the upstream has no data.
  *     parameters:

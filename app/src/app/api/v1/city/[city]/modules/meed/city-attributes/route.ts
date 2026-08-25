@@ -5,7 +5,7 @@
  *     tags:
  *       - city
  *       - modules
- *     operationId: getMeedCityAttributes
+ *     operationId: getMeedModuleCityAttributes
  *     summary: Get socioeconomic city attributes for the MEED+ module.
  *     description: Proxies the Global API city_attributes endpoint for the city's locode. Requires a signed-in user with access to the city. Response is wrapped in '{' data '}'; data is null when the upstream has no data for this city.
  *     parameters:

@@ -37,6 +37,10 @@ import SelectMethodology from "@/components/Tabs/Activity/select-methodology";
 import ExternalDataSection from "@/components/Tabs/Activity/external-data-section";
 import { api } from "@/services/api";
 import {
+  toI18nReasonKey,
+  toNotationKeyLabelKey,
+} from "@/util/notation-keys";
+import {
   MdModeEditOutline,
   MdCheckCircleOutline,
   MdInfoOutline,
@@ -424,16 +428,7 @@ const ActivityTab: FC<ActivityTabProps> = ({
   }, [showUnavailableForm, inventoryValue]);
 
   const notationKey = useMemo(() => {
-    switch (inventoryValue?.unavailableReason) {
-      case "reason-NE":
-        return "notation-key-NE";
-      case "reason-C":
-        return "notation-key-C";
-      case "reason-IE":
-        return "notation-key-IE";
-      default:
-        return "notation-key-NO";
-    }
+    return toNotationKeyLabelKey(inventoryValue?.unavailableReason);
   }, [inventoryValue]);
 
   const { isFrozenCheck } = useOrganizationContext();
@@ -516,7 +511,10 @@ const ActivityTab: FC<ActivityTabProps> = ({
               >
                 <Text fontSize="body.md" fontFamily="body">
                   <strong> {t("reason")}: </strong>
-                  {t(inventoryValue?.unavailableReason as string)}
+                  {t(
+                    (toI18nReasonKey(inventoryValue?.unavailableReason) ??
+                      "") as string,
+                  )}
                 </Text>
               </Text>
               <Text

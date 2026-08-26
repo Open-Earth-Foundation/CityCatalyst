@@ -2207,6 +2207,25 @@ ACTIVE_WORKFLOW_STEP
 UI_CONTEXT
 ```
 
+## MLflow Interaction Names
+
+All user-initiated CNB telemetry uses the `Clima` experiment and the visible
+`workflow=CNB` tag. The durable CNB `run_id` remains a correlation tag; it must
+not be embedded in `mlflow.runName`. The run name identifies the interaction
+boundary with this stable, low-cardinality contract:
+
+| CNB interaction | `mlflow.runName` | Integration boundary |
+| --- | --- | --- |
+| Start or idempotently replay a CNB run | `cnb_start` | `POST /v1/concept-notes/start` |
+| Ask a non-mutating question in the CNB chat | `cnb_chat` | `/v1/messages` with an active `concept_note_run_id` |
+| Answer, correct, skip, or retry missing information | `cnb_missing_information` | The run-scoped gap-resolution operation from CC-730 |
+| Propose or apply a document edit through chat | `cnb_chat_edit` | The dedicated revision operation planned in CC-732 |
+
+The future CC-732 flow must classify edit intent before opening its MLflow run:
+ordinary questions remain `cnb_chat`, while a durable edit proposal or apply
+operation uses `cnb_chat_edit`. More detailed actions belong in tags or spans so
+dashboards can group the four interaction types without parsing dynamic names.
+
 ## SSE Events
 
 The UI needs typed events for chat and document state.

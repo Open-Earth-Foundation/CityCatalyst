@@ -1082,14 +1082,31 @@ Climate Advisor:
   draft-context chat runs, plus offline CNB funding-opportunity research
 
 Each run includes tags such as `service`, `environment`, `workflow`,
-`prompt_name`, `request_id`, `thread_id`, `inventory_id`, and
-`stationary_energy_draft_run_id` when present. Full debug artifacts are logged
-with bearer tokens, API keys, JWTs, and secrets redacted.
+`prompt_name`, `request_id`, `thread_id`, `inventory_id`, and the scoped
+workflow run identifier when present. CNB chat interactions use the visible
+`workflow=CNB` tag and retain the detailed route as
+`workflow_name=concept_note_context_chat`. Full debug artifacts are logged with
+bearer tokens, API keys, JWTs, and secrets redacted.
+
+CNB user interactions use stable, non-dynamic `mlflow.runName` values:
+
+| Interaction | `mlflow.runName` |
+| --- | --- |
+| Start or idempotently replay a CNB run | `cnb_start` |
+| Non-mutating CNB chat | `cnb_chat` |
+| Resolve missing information (CC-730) | `cnb_missing_information` |
+| Future chat-driven document edit (CC-732) | `cnb_chat_edit` |
+
+The durable CNB run ID is retained as `concept_note_run_id`; it is not appended
+to the run name. Missing-information and chat-edit implementations must use the
+reserved names above at their run-scoped mutation boundaries.
 
 Each streamed `/v1/messages` model turn emits one MLflow trace. Climate Advisor
 also assigns the active trace session to the CA `thread_id`, so MLflow's
 session grouping shows all turns from the same UI conversation together while
-still preserving per-turn trace detail.
+still preserving per-turn trace detail. CNB turns use a `CNB` root span so the
+same `workflow=CNB` tag is attached to the interaction trace before model
+streaming starts.
 
 The shared MLflow variables match HIAP-MEED where deployment needs explicit
 configuration (`MLFLOW_ENABLED`, `MLFLOW_TRACKING_URI`,

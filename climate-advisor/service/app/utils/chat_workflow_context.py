@@ -3,8 +3,10 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from app.utils.cnb_observability import CNBInteraction
 
 CONCEPT_NOTE_RUN_ID_KEY = "concept_note_run_id"
+CNB_WORKFLOW_TAG = "CNB"
 STATIONARY_ENERGY_DRAFT_RUN_ID_KEY = "stationary_energy_draft_run_id"
 WORKFLOW_CONTEXT_KEYS = frozenset(
     {CONCEPT_NOTE_RUN_ID_KEY, STATIONARY_ENERGY_DRAFT_RUN_ID_KEY}
@@ -43,7 +45,7 @@ class ChatWorkflowContext:
     def mlflow_run_name(self) -> str:
         """Return the MLflow run name for this workflow context."""
         if self.concept_note_run_id:
-            return "concept_note_context_chat_request"
+            return CNBInteraction.CHAT.mlflow_run_name
         if self.stationary_energy_draft_run_id:
             return "stationary_energy_context_chat_request"
         return "climate_advisor_message_request"
@@ -60,20 +62,28 @@ class ChatWorkflowContext:
     def telemetry(self) -> dict[str, object]:
         """Return shared low-cardinality workflow metadata for logs and traces."""
         if self.concept_note_run_id:
-            workflow = "concept_note_context_chat"
+            workflow = CNB_WORKFLOW_TAG
+            workflow_name = "concept_note_context_chat"
+            interaction = CNBInteraction.CHAT.value
             prompt_name = "chat"
             context_mode = "concept_note_run"
         elif self.stationary_energy_draft_run_id:
             workflow = "stationary_energy_context_chat"
+            workflow_name = None
+            interaction = "chat"
             prompt_name = "stationary_energy_review"
             context_mode = "stationary_energy_draft"
         else:
             workflow = "climate_advisor_conversation"
+            workflow_name = None
+            interaction = "chat"
             prompt_name = "chat"
             context_mode = "general"
 
         return {
             "workflow": workflow,
+            "workflow_name": workflow_name,
+            "interaction": interaction,
             "trace_category": (
                 "ca_agentic_context_chat" if self.is_agentic else "normal_conversation"
             ),

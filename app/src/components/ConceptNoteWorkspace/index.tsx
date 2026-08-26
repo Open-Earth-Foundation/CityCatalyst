@@ -115,6 +115,7 @@ export function ConceptNoteWorkspace({
     cityId,
   });
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
+  const { data: cityDashboard } = api.useGetCityDashboardQuery({ cityId, lng });
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
@@ -304,7 +305,7 @@ export function ConceptNoteWorkspace({
         minH={0}
         overflow="hidden"
         bg="background.alternativeLight"
-        px={{ base: 4, md: 10 }}
+        px={{ base: 2, md: 5 }}
         py={8}
       >
         <VStack
@@ -319,7 +320,7 @@ export function ConceptNoteWorkspace({
           <Grid
             flex={1}
             minH={0}
-            gap={5}
+            gap={2.5}
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
               md: "440px minmax(0, 1fr)",
@@ -404,7 +405,7 @@ export function ConceptNoteWorkspace({
           minH={0}
           maxW="1480px"
           mx="auto"
-          px={{ base: 4, md: 10 }}
+          px={{ base: 2, md: 5 }}
           py={6}
         >
           <HStack flexShrink={0} gap={2} color="content.tertiary">
@@ -464,7 +465,7 @@ export function ConceptNoteWorkspace({
             flex={1}
             minH={0}
             overflow="hidden"
-            gap={5}
+            gap={2.5}
             alignItems="stretch"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
@@ -593,6 +594,7 @@ export function ConceptNoteWorkspace({
                 <ContextTab
                   applicationContext={applicationContext ?? null}
                   bundle={bundle}
+                  cityDashboard={cityDashboard ?? null}
                   cityFilesCount={files.length}
                   cityName={cityName}
                   country={city?.country ?? null}

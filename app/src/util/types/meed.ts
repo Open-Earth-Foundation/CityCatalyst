@@ -95,20 +95,30 @@ export interface MeedRankedActionResult {
  * `restrictions_description` are English with `_es` variants. Read them through
  * a helper rather than assuming a consistent convention.
  */
+/**
+ * A translated string, keyed by language code — `{ en: "…", es: "…" }`.
+ *
+ * Kept as a map rather than split into per-language fields: a new language
+ * then costs a backend key and nothing else, where `_es`/`_en` suffixes cost
+ * a type change, an adapter change and a consumer change every time.
+ */
+export type MeedLocalizedText = Record<string, string | null | undefined>;
+
+/**
+ * Legal evidence for a removed action.
+ *
+ * Field names follow the ranking route's own model rather than the
+ * prioritizer's snake_case, so this reads the same as the database rows it
+ * came from.
+ */
 export interface MeedRemovedActionLegalEvidence {
-  verdict_category?: string | null;
-  verdict_score?: number | null;
-  ownership_category?: string | null;
-  ownership_score?: number | null;
-  ownership_description?: string | null;
-  ownership_description_es?: string | null;
-  restrictions_category?: string | null;
-  restrictions_score?: number | null;
-  restrictions_description?: string | null;
-  restrictions_description_es?: string | null;
-  legal_justification?: string | null;
-  legal_justification_en?: string | null;
-  legal_references?: string[];
+  verdictCategory?: string | null;
+  ownershipCategory?: string | null;
+  ownershipDescription?: MeedLocalizedText | null;
+  restrictionsCategory?: string | null;
+  restrictionsDescription?: MeedLocalizedText | null;
+  legalJustification?: MeedLocalizedText | null;
+  legalReferences?: string[];
 }
 
 /** One action dropped before ranking. Shaped by the backend for display. */

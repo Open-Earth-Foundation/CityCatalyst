@@ -20,6 +20,7 @@ import type {
   MeedPrioritizeCityResult,
 } from "@/util/types/meed";
 import type { MeedActionIndex } from "../results/components/actionCatalog";
+import { resolveLocalizedText } from "../../localizedText";
 
 export interface LegalScreenedAction {
   actionId: string;
@@ -67,6 +68,8 @@ function evidenceEntries(
 export function deriveLegalScreening(
   result: MeedPrioritizeCityResult | null | undefined,
   index: MeedActionIndex,
+  /** Language for the translated legal text; defaults to English. */
+  language = "en",
 ): LegalScreening {
   if (!result) return EMPTY;
 
@@ -81,7 +84,10 @@ export function deriveLegalScreening(
           actionId: r.action_id,
           actionName: nameOf(index, r.action_id, r.action_name),
           sector: sectorOf(index, r.action_id),
-          reasons: [r.removal_reason, r.legal?.legal_justification_en]
+          reasons: [
+            r.removal_reason,
+            resolveLocalizedText(r.legal?.legalJustification, language),
+          ]
             .filter((v): v is string => typeof v === "string" && v.length > 0)
             .slice(0, 2),
         }))

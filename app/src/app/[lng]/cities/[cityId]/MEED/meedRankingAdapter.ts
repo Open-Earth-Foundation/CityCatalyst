@@ -79,39 +79,33 @@ function toRankedAction(
 /**
  * Legal evidence for a removed action.
  *
- * The wire carries `{ en, es }` maps; our type splits them across differently
- * suffixed fields, and not consistently: descriptions are English-primary with
- * an `_es` variant, while `legal_justification` is the *native* text with
- * `legal_justification_en` as its translation. Mapping is therefore explicit
- * per field rather than mechanical.
+ * Now close to a pass-through: the route carries `{ en, es }` maps and we keep
+ * them as maps, so the language choice happens at the point of display via
+ * `resolveLocalizedText`. This previously split each map into `_en`/`_es`
+ * fields, which meant a third language would have required changing the type,
+ * this function and every consumer.
  */
 function toLegalEvidence(
   raw: MeedRankRouteRemovedAction,
 ): MeedRemovedActionLegalEvidence | null {
-  const ownership = raw.ownershipDescription ?? null;
-  const restrictions = raw.restrictionsDescription ?? null;
-  const justification = raw.legalJustification ?? null;
   const references = asArray(raw.legalReferences).filter(
     (r): r is string => typeof r === "string",
   );
 
   const evidence: MeedRemovedActionLegalEvidence = {
-    verdict_category: str(raw.verdictCategory),
-    ownership_category: str(raw.ownershipCategory),
-    ownership_description: str(ownership?.en),
-    ownership_description_es: str(ownership?.es),
-    restrictions_category: str(raw.restrictionsCategory),
-    restrictions_description: str(restrictions?.en),
-    restrictions_description_es: str(restrictions?.es),
-    legal_justification: str(justification?.es) ?? str(justification?.en),
-    legal_justification_en: str(justification?.en),
-    legal_references: references,
+    verdictCategory: str(raw.verdictCategory),
+    ownershipCategory: str(raw.ownershipCategory),
+    ownershipDescription: raw.ownershipDescription ?? null,
+    restrictionsCategory: str(raw.restrictionsCategory),
+    restrictionsDescription: raw.restrictionsDescription ?? null,
+    legalJustification: raw.legalJustification ?? null,
+    legalReferences: references,
   };
 
   const carriesSomething =
     references.length > 0 ||
     Object.entries(evidence).some(
-      ([key, value]) => key !== "legal_references" && value != null,
+      ([key, value]) => key !== "legalReferences" && value != null,
     );
   return carriesSomething ? evidence : null;
 }

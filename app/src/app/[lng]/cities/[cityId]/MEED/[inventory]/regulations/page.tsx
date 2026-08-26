@@ -153,8 +153,8 @@ function RegulationsContent({
   } = useGetMeedActionsQuery({ cityId });
 
   const screening = useMemo(
-    () => deriveLegalScreening(ranking?.result, buildActionIndex(catalog)),
-    [ranking, catalog],
+    () => deriveLegalScreening(ranking?.result, buildActionIndex(catalog), lng),
+    [ranking, catalog, lng],
   );
   const { blocked, flagged, includedCount, isEmpty } = screening;
   const hasScreening = Boolean(ranking) && !isEmpty;

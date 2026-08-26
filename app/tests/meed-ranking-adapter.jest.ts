@@ -86,7 +86,7 @@ describe("MEED ranking adapter", () => {
 });
 
 describe("MEED ranking adapter — removed actions", () => {
-  it("splits the multilingual legal fields the way our type expects", () => {
+  it("carries the multilingual legal fields across as maps", () => {
     const removed = adapted.removed_actions!.find(
       (r) => r.action_id === "icare_0008",
     )!;
@@ -96,21 +96,17 @@ describe("MEED ranking adapter — removed actions", () => {
 
     expect(removed.removal_source).toBe("legal_hard_filter");
     expect(removed.action_name).toBe(source.actionName);
-    // Descriptions are English-primary with an _es variant …
-    expect(removed.legal?.ownership_description).toBe(
-      source.ownershipDescription.en,
+    // Language maps are carried across whole, not split per language.
+    expect(removed.legal?.ownershipDescription).toEqual(
+      source.ownershipDescription,
     );
-    expect(removed.legal?.ownership_description_es).toBe(
-      source.ownershipDescription.es,
+    expect(removed.legal?.restrictionsDescription).toEqual(
+      source.restrictionsDescription,
     );
-    // … while legal_justification is the native text and _en the translation.
-    expect(removed.legal?.legal_justification).toBe(
-      source.legalJustification.es,
+    expect(removed.legal?.legalJustification).toEqual(
+      source.legalJustification,
     );
-    expect(removed.legal?.legal_justification_en).toBe(
-      source.legalJustification.en,
-    );
-    expect(removed.legal?.legal_references).toHaveLength(5);
+    expect(removed.legal?.legalReferences).toHaveLength(5);
   });
 
   it("counts only legal removals as discarded_legal", () => {

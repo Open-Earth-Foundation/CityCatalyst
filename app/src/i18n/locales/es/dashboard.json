@@ -315,7 +315,7 @@
   "legend": "Leyenda",
   "breadcrumb-tools": "Herramientas",
   "breadcrumb-hiap": "Actions & Plans",
-  "breadcrumb-meed": "Acciones y Planes v2",
+  "breadcrumb-meed": "Actions & Plans v2",
   "start-here": "Empieza aquí",
   "inventory-versions-action-change": "{{name}} cambió la acción {{actionName}} a rango {{rank}} y {{selectionStatus}}",
   "inventory-versions-action-deleted": "{{name}} eliminó la acción {{actionName}}",

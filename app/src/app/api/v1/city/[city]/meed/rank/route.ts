@@ -315,6 +315,9 @@ export const GET = apiHandler(async (_req, { session, searchParams }) => {
   const { inventoryId } = getRankingQuery.parse(searchParams);
   await PermissionService.canAccessInventory(session, inventoryId);
 
-  const result = await MeedApiService.getRanking(inventoryId);
+  const result = await MeedApiService.getRanking(
+    inventoryId,
+    session?.user?.id,
+  );
   return NextResponse.json({ data: result });
 });

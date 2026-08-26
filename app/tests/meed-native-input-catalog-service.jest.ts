@@ -59,13 +59,13 @@ jest.unstable_mockModule("@/services/logger", () => ({
 }));
 
 let registerMEEDRanking: typeof import("@/backend/meed/MeedNativeInputCatalogService").registerMEEDRanking;
-let backfillMissingMEEDRankings: typeof import("@/backend/meed/MeedNativeInputCatalogService").backfillMissingMEEDRankings;
+let backfillMissingMEEDRankingsPage: typeof import("@/backend/meed/MeedNativeInputCatalogService").backfillMissingMEEDRankingsPage;
 let withdrawMEEDCatalogForInventory: typeof import("@/backend/meed/MeedNativeInputCatalogService").withdrawMEEDCatalogForInventory;
 
 beforeAll(async () => {
   ({
     registerMEEDRanking,
-    backfillMissingMEEDRankings,
+    backfillMissingMEEDRankingsPage,
     withdrawMEEDCatalogForInventory,
   } = await import("@/backend/meed/MeedNativeInputCatalogService"));
 });
@@ -191,19 +191,76 @@ describe("MeedNativeInputCatalogService", () => {
     );
   });
 
+  it("repairs older active versions when the current registration already exists", async () => {
+    catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-current" });
+    catalogModel.findAll.mockResolvedValueOnce([
+      {
+        id: "catalog-old",
+        sourceId: "inventory-1:user-1:old-input:old-result",
+        availability: "active",
+      },
+    ]);
+
+    await expect(registerMEEDRanking("ranking-1")).resolves.toEqual({
+      catalog: { id: "catalog-current" },
+      created: false,
+    });
+
+    expect(supersedeNativeInput).toHaveBeenCalledWith(
+      "catalog-old",
+      expect.objectContaining({ sourceType: "hiap_meed_ranking" }),
+    );
+  });
+
   it("backfills missing rankings and retries transient catalog failures", async () => {
     rankingModel.findAll.mockResolvedValue([completedRanking]);
     catalogModel.findOne.mockResolvedValue(null);
     registerNativeInput.mockRejectedValueOnce(new Error("temporary failure"));
 
-    await expect(backfillMissingMEEDRankings()).resolves.toBe(0);
+    await expect(
+      backfillMissingMEEDRankingsPage({ limit: 25, dryRun: false }),
+    ).resolves.toMatchObject({ repaired: 0, failed: 1 });
 
     registerNativeInput.mockResolvedValue({
       catalog: { id: "catalog-recovered" },
       created: true,
     });
-    await expect(backfillMissingMEEDRankings()).resolves.toBe(1);
+    await expect(
+      backfillMissingMEEDRankingsPage({ limit: 25, dryRun: false }),
+    ).resolves.toMatchObject({ repaired: 1, failed: 0 });
     expect(registerNativeInput).toHaveBeenCalledTimes(2);
+  });
+
+  it("uses a bounded, resumable page when backfilling rankings", async () => {
+    const firstCreated = new Date("2026-08-24T12:00:00.000Z");
+    const lastCreated = new Date("2026-08-24T13:00:00.000Z");
+    rankingModel.findAll.mockResolvedValue([
+      { ...completedRanking, id: "ranking-first", created: firstCreated },
+      { ...completedRanking, id: "ranking-last", created: lastCreated },
+    ]);
+
+    await expect(
+      backfillMissingMEEDRankingsPage({ limit: 2, dryRun: true }),
+    ).resolves.toEqual({
+      scanned: 2,
+      repaired: 2,
+      failed: 0,
+      hasMore: true,
+      nextCursor: {
+        created: lastCreated.toISOString(),
+        id: "ranking-last",
+      },
+    });
+
+    expect(rankingModel.findAll).toHaveBeenCalledWith({
+      where: { status: "completed" },
+      order: [
+        ["created", "ASC"],
+        ["id", "ASC"],
+      ],
+      limit: 2,
+    });
+    expect(registerNativeInput).not.toHaveBeenCalled();
   });
 
   it("withdraws active MEED catalog entries for an inventory without deleting history", async () => {
@@ -212,9 +269,9 @@ describe("MeedNativeInputCatalogService", () => {
       { id: "catalog-2" },
     ]);
 
-    await expect(
-      withdrawMEEDCatalogForInventory("inventory-1"),
-    ).resolves.toBe(2);
+    await expect(withdrawMEEDCatalogForInventory("inventory-1")).resolves.toBe(
+      2,
+    );
     expect(withdrawNativeInput).toHaveBeenNthCalledWith(1, "catalog-1");
     expect(withdrawNativeInput).toHaveBeenNthCalledWith(2, "catalog-2");
   });

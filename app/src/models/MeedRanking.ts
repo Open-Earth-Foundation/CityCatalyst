@@ -132,10 +132,11 @@ export class MeedRanking
         updatedAt: "last_updated",
         indexes: [
           {
-            name: "MeedRanking_inventory_input_content_unique",
+            name: "MeedRanking_inventory_user_input_content_unique",
             unique: true,
             fields: [
               { name: "inventory_id" },
+              { name: "user_id" },
               { name: "input_digest" },
               { name: "content_digest" },
             ],

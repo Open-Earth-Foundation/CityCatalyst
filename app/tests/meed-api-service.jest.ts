@@ -1,4 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, jest } from "@jest/globals";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from "@jest/globals";
 
 process.env.HIAP_MEED_API_URL = "https://meed.example";
 
@@ -43,9 +50,12 @@ jest.unstable_mockModule("@/backend/InventoryService", () => ({
 jest.mock("@/backend/InventoryService", () => ({
   InventoryService: { extractActivityFields: jest.fn() },
 }));
-jest.unstable_mockModule("@/backend/meed/MeedNativeInputCatalogService", () => ({
-  registerMEEDRanking: jest.fn(),
-}));
+jest.unstable_mockModule(
+  "@/backend/meed/MeedNativeInputCatalogService",
+  () => ({
+    registerMEEDRanking: jest.fn(),
+  }),
+);
 jest.mock("@/backend/meed/MeedNativeInputCatalogService", () => ({
   registerMEEDRanking: jest.fn(),
 }));
@@ -57,9 +67,8 @@ jest.mock("@/services/logger", () => ({
 }));
 
 const populationService = (await import("@/backend/PopulationService")).default;
-const { registerMEEDRanking } = await import(
-  "@/backend/meed/MeedNativeInputCatalogService"
-);
+const { registerMEEDRanking } =
+  await import("@/backend/meed/MeedNativeInputCatalogService");
 const MeedApiService = (await import("@/backend/MeedApiService")).default;
 
 const request = {
@@ -123,7 +132,10 @@ beforeEach(() => {
   removedModel.bulkCreate.mockImplementation(async (rows) => rows);
   rankedModel.findAll.mockResolvedValue([]);
   removedModel.findAll.mockResolvedValue([]);
-  registerMEEDRanking.mockResolvedValue({ catalog: {}, created: true } as never);
+  registerMEEDRanking.mockResolvedValue({
+    catalog: {},
+    created: true,
+  } as never);
   global.fetch = jest.fn();
 });
 
@@ -142,7 +154,12 @@ describe("MeedApiService versioned persistence", () => {
     );
 
     expect(rankedModel.bulkCreate).toHaveBeenCalledWith(
-      [expect.objectContaining({ inventoryId: "inventory-1", rankingId: expect.any(String) })],
+      [
+        expect.objectContaining({
+          inventoryId: "inventory-1",
+          rankingId: expect.any(String),
+        }),
+      ],
       { transaction: mockTransaction },
     );
     expect(rankingModel.create).toHaveBeenCalledWith(
@@ -154,10 +171,17 @@ describe("MeedApiService versioned persistence", () => {
       }),
       { transaction: mockTransaction },
     );
+    expect(rankingModel.findOne).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        inventoryId: "inventory-1",
+        userId: "user-1",
+        inputDigest: expect.any(String),
+        contentDigest: expect.any(String),
+      }),
+      transaction: mockTransaction,
+    });
     expect(rankedModel).not.toHaveProperty("destroy");
-    expect(registerMEEDRanking).toHaveBeenCalledWith(
-      expect.any(String),
-    );
+    expect(registerMEEDRanking).toHaveBeenCalledWith(expect.any(String));
     expect(result).toEqual({
       rankedActions: expect.any(Array),
       removedActions: [],
@@ -169,15 +193,27 @@ describe("MeedApiService versioned persistence", () => {
     rankedModel.findAll.mockResolvedValueOnce([{ id: "ranked-latest" }]);
     removedModel.findAll.mockResolvedValueOnce([{ id: "removed-latest" }]);
 
-    await expect(MeedApiService.getRanking("inventory-1")).resolves.toEqual({
+    await expect(
+      MeedApiService.getRanking("inventory-1", "user-1"),
+    ).resolves.toEqual({
       rankedActions: [{ id: "ranked-latest" }],
       removedActions: [{ id: "removed-latest" }],
+    });
+    expect(rankingModel.findOne).toHaveBeenCalledWith({
+      where: {
+        inventoryId: "inventory-1",
+        userId: "user-1",
+        status: "completed",
+      },
+      order: [["created", "DESC"]],
     });
 
     rankingModel.findOne.mockResolvedValueOnce(null);
     rankedModel.findAll.mockResolvedValueOnce([{ id: "legacy-ranked" }]);
     removedModel.findAll.mockResolvedValueOnce([{ id: "legacy-removed" }]);
-    await expect(MeedApiService.getRanking("inventory-1")).resolves.toEqual({
+    await expect(
+      MeedApiService.getRanking("inventory-1", "user-1"),
+    ).resolves.toEqual({
       rankedActions: [{ id: "legacy-ranked" }],
       removedActions: [{ id: "legacy-removed" }],
     });

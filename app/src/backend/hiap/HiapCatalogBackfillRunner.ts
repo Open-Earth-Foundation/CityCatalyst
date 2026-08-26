@@ -8,6 +8,12 @@ import {
   type HIAPCatalogBackfillPage,
   type HIAPCatalogBackfillPageOptions,
 } from "@/backend/hiap/HiapNativeInputCatalogService";
+import {
+  backfillMissingMEEDRankingsPage,
+  type MEEDCatalogBackfillCursor,
+  type MEEDCatalogBackfillPage,
+  type MEEDCatalogBackfillPageOptions,
+} from "@/backend/meed/MeedNativeInputCatalogService";
 import { logger } from "@/services/logger";
 
 const LOCK_KEY = "citycatalyst:hiap-catalog-backfill";
@@ -29,6 +35,10 @@ export type HIAPCatalogBackfillProgress = {
 export type HIAPCatalogBackfillCheckpoint = {
   rankings: HIAPCatalogBackfillProgress;
   actionPlans: HIAPCatalogBackfillProgress;
+  meedRankings: {
+    cursor: MEEDCatalogBackfillCursor | null;
+    completed: boolean;
+  };
 };
 
 export type HIAPCatalogBackfillPooledConnection = Awaited<
@@ -56,6 +66,7 @@ export type HIAPCatalogBackfillResult = {
   pages: number;
   rankings?: BackfillTotals;
   actionPlans?: BackfillTotals;
+  meedRankings?: BackfillTotals;
 };
 
 export type HIAPCatalogBackfillRunnerDeps = {
@@ -69,6 +80,9 @@ export type HIAPCatalogBackfillRunnerDeps = {
   processActionPlansPage: (
     options: HIAPCatalogBackfillPageOptions,
   ) => Promise<HIAPCatalogBackfillPage>;
+  processMeedRankingsPage: (
+    options: MEEDCatalogBackfillPageOptions,
+  ) => Promise<MEEDCatalogBackfillPage>;
 };
 
 function parsePositiveInteger(
@@ -154,6 +168,7 @@ function emptyCheckpoint(): HIAPCatalogBackfillCheckpoint {
   return {
     rankings: { cursor: null, completed: false },
     actionPlans: { cursor: null, completed: false },
+    meedRankings: { cursor: null, completed: false },
   };
 }
 
@@ -164,6 +179,9 @@ type HIAPCatalogBackfillCheckpointRow = {
   action_plans_cursor_created: Date | string | null;
   action_plans_cursor_id: string | null;
   action_plans_completed: boolean;
+  meed_rankings_cursor_created: Date | string | null;
+  meed_rankings_cursor_id: string | null;
+  meed_rankings_completed: boolean;
 };
 
 function rowCursor(
@@ -191,7 +209,10 @@ async function loadHIAPCatalogBackfillCheckpoint(): Promise<HIAPCatalogBackfillC
         rankings_completed,
         action_plans_cursor_created,
         action_plans_cursor_id,
-        action_plans_completed
+        action_plans_completed,
+        meed_rankings_cursor_created,
+        meed_rankings_cursor_id,
+        meed_rankings_completed
       FROM "HiapCatalogBackfillCheckpoint"
       WHERE job_key = :jobKey
     `,
@@ -215,6 +236,13 @@ async function loadHIAPCatalogBackfillCheckpoint(): Promise<HIAPCatalogBackfillC
       ),
       completed: row.action_plans_completed,
     },
+    meedRankings: {
+      cursor: rowCursor(
+        row.meed_rankings_cursor_created,
+        row.meed_rankings_cursor_id,
+      ),
+      completed: row.meed_rankings_completed,
+    },
   };
 }
 
@@ -232,7 +260,10 @@ async function saveHIAPCatalogBackfillCheckpoint(
         rankings_completed,
         action_plans_cursor_created,
         action_plans_cursor_id,
-        action_plans_completed
+        action_plans_completed,
+        meed_rankings_cursor_created,
+        meed_rankings_cursor_id,
+        meed_rankings_completed
       ) VALUES (
         :jobKey,
         :rankingsCursorCreated,
@@ -240,7 +271,10 @@ async function saveHIAPCatalogBackfillCheckpoint(
         :rankingsCompleted,
         :actionPlansCursorCreated,
         :actionPlansCursorId,
-        :actionPlansCompleted
+        :actionPlansCompleted,
+        :meedRankingsCursorCreated,
+        :meedRankingsCursorId,
+        :meedRankingsCompleted
       )
       ON CONFLICT (job_key) DO UPDATE SET
         rankings_cursor_created = EXCLUDED.rankings_cursor_created,
@@ -249,6 +283,9 @@ async function saveHIAPCatalogBackfillCheckpoint(
         action_plans_cursor_created = EXCLUDED.action_plans_cursor_created,
         action_plans_cursor_id = EXCLUDED.action_plans_cursor_id,
         action_plans_completed = EXCLUDED.action_plans_completed,
+        meed_rankings_cursor_created = EXCLUDED.meed_rankings_cursor_created,
+        meed_rankings_cursor_id = EXCLUDED.meed_rankings_cursor_id,
+        meed_rankings_completed = EXCLUDED.meed_rankings_completed,
         last_updated = NOW()
     `,
     {
@@ -261,6 +298,10 @@ async function saveHIAPCatalogBackfillCheckpoint(
           checkpoint.actionPlans.cursor?.created ?? null,
         actionPlansCursorId: checkpoint.actionPlans.cursor?.id ?? null,
         actionPlansCompleted: checkpoint.actionPlans.completed,
+        meedRankingsCursorCreated:
+          checkpoint.meedRankings.cursor?.created ?? null,
+        meedRankingsCursorId: checkpoint.meedRankings.cursor?.id ?? null,
+        meedRankingsCompleted: checkpoint.meedRankings.completed,
       },
       type: QueryTypes.INSERT,
     },
@@ -274,6 +315,7 @@ const defaultDeps: HIAPCatalogBackfillRunnerDeps = {
   saveCheckpoint: saveHIAPCatalogBackfillCheckpoint,
   processRankingsPage: backfillMissingHIAPRankingsPage,
   processActionPlansPage: backfillMissingHIAPActionPlansPage,
+  processMeedRankingsPage: backfillMissingMEEDRankingsPage,
 };
 
 function emptyTotals(): BackfillTotals {
@@ -287,8 +329,10 @@ function addPage(totals: BackfillTotals, page: HIAPCatalogBackfillPage): void {
 }
 
 async function processPages(
-  kind: "rankings" | "actionPlans",
-  processPage: HIAPCatalogBackfillRunnerDeps["processRankingsPage"],
+  kind: "rankings" | "actionPlans" | "meedRankings",
+  processPage:
+    | HIAPCatalogBackfillRunnerDeps["processRankingsPage"]
+    | HIAPCatalogBackfillRunnerDeps["processMeedRankingsPage"],
   config: HIAPCatalogBackfillConfig,
   checkpoint: HIAPCatalogBackfillCheckpoint,
   saveCheckpoint: HIAPCatalogBackfillRunnerDeps["saveCheckpoint"],
@@ -331,7 +375,9 @@ async function processPages(
     checkpoint =
       kind === "rankings"
         ? { ...checkpoint, rankings: progress }
-        : { ...checkpoint, actionPlans: progress };
+        : kind === "actionPlans"
+          ? { ...checkpoint, actionPlans: progress }
+          : { ...checkpoint, meedRankings: progress };
     await saveCheckpoint(checkpoint);
 
     if (page.failed > 0 || !page.hasMore) break;
@@ -371,12 +417,21 @@ export async function runHIAPCatalogBackfill(
       checkpoint,
       saveCheckpoint,
     );
+    checkpoint = actionPlansRun.checkpoint;
+    const meedRankingsRun = await processPages(
+      "meedRankings",
+      deps.processMeedRankingsPage,
+      config,
+      checkpoint,
+      saveCheckpoint,
+    );
 
     const result = {
       skipped: false,
-      pages: rankingsRun.pages + actionPlansRun.pages,
+      pages: rankingsRun.pages + actionPlansRun.pages + meedRankingsRun.pages,
       rankings: rankingsRun.totals,
       actionPlans: actionPlansRun.totals,
+      meedRankings: meedRankingsRun.totals,
     } satisfies HIAPCatalogBackfillResult;
     logger.info(result, "HIAP catalog backfill completed");
     return result;

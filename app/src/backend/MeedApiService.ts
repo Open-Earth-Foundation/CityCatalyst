@@ -243,7 +243,12 @@ export default class MeedApiService {
 
     const data = await db.sequelize.transaction(async (transaction) => {
       const existingRanking = await db.models.MeedRanking.findOne({
-        where: { inventoryId, inputDigest, contentDigest },
+        where: {
+          inventoryId,
+          userId: userId ?? null,
+          inputDigest,
+          contentDigest,
+        },
         transaction,
       });
       if (existingRanking) {
@@ -329,9 +334,9 @@ export default class MeedApiService {
     };
   }
 
-  public static async getRanking(inventoryId: string) {
+  public static async getRanking(inventoryId: string, userId?: string) {
     const latestRanking = await db.models.MeedRanking.findOne({
-      where: { inventoryId, status: "completed" },
+      where: { inventoryId, userId: userId ?? null, status: "completed" },
       order: [["created", "DESC"]],
     });
     if (latestRanking) {

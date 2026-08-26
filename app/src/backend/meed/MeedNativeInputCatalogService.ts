@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import { db } from "@/models";
 import {
   registerNativeInput,
@@ -11,6 +13,25 @@ import { logger } from "@/services/logger";
 const MEED_MODULE = "hiap_meed" as const;
 const MEED_RANKING_SOURCE_TYPE = "hiap_meed_ranking" as const;
 
+export type MEEDCatalogBackfillCursor = {
+  created: string;
+  id: string;
+};
+
+export type MEEDCatalogBackfillPageOptions = {
+  limit: number;
+  cursor?: MEEDCatalogBackfillCursor;
+  dryRun: boolean;
+};
+
+export type MEEDCatalogBackfillPage = {
+  scanned: number;
+  repaired: number;
+  failed: number;
+  nextCursor: MEEDCatalogBackfillCursor | null;
+  hasMore: boolean;
+};
+
 type MeedRankingLike = {
   id: string;
   inventoryId?: string | null;
@@ -20,6 +41,7 @@ type MeedRankingLike = {
   status?: string | null;
   requestedLanguages?: string[] | null;
   topN?: number | null;
+  created?: Date;
 };
 
 type CatalogScope = {
@@ -172,6 +194,40 @@ async function supersedePreviousVersions(
   }
 }
 
+function validateBackfillLimit(limit: number): void {
+  if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+    throw new Error(
+      "MEED catalog backfill limit must be an integer from 1 to 1000",
+    );
+  }
+}
+
+function cursorWhere(cursor?: MEEDCatalogBackfillCursor) {
+  if (!cursor) return {};
+
+  const created = new Date(cursor.created);
+  if (Number.isNaN(created.getTime())) {
+    throw new Error("MEED catalog backfill cursor has an invalid timestamp");
+  }
+
+  return {
+    [Op.or]: [
+      { created: { [Op.gt]: created } },
+      { created, id: { [Op.gt]: cursor.id } },
+    ],
+  };
+}
+
+function cursorFor(record: MeedRankingLike): MEEDCatalogBackfillCursor {
+  if (!record.created) {
+    throw new Error(
+      `MEED catalog backfill ranking ${record.id} has no created timestamp`,
+    );
+  }
+
+  return { created: record.created.toISOString(), id: record.id };
+}
+
 export async function registerMEEDRanking(
   rankingId: string,
 ): Promise<NativeInputCatalogRegistration> {
@@ -185,33 +241,47 @@ export async function registerMEEDRanking(
       availability: "active",
     },
   });
-  if (existing) return { catalog: existing, created: false };
-
-  const registration = await registerNativeInput(input);
-  if (registration.created) {
-    await supersedePreviousVersions(input, registration.catalog.id);
-  }
+  const registration = existing
+    ? { catalog: existing, created: false }
+    : await registerNativeInput(input);
+  await supersedePreviousVersions(input, String(registration.catalog.id));
   return registration;
 }
 
-export async function backfillMissingMEEDRankings(): Promise<number> {
+export async function backfillMissingMEEDRankingsPage(
+  options: MEEDCatalogBackfillPageOptions,
+): Promise<MEEDCatalogBackfillPage> {
+  validateBackfillLimit(options.limit);
+
   const rankings = await models().MeedRanking.findAll({
-    where: { status: "completed" },
-    order: [["created", "ASC"]],
+    where: { status: "completed", ...cursorWhere(options.cursor) },
+    order: [
+      ["created", "ASC"],
+      ["id", "ASC"],
+    ],
+    limit: options.limit,
   });
-  let backfilledCount = 0;
+
+  let repaired = 0;
+  let failed = 0;
 
   for (const ranking of rankings) {
     try {
-      const registration = await registerMEEDRanking(ranking.id);
-      if (registration.created) {
-        backfilledCount += 1;
-        logger.info(
-          { rankingId: ranking.id, inventoryId: ranking.inventoryId },
-          "Backfilled missing MEED ranking catalog entry",
-        );
+      if (options.dryRun) {
+        await buildMEEDRankingInput(ranking);
+        repaired++;
+      } else {
+        const registration = await registerMEEDRanking(ranking.id);
+        if (registration.created) {
+          repaired++;
+          logger.info(
+            { rankingId: ranking.id, inventoryId: ranking.inventoryId },
+            "Backfilled missing MEED ranking catalog entry",
+          );
+        }
       }
     } catch (error) {
+      failed++;
       logger.error(
         { error, rankingId: ranking.id, inventoryId: ranking.inventoryId },
         "Failed to backfill MEED ranking catalog entry",
@@ -219,7 +289,17 @@ export async function backfillMissingMEEDRankings(): Promise<number> {
     }
   }
 
-  return backfilledCount;
+  const hasMore = rankings.length === options.limit;
+  return {
+    scanned: rankings.length,
+    repaired,
+    failed,
+    hasMore,
+    nextCursor:
+      hasMore && rankings.length > 0
+        ? cursorFor(rankings[rankings.length - 1])
+        : null,
+  };
 }
 
 export async function withdrawMEEDCatalogForInventory(

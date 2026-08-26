@@ -63,10 +63,14 @@ module.exports = {
       },
     });
 
-    await queryInterface.addIndex(
-      "MeedRanking",
-      ["inventory_id", "input_digest", "content_digest"],
-      { name: "MeedRanking_inventory_input_content_unique", unique: true },
+    await queryInterface.sequelize.query(
+      `CREATE UNIQUE INDEX "MeedRanking_inventory_user_input_content_unique"
+       ON "MeedRanking" (
+         "inventory_id",
+         COALESCE("user_id", '00000000-0000-0000-0000-000000000000'::uuid),
+         "input_digest",
+         "content_digest"
+       );`,
     );
 
     await queryInterface.addColumn("MeedActionRanked", "ranking_id", {
@@ -102,9 +106,8 @@ module.exports = {
     );
     await queryInterface.removeColumn("MeedActionRanked", "ranking_id");
     await queryInterface.removeColumn("MeedActionRemoved", "ranking_id");
-    await queryInterface.removeIndex(
-      "MeedRanking",
-      "MeedRanking_inventory_input_content_unique",
+    await queryInterface.sequelize.query(
+      'DROP INDEX IF EXISTS "MeedRanking_inventory_user_input_content_unique";',
     );
     await queryInterface.dropTable("MeedRanking");
   },

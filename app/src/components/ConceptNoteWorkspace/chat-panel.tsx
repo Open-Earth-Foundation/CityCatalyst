@@ -646,34 +646,47 @@ export function ConceptNoteChatPanel({
                 })}
               </Text>
             )}
-            <Text mt={2} fontSize="10px" color="content.tertiary">
-              {t(
-                latestResolvedGap.resolution.actor_user_id === "system"
-                  ? "gap-updated-from-source"
-                  : "gap-confirmed-by-you",
-                {
-                  date: new Intl.DateTimeFormat(lng, {
+            <HStack mt={3} justify="space-between" align="center" gap={3}>
+              <Button
+                size="xs"
+                variant="ghost"
+                color="content.link"
+                flexShrink={0}
+                disabled={isResolvingGap}
+                onClick={() =>
+                  beginAnswer(
+                    latestResolvedGap,
+                    latestResolvedGap.resolution?.answer ?? "",
+                  )
+                }
+              >
+                <Icon as={LuPencil} />
+                {t("gap-correct-answer")}
+              </Button>
+              <VStack gap={0} align="end" textAlign="right">
+                <Text
+                  fontSize="10px"
+                  lineHeight="12px"
+                  color="content.tertiary"
+                >
+                  {t(
+                    latestResolvedGap.resolution.actor_user_id === "system"
+                      ? "gap-updated-from-source-label"
+                      : "gap-confirmed-by-you-label",
+                  )}
+                </Text>
+                <Text
+                  fontSize="10px"
+                  lineHeight="12px"
+                  color="content.tertiary"
+                >
+                  {new Intl.DateTimeFormat(lng, {
                     dateStyle: "medium",
                     timeStyle: "short",
-                  }).format(new Date(latestResolvedGap.resolution.created_at)),
-                },
-              )}
-            </Text>
-            <Button
-              mt={3}
-              size="xs"
-              variant="ghost"
-              disabled={isResolvingGap}
-              onClick={() =>
-                beginAnswer(
-                  latestResolvedGap,
-                  latestResolvedGap.resolution?.answer ?? "",
-                )
-              }
-            >
-              <Icon as={LuPencil} />
-              {t("gap-correct-answer")}
-            </Button>
+                  }).format(new Date(latestResolvedGap.resolution.created_at))}
+                </Text>
+              </VStack>
+            </HStack>
           </Box>
         )}
 

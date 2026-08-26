@@ -314,6 +314,8 @@
   "gap-caveat-kept": "Kept as a caveat",
   "gap-confirmed-by-you": "Confirmed by you · {{date}}",
   "gap-updated-from-source": "Updated from new evidence · {{date}}",
+  "gap-confirmed-by-you-label": "Confirmed by you",
+  "gap-updated-from-source-label": "Updated from new evidence",
   "gap-correct-answer": "Correct answer",
   "gap-answer-mode": "Answering missing information",
   "gap-answer-placeholder": "Type the confirmed information…",

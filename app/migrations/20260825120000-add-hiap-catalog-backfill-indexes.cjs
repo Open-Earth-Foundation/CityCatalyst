@@ -9,11 +9,11 @@ module.exports = {
     // These indexes are created concurrently because the tables are populated
     // in production and the backfill is not allowed to block live requests.
     await queryInterface.sequelize.query(`
-      CREATE INDEX CONCURRENTLY IF NOT EXISTS ${RANKED_ACTIONS_INDEX}
+      CREATE INDEX CONCURRENTLY ${RANKED_ACTIONS_INDEX}
       ON "HighImpactActionRanked" (hia_ranking_id);
     `);
     await queryInterface.sequelize.query(`
-      CREATE INDEX CONCURRENTLY IF NOT EXISTS ${SUCCESS_RANKINGS_INDEX}
+      CREATE INDEX CONCURRENTLY ${SUCCESS_RANKINGS_INDEX}
       ON "HighImpactActionRanking" (status, created, id)
       WHERE status = 'SUCCESS';
     `);

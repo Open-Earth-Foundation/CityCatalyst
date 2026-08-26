@@ -34,10 +34,12 @@ describe("HIAP catalog backfill indexes migration", () => {
     await migration.up(queryInterface);
 
     expect(queries).toHaveLength(2);
-    expect(queries[0]).toContain("CREATE INDEX CONCURRENTLY IF NOT EXISTS");
+    expect(queries[0]).toContain("CREATE INDEX CONCURRENTLY");
+    expect(queries[0]).not.toContain("IF NOT EXISTS");
     expect(queries[0]).toContain("idx_hiap_ranked_hia_ranking_id");
     expect(queries[0]).toContain('"HighImpactActionRanked" (hia_ranking_id)');
-    expect(queries[1]).toContain("CREATE INDEX CONCURRENTLY IF NOT EXISTS");
+    expect(queries[1]).toContain("CREATE INDEX CONCURRENTLY");
+    expect(queries[1]).not.toContain("IF NOT EXISTS");
     expect(queries[1]).toContain("idx_hiap_ranking_success_created_id");
     expect(queries[1]).toContain(
       '"HighImpactActionRanking" (status, created, id)',

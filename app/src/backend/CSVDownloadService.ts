@@ -7,6 +7,7 @@ import { db } from "@/models";
 import { MANUAL_INPUT_HIERARCHY } from "@/util/form-schema";
 import createHttpError from "http-errors";
 import { logger } from "@/services/logger";
+import { toShort } from "@/util/notation-keys";
 
 type InventoryLine = (string | number | null | undefined)[];
 
@@ -300,10 +301,7 @@ export default class CSVDownloadService {
         inventory_reference: inventoryValue.subCategoryId,
         gpc_reference_number: inventoryValue.gpcReferenceNumber,
         subsector_name: inventoryValue.subSector.subsectorName,
-        notation_key: inventoryValue.unavailableReason
-          ?.split("-")
-          .map((word) => word.charAt(0).toUpperCase())
-          .join(""),
+        notation_key: toShort(inventoryValue.unavailableReason) ?? undefined,
         activityValues: finalActivityValues,
       };
 

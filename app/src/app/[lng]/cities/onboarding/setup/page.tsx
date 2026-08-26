@@ -102,6 +102,9 @@ export default function OnboardingSetup(props: {
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   const [createdCityId, setCreatedCityId] = useState<string | null>(null);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(
+    null,
+  );
   const [isSubmittingStep, setIsSubmittingStep] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
   // Continue on the invite step requires project + email(s) + city (CC-652).
@@ -215,6 +218,7 @@ export default function OnboardingSetup(props: {
             projectId: EnterpriseMode ? selectedProjectId : undefined,
           }).unwrap();
           setCreatedCityId(city?.cityId ?? null);
+          setCreatedProjectId(city?.projectId ?? null);
         } catch (err: unknown) {
           logger.error({ err }, "Onboarding - Failed to add city");
           const errorData = isFetchBaseQueryError(err)
@@ -332,6 +336,7 @@ export default function OnboardingSetup(props: {
               ref={inviteStepRef}
               lng={lng}
               onValidityChange={setCanSubmitInvite}
+              createdProjectId={createdProjectId}
             />
           )}
         </Box>

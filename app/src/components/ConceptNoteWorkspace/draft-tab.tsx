@@ -13,6 +13,8 @@ import { useRef, useState } from "react";
 import type { IconType } from "react-icons";
 import {
   LuCheck,
+  LuChevronLeft,
+  LuChevronRight,
   LuCircleAlert,
   LuDatabase,
   LuRefreshCw,
@@ -279,6 +281,7 @@ export function DraftTab({
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
   const previewElement = useRef<HTMLDivElement | null>(null);
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
+  const [sectionsCollapsed, setSectionsCollapsed] = useState(false);
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
@@ -293,6 +296,9 @@ export function DraftTab({
     draft?.total_chapters ||
     applicationContext?.template?.chapter_schema.length ||
     0;
+  const sectionsToggleLabel = t(
+    sectionsCollapsed ? "expand-draft-sections" : "collapse-draft-sections",
+  );
   const missingDraftingRequirements = [
     !applicationContext?.funder ? t("drafting-requirement-funder") : null,
     !applicationContext?.opportunity
@@ -586,29 +592,81 @@ export function DraftTab({
           >
             <VStack
               align="stretch"
+              alignSelf={sectionsCollapsed ? "flex-start" : "stretch"}
               flexShrink={0}
               gap={2}
-              w={{ base: "full", xl: "180px" }}
-              maxH={{ base: "190px", xl: "full" }}
+              w={{ base: "full", xl: sectionsCollapsed ? "32px" : "180px" }}
+              h={{
+                base: sectionsCollapsed ? "32px" : "auto",
+                xl: sectionsCollapsed ? "32px" : "full",
+              }}
+              maxH={{
+                base: sectionsCollapsed ? "32px" : "190px",
+                xl: "full",
+              }}
               minH={0}
-              border="1px solid"
+              border={sectionsCollapsed ? "0" : "1px solid"}
               borderColor="border.neutral"
               borderRadius="rounded"
-              bg="base.light"
-              p={3}
+              bg={sectionsCollapsed ? "transparent" : "base.light"}
+              p={sectionsCollapsed ? 0 : 3}
+              overflow={sectionsCollapsed ? "visible" : "hidden"}
+              transition="width 180ms ease, max-height 180ms ease, padding 180ms ease"
             >
-              <Text
+              <Flex
+                align="center"
+                justify={sectionsCollapsed ? "center" : "space-between"}
+                gap={2}
                 flexShrink={0}
-                fontFamily="heading"
-                fontSize="10px"
-                fontWeight="semibold"
-                color="content.tertiary"
-                letterSpacing="1.5px"
-                textTransform="uppercase"
               >
-                {t("draft-sections")}
-              </Text>
+                {!sectionsCollapsed && (
+                  <Text
+                    fontFamily="heading"
+                    fontSize="10px"
+                    fontWeight="semibold"
+                    color="content.tertiary"
+                    letterSpacing="1.5px"
+                    textTransform="uppercase"
+                  >
+                    {t("draft-sections")}
+                  </Text>
+                )}
+                <chakra.button
+                  type="button"
+                  aria-controls="concept-note-sections-list"
+                  aria-expanded={!sectionsCollapsed}
+                  aria-label={sectionsToggleLabel}
+                  title={sectionsToggleLabel}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  boxSize="28px"
+                  flexShrink={0}
+                  border={sectionsCollapsed ? "1px solid" : "0"}
+                  borderColor="border.neutral"
+                  borderRadius="6px"
+                  bg="base.light"
+                  color="content.secondary"
+                  _hover={{ bg: "background.neutral" }}
+                  _focusVisible={{
+                    outline: "2px solid",
+                    outlineColor: "content.link",
+                    outlineOffset: "1px",
+                  }}
+                  onClick={() =>
+                    setSectionsCollapsed((collapsed) => !collapsed)
+                  }
+                >
+                  <Icon
+                    as={sectionsCollapsed ? LuChevronRight : LuChevronLeft}
+                    boxSize={4}
+                  />
+                </chakra.button>
+              </Flex>
               <VStack
+                id="concept-note-sections-list"
+                aria-hidden={sectionsCollapsed}
+                display={sectionsCollapsed ? "none" : "flex"}
                 align="stretch"
                 flex={1}
                 minH={0}

@@ -177,6 +177,8 @@
   "chat-thinking": "Clima is thinking…",
   "draft-canvas": "Draft canvas",
   "draft-sections": "Sections",
+  "collapse-draft-sections": "Collapse sections",
+  "expand-draft-sections": "Expand sections",
   "draft-preview-document-title": "{{name}} — Concept note",
   "jump-to-chapter": "Jump to {{chapter}}",
   "start-drafting": "Start drafting",

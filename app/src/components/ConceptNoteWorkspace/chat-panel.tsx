@@ -215,7 +215,9 @@ export function ConceptNoteChatPanel({
   } = useConceptNoteChat({ lng, threadId });
   const [answeringGapId, setAnsweringGapId] = useState<string | null>(null);
   const [gapInterviewActive, setGapInterviewActive] = useState(false);
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const focusedGapCardRef = useRef<HTMLDivElement | null>(null);
+  const initiallyScrolledThreadRef = useRef<string | null>(null);
   const chapters = draft?.chapters ?? [];
   const allGaps = chapters.flatMap((chapter) => chapter.gaps);
   const openGaps = getOpenConceptNoteGaps(allGaps);
@@ -296,11 +298,35 @@ export function ConceptNoteChatPanel({
     const frame = window.requestAnimationFrame(() => {
       focusedGapCardRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "start",
+        block: "end",
       });
     });
     return () => window.cancelAnimationFrame(frame);
-  }, [focusedGapId, showFocusedGap]);
+  }, [answeringGapId, focusedGapId, showFocusedGap]);
+
+  useEffect(() => {
+    if (
+      !threadId ||
+      historyLoading ||
+      messages.length === 0 ||
+      initiallyScrolledThreadRef.current === threadId
+    ) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const chatScroll = chatScrollRef.current;
+      if (!chatScroll) {
+        return;
+      }
+      chatScroll.scrollTo({
+        behavior: "auto",
+        top: chatScroll.scrollHeight,
+      });
+      initiallyScrolledThreadRef.current = threadId;
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [historyLoading, messages.length, threadId]);
 
   async function submitMessage(
     event: FormEvent<HTMLDivElement>,
@@ -400,6 +426,7 @@ export function ConceptNoteChatPanel({
       </Flex>
 
       <VStack
+        ref={chatScrollRef}
         align="stretch"
         gap={4}
         flex={1}
@@ -482,6 +509,171 @@ export function ConceptNoteChatPanel({
                 {t("gap-review-draft-first")}
               </Button>
             </HStack>
+          </Box>
+        )}
+
+        {failedGap?.resolution && (
+          <Box
+            border="1px solid"
+            borderColor="sentiment.negativeDefault"
+            borderRadius="rounded"
+            bg="sentiment.negativeOverlay"
+            p={4}
+          >
+            <HStack gap={2} color="sentiment.negativeDefault">
+              <Icon as={LuCircleAlert} />
+              <Text fontSize="label.sm" fontWeight="semibold">
+                {t("gap-regeneration-failed-title")}
+              </Text>
+            </HStack>
+            <Text mt={2} fontSize="body.sm" color="content.primary">
+              {failedGap.question}
+            </Text>
+            {failedGap.resolution.answer && (
+              <Text mt={1} fontSize="label.sm" color="content.secondary">
+                {failedGap.resolution.answer}
+              </Text>
+            )}
+            <Text mt={2} fontSize="label.sm" color="content.secondary">
+              {t("gap-regeneration-failed-description")}
+            </Text>
+            <Button
+              mt={3}
+              size="sm"
+              variant="outline"
+              loading={isResolvingGap}
+              onClick={() => void retryFailedGap(failedGap)}
+            >
+              <Icon as={LuRefreshCw} />
+              {t("retry")}
+            </Button>
+          </Box>
+        )}
+
+        {reviewChapter && (
+          <Box
+            border="1px solid"
+            borderColor="content.link"
+            borderRadius="rounded"
+            bg="base.light"
+            p={4}
+          >
+            <Text
+              fontSize="body.sm"
+              fontWeight="semibold"
+              color="content.primary"
+            >
+              {t("chapter-ready-for-review", { chapter: reviewChapter.title })}
+            </Text>
+            <Text mt={1} fontSize="label.sm" color="content.secondary">
+              {t("chapter-review-required-description")}
+            </Text>
+            <Button
+              mt={3}
+              size="sm"
+              variant="solid"
+              loading={isConfirmingChapter}
+              onClick={() => void onConfirmChapter(reviewChapter)}
+            >
+              <Icon as={LuCheck} />
+              {t("review-and-confirm")}
+            </Button>
+          </Box>
+        )}
+
+        {messages.map((message) => (
+          <Box
+            key={message.id}
+            alignSelf={message.role === "user" ? "end" : "start"}
+            maxW="92%"
+            border="1px solid"
+            borderColor="border.neutral"
+            borderRadius="rounded"
+            bg={message.role === "user" ? "background.neutral" : "base.light"}
+            px={3}
+            py={2.5}
+          >
+            {message.role === "assistant" ? (
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={assistantMarkdownComponents}
+              >
+                {message.text || t("chat-thinking")}
+              </ReactMarkdown>
+            ) : (
+              <Text
+                fontSize="body.sm"
+                lineHeight="22px"
+                color="content.primary"
+                whiteSpace="pre-wrap"
+              >
+                {message.text || t("chat-thinking")}
+              </Text>
+            )}
+          </Box>
+        ))}
+
+        {latestResolvedGap?.resolution && (
+          <Box
+            border="1px solid"
+            borderColor="sentiment.positiveDefault"
+            borderRadius="rounded"
+            bg="sentiment.positiveOverlay"
+            p={4}
+          >
+            <HStack gap={2} color="sentiment.positiveDefault">
+              <Icon as={LuCheck} />
+              <Text fontSize="label.sm" fontWeight="semibold">
+                {t(
+                  latestResolvedGap.state === "caveat"
+                    ? "gap-caveat-kept"
+                    : "gap-resolved",
+                )}
+              </Text>
+            </HStack>
+            <Text mt={2} fontSize="body.sm" color="content.primary">
+              {latestResolvedGap.question}
+            </Text>
+            {latestResolvedGap.resolution.answer && (
+              <Text mt={1} fontSize="label.sm" color="content.secondary">
+                {latestResolvedGap.resolution.answer}
+              </Text>
+            )}
+            {latestResolvedGap.resolution.source_refs.length > 0 && (
+              <Text mt={1} fontSize="10px" color="content.tertiary">
+                {t("gap-suggestion-sources", {
+                  sources: latestResolvedGap.resolution.source_refs.join(", "),
+                })}
+              </Text>
+            )}
+            <Text mt={2} fontSize="10px" color="content.tertiary">
+              {t(
+                latestResolvedGap.resolution.actor_user_id === "system"
+                  ? "gap-updated-from-source"
+                  : "gap-confirmed-by-you",
+                {
+                  date: new Intl.DateTimeFormat(lng, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }).format(new Date(latestResolvedGap.resolution.created_at)),
+                },
+              )}
+            </Text>
+            <Button
+              mt={3}
+              size="xs"
+              variant="ghost"
+              disabled={isResolvingGap}
+              onClick={() =>
+                beginAnswer(
+                  latestResolvedGap,
+                  latestResolvedGap.resolution?.answer ?? "",
+                )
+              }
+            >
+              <Icon as={LuPencil} />
+              {t("gap-correct-answer")}
+            </Button>
           </Box>
         )}
 
@@ -634,171 +826,6 @@ export function ConceptNoteChatPanel({
           </Box>
         )}
 
-        {failedGap?.resolution && (
-          <Box
-            border="1px solid"
-            borderColor="sentiment.negativeDefault"
-            borderRadius="rounded"
-            bg="sentiment.negativeOverlay"
-            p={4}
-          >
-            <HStack gap={2} color="sentiment.negativeDefault">
-              <Icon as={LuCircleAlert} />
-              <Text fontSize="label.sm" fontWeight="semibold">
-                {t("gap-regeneration-failed-title")}
-              </Text>
-            </HStack>
-            <Text mt={2} fontSize="body.sm" color="content.primary">
-              {failedGap.question}
-            </Text>
-            {failedGap.resolution.answer && (
-              <Text mt={1} fontSize="label.sm" color="content.secondary">
-                {failedGap.resolution.answer}
-              </Text>
-            )}
-            <Text mt={2} fontSize="label.sm" color="content.secondary">
-              {t("gap-regeneration-failed-description")}
-            </Text>
-            <Button
-              mt={3}
-              size="sm"
-              variant="outline"
-              loading={isResolvingGap}
-              onClick={() => void retryFailedGap(failedGap)}
-            >
-              <Icon as={LuRefreshCw} />
-              {t("retry")}
-            </Button>
-          </Box>
-        )}
-
-        {latestResolvedGap?.resolution && (
-          <Box
-            border="1px solid"
-            borderColor="sentiment.positiveDefault"
-            borderRadius="rounded"
-            bg="sentiment.positiveOverlay"
-            p={4}
-          >
-            <HStack gap={2} color="sentiment.positiveDefault">
-              <Icon as={LuCheck} />
-              <Text fontSize="label.sm" fontWeight="semibold">
-                {t(
-                  latestResolvedGap.state === "caveat"
-                    ? "gap-caveat-kept"
-                    : "gap-resolved",
-                )}
-              </Text>
-            </HStack>
-            <Text mt={2} fontSize="body.sm" color="content.primary">
-              {latestResolvedGap.question}
-            </Text>
-            {latestResolvedGap.resolution.answer && (
-              <Text mt={1} fontSize="label.sm" color="content.secondary">
-                {latestResolvedGap.resolution.answer}
-              </Text>
-            )}
-            {latestResolvedGap.resolution.source_refs.length > 0 && (
-              <Text mt={1} fontSize="10px" color="content.tertiary">
-                {t("gap-suggestion-sources", {
-                  sources: latestResolvedGap.resolution.source_refs.join(", "),
-                })}
-              </Text>
-            )}
-            <Text mt={2} fontSize="10px" color="content.tertiary">
-              {t(
-                latestResolvedGap.resolution.actor_user_id === "system"
-                  ? "gap-updated-from-source"
-                  : "gap-confirmed-by-you",
-                {
-                  date: new Intl.DateTimeFormat(lng, {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }).format(new Date(latestResolvedGap.resolution.created_at)),
-                },
-              )}
-            </Text>
-            <Button
-              mt={3}
-              size="xs"
-              variant="ghost"
-              disabled={isResolvingGap}
-              onClick={() =>
-                beginAnswer(
-                  latestResolvedGap,
-                  latestResolvedGap.resolution?.answer ?? "",
-                )
-              }
-            >
-              <Icon as={LuPencil} />
-              {t("gap-correct-answer")}
-            </Button>
-          </Box>
-        )}
-
-        {reviewChapter && (
-          <Box
-            border="1px solid"
-            borderColor="content.link"
-            borderRadius="rounded"
-            bg="base.light"
-            p={4}
-          >
-            <Text
-              fontSize="body.sm"
-              fontWeight="semibold"
-              color="content.primary"
-            >
-              {t("chapter-ready-for-review", { chapter: reviewChapter.title })}
-            </Text>
-            <Text mt={1} fontSize="label.sm" color="content.secondary">
-              {t("chapter-review-required-description")}
-            </Text>
-            <Button
-              mt={3}
-              size="sm"
-              variant="solid"
-              loading={isConfirmingChapter}
-              onClick={() => void onConfirmChapter(reviewChapter)}
-            >
-              <Icon as={LuCheck} />
-              {t("review-and-confirm")}
-            </Button>
-          </Box>
-        )}
-
-        {messages.map((message) => (
-          <Box
-            key={message.id}
-            alignSelf={message.role === "user" ? "end" : "start"}
-            maxW="92%"
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
-            bg={message.role === "user" ? "background.neutral" : "base.light"}
-            px={3}
-            py={2.5}
-          >
-            {message.role === "assistant" ? (
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={assistantMarkdownComponents}
-              >
-                {message.text || t("chat-thinking")}
-              </ReactMarkdown>
-            ) : (
-              <Text
-                fontSize="body.sm"
-                lineHeight="22px"
-                color="content.primary"
-                whiteSpace="pre-wrap"
-              >
-                {message.text || t("chat-thinking")}
-              </Text>
-            )}
-          </Box>
-        ))}
-
         {chatError && (
           <HStack
             role="alert"
@@ -871,7 +898,7 @@ export function ConceptNoteChatPanel({
             </Button>
           </Flex>
         )}
-        <HStack gap={2}>
+        <Box position="relative">
           <Input
             value={input}
             disabled={
@@ -888,23 +915,30 @@ export function ConceptNoteChatPanel({
             }
             bg="background.neutral"
             borderColor="border.neutral"
+            pr="44px"
             onChange={(event) => setInput(event.target.value)}
           />
           <Button
             type="submit"
+            position="absolute"
+            top="50%"
+            right="6px"
+            transform="translateY(-50%)"
+            boxSize="28px"
+            minW="28px"
+            p={0}
             disabled={
               !input.trim() ||
               (answeringGap ? isResolvingGap : !threadId || historyLoading)
             }
             loading={answeringGap ? isResolvingGap : isGenerating}
-            size="sm"
+            size="xs"
             variant="solid"
             aria-label={t(answeringGap ? "submit-answer" : "send-message")}
           >
-            <Icon as={LuSend} />
-            {answeringGap ? t("submit-answer") : null}
+            <Icon as={LuSend} boxSize={3.5} />
           </Button>
-        </HStack>
+        </Box>
         {!threadId && !answeringGap && (
           <Text mt={2} fontSize="label.sm" color="content.tertiary">
             {t("chat-thread-unavailable")}

@@ -8,6 +8,7 @@ import { db } from "@/models";
 import type { Inventory } from "@/models/Inventory";
 import type { InventoryValue } from "@/models/InventoryValue";
 import { InventoryTypeEnum } from "@/util/constants";
+import { toCanonical } from "@/util/notation-keys";
 
 const STATIONARY_ENERGY_SECTOR_REFERENCE = "I";
 
@@ -70,13 +71,6 @@ type NotationKeyCandidateEntry = {
   subCategory: Record<string, unknown>;
 };
 
-const notationKeyByCode = new Map(
-  ALLOWED_STATIONARY_ENERGY_NOTATION_KEYS.map((entry) => [
-    entry.notation_key,
-    entry,
-  ]),
-);
-
 const notationKeyByUnavailableReason = new Map(
   ALLOWED_STATIONARY_ENERGY_NOTATION_KEYS.map((entry) => [
     entry.unavailable_reason,
@@ -87,8 +81,7 @@ const notationKeyByUnavailableReason = new Map(
 export function unavailableReasonForNotationKey(
   notationKey: string,
 ): StationaryEnergyUnavailableReason | null {
-  return notationKeyByCode.get(notationKey as StationaryEnergyNotationKey)
-    ?.unavailable_reason ?? null;
+  return toCanonical(notationKey) as StationaryEnergyUnavailableReason | null;
 }
 
 export async function listNotationKeyCandidateGroups(params: {
@@ -421,9 +414,10 @@ function toStationaryEnergyNotationTarget(
   entry: NotationKeyCandidateEntry,
 ): Record<string, unknown> {
   const unavailableReason = entry.inventoryValue?.unavailableReason ?? null;
-  const notation = unavailableReason
+  const canonical = toCanonical(unavailableReason);
+  const notation = canonical
     ? notationKeyByUnavailableReason.get(
-        unavailableReason as StationaryEnergyUnavailableReason,
+        canonical as StationaryEnergyUnavailableReason,
       )
     : null;
   const targetRef = targetRefFromEntry(entry);

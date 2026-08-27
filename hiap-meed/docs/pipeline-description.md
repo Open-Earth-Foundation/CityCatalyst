@@ -1061,14 +1061,11 @@ Key evidence fields in `012_feasibility.json` are grouped per component:
   - `verdict_score_missing`
   - `ownership_category`
   - `ownership_score`
-  - `ownership_description`
-  - `ownership_description_es`
+  - `ownership_description` (text keyed by available language code)
   - `restrictions_category`
   - `restrictions_score`
-  - `restrictions_description`
-  - `restrictions_description_es`
-  - `legal_justification`
-  - `legal_justification_en`
+  - `restrictions_description` (text keyed by available language code)
+  - `legal_justification` (text keyed by available language code)
   - `analysis_date`
   - `generation_method`
   - `references`

@@ -52,8 +52,12 @@ export interface InviteCollaboratorsStepRef {
 
 const InviteCollaboratorsStep = forwardRef<
   InviteCollaboratorsStepRef,
-  { lng: string; onValidityChange?: (canSubmit: boolean) => void }
->(({ lng, onValidityChange }, ref) => {
+  {
+    lng: string;
+    onValidityChange?: (canSubmit: boolean) => void;
+    createdProjectId?: string | null;
+  }
+>(({ lng, onValidityChange, createdProjectId }, ref) => {
   const { t } = useTranslation(lng, "onboarding");
   const { t: tSettings } = useTranslation(lng, "settings");
   const [emailInput, setEmailInput] = useState("");
@@ -87,6 +91,16 @@ const InviteCollaboratorsStep = forwardRef<
   const { data: projectsData } = useGetUserProjectsQuery({});
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
   const [inviteUsers] = useInviteUsersMutation();
+
+  useEffect(() => {
+    if (
+      createdProjectId &&
+      selectedProject.length === 0 &&
+      projectsData?.some((p) => p.projectId === createdProjectId)
+    ) {
+      setSelectedProject([createdProjectId]);
+    }
+  }, [createdProjectId, projectsData, selectedProject.length]);
 
   const isCollaborator =
     accessStatus?.isCollaborator &&

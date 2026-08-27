@@ -35,7 +35,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import type { TFunction } from "i18next";
 
@@ -46,6 +46,8 @@ import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { isModuleVisible } from "@/util/module-visibility";
+import { resolveCitySwitchPath } from "@/util/module-navigation";
+import { toaster } from "@/components/ui/toaster";
 
 const ProjectFilterSection = ({
   t,
@@ -61,12 +63,24 @@ const ProjectFilterSection = ({
   organizationId?: string;
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const [selectedProject, setSelectedProject] = useState<string>("");
 
   // Check user access status for permission-based UI
   const { data: userAccessStatus } = useGetUserAccessStatusQuery({});
   const [selectedCity, setSelectedCity] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+
+  // Modules enabled for the currently selected project, used to decide
+  // whether the active module can be preserved when switching cities.
+  const { data: projectModulesForSwitch } = useGetProjectModulesQuery(
+    selectedProject,
+    { skip: !selectedProject },
+  );
+  const availableModuleIds = useMemo(
+    () => new Set((projectModulesForSwitch ?? []).map((mod) => mod.id)),
+    [projectModulesForSwitch],
+  );
 
   // Initialize with current project and city based on currentCityId
   useEffect(() => {
@@ -193,9 +207,29 @@ const ProjectFilterSection = ({
 
   const searchResults = getSearchResults();
 
-  // Handle city selection and navigation
+  // Handle city selection and navigation, preserving the current module
+  // (GHGI/HIAP/dashboard) for the new city when it's available.
   const handleCitySelection = (cityId: string) => {
-    router.push(`/${lng}/cities/${cityId}`);
+    const { path, blockedModuleId } = resolveCitySwitchPath({
+      pathname,
+      lng,
+      newCityId: cityId,
+      availableModuleIds,
+    });
+
+    if (blockedModuleId) {
+      const blockedModule = projectModulesForSwitch?.find(
+        (mod) => mod.id === blockedModuleId,
+      );
+      toaster.create({
+        type: "info",
+        title: t("module-unavailable-for-city", {
+          module: blockedModule?.name?.[lng] || blockedModule?.name?.en || "",
+        }),
+      });
+    }
+
+    router.push(path);
   };
 
   return (
@@ -458,6 +492,7 @@ const JNDrawer = ({
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
+  const pathname = usePathname();
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
   const { organization, setOrganization } = useOrganizationContext();
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
@@ -473,6 +508,7 @@ const JNDrawer = ({
     [rawOrganizations],
   );
   const [getProjectsForOrganization] = api.useLazyGetProjectsQuery();
+  const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const [isOrgMenuOpen, setOrgMenuOpen] = useState(false);
 
   const [selectedProject, setSelectedProject] = React.useState<string | null>();
@@ -499,12 +535,43 @@ const JNDrawer = ({
     })
       .unwrap()
       .catch(() => []);
-    const cityId = projects
-      .flatMap((project) => project.cities)
-      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
-    router.push(
-      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
-    );
+
+    const targetProject = projects
+      .flatMap((project) => project.cities.map((city) => ({ project, city })))
+      .sort((a, b) => a.city.name.localeCompare(b.city.name))[0];
+
+    if (!targetProject) {
+      router.push(`/${lng}/cities/onboarding`);
+      onClose();
+      return;
+    }
+
+    const newProjectModules = await getProjectModulesTrigger(
+      targetProject.project.projectId,
+    )
+      .unwrap()
+      .catch(() => []);
+
+    const { path, blockedModuleId } = resolveCitySwitchPath({
+      pathname,
+      lng,
+      newCityId: targetProject.city.cityId,
+      availableModuleIds: new Set(newProjectModules.map((mod) => mod.id)),
+    });
+
+    if (blockedModuleId) {
+      const blockedModule = newProjectModules.find(
+        (mod) => mod.id === blockedModuleId,
+      );
+      toaster.create({
+        type: "info",
+        title: t("module-unavailable-for-city", {
+          module: blockedModule?.name?.[lng] || blockedModule?.name?.en || "",
+        }),
+      });
+    }
+
+    router.push(path);
     onClose();
   }
 

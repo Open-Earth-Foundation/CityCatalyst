@@ -51,6 +51,11 @@ import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
 import { getParamValue } from "@/util/helpers";
 import { env } from "@/lib/runtime-env";
+import {
+  getActiveModuleSegment,
+  resolveCitySwitchPath,
+} from "@/util/module-navigation";
+import { toaster } from "@/components/ui/toaster";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -105,6 +110,7 @@ export function NavigationBar({
     [rawOrganizations],
   );
   const [getProjects] = api.useLazyGetProjectsQuery();
+  const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const router = useRouter();
 
   const onChangeLanguage = async (language: string) => {
@@ -119,11 +125,17 @@ export function NavigationBar({
 
   // Derive the active module name from the current pathname
   const moduleName = useMemo(() => {
-    if (!pathname) return null;
-    if (pathname.includes("/GHGI")) return t("page-title-ghg-inventories");
-    if (pathname.includes("/HIAP")) return t("page-title-hiap");
-    if (pathname.includes("/dashboard")) return t("page-title-dashboard");
-    return null;
+    const active = getActiveModuleSegment(pathname);
+    switch (active?.segment) {
+      case "GHGI":
+        return t("page-title-ghg-inventories");
+      case "HIAP":
+        return t("page-title-hiap");
+      case "dashboard":
+        return t("page-title-dashboard");
+      default:
+        return null;
+    }
   }, [pathname, t]);
 
   // Memoize city to ensure it updates when route changes
@@ -157,12 +169,43 @@ export function NavigationBar({
     const projects = await getProjects({ organizationId })
       .unwrap()
       .catch(() => []);
-    const cityId = projects
-      .flatMap((project) => project.cities)
-      .sort((a, b) => a.name.localeCompare(b.name))[0]?.cityId;
-    router.push(
-      cityId ? `/${lng}/cities/${cityId}` : `/${lng}/cities/onboarding`,
-    );
+
+    const targetProject = projects
+      .flatMap((project) => project.cities.map((city) => ({ project, city })))
+      .sort((a, b) => a.city.name.localeCompare(b.city.name))[0];
+
+    if (!targetProject) {
+      router.push(`/${lng}/cities/onboarding`);
+      return;
+    }
+
+    const projectModules = await getProjectModulesTrigger(
+      targetProject.project.projectId,
+    )
+      .unwrap()
+      .catch(() => []);
+
+    const { path, blockedModuleId } = resolveCitySwitchPath({
+      pathname,
+      lng,
+      newCityId: targetProject.city.cityId,
+      availableModuleIds: new Set(projectModules.map((mod) => mod.id)),
+    });
+
+    if (blockedModuleId) {
+      const blockedModule = projectModules.find(
+        (mod) => mod.id === blockedModuleId,
+      );
+      toaster.create({
+        type: "info",
+        title: t("module-unavailable-for-city", {
+          module:
+            blockedModule?.name?.[lng] || blockedModule?.name?.en || "",
+        }),
+      });
+    }
+
+    router.push(path);
   }
 
   function logOut() {

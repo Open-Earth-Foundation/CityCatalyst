@@ -1,6 +1,6 @@
 import React from "react";
 import { useDisclosure } from "@chakra-ui/react";
-import { FiUpload } from "react-icons/fi";
+import { FiGlobe, FiUpload } from "react-icons/fi";
 import ModalPublish from "./DownloadAndShareModals/ModalPublish";
 import ToolbarActionButton from "./ToolbarActionButton";
 import { useTranslation } from "@/i18n/client";
@@ -34,7 +34,13 @@ export function PublishButton({
       />
       <ToolbarActionButton
         onClick={onPublishOpen}
-        icon={<FiUpload size={24} />}
+        icon={
+          inventory?.isPublic ? (
+            <FiGlobe size={24} />
+          ) : (
+            <FiUpload size={24} />
+          )
+        }
         label={t("publish-inventory")}
         dataTestId="publish-inventory-button"
       />

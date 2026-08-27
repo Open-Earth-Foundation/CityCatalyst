@@ -44,6 +44,14 @@ type GpcActivity = {
   notationKey?: string;
 };
 
+type MeedRankResponse = {
+  results: {
+    ranked_actions: MeedResponseActionRanked[];
+    removed_actions: MeedResponseActionRemoved[];
+    metadata: { weights: Record<string, number> };
+  }[];
+};
+
 type MeedResponseActionRanked = {
   action_id: string;
   rank: number;
@@ -181,25 +189,10 @@ export default class MeedApiService {
     });
 
     // make API request to MEED API
-    const response = await fetch(MEED_API_URL + "prioritize", {
-      method: "POST",
-      body: JSON.stringify({
-        requestData: fullRequest,
-        meta: {
-          requestId: randomUUID(),
-        },
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const result = await response.json();
-    const resultString = JSON.stringify(result, null, 2);
-
-    if (response.status != 200 || result.detail) {
-      throw new createHttpError.BadRequest("MEED API error: " + resultString);
-    }
+    const result: MeedRankResponse = await this.makeRequest(
+      "rank",
+      fullRequest,
+    );
 
     const rankedActionsRaw: MeedResponseActionRanked[] =
       result.results[0].ranked_actions;
@@ -274,5 +267,102 @@ export default class MeedApiService {
     });
 
     return { rankedActions, removedActions };
+  }
+
+  public static async getActions() {
+    const result = await this.makeRequest("action-pathways");
+    return result;
+  }
+
+  public static async getCityAttributes(cityId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const locode = city.locode;
+    const result = await this.makeRequest(`cities/${locode}/attributes`);
+    return result;
+  }
+
+  public static async getPolicyScores(cityId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const locode = city.locode;
+    const result = await this.makeRequest(
+      `cities/${locode}/action-policy-scores`,
+    );
+    return result;
+  }
+
+  public static async getFinanceFeasibility(cityId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const locode = city.locode;
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `cities/${locode}/climate-finance/feasibility?country_code=${countryLocode}`,
+    );
+    return result;
+  }
+
+  public static async getFinanceOpportunities(
+    cityId: string,
+    sector: string,
+    financeRoute: string,
+  ) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `climate-finance/opportunities?country_code=${countryLocode}&sector=${sector}&route=${financeRoute}`,
+    );
+    return result;
+  }
+
+  public static async getFinanceProjects(cityId: string, actionId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `climate-finance/projects?country_code=${countryLocode}&action_id=${actionId}`,
+    );
+    return result;
+  }
+
+  private static async makeRequest(route: string, data: object | null = null) {
+    const method = data == null ? "GET" : "POST";
+    const body =
+      data == null
+        ? undefined
+        : JSON.stringify({
+            requestData: data,
+            meta: {
+              requestId: randomUUID(),
+            },
+          });
+    const response = await fetch(MEED_API_URL + route, {
+      method,
+      body,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (response.status != 200 || result.detail) {
+      const resultString = JSON.stringify(result, null, 2);
+      throw new createHttpError.BadRequest("MEED API error: " + resultString);
+    }
+
+    return result;
   }
 }

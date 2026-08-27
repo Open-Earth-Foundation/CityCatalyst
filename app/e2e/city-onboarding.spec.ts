@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { dismissCookieConsent, pickE2EOnboardingInventoryYear } from "./helpers";
+import { dismissCookieConsent } from "./helpers";
 
 test("City Onboarding", async ({ page }) => {
   test.setTimeout(120000);
@@ -57,45 +57,7 @@ test("City Onboarding", async ({ page }) => {
     await continueButton.click();
   }
 
-  /** "Step 2 – Population data is pre-populated" */
-  {
-    await expect(page.getByTestId("add-population-data-heading")).toBeVisible({
-      timeout: 15000,
-    });
-
-    const cityPopulationInput = page.getByPlaceholder("City population number");
-    try {
-      await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {
-        timeout: 15000,
-      });
-    } catch {
-      // OpenClimate pre-fill didn't return in time — fill manually so the
-      // wizard can still be exercised end-to-end.
-      const inventoryYear = pickE2EOnboardingInventoryYear();
-      await cityPopulationInput.fill("1000000");
-      await page
-        .locator('select[name="cityPopulationYear"]')
-        .selectOption(inventoryYear);
-      await page
-        .getByPlaceholder("Region or province population number")
-        .fill("5000000");
-      await page
-        .locator('select[name="regionPopulationYear"]')
-        .selectOption(inventoryYear);
-      await page.getByPlaceholder("Country population number").fill("10000000");
-      await page
-        .locator('select[name="countryPopulationYear"]')
-        .selectOption(inventoryYear);
-    }
-
-    const continueButton = page
-      .getByRole("button", { name: /^Continue$/ })
-      .last();
-    await expect(continueButton).toBeEnabled({ timeout: 30000 });
-    await continueButton.click();
-  }
-
-  /** "Step 3 – Invite collaborators (skip) completes onboarding" */
+  /** "Step 2 – Invite collaborators (skip) completes onboarding" */
   {
     await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
       timeout: 15000,

@@ -2,7 +2,6 @@ import React from "react";
 import { Box, useDisclosure } from "@chakra-ui/react";
 import { FiDownload } from "react-icons/fi";
 import ModalDownloadReport from "./DownloadAndShareModals/ModalDownloadReport";
-import ModalPublish from "./DownloadAndShareModals/ModalPublish";
 import ToolbarActionButton from "./ToolbarActionButton";
 import { useTranslation } from "@/i18n/client";
 import type { CityAttributes } from "@/models/City";
@@ -29,12 +28,6 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
     onClose: onDownloadShareClose,
   } = useDisclosure();
 
-  const {
-    open: isPublishOpen,
-    onOpen: onPublishOpen,
-    onClose: onPublishClose,
-  } = useDisclosure();
-
   const { t } = useTranslation(lng, "dashboard");
 
   return (
@@ -44,19 +37,9 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({
         lng={lng}
         isDownloadShareOpen={isDownloadShareOpen}
         onDownloadShareClose={onDownloadShareClose}
-        onPublishOpen={onPublishOpen}
         inventoryId={inventoryId}
         inventory={inventory}
         cityLocode={city?.locode}
-      />
-      <ModalPublish
-        // Todo: add close state action
-        setModalOpen={() => {}}
-        t={t}
-        isPublishOpen={isPublishOpen}
-        onPublishClose={onPublishClose}
-        inventoryId={inventoryId}
-        inventory={inventory}
       />
       {children ? (
         <Box onClick={onDownloadShareOpen} data-testid="download-button">

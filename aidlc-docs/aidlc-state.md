@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: INCEPTION
-- **Current Stage**: Requirements Analysis — awaiting answers
+- **Current Stage**: User Stories — planning and clarification
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -26,8 +26,8 @@
 ### INCEPTION PHASE
 - [x] Workspace Detection — completed
 - [x] Reverse Engineering — artifacts generated; explicit approval required
-- [ ] Requirements Analysis — clarification questions issued; awaiting answers
-- [ ] User Stories — pending Requirements Analysis decision
+- [x] Requirements Analysis — approved 2026-08-27
+- [ ] User Stories — planning and clarification in progress
 - [ ] Application Design — pending Requirements Analysis decision
 - [ ] Units Generation — pending Requirements Analysis decision
 - [ ] Workflow Planning — pending preceding inception decisions
@@ -35,13 +35,13 @@
 ## Extension Configuration
 | Extension | Enabled | Decided At |
 |---|---|---|
-| Security Baseline | Pending user answer | Requirements Analysis |
-| Resiliency Baseline | Pending user answer | Requirements Analysis |
-| Property-Based Testing | Pending user answer | Requirements Analysis |
+| Security Baseline | Yes | Requirements Analysis |
+| Resiliency Baseline | Yes | Requirements Analysis |
+| Property-Based Testing | Partial | Requirements Analysis |
 
 ## Approval Gates
 - [x] Reverse Engineering approved — 2026-08-27
-- [ ] Requirements Analysis answers complete and requirements approved
+- [x] Requirements Analysis answers complete and requirements approved — 2026-08-27
 - [ ] User Stories approved (if selected)
 - [ ] Application Design approved (if selected)
 - [ ] Units Generation approved (if selected)

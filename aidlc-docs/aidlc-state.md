@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: INCEPTION
-- **Current Stage**: Application Design — planning questions open
+- **Current Stage**: Application Design — approved plan; artifact generation in progress
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -29,8 +29,8 @@
 - [x] Requirements Analysis — approved 2026-08-27
 - [x] User Stories — artifacts approved 2026-08-28
 - [x] Workflow Planning — approved 2026-08-28
-- [ ] Application Design — planning questions open; explicit plan approval required
-- [ ] Units Generation — pending Workflow Planning approval
+- [ ] Application Design — plan approved; artifacts being generated; explicit artifact approval required
+- [ ] Units Generation — pending Application Design approval
 
 ## Extension Configuration
 | Extension | Enabled | Decided At |
@@ -43,7 +43,8 @@
 - [x] Reverse Engineering approved — 2026-08-27
 - [x] Requirements Analysis answers complete and requirements approved — 2026-08-27
 - [x] User Stories approved (if selected) — 2026-08-28
-- [ ] Application Design approved (if selected)
+- [x] Application Design plan approved — 2026-08-28
+- [ ] Application Design artifacts approved (if selected)
 - [ ] Units Generation approved (if selected)
 - [x] Workflow Planning approved — 2026-08-28
 - [ ] Construction explicitly authorized

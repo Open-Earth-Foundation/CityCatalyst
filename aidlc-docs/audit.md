@@ -203,3 +203,33 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Began Application Design for the approved Core/Climate Advisor boundary. Created the dedicated design-plan question file with `[Answer]:` tags covering component boundaries, contracts, authorization propagation, request-time orchestration, bounded reads, non-disclosure errors, observability, compatibility, and cross-service testing. Design artifacts and application code remain ungenerated and unchanged pending answered questions and plan approval.
 **Approval Status**: Answer-collection gate open.
 ---
+
+## Application Design — Answer Validation and Follow-up
+**Timestamp**: 2026-08-28T16:01:43-03:00
+**User Input**: "filled, check!"
+**AI Response**: Validated all 14 original Application Design answer tags. The answers consistently select Core-owned discovery/authorization/allowlisting, explicit request context, request-time Climate Advisor loading, typed bounded contracts, stable non-disclosing errors, existing client/auth patterns, compatibility preservation, safe telemetry, and cross-service contract/security testing. Added Question 15 to resolve the phrase “when the approved contract permits” in partial-failure continuation behavior before the plan approval gate.
+**Follow-up Status**: Application Design plan remains open; no design artifacts or application code were generated.
+---
+
+## Application Design — Plan Answer Validation
+**Timestamp**: 2026-08-28T16:04:21-03:00
+**User Input**: "Done"
+**AI Response**: Validated the completed Question 15 response. All 15 Application Design questions now have non-empty `[Answer]:` tags. The answers consistently select isolation of a failed selected tool, stable non-disclosing errors, and continuation only for independently authorized unrelated tools under the approved orchestration contract. No further follow-up questions are required.
+**Approval Prompt**: "Please examine `aidlc-docs/inception/plans/application-design-plan.md`. Explicitly approve the completed Application Design plan so the five Application Design artifacts can be generated, or request changes. Application code, Units Generation, and Construction remain unauthorized."
+**Approval Status**: Pending user response.
+---
+
+## Approval — Application Design Plan
+**Timestamp**: 2026-08-28T16:10:53-03:00
+**Approval Prompt**: "Please examine `aidlc-docs/inception/plans/application-design-plan.md`. Explicitly approve the completed Application Design plan so the five Application Design artifacts can be generated, or request changes. Application code, Units Generation, and Construction remain unauthorized."
+**User Response**: "approved"
+**Approval Status**: Approved.
+**AI Response**: Recorded the explicit Application Design plan approval and authorized generation of the five high-level Application Design artifacts. No application code, Units Generation, or Construction work was started by this approval.
+---
+
+## Application Design — Artifact Generation Start
+**Timestamp**: 2026-08-28T16:10:53-03:00
+**User Input**: "approved"
+**AI Response**: Began generating `components.md`, `component-methods.md`, `services.md`, `component-dependency.md`, and the consolidated `application-design.md` from the approved plan and existing architecture. Application code remains unchanged.
+**Approval Status**: Artifact generation in progress; explicit artifact approval required after presentation.
+---

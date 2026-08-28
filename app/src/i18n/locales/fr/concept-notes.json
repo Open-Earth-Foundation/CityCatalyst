@@ -331,5 +331,6 @@
   "workflow-interviewing": "Entretien",
   "workflow-unknown": "Étape inconnue",
   "autosaved": "État d'exécution enregistré automatiquement",
-  "export": "Exporter"
+  "export": "Exporter",
+  "chat-generating": "Génération de réponse"
 }

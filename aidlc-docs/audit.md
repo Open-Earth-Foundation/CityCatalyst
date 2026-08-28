@@ -101,6 +101,24 @@ reviewable unit. Stop at every required approval gate."
 **Approval Status**: Pending user response.
 ---
 
+## User Stories — Revision Request
+**Timestamp**: 2026-08-28T11:09:59-03:00
+**User Input**: "Checked, but I'll request some adjusts to the User Storeis artfacts before approving them.\n\nUpdate only the Inception documentation. DO NOT modify application core or begin Construction:\n\n1. Clearly differentiate US-05 and US-06:\n\n- discovery must omit unauthorized, unavailable, or removed entries without revealing metadata\n- reads using stale, forged, or invalid selections must return a stable, non-disclosing error\n- Make it explicit that the exact error contract will be defined during application design\n\n2. US-08 is too large, refine:\n\n- Split it into smaller stories covering CityCatalyst Core evidence and Climate Advisor evidence\n- Update acceptance criteria, traceability, persona mappings, and story counts.\n\n3. Clarify in [personas.md](projects/open-earth/CityCatalyst/aidlc-docs/inception/user-stories/personas.md) that:\n\n- P-01 is the end-user persona.\n- P-02 is a system role\n- P-03 is a technical ownership/maintenance role\n- P-04 is a security and operational governance role\n- Keep these personas because they represent important responsibilities, but DO NOT treat them as end users\n\nThen:\n\n- Update `@stories.md` and `personas.md`.\n- Preserve the security, non-disclosure, bounded-read, Core authorization, and no-storage-credentials requirements.\n- Update traceability to the requirements and Linear issue CC-737.\n- Record this change request in `aidlc-docs/audit.md` and update the vault if necessary.\n- DO NOT mark the artifacts as approved.\n- Present the revised documents again and wait for my explicit approval."
+**AI Response**: Revised only Inception documentation. US-05 now covers discovery omission for unauthorized, unavailable, and removed entries; US-06 now covers stable non-disclosing errors for stale, forged, and invalid reads, with the exact error contract explicitly deferred to Application Design. US-08 was split into US-08 CityCatalyst Core evidence and US-09 Climate Advisor evidence. Persona role classifications and mappings, traceability, and story counts were updated. Artifacts remain unapproved.
+**Approval Status**: Remains pending; no approval was recorded.
+---
+
+## User Stories — Generation Complete
+**Timestamp**: 2026-08-28T11:09:59-03:00
+**User Input**: "reviewed, proceed"
+**AI Response**: Generated four personas and eight user stories using the approved hybrid journey-based approach. Stories include INVEST checks, Given/When/Then acceptance criteria, cross-cutting constraints, first-class non-disclosure and availability scenarios, compatibility behavior, and traceability to approved requirements and Linear acceptance criteria.
+**Security Findings**: None blocking at this documentation stage. Security outcomes are represented as first-class stories and acceptance criteria; implementation verification remains required downstream.
+**Resiliency Findings**: None blocking at this documentation stage. Existing CityCatalyst operational processes are inherited and timeout/Core-unavailability scenarios are documented for Operations.
+**PBT Findings**: None blocking under Partial enforcement. Applicable serialization/invariant/generator/reproducibility requirements are carried into the stories.
+**Approval Prompt**: "Please examine the user stories and personas at `aidlc-docs/inception/user-stories/stories.md` and `aidlc-docs/inception/user-stories/personas.md`. Request changes or explicitly approve the generated stories to proceed to Workflow Planning."
+**Approval Status**: Pending user response.
+---
+
 ## Approval — User Stories Generation Plan
 **Timestamp**: 2026-08-28T11:09:59-03:00
 **Approval Prompt**: "The User Stories generation plan is complete at `aidlc-docs/inception/plans/story-generation-plan.md`. Approve the plan to generate `stories.md` and `personas.md`, or request changes."
@@ -113,6 +131,14 @@ reviewable unit. Stop at every required approval gate."
 **Timestamp**: 2026-08-28T11:09:59-03:00
 **User Input**: "reviewed, proceed"
 **AI Response**: Began story and persona generation from the approved requirements and story-generation plan. The approved approach is hybrid user-journey organization with first-class security/failure slices and traceability.
+---
+
+## Approval — User Stories Artifacts
+**Timestamp**: 2026-08-28T11:48:57-03:00
+**Approval Prompt**: "Please examine the revised user stories and personas at `aidlc-docs/inception/user-stories/stories.md` and `aidlc-docs/inception/user-stories/personas.md`. Approve the revised artifacts or request changes."
+**User Response**: "approved!"
+**Approval Status**: Approved.
+**AI Response**: Recorded the explicit approval, marked the User Stories gate complete, and advanced to Workflow Planning. No application code was modified.
 ---
 
 ## Approval — Requirements Analysis

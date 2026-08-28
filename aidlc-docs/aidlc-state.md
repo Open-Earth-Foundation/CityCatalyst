@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: INCEPTION
-- **Current Stage**: User Stories — generating stories and personas
+- **Current Stage**: Workflow Planning — in progress; explicit approval required
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -27,10 +27,10 @@
 - [x] Workspace Detection — completed
 - [x] Reverse Engineering — artifacts generated; explicit approval required
 - [x] Requirements Analysis — approved 2026-08-27
-- [ ] User Stories — generation in progress
-- [ ] Application Design — pending Requirements Analysis decision
-- [ ] Units Generation — pending Requirements Analysis decision
-- [ ] Workflow Planning — pending preceding inception decisions
+- [x] User Stories — artifacts approved 2026-08-28
+- [ ] Workflow Planning — generated; explicit approval required
+- [ ] Application Design — pending Workflow Planning approval
+- [ ] Units Generation — pending Workflow Planning approval
 
 ## Extension Configuration
 | Extension | Enabled | Decided At |
@@ -42,7 +42,7 @@
 ## Approval Gates
 - [x] Reverse Engineering approved — 2026-08-27
 - [x] Requirements Analysis answers complete and requirements approved — 2026-08-27
-- [ ] User Stories approved (if selected)
+- [x] User Stories approved (if selected) — 2026-08-28
 - [ ] Application Design approved (if selected)
 - [ ] Units Generation approved (if selected)
 - [ ] Workflow Planning approved

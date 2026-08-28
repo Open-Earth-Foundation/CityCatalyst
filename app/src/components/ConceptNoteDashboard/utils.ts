@@ -68,6 +68,15 @@ export function getContextSourceStatusTranslationKey(value: string): string {
   );
 }
 
+export function hasPrioritizedHiapActions(widget: unknown): boolean {
+  const hiap = recordValue(widget);
+
+  return [hiap.mitigation, hiap.adaptation].some((actionType) => {
+    const rankedActions = recordValue(actionType).rankedActions;
+    return Array.isArray(rankedActions) && rankedActions.length > 0;
+  });
+}
+
 export function conceptNoteResumeHref(
   lng: string,
   cityId: string,

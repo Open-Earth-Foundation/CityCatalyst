@@ -664,8 +664,20 @@ copied from the persisted `context_summary`.
 
 `GET /v1/concept-notes/{run_id}?user_id=...` returns only an owned run and
 revalidates current city access before responding. It exposes the same persisted
-status, workflow step, and progress summary as the list contract. The Alembic
-revision `20260729_120000` provisions `concept_note_runs`,
+status, workflow step, and progress summary as the list contract. `PATCH` on the
+same route accepts a trimmed 1-120 character `name` and updates both the run and
+its dedicated thread title.
+
+`POST /v1/concept-notes/{run_id}/duplicate` requires `Idempotency-Key` and
+creates a new run and empty chat. It copies current chapter content, context, and
+ready upload metadata with new mutable IDs while reusing immutable Markdown
+artifacts. Messages, revision history, and exports are not copied. `DELETE` on
+the run route removes its workspace, run data, and dedicated chat; shared files
+and source artifacts remain. A legacy thread referenced by multiple notes cannot
+be deleted. Duplicate and delete return HTTP `409` while context or drafting work
+is active.
+
+The Alembic revision `20260729_120000` provisions `concept_note_runs`,
 `concept_note_context_bundles`, and `concept_note_uploads` in `CA_DATABASE_URL`.
 When `thread_id` is supplied, the start operation also requires that durable
 chat thread to belong to the authenticated user; it remains an integration
@@ -678,10 +690,13 @@ workflow identifier while preserving tokens and unrelated thread context.
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,
 `GET /api/v1/concept-notes?city_id=...`, and
-`GET /api/v1/concept-notes/{runId}`. The proxy derives `user_id` from the session,
-checks city access, issues the scoped CA token server-side, and preserves Climate
-Advisor response statuses. The CityCatalyst dashboard consumes the collection
-route; its implementation details live in the repository architecture guide.
+`GET|PATCH|DELETE /api/v1/concept-notes/{runId}?city_id=...`, plus
+`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...`. The proxy derives
+`user_id` from the session, checks access to the requested city before issuing the
+scoped CA token, forwards the duplicate idempotency key, and preserves Climate
+Advisor response statuses. Climate Advisor remains authoritative for run ownership
+and its stored city binding. The CityCatalyst dashboard consumes these routes; its
+implementation details live in the repository architecture guide.
 
 ### Concept Note city-context baseline
 

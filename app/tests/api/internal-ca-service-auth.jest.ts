@@ -132,12 +132,15 @@ function serviceToken(
   return jwt.sign(payload, process.env.VERIFICATION_TOKEN_SECRET!, options);
 }
 
-function serviceHeaders(token: string, extra?: HeadersInit): Headers {
+function serviceHeaders(
+  token: string,
+  extra?: Record<string, string>,
+): Headers {
   return jsonHeaders({
     Authorization: `Bearer ${token}`,
     "X-Service-Name": "climate-advisor",
     "X-Service-Key": "ci-shared-service-key",
-    ...Object.fromEntries(new Headers(extra)),
+    ...extra,
   });
 }
 

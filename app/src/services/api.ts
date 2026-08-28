@@ -2166,8 +2166,14 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
-        query: (runId) => `concept-notes/${runId}`,
+      getConceptNoteRun: builder.query<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          params: { city_id: cityId },
+        }),
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
@@ -2206,6 +2212,47 @@ export const api = createApi({
               selectedFundingOpportunityId ?? null,
             thread_id: threadId ?? null,
           },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      renameConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; name: string; runId: string }
+      >({
+        query: ({ cityId, name, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "PATCH",
+          body: { name },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      duplicateConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ cityId, idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}/duplicate`,
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      deleteConceptNoteRun: builder.mutation<
+        void,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "DELETE",
+          params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
@@ -2418,6 +2465,9 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useRenameConceptNoteRunMutation,
+  useDuplicateConceptNoteRunMutation,
+  useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

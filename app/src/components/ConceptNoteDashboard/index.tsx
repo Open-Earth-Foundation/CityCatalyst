@@ -358,6 +358,7 @@ export function ConceptNoteDashboard({
                   <RunCard
                     key={run.run_id}
                     run={run}
+                    t={t}
                     reducedMotion={reducedMotion}
                     statusLabel={statusLabel}
                     statusTone={status.tone}
@@ -372,11 +373,6 @@ export function ConceptNoteDashboard({
                     progressLabel={t("run-progress", { progress })}
                     progress={progress}
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
-                    resumeLabel={t("resume")}
-                    renameLabel={t("rename")}
-                    duplicateLabel={t("duplicate")}
-                    exportLabel={t("export")}
-                    deleteLabel={t("delete")}
                     duplicateLoading={duplicatingRunId === run.run_id}
                     lifecycleDisabled={Boolean(duplicatingRunId)}
                     onRename={() =>

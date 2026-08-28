@@ -2166,8 +2166,14 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
-        query: (runId) => `concept-notes/${runId}`,
+      getConceptNoteRun: builder.query<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          params: { city_id: cityId },
+        }),
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
@@ -2215,10 +2221,11 @@ export const api = createApi({
         ConceptNoteRun,
         { cityId: string; name: string; runId: string }
       >({
-        query: ({ name, runId }) => ({
+        query: ({ cityId, name, runId }) => ({
           url: `concept-notes/${runId}`,
           method: "PATCH",
           body: { name },
+          params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
@@ -2228,10 +2235,11 @@ export const api = createApi({
         ConceptNoteRun,
         { cityId: string; idempotencyKey: string; runId: string }
       >({
-        query: ({ idempotencyKey, runId }) => ({
+        query: ({ cityId, idempotencyKey, runId }) => ({
           url: `concept-notes/${runId}/duplicate`,
           method: "POST",
           headers: { "Idempotency-Key": idempotencyKey },
+          params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
@@ -2241,9 +2249,10 @@ export const api = createApi({
         void,
         { cityId: string; runId: string }
       >({
-        query: ({ runId }) => ({
+        query: ({ cityId, runId }) => ({
           url: `concept-notes/${runId}`,
           method: "DELETE",
+          params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },

@@ -10,6 +10,7 @@ import {
 } from "@/backend/chat/climate-advisor";
 import { PermissionService } from "@/backend/permissions/PermissionService";
 import type { AppSession } from "@/lib/auth";
+import { logger } from "@/services/logger";
 
 const upstreamRunSchema = z.object({ city_id: z.string().uuid() });
 
@@ -18,9 +19,14 @@ type ConceptNoteApiRequest = {
   userId: string;
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: Record<string, unknown>;
-  headers?: HeadersInit;
+  headers?: Record<string, string>;
   requestId?: string;
   searchParams?: Record<string, string>;
+};
+
+type AuthorizedConceptNoteApiRequest = Omit<ConceptNoteApiRequest, "userId"> & {
+  cityId: string;
+  session: AppSession;
 };
 
 /**
@@ -39,10 +45,24 @@ export async function callConceptNoteApi(
     body: request.body,
     searchParams: request.searchParams,
     headers: {
-      ...Object.fromEntries(new Headers(request.headers).entries()),
+      ...request.headers,
       Authorization: `Bearer ${token.access_token}`,
       "X-Request-ID": request.requestId ?? `cc-${randomUUID()}`,
     },
+  });
+}
+
+/** Check city access before calling an authenticated Concept Note endpoint. */
+export async function callAuthorizedConceptNoteApi(
+  request: AuthorizedConceptNoteApiRequest,
+): Promise<Response> {
+  const { cityId, session, ...apiRequest } = request;
+  await PermissionService.canAccessCity(session, cityId, {
+    includeResource: false,
+  });
+  return callConceptNoteApi({
+    ...apiRequest,
+    userId: session.user.id,
   });
 }
 
@@ -61,22 +81,28 @@ export async function readConceptNoteApiPayload(
   }
 }
 
-/** Preserve an upstream response after rechecking city access on success. */
+/** Preserve an upstream response after validating its successful run payload. */
 export async function conceptNoteRunResponse(
   response: Response,
-  session: AppSession,
+  expectedCityId: string,
 ): Promise<NextResponse> {
   const payload = await readConceptNoteApiPayload(response);
   if (response.ok) {
     const run = upstreamRunSchema.safeParse(payload);
     if (!run.success) {
+      logger.error(
+        { error: run.error },
+        "Climate Advisor returned an invalid concept-note run",
+      );
       throw new createHttpError.BadGateway(
         "Climate Advisor returned an invalid concept-note run",
       );
     }
-    await PermissionService.canAccessCity(session, run.data.city_id, {
-      includeResource: false,
-    });
+    if (run.data.city_id.toLowerCase() !== expectedCityId.toLowerCase()) {
+      throw new createHttpError.BadGateway(
+        "Climate Advisor returned a concept-note run for an unexpected city",
+      );
+    }
   }
   return NextResponse.json(payload, { status: response.status });
 }

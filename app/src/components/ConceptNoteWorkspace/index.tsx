@@ -85,10 +85,13 @@ export function ConceptNoteWorkspace({
     isError: runFailed,
     isLoading: runLoading,
     refetch: refetchRun,
-  } = api.useGetConceptNoteRunQuery(runId, {
-    pollingInterval: 5_000,
-    skipPollingIfUnfocused: true,
-  });
+  } = api.useGetConceptNoteRunQuery(
+    { cityId, runId },
+    {
+      pollingInterval: 5_000,
+      skipPollingIfUnfocused: true,
+    },
+  );
   const { data: city } = api.useGetCityQuery(cityId);
   const {
     data: applicationContext,

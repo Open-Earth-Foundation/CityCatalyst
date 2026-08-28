@@ -690,12 +690,13 @@ workflow identifier while preserving tokens and unrelated thread context.
 CityCatalyst exposes authenticated proxy routes at
 `POST /api/v1/concept-notes/start`,
 `GET /api/v1/concept-notes?city_id=...`, and
-`GET|PATCH|DELETE /api/v1/concept-notes/{runId}`, plus
-`POST /api/v1/concept-notes/{runId}/duplicate`. The proxy derives `user_id` from
-the session, checks city access, forwards the duplicate idempotency key, issues the scoped
-CA token server-side, and preserves Climate Advisor response statuses. The
-CityCatalyst dashboard consumes these routes; its implementation details live in
-the repository architecture guide.
+`GET|PATCH|DELETE /api/v1/concept-notes/{runId}?city_id=...`, plus
+`POST /api/v1/concept-notes/{runId}/duplicate?city_id=...`. The proxy derives
+`user_id` from the session, checks access to the requested city before issuing the
+scoped CA token, forwards the duplicate idempotency key, and preserves Climate
+Advisor response statuses. Climate Advisor remains authoritative for run ownership
+and its stored city binding. The CityCatalyst dashboard consumes these routes; its
+implementation details live in the repository architecture guide.
 
 ### Concept Note city-context baseline
 

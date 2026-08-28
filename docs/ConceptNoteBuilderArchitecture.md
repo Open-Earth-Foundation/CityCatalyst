@@ -1536,6 +1536,10 @@ object; this contract does not infer percentages or document/upload counts.
 CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
+Its single-run read, rename, duplicate, and delete routes also require `city_id` so
+CityCatalyst can authorize the requested city before issuing the Climate Advisor
+token. Climate Advisor remains authoritative for run ownership and stored city
+binding.
 The CityCatalyst dashboard consumes this contract at
 `/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
 Export, and Delete, with a compact rename button beside the title. Rename uses
@@ -2299,10 +2303,10 @@ POST /v1/concept-notes/{run_id}/export/pdf
 ```text
 POST /api/v1/concept-notes/start
 GET  /api/v1/concept-notes?city_id={city_id}
-GET  /api/v1/concept-notes/{run_id}
-PATCH /api/v1/concept-notes/{run_id}
-POST /api/v1/concept-notes/{run_id}/duplicate
-DELETE /api/v1/concept-notes/{run_id}
+GET  /api/v1/concept-notes/{run_id}?city_id={city_id}
+PATCH /api/v1/concept-notes/{run_id}?city_id={city_id}
+POST /api/v1/concept-notes/{run_id}/duplicate?city_id={city_id}
+DELETE /api/v1/concept-notes/{run_id}?city_id={city_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads
 GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}

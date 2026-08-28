@@ -96,9 +96,12 @@ export function useConceptNoteWiring({
     data: resumedRun,
     isError: resumeFailed,
     isFetching: resumeLoading,
-  } = api.useGetConceptNoteRunQuery(resumeRunId ?? "", {
-    skip: !resumeRunId,
-  });
+  } = api.useGetConceptNoteRunQuery(
+    { cityId, runId: resumeRunId ?? "" },
+    {
+      skip: !resumeRunId,
+    },
+  );
   const [startConceptNoteRun, startState] =
     api.useStartConceptNoteRunMutation();
   const [uploadConceptNoteSource, uploadState] =

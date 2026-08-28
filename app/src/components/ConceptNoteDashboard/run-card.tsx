@@ -9,6 +9,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import type { TFunction } from "i18next";
 import NextLink from "next/link";
 import { LuPencil } from "react-icons/lu";
 
@@ -20,10 +21,7 @@ import type { RunStatusTone } from "./utils";
 
 interface RunCardProps {
   activityLabel: string;
-  deleteLabel: string;
-  duplicateLabel: string;
   duplicateLoading: boolean;
-  exportLabel: string;
   lifecycleDisabled: boolean;
   onDelete: () => void;
   onDuplicate: () => void;
@@ -33,20 +31,16 @@ interface RunCardProps {
   progressLabel: string;
   reducedMotion: boolean;
   resumeHref: string;
-  resumeLabel: string;
-  renameLabel: string;
   run: ConceptNoteRun;
   scopeLabel: string;
   statusLabel: string;
   statusTone: RunStatusTone;
+  t: TFunction;
 }
 
 export function RunCard({
   activityLabel,
-  deleteLabel,
-  duplicateLabel,
   duplicateLoading,
-  exportLabel,
   lifecycleDisabled,
   onDelete,
   onDuplicate,
@@ -56,12 +50,11 @@ export function RunCard({
   progressLabel,
   reducedMotion,
   resumeHref,
-  resumeLabel,
-  renameLabel,
   run,
   scopeLabel,
   statusLabel,
   statusTone,
+  t,
 }: RunCardProps) {
   return (
     <motion.div
@@ -110,7 +103,7 @@ export function RunCard({
               color="content.tertiary"
               onClick={onRename}
               disabled={lifecycleDisabled}
-              aria-label={`${renameLabel}: ${run.name}`}
+              aria-label={`${t("rename")}: ${run.name}`}
               _hover={{ color: "content.link", bg: "background.neutral" }}
             >
               <Icon as={LuPencil} boxSize={3.5} />
@@ -171,9 +164,9 @@ export function RunCard({
           <Button asChild size="sm" variant="solid" h="32px" px="14px" py="8px">
             <NextLink
               href={resumeHref}
-              aria-label={`${resumeLabel}: ${run.name}`}
+              aria-label={`${t("resume")}: ${run.name}`}
             >
-              {resumeLabel}
+              {t("resume")}
             </NextLink>
           </Button>
           <Button
@@ -185,9 +178,9 @@ export function RunCard({
             onClick={onDuplicate}
             loading={duplicateLoading}
             disabled={lifecycleDisabled}
-            aria-label={`${duplicateLabel}: ${run.name}`}
+            aria-label={`${t("duplicate")}: ${run.name}`}
           >
-            {duplicateLabel}
+            {t("duplicate")}
           </Button>
           <Button
             size="sm"
@@ -199,9 +192,9 @@ export function RunCard({
             color="base.light"
             onClick={onExport}
             disabled={lifecycleDisabled}
-            aria-label={`${exportLabel}: ${run.name}`}
+            aria-label={`${t("export")}: ${run.name}`}
           >
-            {exportLabel}
+            {t("export")}
           </Button>
           <Button
             size="sm"
@@ -211,9 +204,9 @@ export function RunCard({
             py="8px"
             onClick={onDelete}
             disabled={lifecycleDisabled}
-            aria-label={`${deleteLabel}: ${run.name}`}
+            aria-label={`${t("delete")}: ${run.name}`}
           >
-            {deleteLabel}
+            {t("delete")}
           </Button>
         </HStack>
       </VStack>

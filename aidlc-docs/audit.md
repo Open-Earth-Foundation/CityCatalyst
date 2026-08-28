@@ -233,3 +233,29 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Began generating `components.md`, `component-methods.md`, `services.md`, `component-dependency.md`, and the consolidated `application-design.md` from the approved plan and existing architecture. Application code remains unchanged.
 **Approval Status**: Artifact generation in progress; explicit artifact approval required after presentation.
 ---
+
+## Application Design — Artifacts Generated
+**Timestamp**: 2026-08-28T16:15:47-03:00
+**User Input**: "approved"
+**AI Response**: Generated and validated `components.md`, `component-methods.md`, `services.md`, `component-dependency.md`, and consolidated `application-design.md`. The design preserves Core authorization/storage ownership, request-time selected capability loading, bounded source reads, the HTTP 404 `capability_unavailable` non-disclosing selection contract, existing Climate Advisor compatibility, and Core/Climate Advisor verification responsibilities. No application code was modified.
+**Security Findings**: No blocking design finding. Core remains final authority; Climate Advisor receives no S3 credentials, signed URLs, raw storage access, direct database access, or unrestricted source payloads. Discovery omission and per-read revalidation are explicit design controls.
+**Resiliency Findings**: Existing timeout, token-refresh, resource-cleanup, failure-isolation, deployment, rollback, and Operations processes are preserved. No new topology or recovery mechanism is introduced.
+**PBT Findings**: Partial Property-Based Testing is assigned to pure allowlist, scope, selection, serialization, result-bound, and safe-error invariants; example-based security and contract tests remain mandatory.
+**Approval Prompt**: "Please examine the Application Design artifacts under `aidlc-docs/inception/application-design/`. Explicitly approve the completed Application Design artifacts to proceed to Units Generation, or request changes. Application code and Construction remain unauthorized."
+**Approval Status**: Pending user response.
+---
+
+## Approval — Application Design Artifacts
+**Timestamp**: 2026-08-28T16:41:12-03:00
+**Approval Prompt**: "Please examine the Application Design artifacts under `aidlc-docs/inception/application-design/`. Explicitly approve the completed Application Design artifacts to proceed to Units Generation, or request changes. Application code and Construction remain unauthorized."
+**User Response**: "approved"
+**Approval Status**: Approved.
+**AI Response**: Recorded the explicit Application Design artifact approval, committed the completed design package atomically, and opened Units Generation planning. No application code or Construction work was started.
+---
+
+## Units Generation — Planning Start
+**Timestamp**: 2026-08-28T16:41:12-03:00
+**User Input**: "approved"
+**AI Response**: Began Units Generation Part 1 (Planning) using the approved requirements, nine stories, Application Design artifacts, and Workflow Planning. A dedicated unit-of-work plan will define logical units, dependencies, story mapping, ownership, and cross-service test coordination. Unit artifacts and application code remain ungenerated and unchanged pending answered questions and plan approval.
+**Approval Status**: Answer-collection gate open.
+---

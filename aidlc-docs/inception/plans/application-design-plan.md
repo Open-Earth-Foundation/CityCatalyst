@@ -7,7 +7,7 @@ This plan defines the Application Design work for Linear issue [CC-737 — Conne
 - **Project**: CityCatalyst brownfield monorepo.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Stage**: INCEPTION — Application Design.
-- **Status**: Plan approved 2026-08-28; Application Design artifacts are being generated.
+- **Status**: Application Design artifacts generated, validated, and approved 2026-08-28; Units Generation planning is now in progress.
 - **Application code**: Must remain unchanged during this stage.
 - **Construction**: Not authorized.
 
@@ -30,43 +30,43 @@ Application Design will establish high-level component boundaries, interfaces, s
 
 ### 1. Context and boundary analysis
 
-- [ ] Reconfirm the Core-to-Climate Advisor boundary from the approved architecture and current capability patterns.
-- [ ] Identify the minimum new or extended components needed for discovery, allowlist evaluation, selected reads, request-time loading, error handling, and safe telemetry.
-- [ ] Identify ownership of each contract and the dependency direction between Core, module systems of record, `CityCatalystClient`, tools, and `AgentService`.
-- [ ] Confirm that no new storage owner, catalog service, authorization authority, or deployment topology is introduced.
+- [x] Reconfirm the Core-to-Climate Advisor boundary from the approved architecture and current capability patterns.
+- [x] Identify the minimum new or extended components needed for discovery, allowlist evaluation, selected reads, request-time loading, error handling, and safe telemetry.
+- [x] Identify ownership of each contract and the dependency direction between Core, module systems of record, `CityCatalystClient`, tools, and `AgentService`.
+- [x] Confirm that no new storage owner, catalog service, authorization authority, or deployment topology is introduced.
 
 ### 2. Contract and method design
 
-- [ ] Define high-level discovery, capability-eligibility, selection, and bounded-read interfaces.
-- [ ] Define the scope context carried from the user request and the Core revalidation boundary.
-- [ ] Define the typed allowlist ownership and the data needed to bind a catalog entry to an approved capability.
-- [ ] Define the stable non-disclosing error contract for US-06, including status, code, envelope, and normalization rules.
-- [ ] Define bounded input/output responsibilities, source-specific limits, timeout ownership, and resource cleanup boundaries.
+- [x] Define high-level discovery, capability-eligibility, selection, and bounded-read interfaces.
+- [x] Define the scope context carried from the user request and the Core revalidation boundary.
+- [x] Define the typed allowlist ownership and the data needed to bind a catalog entry to an approved capability.
+- [x] Define the stable non-disclosing error contract for US-06, including status, code, envelope, and normalization rules.
+- [x] Define bounded input/output responsibilities, source-specific limits, timeout ownership, and resource cleanup boundaries.
 
 ### 3. Service orchestration design
 
-- [ ] Define how discovery results are selected and passed into request-time Climate Advisor tool registration.
-- [ ] Define how Core revalidates authorization, catalog state, capability mapping, and source availability immediately before every read.
-- [ ] Define partial-failure behavior so invalid/unavailable selections do not widen access or expose unrelated sources.
-- [ ] Define compatibility behavior for requests without catalog context and for existing workflow-specific tool packs.
+- [x] Define how discovery results are selected and passed into request-time Climate Advisor tool registration.
+- [x] Define how Core revalidates authorization, catalog state, capability mapping, and source availability immediately before every read.
+- [x] Define partial-failure behavior so invalid/unavailable selections do not widen access or expose unrelated sources.
+- [x] Define compatibility behavior for requests without catalog context and for existing workflow-specific tool packs.
 
 ### 4. Dependency and verification design
 
-- [ ] Define Core-first contract ownership and the approved dependency direction.
-- [ ] Define deterministic cross-service fixtures and contract-version coordination without creating a separately versioned shared package.
-- [ ] Define Core and Climate Advisor unit/contract/security test responsibilities.
-- [ ] Define safe audit/telemetry fields, redaction rules, and correlation behavior.
-- [ ] Validate design consistency against all requirements, nine User Stories, four persona mappings, and Linear acceptance criteria.
+- [x] Define Core-first contract ownership and the approved dependency direction.
+- [x] Define deterministic cross-service fixtures and contract-version coordination without creating a separately versioned shared package.
+- [x] Define Core and Climate Advisor unit/contract/security test responsibilities.
+- [x] Define safe audit/telemetry fields, redaction rules, and correlation behavior.
+- [x] Validate design consistency against all requirements, nine User Stories, four persona mappings, and Linear acceptance criteria.
 
 ## Mandatory Application Design Artifacts
 
-- [ ] Generate `aidlc-docs/inception/application-design/components.md` with component names, purposes, responsibilities, and high-level interfaces.
-- [ ] Generate `aidlc-docs/inception/application-design/component-methods.md` with method signatures, high-level purposes, and input/output types. Detailed business rules remain deferred to Functional Design.
-- [ ] Generate `aidlc-docs/inception/application-design/services.md` with service responsibilities and orchestration patterns.
-- [ ] Generate `aidlc-docs/inception/application-design/component-dependency.md` with dependency matrix, communication patterns, and data-flow diagrams.
-- [ ] Generate `aidlc-docs/inception/application-design/application-design.md` consolidating the design artifacts.
-- [ ] Validate design completeness, consistency, security boundaries, compatibility, and traceability.
-- [ ] Obtain explicit approval of the completed Application Design artifacts.
+- [x] Generate `aidlc-docs/inception/application-design/components.md` with component names, purposes, responsibilities, and high-level interfaces.
+- [x] Generate `aidlc-docs/inception/application-design/component-methods.md` with method signatures, high-level purposes, and input/output types. Detailed business rules remain deferred to Functional Design.
+- [x] Generate `aidlc-docs/inception/application-design/services.md` with service responsibilities and orchestration patterns.
+- [x] Generate `aidlc-docs/inception/application-design/component-dependency.md` with dependency matrix, communication patterns, and data-flow diagrams.
+- [x] Generate `aidlc-docs/inception/application-design/application-design.md` consolidating the design artifacts.
+- [x] Validate design completeness, consistency, security boundaries, compatibility, and traceability.
+- [x] Obtain explicit approval of the completed Application Design artifacts — 2026-08-28.
 
 ## Design Questions — Complete Every `[Answer]:` Tag
 

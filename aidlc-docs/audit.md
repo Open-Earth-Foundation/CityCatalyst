@@ -101,6 +101,25 @@ reviewable unit. Stop at every required approval gate."
 **Approval Status**: Pending user response.
 ---
 
+## Approval — User Stories Artifacts
+**Timestamp**: 2026-08-28T11:48:57-03:00
+**Approval Prompt**: "Please examine the revised user stories and personas at `aidlc-docs/inception/user-stories/stories.md` and `aidlc-docs/inception/user-stories/personas.md`. Approve the revised artifacts or request changes."
+**User Response**: "approved!"
+**Approval Status**: Approved.
+**AI Response**: Recorded the explicit approval, marked the User Stories gate complete, and advanced to Workflow Planning. No application code was modified.
+---
+
+## Workflow Planning — Generated
+**Timestamp**: 2026-08-28T11:48:57-03:00
+**User Input**: "approved!"
+**AI Response**: Created `aidlc-docs/inception/plans/execution-plan.md` from the approved brown-field reverse-engineering, requirements, User Stories, and persona artifacts. The plan selects Application Design and Units Generation, schedules later Construction stages, skips Infrastructure Design unless a separately approved material infrastructure change is discovered, and records sequential Core contract ownership followed by coordinated Climate Advisor and cross-service verification. No application code was modified.
+**Security Findings**: Security Baseline remains enabled. Core is retained as the final authorization/storage boundary; discovery omission, stale/forged/invalid non-disclosure, bounded reads, allowlisting, redaction, and no Climate Advisor storage credentials/raw access are explicit gates.
+**Resiliency Findings**: Resiliency Baseline remains enabled using existing CityCatalyst timeout, cleanup, deployment, rollback, and Operations processes. No new topology or recovery mechanism is planned.
+**PBT Findings**: Partial Property-Based Testing remains enabled for applicable pure mapping, scope, serialization, result, and error invariants; example-based critical security tests remain mandatory.
+**Approval Prompt**: "Please examine `aidlc-docs/inception/plans/execution-plan.md`. Explicitly approve Workflow Planning to proceed to Application Design, or request changes. Application code and Construction remain unauthorized."
+**Approval Status**: Pending user response.
+---
+
 ## User Stories — Revision Request
 **Timestamp**: 2026-08-28T11:09:59-03:00
 **User Input**: "Checked, but I'll request some adjusts to the User Storeis artfacts before approving them.\n\nUpdate only the Inception documentation. DO NOT modify application core or begin Construction:\n\n1. Clearly differentiate US-05 and US-06:\n\n- discovery must omit unauthorized, unavailable, or removed entries without revealing metadata\n- reads using stale, forged, or invalid selections must return a stable, non-disclosing error\n- Make it explicit that the exact error contract will be defined during application design\n\n2. US-08 is too large, refine:\n\n- Split it into smaller stories covering CityCatalyst Core evidence and Climate Advisor evidence\n- Update acceptance criteria, traceability, persona mappings, and story counts.\n\n3. Clarify in [personas.md](projects/open-earth/CityCatalyst/aidlc-docs/inception/user-stories/personas.md) that:\n\n- P-01 is the end-user persona.\n- P-02 is a system role\n- P-03 is a technical ownership/maintenance role\n- P-04 is a security and operational governance role\n- Keep these personas because they represent important responsibilities, but DO NOT treat them as end users\n\nThen:\n\n- Update `@stories.md` and `personas.md`.\n- Preserve the security, non-disclosure, bounded-read, Core authorization, and no-storage-credentials requirements.\n- Update traceability to the requirements and Linear issue CC-737.\n- Record this change request in `aidlc-docs/audit.md` and update the vault if necessary.\n- DO NOT mark the artifacts as approved.\n- Present the revised documents again and wait for my explicit approval."
@@ -131,14 +150,6 @@ reviewable unit. Stop at every required approval gate."
 **Timestamp**: 2026-08-28T11:09:59-03:00
 **User Input**: "reviewed, proceed"
 **AI Response**: Began story and persona generation from the approved requirements and story-generation plan. The approved approach is hybrid user-journey organization with first-class security/failure slices and traceability.
----
-
-## Approval — User Stories Artifacts
-**Timestamp**: 2026-08-28T11:48:57-03:00
-**Approval Prompt**: "Please examine the revised user stories and personas at `aidlc-docs/inception/user-stories/stories.md` and `aidlc-docs/inception/user-stories/personas.md`. Approve the revised artifacts or request changes."
-**User Response**: "approved!"
-**Approval Status**: Approved.
-**AI Response**: Recorded the explicit approval, marked the User Stories gate complete, and advanced to Workflow Planning. No application code was modified.
 ---
 
 ## Approval — Requirements Analysis
@@ -176,4 +187,19 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Validated all eight follow-up answer tags and found no unresolved ambiguity or contradiction. Generated `aidlc-docs/inception/requirements/requirements.md` with functional requirements, non-functional requirements, user scenarios, Linear traceability, stage-selection decisions, Security Baseline compliance, Resiliency Baseline treatment, and Partial Property-Based Testing requirements. Requirements Analysis is complete and awaiting explicit approval.
 **Approval Prompt**: "Please examine the requirements document at `aidlc-docs/inception/requirements/requirements.md`. Request changes or explicitly approve Requirements Analysis to proceed to User Stories and Workflow Planning."
 **Approval Status**: Pending user response.
+---
+
+## Approval — Workflow Planning
+**Timestamp**: 2026-08-28T14:25:35-03:00
+**Approval Prompt**: "Please examine `aidlc-docs/inception/plans/execution-plan.md`. Explicitly approve Workflow Planning to proceed to Application Design, or request changes. Application code and Construction remain unauthorized."
+**User Response**: "Approved, let's proceed"
+**Approval Status**: Approved.
+**AI Response**: Recorded the explicit Workflow Planning approval, committed the planning checkpoint atomically, and opened the Application Design planning gate. No application code was modified.
+---
+
+## Application Design — Planning Start
+**Timestamp**: 2026-08-28T14:25:35-03:00
+**User Input**: "Approved, let's proceed"
+**AI Response**: Began Application Design for the approved Core/Climate Advisor boundary. Created the dedicated design-plan question file with `[Answer]:` tags covering component boundaries, contracts, authorization propagation, request-time orchestration, bounded reads, non-disclosure errors, observability, compatibility, and cross-service testing. Design artifacts and application code remain ungenerated and unchanged pending answered questions and plan approval.
+**Approval Status**: Answer-collection gate open.
 ---

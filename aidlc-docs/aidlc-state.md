@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: INCEPTION
-- **Current Stage**: Workflow Planning — in progress; explicit approval required
+- **Current Stage**: Application Design — planning questions open
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -28,8 +28,8 @@
 - [x] Reverse Engineering — artifacts generated; explicit approval required
 - [x] Requirements Analysis — approved 2026-08-27
 - [x] User Stories — artifacts approved 2026-08-28
-- [ ] Workflow Planning — generated; explicit approval required
-- [ ] Application Design — pending Workflow Planning approval
+- [x] Workflow Planning — approved 2026-08-28
+- [ ] Application Design — planning questions open; explicit plan approval required
 - [ ] Units Generation — pending Workflow Planning approval
 
 ## Extension Configuration
@@ -45,5 +45,5 @@
 - [x] User Stories approved (if selected) — 2026-08-28
 - [ ] Application Design approved (if selected)
 - [ ] Units Generation approved (if selected)
-- [ ] Workflow Planning approved
+- [x] Workflow Planning approved — 2026-08-28
 - [ ] Construction explicitly authorized

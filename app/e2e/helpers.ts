@@ -106,7 +106,7 @@ export async function signup(
   name: string = "Test Account",
   acceptTerms: boolean = true,
 ) {
-  const result = await request.post("/api/v1/auth/register", {
+  const result = await request.post("/api/v1/auth/register/", {
     data: {
       email,
       password,

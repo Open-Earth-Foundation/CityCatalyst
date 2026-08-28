@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: INCEPTION
-- **Current Stage**: User Stories — planning and clarification
+- **Current Stage**: User Stories — generating stories and personas
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -27,7 +27,7 @@
 - [x] Workspace Detection — completed
 - [x] Reverse Engineering — artifacts generated; explicit approval required
 - [x] Requirements Analysis — approved 2026-08-27
-- [ ] User Stories — planning and clarification in progress
+- [ ] User Stories — generation in progress
 - [ ] Application Design — pending Requirements Analysis decision
 - [ ] Units Generation — pending Requirements Analysis decision
 - [ ] Workflow Planning — pending preceding inception decisions

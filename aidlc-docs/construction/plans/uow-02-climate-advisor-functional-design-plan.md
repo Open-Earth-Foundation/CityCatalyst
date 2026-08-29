@@ -12,7 +12,7 @@ Design artifacts are separately approved.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Assigned stories**: US-03, US-07, US-09.
 - **Stage**: CONSTRUCTION — Functional Design.
-- **Status**: Planning opened after UOW-01 Core Code Generation approval.
+- **Status**: All planning answers validated; explicit plan approval pending.
 - **Prerequisite**: Approved UOW-01 Core contract, implementation, and verification evidence.
 - **Application code**: Climate Advisor code remains unchanged until this plan and its Functional Design artifacts are approved.
 
@@ -106,7 +106,7 @@ context changed.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 2 — Discovery timing
 
@@ -122,7 +122,7 @@ C) Only after the model requests an arbitrary capability name.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 3 — Selection authority
 
@@ -138,7 +138,7 @@ C) Accept any capability ID returned by a model or persisted conversation.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 4 — Tool registration scope
 
@@ -154,7 +154,7 @@ C) Register a generic raw-source tool and let the model choose its arguments.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 5 — Core contract transport
 
@@ -170,7 +170,7 @@ C) Call source-specific storage or module endpoints directly from tools.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 6 — Capability input context
 
@@ -186,7 +186,7 @@ C) Omit context and trust the catalog selection alone.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 7 — Stable unavailable errors
 
@@ -203,7 +203,7 @@ C) Retry indefinitely or fall back to raw storage.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 8 — Token refresh and client lifetime
 
@@ -219,7 +219,7 @@ C) Disable refresh and expose upstream authentication errors to the model.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 9 — Existing workflow coexistence
 
@@ -235,7 +235,7 @@ C) Make catalog-backed tools globally available in every mode.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 10 — Empty/disabled Core behavior
 
@@ -252,7 +252,7 @@ C) Fall back to raw storage or legacy unrestricted source reads.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 11 — Failure isolation and concurrency
 
@@ -269,7 +269,7 @@ C) Disable all tools after one source failure.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 12 — Climate Advisor evidence
 
@@ -286,7 +286,7 @@ C) Defer all consumer security and compatibility evidence to UOW-03.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ## Mandatory Functional Design artifacts
 
@@ -301,10 +301,24 @@ contract, and all applicable FR/NFR constraints. They must preserve Core as
 the sole authorization authority and the no-storage-credentials/raw-access
 boundary.
 
+## Answer validation result
+
+- All 12 planning questions have non-empty `[Answer]:` tags.
+- Every answer selects the recommended option and is consistent with the
+  approved UOW-01 Core contract and the existing Climate Advisor architecture.
+- The answers establish authenticated active-request context, request-time
+  discovery, current Core-issued selection binding, selected-only tool
+  registration, typed bounded inputs, Core-owned authorization/revalidation,
+  stable non-disclosing errors, existing token refresh/cleanup, workflow
+  compatibility, isolated failure behavior, and consumer contract/security
+  evidence.
+- No contradiction or unresolved ambiguity requires a follow-up question.
+- **Gate**: UOW-02 Functional Design plan approval is required before the
+  Functional Design artifacts are generated.
+
 ## Approval gate
 
 Complete every `[Answer]:` tag, resolve follow-up questions, and explicitly
 approve this plan before Functional Design artifacts are generated. After the
 artifacts are generated and validated, a separate explicit approval is
 required before UOW-02 NFR Requirements or application-code changes.
-

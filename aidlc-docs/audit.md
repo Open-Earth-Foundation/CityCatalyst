@@ -588,3 +588,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded David's explicit approval of the generated UOW-01 Core implementation, tests, atomic commits, verification evidence, and documented environment limitations. UOW-01 remains within the approved security and architecture boundaries: Core is the sole authorization authority; discovery uses lightweight readiness only; selected reads are revalidated and bounded; unavailable selections are non-disclosing; and Climate Advisor receives no storage credentials or raw storage access. Closed UOW-01 Code Generation and opened UOW-02 Functional Design planning. No UOW-02 application code was modified.
 **Approval Status**: UOW-01 Code Generation complete; UOW-02 Functional Design planning gate open.
 ---
+
+## UOW-02 Functional Design Plan Answers Validated
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "answered"
+**AI Response**: Validated all 12 UOW-02 Functional Design planning answers. All answer tags are complete and select the recommended behavior: authenticated active-request context, request-time Core discovery, current Core-issued selection binding, selected-only tool registration, typed bounded inputs, Core-owned authorization/revalidation, stable non-disclosing errors, existing token refresh/cleanup, workflow compatibility, isolated failures, and consumer contract/security evidence. No contradiction or unresolved ambiguity requires follow-up questions. Functional Design artifacts and Climate Advisor code remain deferred pending explicit plan approval.
+**Approval Status**: UOW-02 Functional Design plan answers complete; explicit plan approval pending.
+---

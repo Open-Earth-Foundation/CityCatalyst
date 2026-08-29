@@ -1,8 +1,10 @@
 import { describe, expect, it, jest } from "@jest/globals";
 
 import {
+  authorizeCatalogScope,
   discoverNativeInputs,
   readNativeInputCapability,
+  type NativeInputDiscoveryRequest,
   type NativeInputCapabilityServiceDependencies,
 } from "@/backend/NativeInputCatalogCapabilityService";
 import type { AppSession } from "@/lib/auth";
@@ -155,6 +157,23 @@ describe("NativeInputCatalog capability service", () => {
     await expect(discoverNativeInputs({}, session, deps)).resolves.toEqual([]);
   });
 
+  it.each(["organizationId", "projectId", "cityId", "inventoryId"] as const)(
+    "omits an entry for a conflicting %s request scope",
+    async (field) => {
+      const scopedEntry = {
+        ...authorizedEntry,
+        [field]: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+      };
+      const request = {
+        [field]: "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+      } as NativeInputDiscoveryRequest;
+
+      await expect(
+        authorizeCatalogScope(session, request, scopedEntry),
+      ).resolves.toBe(false);
+    },
+  );
+
   it("revalidates and executes exactly the selected bounded capability", async () => {
     const adapter = {
       probeReadiness: jest.fn(async () => true),
@@ -293,6 +312,91 @@ describe("NativeInputCatalog capability service", () => {
       action: "ghgi.inventory.status_overview",
       success: true,
       data: { bounded: true },
+    });
+  });
+
+  it.each([
+    [
+      "readiness-negative",
+      {
+        getSourceAdapter: jest.fn(() => ({
+          probeReadiness: jest.fn(async () => false),
+          executeSelected: jest.fn(),
+        })),
+      },
+    ],
+    ["malformed input", undefined],
+    ["missing adapter", { getSourceAdapter: jest.fn(() => null) }],
+    [
+      "upstream failure",
+      {
+        getSourceAdapter: jest.fn(() => ({
+          probeReadiness: jest.fn(async () => true),
+          executeSelected: jest.fn(async () => {
+            throw new Error("private upstream details");
+          }),
+        })),
+      },
+    ],
+  ] as const)(
+    "normalizes %s selected-read failures",
+    async (label, override) => {
+      const adapter = {
+        probeReadiness: jest.fn(async () => true),
+        executeSelected: jest.fn(async () => ({ bounded: true })),
+      };
+      const input =
+        label === "malformed input"
+          ? {}
+          : {
+              city_id: authorizedEntry.cityId,
+              inventory_id: authorizedEntry.inventoryId,
+            };
+      const deps = readDependencies(adapter, override ?? undefined);
+
+      await expect(
+        readNativeInputCapability(
+          {
+            catalogId: authorizedEntry.id,
+            capabilityId: "ghgi.inventory.status_overview",
+            input,
+          },
+          session,
+          deps,
+        ),
+      ).rejects.toMatchObject({
+        statusCode: 404,
+        code: "capability_unavailable",
+        message: "Requested capability is unavailable.",
+      });
+    },
+  );
+
+  it("rejects a selected result that exceeds the bounded response size", async () => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({
+        oversized: "x".repeat(64 * 1024),
+      })),
+    };
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: authorizedEntry.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          input: {
+            city_id: authorizedEntry.cityId,
+            inventory_id: authorizedEntry.inventoryId,
+          },
+        },
+        session,
+        readDependencies(adapter),
+      ),
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      code: "capability_unavailable",
+      message: "Requested capability is unavailable.",
     });
   });
 });

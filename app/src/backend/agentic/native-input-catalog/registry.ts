@@ -140,9 +140,21 @@ export function projectNativeInputDiscoveryEntry(
     capability_ids: [...capabilityIds],
   };
 
-  if (typeof displayName === "string" && displayName.trim()) {
+  if (isSafeDisplayName(displayName)) {
     projected.labels = { display_name: displayName };
   }
 
   return projected;
+}
+
+function isSafeDisplayName(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.trim().length > 0 &&
+    value.length <= 200 &&
+    !/[\r\n\u0000-\u001f]/.test(value) &&
+    !/(?:s3:\/\/|amazonaws\.com|private\/raw|bearer\s|access[_-]?key|secret|token|signed[_-]?url)/i.test(
+      value,
+    )
+  );
 }

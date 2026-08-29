@@ -79,4 +79,39 @@ describe("NativeInputCatalog capability registry", () => {
     expect(JSON.stringify(projected)).not.toContain("s3_key");
     expect(JSON.stringify(projected)).not.toContain("bearer_token");
   });
+
+  it("preserves the projection invariant across untrusted label variants", () => {
+    const labelVariants = [
+      undefined,
+      null,
+      "",
+      "   ",
+      "safe display name",
+      { nested: "must not be copied" },
+      "s3://private/raw/catalog.json",
+    ];
+
+    for (const displayName of labelVariants) {
+      const projected = projectNativeInputDiscoveryEntry(
+        {
+          id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          kind: "inventory_import",
+          owningModule: "ghgi",
+          sourceType: "inventory",
+          sourceId: "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+          labels: { display_name: displayName },
+        },
+        ["ghgi.inventory.status_overview"],
+      );
+      const serialized = JSON.stringify(projected);
+
+      expect(serialized).not.toContain("bbbbbbbb");
+      expect(serialized).not.toContain("private/raw");
+      if (displayName === "safe display name") {
+        expect(projected.labels?.display_name).toBe(displayName);
+      } else {
+        expect(projected.labels).toBeUndefined();
+      }
+    }
+  });
 });

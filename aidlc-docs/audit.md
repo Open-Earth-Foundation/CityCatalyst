@@ -504,3 +504,24 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `f7e720cae` (`feat(cc-737): add authorized native input discovery`) containing only the Core discovery service and focused tests. Unit 3 enforces active exact-mapping discovery, conjunctive scope authorization, omission-only non-disclosure, readiness probing without selected execution, and bounded sequential candidate processing. Opened Unit 4 for selected-read validation and safe error/result handling.
 **Approval Status**: Unit 3 complete; Unit 4 generation in progress under the approved plan.
 ---
+
+## Code Generation — UOW-01 Unit 4 TDD Red Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Added Unit 4 selected-read service tests before extending production code and ran the focused suite. Existing discovery tests pass, while the new selected-read cases fail because `readNativeInputCapability` is not yet implemented. The red checkpoint covers current revalidation, stable 404 `capability_unavailable` errors, selected-only execution, and forbidden-data non-disclosure.
+**Approval Status**: Unit 4 test-first red checkpoint complete; selected-read implementation authorized under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 4 TDD Green Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Implemented selected-read validation and safe result/error handling in the Core capability service. The path re-resolves current catalog state, exact capability mapping, scope authorization, readiness, and typed input before executing only the selected adapter; it returns the stable HTTP 404 `capability_unavailable` contract for resolution failures and redacts forbidden result fields. Focused registry/adapter/service suites pass 15/15 with coverage disabled, ESLint and Prettier pass, and the repository TypeScript baseline remains blocked only by the unrelated missing `src/app/api/v1/city/[city]/meed/rank/route.js` validator reference.
+**Approval Status**: Unit 4 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
+---
+
+## Code Generation — UOW-01 Unit 4 Committed
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `5adb79af9` (`feat(cc-737): enforce bounded selected native input reads`) containing the Core selected-read service and focused tests. Unit 4 enforces current catalog/scope/readiness revalidation, exact capability binding, selected-only execution, stable non-disclosing errors, bounded responses, and forbidden-field redaction. Opened Unit 5 for the internal Core CA discovery route.
+**Approval Status**: Unit 4 complete; Unit 5 generation in progress under the approved plan.
+---

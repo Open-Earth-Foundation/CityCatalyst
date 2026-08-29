@@ -339,25 +339,25 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests for authorized selected reads and bounded typed result
+1. [x] Add failing tests for authorized selected reads and bounded typed result
    shaping.
-2. [ ] Add failing tests for stale, forged, malformed, unknown, mismatched,
+2. [x] Add failing tests for stale, forged, malformed, unknown, mismatched,
    unauthorized, withdrawn, superseded, unavailable, missing, deleted, and
    readiness-negative selections. Assert identical status/code/message and no
    catalog/source/state metadata.
-3. [ ] Add failing tests proving catalog identity, capability identity, request
+3. [x] Add failing tests proving catalog identity, capability identity, request
    context, and current source identity must all agree at read time.
-4. [ ] Add failing tests for forbidden fields, raw storage paths, signed URLs,
+4. [x] Add failing tests for forbidden fields, raw storage paths, signed URLs,
    credentials, tokens, raw content, and upstream error text in both results
    and telemetry.
-5. [ ] Run the focused service tests to confirm failure before implementation.
-6. [ ] Implement fixed-order selected-read validation, current scope/state
+5. [x] Run the focused service tests to confirm failure before implementation.
+6. [x] Implement fixed-order selected-read validation, current scope/state
    revalidation, safe generic error mapping, selected adapter invocation, and
    result shaping/redaction.
-7. [ ] Ensure only the selected capability is loaded/executed after all checks;
+7. [x] Ensure only the selected capability is loaded/executed after all checks;
    discovery readiness is not reused as authorization.
-8. [ ] Run focused tests, lint, type checks, and a serialized-response audit.
-9. [ ] Commit only the selected-read service behavior and tests with:
+8. [x] Run focused tests, lint, type checks, and a serialized-response audit.
+9. [x] Commit only the selected-read service behavior and tests with:
    `feat(cc-737): enforce bounded selected native input reads`.
 
 Story/requirement mapping: US-02, US-03, US-04, US-06, US-08; FR-04 through

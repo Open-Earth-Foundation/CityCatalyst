@@ -1,0 +1,390 @@
+{
+  "status": "completed",
+  "provider": "openai",
+  "model": "gpt-5.4-mini",
+  "request_context": {
+    "source_language": "en",
+    "target_languages": [
+      "es"
+    ],
+    "ranked_action_ids": [
+      "c40_0042",
+      "icare_0045",
+      "icare_0050",
+      "icare_0069",
+      "icare_0099",
+      "icare_0122",
+      "icare_0131",
+      "icare_0132",
+      "ipcc_0028",
+      "ipcc_0034",
+      "ipcc_0052",
+      "ipcc_0053",
+      "ipcc_0054",
+      "ipcc_0056",
+      "ipcc_0057",
+      "ipcc_0067",
+      "ipcc_0068",
+      "ipcc_0069",
+      "ipcc_0070",
+      "ipcc_0071"
+    ]
+  },
+  "llm_input": {
+    "system_prompt": "<role>\nYou are a faithful translator of canonical ranked-action explanations.\n</role>\n\n<task>\nFollow the user prompt exactly.\n- Do not add or remove factual content.\n- Return JSON only.\n</task>\n\n<input>\nInput will provide the source-language label, requested target languages, and canonical explanation rows.\n</input>\n\n<output>\nReturn exactly the fields requested in the user prompt.\n</output>",
+    "actions_payload": [
+      {
+        "action_id": "c40_0042",
+        "canonical_explanation": "This action is similar to the other lower-ranked options because it has very strong policy support and strong mitigation feasibility. It remains low because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "icare_0045",
+        "canonical_explanation": "This action ranks well because it can deliver emissions benefits on a very favorable timeline and also has very strong policy support and mitigation feasibility. It does not rank higher because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "icare_0050",
+        "canonical_explanation": "This action stays in the middle of the list because it has strong policy support and very strong mitigation feasibility. Its rank is held back because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "icare_0069",
+        "canonical_explanation": "This action has a very favorable timeline, strong policy support, and very strong mitigation feasibility. It stays below higher-ranked actions because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "icare_0099",
+        "canonical_explanation": "This action has the advantage of a very favorable timeline, strong policy support, and very strong mitigation feasibility. It ranks lower because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "icare_0122",
+        "canonical_explanation": "This action is supported by a very favorable timeline, strong policy context, and very strong mitigation feasibility. It remains below the top tier because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "icare_0131",
+        "canonical_explanation": "This action has a very favorable timeline and strong policy support, but it still ranks low because its expected emissions reduction is limited in the current city inventory. No legal assessment row was available, and no mitigation feasibility score row was available, so both used neutral fallbacks."
+      },
+      {
+        "action_id": "icare_0132",
+        "canonical_explanation": "This action is placed here because it can deliver emissions benefits on a very favorable timeline and has strong policy support and very strong mitigation feasibility. Its lower rank reflects the limited expected emissions reduction in the current city inventory."
+      },
+      {
+        "action_id": "ipcc_0028",
+        "canonical_explanation": "This action ranks low because its expected emissions reduction is limited in the current city inventory. Its very strong policy context and very strong mitigation feasibility help it stay above the weakest options."
+      },
+      {
+        "action_id": "ipcc_0034",
+        "canonical_explanation": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It has some policy support, but the feasibility evidence is weaker here and no mitigation feasibility score row was available, so that part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0052",
+        "canonical_explanation": "This action is placed near the top for the same main reasons: strong expected emissions reduction, very strong policy support, and strong mitigation feasibility. It stays just below the first-ranked action because the evidence does not add anything stronger than that overall profile."
+      },
+      {
+        "action_id": "ipcc_0053",
+        "canonical_explanation": "This action ranks first because it is expected to cut emissions strongly, has very strong supportive policy context, and looks feasible for the city to carry out. The only limitation noted is that no legal assessment row was available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0054",
+        "canonical_explanation": "This action ranks here because it has very strong policy support and strong mitigation feasibility. It does not move higher because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "ipcc_0056",
+        "canonical_explanation": "This action ranks near the bottom because its expected emissions reduction is limited in the current city inventory. Strong policy support and very strong mitigation feasibility keep it from dropping further."
+      },
+      {
+        "action_id": "ipcc_0057",
+        "canonical_explanation": "This action is held down by its limited expected emissions reduction in the current city inventory. It still has strong policy support and strong mitigation feasibility, which keeps it from falling further."
+      },
+      {
+        "action_id": "ipcc_0067",
+        "canonical_explanation": "This action is kept in the upper group because it has very strong policy support and very strong mitigation feasibility. It ranks below the top actions because its expected emissions reduction is limited in the current city inventory."
+      },
+      {
+        "action_id": "ipcc_0068",
+        "canonical_explanation": "This action is pulled down by its slow timeline for emissions benefits and weaker mitigation feasibility. Even so, it still has strong expected emissions reduction and strong policy support."
+      },
+      {
+        "action_id": "ipcc_0069",
+        "canonical_explanation": "This action ranks low because its expected emissions reduction is limited in the current city inventory. It has strong policy support, but the alignment is weaker overall and no legal assessment row was available, so the legal part used a neutral fallback."
+      },
+      {
+        "action_id": "ipcc_0070",
+        "canonical_explanation": "This action stays low because its expected emissions reduction is limited in the current city inventory. Strong policy support and very strong mitigation feasibility help, but not enough to lift it much higher."
+      },
+      {
+        "action_id": "ipcc_0071",
+        "canonical_explanation": "This action ranks in the lower half because it has strong policy support and strong mitigation feasibility, but its expected emissions reduction is limited in the current city inventory. That keeps it below actions with stronger overall impact or timing advantages."
+      }
+    ],
+    "prompt_text_file": "llm/explanation_translations_prompt.txt",
+    "prompt_text_characters": 8798
+  },
+  "llm_output": {
+    "parsed": {
+      "translations": [
+        {
+          "action_id": "c40_0042",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción es similar a las otras opciones de menor rango porque cuenta con un apoyo de políticas muy sólido y una fuerte viabilidad de mitigación. Sigue en un nivel bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0045",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción obtiene una buena clasificación porque puede aportar beneficios en emisiones en un plazo muy favorable y además cuenta con un apoyo de políticas muy sólido y una fuerte viabilidad de mitigación. No sube más porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0050",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se mantiene en la mitad de la lista porque cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Su posición se ve limitada porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0069",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción tiene un plazo muy favorable, un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Queda por debajo de las acciones mejor clasificadas porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0099",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción tiene la ventaja de un plazo muy favorable, un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Se clasifica más abajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0122",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción está respaldada por un plazo muy favorable, un contexto de políticas sólido y una viabilidad de mitigación muy sólida. Permanece por debajo del nivel superior porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0131",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción tiene un plazo muy favorable y un fuerte apoyo de políticas, pero aun así se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. No había una fila de evaluación legal disponible, y tampoco había una fila de puntuación de viabilidad de mitigación disponible, así que ambas usaron valores neutros de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "icare_0132",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se sitúa aquí porque puede aportar beneficios en emisiones en un plazo muy favorable y cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Su menor rango refleja la limitada reducción esperada de emisiones en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0028",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Su contexto de políticas muy sólido y su viabilidad de mitigación muy sólida la ayudan a mantenerse por encima de las opciones más débiles."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0034",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Tiene cierto apoyo de políticas, pero la evidencia de viabilidad es más débil aquí y no había una fila de puntuación de viabilidad de mitigación disponible, así que esa parte usó un valor neutro de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0052",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se sitúa cerca de la parte superior por las mismas razones principales: una fuerte reducción esperada de emisiones, un apoyo de políticas muy sólido y una viabilidad de mitigación sólida. Queda justo por debajo de la acción clasificada en primer lugar porque la evidencia no añade nada más fuerte que ese perfil general."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0053",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción ocupa el primer lugar porque se espera que reduzca fuertemente las emisiones, cuenta con un contexto de políticas muy favorable y parece viable para que la ciudad la lleve a cabo. La única limitación señalada es que no había una fila de evaluación legal disponible, así que la parte legal usó un valor neutro de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0054",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica aquí porque cuenta con un apoyo de políticas muy sólido y una viabilidad de mitigación sólida. No sube más porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0056",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica cerca del final porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Un apoyo de políticas sólido y una viabilidad de mitigación muy sólida evitan que caiga más."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0057",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción está limitada por su reducida reducción esperada de emisiones en el inventario actual de la ciudad. Aun así, cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación sólida, lo que evita que caiga más."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0067",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se mantiene en el grupo superior porque cuenta con un apoyo de políticas muy sólido y una viabilidad de mitigación muy sólida. Se clasifica por debajo de las acciones principales porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0068",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se ve penalizada por su ritmo lento para aportar beneficios en emisiones y por una viabilidad de mitigación más débil. Aun así, sigue teniendo una fuerte reducción esperada de emisiones y un fuerte apoyo de políticas."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0069",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Tiene un fuerte apoyo de políticas, pero la alineación es más débil en general y no había una fila de evaluación legal disponible, así que la parte legal usó un valor neutro de respaldo."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0070",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se mantiene baja porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida ayudan, pero no lo suficiente para elevarla mucho más."
+            }
+          ],
+          "source_language_warning": false
+        },
+        {
+          "action_id": "ipcc_0071",
+          "translations": [
+            {
+              "language": "es",
+              "text": "Esta acción se clasifica en la mitad inferior porque cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación sólida, pero su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Eso la mantiene por debajo de las acciones con un impacto general o ventajas de tiempo más fuertes."
+            }
+          ],
+          "source_language_warning": false
+        }
+      ]
+    },
+    "translations_by_action_id": {
+      "c40_0042": {
+        "es": "Esta acción es similar a las otras opciones de menor rango porque cuenta con un apoyo de políticas muy sólido y una fuerte viabilidad de mitigación. Sigue en un nivel bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "icare_0045": {
+        "es": "Esta acción obtiene una buena clasificación porque puede aportar beneficios en emisiones en un plazo muy favorable y además cuenta con un apoyo de políticas muy sólido y una fuerte viabilidad de mitigación. No sube más porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "icare_0050": {
+        "es": "Esta acción se mantiene en la mitad de la lista porque cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Su posición se ve limitada porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "icare_0069": {
+        "es": "Esta acción tiene un plazo muy favorable, un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Queda por debajo de las acciones mejor clasificadas porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "icare_0099": {
+        "es": "Esta acción tiene la ventaja de un plazo muy favorable, un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Se clasifica más abajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "icare_0122": {
+        "es": "Esta acción está respaldada por un plazo muy favorable, un contexto de políticas sólido y una viabilidad de mitigación muy sólida. Permanece por debajo del nivel superior porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "icare_0131": {
+        "es": "Esta acción tiene un plazo muy favorable y un fuerte apoyo de políticas, pero aun así se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. No había una fila de evaluación legal disponible, y tampoco había una fila de puntuación de viabilidad de mitigación disponible, así que ambas usaron valores neutros de respaldo."
+      },
+      "icare_0132": {
+        "es": "Esta acción se sitúa aquí porque puede aportar beneficios en emisiones en un plazo muy favorable y cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida. Su menor rango refleja la limitada reducción esperada de emisiones en el inventario actual de la ciudad."
+      },
+      "ipcc_0028": {
+        "es": "Esta acción se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Su contexto de políticas muy sólido y su viabilidad de mitigación muy sólida la ayudan a mantenerse por encima de las opciones más débiles."
+      },
+      "ipcc_0034": {
+        "es": "Esta acción se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Tiene cierto apoyo de políticas, pero la evidencia de viabilidad es más débil aquí y no había una fila de puntuación de viabilidad de mitigación disponible, así que esa parte usó un valor neutro de respaldo."
+      },
+      "ipcc_0052": {
+        "es": "Esta acción se sitúa cerca de la parte superior por las mismas razones principales: una fuerte reducción esperada de emisiones, un apoyo de políticas muy sólido y una viabilidad de mitigación sólida. Queda justo por debajo de la acción clasificada en primer lugar porque la evidencia no añade nada más fuerte que ese perfil general."
+      },
+      "ipcc_0053": {
+        "es": "Esta acción ocupa el primer lugar porque se espera que reduzca fuertemente las emisiones, cuenta con un contexto de políticas muy favorable y parece viable para que la ciudad la lleve a cabo. La única limitación señalada es que no había una fila de evaluación legal disponible, así que la parte legal usó un valor neutro de respaldo."
+      },
+      "ipcc_0054": {
+        "es": "Esta acción se clasifica aquí porque cuenta con un apoyo de políticas muy sólido y una viabilidad de mitigación sólida. No sube más porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "ipcc_0056": {
+        "es": "Esta acción se clasifica cerca del final porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Un apoyo de políticas sólido y una viabilidad de mitigación muy sólida evitan que caiga más."
+      },
+      "ipcc_0057": {
+        "es": "Esta acción está limitada por su reducida reducción esperada de emisiones en el inventario actual de la ciudad. Aun así, cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación sólida, lo que evita que caiga más."
+      },
+      "ipcc_0067": {
+        "es": "Esta acción se mantiene en el grupo superior porque cuenta con un apoyo de políticas muy sólido y una viabilidad de mitigación muy sólida. Se clasifica por debajo de las acciones principales porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad."
+      },
+      "ipcc_0068": {
+        "es": "Esta acción se ve penalizada por su ritmo lento para aportar beneficios en emisiones y por una viabilidad de mitigación más débil. Aun así, sigue teniendo una fuerte reducción esperada de emisiones y un fuerte apoyo de políticas."
+      },
+      "ipcc_0069": {
+        "es": "Esta acción se clasifica bajo porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Tiene un fuerte apoyo de políticas, pero la alineación es más débil en general y no había una fila de evaluación legal disponible, así que la parte legal usó un valor neutro de respaldo."
+      },
+      "ipcc_0070": {
+        "es": "Esta acción se mantiene baja porque su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Un fuerte apoyo de políticas y una viabilidad de mitigación muy sólida ayudan, pero no lo suficiente para elevarla mucho más."
+      },
+      "ipcc_0071": {
+        "es": "Esta acción se clasifica en la mitad inferior porque cuenta con un fuerte apoyo de políticas y una viabilidad de mitigación sólida, pero su reducción esperada de emisiones es limitada en el inventario actual de la ciudad. Eso la mantiene por debajo de las acciones con un impacto general o ventajas de tiempo más fuertes."
+      }
+    },
+    "warning_action_ids": [],
+    "warnings": []
+  }
+}

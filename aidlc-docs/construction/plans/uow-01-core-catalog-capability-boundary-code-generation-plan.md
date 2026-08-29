@@ -274,21 +274,21 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests proving discovery readiness invokes only the bounded
+1. [x] Add failing tests proving discovery readiness invokes only the bounded
    non-content probe and never invokes the full GHGI/HIAP builder, loads a CA
    tool, fetches source content, or executes all candidate reads.
-2. [ ] Add failing tests proving selected execution invokes exactly one mapped
+2. [x] Add failing tests proving selected execution invokes exactly one mapped
    capability after validation, never an unselected capability, and fails
    closed when no safe readiness probe exists.
-3. [ ] Run the focused tests to confirm failure before implementation.
-4. [ ] Implement deterministic GHGI/HIAP adapter definitions that separate
+3. [x] Run the focused tests to confirm failure before implementation.
+4. [x] Implement deterministic GHGI/HIAP adapter definitions that separate
    `probeReadiness` from `executeSelected`; use existing bounded builders for
    execution and no raw storage fallback.
-5. [ ] Add finite timeout/cancellation/cleanup propagation through the existing
+5. [x] Add finite timeout/cancellation/cleanup propagation through the existing
    conventions where the current builder/client boundary supports it.
-6. [ ] Run focused tests and lint/type checks; verify invocation counts explicitly
+6. [x] Run focused tests and lint/type checks; verify invocation counts explicitly
    for discovery versus selected-read phases.
-7. [ ] Commit only adapter/registry integration files and focused tests with:
+7. [x] Commit only adapter/registry integration files and focused tests with:
    `feat(cc-737): add bounded native input source adapters`.
 
 Story/requirement mapping: US-02, US-03, US-04, US-06, US-08; FR-03 through

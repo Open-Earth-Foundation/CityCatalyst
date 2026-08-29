@@ -462,3 +462,24 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `3ed5b1b48` (`feat(cc-737): add Core native input capability registry`) containing only the Unit 1 Core registry and focused tests. Unit 1 covers exact tuple allowlisting and safe discovery projection; focused tests pass 3/3, ESLint and Prettier pass, and the unrelated repository TypeScript baseline error remains documented. Opened Unit 2 for separate readiness-probe and selected-execution adapter work. No Climate Advisor code or storage access was added.
 **Approval Status**: Unit 1 complete; Unit 2 generation in progress under the approved plan.
 ---
+
+## Code Generation — UOW-01 Unit 2 TDD Red Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Added Unit 2 source-adapter tests before production code and ran the focused Jest command. The suite failed at module resolution because the new `source-adapters` module does not yet exist, confirming the expected red checkpoint. The tests cover discovery-only readiness, selected-only execution, and storage-reference non-disclosure.
+**Approval Status**: Unit 2 test-first red checkpoint complete; adapter implementation authorized under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 2 TDD Green Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Implemented the separate native-input source-adapter contract and conservative GHGI/HIAP dispatch. Discovery uses a non-content inventory existence probe, while selected execution invokes only the requested bounded builder after the caller supplies the selected capability. The focused registry/adapter suites pass 6/6 with coverage disabled, ESLint and Prettier pass, and the repository TypeScript baseline remains blocked only by the unrelated missing `src/app/api/v1/city/[city]/meed/rank/route.js` validator reference. No Climate Advisor or raw storage access was added.
+**Approval Status**: Unit 2 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
+---
+
+## Code Generation — UOW-01 Unit 2 Committed
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `f727bfb15` (`feat(cc-737): add bounded native input source adapters`) containing only the adapter contract, conservative GHGI/HIAP dispatch, and focused tests. Unit 2 establishes separate discovery readiness probing and selected-only bounded execution; no route, Climate Advisor, credential, or raw storage access was added. Opened Unit 3 for the Core discovery service.
+**Approval Status**: Unit 2 complete; Unit 3 generation in progress under the approved plan.
+---

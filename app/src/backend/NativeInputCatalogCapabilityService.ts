@@ -37,12 +37,30 @@ export type NativeInputDiscoveryRequest = {
   capabilityId?: NativeInputCapabilityId;
 };
 
+export type NativeInputSelectedReadRequest = NativeInputDiscoveryRequest & {
+  catalogId: string;
+  capabilityId: NativeInputCapabilityId;
+  input: unknown;
+};
+
+export type NativeInputCapabilityResponse = {
+  action: NativeInputCapabilityId;
+  success: true;
+  data: Record<string, unknown>;
+};
+
+export const NATIVE_INPUT_CAPABILITY_UNAVAILABLE_CODE =
+  "capability_unavailable" as const;
+export const NATIVE_INPUT_CAPABILITY_UNAVAILABLE_MESSAGE =
+  "Requested capability is unavailable." as const;
+
 type CatalogEntry = NativeInputDiscoveryCatalogEntry & {
   availability?: NativeInputCatalog["availability"];
 };
 
 export interface NativeInputCapabilityServiceDependencies {
   findActiveCatalogEntries: () => Promise<CatalogEntry[]>;
+  findCatalogEntryById?: (catalogId: string) => Promise<CatalogEntry | null>;
   authorizeCatalogScope: (
     session: AppSession,
     request: NativeInputDiscoveryRequest,
@@ -80,9 +98,44 @@ const defaultDependencies: NativeInputCapabilityServiceDependencies = {
     });
     return rows as unknown as CatalogEntry[];
   },
+  async findCatalogEntryById(catalogId) {
+    const row = await db.models.NativeInputCatalog.findByPk(catalogId, {
+      attributes: [
+        "id",
+        "kind",
+        "owningModule",
+        "sourceType",
+        "sourceId",
+        "userId",
+        "inventoryId",
+        "cityId",
+        "projectId",
+        "organizationId",
+        "availability",
+        "labels",
+      ],
+    });
+    return row as unknown as CatalogEntry | null;
+  },
   authorizeCatalogScope: authorizeCatalogScope,
   getSourceAdapter: getNativeInputSourceAdapter,
 };
+
+export function nativeInputCapabilityUnavailable(): createHttpError.HttpError {
+  const error = new createHttpError.NotFound(
+    NATIVE_INPUT_CAPABILITY_UNAVAILABLE_MESSAGE,
+  ) as createHttpError.HttpError & { code?: string };
+  error.code = NATIVE_INPUT_CAPABILITY_UNAVAILABLE_CODE;
+  return error;
+}
+
+function isNativeInputCapabilityUnavailable(error: unknown): boolean {
+  return (
+    createHttpError.isHttpError(error) &&
+    (error as createHttpError.HttpError & { code?: string }).code ===
+      NATIVE_INPUT_CAPABILITY_UNAVAILABLE_CODE
+  );
+}
 
 function isSafePermissionMiss(error: unknown): boolean {
   return (
@@ -237,4 +290,133 @@ export async function discoverNativeInputs(
   }
 
   return discovered;
+}
+
+const FORBIDDEN_RESULT_KEYS = new Set([
+  "access_key_id",
+  "authorization",
+  "bearer_token",
+  "catalog_id",
+  "city_id",
+  "client_secret",
+  "credentials",
+  "inventory_id",
+  "object_key",
+  "organization_id",
+  "password",
+  "private_key",
+  "project_id",
+  "s3_key",
+  "secret_access_key",
+  "signed_url",
+  "source_id",
+  "storage_path",
+  "token",
+  "user_id",
+]);
+
+function redactForbiddenResultFields(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(redactForbiddenResultFields);
+  }
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => !FORBIDDEN_RESULT_KEYS.has(key.toLowerCase()))
+      .map(([key, child]) => [key, redactForbiddenResultFields(child)]),
+  );
+}
+
+function assertBoundedSafeResult(value: unknown): Record<string, unknown> {
+  const safeResult = redactForbiddenResultFields(value);
+  const serialized = JSON.stringify(safeResult);
+  if (
+    serialized == null ||
+    serialized.length > 64 * 1024 ||
+    /(?:s3:\/\/|amazonaws\.com|Bearer\s|private\/raw)/i.test(serialized)
+  ) {
+    throw nativeInputCapabilityUnavailable();
+  }
+  if (
+    !safeResult ||
+    typeof safeResult !== "object" ||
+    Array.isArray(safeResult)
+  ) {
+    throw nativeInputCapabilityUnavailable();
+  }
+  return safeResult as Record<string, unknown>;
+}
+
+export async function readNativeInputCapability(
+  request: NativeInputSelectedReadRequest,
+  session: AppSession,
+  dependencies: NativeInputCapabilityServiceDependencies = defaultDependencies,
+): Promise<NativeInputCapabilityResponse> {
+  if (!session.user?.id) {
+    throw new createHttpError.Unauthorized("Authentication required");
+  }
+
+  if (request.userId && request.userId !== session.user.id) {
+    throw nativeInputCapabilityUnavailable();
+  }
+
+  const resolvedDependencies = { ...defaultDependencies, ...dependencies };
+
+  try {
+    const findCatalogEntryById = resolvedDependencies.findCatalogEntryById;
+    if (!findCatalogEntryById) throw nativeInputCapabilityUnavailable();
+
+    const entry = await findCatalogEntryById(request.catalogId);
+    if (!entry || entry.availability !== "active") {
+      throw nativeInputCapabilityUnavailable();
+    }
+
+    const definition = (
+      resolvedDependencies.resolveCapability ??
+      getNativeInputCapabilityDefinition
+    )(entry);
+    if (
+      !definition ||
+      !definition.capabilityIds.includes(request.capabilityId)
+    ) {
+      throw nativeInputCapabilityUnavailable();
+    }
+
+    const adapter = resolvedDependencies.getSourceAdapter(entry);
+    if (!adapter) throw nativeInputCapabilityUnavailable();
+    if (
+      !(await resolvedDependencies.authorizeCatalogScope(
+        session,
+        request,
+        entry,
+      ))
+    ) {
+      throw nativeInputCapabilityUnavailable();
+    }
+    if (!(await adapter.probeReadiness(entry))) {
+      throw nativeInputCapabilityUnavailable();
+    }
+
+    const parsedInput = definition.schemas.input.safeParse(request.input);
+    if (!parsedInput.success) throw nativeInputCapabilityUnavailable();
+
+    const sourceResult = await adapter.executeSelected({
+      entry,
+      capabilityId: request.capabilityId,
+      input: parsedInput.data,
+    });
+    const response = {
+      action: request.capabilityId,
+      success: true as const,
+      data: assertBoundedSafeResult(sourceResult),
+    };
+    if (!definition.schemas.output.safeParse(response).success) {
+      throw nativeInputCapabilityUnavailable();
+    }
+    return response;
+  } catch (error) {
+    if (isNativeInputCapabilityUnavailable(error)) throw error;
+    throw nativeInputCapabilityUnavailable();
+  }
 }

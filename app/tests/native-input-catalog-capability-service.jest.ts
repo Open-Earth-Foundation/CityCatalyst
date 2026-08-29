@@ -2,6 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 
 import {
   discoverNativeInputs,
+  readNativeInputCapability,
   type NativeInputCapabilityServiceDependencies,
 } from "@/backend/NativeInputCatalogCapabilityService";
 import type { AppSession } from "@/lib/auth";
@@ -38,6 +39,20 @@ function dependencies(
     })),
     ...overrides,
   };
+}
+
+function readDependencies(
+  adapter: {
+    probeReadiness: jest.Mock;
+    executeSelected: jest.Mock;
+  },
+  overrides: Partial<NativeInputCapabilityServiceDependencies> = {},
+): NativeInputCapabilityServiceDependencies {
+  return dependencies([authorizedEntry], {
+    findCatalogEntryById: jest.fn(async () => authorizedEntry),
+    getSourceAdapter: jest.fn(() => adapter),
+    ...overrides,
+  });
 }
 
 describe("NativeInputCatalog capability service", () => {
@@ -138,5 +153,146 @@ describe("NativeInputCatalog capability service", () => {
     });
 
     await expect(discoverNativeInputs({}, session, deps)).resolves.toEqual([]);
+  });
+
+  it("revalidates and executes exactly the selected bounded capability", async () => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({
+        completion: { filled: 10, required: 12 },
+      })),
+    };
+    const deps = readDependencies(adapter);
+
+    await expect(
+      readNativeInputCapability(
+        {
+          userId: session.user.id,
+          catalogId: authorizedEntry.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          cityId: authorizedEntry.cityId,
+          inventoryId: authorizedEntry.inventoryId,
+          input: {
+            city_id: authorizedEntry.cityId,
+            inventory_id: authorizedEntry.inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).resolves.toEqual({
+      action: "ghgi.inventory.status_overview",
+      success: true,
+      data: { completion: { filled: 10, required: 12 } },
+    });
+    expect(adapter.probeReadiness).toHaveBeenCalledTimes(1);
+    expect(adapter.executeSelected).toHaveBeenCalledTimes(1);
+    expect(adapter.executeSelected).toHaveBeenCalledWith(
+      expect.objectContaining({
+        entry: authorizedEntry,
+        capabilityId: "ghgi.inventory.status_overview",
+      }),
+    );
+  });
+
+  it.each([
+    ["missing catalog", null],
+    ["withdrawn catalog", { ...authorizedEntry, availability: "withdrawn" }],
+    ["forged capability", { ...authorizedEntry, kind: "unsupported" }],
+  ])("returns one stable error for %s selection", async (_label, entry) => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(),
+    };
+    const deps = readDependencies(adapter, {
+      findCatalogEntryById: jest.fn(async () => entry),
+    });
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: authorizedEntry.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          input: {
+            city_id: authorizedEntry.cityId,
+            inventory_id: authorizedEntry.inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      code: "capability_unavailable",
+      message: "Requested capability is unavailable.",
+    });
+    expect(adapter.executeSelected).not.toHaveBeenCalled();
+  });
+
+  it("normalizes stale authorization and forbidden adapter data without disclosure", async () => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({
+        s3_key: "private/raw/inventory.csv",
+        signed_url: "https://storage.example/signed",
+        bearer_token: "secret",
+      })),
+    };
+    const deps = readDependencies(adapter, {
+      authorizeCatalogScope: jest.fn(async () => false),
+    });
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: authorizedEntry.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          input: {
+            city_id: authorizedEntry.cityId,
+            inventory_id: authorizedEntry.inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).rejects.toMatchObject({
+      statusCode: 404,
+      code: "capability_unavailable",
+      message: "Requested capability is unavailable.",
+    });
+    expect(adapter.probeReadiness).not.toHaveBeenCalled();
+    expect(adapter.executeSelected).not.toHaveBeenCalled();
+  });
+
+  it("redacts forbidden fields from a selected bounded result", async () => {
+    const adapter = {
+      probeReadiness: jest.fn(async () => true),
+      executeSelected: jest.fn(async () => ({
+        bounded: true,
+        s3_key: "private/raw/inventory.csv",
+        signed_url: "https://storage.example/signed",
+        inventory_id: authorizedEntry.inventoryId,
+      })),
+    };
+    const deps = readDependencies(adapter);
+
+    await expect(
+      readNativeInputCapability(
+        {
+          catalogId: authorizedEntry.id,
+          capabilityId: "ghgi.inventory.status_overview",
+          input: {
+            city_id: authorizedEntry.cityId,
+            inventory_id: authorizedEntry.inventoryId,
+          },
+        },
+        session,
+        deps,
+      ),
+    ).resolves.toEqual({
+      action: "ghgi.inventory.status_overview",
+      success: true,
+      data: { bounded: true },
+    });
   });
 });

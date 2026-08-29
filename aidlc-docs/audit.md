@@ -426,3 +426,18 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded explicit approval of both revised UOW-01 NFR Design artifacts. Marked NFR Design complete and opened Code Generation planning. The approved design preserves Core authorization, discovery omission/non-disclosure, bounded reads, selected-only capability loading and execution, module source ownership, and the absence of storage credentials or raw storage access in Climate Advisor. No application code or tests were modified.
 **Approval Status**: UOW-01 NFR Design approved; Code Generation planning gate open.
 ---
+
+## Code Generation — UOW-01 Planning Start
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Closed the approved UOW-01 NFR Design stage and drafted the brown-field UOW-01 Code Generation plan. The plan names exact Core production/test paths, dependency-ordered test-first units, atomic commit boundaries, the discovery readiness versus selected execution separation, Core authorization/non-disclosure, bounded reads, and no-storage-credentials constraints. No application code or tests were modified.
+**Approval Prompt**: "Please review `aidlc-docs/construction/plans/uow-01-core-catalog-capability-boundary-code-generation-plan.md` and explicitly approve this Code Generation plan, or request changes. No application code or tests will be modified until approval."
+**Approval Status**: Code Generation plan approval pending.
+---
+
+## Approval — UOW-01 Code Generation Plan
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of the UOW-01 brown-field Core Code Generation plan. Code Generation is now authorized for the dependency-ordered Core units, using test-first implementation, atomic commits, the discovery-only readiness boundary, selected-only capability execution, Core authorization, bounded reads, non-disclosure, and storage isolation. Climate Advisor/UOW-02 remains deferred until the approved Core contract is available. No application code or tests were modified while recording this approval.
+**Approval Status**: UOW-01 Code Generation plan approved; generation in progress.
+---

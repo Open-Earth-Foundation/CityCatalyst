@@ -581,3 +581,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `5f9ada5f3` (`test(cc-737): harden Core catalog capability security evidence`) containing only verification hardening for the Core registry/service and the existing internal-CA auth matrix. No unrelated files, Climate Advisor/UOW-02 code, migrations, storage credentials, or raw storage access were added. Code Generation completion review is now open; UOW-02 remains deferred pending explicit approval of the generated UOW-01 code/tests and resolution or acceptance of the documented environment limitations.
 **Approval Status**: Unit 7 implementation committed; Code Generation completion approval pending.
 ---
+
+## Approval — UOW-01 Core Code Generation Completion
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the generated UOW-01 Core implementation, tests, atomic commits, verification evidence, and documented environment limitations. UOW-01 remains within the approved security and architecture boundaries: Core is the sole authorization authority; discovery uses lightweight readiness only; selected reads are revalidated and bounded; unavailable selections are non-disclosing; and Climate Advisor receives no storage credentials or raw storage access. Closed UOW-01 Code Generation and opened UOW-02 Functional Design planning. No UOW-02 application code was modified.
+**Approval Status**: UOW-01 Code Generation complete; UOW-02 Functional Design planning gate open.
+---

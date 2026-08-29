@@ -13,7 +13,7 @@ until this plan is explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-01 — Core Catalog/Capability Boundary.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Code Generation in progress.
+- **Status**: Plan and generated Core implementation approved; verification caveat accepted; stage complete.
 - **Application code**: Unchanged. No tests or production code may be written until this plan is approved.
 - **Owner**: CityCatalyst Core maintainers; UOW-02 remains the Climate Advisor consumer unit.
 
@@ -441,8 +441,13 @@ Steps:
 3. [x] Run focused suites, the existing GHGI/HIAP capability suites, the
    internal CA auth suite, Core lint, TypeScript checks, and the repository's
    relevant build/test command.
-4. [ ] Confirm existing GHGI/HIAP routes and producer catalog lifecycle tests
+4. [x] Confirm existing GHGI/HIAP routes and producer catalog lifecycle tests
    remain green and no application behavior outside CC-737 changed.
+
+The existing GHGI integration suite could not execute because local PostgreSQL
+access was unavailable; David approved the generated UOW-01 code/tests with
+this limitation recorded in the verification evidence. HIAP regression and
+the in-scope Core/auth suites passed.
 5. [x] Record verification evidence in the UOW-01 code artifact directory and
    commit only the independently reviewable verification updates with:
    `test(cc-737): harden Core catalog capability security evidence`.
@@ -498,4 +503,4 @@ explicitly approve it before any test or application-code change.
 - **Approved by**: David
 - **Approval input**: `approved`
 - **Approval date**: 2026-08-29
-- **Approval scope**: This exact UOW-01 Core Code Generation plan, including its test-first sequence, conservative GHGI/HIAP scope, readiness/execution separation, security boundaries, and atomic commit protocol.
+- **Approval scope**: This exact UOW-01 Core Code Generation plan, including its test-first sequence, conservative GHGI/HIAP scope, readiness/execution separation, security boundaries, atomic commit protocol, generated implementation, verification evidence, and documented environment limitations.

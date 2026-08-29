@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation — UOW-01 completion review pending
+- **Current Stage**: Functional Design — UOW-02 planning
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -51,6 +51,7 @@
 - [x] Construction explicitly authorized — 2026-08-29
 - [x] UOW-01 Functional Design plan and artifacts approved — 2026-08-29
 - [x] UOW-01 NFR Requirements plan and artifacts approved — 2026-08-29
+- [x] UOW-01 Code Generation and verification evidence approved — 2026-08-29
 
 ## CONSTRUCTION PHASE
 - [x] Functional Design — UOW-01 artifacts approved 2026-08-29
@@ -58,5 +59,6 @@
 - [x] NFR Design — UOW-01 artifacts approved — 2026-08-29
 - [ ] Infrastructure Design — skipped unless a new approved infrastructure need appears
 - [x] Code Generation plan — UOW-01 approved — 2026-08-29
-- [ ] Code Generation — UOW-01 completion review pending
+- [x] Code Generation — UOW-01 complete with documented GHGI environment limitation
+- [ ] Functional Design — UOW-02 planning
 - [ ] Build and Test — pending implementation

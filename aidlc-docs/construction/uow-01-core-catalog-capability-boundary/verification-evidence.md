@@ -2,7 +2,7 @@
 
 **Issue**: CC-737 — Connect NativeInputCatalog to Climate Advisor capabilities  
 **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`  
-**Status**: Core Code Generation evidence prepared; completion approval pending.
+**Status**: Core Code Generation evidence approved; GHGI environment limitation remains documented for release verification.
 
 ## Atomic implementation commits
 

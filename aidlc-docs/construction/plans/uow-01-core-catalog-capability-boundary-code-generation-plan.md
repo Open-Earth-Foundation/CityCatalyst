@@ -400,18 +400,18 @@ Files:
 
 Steps:
 
-1. [ ] Add failing route tests for authentication/feature gates, typed request
+1. [x] Add failing route tests for authentication/feature gates, typed request
    rejection, authorized bounded read, selected-only adapter invocation, and
    every non-disclosing selection failure class.
-2. [ ] Run the focused route suite to confirm failure before implementation.
-3. [ ] Implement the route with the existing internal CA conventions and
+2. [x] Run the focused route suite to confirm failure before implementation.
+3. [x] Implement the route with the existing internal CA conventions and
    delegation to the selected-read Core service. Do not put authorization or
    source dispatch logic in the route.
-4. [ ] Assert the exact HTTP 404 `capability_unavailable` response and absence
+4. [x] Assert the exact HTTP 404 `capability_unavailable` response and absence
    of catalog/source/state identifiers, scope, storage details, and upstream
    text.
-5. [ ] Run focused route/auth tests, lint, and type checks.
-6. [ ] Commit only the route and tests with:
+5. [x] Run focused route/auth tests, lint, and type checks.
+6. [x] Commit only the route and tests with:
    `feat(cc-737): expose Core selected native input capability`.
 
 Story/requirement mapping: US-02, US-03, US-04, US-06, US-08; FR-04 through

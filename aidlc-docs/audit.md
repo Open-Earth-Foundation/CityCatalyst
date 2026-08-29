@@ -539,3 +539,31 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Implemented the feature-gated, Climate Advisor service-authenticated Core discovery route with typed request parsing, mandatory bearer-bound session validation, body/session user matching, and delegation to the Core discovery service. Added route coverage for the safe discovery envelope, missing service authentication, missing session, user mismatch, malformed filters, and disabled integration. The focused route suite passes 6/6 with coverage disabled; ESLint and Prettier pass. The repository TypeScript check still reports the pre-existing missing `.next/dev/types/validator.ts` reference to `src/app/api/v1/city/[city]/meed/rank/route.js`; the new route itself introduced no additional TypeScript error. The test harness uses a mocked server feature-flag boundary to avoid the repository's process-level feature-flag cache; production feature-flag code was not changed.
 **Approval Status**: Unit 5 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
 ---
+
+## Code Generation — UOW-01 Unit 5 Committed
+**Timestamp**: 2026-08-29T17:05:24-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `aa26fb6b7` (`feat(cc-737): expose Core native input discovery capability`) containing only the internal Core Climate Advisor discovery route and its route contract tests. Unit 5 covers feature gating, Climate Advisor service authentication, mandatory bearer-bound sessions, user matching, malformed request rejection, safe discovery serialization, and delegation to the Core authorization/discovery service. Unrelated setup files and lockfile changes remained unstaged. Opened Unit 6 for the selected-read route.
+**Approval Status**: Unit 5 complete; Unit 6 generation in progress under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 6 TDD Red Checkpoint
+**Timestamp**: 2026-08-29T17:08:21-03:00
+**User Input**: "approved"
+**AI Response**: Added Unit 6 selected-read route tests before route production code and ran the focused package-script Jest command. The suite reached the intended red checkpoint because the new selected-read route module does not yet exist. The tests cover the Core bounded success envelope, service authentication, typed request rejection, bearer/session user matching, stable non-disclosing `capability_unavailable` propagation, and the disabled integration gate. No selected-read route production code was added at the red checkpoint.
+**Approval Status**: Unit 6 test-first red checkpoint complete; selected-read route implementation authorized under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 6 TDD Green Checkpoint
+**Timestamp**: 2026-08-29T17:09:22-03:00
+**User Input**: "approved"
+**AI Response**: Implemented the thin internal Core Climate Advisor selected-read route with existing feature gating, service authentication, mandatory bearer-bound session validation, typed bounded request parsing, and delegation to the Core selected-read service. The focused route suite passes 12/12 with coverage disabled, including the exact stable HTTP 404 `capability_unavailable` response and no-disclosure assertion. ESLint and Prettier pass. The repository TypeScript check still reports only the unrelated pre-existing `.next/dev/types/validator.ts` reference to missing `src/app/api/v1/city/[city]/meed/rank/route.js`; the new route introduces no additional TypeScript error.
+**Approval Status**: Unit 6 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
+---
+
+## Code Generation — UOW-01 Unit 6 Committed
+**Timestamp**: 2026-08-29T17:09:22-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `07217e41e` (`feat(cc-737): expose Core selected native input capability`) containing only the internal Core Climate Advisor selected-read route and its route contract extensions. Unit 6 enforces the existing feature/service boundary, bearer-bound session and user matching, typed bounded input parsing, Core delegation, exact stable unavailable errors, and response non-disclosure. Opened Unit 7 for contract, property, regression, and security verification hardening.
+**Approval Status**: Unit 6 complete; Unit 7 generation in progress under the approved Code Generation plan.
+---

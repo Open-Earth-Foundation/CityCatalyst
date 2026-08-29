@@ -595,3 +595,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Validated all 12 UOW-02 Functional Design planning answers. All answer tags are complete and select the recommended behavior: authenticated active-request context, request-time Core discovery, current Core-issued selection binding, selected-only tool registration, typed bounded inputs, Core-owned authorization/revalidation, stable non-disclosing errors, existing token refresh/cleanup, workflow compatibility, isolated failures, and consumer contract/security evidence. No contradiction or unresolved ambiguity requires follow-up questions. Functional Design artifacts and Climate Advisor code remain deferred pending explicit plan approval.
 **Approval Status**: UOW-02 Functional Design plan answers complete; explicit plan approval pending.
 ---
+
+## Approval — UOW-02 Functional Design Plan
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the answered UOW-02 Functional Design plan. Generated the three planned technology-agnostic Climate Advisor artifacts covering request-time discovery, lightweight readiness versus selected bounded execution, selection binding, selected-only tool registration, typed inputs/results, Core revalidation, stable non-disclosure, workflow compatibility, token/resource lifecycle, and consumer evidence. No Climate Advisor application code, prompts, tests, NFR artifacts, or unrelated files were modified.
+**Approval Status**: UOW-02 Functional Design plan approved; artifacts generated and awaiting separate explicit artifact approval.
+---

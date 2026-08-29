@@ -12,7 +12,7 @@ Design artifacts are separately approved.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Assigned stories**: US-03, US-07, US-09.
 - **Stage**: CONSTRUCTION — Functional Design.
-- **Status**: All planning answers validated; explicit plan approval pending.
+- **Status**: Functional Design artifacts generated and validated; explicit artifact approval pending.
 - **Prerequisite**: Approved UOW-01 Core contract, implementation, and verification evidence.
 - **Application code**: Climate Advisor code remains unchanged until this plan and its Functional Design artifacts are approved.
 
@@ -65,28 +65,28 @@ replace workflow-specific tools or create a second storage/client boundary.
 
 ## Functional Design workplan
 
-- [ ] Model the request lifecycle from active user/session context through Core
+- [x] Model the request lifecycle from active user/session context through Core
   discovery, selection, request-scoped tool creation, selected read, and agent
   execution.
-- [ ] Define domain fields and trust levels for discovery entries, selections,
+- [x] Define domain fields and trust levels for discovery entries, selections,
   Core capability IDs, request context, tool instances, bounded results, safe
   errors, token references, and cleanup state.
-- [ ] Define the exact selection and capability-binding rules for stale,
+- [x] Define the exact selection and capability-binding rules for stale,
   forged, malformed, unknown, unauthorized, unavailable, withdrawn,
   superseded, missing, and deleted selections.
-- [ ] Define coexistence rules for the existing tool packs and new
+- [x] Define coexistence rules for the existing tool packs and new
   catalog-backed tools across general chat, Stationary Energy, Concept Note,
   and other active workflow modes.
-- [ ] Define token propagation, one-time refresh, timeout, cancellation, and
+- [x] Define token propagation, one-time refresh, timeout, cancellation, and
   short-lived client/resource cleanup behavior.
-- [ ] Define safe tool-result and error transformations, including forbidden
+- [x] Define safe tool-result and error transformations, including forbidden
   storage/credential/source fields and safe telemetry.
-- [ ] Define selected-only loading and execution invariants, including the
+- [x] Define selected-only loading and execution invariants, including the
   prohibition on pre-registering all catalog capabilities or reading every
   discovered source.
-- [ ] Define compatibility, failure-isolation, and rollback behavior when Core
+- [x] Define compatibility, failure-isolation, and rollback behavior when Core
   discovery/read is disabled, unavailable, or returns no eligible entries.
-- [ ] Define Climate Advisor example-based, security, compatibility, cleanup,
+- [x] Define Climate Advisor example-based, security, compatibility, cleanup,
   and applicable partial property-based verification evidence.
 
 ## Functional Design questions — answer every `[Answer]:` tag
@@ -301,6 +301,20 @@ contract, and all applicable FR/NFR constraints. They must preserve Core as
 the sole authorization authority and the no-storage-credentials/raw-access
 boundary.
 
+## Generated Functional Design artifacts
+
+The following artifacts were generated from the approved plan and validated
+against the approved UOW-01 Core contract and existing Climate Advisor
+architecture:
+
+- `uow-02-climate-advisor-request-time-integration/functional-design/business-logic-model.md`
+- `uow-02-climate-advisor-request-time-integration/functional-design/business-rules.md`
+- `uow-02-climate-advisor-request-time-integration/functional-design/domain-entities.md`
+
+The artifacts explicitly separate lightweight discovery readiness from selected
+bounded execution. They do not authorize application code, prompt changes, or
+NFR Requirements work until artifact approval.
+
 ## Answer validation result
 
 - All 12 planning questions have non-empty `[Answer]:` tags.
@@ -313,12 +327,12 @@ boundary.
   compatibility, isolated failure behavior, and consumer contract/security
   evidence.
 - No contradiction or unresolved ambiguity requires a follow-up question.
-- **Gate**: UOW-02 Functional Design plan approval is required before the
-  Functional Design artifacts are generated.
+- **Gate result**: Plan approval was received; the three Functional Design
+  artifacts are now available for explicit artifact approval.
 
 ## Approval gate
 
 Complete every `[Answer]:` tag, resolve follow-up questions, and explicitly
 approve this plan before Functional Design artifacts are generated. After the
-artifacts are generated and validated, a separate explicit approval is
-required before UOW-02 NFR Requirements or application-code changes.
+artifacts are generated and validated, a separate explicit artifact approval
+is required before UOW-02 NFR Requirements or application-code changes.

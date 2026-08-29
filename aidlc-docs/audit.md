@@ -382,3 +382,47 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded explicit approval of both UOW-01 NFR Requirements artifacts. Marked NFR Requirements complete and opened NFR Design planning for UOW-01. Application code and tests remain unchanged.
 **Approval Status**: UOW-01 NFR Requirements approved; NFR Design planning gate open.
 ---
+
+## NFR Design — UOW-01 Planning Start
+**Timestamp**: 2026-08-29T15:44:57-03:00
+**User Input**: "approved"
+**AI Response**: Opened the UOW-01 NFR Design planning gate after NFR Requirements artifact approval. Created a 12-question plan covering resilience, retries/timeouts, degradation, bounded concurrency, performance, security placement, non-disclosure, logical components, caching/consistency, observability, rollout, contract evolution, and verification architecture. Existing patterns remain the baseline; no application code or NFR Design artifacts were generated.
+**Approval Status**: NFR Design answer-collection gate open.
+---
+
+## NFR Design — UOW-01 Plan Answer Validation
+**Timestamp**: 2026-08-29T15:44:57-03:00
+**User Input**: "filled"
+**AI Response**: Validated all 12 UOW-01 NFR Design planning answer tags. The answers consistently select bounded existing timeout/retry and operational patterns, Core defense-in-depth, omission/non-disclosure, selected-only work, no stale authorization cache, safe observability, Core-first rollout, and no new infrastructure. The logical component approach preserves Core authorization and module source ownership while keeping Climate Advisor as a request-time consumer. No follow-up questions were required. NFR Design artifacts and application code remain ungenerated and unchanged.
+**Approval Prompt**: "Please examine `aidlc-docs/construction/plans/uow-01-core-catalog-capability-boundary-nfr-design-plan.md`. Explicitly approve the completed UOW-01 NFR Design plan, or request changes. NFR Design artifacts and application code remain ungenerated."
+**Approval Status**: Pending explicit user approval of the NFR Design plan.
+---
+
+## Approval — UOW-01 NFR Design Plan
+**Timestamp**: 2026-08-29T15:49:50-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of the completed UOW-01 NFR Design plan. Began generating only the NFR Design Patterns and Logical Components artifacts; application code remains unchanged.
+**Approval Status**: UOW-01 NFR Design plan approved; artifact approval remains pending.
+---
+
+## NFR Design — UOW-01 Artifacts Generated
+**Timestamp**: 2026-08-29T15:52:51-03:00
+**User Input**: "approved"
+**AI Response**: Generated and validated `nfr-design-patterns.md` and `logical-components.md` for UOW-01. Validation covered resilience, scalability, performance, security, non-disclosure, observability, compatibility, rollout, verification, Core authority, module ownership, bounded reads, cleanup, and no storage credentials/raw storage access in Climate Advisor. No application code or tests were modified.
+**Approval Prompt**: "Please examine the UOW-01 NFR Design artifacts under `aidlc-docs/construction/uow-01-core-catalog-capability-boundary/nfr-design/`. Explicitly approve the completed NFR Design artifacts to proceed to Code Generation, or request changes. Application code and tests remain unchanged."
+**Approval Status**: Pending explicit NFR Design artifact approval.
+---
+
+## Change Request — NFR Design Readiness/Execution Separation
+**Timestamp**: 2026-08-29T16:03:32-03:00
+**User Input**: "Adjust the NFR design to explicitly distinguish between the lightweight readiness check performed during discovery and the bounded read execution performed during a selected read. Discovery must not load Climate Advisor capabilities or execute full reads for all inputs; only the selected capability may be loaded and executed. All other Core authorization, non-disclosure, and storage isolation constraints remain in effect."
+**AI Response**: Updated the unapproved UOW-01 NFR Design artifacts to separate discovery-time lightweight, non-content readiness probing from selected-read capability loading/execution. Discovery now explicitly forbids Climate Advisor tool loading, executable capability initialization, full capability invocation, source-content fetches, and full reads for all candidates. Selected reads now explicitly load and execute only the chosen capability after full Core revalidation. Existing authorization, non-disclosure, bounded-read, module-ownership, and storage-isolation constraints remain unchanged.
+**Approval Status**: NFR Design artifact approval remains pending; no application code was modified.
+---
+
+## Approval — UOW-01 NFR Design Artifacts
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of both revised UOW-01 NFR Design artifacts. Marked NFR Design complete and opened Code Generation planning. The approved design preserves Core authorization, discovery omission/non-disclosure, bounded reads, selected-only capability loading and execution, module source ownership, and the absence of storage credentials or raw storage access in Climate Advisor. No application code or tests were modified.
+**Approval Status**: UOW-01 NFR Design approved; Code Generation planning gate open.
+---

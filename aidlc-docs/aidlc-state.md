@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: INCEPTION
-- **Current Stage**: Units Generation — planning questions open
+- **Current Stage**: Units Generation — approved plan; artifact generation in progress
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -30,7 +30,7 @@
 - [x] User Stories — artifacts approved 2026-08-28
 - [x] Workflow Planning — approved 2026-08-28
 - [x] Application Design — artifacts approved 2026-08-28
-- [ ] Units Generation — planning questions open; explicit plan approval required
+- [ ] Units Generation — plan approved; artifacts being generated; explicit artifact approval required
 
 ## Extension Configuration
 | Extension | Enabled | Decided At |

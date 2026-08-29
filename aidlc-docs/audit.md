@@ -483,3 +483,24 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `f727bfb15` (`feat(cc-737): add bounded native input source adapters`) containing only the adapter contract, conservative GHGI/HIAP dispatch, and focused tests. Unit 2 establishes separate discovery readiness probing and selected-only bounded execution; no route, Climate Advisor, credential, or raw storage access was added. Opened Unit 3 for the Core discovery service.
 **Approval Status**: Unit 2 complete; Unit 3 generation in progress under the approved plan.
 ---
+
+## Code Generation — UOW-01 Unit 3 TDD Red Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Added Unit 3 discovery-service tests before production code and ran the focused Jest command. The suite failed at module resolution because `NativeInputCatalogCapabilityService` does not yet exist, confirming the expected red checkpoint. The tests cover safe authorized projection, omission of unauthorized/removed/unmapped/unready entries, no readiness error disclosure, and no selected execution during discovery.
+**Approval Status**: Unit 3 test-first red checkpoint complete; discovery-service implementation authorized under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 3 TDD Green Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Implemented the Core discovery service with active catalog filtering, exact allowlist resolution, request-context matching, conjunctive populated-scope authorization, non-content readiness probing, omission-only safe projection, and sequential bounded candidate processing. The focused registry/adapter/discovery suites pass 9/9 with coverage disabled and ESLint/Prettier pass. The repository TypeScript check still reports only the unrelated existing `.next/dev/types/validator.ts` reference to missing `src/app/api/v1/city/[city]/meed/rank/route.js`.
+**Approval Status**: Unit 3 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
+---
+
+## Code Generation — UOW-01 Unit 3 Committed
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `f7e720cae` (`feat(cc-737): add authorized native input discovery`) containing only the Core discovery service and focused tests. Unit 3 enforces active exact-mapping discovery, conjunctive scope authorization, omission-only non-disclosure, readiness probing without selected execution, and bounded sequential candidate processing. Opened Unit 4 for selected-read validation and safe error/result handling.
+**Approval Status**: Unit 3 complete; Unit 4 generation in progress under the approved plan.
+---

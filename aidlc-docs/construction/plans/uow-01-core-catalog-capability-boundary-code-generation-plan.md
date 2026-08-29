@@ -305,26 +305,26 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests for active authorized discovery with safe projection.
-2. [ ] Add failing tests for each applicable scope denial: user,
+1. [x] Add failing tests for active authorized discovery with safe projection.
+2. [x] Add failing tests for each applicable scope denial: user,
    organization, project, city, and inventory. Assert the entry is omitted and
    no denial reason, hidden-source metadata, or source ID is returned.
-3. [ ] Add failing tests for withdrawn, superseded, unavailable, unreadable,
+3. [x] Add failing tests for withdrawn, superseded, unavailable, unreadable,
    missing, deleted, unknown, and not-ready entries; assert indistinguishable
    omission behavior.
-4. [ ] Add failing tests for bounded query/result behavior, safe labels, safe
+4. [x] Add failing tests for bounded query/result behavior, safe labels, safe
    telemetry projection, and dependency/probe failure isolation.
-5. [ ] Run the focused service suite to confirm the expected failure before
+5. [x] Run the focused service suite to confirm the expected failure before
    implementation.
-6. [ ] Implement service authentication/user-binding hooks at the route-facing
+6. [x] Implement service authentication/user-binding hooks at the route-facing
    boundary, catalog query/filtering, conjunctive populated-scope checks,
    registry resolution, readiness probing, omission-only projection, and safe
    bounded telemetry.
-7. [ ] Ensure discovery never performs selected capability execution and never
+7. [x] Ensure discovery never performs selected capability execution and never
    loads source content for all candidates.
-8. [ ] Run focused tests, lint, and type checks; inspect serialized output for
+8. [x] Run focused tests, lint, and type checks; inspect serialized output for
    forbidden fields and metadata disclosure.
-9. [ ] Commit only the Core discovery service and tests with:
+9. [x] Commit only the Core discovery service and tests with:
    `feat(cc-737): add authorized native input discovery`.
 
 Story/requirement mapping: US-01, US-02, US-05, US-08; FR-01, FR-02, FR-03,

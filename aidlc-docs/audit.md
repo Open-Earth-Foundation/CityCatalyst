@@ -441,3 +441,24 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded explicit approval of the UOW-01 brown-field Core Code Generation plan. Code Generation is now authorized for the dependency-ordered Core units, using test-first implementation, atomic commits, the discovery-only readiness boundary, selected-only capability execution, Core authorization, bounded reads, non-disclosure, and storage isolation. Climate Advisor/UOW-02 remains deferred until the approved Core contract is available. No application code or tests were modified while recording this approval.
 **Approval Status**: UOW-01 Code Generation plan approved; generation in progress.
 ---
+
+## Code Generation — UOW-01 Unit 1 TDD Red Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Added the Unit 1 registry contract tests before production code and ran the focused Jest command. The suite failed at module resolution because the new Core registry does not yet exist, confirming the expected red checkpoint. No production code was added; unrelated worktree changes remain untouched.
+**Approval Status**: Unit 1 test-first red checkpoint complete; registry implementation authorized under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 1 TDD Green Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Implemented the Core closed native-input capability registry and safe discovery projection required by Unit 1. The focused registry suite passes 3/3 with coverage disabled for the focused run; ESLint and Prettier checks pass. The repository-wide TypeScript check remains blocked by the pre-existing `.next/dev/types/validator.ts` reference to missing `src/app/api/v1/city/[city]/meed/rank/route.js`, unrelated to this unit. No database, source-content, Climate Advisor, or storage-access code was changed.
+**Approval Status**: Unit 1 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
+---
+
+## Code Generation — UOW-01 Unit 1 Committed
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `3ed5b1b48` (`feat(cc-737): add Core native input capability registry`) containing only the Unit 1 Core registry and focused tests. Unit 1 covers exact tuple allowlisting and safe discovery projection; focused tests pass 3/3, ESLint and Prettier pass, and the unrelated repository TypeScript baseline error remains documented. Opened Unit 2 for separate readiness-probe and selected-execution adapter work. No Climate Advisor code or storage access was added.
+**Approval Status**: Unit 1 complete; Unit 2 generation in progress under the approved plan.
+---

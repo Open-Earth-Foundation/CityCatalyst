@@ -241,21 +241,21 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests for exact supported tuple lookup, unknown tuple
+1. [x] Add failing tests for exact supported tuple lookup, unknown tuple
    omission, Core-issued capability IDs, route non-derivation, bounded schema
    parsing, and safe metadata projection.
-2. [ ] Run the focused registry test and record the expected module/exports
+2. [x] Run the focused registry test and record the expected module/exports
    failure before adding production code.
-3. [ ] Implement the closed registry using existing GHGI/HIAP definitions and
+3. [x] Implement the closed registry using existing GHGI/HIAP definitions and
    explicit conservative support rules; return `null` for unsupported sources.
-4. [ ] Add pure safe metadata and capability-input/output validation helpers
+4. [x] Add pure safe metadata and capability-input/output validation helpers
    with finite collection/field handling.
-5. [ ] Run the focused test, TypeScript validation for the touched module, and
+5. [x] Run the focused test, TypeScript validation for the touched module, and
    lint; refactor only after the tests are green.
-6. [ ] Review that this unit performs no database access, no module content
+6. [x] Review that this unit performs no database access, no module content
    read, no tool loading, no storage access, and no route construction from
    untrusted input.
-7. [ ] Commit only the registry and its focused tests with:
+7. [x] Commit only the registry and its focused tests with:
    `feat(cc-737): add Core native input capability registry`.
 
 Story/requirement mapping: US-02, US-04, US-06, US-08; FR-03, FR-04, FR-05,
@@ -468,10 +468,10 @@ NFR-01 through NFR-08.
 The exact commands are executed from the existing `app/` package and adjusted
 only for repository-supported tooling:
 
-1. `npm run jest -- --runInBand tests/native-input-catalog-capability-registry.jest.ts`
-2. `npm run jest -- --runInBand tests/native-input-catalog-capability-service.jest.ts`
-3. `npm run jest -- --runInBand tests/agentic-native-input-catalog-capabilities.jest.ts`
-4. `npm run jest -- --runInBand tests/api/internal-ca-service-auth.jest.ts tests/agentic-inventory-capabilities.jest.ts tests/agentic-hiap-context-capability.jest.ts`
+1. `npx jest --runInBand --coverage=false tests/native-input-catalog-capability-registry.jest.ts`
+2. `npx jest --runInBand --coverage=false tests/native-input-catalog-capability-service.jest.ts`
+3. `npx jest --runInBand --coverage=false tests/agentic-native-input-catalog-capabilities.jest.ts`
+4. `npx jest --runInBand --coverage=false tests/api/internal-ca-service-auth.jest.ts tests/agentic-inventory-capabilities.jest.ts tests/agentic-hiap-context-capability.jest.ts`
 5. `npm run lint`
 6. `npx tsc --noEmit -p tests/tsconfig.json`
 

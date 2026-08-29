@@ -567,3 +567,17 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `07217e41e` (`feat(cc-737): expose Core selected native input capability`) containing only the internal Core Climate Advisor selected-read route and its route contract extensions. Unit 6 enforces the existing feature/service boundary, bearer-bound session and user matching, typed bounded input parsing, Core delegation, exact stable unavailable errors, and response non-disclosure. Opened Unit 7 for contract, property, regression, and security verification hardening.
 **Approval Status**: Unit 6 complete; Unit 7 generation in progress under the approved Code Generation plan.
 ---
+
+## Code Generation — UOW-01 Unit 7 Verification Checkpoint
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Completed the in-scope UOW-01 verification hardening. Added all populated request-scope mismatch cases, selected-read readiness/input/adapter/upstream/size failure normalization, projection invariants for untrusted labels, and the new discovery/read routes to the internal-CA auth matrix. The combined CC-737 Core sweep passes 45/45; the internal-CA auth matrix passes 8/8; touched-file ESLint and Prettier checks pass; HIAP regression passes. The GHGI integration regression remains environment-blocked by `SequelizeConnectionError: connect EPERM 127.0.0.1:5432`; full repository lint reports unrelated pre-existing errors; the standalone TypeScript check retains the pre-existing missing `meed/rank/route.js` validator reference; and `npm run build` compiles then fails in TypeScript with `Could not parse output from TypeScript's --showConfig`. Evidence is recorded in `aidlc-docs/construction/uow-01-core-catalog-capability-boundary/verification-evidence.md`.
+**Approval Status**: In-scope verification implementation ready for its atomic commit; environment-dependent regression evidence remains pending for completion review.
+---
+
+## Code Generation — UOW-01 Unit 7 Committed
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Created atomic commit `5f9ada5f3` (`test(cc-737): harden Core catalog capability security evidence`) containing only verification hardening for the Core registry/service and the existing internal-CA auth matrix. No unrelated files, Climate Advisor/UOW-02 code, migrations, storage credentials, or raw storage access were added. Code Generation completion review is now open; UOW-02 remains deferred pending explicit approval of the generated UOW-01 code/tests and resolution or acceptance of the documented environment limitations.
+**Approval Status**: Unit 7 implementation committed; Code Generation completion approval pending.
+---

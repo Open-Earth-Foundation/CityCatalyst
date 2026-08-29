@@ -431,21 +431,26 @@ Files:
 
 Steps:
 
-1. [ ] Add/complete example-based security matrix coverage for all scope
+1. [x] Add/complete example-based security matrix coverage for all scope
    dimensions, auth failures, lifecycle states, stale/forged selections,
    bounds, redaction, timeout, cleanup, and selected-only invocation.
-2. [ ] Add partial property-based tests only for pure exact-tuple lookup,
+2. [x] Add partial property-based tests only for pure exact-tuple lookup,
    omission/projection invariants, safe-error normalization, and bounded
    serialization, with deterministic generators, shrinking, and reproducible
    seeds consistent with the approved testing baseline.
-3. [ ] Run focused suites, the existing GHGI/HIAP capability suites, the
+3. [x] Run focused suites, the existing GHGI/HIAP capability suites, the
    internal CA auth suite, Core lint, TypeScript checks, and the repository's
    relevant build/test command.
 4. [ ] Confirm existing GHGI/HIAP routes and producer catalog lifecycle tests
    remain green and no application behavior outside CC-737 changed.
-5. [ ] Record verification evidence in the UOW-01 code artifact directory and
+5. [x] Record verification evidence in the UOW-01 code artifact directory and
    commit only the independently reviewable verification updates with:
    `test(cc-737): harden Core catalog capability security evidence`.
+
+Verification caveat: Step 4 remains pending because the existing GHGI
+capability suite cannot connect to the local PostgreSQL dependency in the
+current environment. See
+`aidlc-docs/construction/uow-01-core-catalog-capability-boundary/verification-evidence.md`.
 
 Story/requirement mapping: US-01 through US-06 and US-08; FR-01 through FR-11;
 NFR-01 through NFR-08.

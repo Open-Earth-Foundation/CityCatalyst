@@ -374,16 +374,16 @@ Files:
 
 Steps:
 
-1. [ ] Add failing route tests for feature-disabled 404, missing/invalid service
+1. [x] Add failing route tests for feature-disabled 404, missing/invalid service
    headers, missing/invalid bearer session, user mismatch, malformed body,
    authorized discovery, and omission-only denial behavior.
-2. [ ] Run the focused route suite to confirm failure before implementation.
-3. [ ] Implement the route with the existing feature flag, CA service auth,
+2. [x] Run the focused route suite to confirm failure before implementation.
+3. [x] Implement the route with the existing feature flag, CA service auth,
    `apiHandler`, typed parsing, session binding, and Core service delegation.
-4. [ ] Assert response serialization contains only the approved discovery
+4. [x] Assert response serialization contains only the approved discovery
    contract and no source/storage/credential fields.
-5. [ ] Run focused route/auth tests, lint, and type checks.
-6. [ ] Commit only the route and tests with:
+5. [x] Run focused route/auth tests, lint, and type checks.
+6. [x] Commit only the route and tests with:
    `feat(cc-737): expose Core native input discovery capability`.
 
 Story/requirement mapping: US-01, US-05, US-08; FR-01, FR-02, FR-06, FR-07,

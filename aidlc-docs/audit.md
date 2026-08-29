@@ -525,3 +525,17 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `5adb79af9` (`feat(cc-737): enforce bounded selected native input reads`) containing the Core selected-read service and focused tests. Unit 4 enforces current catalog/scope/readiness revalidation, exact capability binding, selected-only execution, stable non-disclosing errors, bounded responses, and forbidden-field redaction. Opened Unit 5 for the internal Core CA discovery route.
 **Approval Status**: Unit 4 complete; Unit 5 generation in progress under the approved plan.
 ---
+
+## Code Generation — UOW-01 Unit 5 TDD Red Checkpoint
+**Timestamp**: 2026-08-29T16:09:35-03:00
+**User Input**: "approved"
+**AI Response**: Added Unit 5 internal Core CA discovery-route tests before route production code. The package-script Jest run reached the intended red checkpoint: route module resolution failed because the new discovery route does not yet exist. No route production code was added.
+**Approval Status**: Unit 5 test-first red checkpoint complete; discovery-route implementation authorized under the approved Code Generation plan.
+---
+
+## Code Generation — UOW-01 Unit 5 TDD Green Checkpoint
+**Timestamp**: 2026-08-29T17:05:24-03:00
+**User Input**: "approved"
+**AI Response**: Implemented the feature-gated, Climate Advisor service-authenticated Core discovery route with typed request parsing, mandatory bearer-bound session validation, body/session user matching, and delegation to the Core discovery service. Added route coverage for the safe discovery envelope, missing service authentication, missing session, user mismatch, malformed filters, and disabled integration. The focused route suite passes 6/6 with coverage disabled; ESLint and Prettier pass. The repository TypeScript check still reports the pre-existing missing `.next/dev/types/validator.ts` reference to `src/app/api/v1/city/[city]/meed/rank/route.js`; the new route itself introduced no additional TypeScript error. The test harness uses a mocked server feature-flag boundary to avoid the repository's process-level feature-flag cache; production feature-flag code was not changed.
+**Approval Status**: Unit 5 implementation ready for its atomic commit; the plan's commit checkbox remains pending until the commit is created.
+---

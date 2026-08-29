@@ -8,7 +8,7 @@ This plan decomposes the approved CC-737 Application Design into manageable, rev
 - **Project**: CityCatalyst brownfield monorepo.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Stage**: INCEPTION — Units Generation, Part 1 Planning.
-- **Status**: Plan approved 2026-08-29; Unit of Work artifacts are being generated.
+- **Status**: Unit-of-work artifacts generated, validated, and approved 2026-08-29; Inception is complete and Construction authorization is pending.
 - **Approved design basis**: `aidlc-docs/inception/application-design/`.
 - **Construction**: Not authorized.
 
@@ -52,12 +52,12 @@ This plan decomposes the approved CC-737 Application Design into manageable, rev
 
 ## Mandatory Unit Artifacts
 
-- [ ] Generate `aidlc-docs/inception/application-design/unit-of-work.md` with unit definitions, responsibilities, scope, ownership, and review outputs.
-- [ ] Generate `aidlc-docs/inception/application-design/unit-of-work-dependency.md` with the dependency matrix and sequencing/parallelization rules.
-- [ ] Generate `aidlc-docs/inception/application-design/unit-of-work-story-map.md` mapping all nine stories to units and verification responsibilities.
-- [ ] Validate unit boundaries, dependencies, ownership, security constraints, and completeness.
-- [ ] Ensure every story is assigned to at least one unit and every unit has explicit acceptance evidence.
-- [ ] Obtain explicit approval of the completed Units Generation artifacts before any Construction stage.
+- [x] Generate `aidlc-docs/inception/application-design/unit-of-work.md` with unit definitions, responsibilities, scope, ownership, and review outputs.
+- [x] Generate `aidlc-docs/inception/application-design/unit-of-work-dependency.md` with the dependency matrix and sequencing/parallelization rules.
+- [x] Generate `aidlc-docs/inception/application-design/unit-of-work-story-map.md` mapping all nine stories to units and verification responsibilities.
+- [x] Validate unit boundaries, dependencies, ownership, security constraints, and completeness.
+- [x] Ensure every story is assigned to at least one unit and every unit has explicit acceptance evidence.
+- [x] Obtain explicit approval of the completed Units Generation artifacts before any Construction stage — 2026-08-29.
 
 ## Decomposition Questions — Complete Every `[Answer]:` Tag
 

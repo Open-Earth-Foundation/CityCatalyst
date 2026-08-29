@@ -282,3 +282,29 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Began generating `unit-of-work.md`, `unit-of-work-dependency.md`, and `unit-of-work-story-map.md` from the approved decomposition. Application code and Construction remain unchanged and unauthorized.
 **Approval Status**: Artifact generation in progress; explicit artifact approval required after presentation.
 ---
+
+## Units Generation — Artifacts Generated
+**Timestamp**: 2026-08-29T14:31:18-03:00
+**User Input**: "approved"
+**AI Response**: Generated and validated `unit-of-work.md`, `unit-of-work-dependency.md`, and `unit-of-work-story-map.md`. The artifacts define three logical units—Core Catalog/Capability Boundary, Climate Advisor Request-Time Integration, and Cross-Service Verification/Release Evidence—map all nine stories, preserve Core authorization/storage ownership, and define Core-first sequencing with atomic reviewable commits. No application code or Construction work was started.
+**Security Findings**: No blocking unit-decomposition finding. Security, non-disclosure, bounded-read, no-storage-credentials, and Core-authorization controls are embedded in service units and verified by the cross-service unit.
+**Resiliency Findings**: Existing independent deployments, feature-gated rollout, timeout/cleanup behavior, rollback, and Operations processes are preserved. No catalog-data rollback or new topology is introduced.
+**PBT Findings**: Applicable partial property-based invariants remain assigned to the Core and Climate Advisor service units, with cross-service reproducibility evidence in the verification unit; critical example-based tests remain mandatory.
+**Approval Prompt**: "Please examine the Units Generation artifacts under `aidlc-docs/inception/application-design/`. Explicitly approve the completed unit-of-work artifacts to proceed to Construction, or request changes. Application code and Construction remain unauthorized until explicit Construction authorization."
+**Approval Status**: Pending user response.
+---
+
+## Approval — Units Generation Artifacts
+**Timestamp**: 2026-08-29T14:39:31-03:00
+**Approval Prompt**: "Please examine the Units Generation artifacts under `aidlc-docs/inception/application-design/`. Explicitly approve the completed unit-of-work artifacts to proceed to Construction, or request changes. Application code and Construction remain unauthorized until explicit Construction authorization."
+**User Response**: "reviewed and approved"
+**Approval Status**: Approved.
+**AI Response**: Recorded the explicit Units Generation artifact approval and marked Inception complete. The unit-of-work checkpoint will be committed atomically; Construction remains blocked pending its separate explicit authorization. No application code was modified.
+---
+
+## Inception Complete — Construction Authorization Gate
+**Timestamp**: 2026-08-29T14:39:31-03:00
+**User Input**: "reviewed and approved"
+**AI Response**: All required AI-DLC Inception stages and artifacts are approved: Workspace Detection, Reverse Engineering, Requirements Analysis, User Stories, Workflow Planning, Application Design, and Units Generation. The workflow is paused at the explicit Construction authorization gate.
+**Approval Status**: Construction authorization pending; no application code or Construction work started.
+---

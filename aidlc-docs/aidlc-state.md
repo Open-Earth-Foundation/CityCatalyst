@@ -4,8 +4,8 @@
 - **Project**: CityCatalyst — Linear CC-737
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
-- **Current Phase**: INCEPTION
-- **Current Stage**: Units Generation — approved plan; artifact generation in progress
+- **Current Phase**: INCEPTION COMPLETE
+- **Current Stage**: Construction authorization gate — awaiting explicit authorization
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -30,7 +30,7 @@
 - [x] User Stories — artifacts approved 2026-08-28
 - [x] Workflow Planning — approved 2026-08-28
 - [x] Application Design — artifacts approved 2026-08-28
-- [ ] Units Generation — plan approved; artifacts being generated; explicit artifact approval required
+- [x] Units Generation — artifacts approved 2026-08-29
 
 ## Extension Configuration
 | Extension | Enabled | Decided At |
@@ -45,6 +45,7 @@
 - [x] User Stories approved (if selected) — 2026-08-28
 - [x] Application Design plan approved — 2026-08-28
 - [x] Application Design artifacts approved (if selected) — 2026-08-28
-- [ ] Units Generation approved (if selected)
+- [x] Units Generation approved (if selected) — 2026-08-29
 - [x] Workflow Planning approved — 2026-08-28
+- [x] Units Generation artifacts approved (if selected) — 2026-08-29
 - [ ] Construction explicitly authorized

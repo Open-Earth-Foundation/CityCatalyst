@@ -345,3 +345,40 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded explicit approval of all three UOW-01 Functional Design artifacts and the user's constraint reminder. Marked Functional Design complete and opened NFR Requirements planning for UOW-01. Application code and tests remain unchanged.
 **Approval Status**: UOW-01 Functional Design approved; NFR Requirements planning gate open.
 ---
+
+## NFR Requirements — UOW-01 Planning Start
+**Timestamp**: 2026-08-29T15:24:54-03:00
+**User Input**: "Approved, proceed to the next stage while maintaining the constraints regarding scope, Core authorization, bounded reads, non-disclosure, and the absence of storage credentials in Climate Advisor"
+**AI Response**: Opened the UOW-01 NFR Requirements planning gate after the Functional Design approval. Created a 14-question plan covering scalability, performance, availability, reliability, security/privacy, technology reuse, enforcement placement, compatibility, verification, rollout, and maintainability. The fixed Core authorization, bounded-read, non-disclosure, and no-storage-credentials constraints are carried forward. No NFR artifacts or application code were generated.
+**Approval Status**: NFR Requirements answer-collection gate open.
+---
+
+## NFR Requirements — UOW-01 Plan Answer Validation
+**Timestamp**: 2026-08-29T15:24:54-03:00
+**User Input**: "answered!"
+**AI Response**: Validated all 14 UOW-01 NFR Requirements planning answer tags. The answers consistently inherit current platform baselines for load, scaling, latency, availability, recovery, and rollout; require fail-closed dependency behavior; make the enumerated security threats release-blocking; preserve Core-side enforcement and module ownership; require safe telemetry and deterministic verification; and introduce no new service, storage, topology, or framework. No follow-up questions were required. NFR artifacts and application code remain ungenerated and unchanged.
+**Approval Prompt**: "Please examine `aidlc-docs/construction/plans/uow-01-core-catalog-capability-boundary-nfr-requirements-plan.md`. Explicitly approve the completed UOW-01 NFR Requirements plan, or request changes. NFR artifacts and application code remain ungenerated."
+**Approval Status**: Pending explicit user approval of the NFR Requirements plan.
+---
+
+## Approval — UOW-01 NFR Requirements Plan
+**Timestamp**: 2026-08-29T15:35:03-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of the completed UOW-01 NFR Requirements plan. Began generating only the NFR Requirements and Technology Stack Decisions artifacts; application code remains unchanged.
+**Approval Status**: UOW-01 NFR Requirements plan approved; artifact approval remains pending.
+---
+
+## NFR Requirements — UOW-01 Artifacts Generated
+**Timestamp**: 2026-08-29T15:35:03-03:00
+**User Input**: "approved"
+**AI Response**: Generated and validated `nfr-requirements.md` and `tech-stack-decisions.md` for UOW-01. Validation covered all approved NFR categories and confirmed release-blocking Core authorization, scope enforcement, non-disclosure, bounded reads, failure isolation, cleanup, compatibility, safe telemetry, existing technology reuse, and no storage credentials/raw storage access in Climate Advisor. No application code or tests were modified.
+**Approval Prompt**: "Please examine the UOW-01 NFR Requirements artifacts under `aidlc-docs/construction/uow-01-core-catalog-capability-boundary/nfr-requirements/`. Explicitly approve the completed NFR Requirements artifacts to proceed to NFR Design, or request changes. Application code and tests remain unchanged."
+**Approval Status**: Pending explicit NFR artifact approval.
+---
+
+## Approval — UOW-01 NFR Requirements Artifacts
+**Timestamp**: 2026-08-29T15:43:19-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of both UOW-01 NFR Requirements artifacts. Marked NFR Requirements complete and opened NFR Design planning for UOW-01. Application code and tests remain unchanged.
+**Approval Status**: UOW-01 NFR Requirements approved; NFR Design planning gate open.
+---

@@ -4,8 +4,8 @@
 - **Project**: CityCatalyst — Linear CC-737
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
-- **Current Phase**: INCEPTION COMPLETE
-- **Current Stage**: Construction authorization gate — awaiting explicit authorization
+- **Current Phase**: CONSTRUCTION
+- **Current Stage**: NFR Requirements — UOW-01 planning questions open
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -48,4 +48,12 @@
 - [x] Units Generation approved (if selected) — 2026-08-29
 - [x] Workflow Planning approved — 2026-08-28
 - [x] Units Generation artifacts approved (if selected) — 2026-08-29
-- [ ] Construction explicitly authorized
+- [x] Construction explicitly authorized — 2026-08-29
+
+## CONSTRUCTION PHASE
+- [x] Functional Design — UOW-01 artifacts approved 2026-08-29
+- [ ] NFR Requirements — UOW-01 planning questions open
+- [ ] NFR Design — planned after NFR Requirements
+- [ ] Infrastructure Design — skipped unless a new approved infrastructure need appears
+- [ ] Code Generation — pending prior Construction design approvals
+- [ ] Build and Test — pending implementation

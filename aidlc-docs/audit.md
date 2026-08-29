@@ -308,3 +308,40 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: All required AI-DLC Inception stages and artifacts are approved: Workspace Detection, Reverse Engineering, Requirements Analysis, User Stories, Workflow Planning, Application Design, and Units Generation. The workflow is paused at the explicit Construction authorization gate.
 **Approval Status**: Construction authorization pending; no application code or Construction work started.
 ---
+
+## Authorization — Construction
+**Timestamp**: 2026-08-29T14:42:22-03:00
+**User Input**: "authorized"
+**AI Response**: Recorded explicit Construction authorization after all Inception artifacts were approved. Opened Functional Design for UOW-01 Core Catalog/Capability Boundary, the first dependency-ordered unit. Application code remains unchanged until the Functional Design gate and subsequent approved unit workflow permit implementation.
+**Approval Status**: Construction authorized; Functional Design planning gate open.
+---
+
+## Functional Design — UOW-01 Plan Answer Validation
+**Timestamp**: 2026-08-29T14:52:49-03:00
+**User Input**: "answered"
+**AI Response**: Validated all 12 UOW-01 Functional Design planning answer tags. The answers are complete and internally consistent: Core evaluates every populated scope dimension, omits unauthorized/unavailable/removed entries without metadata disclosure, revalidates selections at read time, returns the stable non-disclosing selection failure, applies a closed capability allowlist, preserves bounded module-owned reads and storage ownership, and requires security/contract evidence. No follow-up questions were required. Functional Design artifacts and application code remain ungenerated and unchanged.
+**Approval Prompt**: "Please examine `aidlc-docs/construction/plans/uow-01-core-catalog-capability-boundary-functional-design-plan.md`. Explicitly approve the completed UOW-01 Functional Design plan, or request changes. Functional Design artifacts and application code remain ungenerated."
+**Approval Status**: Pending explicit user approval of the Functional Design plan.
+---
+
+## Approval — UOW-01 Functional Design Plan
+**Timestamp**: 2026-08-29T14:58:09-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of the completed UOW-01 Functional Design plan. Began generating only the technology-agnostic Functional Design artifacts for business logic, business rules, and domain entities. Application code and tests remain unchanged.
+**Approval Status**: UOW-01 Functional Design plan approved; artifact approval remains pending.
+---
+
+## Functional Design — UOW-01 Artifacts Generated
+**Timestamp**: 2026-08-29T14:58:09-03:00
+**User Input**: "approved"
+**AI Response**: Generated and validated `business-logic-model.md`, `business-rules.md`, and `domain-entities.md` under the UOW-01 Functional Design directory. Validation confirmed traceability to the approved CC-737 requirements/stories, Core authorization and source ownership, discovery omission and selected-read non-disclosure, bounded results, safe telemetry, cleanup, and required security/contract evidence. No application code or tests were modified.
+**Approval Prompt**: "Please examine the three UOW-01 Functional Design artifacts under `aidlc-docs/construction/uow-01-core-catalog-capability-boundary/functional-design/`. Explicitly approve the completed Functional Design artifacts to proceed to the next Construction stage, or request changes. Application code and tests remain unchanged."
+**Approval Status**: Pending explicit artifact approval.
+---
+
+## Approval — UOW-01 Functional Design Artifacts
+**Timestamp**: 2026-08-29T15:22:26-03:00
+**User Input**: "Approved, proceed to the next stage while maintaining the constraints regarding scope, Core authorization, bounded reads, non-disclosure, and the absence of storage credentials in Climate Advisor"
+**AI Response**: Recorded explicit approval of all three UOW-01 Functional Design artifacts and the user's constraint reminder. Marked Functional Design complete and opened NFR Requirements planning for UOW-01. Application code and tests remain unchanged.
+**Approval Status**: UOW-01 Functional Design approved; NFR Requirements planning gate open.
+---

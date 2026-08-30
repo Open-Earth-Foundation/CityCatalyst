@@ -36,7 +36,7 @@ interface CreateEditProjectModalProps {
 const schema = z.object({
   projectName: z.string().min(3, "required"),
   description: z.string().min(3, "required"),
-  cityCountLimit: z.number().min(1, "required"),
+  cityCountLimit: z.coerce.number().min(1, "required"),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -53,8 +53,6 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
     register,
     handleSubmit,
     reset,
-    setError,
-    clearErrors,
     control,
     formState: { errors, isDirty },
   } = useForm<Schema>({
@@ -203,15 +201,13 @@ const CreateEditProjectModal: FC<CreateEditProjectModalProps> = ({
               <FormattedNumberInput
                 placeholder="00"
                 max={99999}
-                setError={setError}
-                clearErrors={clearErrors}
                 min={1}
                 control={control}
                 name={`cityCountLimit`}
                 t={t}
                 w="full"
               />
-              {errors.description && (
+              {errors.cityCountLimit && (
                 <Box display="flex" gap="6px" alignItems="center" mt="6px">
                   <Icon as={MdWarning} color="sentiment.negativeDefault" />
                   <Text color="error" fontSize="body.sm">

@@ -13,7 +13,6 @@ order. This module does not remove source records or make network requests.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 from statistics import fmean
 from typing import Any
 
@@ -53,8 +52,8 @@ from app.modules.reference_data.models import (
     MonitoringFinanceOpportunityResponse,
     PolicyAggregatesResponse,
     PolicyEvidenceResponse,
-    ReferenceDataMeta,
 )
+from app.utils.api_contract import build_response_meta
 
 _POLICY_SIGNAL_STRENGTH = {"high": 0.7, "medium": 0.4, "low": 0.2}
 _POLICY_SCOPE_BY_DOCUMENT_TYPE = {
@@ -63,25 +62,6 @@ _POLICY_SCOPE_BY_DOCUMENT_TYPE = {
     "parcc": "regional",
     "paccc": "municipal",
 }
-
-
-def _generated_at_utc() -> str:
-    """Return a UTC response-generation timestamp in the public API format."""
-    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
-def _meta(
-    *,
-    endpoint: str,
-    total_records: int,
-    **scope: str | int,
-) -> ReferenceDataMeta:
-    """Build the common metadata envelope without exposing upstream diagnostics."""
-    return ReferenceDataMeta(
-        generated_at_utc=_generated_at_utc(),
-        api_context={"endpoint": endpoint, **scope},
-        total_records=total_records,
-    )
 
 
 def _warnings(*warnings: str | None) -> list[str]:
@@ -109,7 +89,7 @@ def _city_indicators(city: CityData) -> list[CityIndicatorResponse]:
 def build_city_attributes_response(
     city: CityData,
     *,
-    locode: str,
+    request_id: str,
 ) -> CityAttributesResponse:
     """
     Return the public city record for the requested locode.
@@ -119,7 +99,6 @@ def build_city_attributes_response(
     Upstream URLs, datasource details, and the raw Global API payload stay out
     of the response.
     """
-    normalized_locode = locode.strip().upper()
     return CityAttributesResponse(
         city=CityResponse(
             locode=city.locode,
@@ -131,10 +110,9 @@ def build_city_attributes_response(
             population_density=city.population_density,
             indicators=_city_indicators(city),
         ),
-        meta=_meta(
-            endpoint="GET /v1/cities/{locode}/attributes",
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=1,
-            locode=normalized_locode,
         ),
         warnings=[],
     )
@@ -159,6 +137,7 @@ def build_action_pathways_response(
     *,
     requested_languages: list[str],
     missing_action_type_count: int,
+    request_id: str,
 ) -> ActionPathwaysResponse:
     """
     Return the canonical action catalogue in the requested languages.
@@ -188,10 +167,9 @@ def build_action_pathways_response(
     ]
     return ActionPathwaysResponse(
         actions=actions,
-        meta=_meta(
-            endpoint="GET /v1/action-pathways",
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=len(actions),
-            missing_action_type_count=missing_action_type_count,
         ),
         warnings=_warnings(
             result.warning,
@@ -268,6 +246,7 @@ def build_action_policy_scores_response(
     result: ActionPolicyScoresFetchResult,
     *,
     locode: str,
+    request_id: str,
 ) -> ActionPolicyScoresResponse:
     """
     Return all evidence and calculate national, regional, and municipal averages.
@@ -309,10 +288,9 @@ def build_action_policy_scores_response(
         locode=normalized_locode,
         scores=scores,
         aggregates=_policy_aggregates(records),
-        meta=_meta(
-            endpoint="GET /v1/cities/{locode}/action-policy-scores",
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=len(scores),
-            locode=normalized_locode,
         ),
         warnings=_warnings(result.warning),
     )
@@ -323,6 +301,7 @@ def build_action_mitigation_scores_response(
     *,
     locode: str,
     country_code: str,
+    request_id: str,
 ) -> ActionMitigationScoresResponse:
     """
     Return mitigation-feasibility scores for the requested city and country.
@@ -354,13 +333,9 @@ def build_action_mitigation_scores_response(
         locode=normalized_locode,
         country_code=normalized_country_code,
         scores=scores,
-        meta=_meta(
-            endpoint=(
-                "GET /v1/cities/{locode}/action-mitigation-feasibility-scores"
-            ),
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=len(scores),
-            locode=normalized_locode,
-            country_code=normalized_country_code,
         ),
         warnings=_warnings(result.warning),
     )
@@ -371,6 +346,7 @@ def build_action_financial_scores_response(
     *,
     locode: str,
     country_code: str,
+    request_id: str,
 ) -> ActionFinancialScoresResponse:
     """
     Return every normalized financial-feasibility source row.
@@ -408,11 +384,9 @@ def build_action_financial_scores_response(
         locode=normalized_locode,
         country_code=normalized_country_code,
         data=data,
-        meta=_meta(
-            endpoint="GET /v1/cities/{locode}/climate-finance/feasibility",
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=len(data),
-            locode=normalized_locode,
-            country_code=normalized_country_code,
         ),
         warnings=_warnings(result.warning),
     )
@@ -447,9 +421,7 @@ def _financial_feasibility_inputs(
 def build_climate_finance_opportunities_response(
     result: ClimateFinanceOpportunitiesFetchResult,
     *,
-    country_code: str,
-    sector: str | None,
-    route: str | None,
+    request_id: str,
 ) -> ClimateFinanceOpportunitiesResponse:
     """
     Return the already selected opportunities as current and monitor lists.
@@ -482,19 +454,12 @@ def build_climate_finance_opportunities_response(
         for record in result.opportunities
         if record.report_category == "monitor"
     ]
-    normalized_country_code = country_code.strip().upper()
-    context = {
-        "country_code": normalized_country_code,
-        "sector": sector or "",
-        "route": route or "",
-    }
     return ClimateFinanceOpportunitiesResponse(
         current=current,
         monitor=monitor,
-        meta=_meta(
-            endpoint="GET /v1/climate-finance/opportunities",
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=len(current) + len(monitor),
-            **context,
         ),
         warnings=_warnings(result.warning),
     )
@@ -503,8 +468,7 @@ def build_climate_finance_opportunities_response(
 def build_climate_finance_projects_response(
     result: ClimateFinanceProjectsFetchResult,
     *,
-    country_code: str,
-    action_id: str,
+    request_id: str,
 ) -> ClimateFinanceProjectsResponse:
     """
     Return the comparable projects selected for a country and action.
@@ -544,14 +508,11 @@ def build_climate_finance_projects_response(
         )
         for record in result.projects
     ]
-    normalized_country_code = country_code.strip().upper()
     return ClimateFinanceProjectsResponse(
         projects=projects,
-        meta=_meta(
-            endpoint="GET /v1/climate-finance/projects",
+        meta=build_response_meta(
+            request_id=request_id,
             total_records=len(projects),
-            country_code=normalized_country_code,
-            action_id=action_id.strip(),
         ),
         warnings=_warnings(result.warning),
     )

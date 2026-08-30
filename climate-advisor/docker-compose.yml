@@ -32,9 +32,11 @@ services:
       # Compose runs CA inside a container, so DB host must be the postgres service
       # on the compose network (not localhost from .env/.env.example).
       CA_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/climateadvisor
+      CNB_DATABASE_URL: postgresql://climateadvisor:climateadvisor@postgres:5432/cnb
       CC_BASE_URL: http://host.docker.internal:3000
     command: >
       sh -c "python -m alembic -c alembic.ini upgrade head &&
+             python -m alembic -c cnb-alembic.ini upgrade head &&
              uvicorn app.main:app --host 0.0.0.0 --port 8080"
     ports:
       - "8080:8080"

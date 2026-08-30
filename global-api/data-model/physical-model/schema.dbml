@@ -367,6 +367,8 @@ Table "modelled"."action_policy_signals" {
   "doc_relevance" varchar [not null]
   "signal_summary" text [not null]
   "evidence_text" text [not null]
+  "match_type" varchar
+  "match_reason" text
   "page" integer [not null]
   "release_id" uuid [not null]
   "created_at" timestamptz [not null]

@@ -1,4 +1,4 @@
-﻿# HIAP-MEED
+# HIAP-MEED
 
 `hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
 
@@ -294,8 +294,8 @@ additive-tolerant upstream response contracts in
 
 Key models:
 
-- Frontend request envelope: `PrioritizerApiRequest`
-- Output-plan request envelope: `CityActionReportApiRequest`
+- Prioritization request: `PrioritizerApiRequest`
+- Output-plan request: `CityActionReportApiRequest`
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
 - Global action pathways API response: `ActionPathwaysApiResponse`
@@ -308,11 +308,21 @@ Key models:
 
 Design note:
 
+- Workflow POST bodies contain `requestData` and caller metadata with only
+  `meta.requestId`.
+  Callers no longer
+  provide timestamps, endpoint names, service/provider labels, or record counts.
+  Legacy fields in `meta` are temporarily ignored so this backend-only contract
+  change does not require a coordinated frontend release.
+- Every successful workflow and reference-data response contains server-owned
+  `meta` with `requestId`, `generatedAtUtc`, and `totalRecords`. Workflow
+  responses echo `meta.requestId`; reference-data GET responses use a
+  server-generated ID.
 - For the processing frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
-- Boundary validation note: public consumer request/response DTOs reject
-  unexpected fields. Upstream/mock response DTOs remain additive-tolerant: they
-  ignore unexpected extra fields while validating the fields HIAP-MEED uses.
+- Boundary validation note: public domain payloads and response DTOs reject
+  unexpected fields. The small workflow `meta` object and upstream/mock response
+  DTOs remain additive-tolerant while validating the fields HIAP-MEED uses.
 - Action API note: `ActionPathwaysApiResponse` now matches `GET /api/v1/action-pathways`
   without query parameters. The action payload includes the fields used by the
   current prioritization flow and action-pathways client.
@@ -338,6 +348,9 @@ Design note:
 - `requestData.prioritizationSnapshot.request`: the full original `/v1/prioritize` request
 - `requestData.prioritizationSnapshot.response`: the full `/v1/prioritize` response returned to the frontend
 
+Snapshots stored before response metadata was introduced remain accepted; all
+new `/v1/prioritize` responses include `meta`.
+
 The endpoint validates that the requested city and action exist in the supplied prioritization snapshot before it fetches live enrichment data. Report languages are output choices: they do not need to be a subset of the original prioritization `requestedLanguages`. If they differ, response metadata keeps a limitation note because action explanations from the original ranking may not exist in every requested language. The endpoint remains stateless: the prototype frontend stores the snapshot in browser local storage and sends it with the report request. When this frontend is later moved into CityCatalyst, snapshot persistence is expected to move into the CityCatalyst database, not into `hiap-meed`.
 
 The backend uses the supplied prioritization snapshot as the ranking basis and refetches additional city/action/policy/legal/feasibility data where the prioritize response does not carry enough detail for report writing. It fetches a broader finance catalogue and screens up to five active candidates by country, sector, municipal eligibility, climate relevance, municipal application route, and compatibility with the selected action's finance route; the upstream opportunities catalogue does not currently provide action-specific matching, so the report labels these as opportunities to assess. The action's financial-feasibility sector is required for this lookup; when it is missing, the backend skips the opportunities request and records a data gap instead of returning cross-sector programmes. Closed programmes are excluded from the current list, but up to five are retained in a separate monitoring list when the catalogue marks them as annual, periodic, recurring, or sporadic. Expired, cancelled, and non-recurring closed entries are omitted. Comparable projects are filtered by the selected `actionId` and capped at five. Financial feasibility scores, opportunities, and projects each use a dedicated upstream service and an independent failure boundary. A missing or unavailable projects response therefore produces an empty projects list and a project-specific data gap without discarding successfully fetched opportunities, and the inverse applies when only the opportunities lookup fails. A report request still produces exactly one action plan; multiple plans should be requested as separate calls so each selected action gets isolated LLM context.
@@ -362,7 +375,7 @@ Run commands from a Bash shell (Git Bash, WSL, Linux, macOS).
 
 Request body:
 
-- The endpoint accepts the frontend envelope `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
+- The endpoint accepts `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
@@ -533,15 +546,7 @@ Example JSON request bodies (using mock data from `data/`):
 ```json
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize/exclusions/preview",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": ["en"],
@@ -585,7 +590,12 @@ Example exclusion preview response:
       },
       "warnings": []
     }
-  ]
+  ],
+  "meta": {
+    "requestId": "1234567890",
+    "generatedAtUtc": "2026-08-19T10:00:00Z",
+    "totalRecords": 1
+  }
 }
 ```
 
@@ -594,15 +604,7 @@ Example ranking request after review:
 ```json
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": ["en"],
@@ -657,14 +659,20 @@ Example response:
                 "component_source": "verdict_score",
                 "ownership_category": "enabled",
                 "ownership_score": 1.0,
-                "ownership_description": "Municipality has explicit legal authority to act directly.",
-                "ownership_description_es": "El municipio cuenta con competencia legal expresa para actuar de forma directa.",
+                "ownership_description": {
+                  "en": "Municipality has explicit legal authority to act directly.",
+                  "es": "El municipio cuenta con competencia legal expresa para actuar de forma directa."
+                },
                 "restrictions_category": "conditional",
                 "restrictions_score": 0.5,
-                "restrictions_description": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
-                "restrictions_description_es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial.",
-                "legal_justification": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal.",
-                "legal_justification_en": "English legal reasoning text from the legal classification source.",
+                "restrictions_description": {
+                  "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                  "es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial."
+                },
+                "legal_justification": {
+                  "en": "English legal reasoning text from the legal classification source.",
+                  "es": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal."
+                },
                 "legal_references": ["Ley 18.695 (LOCM) - BCN"]
               },
               "mitigation_feasibility": {
@@ -690,12 +698,18 @@ Example response:
           "legal": {
             "verdict_category": "blocked",
             "verdict_score": 0.0,
-            "ownership_description": "Authority belongs to another level of government; municipality cannot act alone.",
-            "ownership_description_es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo.",
-            "restrictions_description": "There is a legal prohibition/restriction, or legal reform is needed.",
-            "restrictions_description_es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa.",
-            "legal_justification": "Texto de razonamiento juridico en espanol.",
-            "legal_justification_en": "English legal reasoning text.",
+            "ownership_description": {
+              "en": "Authority belongs to another level of government; municipality cannot act alone.",
+              "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo."
+            },
+            "restrictions_description": {
+              "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+              "es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa."
+            },
+            "legal_justification": {
+              "en": "English legal reasoning text.",
+              "es": "Texto de razonamiento juridico en espanol."
+            },
             "legal_references": ["Ley 18.695 (LOCM) - BCN"]
           }
         }
@@ -729,16 +743,21 @@ Example response:
         }
       }
     }
-  ]
+  ],
+  "meta": {
+    "requestId": "1234567890",
+    "generatedAtUtc": "2026-08-19T10:00:01Z",
+    "totalRecords": 1
+  }
 }
 ```
 
 When actions are removed before ranking, the prioritization response includes
 them in `removed_actions` for frontend display. Legally blocked rows include a
-`legal` object with the same public legal detail fields used by ranked actions,
-including `ownership_description`, `ownership_description_es`,
-`restrictions_description`, `restrictions_description_es`,
-`legal_justification`, `legal_justification_en`, and `legal_references`.
+`legal` object with the same public legal detail fields used by ranked actions.
+`ownership_description`, `restrictions_description`, and `legal_justification`
+are objects keyed by available language code (for example, `en` and `es`), and
+`legal_references` remains a list.
 The diagnostic `metadata.hard_filter_evidence_by_action_id` map remains
 available for artifact/debug views.
 

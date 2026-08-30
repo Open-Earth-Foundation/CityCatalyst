@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef, useState } from "react";
+
 import {
   Box,
   Flex,
@@ -21,22 +23,35 @@ import {
   LuFileText,
   LuFolderOpen,
   LuLandmark,
-  LuRefreshCw,
+  LuListChecks,
+  LuShieldAlert,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
+import { isFetchBaseQueryError } from "@/util/helpers";
+import type { ConceptNoteRun } from "@/util/types";
 
+import { ExportDialog } from "../ConceptNoteWorkspace/export-dialog";
 import { ContextTile } from "./context-tile";
+import {
+  ConceptNoteLifecycleDialog,
+  type ConceptNoteLifecycleAction,
+} from "./lifecycle-dialog";
+import { NewConceptNoteDialog } from "./new-concept-note-dialog";
 import { RunCard } from "./run-card";
 import { RunCardSkeleton } from "./run-card-skeleton";
 import { StatusBadge } from "./status-badge";
 import {
   conceptNoteResumeHref,
   formatRelativeTime,
+  getConceptNoteBundleProgress,
+  getRunProgressPercent,
   getRunStatusPresentation,
-  humanizeLifecycleValue,
+  getWorkflowStepTranslationKey,
+  hasPrioritizedHiapActions,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -56,11 +71,19 @@ export function ConceptNoteDashboard({
 }: ConceptNoteDashboardProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [lifecycleDialog, setLifecycleDialog] = useState<{
+    action: ConceptNoteLifecycleAction;
+    run: ConceptNoteRun;
+  } | null>(null);
+  const [exportRun, setExportRun] = useState<ConceptNoteRun | null>(null);
+  const [duplicatingRunId, setDuplicatingRunId] = useState<string | null>(null);
+  const duplicateKeysRef = useRef(new Map<string, string>());
+  const [duplicateConceptNote] = api.useDuplicateConceptNoteRunMutation();
   const {
     data: runList,
     isError: runsFailed,
     isLoading: runsLoading,
-    refetch: refetchRuns,
   } = api.useGetConceptNoteRunsQuery(cityId);
   const { data: city, isLoading: cityLoading } = api.useGetCityQuery(cityId);
   const { data: population, isLoading: populationLoading } =
@@ -69,6 +92,12 @@ export function ConceptNoteDashboard({
     api.useGetInventoryByCityIdQuery(cityId);
   const { data: files, isLoading: filesLoading } =
     api.useGetUserFilesQuery(cityId);
+  const { data: cityDashboard, isLoading: modulesLoading } =
+    api.useGetCityDashboardQuery({ cityId, lng });
+  const { currentData: exportDraft } = api.useGetConceptNoteDraftQuery(
+    exportRun?.run_id ?? "",
+    { skip: !exportRun },
+  );
 
   const runs = runList?.runs ?? [];
   const cityFiles = files ?? [];
@@ -76,12 +105,6 @@ export function ConceptNoteDashboard({
   const cityLocation = city?.country
     ? t("city-location", { city: cityName, country: city.country })
     : cityName;
-  const linkedFundingCount = runs.filter(
-    (run) => run.funder_id !== null,
-  ).length;
-  const latestRunUpdate = runs[0]
-    ? formatRelativeTime(runs[0].updated_at, lng)
-    : "";
   const populationLabel = population
     ? t("population", {
         population: new Intl.NumberFormat(lng).format(population.population),
@@ -91,14 +114,45 @@ export function ConceptNoteDashboard({
   const inventoryLabel = inventory?.year
     ? t("inventory-year", { year: inventory.year })
     : t("no-inventory");
-  const fundingContextLabel = linkedFundingCount
-    ? t("funding-linked", { count: linkedFundingCount })
-    : t("funding-not-selected");
-  const runActivityLabel = latestRunUpdate
-    ? t("latest-run-update", { time: latestRunUpdate })
-    : t("no-run-activity");
   const fileName = cityFiles[0]?.fileName ?? t("no-city-files");
-  const wiringHref = `/${lng}/cities/${cityId}/concept-notes/wiring`;
+  const ccraConnected = Boolean(cityDashboard?.widgets.ccra);
+  const hiapConnected = hasPrioritizedHiapActions(cityDashboard?.widgets.hiap);
+  const exportBundle = exportRun
+    ? getConceptNoteBundleProgress(exportRun.progress_summary)
+    : null;
+
+  async function duplicateRun(run: ConceptNoteRun): Promise<void> {
+    const idempotencyKey =
+      duplicateKeysRef.current.get(run.run_id) ?? crypto.randomUUID();
+    duplicateKeysRef.current.set(run.run_id, idempotencyKey);
+    setDuplicatingRunId(run.run_id);
+    try {
+      await duplicateConceptNote({
+        cityId,
+        idempotencyKey,
+        runId: run.run_id,
+      }).unwrap();
+      duplicateKeysRef.current.delete(run.run_id);
+      toaster.create({
+        title: t("duplicate-success"),
+        description: t("duplicate-success-description"),
+        type: "success",
+        meta: { closable: true },
+      });
+    } catch (error) {
+      toaster.create({
+        title:
+          isFetchBaseQueryError(error) && error.status === 409
+            ? t("duplicate-conflict")
+            : t("duplicate-error"),
+        description: t("lifecycle-retry-description"),
+        type: "error",
+        meta: { closable: true },
+      });
+    } finally {
+      setDuplicatingRunId(null);
+    }
+  }
 
   return (
     <Box minH="calc(100vh - 80px)" bg="background.alternativeLight">
@@ -143,8 +197,12 @@ export function ConceptNoteDashboard({
               </Text>
             </Box>
             <Flex flex={1} />
-            <Button asChild size="sm" variant="solid">
-              <NextLink href={wiringHref}>{t("new-concept-note")}</NextLink>
+            <Button
+              size="sm"
+              variant="solid"
+              onClick={() => setCreateDialogOpen(true)}
+            >
+              {t("new-concept-note")}
             </Button>
           </Flex>
 
@@ -205,8 +263,7 @@ export function ConceptNoteDashboard({
               gridTemplateColumns={{
                 base: "1fr",
                 sm: "repeat(2, minmax(0, 1fr))",
-                lg: "repeat(4, minmax(0, 1fr))",
-                xl: "repeat(4, minmax(0, 205px)) minmax(260px, 1fr)",
+                lg: "repeat(5, minmax(0, 1fr))",
               }}
             >
               <ContextTile
@@ -228,24 +285,38 @@ export function ConceptNoteDashboard({
                 detail={t("inventory-detail")}
               />
               <ContextTile
-                icon={LuLandmark}
-                label={t("funding-context")}
+                icon={LuShieldAlert}
+                label={t("climate-risk-assessment")}
+                status={ccraConnected ? t("connected") : t("not-available")}
+                statusTone={ccraConnected ? "info" : "neutral"}
                 value={
-                  runsLoading ? <Skeleton h="20px" /> : fundingContextLabel
-                }
-                detail={t("funding-detail")}
-              />
-              <ContextTile
-                icon={LuFileText}
-                label={t("run-activity")}
-                value={
-                  runsLoading ? (
+                  modulesLoading ? (
                     <Skeleton h="20px" />
+                  ) : ccraConnected ? (
+                    t("context-ready")
                   ) : (
-                    t("run-count", { count: runs.length })
+                    t("not-available")
                   )
                 }
-                detail={runActivityLabel}
+                detail={t("ccra-detail")}
+              />
+              <ContextTile
+                icon={LuListChecks}
+                label={t("hiap-context")}
+                status={hiapConnected ? t("connected") : t("not-available")}
+                statusTone={hiapConnected ? "info" : "neutral"}
+                value={
+                  modulesLoading ? (
+                    <Skeleton h="20px" />
+                  ) : hiapConnected ? (
+                    t("context-ready")
+                  ) : (
+                    t("not-available")
+                  )
+                }
+                detail={t(
+                  hiapConnected ? "hiap-detail" : "hiap-impact-missing-summary",
+                )}
               />
               <ContextTile
                 icon={LuFolderOpen}
@@ -256,40 +327,7 @@ export function ConceptNoteDashboard({
             </Grid>
           </VStack>
 
-          {runsFailed ? (
-            <Flex
-              align={{ base: "stretch", sm: "center" }}
-              direction={{ base: "column", sm: "row" }}
-              gap={4}
-              border="1px solid"
-              borderColor="sentiment.negativeDefault"
-              borderRadius="rounded"
-              bg="sentiment.negativeOverlay"
-              p={5}
-            >
-              <Box flex={1}>
-                <Heading
-                  as="h2"
-                  fontFamily="heading"
-                  fontSize="title.sm"
-                  color="content.primary"
-                >
-                  {t("load-error-title")}
-                </Heading>
-                <Text mt={1} fontSize="body.sm" color="content.secondary">
-                  {t("load-error-description")}
-                </Text>
-              </Box>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => void refetchRuns()}
-              >
-                <Icon as={LuRefreshCw} />
-                {t("try-again")}
-              </Button>
-            </Flex>
-          ) : runsLoading ? (
+          {runsFailed ? null : runsLoading ? (
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               <RunCardSkeleton />
               <RunCardSkeleton />
@@ -299,10 +337,10 @@ export function ConceptNoteDashboard({
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               {runs.map((run) => {
                 const status = getRunStatusPresentation(run.status);
-                const statusLabel = status.translationKey
-                  ? t(status.translationKey)
-                  : humanizeLifecycleValue(run.status);
-                const workflowLabel = humanizeLifecycleValue(run.workflow_step);
+                const statusLabel = t(status.translationKey);
+                const workflowLabel = t(
+                  getWorkflowStepTranslationKey(run.workflow_step),
+                );
                 const updatedLabel =
                   formatRelativeTime(run.updated_at, lng) ||
                   t("updated-recently");
@@ -310,10 +348,17 @@ export function ConceptNoteDashboard({
                   ? t("funding-linked-short")
                   : t("funding-not-selected-short");
 
+                const progress = getRunProgressPercent(
+                  run.status,
+                  run.workflow_step,
+                  run.progress_summary,
+                );
+
                 return (
                   <RunCard
                     key={run.run_id}
                     run={run}
+                    t={t}
                     reducedMotion={reducedMotion}
                     statusLabel={statusLabel}
                     statusTone={status.tone}
@@ -325,8 +370,19 @@ export function ConceptNoteDashboard({
                       workflow: workflowLabel,
                       time: updatedLabel,
                     })}
+                    progressLabel={t("run-progress", { progress })}
+                    progress={progress}
                     resumeHref={conceptNoteResumeHref(lng, cityId, run.run_id)}
-                    resumeLabel={t("resume")}
+                    duplicateLoading={duplicatingRunId === run.run_id}
+                    lifecycleDisabled={Boolean(duplicatingRunId)}
+                    onRename={() =>
+                      setLifecycleDialog({ action: "rename", run })
+                    }
+                    onDuplicate={() => void duplicateRun(run)}
+                    onExport={() => setExportRun(run)}
+                    onDelete={() =>
+                      setLifecycleDialog({ action: "delete", run })
+                    }
                   />
                 );
               })}
@@ -366,11 +422,13 @@ export function ConceptNoteDashboard({
                   {t("empty-description")}
                 </Text>
               </Box>
-              <Button asChild size="sm" variant="outline">
-                <NextLink href={wiringHref}>
-                  {t("create-first-note")}
-                  <Icon as={LuArrowUpRight} />
-                </NextLink>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setCreateDialogOpen(true)}
+              >
+                {t("create-first-note")}
+                <Icon as={LuArrowUpRight} />
               </Button>
             </Flex>
           )}
@@ -383,6 +441,37 @@ export function ConceptNoteDashboard({
           )}
         </VStack>
       </motion.main>
+      <NewConceptNoteDialog
+        cityId={cityId}
+        cityName={cityName}
+        lng={lng}
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        projectId={city?.projectId ?? null}
+        projectName={city?.project?.name ?? null}
+      />
+      {lifecycleDialog && (
+        <ConceptNoteLifecycleDialog
+          key={`${lifecycleDialog.action}-${lifecycleDialog.run.run_id}`}
+          action={lifecycleDialog.action}
+          cityId={cityId}
+          lng={lng}
+          run={lifecycleDialog.run}
+          onClose={() => setLifecycleDialog(null)}
+        />
+      )}
+      {exportRun && (
+        <ExportDialog
+          draft={exportDraft ?? null}
+          hasUploadedEvidence={
+            exportBundle?.availableContext.uploadedDocuments ?? false
+          }
+          lng={lng}
+          noteName={exportRun.name}
+          open
+          onOpenChange={(open) => !open && setExportRun(null)}
+        />
+      )}
     </Box>
   );
 }

@@ -12,7 +12,7 @@ resource lifecycle, and compatibility with existing Climate Advisor workflows.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — NFR Requirements.
 - **Assigned stories**: US-03, US-07, US-09.
-- **Status**: Planning opened; answers and explicit plan approval pending.
+- **Status**: All NFR planning answers validated; explicit plan approval pending.
 - **Prerequisite**: UOW-02 Functional Design plan and artifacts approved
   2026-08-29; UOW-01 Core contract and evidence approved with its documented
   GHGI/PostgreSQL validation limitation.
@@ -162,7 +162,7 @@ C) Treat request-time work as unbounded and rely only on autoscaling.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 2 — Discovery cost and frequency
 
@@ -179,7 +179,7 @@ C) Rediscover and fully read every candidate whenever the agent is created.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 3 — Selected-read and tool-surface bounds
 
@@ -195,7 +195,7 @@ C) Allow the model to select arbitrary capabilities and result sizes.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 4 — Latency and timeout expectations
 
@@ -211,7 +211,7 @@ C) Do not measure latency because authorization correctness is sufficient.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 5 — Response and resource bounds
 
@@ -228,7 +228,7 @@ C) Load full source responses and trim them only in the prompt.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 6 — Availability and continuity objectives
 
@@ -244,7 +244,7 @@ C) Treat the integration as best effort with no operational objective.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 7 — Dependency failure and graceful degradation
 
@@ -262,7 +262,7 @@ C) Use cached catalog authorization or direct source/storage access.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 8 — Security threat priority
 
@@ -279,7 +279,7 @@ C) Treat these as post-release hardening.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 9 — Privacy, retention, and telemetry
 
@@ -297,7 +297,7 @@ C) Disable all telemetry for denied or unavailable operations.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 10 — Technology reuse
 
@@ -314,7 +314,7 @@ C) Move authorization and source reads into Climate Advisor.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 11 — Enforcement placement
 
@@ -332,7 +332,7 @@ C) Let Core pass through data and rely on each tool to enforce security.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 12 — Contract/version compatibility
 
@@ -349,7 +349,7 @@ C) Replace existing workflow-specific contracts with the catalog contract.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 13 — Rollout and rollback
 
@@ -366,7 +366,7 @@ C) Fall back to raw storage when Core is not ready.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 14 — Verification and release gates
 
@@ -385,7 +385,7 @@ C) Defer negative/security/compatibility evidence to UOW-03 or production.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ## Frontend and topology applicability
 
@@ -394,6 +394,22 @@ X) Other (describe after the tag).
 - No new service, storage, database, deployment topology, region, queue, cache,
   worker, or shared runtime is proposed. Availability, recovery, scaling, and
   incident behavior inherit existing platform practices.
+
+## Answer validation result
+
+- All 14 planning questions have non-empty `[Answer]:` tags.
+- Every answer selects the recommended behavior and is consistent with the
+  approved UOW-02 Functional Design and UOW-01 Core contract.
+- The answers preserve request-time discovery, lightweight readiness without
+  full reads or Climate Advisor capability loading, selected-only execution,
+  Core authorization/revalidation, bounded inputs/results, stable
+  non-disclosure, existing workflow compatibility, token/resource cleanup,
+  feature-gated rollout, and no storage credentials/raw storage access.
+- Security and negative evidence remain release-blocking; no new topology,
+  storage owner, authorization path, or unrelated refactoring is introduced.
+- No contradiction or unresolved ambiguity requires a follow-up question.
+- **Gate**: Explicit UOW-02 NFR Requirements plan approval is required before
+  NFR Requirements artifacts are generated.
 
 ## Completion and approval gate
 

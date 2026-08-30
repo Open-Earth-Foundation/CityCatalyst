@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: NFR Requirements — UOW-02 plan answers pending
+- **Current Stage**: NFR Requirements — UOW-02 plan approval pending
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -64,5 +64,5 @@
 - [x] Code Generation plan — UOW-01 approved — 2026-08-29
 - [x] Code Generation — UOW-01 complete with documented GHGI environment limitation
 - [x] Functional Design — UOW-02 artifacts approved — 2026-08-29
-- [ ] NFR Requirements — UOW-02 plan answers pending
+- [ ] NFR Requirements — UOW-02 plan approval pending
 - [ ] Build and Test — pending implementation

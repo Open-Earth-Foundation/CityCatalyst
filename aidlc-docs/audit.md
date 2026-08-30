@@ -665,3 +665,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Validated all 10 UOW-02 Code Generation planning answers. All answer tags are complete and select the recommended behavior: ordered test-first units, explicit red/green review checkpoints, narrow brown-field scope, discovery/readiness separation, selected-only execution, release-blocking security and compatibility evidence, mandatory Climate Advisor post-change skills, and documented environment/atomic-commit handling. No contradiction or unresolved ambiguity requires a follow-up question. Tests and application code remain deferred pending explicit plan approval.
 **Approval Status**: UOW-02 Code Generation plan answers complete; explicit plan approval pending.
 ---
+
+## Code Generation — UOW-02 Unit 1 TDD Red Checkpoint
+**Timestamp**: 2026-08-30T00:12:09-03:00
+**User Input**: "approved" (plan approval already recorded; no new implementation approval)
+**AI Response**: Started Unit 1 under the approved Code Generation plan by adding only the focused Climate Advisor CityCatalystClient contract tests. The focused pytest selection reached the intended red checkpoint: four new discovery/read tests fail because the production methods do not yet exist, while the existing client-close assertion passes. No Climate Advisor production code was modified. Implementation is paused pending explicit review of this red checkpoint.
+**Approval Status**: Unit 1 TDD red checkpoint complete; client implementation approval pending.
+---

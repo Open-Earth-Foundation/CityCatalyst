@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: All 10 Code Generation planning answers validated; explicit plan approval pending.
+- **Status**: Plan approved; Unit 1 TDD red checkpoint committed; Unit 1 implementation approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -143,12 +143,12 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests for typed discovery/read request payloads, existing
+1. [x] Add failing tests for typed discovery/read request payloads, existing
    service/bearer headers, timeout forwarding, and bounded response parsing.
-2. [ ] Add failing tests for one-time 401 refresh, refreshed token-reference
+2. [x] Add failing tests for one-time 401 refresh, refreshed token-reference
    propagation, client/response closure, transport failure, and the exact
    fixed `capability_unavailable` classification without upstream body text.
-3. [ ] Run the focused client tests to confirm failure before implementation.
+3. [x] Run the focused client tests to confirm failure before implementation.
 4. [ ] Implement only narrow typed Core discovery/read methods using existing
    client/auth/timeout/refresh conventions; keep endpoint details in the client.
 5. [ ] Ensure discovery and selected read are distinct operations; discovery
@@ -157,6 +157,13 @@ Steps:
    `simplify-after-change` and `docs-after-change` skills.
 7. [ ] Commit only this unit with:
    `feat(cc-737): add Climate Advisor catalog client contract`.
+
+**TDD red checkpoint**: Added the five Unit 1 client tests and ran the focused
+selection. Four catalog discovery/read tests fail with the expected missing
+`CityCatalystClient.discover_native_inputs` / `read_native_input` methods; the
+existing close-lifecycle assertion passes. No production client code was
+modified. Unit 1 implementation remains gated on explicit review of this red
+checkpoint.
 
 Story/requirement mapping: US-03, US-07, US-09; FR-04 through FR-07, FR-09,
 FR-10, FR-11; NFR-UOW02-02, 04, 05, 07, 11, 12, 14–18, 21–22.

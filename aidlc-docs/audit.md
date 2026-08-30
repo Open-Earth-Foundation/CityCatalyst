@@ -616,3 +616,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Validated all 14 UOW-02 NFR Requirements planning answers. All answer tags are complete and select the recommended behavior: inherited workload/performance/availability baselines, once-per-request lightweight discovery, selected-only bounded execution, fail-closed dependency handling, release-blocking security threats and evidence, existing technology reuse, safe telemetry/retention, Core/client/module enforcement placement, typed compatibility, Core-first rollout, and lifecycle/compatibility verification. No contradiction or unresolved ambiguity requires a follow-up question. NFR Requirements artifacts remain deferred pending explicit plan approval.
 **Approval Status**: UOW-02 NFR Requirements plan answers complete; explicit plan approval pending.
 ---
+
+## Approval — UOW-02 NFR Requirements Plan
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the answered UOW-02 NFR Requirements plan. Generated the planned NFR Requirements and Technology Stack Decisions artifacts for the Climate Advisor consumer boundary. The artifacts preserve inherited platform baselines, request-time lightweight discovery, selected-only bounded execution, fail-closed behavior, Core authorization/revalidation, non-disclosure, no storage credentials/raw access, existing technology reuse, compatibility, and release-blocking security evidence. No application code was modified.
+**Approval Status**: UOW-02 NFR Requirements plan approved; artifacts generated and awaiting separate explicit artifact approval.
+---

@@ -12,7 +12,7 @@ resource lifecycle, and compatibility with existing Climate Advisor workflows.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — NFR Requirements.
 - **Assigned stories**: US-03, US-07, US-09.
-- **Status**: All NFR planning answers validated; explicit plan approval pending.
+- **Status**: NFR Requirements artifacts generated and validated; explicit artifact approval pending.
 - **Prerequisite**: UOW-02 Functional Design plan and artifacts approved
   2026-08-29; UOW-01 Core contract and evidence approved with its documented
   GHGI/PostgreSQL validation limitation.
@@ -61,81 +61,81 @@ choices:
 
 ### 1. Scalability and capacity
 
-- [ ] Establish workload and growth assumptions for request-time discovery,
+- [x] Establish workload and growth assumptions for request-time discovery,
   selected tool construction, and selected reads using existing Climate Advisor
   and Core usage evidence.
-- [ ] Define bounded discovery/selection/read work, in-flight resources, and
+- [x] Define bounded discovery/selection/read work, in-flight resources, and
   agent tool-surface limits without global catalog loading or unbounded fan-out.
-- [ ] Define capacity measurement and regression signals using existing service
+- [x] Define capacity measurement and regression signals using existing service
   and operations practices.
 
 ### 2. Performance and resource behavior
 
-- [ ] Establish measurable baseline/regression expectations for discovery,
+- [x] Establish measurable baseline/regression expectations for discovery,
   selected tool construction, and selected reads relative to existing client
   and workflow defaults.
-- [ ] Define timeout, response-size, finite-result, cancellation, refresh, and
+- [x] Define timeout, response-size, finite-result, cancellation, refresh, and
   client/resource cleanup behavior.
-- [ ] Explicitly distinguish discovery readiness cost from selected read cost;
+- [x] Explicitly distinguish discovery readiness cost from selected read cost;
   discovery must not be a full-read performance path.
 
 ### 3. Availability and reliability
 
-- [ ] Confirm inherited platform availability, RTO/RPO, disaster-recovery,
+- [x] Confirm inherited platform availability, RTO/RPO, disaster-recovery,
   deployment, rollback, and incident objectives.
-- [ ] Define fail-closed behavior for Core discovery/read, token, validation,
+- [x] Define fail-closed behavior for Core discovery/read, token, validation,
   permission, module, timeout, and malformed-response failures.
-- [ ] Define failure isolation so one selected capability does not widen or
+- [x] Define failure isolation so one selected capability does not widen or
   disable unrelated existing authorized tools.
 
 ### 4. Security, privacy, and non-disclosure
 
-- [ ] Cover threat scenarios for confused deputy, IDOR/cross-scope selection,
+- [x] Cover threat scenarios for confused deputy, IDOR/cross-scope selection,
   stale/forged/malformed selection, route/capability injection, tool-surface
   overexposure, existence oracles, resource exhaustion, and secret leakage.
-- [ ] Define consumer-side NFRs for typed input, selected-only registration,
+- [x] Define consumer-side NFRs for typed input, selected-only registration,
   Core revalidation, safe error mapping, redaction, and telemetry.
-- [ ] Confirm existing privacy, retention, and credential-handling policies;
+- [x] Confirm existing privacy, retention, and credential-handling policies;
   do not expand data collection or persist selection secrets.
 
 ### 5. Technology and integration constraints
 
-- [ ] Confirm reuse of the existing Climate Advisor Python/FastAPI/httpx,
+- [x] Confirm reuse of the existing Climate Advisor Python/FastAPI/httpx,
   Pydantic/schema, Agents SDK/tool factory, streaming, token, and test
   patterns, plus the existing Core internal HTTP contract.
-- [ ] Define enforcement placement between client, request coordinator, tool
+- [x] Define enforcement placement between client, request coordinator, tool
   wrapper, Core, and module boundaries without duplicating Core authority.
-- [ ] Identify technology decisions that are genuinely required versus details
+- [x] Identify technology decisions that are genuinely required versus details
   deferred to NFR Design or Code Generation.
 
 ### 6. Maintainability, observability, and testability
 
-- [ ] Define explicit contract, fixture, schema, bound, lifecycle, and
+- [x] Define explicit contract, fixture, schema, bound, lifecycle, and
   ownership documentation expectations for the consumer boundary.
-- [ ] Define safe low-cardinality logs/metrics/traces for discovery, selected
+- [x] Define safe low-cardinality logs/metrics/traces for discovery, selected
   registration, reads, errors, refresh, timeout, cleanup, and failure
   isolation.
-- [ ] Define example-based, contract, security, compatibility, lifecycle,
+- [x] Define example-based, contract, security, compatibility, lifecycle,
   resiliency, and partial property-based evidence requirements.
 
 ### 7. Compatibility and rollout
 
-- [ ] Confirm feature-gated/Core-first rollout and existing rollback behavior.
-- [ ] Define regression evidence for general chat, inventory, Stationary
+- [x] Confirm feature-gated/Core-first rollout and existing rollback behavior.
+- [x] Define regression evidence for general chat, inventory, Stationary
   Energy, Concept Note, legacy datasource, vector, authentication, token
   refresh, timeout, cancellation, and cleanup paths.
-- [ ] Confirm no public API/UI contract, prompt contract, storage boundary, or
+- [x] Confirm no public API/UI contract, prompt contract, storage boundary, or
   unrelated workflow change is required.
 
 ### 8. NFR validation and traceability
 
-- [ ] Validate answers against the approved UOW-02 Functional Design artifacts,
+- [x] Validate answers against the approved UOW-02 Functional Design artifacts,
   UOW-01 Core contract, FR-01 through FR-11, NFR-01 through NFR-08, US-03,
   US-07, US-09, Application Design, Units Generation, and Linear acceptance
   criteria.
-- [ ] Record and resolve any NFR ambiguity with follow-up questions before
+- [x] Record and resolve any NFR ambiguity with follow-up questions before
   artifact generation.
-- [ ] Generate NFR Requirements and Technology Stack Decisions artifacts only
+- [x] Generate NFR Requirements and Technology Stack Decisions artifacts only
   after this plan is answered and explicitly approved.
 
 ## NFR Requirements questions — complete every `[Answer]:` tag
@@ -408,8 +408,21 @@ X) Other (describe after the tag).
 - Security and negative evidence remain release-blocking; no new topology,
   storage owner, authorization path, or unrelated refactoring is introduced.
 - No contradiction or unresolved ambiguity requires a follow-up question.
-- **Gate**: Explicit UOW-02 NFR Requirements plan approval is required before
-  NFR Requirements artifacts are generated.
+- **Gate result**: Plan approval was received; the two NFR Requirements
+  artifacts are now available for explicit artifact approval.
+
+## Generated NFR Requirements artifacts
+
+The following artifacts were generated from the approved plan and validated
+against the approved UOW-02 Functional Design, UOW-01 Core contract, and
+existing Climate Advisor architecture:
+
+- `uow-02-climate-advisor-request-time-integration/nfr-requirements/nfr-requirements.md`
+- `uow-02-climate-advisor-request-time-integration/nfr-requirements/tech-stack-decisions.md`
+
+The artifacts preserve the explicit distinction between lightweight discovery
+readiness and selected bounded execution. They do not authorize application
+code, NFR Design, or Code Generation until separately approved.
 
 ## Completion and approval gate
 

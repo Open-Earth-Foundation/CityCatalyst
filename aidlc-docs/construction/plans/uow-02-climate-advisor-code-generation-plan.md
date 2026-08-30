@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Planning opened; answers and explicit plan approval pending.
+- **Status**: Questions added after plan review; answers and explicit plan approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -302,6 +302,187 @@ NFR-UOW02-01 through NFR-UOW02-22.
   decision, stop, document it with a dedicated question, and request approval.
 - UOW-03 consumes the resulting consumer evidence; it does not replace these
   service-local security/compatibility tests.
+
+## Code Generation questions — complete every `[Answer]:` tag
+
+Answer each question directly after its `[Answer]:` tag. Select one option and
+state any constraint or rationale required. These questions define execution
+controls for the approved units; they do not authorize implementation until
+the plan is answered and explicitly approved.
+
+### Question 1 — Unit sequence and scope
+
+How should the five implementation units be executed?
+
+A) **Recommended:** Execute Units 1–5 in order, preserving the dependency
+boundaries and exact file scope in the plan; pause and return to design if a
+Core contract, storage, topology, or unrelated workflow change is discovered.
+
+B) Execute all units in parallel to reduce elapsed time.
+
+C) Combine all units into one broad refactor.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 2 — Test-first checkpoints
+
+What checkpoint must precede each implementation unit?
+
+A) **Recommended:** Add the smallest failing tests first, run them to record
+the intended red checkpoint, then implement the minimum behavior and run the
+focused suite green before any commit.
+
+B) Implement production code first and add tests after all units are complete.
+
+C) Use only end-to-end tests after the final unit.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 3 — Approval granularity
+
+When should work pause for explicit review during Code Generation?
+
+A) **Recommended:** Pause after each independently reviewable unit's red/green
+evidence and atomic commit, and pause at the final Code Generation completion
+gate; do not advance to the next unit without the required approval.
+
+B) Pause only once after all five units are implemented.
+
+C) Continue automatically through all units after plan approval.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 4 — Existing-file and implementation scope
+
+How should brown-field file changes be constrained?
+
+A) **Recommended:** Prefer existing client, AgentService, streaming, token, and
+tool patterns; add only the narrowest required seams/files; stage exact files;
+leave setup, lockfiles, prompts, storage, migrations, and unrelated behavior
+untouched.
+
+B) Refactor shared Climate Advisor infrastructure before adding the feature.
+
+C) Modify any convenient service or dependency to simplify implementation.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 5 — Discovery/readiness execution invariant
+
+What must the implementation prove about discovery?
+
+A) **Recommended:** Discovery runs once per active request after context
+resolution and performs only typed safe filtering/readiness consumption; it
+must not load Climate Advisor capabilities, execute full reads, retrieve all
+candidate content, or speculatively invoke tools.
+
+B) Preload every discovered tool during agent creation.
+
+C) Execute one source read per candidate to validate readiness.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 6 — Selected-only execution invariant
+
+What must the tool implementation guarantee?
+
+A) **Recommended:** Only a current discovery entry paired with its opaque
+Core-issued capability ID can create a request-scoped tool, and one invocation
+executes only that selected bounded Core read; Core still revalidates it.
+
+B) Register all eligible tools and let the model choose among them.
+
+C) Accept arbitrary capability IDs and derive routes at runtime.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 7 — Security and forbidden-data evidence
+
+Which evidence is mandatory before committing a security-relevant unit?
+
+A) **Recommended:** Assert stable non-disclosure for stale/forged/invalid and
+unavailable selections, Core-mediated bounded results, absence of source/state/
+scope/storage/credential/upstream-error leakage, and no direct storage/module
+access in Climate Advisor.
+
+B) Verify only the authorized happy path.
+
+C) Defer all forbidden-data checks to UOW-03.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 8 — Compatibility and lifecycle evidence
+
+What regression scope is required while integrating the new pack?
+
+A) **Recommended:** Preserve and test general chat, inventory, Stationary
+Energy, Concept Note, legacy datasource, vector, auth, token refresh, timeout,
+cancellation, cleanup, feature flags, and failure isolation; no catalog failure
+may widen or silently replace an existing pack.
+
+B) Test only the new catalog-backed path.
+
+C) Replace existing workflow tools with the new pack during this unit.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 9 — Mandatory post-change quality checks
+
+What checks must follow any Climate Advisor code change?
+
+A) **Recommended:** Apply both mandatory project skills,
+`simplify-after-change` and `docs-after-change`, then run focused pytest,
+format/lint/type checks applicable to the touched files before committing.
+
+B) Run only the feature test and defer documentation/simplification.
+
+C) Skip checks until the final integration suite.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+### Question 10 — Environment limitations and commit protocol
+
+How should unavailable dependencies or unrelated baseline failures be handled?
+
+A) **Recommended:** Record the exact command, failure, and scope in the unit
+evidence; continue only with safe deterministic alternatives; never bypass a
+security check; stage only the unit's files and create one atomic commit per
+unit.
+
+B) Modify unrelated setup or dependencies to make every command pass.
+
+C) Ignore failures and commit the unit without evidence.
+
+X) Other (describe after the tag).
+
+[Answer]:
+
+## Answer validation and approval gate
+
+After all answers are supplied, they will be checked for completeness,
+contradictions, and consistency with the approved Functional Design, NFR
+Requirements, NFR Design, UOW-01 Core contract, and brown-field instructions.
+Any unresolved decision will receive a follow-up question with a new
+`[Answer]:` tag. Tests or application code will be generated only after this
+plan is answered and explicitly approved.
 
 ## Verification commands
 

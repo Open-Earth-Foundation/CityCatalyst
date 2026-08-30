@@ -651,3 +651,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded David's explicit approval of the UOW-02 NFR Design Patterns and Logical Components artifacts. Closed UOW-02 NFR Design and opened the UOW-02 Code Generation planning gate. The approved design preserves request-scoped orchestration, typed Core client transport, lightweight discovery readiness without full reads or capability loading, selected-only execution, Core defense-in-depth, stable non-disclosure, token/resource cleanup, compatibility, safe observability, and existing rollout/verification patterns. No application code was modified.
 **Approval Status**: UOW-02 NFR Design complete; UOW-02 Code Generation plan opened and awaiting answers/approval.
 ---
+
+## Code Generation Plan Questions Correction
+**Timestamp**: 2026-08-30T00:12:09-03:00
+**User Input**: "You didn't create the questions, could you check?"
+**AI Response**: Confirmed that the UOW-02 Code Generation plan contained implementation units but no dedicated `[Answer]:` questions. Added 10 questions covering unit sequence/scope, test-first checkpoints, approval granularity, brown-field file scope, discovery/readiness separation, selected-only execution, security evidence, compatibility/lifecycle evidence, mandatory post-change skills, and environment/atomic-commit handling. No tests or application code were modified.
+**Approval Status**: Code Generation plan corrected; answers and explicit plan approval pending.
+---

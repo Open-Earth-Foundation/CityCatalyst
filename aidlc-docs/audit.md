@@ -602,3 +602,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded David's explicit approval of the answered UOW-02 Functional Design plan. Generated the three planned technology-agnostic Climate Advisor artifacts covering request-time discovery, lightweight readiness versus selected bounded execution, selection binding, selected-only tool registration, typed inputs/results, Core revalidation, stable non-disclosure, workflow compatibility, token/resource lifecycle, and consumer evidence. No Climate Advisor application code, prompts, tests, NFR artifacts, or unrelated files were modified.
 **Approval Status**: UOW-02 Functional Design plan approved; artifacts generated and awaiting separate explicit artifact approval.
 ---
+
+## Approval — UOW-02 Functional Design Artifacts
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the UOW-02 Climate Advisor Functional Design artifacts: business logic model, business rules, and domain entities. Closed UOW-02 Functional Design and opened the UOW-02 NFR Requirements planning gate. The approved artifacts preserve request-time discovery, lightweight readiness without full reads or Climate Advisor capability loading, selected-only execution, Core authorization/revalidation, bounded results, stable non-disclosure, workflow compatibility, token/resource cleanup, and storage isolation. No application code was modified.
+**Approval Status**: UOW-02 Functional Design complete; UOW-02 NFR Requirements plan opened and awaiting answers/approval.
+---

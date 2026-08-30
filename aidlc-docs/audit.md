@@ -637,3 +637,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Validated all 12 UOW-02 NFR Design planning answers. All answer tags are complete and select the recommended behavior: bounded existing timeout/cleanup patterns, explicit discovery-readiness separation, selected-only execution, Core defense-in-depth, non-disclosure, no stale authorization cache, safe observability, feature-gated compatibility, existing technology reuse, and deterministic consumer verification. No contradiction or unresolved ambiguity requires a follow-up question. NFR Design artifacts remain deferred pending explicit plan approval.
 **Approval Status**: UOW-02 NFR Design plan answers complete; explicit plan approval pending.
 ---
+
+## Approval — UOW-02 NFR Design Plan
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the answered UOW-02 NFR Design plan. Generated the planned NFR Design Patterns and Logical Components artifacts for Climate Advisor. The artifacts preserve request-scoped orchestration, typed Core client transport, lightweight discovery readiness without full reads or capability loading, selected-only execution, Core defense-in-depth, stable non-disclosure, token/resource cleanup, compatibility, safe observability, and existing rollout/verification patterns. No application code was modified.
+**Approval Status**: UOW-02 NFR Design plan approved; artifacts generated and awaiting separate explicit artifact approval.
+---

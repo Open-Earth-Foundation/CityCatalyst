@@ -11,7 +11,7 @@ concrete implementation details remain for Code Generation.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — NFR Design.
 - **Assigned stories**: US-03, US-07, US-09.
-- **Status**: All NFR Design planning answers validated; explicit plan approval pending.
+- **Status**: NFR Design artifacts generated and validated; explicit artifact approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Requirements artifacts
   approved 2026-08-29; approved UOW-01 Core contract and evidence.
 - **Application code**: Climate Advisor code remains unchanged until this plan
@@ -47,64 +47,64 @@ concrete implementation details remain for Code Generation.
 
 ### 1. Resilience patterns
 
-- [ ] Design finite timeout, refresh, cancellation, and cleanup behavior for
+- [x] Design finite timeout, refresh, cancellation, and cleanup behavior for
   discovery, selected reads, and tool execution.
-- [ ] Design fail-closed error mapping and failure isolation without stale
+- [x] Design fail-closed error mapping and failure isolation without stale
   authorization, raw-storage fallback, or capability widening.
-- [ ] Design feature-disable, health/degradation, rollback, and operational
+- [x] Design feature-disable, health/degradation, rollback, and operational
   handoff using existing mechanisms.
 
 ### 2. Scalability and performance patterns
 
-- [ ] Place request, discovery, tool-surface, input/output, and resource bounds
+- [x] Place request, discovery, tool-surface, input/output, and resource bounds
   at the correct Climate Advisor/Core boundaries.
-- [ ] Keep readiness probing separate from selected bounded execution and
+- [x] Keep readiness probing separate from selected bounded execution and
   prevent unbounded fan-out or global capability loading.
-- [ ] Define baseline/regression measurement points without a new hard target.
+- [x] Define baseline/regression measurement points without a new hard target.
 
 ### 3. Security and privacy patterns
 
-- [ ] Map defense in depth across active context, Core client, selection binding,
+- [x] Map defense in depth across active context, Core client, selection binding,
   selected-only factory, typed tool, error mapper, and telemetry.
-- [ ] Design protections for confused deputy, IDOR/cross-scope selection,
+- [x] Design protections for confused deputy, IDOR/cross-scope selection,
   existence oracles, route injection, global tool exposure, secret leakage,
   raw storage access, and resource exhaustion.
-- [ ] Define redaction-before-serialization/logging hooks and safe telemetry.
+- [x] Define redaction-before-serialization/logging hooks and safe telemetry.
 
 ### 4. Logical components and integration
 
-- [ ] Define logical responsibilities for active request context, Core client,
+- [x] Define logical responsibilities for active request context, Core client,
   discovery validator, selection binder, selected-only tool factory, bounded
   result/error mapper, token/resource lifecycle, and telemetry.
-- [ ] Confirm reused existing components and the narrowest necessary new seams
+- [x] Confirm reused existing components and the narrowest necessary new seams
   without adding deployable infrastructure.
-- [ ] Define Core-to-Climate Advisor contracts and deterministic test doubles.
+- [x] Define Core-to-Climate Advisor contracts and deterministic test doubles.
 
 ### 5. Compatibility and rollout
 
-- [ ] Design Core-first feature-gated rollout and rollback while preserving all
+- [x] Design Core-first feature-gated rollout and rollback while preserving all
   existing Climate Advisor workflow/tool-pack rules.
-- [ ] Define safe behavior when context, discovery, feature flags, or Core are
+- [x] Define safe behavior when context, discovery, feature flags, or Core are
   unavailable.
-- [ ] Define compatible contract evolution without replacing existing flows.
+- [x] Define compatible contract evolution without replacing existing flows.
 
 ### 6. Verification and operations
 
-- [ ] Map patterns to client, registration, execution, error, security,
+- [x] Map patterns to client, registration, execution, error, security,
   compatibility, cleanup, timeout, and failure-isolation tests.
-- [ ] Define partial property-based invariants, deterministic generators,
+- [x] Define partial property-based invariants, deterministic generators,
   shrinking, and reproducible seeds for pure consumer logic.
-- [ ] Define safe dashboards/alerts/release evidence with no secret/raw-content
+- [x] Define safe dashboards/alerts/release evidence with no secret/raw-content
   leakage.
 
 ### 7. NFR Design validation
 
-- [ ] Validate the design against approved NFR Requirements, Functional Design,
+- [x] Validate the design against approved NFR Requirements, Functional Design,
   UOW-01 contract/evidence, requirements, stories, Application Design, Units
   Generation, and Linear acceptance criteria.
-- [ ] Identify and resolve pattern/component ambiguity with follow-up questions
+- [x] Identify and resolve pattern/component ambiguity with follow-up questions
   before artifact generation.
-- [ ] Generate `nfr-design-patterns.md` and `logical-components.md` only after
+- [x] Generate `nfr-design-patterns.md` and `logical-components.md` only after
   this plan is answered and explicitly approved.
 
 ## NFR Design questions — complete every `[Answer]:` tag
@@ -325,6 +325,20 @@ X) Other (describe after the tag).
   persistence layer, shared runtime, region, or deployment topology is
   proposed. Existing logical/runtime components and operations remain the
   baseline.
+
+## Generated NFR Design artifacts
+
+The following artifacts were generated from the approved plan and validated
+against the approved UOW-02 NFR Requirements, Functional Design, UOW-01 Core
+contract, and existing Climate Advisor architecture:
+
+- `uow-02-climate-advisor-request-time-integration/nfr-design/nfr-design-patterns.md`
+- `uow-02-climate-advisor-request-time-integration/nfr-design/logical-components.md`
+
+The artifacts explicitly separate lightweight discovery readiness from selected
+bounded execution and preserve Core authorization, non-disclosure, bounded
+reads, and storage isolation. They do not authorize Code Generation until
+separately approved.
 
 ## Answer validation result
 

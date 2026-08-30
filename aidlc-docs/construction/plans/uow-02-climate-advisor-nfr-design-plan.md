@@ -11,7 +11,7 @@ concrete implementation details remain for Code Generation.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — NFR Design.
 - **Assigned stories**: US-03, US-07, US-09.
-- **Status**: Planning opened; answers and explicit plan approval pending.
+- **Status**: All NFR Design planning answers validated; explicit plan approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Requirements artifacts
   approved 2026-08-29; approved UOW-01 Core contract and evidence.
 - **Application code**: Climate Advisor code remains unchanged until this plan
@@ -129,7 +129,7 @@ C) Use a direct-storage fallback when Core is slow or unavailable.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 2 — Discovery readiness separation
 
@@ -146,7 +146,7 @@ C) Execute one full read for every candidate during discovery.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 3 — Selected-only loading and concurrency
 
@@ -163,7 +163,7 @@ C) Execute all eligible capabilities concurrently for faster responses.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 4 — Performance optimization
 
@@ -180,7 +180,7 @@ C) Optimize by moving authorization and source reads into Climate Advisor.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 5 — Security control placement
 
@@ -198,7 +198,7 @@ C) Make Climate Advisor the primary authorization layer.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 6 — Non-disclosure design
 
@@ -215,7 +215,7 @@ C) Return hidden-source placeholders for troubleshooting.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 7 — Logical component decomposition
 
@@ -232,7 +232,7 @@ C) Put catalog filtering and source reads entirely in Climate Advisor.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 8 — Caching and consistency
 
@@ -248,7 +248,7 @@ C) Cache raw source objects in Climate Advisor for resilience.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 9 — Observability and redaction
 
@@ -265,7 +265,7 @@ C) Disable telemetry for denied/unavailable operations.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 10 — Workflow compatibility and rollout
 
@@ -282,7 +282,7 @@ C) Replace existing workflow packs and use raw storage during rollback.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 11 — Contract evolution
 
@@ -299,7 +299,7 @@ C) Replace existing workflow-specific contracts with a generic catalog payload.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 12 — Verification architecture
 
@@ -316,7 +316,7 @@ C) Defer consumer security and compatibility evidence to production.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ## Frontend and infrastructure applicability
 
@@ -325,6 +325,21 @@ X) Other (describe after the tag).
   persistence layer, shared runtime, region, or deployment topology is
   proposed. Existing logical/runtime components and operations remain the
   baseline.
+
+## Answer validation result
+
+- All 12 planning questions have non-empty `[Answer]:` tags.
+- Every answer selects the recommended behavior and is consistent with the
+  approved UOW-02 NFR Requirements, Functional Design, and UOW-01 Core
+  contract.
+- The answers preserve finite timeout/cleanup behavior, lightweight discovery
+  readiness without full reads or Climate Advisor capability loading,
+  selected-only execution, Core defense-in-depth, non-disclosure, no stale
+  authorization cache, safe observability, existing workflow compatibility,
+  and no new infrastructure.
+- No contradiction or unresolved ambiguity requires a follow-up question.
+- **Gate**: Explicit UOW-02 NFR Design plan approval is required before NFR
+  Design artifacts are generated.
 
 ## Completion and approval gate
 

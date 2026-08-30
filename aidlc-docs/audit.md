@@ -623,3 +623,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded David's explicit approval of the answered UOW-02 NFR Requirements plan. Generated the planned NFR Requirements and Technology Stack Decisions artifacts for the Climate Advisor consumer boundary. The artifacts preserve inherited platform baselines, request-time lightweight discovery, selected-only bounded execution, fail-closed behavior, Core authorization/revalidation, non-disclosure, no storage credentials/raw access, existing technology reuse, compatibility, and release-blocking security evidence. No application code was modified.
 **Approval Status**: UOW-02 NFR Requirements plan approved; artifacts generated and awaiting separate explicit artifact approval.
 ---
+
+## Approval — UOW-02 NFR Requirements Artifacts
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the UOW-02 NFR Requirements and Technology Stack Decisions artifacts. Closed UOW-02 NFR Requirements and opened the UOW-02 NFR Design planning gate. The approved requirements preserve inherited platform baselines, lightweight discovery readiness without full reads or Climate Advisor capability loading, selected-only bounded execution, fail-closed behavior, Core authorization/revalidation, non-disclosure, no storage credentials/raw access, existing technology reuse, compatibility, and release-blocking security evidence. No application code was modified.
+**Approval Status**: UOW-02 NFR Requirements complete; UOW-02 NFR Design plan opened and awaiting answers/approval.
+---

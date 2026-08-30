@@ -644,3 +644,10 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Recorded David's explicit approval of the answered UOW-02 NFR Design plan. Generated the planned NFR Design Patterns and Logical Components artifacts for Climate Advisor. The artifacts preserve request-scoped orchestration, typed Core client transport, lightweight discovery readiness without full reads or capability loading, selected-only execution, Core defense-in-depth, stable non-disclosure, token/resource cleanup, compatibility, safe observability, and existing rollout/verification patterns. No application code was modified.
 **Approval Status**: UOW-02 NFR Design plan approved; artifacts generated and awaiting separate explicit artifact approval.
 ---
+
+## Approval — UOW-02 NFR Design Artifacts
+**Timestamp**: 2026-08-29T17:15:31-03:00
+**User Input**: "approved"
+**AI Response**: Recorded David's explicit approval of the UOW-02 NFR Design Patterns and Logical Components artifacts. Closed UOW-02 NFR Design and opened the UOW-02 Code Generation planning gate. The approved design preserves request-scoped orchestration, typed Core client transport, lightweight discovery readiness without full reads or capability loading, selected-only execution, Core defense-in-depth, stable non-disclosure, token/resource cleanup, compatibility, safe observability, and existing rollout/verification patterns. No application code was modified.
+**Approval Status**: UOW-02 NFR Design complete; UOW-02 Code Generation plan opened and awaiting answers/approval.
+---

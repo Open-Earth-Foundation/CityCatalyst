@@ -677,4 +677,10 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved"
 **AI Response**: Following explicit approval of the Unit 1 red checkpoint, implemented only the Climate Advisor `CityCatalystClient` discovery/read contract. Both methods reuse the existing Core internal transport, bearer propagation, one-time token refresh, bounded client timeout, and cleanup. Discovery is a distinct lightweight operation and does not load or execute source capabilities. Selected reads map Core 404 responses to the fixed non-disclosing unavailable error without upstream body text. The focused catalog/lifecycle selection passes 5/5, the complete client test file passes 17/17, and both changed Python files compile. Ruff was unavailable because it is not installed in the service environment. The mandatory simplification pass found no redundant scoped code; Climate Advisor README and architecture documentation were reviewed and require no runtime-flow update until later orchestration units.
 **Approval Status**: Unit 1 implementation green checkpoint complete; atomic commit and unit-completion review pending.
+
+## Code Generation — UOW-02 Unit 1 Atomic Commit
+**Timestamp**: 2026-08-30T00:28:12-03:00
+**User Input**: "approved" (Unit 1 implementation approval already recorded)
+**AI Response**: Created atomic commit `c399c1951` (`feat(cc-737): add Climate Advisor catalog client contract`) containing the Unit 1 Climate Advisor client implementation and its AI-DLC plan/state/audit evidence. The preceding red-test commit is `0c28762d8`. No unrelated application changes were staged; the pre-existing `app/package-lock.json` modification and untracked setup files remain untouched. Unit 2 is not opened.
+**Approval Status**: Unit 1 commit created; explicit unit-completion approval pending.
 ---

@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 implementation green checkpoint complete; atomic commit approval pending.
+- **Status**: Plan approved; Unit 1 committed after green checkpoint; unit-completion approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -155,7 +155,7 @@ Steps:
    never invokes a full read or loads a CA tool.
 6. [x] Run focused tests, lint/format checks, and the required
    `simplify-after-change` and `docs-after-change` skills.
-7. [ ] Commit only this unit with:
+7. [x] Commit only this unit with:
    `feat(cc-737): add Climate Advisor catalog client contract`.
 
 **TDD red checkpoint**: At the red checkpoint, added the five Unit 1 client
@@ -178,6 +178,12 @@ environment. The mandatory simplification pass found no redundant scoped code
 to remove. Climate Advisor README/architecture documentation was reviewed; no
 runtime flow documentation update is applicable until the client contract is
 composed into request-time orchestration in later units.
+
+**Atomic commit**: Created `c399c1951`
+(`feat(cc-737): add Climate Advisor catalog client contract`) containing only
+the Unit 1 client implementation and AI-DLC evidence updates. The Unit 1
+contract tests were introduced in the preceding red-checkpoint commit
+`0c28762d8`. Unit 1 completion remains pending explicit review and approval.
 
 Story/requirement mapping: US-03, US-07, US-09; FR-04 through FR-07, FR-09,
 FR-10, FR-11; NFR-UOW02-02, 04, 05, 07, 11, 12, 14–18, 21–22.

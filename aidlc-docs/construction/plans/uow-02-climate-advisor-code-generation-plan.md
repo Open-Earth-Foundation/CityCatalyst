@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Questions added after plan review; answers and explicit plan approval pending.
+- **Status**: All 10 Code Generation planning answers validated; explicit plan approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -324,7 +324,7 @@ C) Combine all units into one broad refactor.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 2 — Test-first checkpoints
 
@@ -340,7 +340,7 @@ C) Use only end-to-end tests after the final unit.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 3 — Approval granularity
 
@@ -356,7 +356,7 @@ C) Continue automatically through all units after plan approval.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 4 — Existing-file and implementation scope
 
@@ -373,7 +373,7 @@ C) Modify any convenient service or dependency to simplify implementation.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 5 — Discovery/readiness execution invariant
 
@@ -390,7 +390,7 @@ C) Execute one source read per candidate to validate readiness.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 6 — Selected-only execution invariant
 
@@ -406,7 +406,7 @@ C) Accept arbitrary capability IDs and derive routes at runtime.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 7 — Security and forbidden-data evidence
 
@@ -423,7 +423,7 @@ C) Defer all forbidden-data checks to UOW-03.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 8 — Compatibility and lifecycle evidence
 
@@ -440,7 +440,7 @@ C) Replace existing workflow tools with the new pack during this unit.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 9 — Mandatory post-change quality checks
 
@@ -456,7 +456,7 @@ C) Skip checks until the final integration suite.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ### Question 10 — Environment limitations and commit protocol
 
@@ -473,7 +473,7 @@ C) Ignore failures and commit the unit without evidence.
 
 X) Other (describe after the tag).
 
-[Answer]:
+[Answer]: A
 
 ## Answer validation and approval gate
 
@@ -483,6 +483,21 @@ Requirements, NFR Design, UOW-01 Core contract, and brown-field instructions.
 Any unresolved decision will receive a follow-up question with a new
 `[Answer]:` tag. Tests or application code will be generated only after this
 plan is answered and explicitly approved.
+
+### Answer validation result
+
+- All 10 planning questions have non-empty `[Answer]:` tags.
+- Every answer selects the recommended behavior and is consistent with the
+  approved UOW-02 Functional Design, NFR Requirements, NFR Design, and UOW-01
+  Core contract.
+- The answers require ordered test-first units, explicit red/green review
+  checkpoints, atomic commits, narrow brown-field changes, readiness/read
+  separation, selected-only execution, release-blocking security and
+  compatibility evidence, mandatory post-change skills, and documented
+  environment limitations.
+- No contradiction or unresolved ambiguity requires a follow-up question.
+- **Gate**: Explicit UOW-02 Code Generation plan approval is required before
+  any tests or application code are written.
 
 ## Verification commands
 

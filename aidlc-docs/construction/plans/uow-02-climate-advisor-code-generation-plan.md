@@ -13,12 +13,12 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 TDD red checkpoint committed; Unit 1 implementation approval pending.
+- **Status**: Plan approved; Unit 1 implementation green checkpoint complete; atomic commit approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
-- **Application code**: Unchanged. No Climate Advisor tests or production code
-  may be written until this plan is approved.
+- **Application code at plan approval**: Unchanged. The approved Unit 1
+  implementation is now limited to the files listed for that unit.
 - **Owner**: Climate Advisor maintainers; UOW-01 Core remains the authority.
 
 ## Approved inputs and non-negotiable constraints
@@ -149,21 +149,35 @@ Steps:
    propagation, client/response closure, transport failure, and the exact
    fixed `capability_unavailable` classification without upstream body text.
 3. [x] Run the focused client tests to confirm failure before implementation.
-4. [ ] Implement only narrow typed Core discovery/read methods using existing
+4. [x] Implement only narrow typed Core discovery/read methods using existing
    client/auth/timeout/refresh conventions; keep endpoint details in the client.
-5. [ ] Ensure discovery and selected read are distinct operations; discovery
+5. [x] Ensure discovery and selected read are distinct operations; discovery
    never invokes a full read or loads a CA tool.
-6. [ ] Run focused tests, lint/format checks, and the required
+6. [x] Run focused tests, lint/format checks, and the required
    `simplify-after-change` and `docs-after-change` skills.
 7. [ ] Commit only this unit with:
    `feat(cc-737): add Climate Advisor catalog client contract`.
 
-**TDD red checkpoint**: Added the five Unit 1 client tests and ran the focused
-selection. Four catalog discovery/read tests fail with the expected missing
+**TDD red checkpoint**: At the red checkpoint, added the five Unit 1 client
+tests and ran the focused selection. Four catalog discovery/read tests failed
+with the expected missing
 `CityCatalystClient.discover_native_inputs` / `read_native_input` methods; the
 existing close-lifecycle assertion passes. No production client code was
-modified. Unit 1 implementation remains gated on explicit review of this red
-checkpoint.
+modified at that checkpoint. Implementation then proceeded only after
+explicit review of this red checkpoint.
+
+**TDD green checkpoint**: Following explicit approval of the red checkpoint,
+implemented the narrow discovery/read client methods over the existing Core
+internal capability transport. Discovery uses the existing auth refresh and
+bounded client timeout without loading or executing source capabilities. The
+selected-read method uses the same boundary and maps a Core 404 to the fixed
+non-disclosing unavailable error. The focused catalog/lifecycle selection
+passes 5/5; the complete client test file passes 17/17; both changed Python
+files compile. Ruff could not run because it is not installed in the service
+environment. The mandatory simplification pass found no redundant scoped code
+to remove. Climate Advisor README/architecture documentation was reviewed; no
+runtime flow documentation update is applicable until the client contract is
+composed into request-time orchestration in later units.
 
 Story/requirement mapping: US-03, US-07, US-09; FR-04 through FR-07, FR-09,
 FR-10, FR-11; NFR-UOW02-02, 04, 05, 07, 11, 12, 14–18, 21–22.

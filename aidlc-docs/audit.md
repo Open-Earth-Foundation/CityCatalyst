@@ -671,4 +671,10 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (plan approval already recorded; no new implementation approval)
 **AI Response**: Started Unit 1 under the approved Code Generation plan by adding only the focused Climate Advisor CityCatalystClient contract tests. The focused pytest selection reached the intended red checkpoint: four new discovery/read tests fail because the production methods do not yet exist, while the existing client-close assertion passes. No Climate Advisor production code was modified. Implementation is paused pending explicit review of this red checkpoint.
 **Approval Status**: Unit 1 TDD red checkpoint complete; client implementation approval pending.
+
+## Code Generation — UOW-02 Unit 1 TDD Green Checkpoint
+**Timestamp**: 2026-08-30T00:28:12-03:00
+**User Input**: "approved"
+**AI Response**: Following explicit approval of the Unit 1 red checkpoint, implemented only the Climate Advisor `CityCatalystClient` discovery/read contract. Both methods reuse the existing Core internal transport, bearer propagation, one-time token refresh, bounded client timeout, and cleanup. Discovery is a distinct lightweight operation and does not load or execute source capabilities. Selected reads map Core 404 responses to the fixed non-disclosing unavailable error without upstream body text. The focused catalog/lifecycle selection passes 5/5, the complete client test file passes 17/17, and both changed Python files compile. Ruff was unavailable because it is not installed in the service environment. The mandatory simplification pass found no redundant scoped code; Climate Advisor README and architecture documentation were reviewed and require no runtime-flow update until later orchestration units.
+**Approval Status**: Unit 1 implementation green checkpoint complete; atomic commit and unit-completion review pending.
 ---

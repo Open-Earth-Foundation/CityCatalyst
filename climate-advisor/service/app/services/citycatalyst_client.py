@@ -553,6 +553,8 @@ class CityCatalystClient:
         json_data: Dict[str, Any],
         token: Optional[str] = None,
         request_timeout: Optional[float] = None,
+        refresh_user_id: Optional[str] = None,
+        safe_selection_error: bool = False,
     ) -> Dict[str, Any]:
         """POST to an internal CityCatalyst capability endpoint with auth refresh."""
         if not self.base_url:
@@ -561,7 +563,7 @@ class CityCatalystClient:
         url = f"{self.base_url.rstrip('/')}{path}"
         client = await self._get_client()
         request_token = token
-        user_id = self._refresh_user_id(json_data)
+        user_id = refresh_user_id or self._refresh_user_id(json_data)
         self.last_refreshed_token = None
 
         response = await client.post(
@@ -593,6 +595,11 @@ class CityCatalystClient:
                 ) from e
 
         if not response.is_success:
+            if safe_selection_error and response.status_code == 404:
+                raise CityCatalystClientError(
+                    "Requested capability is unavailable.",
+                    status_code=404,
+                )
             error_text = response.text[:500] if response.text else "Unknown error"
             raise CityCatalystClientError(
                 f"CC capability request failed: {response.status_code} - {error_text}",
@@ -613,6 +620,47 @@ class CityCatalystClient:
             return None
         user_id_text = str(user_id).strip()
         return user_id_text or None
+
+    async def discover_native_inputs(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> Dict[str, Any]:
+        """Discover safe NativeInputCatalog entries for the active CA request.
+
+        The Core endpoint performs filtering and lightweight readiness checks;
+        this method does not load or execute source capabilities.
+        """
+        del thread_id
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/native-inputs/discover",
+            json_data=request_payload,
+            token=token,
+            request_timeout=self.timeout,
+            refresh_user_id=user_id,
+        )
+
+    async def read_native_input(
+        self,
+        *,
+        request_payload: Dict[str, Any],
+        token: Optional[str],
+        user_id: str,
+        thread_id: str,
+    ) -> Dict[str, Any]:
+        """Read one selected bounded NativeInputCatalog capability through Core."""
+        del thread_id
+        return await self.post_internal_capability(
+            "/api/v1/internal/ca/capabilities/native-inputs/read",
+            json_data=request_payload,
+            token=token,
+            request_timeout=self.timeout,
+            refresh_user_id=user_id,
+            safe_selection_error=True,
+        )
 
     async def get_stationary_energy_allowed_capabilities(
         self,

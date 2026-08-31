@@ -355,6 +355,11 @@ the expected missing `native_input_catalog_service` constructor seam. No Unit
 were made. Explicit Unit 4 implementation approval is required before the
 green cycle.
 
+**Red-test atomic commit**: Created `470bcfc87`
+(`test(cc-737): add AgentService catalog composition red tests`) containing
+only the Unit 4 red tests and AI-DLC evidence. Unit 4 production implementation
+remains gated on explicit approval.
+
 ### Unit 5 — Consumer security, contract, lifecycle, and compatibility hardening
 
 Files:

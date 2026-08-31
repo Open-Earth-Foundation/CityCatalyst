@@ -778,5 +778,13 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (UOW-02 Unit 3 completion approval authorizing the next test-first unit)
 **AI Response**: Added only the Unit 4 AgentService composition tests. They cover discovery/context handoff before agent construction, exact selected-only catalog tool composition, missing active context/selection fail-closed behavior, and preservation of the existing vector pack when discovery is empty. The focused AgentService suite collected 29 tests: 26 existing tests passed and the three new tests failed because `AgentService` does not yet accept the planned `native_input_catalog_service` seam. No Unit 4 production code, streaming code, storage access, or credential changes were made.
 **Approval Status**: Unit 4 TDD red checkpoint complete; explicit implementation approval pending.
+
+---
+
+## Code Generation — UOW-02 Unit 4 Red-Test Atomic Commit
+**Timestamp**: 2026-08-31T10:22:42-03:00
+**User Input**: "approved" (UOW-02 Unit 3 completion approval authorizing the next test-first unit)
+**AI Response**: Created atomic commit `470bcfc87` (`test(cc-737): add AgentService catalog composition red tests`) containing only the Unit 4 red tests and AI-DLC evidence. No Unit 4 production, streaming, storage, or credential code was staged.
+**Approval Status**: Unit 4 red-test commit created; explicit Unit 4 implementation approval pending.
 ---
 ---

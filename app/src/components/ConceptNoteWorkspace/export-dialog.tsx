@@ -58,6 +58,8 @@ import {
 type ReviewStage =
   "running" | "missing_information" | "conflicts_logic" | "decision";
 
+const MAX_PARALLEL_CHAPTER_VALIDATIONS = 3;
+
 interface ExportDialogProps {
   draft: ConceptNoteDraftState | null;
   draftError: boolean;
@@ -349,8 +351,7 @@ export function ExportDialog({
   const [reviewError, setReviewError] = useState<ChapterReviewErrorKind | null>(
     null,
   );
-  const [progressIndex, setProgressIndex] = useState(0);
-  const [progressTitle, setProgressTitle] = useState("");
+  const [completedChapterCount, setCompletedChapterCount] = useState(0);
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [acceptedMissingInformation, setAcceptedMissingInformation] =
     useState(false);
@@ -372,7 +373,7 @@ export function ExportDialog({
     canExportConceptNote(chapters, acceptedMissingInformation) &&
     !exportingFormat;
   const progressPercent = chapters.length
-    ? Math.round((progressIndex / chapters.length) * 100)
+    ? Math.round((completedChapterCount / chapters.length) * 100)
     : 0;
   const firstActionableChapterId =
     [
@@ -389,8 +390,7 @@ export function ExportDialog({
     setStage("running");
     setReviewedChapters([]);
     setReviewError(null);
-    setProgressIndex(0);
-    setProgressTitle(chapters[0]?.title ?? "");
+    setCompletedChapterCount(0);
     setShowExportOptions(false);
     setAcceptedMissingInformation(false);
     setExportError(false);
@@ -405,12 +405,21 @@ export function ExportDialog({
       return;
     }
 
-    const completed: ReviewedConceptNoteChapter[] = [];
-    try {
-      for (let index = 0; index < chapters.length; index += 1) {
-        const chapter = chapters[index];
-        setProgressIndex(index);
-        setProgressTitle(chapter.title);
+    const completed: Array<ReviewedConceptNoteChapter | undefined> = new Array(
+      chapters.length,
+    );
+    let nextChapterIndex = 0;
+    let completedCount = 0;
+
+    async function validateNextChapters(): Promise<void> {
+      while (activeRequestRef.current === requestId) {
+        const chapterIndex = nextChapterIndex;
+        nextChapterIndex += 1;
+        if (chapterIndex >= chapters.length) {
+          return;
+        }
+
+        const chapter = chapters[chapterIndex];
         const validation = await validateChapter({
           chapterId: chapter.chapter_id,
           runId,
@@ -418,9 +427,29 @@ export function ExportDialog({
         if (activeRequestRef.current !== requestId) {
           return;
         }
-        completed.push({ chapter, validation });
-        setReviewedChapters([...completed]);
-        setProgressIndex(index + 1);
+
+        completed[chapterIndex] = { chapter, validation };
+        completedCount += 1;
+        setReviewedChapters(
+          completed.filter(
+            (result): result is ReviewedConceptNoteChapter =>
+              result !== undefined,
+          ),
+        );
+        setCompletedChapterCount(completedCount);
+      }
+    }
+
+    try {
+      const workerCount = Math.min(
+        MAX_PARALLEL_CHAPTER_VALIDATIONS,
+        chapters.length,
+      );
+      await Promise.all(
+        Array.from({ length: workerCount }, () => validateNextChapters()),
+      );
+      if (activeRequestRef.current !== requestId) {
+        return;
       }
       await onReviewComplete();
       if (activeRequestRef.current === requestId) {
@@ -428,6 +457,7 @@ export function ExportDialog({
       }
     } catch (error) {
       if (activeRequestRef.current === requestId) {
+        activeRequestRef.current += 1;
         setReviewError(getChapterReviewErrorKind(error));
       }
     }
@@ -712,12 +742,8 @@ export function ExportDialog({
                           color="content.secondary"
                         >
                           {t("guided-review-progress", {
-                            current: Math.min(
-                              progressIndex + 1,
-                              chapters.length,
-                            ),
+                            current: completedChapterCount,
                             total: chapters.length,
-                            chapter: progressTitle,
                           })}
                         </Text>
                       </Box>

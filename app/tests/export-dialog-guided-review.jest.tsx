@@ -35,10 +35,10 @@ const translations: Record<string, string> = {
     "The application template is no longer available",
   "guided-review-template-unavailable-description":
     "Review application setup before running the review again.",
-  "guided-review-progress": "Chapter {{current}} of {{total}} · {{chapter}}",
+  "guided-review-progress": "{{current}} of {{total}} chapters reviewed",
   "guided-review-running": "Reviewing the full document",
   "guided-review-running-description":
-    "Completeness first, consistency second.",
+    "Up to three chapters at once. Completeness first, consistency second.",
   "guided-review-steps": "Review steps",
   "guided-review-title": "Review before export",
   "missing-information-export-confirmation":
@@ -166,6 +166,26 @@ function draft(): ConceptNoteDraftState {
   };
 }
 
+function draftWithChapterCount(chapterCount: number): ConceptNoteDraftState {
+  const baseDraft = draft();
+  const extraChapters = Array.from(
+    { length: Math.max(0, chapterCount - baseDraft.chapters.length) },
+    (_, index) =>
+      chapter(
+        `chapter-extra-${index + 1}`,
+        `Additional chapter ${index + 1}`,
+        index + baseDraft.chapters.length,
+      ),
+  );
+  const chapters = [...baseDraft.chapters, ...extraChapters];
+  return {
+    ...baseDraft,
+    chapters,
+    completed_chapters: chapters.length,
+    total_chapters: chapters.length,
+  };
+}
+
 function validationFor(
   chapterId: string,
 ): ConceptNoteChapterValidationResponse {
@@ -269,6 +289,75 @@ afterEach(async () => {
 });
 
 describe("guided review before export", () => {
+  it("runs no more than three chapter validations at once", async () => {
+    const pending: Array<() => void> = [];
+    let activeRequests = 0;
+    let maxActiveRequests = 0;
+    const onReviewComplete = jest.fn(async () => undefined);
+
+    validateChapter.mockImplementation((request) => ({
+      unwrap: () =>
+        new Promise((resolve) => {
+          activeRequests += 1;
+          maxActiveRequests = Math.max(maxActiveRequests, activeRequests);
+          pending.push(() => {
+            activeRequests -= 1;
+            resolve(validationFor(request.chapterId));
+          });
+        }),
+    }));
+
+    await act(async () => {
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <ExportDialog
+            draft={draftWithChapterCount(5)}
+            draftError={false}
+            hasApplicationTemplate
+            hasUploadedEvidence={false}
+            lng="en"
+            noteName="Kraków Tram"
+            onAddInformation={jest.fn()}
+            onOpenChange={jest.fn()}
+            onRetryDraft={jest.fn()}
+            onReviewComplete={onReviewComplete}
+            onReviewSetup={jest.fn()}
+            open
+            runId="run-1"
+          />
+        </ChakraProvider>,
+      );
+    });
+    await settle();
+
+    expect(validateChapter).toHaveBeenCalledTimes(3);
+    expect(maxActiveRequests).toBe(3);
+
+    await act(async () => {
+      pending.shift()?.();
+      await Promise.resolve();
+    });
+    expect(validateChapter).toHaveBeenCalledTimes(4);
+
+    await act(async () => {
+      pending.shift()?.();
+      await Promise.resolve();
+    });
+    expect(validateChapter).toHaveBeenCalledTimes(5);
+    expect(maxActiveRequests).toBe(3);
+
+    await act(async () => {
+      for (const complete of pending.splice(0)) {
+        complete();
+      }
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    await settle();
+
+    expect(onReviewComplete).toHaveBeenCalledTimes(1);
+  });
+
   it("waits for a delayed draft before starting the first review", async () => {
     const props = {
       draftError: false,

@@ -15,6 +15,8 @@ import {
   LuCheck,
   LuCircleAlert,
   LuDatabase,
+  LuPanelLeftClose,
+  LuPanelLeftOpen,
   LuRefreshCw,
   LuSparkles,
 } from "react-icons/lu";
@@ -271,6 +273,7 @@ export function DraftTab({
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
   const previewElement = useRef<HTMLDivElement | null>(null);
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
+  const [isChapterPanelOpen, setIsChapterPanelOpen] = useState(true);
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
@@ -594,30 +597,84 @@ export function DraftTab({
             p={4}
           >
             <VStack
+              id="concept-note-chapter-panel"
+              role="region"
+              aria-label={t("draft-sections")}
               align="stretch"
               flexShrink={0}
-              gap={2}
-              w={{ base: "full", lg: "160px", xl: "180px" }}
-              maxH={{ base: "190px", lg: "full" }}
+              gap={isChapterPanelOpen ? 2 : 0}
+              w={
+                isChapterPanelOpen
+                  ? { base: "full", lg: "160px", xl: "180px" }
+                  : { base: "full", lg: "40px" }
+              }
+              maxH={
+                isChapterPanelOpen
+                  ? { base: "190px", lg: "full" }
+                  : { base: "40px", lg: "full" }
+              }
               minH={0}
               border="1px solid"
               borderColor="border.neutral"
               borderRadius="rounded"
               bg="base.light"
-              p={3}
+              overflow="hidden"
+              p={isChapterPanelOpen ? 3 : 1}
+              transition="width 160ms ease, padding 160ms ease"
             >
-              <Text
+              <HStack
                 flexShrink={0}
-                fontFamily="heading"
-                fontSize="10px"
-                fontWeight="semibold"
-                color="content.tertiary"
-                letterSpacing="1.5px"
-                textTransform="uppercase"
+                justify={isChapterPanelOpen ? "space-between" : "center"}
+                gap={1}
               >
-                {t("draft-sections")}
-              </Text>
+                {isChapterPanelOpen && (
+                  <Text
+                    fontFamily="heading"
+                    fontSize="10px"
+                    fontWeight="semibold"
+                    color="content.tertiary"
+                    letterSpacing="1.5px"
+                    textTransform="uppercase"
+                  >
+                    {t("draft-sections")}
+                  </Text>
+                )}
+                <Tooltip
+                  content={t(
+                    isChapterPanelOpen
+                      ? "hide-chapter-panel"
+                      : "show-chapter-panel",
+                  )}
+                >
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    aria-controls="concept-note-chapter-panel"
+                    aria-expanded={isChapterPanelOpen}
+                    aria-label={t(
+                      isChapterPanelOpen
+                        ? "hide-chapter-panel"
+                        : "show-chapter-panel",
+                    )}
+                    minW="28px"
+                    h="28px"
+                    color="content.link"
+                    p={0}
+                    _hover={{ bg: "background.neutral" }}
+                    onClick={() => setIsChapterPanelOpen((isOpen) => !isOpen)}
+                  >
+                    <Icon
+                      as={
+                        isChapterPanelOpen ? LuPanelLeftClose : LuPanelLeftOpen
+                      }
+                      boxSize="14px"
+                    />
+                  </Button>
+                </Tooltip>
+              </HStack>
               <VStack
+                id="concept-note-chapter-list"
+                hidden={!isChapterPanelOpen}
                 align="stretch"
                 flex={1}
                 minH={0}

@@ -188,6 +188,10 @@ The drafting service and document workspace then use that context bundle to:
 - Let the user edit, add, delete, restore, and reorder chapters.
 - Validate one chapter explicitly for completeness, then internal and
   cross-chapter consistency, without silently truncating the document.
+- During full-document review, validate at most three chapters concurrently.
+  Completeness and consistency remain sequential within each chapter, and every
+  worker evaluates the fingerprinted document snapshot before its result is
+  persisted.
 - Export DOCX and PDF documents plus a reusable context bundle.
 
 ```mermaid

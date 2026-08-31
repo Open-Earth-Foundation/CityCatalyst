@@ -401,6 +401,7 @@ export function ConceptNoteWorkspace({
               align={{ base: "stretch", md: "end" }}
               flexShrink={0}
               gap={1}
+              w={{ base: "full", md: "320px" }}
             >
               <Button
                 aria-describedby={
@@ -421,13 +422,9 @@ export function ConceptNoteWorkspace({
                 {t("review-and-export")}
               </Button>
               {reviewAvailabilityDescription && (
-                <HStack
-                  id="review-availability-reason"
-                  align="center"
-                  justify={{ base: "start", md: "end" }}
-                  gap={1}
-                >
+                <VStack align={{ base: "start", md: "end" }} gap={0}>
                   <Text
+                    id="review-availability-reason"
                     maxW="320px"
                     fontSize="label.xs"
                     color="content.tertiary"
@@ -465,7 +462,7 @@ export function ConceptNoteWorkspace({
                       </Button>
                     )
                   )}
-                </HStack>
+                </VStack>
               )}
             </VStack>
           </Flex>

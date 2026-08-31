@@ -67,7 +67,11 @@ async def validate_concept_note_chapter(
             chapter_id=chapter_id,
         )
     except (ChapterValidationWorkflowError, ChapterValidationError) as exc:
-        return _problem(exc.status_code, exc.code, str(exc))
+        return _problem(
+            exc.status_code,
+            exc.code,
+            "Unable to validate the requested chapter",
+        )
 
     return ConceptNoteChapterValidationActionResponse(
         chapter_id=chapter_id,

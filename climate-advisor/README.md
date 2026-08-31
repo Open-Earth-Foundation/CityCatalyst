@@ -517,7 +517,7 @@ Current CA model defaults:
 Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
 reasoning to `none`; GPT-5.6 otherwise defaults to medium reasoning. The configured
 chat and source-worker requests omit `temperature`. Research keeps its Responses
-API path and existing reasoning settings. Prompt schemas, source partitions,
+API path and existing reasoning settings. Source partition budgets,
 concurrency limits, and embedding models are unchanged. Stored summaries are not
 automatically rebuilt by changing the model configuration.
 
@@ -556,12 +556,36 @@ system message: selected-source summaries and topics plus available city,
 project, funding, comparable-project, and document context. The model-facing
 projection recursively omits identifier and fingerprint fields, including run,
 upload, build, city, and funding IDs. Stored IDs and hashes remain available for
-authorization, integrity checks, and telemetry. Summaries and other context fields
-are unchanged. The CNB prompt treats
+authorization, integrity checks, and telemetry. Stored summaries are unchanged.
+The CNB prompt treats
 source text as untrusted evidence and directs precise questions to
 `concept_note_sources_query` using the exact source label and filename. The tool
 resolves the upload server-side, rejects ambiguous names, and omits IDs from its
 model-facing result. Durable chat-driven edits remain a separate workflow.
+
+All CNB model-facing payloads now separate facts from backend identity:
+
+- Chat and chapter-drafting source lists omit page/block counts; backend source
+  processing retains them.
+- Chat history tool JSON is projected too; ordinary user/source prose is preserved.
+- Source readers receive ordered JSON `sections`, not generated segment tokens.
+  They return one result per input section. Code validates the count and exact
+  quoted text, then attaches its internal citation and coverage metadata.
+- Summary synthesis receives human-readable pages/headings without coverage keys.
+- Chapter drafting receives semantic application and source context, without
+  run/upload/template IDs, hashes, build state, or duplicated full chapter schemas.
+- Funder matching returns supplied funder names and projects in input order;
+  ambiguous or unknown names are rejected before backend IDs are restored.
+- Similar-project matching returns ordered decisions and one-based evidence-list
+  positions. Candidate IDs and evidence references remain server-side.
+- Research uses public source URLs and zero-based array positions for evidence,
+  fields and conflicts. Code restores record references after validation. Existing
+  rows retain names/order and new rows append; local snapshot paths never enter
+  model context.
+
+Database identity, source digest validation and persisted artifact schemas remain
+unchanged. API protocol identifiers such as tool-call IDs and `previous_response_id`
+are still used for transport, but are not copied into model-facing data bodies.
 
 Workflow prompt `<tools>` sections load shared tool-policy fragments with
 `{{ include: ... }}` directives. Exact tool argument contracts come from the

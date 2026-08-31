@@ -1622,8 +1622,9 @@ Rules:
   concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
   final document synthesis. Both retain tool-free structured outputs through
   OpenRouter Chat Completions and omit temperature.
-- Requires every partition reader to acknowledge every segment and verifies
-  every retained excerpt as an exact substring of its cited source location.
+- Requires exactly one ordered result per input section and verifies every
+  retained excerpt as an exact substring of that section. Generated segment
+  identifiers are attached only by backend code, never included in the prompt.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1664,6 +1665,8 @@ main CNB agent selects a source by its exact `source_label` and `filename` from
 the always-on summaries and asks one bounded natural-language question. The tool
 resolves the upload inside the authorized run and rejects duplicate label/filename
 pairs rather than selecting arbitrarily. Its model-facing result omits upload IDs.
+Generated block fingerprints are replaced with readable document headings, while
+the backend retains exact block anchors for source verification.
 Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
 tool-free GPT-5.6 Luna readers over every source-preserving partition using
@@ -1675,6 +1678,24 @@ to combine. If no passage supports the question it returns an explicit
 ignored and reader agents receive no external tools.
 
 ### Internal Research Capabilities
+
+The JSON model boundary is distinct from the persisted schemas in this document.
+Model-facing data omits database UUIDs, generated record/chapter references, source
+hashes, storage paths and build bookkeeping. Research uses `ResearchPromptResult`:
+public source URLs, zero-based record positions in field paths, and evidence-array
+positions. Code validates these selections and reconstructs the internal
+`FundingOpportunityResearchResult` before existing provenance checks and persistence.
+Existing record names/order must be preserved; new records append. Unknown source
+URLs, invalid positions and reassigned rows trigger a bounded correction retry.
+
+Funder identity matching uses exact canonical names and rejects ambiguity.
+Similar-project selection returns one decision per input candidate, with its name
+and one-based evidence positions; code restores the internal IDs and applies the
+existing tag, evidence and selection-limit validation. Source readers similarly
+use ordered sections, and summary synthesis receives pages/readable headings.
+Chapter inputs and retained CNB tool history use the identifier-free projection.
+The backend and provider protocol still retain identifiers necessary for ownership,
+integrity, trace correlation and tool-response routing.
 
 These are internal service capabilities, not user-facing tools. They are invoked
 by workflow orchestration during funder profiling, similar-project matching, and

@@ -7,7 +7,7 @@ import httpx
 import pytest
 from agents import RunConfig, Runner, function_tool
 from app.config import get_settings
-from app.models.cnb.context_bundle import SourceDocumentSynthesis, SourceQuestionReading
+from app.models.cnb.source_prompt import DocumentSummary, QuestionReading
 from app.services.agent_service import AgentService
 from app.services.cnb.source_analysis import (
     _run_agent,
@@ -138,12 +138,12 @@ async def test_chat_modes_round_trip_function_tools_with_explicit_none(
     [
         (
             "cnb_source_reader",
-            SourceQuestionReading,
-            {"excerpts": [], "caveats": [], "covered_segment_ids": ["p1-s1"]},
+            QuestionReading,
+            {"sections": [{"excerpts": [], "caveats": []}]},
         ),
         (
             "cnb_source_synthesizer",
-            SourceDocumentSynthesis,
+            DocumentSummary,
             {
                 "summary": "No budget is stated.",
                 "topics": ["budget"],

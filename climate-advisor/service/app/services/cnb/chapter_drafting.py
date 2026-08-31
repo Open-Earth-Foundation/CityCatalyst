@@ -39,6 +39,7 @@ from app.services.cnb.application_context import (
     included_sources_from_bundle,
 )
 from app.services.openrouter_client import build_openrouter_client_options
+from app.utils.concept_note_context import omit_context_identifiers
 from openai import AsyncOpenAI
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -613,29 +614,45 @@ def _build_chapter_input(
     chapters: list[WorkspaceChapterSnapshot],
 ) -> dict[str, Any]:
     """Build the exact prompt payload, including every earlier chapter body."""
-    return {
-        "application_context": application_context.model_dump(mode="json"),
-        "run_context": run_context,
-        "chapter": {
-            "chapter_ref": current.chapter_ref,
-            "title": current.title,
-            "description": (
-                template_chapter.description if template_chapter is not None else None
-            ),
-            "position": current.position,
-            "required": current.required,
-        },
-        "previous_chapters": [
-            {
-                "chapter_ref": chapter.chapter_ref,
-                "title": chapter.title,
-                "body_markdown": chapter.body_markdown,
-            }
-            for chapter in chapters
-            if chapter.position < current.position
-            and chapter.body_markdown is not None
-        ],
+    application_payload = application_context.model_dump(mode="json")
+    if application_payload.get("template"):
+        application_payload["template"].pop("chapter_schema", None)
+    semantic_run_context = {
+        key: value
+        for key, value in run_context.items()
+        if key != "context_bundle_status"
     }
+    payload = omit_context_identifiers(
+        {
+            "application_context": application_payload,
+            "run_context": semantic_run_context,
+            "chapter": {
+                "title": current.title,
+                "description": (
+                    template_chapter.description
+                    if template_chapter is not None
+                    else None
+                ),
+                "position": current.position,
+                "required": current.required,
+            },
+            "previous_chapters": [
+                {
+                    "title": chapter.title,
+                    "body_markdown": chapter.body_markdown,
+                }
+                for chapter in chapters
+                if chapter.position < current.position
+                and chapter.body_markdown is not None
+            ],
+        }
+    )
+    for source in payload["run_context"].get("context_bundle", {}).get(
+        "selected_sources", []
+    ):
+        source.pop("page_count", None)
+        source.pop("block_count", None)
+    return payload
 
 
 def _build_state_response(

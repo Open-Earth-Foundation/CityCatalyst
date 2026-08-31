@@ -333,6 +333,8 @@ async def test_agent_projection_removes_ids_but_keeps_backend_identity(
         assert context is not None
         assert "concept_note_run_id" not in context
         assert "upload_id" not in context["selected_sources"][0]
+        assert "page_count" not in context["selected_sources"][0]
+        assert "block_count" not in context["selected_sources"][0]
         assert "build_id" not in context["context_bundle_status"]
         assert "source_fingerprint" not in context["context_bundle_status"]
         assert context["cc_context"]["city"] == {"name": "Example City"}
@@ -347,6 +349,8 @@ async def test_agent_projection_removes_ids_but_keeps_backend_identity(
             assert (
                 bundle.context_bundle["selected_sources"][0]["sha256"] == source.sha256
             )
+            assert bundle.context_bundle["selected_sources"][0]["page_count"] == source.page_count
+            assert bundle.context_bundle["selected_sources"][0]["block_count"] == source.block_count
             assert (
                 bundle.context_bundle["cc_context"]["city"]["cityId"] == "internal-city"
             )

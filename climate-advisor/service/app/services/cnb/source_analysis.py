@@ -17,14 +17,22 @@ from app.config import Settings, get_settings
 from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
     SelectedSource,
-    SourceDocumentSynthesis,
     SourceExcerpt,
     SourcePartitionMap,
     SourceQueryResult,
     SourceQuestionReading,
 )
+from app.models.cnb.source_prompt import (
+    DocumentMappingReading,
+    DocumentSummary,
+    QuestionReading,
+)
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
+from app.utils.concept_note_context import (
+    omit_context_identifiers,
+    readable_source_heading,
+)
 from app.utils.prompt_budget import count_prompt_tokens
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from openai import AsyncOpenAI
@@ -219,14 +227,15 @@ async def analyze_document(
             name="Concept Note source summary synthesizer",
             prompt=settings.llm.prompts.get_prompt("cnb_source_summary_synthesis"),
             model_name=synthesizer_model.name,
-            output_type=SourceDocumentSynthesis,
+            output_type=DocumentSummary,
             input_text=json.dumps(
                 {
                     "source_label": label,
                     "source_format": source_format,
                     "unit_count": len(pages),
                     "partition_maps": [
-                        item.model_dump(mode="json") for item in verified_readings
+                        omit_context_identifiers(item.model_dump(mode="json"))
+                        for item in verified_readings
                     ],
                     "limits": {
                         "max_topics": budget.max_topics,
@@ -251,9 +260,7 @@ async def analyze_document(
             block_count=len(pages) if source_format == "markdown" else None,
             summary=synthesis.summary,
             topics=deduplicate_strings(synthesis.topics)[: budget.max_topics],
-            key_excerpts=verified_excerpts(synthesis.key_excerpts, unit_text)[
-                : budget.max_key_excerpts
-            ],
+            key_excerpts=_restore_summary_excerpts(synthesis, pages)[: budget.max_key_excerpts],
         )
     finally:
         if owns_client:
@@ -387,20 +394,74 @@ async def _read_partition(
     runner: Any,
     reader_limit: asyncio.Semaphore,
 ) -> PartitionOutput:
-    """Run one bounded partition reader and require exact segment coverage."""
+    """Read ordered sections and restore citation/coverage identity only in code."""
     async with reader_limit, _GLOBAL_READER_SEMAPHORE:
         result = await _run_agent(
             name=name,
             prompt=prompt,
             model_name=settings.llm.models.cnb_source_reader.name,
-            output_type=output_type,
+            output_type=DocumentMappingReading
+            if output_type is SourcePartitionMap
+            else QuestionReading,
             input_text=input_text,
             settings=settings,
             client=client,
             runner=runner,
         )
-    require_partition_coverage(partition, result.covered_segment_ids)
-    return result
+    if len(result.sections) != len(partition):
+        raise SourceAnalysisError(
+            "incomplete_source_coverage",
+            "Reader must return every supplied section in order",
+        )
+    # Match evidence to the exact section; the model never chooses an internal locator.
+    excerpts = []
+    caveats = []
+    for segment, reading in zip(partition, result.sections, strict=True):
+        excerpts.extend(
+            SourceExcerpt(text=text, page=segment.page, anchor=segment.anchor)
+            for text in reading.excerpts
+            if text and text in segment.text
+        )
+        caveats.extend(reading.caveats)
+    values = {
+        "excerpts": excerpts[:20],
+        "covered_segment_ids": [s.segment_id for s in partition],
+    }
+    if output_type is SourcePartitionMap:
+        values.update(summary=result.summary, topics=result.topics)
+    else:
+        values["caveats"] = deduplicate_strings(caveats)[:10]
+    return output_type.model_validate(values)
+
+
+def _restore_summary_excerpts(
+    summary: DocumentSummary, pages: Sequence[SourceUnit]
+) -> list[SourceExcerpt]:
+    """Resolve readable citations to verified backend locations without guessing."""
+    restored = []
+    for excerpt in summary.key_excerpts:
+        for unit in pages:
+            matches_location = (
+                isinstance(unit, SourcePage)
+                and excerpt.page == unit.number
+                and excerpt.heading is None
+            ) or (
+                isinstance(unit, SourceBlock)
+                and excerpt.page is None
+                and excerpt.heading == readable_source_heading(unit.anchor)
+            )
+            if matches_location and excerpt.text in unit.text:
+                restored.append(
+                    SourceExcerpt(
+                        text=excerpt.text,
+                        page=unit.number if isinstance(unit, SourcePage) else None,
+                        anchor=unit.anchor if isinstance(unit, SourceBlock) else None,
+                    )
+                )
+                break
+    return verified_excerpts(
+        restored, {source_unit_anchor(unit): unit.text for unit in pages}
+    )
 
 
 async def _run_agent(
@@ -779,35 +840,24 @@ def render_partition(
     source_label: str | None = None,
     question: str | None = None,
 ) -> str:
-    """Render immutable segment framing without altering source text."""
-    prefix: list[str] = []
+    """Render ordered source sections without generated identifiers or hashes."""
+    payload: dict[str, Any] = {}
     if source_label is not None:
-        prefix.append(f"<source_label>{source_label}</source_label>")
+        payload["source_label"] = source_label
     if question is not None:
-        prefix.append(f"<question>{question}</question>")
-    for segment in segments:
-        locator = (
-            f' page="{segment.page}"'
-            if segment.page is not None
-            else f' anchor="{segment.anchor}"'
-        )
-        prefix.append(
-            f'<segment id="{segment.segment_id}"{locator}>\n{segment.text}\n</segment>'
-        )
-    return "\n".join(prefix)
-
-
-def require_partition_coverage(
-    partition: Sequence[SourceSegment],
-    covered_segment_ids: Sequence[str],
-) -> None:
-    """Fail unless the reader explicitly acknowledges every segment exactly once."""
-    expected = [segment.segment_id for segment in partition]
-    if list(covered_segment_ids) != expected:
-        raise SourceAnalysisError(
-            "incomplete_source_coverage",
-            "Source reader did not confirm every partition segment",
-        )
+        payload["question"] = question
+    payload["sections"] = [
+        {
+            **(
+                {"page": segment.page}
+                if segment.page is not None
+                else {"heading": readable_source_heading(segment.anchor or "")}
+            ),
+            "text": segment.text,
+        }
+        for segment in segments
+    ]
+    return json.dumps(payload, ensure_ascii=False)
 
 
 def verified_excerpts(

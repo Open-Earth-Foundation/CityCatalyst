@@ -30,7 +30,10 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
 )
 from app.services.thread_service import ThreadService
 from app.utils.chat_workflow_context import CNB_WORKFLOW_TAG, ChatWorkflowContext
-from app.utils.concept_note_context import extract_concept_note_run_id
+from app.utils.concept_note_context import (
+    clean_cnb_history,
+    extract_concept_note_run_id,
+)
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
@@ -331,6 +334,8 @@ class StreamingHandler:
             user_id=self.user_id,
             session_factory=self.session_factory,
         )
+        if self.workflow_context.concept_note_run_id:
+            conversation_history = clean_cnb_history(conversation_history)
         context_message = await self._load_stationary_energy_context_message(payload)
         if context_message:
             context_message = self._stationary_energy_system_context_message(

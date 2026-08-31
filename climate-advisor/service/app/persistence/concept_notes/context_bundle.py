@@ -482,14 +482,15 @@ async def load_agent_context(
             return omit_context_identifiers(
                 {
                     "workflow_step": run.workflow_step,
-                    "context_bundle_status": bundle_progress,
+                    "context_bundle_status": {
+                        key: value for key, value in bundle_progress.items()
+                        if key in {"status", "document_grounding", "available_context", "missing_context", "warnings"}
+                    },
                     "selected_sources": [
                         {
                             "source_label": source.source_label,
                             "filename": source.filename,
                             "source_format": source.source_format,
-                            "page_count": source.page_count,
-                            "block_count": source.block_count,
                             "summary": source.summary,
                             "topics": source.topics,
                         }

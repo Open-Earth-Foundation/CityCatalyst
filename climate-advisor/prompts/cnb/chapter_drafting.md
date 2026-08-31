@@ -39,15 +39,14 @@ your process. Do not call tools.
 <input>
 Input is one JSON object with:
 
-- `application_context` (object): run and city identifiers plus the selected
-  funder, programme, and application template
-- `run_context` (object): run metadata, context-bundle status, and the complete
-  persisted context bundle, including any available CityCatalyst context and
-  source excerpts
-- `chapter` (object): `chapter_ref`, `title`, nullable `description`,
+- `application_context` (object): selected funder/programme names and semantic
+  application-template requirements, without identifiers or the full chapter schema
+- `run_context` (object): the proposal name and semantic context bundle,
+  including available CityCatalyst facts and source excerpts, without backend bookkeeping
+- `chapter` (object): `title`, nullable `description`,
   zero-based `position`, and `required` for the one chapter to write now
 - `previous_chapters` (array): every earlier chapter in document order, each
-  with `chapter_ref`, `title`, and full `body_markdown`
+  with `title` and full `body_markdown`
 </input>
 
 <output>

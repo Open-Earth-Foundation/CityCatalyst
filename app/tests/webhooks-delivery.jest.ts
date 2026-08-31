@@ -14,11 +14,15 @@ import type { WebhookSubscription } from "@/models/WebhookSubscription";
 import { verifyWebhookSignature } from "@/util/webhook-signature";
 
 const findAll = jest.fn();
+const destroyMock = jest.fn<() => Promise<number>>().mockResolvedValue(0);
 
 jest.unstable_mockModule("@/models", () => ({
   db: {
     models: {
-      WebhookDelivery: { findAll },
+      WebhookDelivery: {
+        findAll,
+        destroy: destroyMock,
+      },
     },
   },
 }));
@@ -99,6 +103,8 @@ describe("webhook delivery worker", () => {
 
   beforeEach(() => {
     findAll.mockReset();
+    destroyMock.mockClear();
+    destroyMock.mockResolvedValue(0);
   });
 
   it("POSTs a signed envelope and marks the delivery delivered on 2xx", async () => {
@@ -114,6 +120,7 @@ describe("webhook delivery worker", () => {
       delivered: 1,
       retried: 0,
       failed: 0,
+      purged: 0,
     });
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
@@ -150,6 +157,7 @@ describe("webhook delivery worker", () => {
       delivered: 0,
       retried: 1,
       failed: 0,
+      purged: 0,
     });
     expect(delivery.status).toBe("pending");
     expect(delivery.attemptCount).toBe(1);
@@ -171,6 +179,7 @@ describe("webhook delivery worker", () => {
       delivered: 0,
       retried: 0,
       failed: 1,
+      purged: 0,
     });
     expect(delivery.status).toBe("failed");
   });

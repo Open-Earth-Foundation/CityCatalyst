@@ -7,6 +7,10 @@ function readRepoFile(path: string): string {
   return readFileSync(resolve(repoRoot, path), "utf8");
 }
 
+/**
+ * Lightweight contract test: webhook CronJob manifests stay wired into CI deploy
+ * workflows with auth, encryption env, and the delivery worker route.
+ */
 describe("webhook delivery deployment contract", () => {
   const environments = [
     {
@@ -36,7 +40,7 @@ describe("webhook delivery deployment contract", () => {
       const workflow = readRepoFile(workflowPath);
 
       expect(cron).toContain("kind: CronJob");
-      expect(cron).toContain('schedule: "* * * * *"');
+      expect(cron).toContain('schedule: "*/5 * * * *"');
       expect(cron).toContain("concurrencyPolicy: Forbid");
       expect(cron).toContain("Authorization: Bearer $CC_CRON_JOB_API_KEY");
       expect(cron).toContain("/api/v1/cron/process-webhook-deliveries");

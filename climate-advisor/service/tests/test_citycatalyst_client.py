@@ -60,6 +60,14 @@ class _StubAsyncClient:
         return None
 
 
+class _FailingPostClient:
+    """HTTP double that fails with a transport error carrying a secret."""
+
+    async def post(self, *args: Any, **kwargs: Any) -> httpx.Response:
+        del args, kwargs
+        raise httpx.ReadTimeout("private upstream transport detail")
+
+
 def _response(
     status_code: int,
     *,
@@ -690,6 +698,37 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertNotIn("private-source-secret", str(captured.exception))
 
+    async def test_read_native_input_normalizes_transport_failure_without_upstream_text(
+        self,
+    ) -> None:
+        with patch(
+            "app.services.citycatalyst_client.get_settings",
+            return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+        ):
+            client = CityCatalystClient(
+                base_url="https://cc.example",
+                api_key="test-api-key",
+            )
+
+            with patch.object(
+                client,
+                "_get_client",
+                new=AsyncMock(return_value=_FailingPostClient()),
+            ):
+                with self.assertRaises(CityCatalystClientError) as captured:
+                    await client.read_native_input(
+                        request_payload={
+                            "catalog_id": "catalog-1",
+                            "capability_id": "capability-1",
+                            "input": {},
+                        },
+                        token="jwt-token",
+                        user_id="user-1",
+                        thread_id="thread-1",
+                    )
+
+        self.assertNotIn("private upstream transport detail", str(captured.exception))
+
     async def test_discover_native_inputs_refreshes_once_and_reuses_fresh_token(self) -> None:
         with patch(
             "app.services.citycatalyst_client.get_settings",
@@ -754,3 +793,66 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                 await client.close()
 
         stub.aclose.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "selection_state",
+    [
+        "stale",
+        "forged",
+        "malformed",
+        "unknown",
+        "mismatched",
+        "unauthorized",
+        "withdrawn",
+        "superseded",
+        "missing",
+        "deleted",
+        "unavailable",
+        "readiness-negative",
+    ],
+)
+async def test_selection_failure_matrix_has_one_stable_non_disclosing_client_error(
+    selection_state: str,
+) -> None:
+    with patch(
+        "app.services.citycatalyst_client.get_settings",
+        return_value=SimpleNamespace(cc_base_url=None, cc_api_key=None),
+    ):
+        client = CityCatalystClient(
+            base_url="https://cc.example",
+            api_key="test-api-key",
+        )
+        stub = _StubAsyncClient(
+            [
+                _response(
+                    404,
+                    json_data={
+                        "code": "capability_unavailable",
+                        "message": "Requested capability is unavailable.",
+                        "selection_state": selection_state,
+                        "catalog_id": "private-catalog-id",
+                        "source_id": "private-source-id",
+                        "debug": "private-upstream-detail",
+                    },
+                )
+            ]
+        )
+
+        with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
+            with pytest.raises(CityCatalystClientError) as captured:
+                await client.read_native_input(
+                    request_payload={
+                        "catalog_id": f"{selection_state}-catalog",
+                        "capability_id": f"{selection_state}-capability",
+                        "input": {},
+                    },
+                    token="jwt-token",
+                    user_id="user-1",
+                    thread_id="thread-1",
+                )
+
+    assert captured.value.status_code == 404
+    assert str(captured.value) == "Requested capability is unavailable."
+    assert "private" not in str(captured.value)

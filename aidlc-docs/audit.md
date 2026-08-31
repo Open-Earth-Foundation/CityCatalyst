@@ -810,5 +810,29 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (implementation approval; atomic commit is the authorized unit workflow)
 **AI Response**: Created atomic commit `1005e2d35` (`feat(cc-737): integrate request-time catalog tools`) containing only the AgentService/StreamingHandler request-time integration, its handoff test, architecture documentation, and AI-DLC evidence. Unrelated `app/package-lock.json`, root `package-lock.json`, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. Unit 5 has not been opened.
 **Approval Status**: Unit 4 commit created; explicit Unit 4 completion approval pending.
+
+---
+
+## Approval — UOW-02 Unit 4 Completion and Unit 5 Opening
+**Timestamp**: 2026-08-31T10:48:23-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of UOW-02 Unit 4 completion after atomic commit `1005e2d35`. Opened Unit 5, Consumer security, contract, lifecycle, and compatibility hardening, at its test-first red-checkpoint gate. The next work is limited to adding and running the planned hardening tests; no Unit 5 production implementation is authorized until a separate explicit approval.
+**Approval Status**: Unit 4 complete; Unit 5 red-test preparation in progress.
+
+---
+
+## Code Generation — UOW-02 Unit 5 TDD Red Checkpoint
+**Timestamp**: 2026-08-31T10:52:34-03:00
+**User Input**: "approved" (UOW-02 Unit 4 completion approval authorizing the next test-first unit)
+**AI Response**: Added only Unit 5 consumer hardening tests. The focused client and selected-tool suite collected 48 tests: 43 passed and five failed for the expected gaps: raw `httpx.ReadTimeout` escapes from the catalog client, non-finite result values are serialized as successful output, and generic exception telemetry includes upstream text. The selection failure matrix, cancellation cleanup, and static direct-storage/source-access checks passed. No Unit 5 production code was modified.
+**Approval Status**: Unit 5 TDD red checkpoint complete; explicit approval to implement Unit 5 remains pending.
+
+---
+
+## Code Generation — UOW-02 Unit 5 Red-Test Atomic Commit
+**Timestamp**: 2026-08-31T10:52:34-03:00
+**User Input**: "approved" (UOW-02 Unit 4 completion approval authorizing the next test-first unit)
+**AI Response**: Created the atomic red-test checkpoint commit containing only the Unit 5 client/tool hardening tests and AI-DLC evidence. Unrelated lockfiles, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. Unit 5 production implementation remains gated on explicit review and approval.
+**Approval Status**: Red-test commit created; explicit Unit 5 implementation approval pending.
 ---
 ---

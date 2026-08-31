@@ -385,9 +385,13 @@ accurate.
 (`feat(cc-737): integrate request-time catalog tools`) containing only the
 Unit 4 AgentService/StreamingHandler integration, its handoff test,
 architecture documentation, and AI-DLC evidence. Unit 4 completion remains
-pending explicit review and approval; Unit 5 is not opened.
+approved after explicit review on 2026-08-31. Unit 5 is now opened at its
+test-first red-checkpoint gate.
 
 ### Unit 5 — Consumer security, contract, lifecycle, and compatibility hardening
+
+Status: TDD red checkpoint complete; production implementation is not
+authorized until the checkpoint is reviewed and explicitly approved.
 
 Files:
 
@@ -396,10 +400,10 @@ Files:
 
 Steps:
 
-1. [ ] Add the complete example-based matrix for stale, forged, malformed,
+1. [x] Add the complete example-based matrix for stale, forged, malformed,
    unknown, mismatched, unauthorized, withdrawn, superseded, missing, deleted,
    unavailable, and readiness-negative selections.
-2. [ ] Assert the stable safe error and no source existence/state, labels,
+2. [x] Assert the stable safe error and no source existence/state, labels,
    scope, storage, credential, token, content, or upstream text disclosure.
 3. [ ] Assert discovery readiness versus selected execution invocation counts,
    selected-only loading, finite inputs/results, and no raw storage access.
@@ -416,6 +420,22 @@ Steps:
 
 Story/requirement mapping: US-03, US-07, US-09; FR-03 through FR-11;
 NFR-UOW02-01 through NFR-UOW02-22.
+
+**TDD red checkpoint — Unit 5**: Added the selection-failure matrix and
+consumer hardening tests for stable non-disclosure, transport failure
+normalization, finite result serialization, cancellation cleanup, safe
+telemetry, and absence of direct storage/source access. The focused client and
+selected-tool suite collected 48 tests: 43 passed and five failed for the
+expected unimplemented gaps—transport exceptions still escape as raw
+`httpx.ReadTimeout`, non-finite results are currently serialized as successful
+responses, and generic exception telemetry currently includes upstream text.
+The matrix, cancellation cleanup, and static storage-boundary checks passed.
+No Unit 5 production implementation was added. The remaining Unit 5 steps
+stay gated on explicit approval of this red checkpoint.
+
+**Red-test atomic commit**: Created after this checkpoint with only the Unit 5
+hardening tests and AI-DLC evidence. Unit 5 production implementation remains
+gated on explicit approval.
 
 ## Atomic commit and review protocol
 

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import asyncio
 import json
+import logging
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any, Optional
 from unittest.mock import AsyncMock
 
@@ -319,6 +322,90 @@ async def test_selected_tool_isolates_execution_failure_and_closes_client() -> N
     assert payload["error_code"] == "tool_error"
     assert "private upstream failure" not in output
     assert client.closed
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+async def test_selected_tool_rejects_non_finite_result_without_serializing_it(
+    value: float,
+) -> None:
+    client = _StubClient(
+        response={
+            "action": "ghgi.inventory.status_overview",
+            "success": True,
+            "data": {"value": value},
+        }
+    )
+    tool, _ = _build(client)
+
+    output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
+        _tool_context(getattr(tool, "name")),
+        "{}",
+    )
+
+    payload = json.loads(output)
+    assert payload["success"] is False
+    assert payload["error_code"] == "invalid_response"
+    assert "NaN" not in output
+    assert "Infinity" not in output
+    assert client.closed
+
+
+@pytest.mark.asyncio
+async def test_selected_tool_failure_telemetry_does_not_include_upstream_exception_text(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    client = _StubClient(error=RuntimeError("private upstream exception detail"))
+    tool, _ = _build(client)
+
+    with caplog.at_level(
+        logging.WARNING,
+        logger="app.tools.native_input_catalog_tools",
+    ):
+        output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
+            _tool_context(getattr(tool, "name")),
+            "{}",
+        )
+
+    payload = json.loads(output)
+    assert payload["success"] is False
+    assert payload["error_code"] == "tool_error"
+    assert "private upstream exception detail" not in caplog.text
+    assert client.closed
+
+
+@pytest.mark.asyncio
+async def test_selected_tool_cancellation_closes_client_without_widening_failure_scope() -> None:
+    client = _StubClient(error=asyncio.CancelledError())
+    tool, _ = _build(client)
+
+    with pytest.raises(asyncio.CancelledError):
+        await tool.on_invoke_tool(  # type: ignore[attr-defined]
+            _tool_context(getattr(tool, "name")),
+            "{}",
+        )
+
+    assert client.closed
+
+
+def test_catalog_consumer_has_no_direct_storage_or_source_access() -> None:
+    source = (
+        Path(__file__).parents[1] / "app" / "tools" / "native_input_catalog_tools.py"
+    ).read_text(encoding="utf-8")
+
+    forbidden_patterns = (
+        "import boto3",
+        "from boto3",
+        "import aioboto3",
+        "from aioboto3",
+        "s3://",
+        "get_object(",
+        "storage_client",
+        "os.environ",
+        "os.getenv(",
+        "open(",
+    )
+    assert not [pattern for pattern in forbidden_patterns if pattern in source]
 
 
 @pytest.mark.asyncio

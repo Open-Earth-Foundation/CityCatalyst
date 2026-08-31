@@ -76,6 +76,10 @@ import {
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
+  WebhookSubscriptionResponse,
+  WebhookSubscriptionSecretResponse,
+  CreateWebhookSubscriptionRequest,
+  UpdateWebhookSubscriptionRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -139,6 +143,7 @@ export const api = createApi({
     "ActionPlan",
     "VersionHistory",
     "PersonalAccessToken",
+    "Webhook",
     "AdminModules",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
@@ -2091,6 +2096,87 @@ export const api = createApi({
         },
       ),
 
+      getOrganizationWebhooks: builder.query<
+        WebhookSubscriptionResponse[],
+        string
+      >({
+        query: (organizationId) => `/organizations/${organizationId}/webhooks`,
+        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
+          response.data,
+        providesTags: (result, _err, organizationId) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({ type: "Webhook" as const, id })),
+                { type: "Webhook", id: `ORG-${organizationId}` },
+              ]
+            : [{ type: "Webhook", id: `ORG-${organizationId}` }],
+      }),
+      createOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; body: CreateWebhookSubscriptionRequest }
+      >({
+        query: ({ organizationId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId }) => [
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      updateOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionResponse,
+        {
+          organizationId: string;
+          webhookId: string;
+          body: UpdateWebhookSubscriptionRequest;
+        }
+      >({
+        query: ({ organizationId, webhookId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "PATCH",
+          body,
+        }),
+        transformResponse: (response: { data: WebhookSubscriptionResponse }) =>
+          response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      deleteOrganizationWebhook: builder.mutation<
+        { success: boolean },
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      rotateOrganizationWebhookSecret: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}/rotate-secret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
         query: () => "admin/modules",
@@ -2456,6 +2542,11 @@ export const {
   useGetPersonalAccessTokensQuery,
   useCreatePersonalAccessTokenMutation,
   useDeletePersonalAccessTokenMutation,
+  useGetOrganizationWebhooksQuery,
+  useCreateOrganizationWebhookMutation,
+  useUpdateOrganizationWebhookMutation,
+  useDeleteOrganizationWebhookMutation,
+  useRotateOrganizationWebhookSecretMutation,
   useGetAdminModulesQuery,
   useCreateModuleMutation,
   useUpdateModuleMutation,

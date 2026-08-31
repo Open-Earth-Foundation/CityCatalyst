@@ -14,8 +14,10 @@ topology, or production fallback.
 - **Scope**: deterministic Core route/contract tests, Climate Advisor
   request-time/security regression tests, cross-service contract comparison,
   touched-file quality checks, and documented environment limitations.
-- **Status**: Deterministic verification evidence captured; completion review
-  pending. No UOW-03 production implementation is planned.
+- **Status**: Deterministic verification evidence captured. Configured local
+  live revalidation completed with 4/4 contract-test failures at the Core
+  token endpoint; completion review remains pending. No UOW-03 production
+  implementation is planned.
 
 ## Non-negotiable verification invariants
 
@@ -89,8 +91,12 @@ must stop verification and return to the owning design/unit gate.
 
 - Core NativeInputCatalog suites: **37/37 passed**.
 - Climate Advisor UOW-02 regression suite: **109/109 passed**.
-- Climate Advisor local auth tests: **5/5 passed**; **4 live contract tests
-  skipped** because contract environment variables are not configured.
+- Climate Advisor local auth tests: **5/5 passed**.
+- Configured live CC–CA contract revalidation: **4 failed, 0 passed, 0
+  skipped**. All four tests received HTTP 404 from
+  `POST /api/v1/internal/ca/user-token`; the wrong-key test consequently did
+  not reach its expected HTTP 401 assertion, and the capability/cross-user
+  assertions were not reached.
 - Core touched-file ESLint: passed.
 - Core touched-file Prettier check: passed.
 - Climate Advisor touched-file compile and `git diff --check`: passed.
@@ -100,5 +106,6 @@ must stop verification and return to the owning design/unit gate.
 
 **Evidence commit**: `96c089cfb`
 (`docs(cc-737): record UOW-03 verification evidence`). Evidence is ready for
-explicit UOW-03 completion review. No release-readiness or task-closure claim
-is made until that approval is recorded.
+explicit UOW-03 completion review after the configured local revalidation
+result is addressed. No release-readiness or task-closure claim is made until
+that approval is recorded.

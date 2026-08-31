@@ -890,5 +890,32 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (UOW-03 authorization; atomic evidence commit is the authorized workflow)
 **AI Response**: Created atomic UOW-03 verification evidence commit `96c089cfb` (`docs(cc-737): record UOW-03 verification evidence`) containing only the verification plan, evidence artifact, and AI-DLC records. No application code, storage, credentials, or unrelated worktree files were staged. UOW-03 completion remains pending explicit review and approval.
 **Approval Status**: Evidence commit created; explicit UOW-03 completion approval pending.
+
+---
+
+## Verification — UOW-03 Local Auth-Contract Environment
+**Timestamp**: 2026-08-31T13:42:00-03:00
+**User Input**: "faça a devida configuração para mim"; local path selected with "vamos seguir o caminho local mesmo"
+**AI Response**: Configured the ignored local `climate-advisor/.env` with the four deterministic auth-contract identifiers. Reused the existing local Core service key without recording its value. Started the existing `citycatalyst-db` container, confirmed PostgreSQL readiness, verified migrations were current, upserted the deterministic CA/CC smoke fixture, started the local Core on `127.0.0.1:3000`, and executed the Climate Advisor live auth-contract suite. The first run exposed a local JWT audience mismatch caused by using `127.0.0.1` while Core emitted `http://localhost:3000`; the test was rerun with the aligned URL.
+**Verification Result**: Live auth-contract suite passed **4/4**. No application code was modified. The UOW-03 completion approval remains pending explicit user approval.
+**Approval Status**: Local verification complete; no UOW-03 completion approval inferred.
+---
+
+## Verification — UOW-03 Configured Local Live Contract Revalidation
+**Timestamp**: 2026-08-31T13:53:41-03:00
+**User Input**:
+```text
+Revalidate UOW-03 using the now-configured local environment. Run the four live CC\_CA contract tests with CC\_BASE\_URL=[http://localhost:3000](http://localhost:3000), the corresponding local service key, and deterministic fixtures. Update the evidence, audit, and vault with the actual results. Do not mark UOW-03 as approved; simply present the results and await my explicit approval.
+```
+**AI Response**: Re-ran the four live CC–CA auth-contract tests from Climate
+Advisor with `CC_BASE_URL=http://localhost:3000`, the configured local service
+key, and deterministic fixture identifiers. Secret and fixture values were
+not recorded. The run completed with **4 failed, 0 passed, 0 skipped**. All
+four tests failed during `POST /api/v1/internal/ca/user-token` because the
+local Core process returned HTTP 404. The wrong-key test therefore observed
+404 before its expected 401 assertion, and the capability/cross-user
+assertions were not reached. No application code was modified.
+**Approval Status**: UOW-03 remains unapproved; completion review and explicit
+user approval are pending.
 ---
 ---

@@ -1,7 +1,8 @@
 # UOW-03 Cross-Service Verification Evidence — CC-737
 
 **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`  
-**Status**: Evidence captured; UOW-03 completion review pending.
+**Status**: Deterministic evidence captured; configured local live revalidation
+failed at the Core token endpoint; UOW-03 completion review pending.
 
 ## Scope
 
@@ -25,8 +26,9 @@ a new cross-service runtime.
 
 - UOW-02 request-time/client/tool regression suite: **109/109 passed**.
 - Local client-auth suite: **5/5 passed**.
-- Live auth-contract suite: **4 skipped** because its required contract
-  environment variables are not configured.
+- Live auth-contract suite: the configured-local revalidation is recorded
+  below; it did not reach the capability assertions because the local Core
+  token endpoint returned HTTP 404.
 - Covered: authenticated request context, request-time discovery, selected-only
   tool registration/execution, Core-mediated bounded reads, stable errors,
   cross-context/stale/forged selection protection, finite result handling,
@@ -52,12 +54,47 @@ a new cross-service runtime.
 - Climate Advisor `git diff --check`: passed.
 - Climate Advisor Ruff: unavailable in the environment.
 
+## Configured local live CC–CA contract revalidation
+
+**Date**: 2026-08-31
+
+**Target**: `CC_BASE_URL=http://localhost:3000`
+**Command**:
+
+```text
+set -a; source .env; set +a; CC_BASE_URL=http://localhost:3000 UV_CACHE_DIR=/tmp/cc737-uv-cache uv run pytest service/tests/test_citycatalyst_client_auth_contract.py -q
+```
+
+The local service key was sourced from the ignored Climate Advisor environment
+without recording its value. Deterministic fixture identifiers were sourced
+from that environment. No secret values or fixture values are recorded here.
+
+**Result**: **4 failed, 0 passed, 0 skipped**.
+
+| Test | Observed result |
+|---|---|
+| `test_refresh_token_against_running_cc_accepts_shared_key` | Failed: `POST /api/v1/internal/ca/user-token` returned HTTP 404. |
+| `test_allowed_capabilities_against_running_cc_accepts_service_headers` | Failed during token refresh: HTTP 404 from the same endpoint. |
+| `test_wrong_cc_api_key_gets_real_401_from_running_cc` | Failed: expected HTTP 401, but token refresh received HTTP 404 first. |
+| `test_token_for_one_user_cannot_be_reused_for_other_user` | Failed during token refresh: HTTP 404 from the same endpoint. |
+
+The run therefore did not reach the intended capability authorization,
+wrong-key, or cross-user assertions. The observed result is that the local
+Core process at `localhost:3000` did not expose the expected
+`/api/v1/internal/ca/user-token` route during this run. This is a verification
+failure/blocker, not an approval or a release-readiness result; UOW-03 remains
+pending explicit review and approval.
+
 ## Environment limitations
 
-- Four live auth-contract tests were skipped because the required CC/CA
-  contract environment variables are not configured.
+- The live auth-contract suite was initially skipped because its required
+  CC/CA contract environment variables were not configured. After the local
+  environment was configured, the four-test revalidation ran but all four
+  failed at the Core token endpoint with HTTP 404; see the revalidation table
+  above.
 - The pre-existing GHGI integration limitation remains: local PostgreSQL is
-  unavailable (`EPERM 127.0.0.1:5432`).
+  not covered by this auth-contract setup and remains a separate validation
+  limitation.
 - Ruff is unavailable in the Climate Advisor environment.
 - Full repository lint/build limitations documented in the UOW-01 evidence
   remain applicable; focused touched-file checks are the release evidence for

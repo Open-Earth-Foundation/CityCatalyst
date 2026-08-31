@@ -1620,8 +1620,8 @@ Rules:
   synthetic pagination.
 - Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
   concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
-  final document synthesis. Both use tool-free structured outputs through
-  OpenRouter Chat Completions without a temperature parameter.
+  final document synthesis. Both retain tool-free structured outputs through
+  OpenRouter Chat Completions and omit temperature.
 - Requires every partition reader to acknowledge every segment and verifies
   every retained excerpt as an exact substring of its cited source location.
 - Requires every factual sentence in a synthesized document summary to remain
@@ -2209,6 +2209,12 @@ prompts:
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
 ```
+
+The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+`reasoning_effort: none` for its Chat Completions function-tool loop. Funding
+research and similar-project selection use Sol with medium reasoning on the
+existing Responses API path; canonical-funder identity matching uses Luna with
+low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
 
 Prompt composition should follow the current CA pattern:
 

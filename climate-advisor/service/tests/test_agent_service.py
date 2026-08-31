@@ -52,10 +52,12 @@ def build_mock_settings(
         orchestrator=SimpleNamespace(
             name=default_model,
             temperature=temperature,
+            reasoning_effort=None,
         ),
         agentic_flow=(
             SimpleNamespace(
                 name=agentic_flow_model or default_model,
+                reasoning_effort=None,
                 temperature=(
                     agentic_flow_temperature
                     if agentic_flow_temperature is not None

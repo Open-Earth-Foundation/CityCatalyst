@@ -16,6 +16,7 @@ from uuid import UUID
 import openai
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
 from app.config import get_settings
+from app.config.settings import RoleModelConfig
 from app.persistence.concept_notes.context_bundle import (
     ALLOWED_SOURCE_QUERY_STEPS,
     ContextBundlePersistenceError,
@@ -174,14 +175,21 @@ class AgentService:
             return model.split("/", 1)[1]
         return model
 
-    def _temperature_for_model(self, *, raw_model: str, resolved_model: str) -> float:
-        """Return the configured temperature for the selected chat model."""
+    def _config_for_model(
+        self, *, raw_model: str, resolved_model: str
+    ) -> RoleModelConfig | None:
+        """Resolve a configured role without imposing its reasoning on other models."""
         if (
             raw_model == self.raw_agentic_flow_model
             or resolved_model == self.agentic_flow_model
         ):
-            return self.agentic_flow_temperature
-        return self.default_temperature
+            return (
+                self.settings.llm.models.agentic_flow
+                or self.settings.llm.models.orchestrator
+            )
+        if raw_model == self.raw_default_model or resolved_model == self.default_model:
+            return self.settings.llm.models.orchestrator
+        return None
 
     def _create_openrouter_client(self) -> AsyncOpenAI:
         """Create an AsyncOpenAI client configured from the shared OpenRouter helper."""
@@ -245,18 +253,24 @@ class AgentService:
         # Resolve model and instruction settings before registering workflow tools.
         raw_agent_model = model or self.raw_default_model
         agent_model = self._resolve_chat_model_name(raw_agent_model)
-        agent_temperature = self._temperature_for_model(
+        model_config = self._config_for_model(
             raw_model=raw_agent_model,
             resolved_model=agent_model,
+        )
+        agent_temperature = (
+            model_config.temperature
+            if model_config is not None
+            else self.default_temperature
+        )
+        reasoning_effort = (
+            model_config.reasoning_effort if model_config is not None else None
         )
         if instructions:
             agent_instructions = instructions
         elif self._uses_stationary_energy_review_prompt:
             agent_instructions = (
                 self.stationary_energy_system_prompt
-                or self.settings.llm.prompts.compose_prompt(
-                    "stationary_energy_review"
-                )
+                or self.settings.llm.prompts.compose_prompt("stationary_energy_review")
             )
         elif self._has_concept_note_context:
             agent_instructions = (
@@ -399,6 +413,9 @@ class AgentService:
             model_settings=ModelSettings(
                 temperature=agent_temperature,
                 include_usage=True,
+                reasoning={"effort": reasoning_effort}
+                if reasoning_effort is not None
+                else None,
             ),
             tools=tools,
         )

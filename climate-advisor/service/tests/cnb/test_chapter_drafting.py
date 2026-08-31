@@ -5,7 +5,7 @@ from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from typing import Any, cast
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 from uuid import UUID, uuid4
 
 import pytest
@@ -75,6 +75,36 @@ class FakeWorkspace:
             revision_number=1,
         )
         return True
+
+
+async def test_load_state_uses_lightweight_template_fingerprint_lookup() -> None:
+    """Avoid loading full funder context for the frequently polled draft state."""
+    workspace = MagicMock()
+    workspace.list_chapters = AsyncMock(return_value=[])
+    application_context = MagicMock()
+    application_context.load_template_fingerprint_for_run = AsyncMock(
+        return_value="template-fingerprint"
+    )
+    application_context.load_for_run = AsyncMock()
+    service = cast(
+        ConceptNoteChapterDraftService,
+        object.__new__(ConceptNoteChapterDraftService),
+    )
+    service._workspace = workspace
+    service._application_context = application_context
+    run = cast(
+        ConceptNoteRun,
+        SimpleNamespace(run_id=RUN_ID, context_summary={}),
+    )
+
+    await service.load_state(run)
+
+    application_context.load_template_fingerprint_for_run.assert_awaited_once_with(run)
+    application_context.load_for_run.assert_not_called()
+    workspace.list_chapters.assert_awaited_once_with(
+        run_id=RUN_ID,
+        template_fingerprint="template-fingerprint",
+    )
 
 
 async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:

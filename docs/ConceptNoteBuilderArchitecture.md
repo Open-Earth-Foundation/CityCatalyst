@@ -2157,11 +2157,14 @@ sequenceDiagram
 
 ## Chapter Validation
 
-Validation is explicit and UI-driven. **Review & export** opens a focused modal
-before any export format is shown. The modal validates every active chapter
-sequentially through the authenticated chapter-validation route. Chat does not
-expose a mark-ready tool. Each request revalidates current CityCatalyst city
-access before reading or writing the workspace.
+Validation is explicit and UI-driven. **Review & export** is available only
+after an application template and at least one draft chapter are loaded. The UI
+shows the missing prerequisite and links template failures back to Application
+context without starting validation. Once available, the action opens a focused
+modal before any export format is shown. The modal validates every active
+chapter sequentially through the authenticated chapter-validation route. Chat
+does not expose a mark-ready tool. Each request revalidates current CityCatalyst
+city access before reading or writing the workspace.
 
 The validator always runs two structured calls in order:
 
@@ -2199,11 +2202,14 @@ The draft contract nests validation under each chapter with status, stale flag,
 validated revision/time, fixed checks, and findings. Findings include phase,
 category, severity, actionable resolution, involved chapter IDs, and optional
 excerpts. The guided modal first presents Missing information with evidence
-warnings, then Conflicts & logic, and finally a decision step. The user can add
-information, accept the saved review and return to the note, or export as is.
-Symmetric document conflicts are deduplicated for presentation while the
-per-chapter records remain intact. Returning to add information focuses the
-first actionable chapter.
+warnings, then Conflicts & logic, and finally a decision step. The decision and
+export screens use the same impact summary: validation blockers remain
+unresolved in exported text, unanswered workspace prompts are omitted from the
+file, and warnings stay in the workspace for follow-up. The user can jump from
+a blocking finding to its chapter, review warnings again, or export anyway after
+acknowledging omitted prompts. Symmetric document conflicts are deduplicated for
+presentation while the per-chapter records remain intact. Returning to fix
+blockers focuses the first actionable chapter.
 
 ## Chapter Delete Confirmation Flow
 
@@ -2329,12 +2335,13 @@ The UI needs typed events for chat and document state.
 
 ```mermaid
 flowchart LR
-    Trigger["Review & export"] --> Complete["1 · Missing information<br/>and evidence"]
+    Gate["Template + draft chapters"] --> Trigger["Review & export"]
+    Trigger --> Complete["1 · Missing information<br/>and evidence"]
     Complete --> Consistency["2 · Conflicts & logic"]
     Consistency --> Decide["3 · Decide"]
-    Decide -->|add information| Revise["Return to actionable chapter"]
-    Decide -->|accept review| Note["Return to note"]
-    Decide -->|export as is| Preflight["Export acknowledgement"]
+    Decide -->|fix blockers| Revise["Return to actionable chapter"]
+    Decide -->|review warnings| Complete
+    Decide -->|export anyway| Preflight["Export impact + acknowledgement"]
     Preflight --> Render["Render chapter text"]
     Render --> Docx["Generate DOCX"]
     Render --> Pdf["Generate PDF"]

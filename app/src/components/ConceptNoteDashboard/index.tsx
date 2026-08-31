@@ -53,6 +53,7 @@ import {
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
+  normalizePopulationData,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -96,10 +97,20 @@ export function ConceptNoteDashboard({
     api.useGetUserFilesQuery(cityId);
   const { data: cityDashboard, isLoading: modulesLoading } =
     api.useGetCityDashboardQuery({ cityId, lng });
-  const { currentData: exportDraft, refetch: refetchExportDraft } =
-    api.useGetConceptNoteDraftQuery(exportRun?.run_id ?? "", {
-      skip: !exportRun,
-    });
+  const {
+    currentData: exportDraft,
+    isError: exportDraftFailed,
+    isLoading: exportDraftLoading,
+    refetch: refetchExportDraft,
+  } = api.useGetConceptNoteDraftQuery(exportRun?.run_id ?? "", {
+    skip: !exportRun,
+  });
+  const {
+    currentData: exportApplicationContext,
+    isLoading: exportApplicationContextLoading,
+  } = api.useGetConceptNoteApplicationContextQuery(exportRun?.run_id ?? "", {
+    skip: !exportRun,
+  });
 
   const runs = runList?.runs ?? [];
   const cityFiles = files ?? [];
@@ -107,10 +118,13 @@ export function ConceptNoteDashboard({
   const cityLocation = city?.country
     ? t("city-location", { city: cityName, country: city.country })
     : cityName;
-  const populationLabel = population
+  const populationData = normalizePopulationData(population);
+  const populationLabel = populationData
     ? t("population", {
-        population: new Intl.NumberFormat(lng).format(population.population),
-        year: population.year,
+        population: new Intl.NumberFormat(lng).format(
+          populationData.population,
+        ),
+        year: populationData.year,
       })
     : t("population-unavailable");
   const inventoryLabel = inventory?.year
@@ -462,9 +476,11 @@ export function ConceptNoteDashboard({
           onClose={() => setLifecycleDialog(null)}
         />
       )}
-      {exportRun && (
+      {exportRun && !exportApplicationContextLoading && !exportDraftLoading && (
         <ExportDialog
           draft={exportDraft ?? null}
+          draftError={exportDraftFailed && exportDraft === undefined}
+          hasApplicationTemplate={Boolean(exportApplicationContext?.template)}
           hasUploadedEvidence={
             exportBundle?.availableContext.uploadedDocuments ?? false
           }
@@ -477,7 +493,13 @@ export function ConceptNoteDashboard({
             setExportRun(null);
             router.push(conceptNoteResumeHref(lng, cityId, runId));
           }}
+          onReviewSetup={() => {
+            const runId = exportRun.run_id;
+            setExportRun(null);
+            router.push(conceptNoteResumeHref(lng, cityId, runId));
+          }}
           onOpenChange={(open) => !open && setExportRun(null)}
+          onRetryDraft={() => refetchExportDraft()}
           onReviewComplete={() => refetchExportDraft()}
         />
       )}

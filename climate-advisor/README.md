@@ -67,8 +67,8 @@ comparisons.
 medium reasoning and a 50,000-token validation prompt budget. The service uses
 temperature zero. Model or parse failures persist nothing. Successful results
 store concise checks and actionable findings, never reasoning, and are guarded
-by a transactional fingerprint covering the active document plus target gaps
-and evidence links. See
+by a transactional fingerprint covering active chapter metadata and revisions,
+target gaps and evidence links, and every application-template field. See
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#chapter-validation)
 for status aggregation, staleness, persistence, API, and the guided export UI.
 

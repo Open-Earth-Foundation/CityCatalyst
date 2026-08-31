@@ -43,7 +43,9 @@ import type {
 
 import {
   buildDocumentReviewSummary,
+  type ChapterReviewErrorKind,
   type DocumentReviewFinding,
+  getChapterReviewErrorKind,
   type ReviewedConceptNoteChapter,
 } from "./chapter-validation";
 import {
@@ -58,12 +60,16 @@ type ReviewStage =
 
 interface ExportDialogProps {
   draft: ConceptNoteDraftState | null;
+  draftError: boolean;
+  hasApplicationTemplate: boolean;
   hasUploadedEvidence: boolean;
   lng: string;
   noteName: string;
   onAddInformation: (chapterId: string | null) => void;
   onOpenChange: (open: boolean) => void;
+  onRetryDraft: () => void | Promise<unknown>;
   onReviewComplete: () => void | Promise<unknown>;
+  onReviewSetup: () => void;
   open: boolean;
   runId: string;
 }
@@ -73,6 +79,15 @@ interface ReviewFindingListProps {
   emptyKey: string;
   entries: DocumentReviewFinding[];
   lng: string;
+  onOpenChapter: (chapterId: string) => void;
+}
+
+interface ReviewImpactSummaryProps {
+  blockingCount: number;
+  lng: string;
+  omittedPromptCount: number;
+  status: ConceptNoteChapterValidationStatus;
+  warningCount: number;
 }
 
 const reviewSteps: Array<{
@@ -120,6 +135,7 @@ function ReviewFindingList({
   emptyKey,
   entries,
   lng,
+  onOpenChapter,
 }: ReviewFindingListProps) {
   const { t } = useTranslation(lng, "concept-notes");
 
@@ -190,6 +206,18 @@ function ReviewFindingList({
               </Text>{" "}
               {entry.finding.suggested_action}
             </Text>
+            {isBlocking && (
+              <Button
+                mt={2}
+                size="xs"
+                variant="ghost"
+                color="content.link"
+                onClick={() => onOpenChapter(entry.chapterId)}
+              >
+                {t("review-open-chapter")}
+                <Icon as={LuArrowRight} />
+              </Button>
+            )}
           </Box>
         );
       })}
@@ -197,14 +225,110 @@ function ReviewFindingList({
   );
 }
 
+function ReviewImpactSummary({
+  blockingCount,
+  lng,
+  omittedPromptCount,
+  status,
+  warningCount,
+}: ReviewImpactSummaryProps) {
+  const { t } = useTranslation(lng, "concept-notes");
+
+  return (
+    <Box
+      aria-label={t("review-export-impact")}
+      borderY="1px solid"
+      borderColor="border.neutral"
+      py={5}
+    >
+      <Text fontSize="label.sm" fontWeight="semibold" color="content.secondary">
+        {t("review-export-impact")}
+      </Text>
+      <Grid
+        mt={3}
+        gap={5}
+        gridTemplateColumns={{
+          base: "1fr",
+          sm: "repeat(2, 1fr)",
+          md: "repeat(4, 1fr)",
+        }}
+      >
+        <Box>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("review-document-status")}
+          </Text>
+          <Text
+            mt={1}
+            fontFamily="heading"
+            fontSize="title.md"
+            fontWeight="semibold"
+            color={
+              status === "ready"
+                ? "sentiment.positiveDefault"
+                : status === "needs_review"
+                  ? "sentiment.warningDefault"
+                  : "sentiment.negativeDefault"
+            }
+          >
+            {t(statusTranslationKey(status))}
+          </Text>
+        </Box>
+        <Box>
+          <Text
+            fontFamily="heading"
+            fontSize="title.md"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {blockingCount}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("review-unresolved-blockers")}
+          </Text>
+        </Box>
+        <Box>
+          <Text
+            fontFamily="heading"
+            fontSize="title.md"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {omittedPromptCount}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("review-omitted-prompts")}
+          </Text>
+        </Box>
+        <Box>
+          <Text
+            fontFamily="heading"
+            fontSize="title.md"
+            fontWeight="semibold"
+            color="content.primary"
+          >
+            {warningCount}
+          </Text>
+          <Text fontSize="label.sm" color="content.tertiary">
+            {t("review-workspace-warnings")}
+          </Text>
+        </Box>
+      </Grid>
+    </Box>
+  );
+}
+
 export function ExportDialog({
   draft,
+  draftError,
+  hasApplicationTemplate,
   hasUploadedEvidence,
   lng,
   noteName,
   onAddInformation,
   onOpenChange,
+  onRetryDraft,
   onReviewComplete,
+  onReviewSetup,
   open,
   runId,
 }: ExportDialogProps) {
@@ -222,7 +346,9 @@ export function ExportDialog({
   const [reviewedChapters, setReviewedChapters] = useState<
     ReviewedConceptNoteChapter[]
   >([]);
-  const [reviewError, setReviewError] = useState(false);
+  const [reviewError, setReviewError] = useState<ChapterReviewErrorKind | null>(
+    null,
+  );
   const [progressIndex, setProgressIndex] = useState(0);
   const [progressTitle, setProgressTitle] = useState("");
   const [showExportOptions, setShowExportOptions] = useState(false);
@@ -262,15 +388,20 @@ export function ExportDialog({
     activeRequestRef.current = requestId;
     setStage("running");
     setReviewedChapters([]);
-    setReviewError(false);
+    setReviewError(null);
     setProgressIndex(0);
     setProgressTitle(chapters[0]?.title ?? "");
     setShowExportOptions(false);
     setAcceptedMissingInformation(false);
     setExportError(false);
 
+    if (!hasApplicationTemplate) {
+      setReviewError("template_unavailable");
+      return;
+    }
+
     if (chapters.length === 0) {
-      setReviewError(true);
+      setReviewError("draft_unavailable");
       return;
     }
 
@@ -295,12 +426,18 @@ export function ExportDialog({
       if (activeRequestRef.current === requestId) {
         setStage("missing_information");
       }
-    } catch {
+    } catch (error) {
       if (activeRequestRef.current === requestId) {
-        setReviewError(true);
+        setReviewError(getChapterReviewErrorKind(error));
       }
     }
-  }, [chapters, onReviewComplete, runId, validateChapter]);
+  }, [
+    chapters,
+    hasApplicationTemplate,
+    onReviewComplete,
+    runId,
+    validateChapter,
+  ]);
 
   useEffect(() => {
     if (open && draft !== null && !wasOpenRef.current) {
@@ -320,9 +457,14 @@ export function ExportDialog({
     onOpenChange(nextOpen);
   }
 
-  function handleAddInformation(): void {
+  function handleAddInformation(chapterId: string | null): void {
     handleOpenChange(false);
-    onAddInformation(firstActionableChapterId);
+    onAddInformation(chapterId);
+  }
+
+  function handleReviewSetup(): void {
+    handleOpenChange(false);
+    onReviewSetup();
   }
 
   async function handleExport(format: ConceptNoteExportFormat): Promise<void> {
@@ -464,7 +606,7 @@ export function ExportDialog({
             {stage === "running" && (
               <Flex h="full" minH="440px" align="center" justify="center">
                 <VStack maxW="420px" gap={5} textAlign="center">
-                  {reviewError ? (
+                  {draftError || reviewError ? (
                     <>
                       <Flex
                         boxSize="56px"
@@ -484,14 +626,30 @@ export function ExportDialog({
                           fontWeight="semibold"
                           color="content.primary"
                         >
-                          {t("guided-review-failed")}
+                          {t(
+                            draftError
+                              ? "review-draft-load-error"
+                              : reviewError === "template_unavailable"
+                                ? "guided-review-template-unavailable"
+                                : reviewError === "draft_unavailable"
+                                  ? "guided-review-draft-unavailable"
+                                  : "guided-review-failed",
+                          )}
                         </Text>
                         <Text
                           mt={2}
                           fontSize="body.sm"
                           color="content.secondary"
                         >
-                          {t("guided-review-failed-description")}
+                          {t(
+                            draftError
+                              ? "review-draft-load-error-description"
+                              : reviewError === "template_unavailable"
+                                ? "guided-review-template-unavailable-description"
+                                : reviewError === "draft_unavailable"
+                                  ? "guided-review-draft-unavailable-description"
+                                  : "guided-review-failed-description",
+                          )}
                         </Text>
                       </Box>
                       <HStack gap={3}>
@@ -501,9 +659,23 @@ export function ExportDialog({
                         >
                           {t("cancel")}
                         </Button>
-                        <Button onClick={() => void runReview()}>
-                          {t("try-again")}
-                        </Button>
+                        {draftError ? (
+                          <Button onClick={() => void onRetryDraft()}>
+                            {t("try-again")}
+                          </Button>
+                        ) : reviewError === "template_unavailable" ? (
+                          <Button onClick={handleReviewSetup}>
+                            {t("review-application-setup")}
+                          </Button>
+                        ) : reviewError === "draft_unavailable" ? (
+                          <Button onClick={() => handleAddInformation(null)}>
+                            {t("review-return-to-draft")}
+                          </Button>
+                        ) : (
+                          <Button onClick={() => void runReview()}>
+                            {t("try-again")}
+                          </Button>
+                        )}
                       </HStack>
                     </>
                   ) : (
@@ -625,6 +797,7 @@ export function ExportDialog({
                   emptyKey="review-no-missing-information"
                   entries={review.groups.missing_information}
                   lng={lng}
+                  onOpenChapter={handleAddInformation}
                 />
 
                 <Box borderTop="1px solid" borderColor="border.neutral" pt={5}>
@@ -647,6 +820,7 @@ export function ExportDialog({
                     emptyKey="review-no-evidence-warnings"
                     entries={review.groups.evidence}
                     lng={lng}
+                    onOpenChapter={handleAddInformation}
                   />
                 </Box>
 
@@ -696,6 +870,7 @@ export function ExportDialog({
                   emptyKey="review-no-conflicts"
                   entries={review.groups.conflicts_logic}
                   lng={lng}
+                  onOpenChapter={handleAddInformation}
                 />
 
                 <Flex justify="space-between" gap={3} pt={2}>
@@ -746,81 +921,40 @@ export function ExportDialog({
                       </Text>
                     </Box>
 
-                    <Flex
-                      align={{ base: "start", sm: "center" }}
-                      direction={{ base: "column", sm: "row" }}
-                      justify="space-between"
-                      gap={5}
-                      borderY="1px solid"
-                      borderColor="border.neutral"
-                      py={5}
-                    >
-                      <Box>
-                        <Text fontSize="label.sm" color="content.tertiary">
-                          {t("review-document-status")}
-                        </Text>
-                        <Text
-                          mt={1}
-                          fontFamily="heading"
-                          fontSize="title.md"
-                          fontWeight="semibold"
-                          color={
-                            review.status === "ready"
-                              ? "sentiment.positiveDefault"
-                              : review.status === "needs_review"
-                                ? "sentiment.warningDefault"
-                                : "sentiment.negativeDefault"
-                          }
-                        >
-                          {t(statusTranslationKey(review.status))}
-                        </Text>
-                      </Box>
-                      <HStack gap={6}>
-                        <Box>
-                          <Text
-                            fontSize="title.md"
-                            fontWeight="semibold"
-                            color="content.primary"
-                          >
-                            {review.blockingCount}
-                          </Text>
-                          <Text fontSize="label.sm" color="content.tertiary">
-                            {t("review-blocking-items")}
-                          </Text>
-                        </Box>
-                        <Box>
-                          <Text
-                            fontSize="title.md"
-                            fontWeight="semibold"
-                            color="content.primary"
-                          >
-                            {review.warningCount}
-                          </Text>
-                          <Text fontSize="label.sm" color="content.tertiary">
-                            {t("review-warning-items")}
-                          </Text>
-                        </Box>
-                      </HStack>
-                    </Flex>
+                    <ReviewImpactSummary
+                      blockingCount={review.blockingCount}
+                      lng={lng}
+                      omittedPromptCount={unresolvedCount}
+                      status={review.status}
+                      warningCount={review.warningCount}
+                    />
 
                     <VStack align="stretch" gap={3}>
-                      {review.status !== "ready" && (
+                      {review.blockingCount > 0 && (
                         <Button
                           justifyContent="flex-start"
-                          onClick={handleAddInformation}
+                          onClick={() =>
+                            handleAddInformation(firstActionableChapterId)
+                          }
                         >
                           <Icon as={LuFileText} />
-                          {t("review-add-information")}
+                          {t("review-fix-blockers", {
+                            count: review.blockingCount,
+                          })}
                         </Button>
                       )}
-                      <Button
-                        justifyContent="flex-start"
-                        variant="outline"
-                        onClick={() => handleOpenChange(false)}
-                      >
-                        <Icon as={LuCheck} />
-                        {t("review-accept")}
-                      </Button>
+                      {review.warningCount > 0 && (
+                        <Button
+                          justifyContent="flex-start"
+                          variant="outline"
+                          onClick={() => setStage("missing_information")}
+                        >
+                          <Icon as={LuSearchCheck} />
+                          {t("review-review-warnings", {
+                            count: review.warningCount,
+                          })}
+                        </Button>
+                      )}
                       <Button
                         justifyContent="flex-start"
                         variant={review.status === "ready" ? "solid" : "ghost"}
@@ -907,6 +1041,14 @@ export function ExportDialog({
                         </Text>
                       </Box>
                     </HStack>
+
+                    <ReviewImpactSummary
+                      blockingCount={review.blockingCount}
+                      lng={lng}
+                      omittedPromptCount={unresolvedCount}
+                      status={review.status}
+                      warningCount={review.warningCount}
+                    />
 
                     {unresolvedCount > 0 && (
                       <Checkbox

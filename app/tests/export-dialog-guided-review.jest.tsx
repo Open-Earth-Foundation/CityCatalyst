@@ -31,6 +31,10 @@ const translations: Record<string, string> = {
   "guided-review-description": "Review description",
   "guided-review-failed": "Review failed",
   "guided-review-failed-description": "Try again",
+  "guided-review-template-unavailable":
+    "The application template is no longer available",
+  "guided-review-template-unavailable-description":
+    "Review application setup before running the review again.",
   "guided-review-progress": "Chapter {{current}} of {{total}} · {{chapter}}",
   "guided-review-running": "Reviewing the full document",
   "guided-review-running-description":
@@ -40,14 +44,12 @@ const translations: Record<string, string> = {
   "missing-information-export-confirmation":
     "I understand unresolved information is omitted.",
   "pdf-description": "Review copy",
-  "review-accept": "Accept review",
   "review-action-label": "Recommended action:",
-  "review-add-information": "Add information",
+  "review-application-setup": "Review application setup",
   "review-back-conflicts": "Back to conflicts & logic",
   "review-back-decision": "Back to decision",
   "review-back-missing": "Back to missing information",
   "review-blocking": "Blocking",
-  "review-blocking-items": "Blocking items",
   "review-conflicts-description":
     "The consistency review found {{count}} issues.",
   "review-conflicts-title": "Conflicts & logic",
@@ -57,7 +59,10 @@ const translations: Record<string, string> = {
   "review-document-status": "Document review status",
   "review-evidence-description": "{{count}} evidence warnings.",
   "review-evidence-title": "Evidence to add",
-  "review-export-as-is": "Export as is",
+  "review-draft-load-error": "The current draft could not be loaded.",
+  "review-draft-load-error-description": "Retry loading the draft.",
+  "review-export-as-is": "Export anyway",
+  "review-export-impact": "Export impact",
   "review-export-description": "Choose a format.",
   "review-export-title": "Export the current draft",
   "review-missing-description":
@@ -68,13 +73,19 @@ const translations: Record<string, string> = {
   "review-no-conflicts": "No conflicts",
   "review-no-evidence-warnings": "No evidence warnings",
   "review-no-missing-information": "No missing information",
+  "review-fix-blockers": "Fix blockers ({{count}})",
+  "review-review-warnings": "Review warnings ({{count}})",
+  "review-open-chapter": "Open chapter to fix",
+  "review-omitted-prompts": "Unanswered prompts are omitted from the file",
   "review-step-conflicts-logic": "Conflicts & logic",
   "review-step-decision": "Decide & export",
   "review-step-missing-information": "Missing information",
   "review-step-number": "Step {{number}}",
   "review-template-failures": "{{count}} chapters fail the template.",
   "review-warning": "Review",
-  "review-warning-items": "Warnings",
+  "review-unresolved-blockers":
+    "Validation blockers remain unresolved in exported text",
+  "review-workspace-warnings": "Warnings stay in the workspace for follow-up",
   "source-context-ready": "Evidence available",
   "source-context-ready-export": "Evidence is linked.",
   "source-context-recommended": "Evidence missing",
@@ -260,12 +271,16 @@ afterEach(async () => {
 describe("guided review before export", () => {
   it("waits for a delayed draft before starting the first review", async () => {
     const props = {
+      draftError: false,
+      hasApplicationTemplate: true,
       hasUploadedEvidence: false,
       lng: "en",
       noteName: "Kraków Tram",
       onAddInformation: jest.fn(),
       onOpenChange: jest.fn(),
+      onRetryDraft: jest.fn(),
       onReviewComplete: jest.fn(async () => undefined),
+      onReviewSetup: jest.fn(),
       open: true,
       runId: "run-1",
     };
@@ -305,12 +320,16 @@ describe("guided review before export", () => {
         <ChakraProvider value={appTheme}>
           <ExportDialog
             draft={draft()}
+            draftError={false}
+            hasApplicationTemplate
             hasUploadedEvidence={false}
             lng="en"
             noteName="Kraków Tram"
             onAddInformation={onAddInformation}
             onOpenChange={onOpenChange}
+            onRetryDraft={jest.fn()}
             onReviewComplete={onReviewComplete}
+            onReviewSetup={jest.fn()}
             open
             runId="run-1"
           />
@@ -338,13 +357,91 @@ describe("guided review before export", () => {
 
     await click("Continue to decision");
     expect(document.body.textContent).toContain("Choose what happens next");
-    expect(document.body.textContent).toContain("Add information");
-    expect(document.body.textContent).toContain("Accept review");
-    expect(document.body.textContent).toContain("Export as is");
+    expect(document.body.textContent).toContain("Fix blockers (3)");
+    expect(document.body.textContent).toContain("Review warnings (2)");
+    expect(document.body.textContent).toContain(
+      "Validation blockers remain unresolved in exported text",
+    );
+    expect(document.body.textContent).toContain(
+      "Unanswered prompts are omitted from the file",
+    );
+    expect(document.body.textContent).toContain("Export anyway");
 
-    await click("Export as is");
+    await click("Export anyway");
     expect(document.body.textContent).toContain("Export the current draft");
     expect(document.body.textContent).toContain("Export DOCX");
     expect(button("Export DOCX").disabled).toBe(true);
+  });
+
+  it("blocks review when the application template is unavailable", async () => {
+    const onOpenChange = jest.fn();
+    const onReviewSetup = jest.fn();
+
+    await act(async () => {
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <ExportDialog
+            draft={draft()}
+            draftError={false}
+            hasApplicationTemplate={false}
+            hasUploadedEvidence={false}
+            lng="en"
+            noteName="Kraków Tram"
+            onAddInformation={jest.fn()}
+            onOpenChange={onOpenChange}
+            onRetryDraft={jest.fn()}
+            onReviewComplete={jest.fn()}
+            onReviewSetup={onReviewSetup}
+            open
+            runId="run-1"
+          />
+        </ChakraProvider>,
+      );
+    });
+    await settle();
+
+    expect(validateChapter).not.toHaveBeenCalled();
+    expect(document.body.textContent).toContain(
+      "The application template is no longer available",
+    );
+
+    await click("Review application setup");
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    expect(onReviewSetup).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows a retry action when loading the draft fails", async () => {
+    const onRetryDraft = jest.fn();
+
+    await act(async () => {
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <ExportDialog
+            draft={null}
+            draftError
+            hasApplicationTemplate
+            hasUploadedEvidence={false}
+            lng="en"
+            noteName="Kraków Tram"
+            onAddInformation={jest.fn()}
+            onOpenChange={jest.fn()}
+            onRetryDraft={onRetryDraft}
+            onReviewComplete={jest.fn()}
+            onReviewSetup={jest.fn()}
+            open
+            runId="run-1"
+          />
+        </ChakraProvider>,
+      );
+    });
+    await settle();
+
+    expect(document.body.textContent).toContain(
+      "The current draft could not be loaded.",
+    );
+    expect(validateChapter).not.toHaveBeenCalled();
+
+    await click("Try again");
+    expect(onRetryDraft).toHaveBeenCalledTimes(1);
   });
 });

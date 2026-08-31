@@ -28,6 +28,7 @@ from app.services.cnb.chapter_validation_workflow import (
     ChapterValidationWorkflowError,
     ConceptNoteChapterValidationWorkflowService,
 )
+from sqlalchemy.exc import SQLAlchemyError
 
 
 def _template() -> ApplicationContextTemplate:
@@ -287,4 +288,70 @@ async def test_workflow_preserves_state_when_template_is_unavailable() -> None:
     assert exc_info.value.code == "chapter_validation_template_unavailable"
     workspace.load_validation_context.assert_not_called()
     validator.validate.assert_not_called()
+    workspace.upsert_validation.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_workflow_maps_initial_template_storage_failure_to_stable_503() -> None:
+    """Return the documented storage error when the first template read fails."""
+    workspace = MagicMock()
+    validator = MagicMock()
+    application_context = MagicMock()
+    application_context.load_for_run = AsyncMock(side_effect=OSError("offline"))
+    service = ConceptNoteChapterValidationWorkflowService(
+        workflow_session=MagicMock(),
+        workspace=workspace,
+        validator=validator,
+        application_context=application_context,
+    )
+
+    with pytest.raises(ChapterValidationWorkflowError) as exc_info:
+        await service.validate(
+            run=SimpleNamespace(
+                run_id=uuid4(),
+                workflow_step="editing_document",
+            ),
+            chapter_id=uuid4(),
+        )
+
+    assert exc_info.value.status_code == 503
+    assert exc_info.value.code == "cnb_storage_unavailable"
+    workspace.load_validation_context.assert_not_called()
+    validator.validate.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_workflow_maps_post_llm_template_storage_failure_to_stable_503() -> None:
+    """Do not persist a result when the template recheck cannot reach storage."""
+    context = _validation_context()
+    workspace = MagicMock()
+    workspace.load_validation_context = AsyncMock(return_value=context)
+    workspace.upsert_validation = AsyncMock()
+    validator = MagicMock()
+    validator.validate = AsyncMock(return_value=_decision(context))
+    application_context = MagicMock()
+    application_context.load_for_run = AsyncMock(
+        side_effect=[
+            SimpleNamespace(template=_template()),
+            SQLAlchemyError("offline"),
+        ]
+    )
+    service = ConceptNoteChapterValidationWorkflowService(
+        workflow_session=MagicMock(),
+        workspace=workspace,
+        validator=validator,
+        application_context=application_context,
+    )
+
+    with pytest.raises(ChapterValidationWorkflowError) as exc_info:
+        await service.validate(
+            run=SimpleNamespace(
+                run_id=uuid4(),
+                workflow_step="editing_document",
+            ),
+            chapter_id=context.target.chapter_id,
+        )
+
+    assert exc_info.value.status_code == 503
+    assert exc_info.value.code == "cnb_storage_unavailable"
     workspace.upsert_validation.assert_not_called()

@@ -35,6 +35,23 @@ export interface DocumentReviewSummary {
   warningCount: number;
 }
 
+export type ChapterReviewErrorKind =
+  "draft_unavailable" | "generic" | "template_unavailable";
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+export function getChapterReviewErrorKind(
+  error: unknown,
+): ChapterReviewErrorKind {
+  const payload = isRecord(error) && isRecord(error.data) ? error.data : error;
+  return isRecord(payload) &&
+    payload.code === "chapter_validation_template_unavailable"
+    ? "template_unavailable"
+    : "generic";
+}
+
 export function getChapterDisplayStatus(
   chapter: ConceptNoteDraftChapter,
 ): ChapterDisplayStatus {

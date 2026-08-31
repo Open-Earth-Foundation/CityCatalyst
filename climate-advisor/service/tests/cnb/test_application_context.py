@@ -5,9 +5,11 @@ from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 from uuid import UUID
 
+from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.db.concept_note import ConceptNoteRun
 from app.services.cnb.application_context import (
     ConceptNoteApplicationContextService,
+    calculate_application_template_fingerprint,
 )
 
 RUN_ID = UUID("10000000-0000-4000-8000-000000000001")
@@ -147,3 +149,41 @@ async def test_maps_selected_funder_programme_and_template() -> None:
             "hiap": False,
         },
     }
+
+
+async def test_loads_template_fingerprint_with_one_reference_query() -> None:
+    """Keep the frequently polled draft state independent of full context loading."""
+    template = SimpleNamespace(
+        template_id=TEMPLATE_ID,
+        template_name="EIB starter",
+        output_format="markdown",
+        chapter_schema=[{"chapter_ref": "summary", "title": "Summary"}],
+        required_fields=["project_summary"],
+    )
+    session = AsyncMock()
+    session.scalar.return_value = template
+    service = ConceptNoteApplicationContextService(
+        session_factory=_session_factory(session)
+    )
+    service._load_funder = AsyncMock()
+    service._load_opportunity = AsyncMock()
+    service._load_template = AsyncMock()
+
+    fingerprint = await service.load_template_fingerprint_for_run(
+        _run(with_funding=True)
+    )
+
+    expected_template = ApplicationContextTemplate(
+        id=TEMPLATE_ID,
+        name="EIB starter",
+        output_format="markdown",
+        chapter_schema=[{"chapter_ref": "summary", "title": "Summary"}],
+        required_fields=["project_summary"],
+    )
+    assert fingerprint == calculate_application_template_fingerprint(
+        expected_template
+    )
+    session.scalar.assert_awaited_once()
+    service._load_funder.assert_not_called()
+    service._load_opportunity.assert_not_called()
+    service._load_template.assert_not_called()

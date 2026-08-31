@@ -6,6 +6,9 @@ import logging
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
+from app.models.cnb.concept_note_application_context import (
+    ApplicationContextTemplate,
+)
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterValidationResponse,
     ConceptNoteValidationCheckResponse,
@@ -90,8 +93,7 @@ class ConceptNoteChapterValidationWorkflowService:
             )
 
         # Step 1: load the reviewed template included in the validation input.
-        application_context = await self._application_context.load_for_run(run)
-        template = application_context.template
+        template = await self._load_template(run=run, chapter_id=chapter_id)
         if template is None:
             raise ChapterValidationWorkflowError(
                 "chapter_validation_template_unavailable",
@@ -133,8 +135,7 @@ class ConceptNoteChapterValidationWorkflowService:
         decision = await self._validator.validate(request)
 
         # Step 4: recheck the independently stored template before publishing.
-        latest_application_context = await self._application_context.load_for_run(run)
-        latest_template = latest_application_context.template
+        latest_template = await self._load_template(run=run, chapter_id=chapter_id)
         if (
             latest_template is None
             or calculate_application_template_fingerprint(latest_template)
@@ -180,6 +181,28 @@ class ConceptNoteChapterValidationWorkflowService:
             ) from exc
 
         return chapter_validation_response(stored)
+
+    async def _load_template(
+        self,
+        *,
+        run: ConceptNoteRun,
+        chapter_id: UUID,
+    ) -> ApplicationContextTemplate | None:
+        """Load template state while preserving the workflow's stable storage error."""
+        try:
+            application_context = await self._application_context.load_for_run(run)
+        except (OSError, SQLAlchemyError) as exc:
+            logger.exception(
+                "Failed to load chapter validation template run_id=%s chapter_id=%s",
+                run.run_id,
+                chapter_id,
+            )
+            raise ChapterValidationWorkflowError(
+                "cnb_storage_unavailable",
+                503,
+                "Concept Note validation storage is unavailable",
+            ) from exc
+        return application_context.template
 
 
 def chapter_validation_response(

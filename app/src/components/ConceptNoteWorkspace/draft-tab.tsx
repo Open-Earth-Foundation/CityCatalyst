@@ -583,7 +583,7 @@ export function DraftTab({
       {draftStarted && chapters.length > 0 && (
         <VStack align="stretch" flex={1} minH={0} gap={2}>
           <Flex
-            direction={{ base: "column", xl: "row" }}
+            direction={{ base: "column", lg: "row" }}
             flex={1}
             minH={0}
             gap={3}
@@ -597,8 +597,8 @@ export function DraftTab({
               align="stretch"
               flexShrink={0}
               gap={2}
-              w={{ base: "full", xl: "180px" }}
-              maxH={{ base: "190px", xl: "full" }}
+              w={{ base: "full", lg: "160px", xl: "180px" }}
+              maxH={{ base: "190px", lg: "full" }}
               minH={0}
               border="1px solid"
               borderColor="border.neutral"

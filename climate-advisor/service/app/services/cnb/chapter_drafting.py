@@ -103,12 +103,8 @@ class ConceptNoteChapterDraftService:
 
     async def load_state(self, run: ConceptNoteRun) -> ConceptNoteDraftResponse:
         """Return persisted chapter state without starting generation."""
-        application_context = await self._application_context.load_for_run(run)
-        template = application_context.template
         template_fingerprint = (
-            calculate_application_template_fingerprint(template)
-            if template is not None
-            else None
+            await self._application_context.load_template_fingerprint_for_run(run)
         )
         chapters = await self._workspace.list_chapters(
             run_id=run.run_id,

@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   buildDocumentReviewSummary,
+  getChapterReviewErrorKind,
   getChapterDisplayStatus,
   groupChapterValidationFindings,
 } from "@/components/ConceptNoteWorkspace/chapter-validation";
@@ -58,6 +59,19 @@ function finding(
 }
 
 describe("Concept Note chapter-validation presentation", () => {
+  it("distinguishes a missing application template from generic review failures", () => {
+    expect(
+      getChapterReviewErrorKind({
+        status: 409,
+        data: {
+          code: "chapter_validation_template_unavailable",
+          detail: "The selected application template is unavailable",
+        },
+      }),
+    ).toBe("template_unavailable");
+    expect(getChapterReviewErrorKind({ status: 503 })).toBe("generic");
+  });
+
   it.each([
     [undefined, "draft"],
     [validation({ status: "ready" }), "ready"],

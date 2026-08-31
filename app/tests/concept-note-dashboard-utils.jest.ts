@@ -9,9 +9,29 @@ import {
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
+  normalizePopulationData,
 } from "@/components/ConceptNoteDashboard/utils";
 
 describe("Concept Note dashboard presentation helpers", () => {
+  it("normalizes valid population data and rejects missing values", () => {
+    expect(
+      normalizePopulationData({ population: 1_234_567, year: 2025 }),
+    ).toEqual({ population: 1_234_567, year: 2025 });
+    expect(
+      normalizePopulationData({ population: "2746388", year: 2020 }),
+    ).toEqual({ population: 2_746_388, year: 2020 });
+    expect(normalizePopulationData(undefined)).toBeNull();
+    expect(
+      normalizePopulationData({ population: undefined, year: undefined }),
+    ).toBeNull();
+    expect(
+      normalizePopulationData({ population: null, year: 2025 }),
+    ).toBeNull();
+    expect(
+      normalizePopulationData({ population: Number.NaN, year: 2025 }),
+    ).toBeNull();
+  });
+
   it("maps known and unknown lifecycle values", () => {
     expect(getRunStatusPresentation("active")).toEqual({
       tone: "warning",

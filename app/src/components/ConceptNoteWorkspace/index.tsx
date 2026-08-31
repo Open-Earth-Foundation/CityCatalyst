@@ -33,6 +33,7 @@ import {
   getConceptNoteBundleProgress,
   getRunStatusPresentation,
   getWorkflowStepTranslationKey,
+  normalizePopulationData,
 } from "../ConceptNoteDashboard/utils";
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
 import {
@@ -99,11 +100,15 @@ export function ConceptNoteWorkspace({
     isError: applicationContextFailed,
     isLoading: applicationContextLoading,
   } = api.useGetConceptNoteApplicationContextQuery(runId);
-  const { data: draft, refetch: refetchDraft } =
-    api.useGetConceptNoteDraftQuery(runId, {
-      pollingInterval: 3_000,
-      skipPollingIfUnfocused: true,
-    });
+  const {
+    data: draft,
+    isError: draftQueryFailed,
+    isLoading: draftLoading,
+    refetch: refetchDraft,
+  } = api.useGetConceptNoteDraftQuery(runId, {
+    pollingInterval: 3_000,
+    skipPollingIfUnfocused: true,
+  });
   const { data: population } = api.useGetMostRecentCityPopulationQuery({
     cityId,
   });
@@ -139,10 +144,13 @@ export function ConceptNoteWorkspace({
     ? t("refresh-status-error")
     : uploadError;
   const cityName = city?.name || t("selected-city");
-  const populationLabel = population
+  const populationData = normalizePopulationData(population);
+  const populationLabel = populationData
     ? t("population", {
-        population: new Intl.NumberFormat(lng).format(population.population),
-        year: population.year,
+        population: new Intl.NumberFormat(lng).format(
+          populationData.population,
+        ),
+        year: populationData.year,
       })
     : t("population-unavailable");
   const files = cityFiles ?? [];
@@ -151,6 +159,23 @@ export function ConceptNoteWorkspace({
     applicationContext.opportunity &&
     applicationContext.template,
   );
+  const hasApplicationTemplate = Boolean(applicationContext?.template);
+  const hasDraftChapters = Boolean(draft?.chapters.length);
+  const draftFailed = draftQueryFailed && draft === undefined;
+  const reviewAvailabilityDescription = applicationContextFailed
+    ? t("review-setup-load-error")
+    : draftFailed
+      ? t("review-draft-load-error")
+      : applicationContextLoading || draftLoading
+        ? t("review-setup-loading")
+        : !hasApplicationTemplate && !hasDraftChapters
+          ? t("review-requires-template-and-draft")
+          : !hasApplicationTemplate
+            ? t("review-requires-template")
+            : !hasDraftChapters
+              ? t("review-requires-draft")
+              : null;
+  const canReview = reviewAvailabilityDescription === null;
   const draftStartError = startDraftState.isError
     ? t("draft-start-error")
     : null;
@@ -244,11 +269,12 @@ export function ConceptNoteWorkspace({
             gap={5}
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
-              md: "440px minmax(0, 1fr)",
+              lg: "360px minmax(0, 1fr)",
+              xl: "440px minmax(0, 1fr)",
             }}
             gridTemplateRows={{
               base: "repeat(2, minmax(0, 1fr))",
-              md: "minmax(0, 1fr)",
+              lg: "minmax(0, 1fr)",
             }}
           >
             <Skeleton h="full" minH={0} />
@@ -371,18 +397,77 @@ export function ConceptNoteWorkspace({
                 {cityName} · {workflowLabel} · {t("autosaved")}
               </Text>
             </Box>
-            <Button
-              size="sm"
-              variant="solid"
-              bg="sentiment.positiveDefault"
-              onClick={() => {
-                setReviewChapterId(null);
-                setReviewOpen(true);
-              }}
+            <VStack
+              align={{ base: "stretch", md: "end" }}
+              flexShrink={0}
+              gap={1}
             >
-              <Icon as={LuShieldCheck} />
-              {t("review-and-export")}
-            </Button>
+              <Button
+                aria-describedby={
+                  reviewAvailabilityDescription
+                    ? "review-availability-reason"
+                    : undefined
+                }
+                disabled={!canReview}
+                size="sm"
+                variant="solid"
+                bg="sentiment.positiveDefault"
+                onClick={() => {
+                  setReviewChapterId(null);
+                  setReviewOpen(true);
+                }}
+              >
+                <Icon as={LuShieldCheck} />
+                {t("review-and-export")}
+              </Button>
+              {reviewAvailabilityDescription && (
+                <HStack
+                  id="review-availability-reason"
+                  align="center"
+                  justify={{ base: "start", md: "end" }}
+                  gap={1}
+                >
+                  <Text
+                    maxW="320px"
+                    fontSize="label.xs"
+                    color="content.tertiary"
+                    textAlign={{ base: "left", md: "right" }}
+                  >
+                    {reviewAvailabilityDescription}
+                  </Text>
+                  {draftFailed && !draftLoading ? (
+                    <Button
+                      h="auto"
+                      minW="auto"
+                      size="xs"
+                      variant="ghost"
+                      px={1}
+                      py={0}
+                      color="content.link"
+                      onClick={() => void refetchDraft()}
+                    >
+                      {t("try-again")}
+                    </Button>
+                  ) : (
+                    (applicationContextFailed || !hasApplicationTemplate) &&
+                    !applicationContextLoading && (
+                      <Button
+                        h="auto"
+                        minW="auto"
+                        size="xs"
+                        variant="ghost"
+                        px={1}
+                        py={0}
+                        color="content.link"
+                        onClick={() => setTab("context")}
+                      >
+                        {t("review-application-setup")}
+                      </Button>
+                    )
+                  )}
+                </HStack>
+              )}
+            </VStack>
           </Flex>
 
           <Grid
@@ -393,11 +478,12 @@ export function ConceptNoteWorkspace({
             alignItems="stretch"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
-              md: "440px minmax(0, 1fr)",
+              lg: "360px minmax(0, 1fr)",
+              xl: "440px minmax(0, 1fr)",
             }}
             gridTemplateRows={{
               base: "repeat(2, minmax(0, 1fr))",
-              md: "minmax(0, 1fr)",
+              lg: "minmax(0, 1fr)",
             }}
           >
             <ConceptNoteChatPanel
@@ -531,6 +617,8 @@ export function ConceptNoteWorkspace({
 
       <ExportDialog
         draft={draft ?? null}
+        draftError={draftFailed}
+        hasApplicationTemplate={hasApplicationTemplate}
         hasUploadedEvidence={bundle.availableContext.uploadedDocuments}
         lng={lng}
         noteName={run.name}
@@ -540,7 +628,9 @@ export function ConceptNoteWorkspace({
           setReviewChapterId(chapterId);
           setTab("draft");
         }}
+        onReviewSetup={() => setTab("context")}
         onOpenChange={setReviewOpen}
+        onRetryDraft={() => refetchDraft()}
         onReviewComplete={() => refetchDraft()}
       />
     </Box>

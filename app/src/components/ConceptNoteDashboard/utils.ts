@@ -6,6 +6,11 @@ interface RunStatusPresentation {
   translationKey: string;
 }
 
+interface CityPopulationSummary {
+  population?: number | string | null;
+  year?: number | string | null;
+}
+
 const statusPresentations: Record<string, RunStatusPresentation> = {
   active: { tone: "warning", translationKey: "status-in-progress" },
   completed: { tone: "positive", translationKey: "status-completed" },
@@ -38,6 +43,21 @@ const contextSourceStatusTranslationKeys: Record<string, string> = {
   pending: "bundle-source-pending",
   unavailable: "bundle-source-unavailable",
 };
+
+export function normalizePopulationData(
+  population: CityPopulationSummary | null | undefined,
+): { population: number; year: number } | null {
+  if (population?.population == null || population.year == null) {
+    return null;
+  }
+
+  const populationValue = Number(population.population);
+  const yearValue = Number(population.year);
+
+  return Number.isFinite(populationValue) && Number.isFinite(yearValue)
+    ? { population: populationValue, year: yearValue }
+    : null;
+}
 
 function normalizeLifecycleValue(value: string): string {
   return value.trim().toLowerCase();

@@ -11,7 +11,7 @@ import {
   generateWebhookSecret,
 } from "@/util/webhook-crypto";
 import {
-  isWebhookEventType,
+  isEmittedWebhookEventType,
   type WebhookEventType,
 } from "@/backend/webhooks/events";
 
@@ -33,23 +33,6 @@ export type PublicWebhookSubscription = {
   lastUpdated: Date | null;
 };
 
-function toPublic(sub: WebhookSubscription): PublicWebhookSubscription {
-  return {
-    id: sub.id,
-    organizationId: sub.organizationId,
-    name: sub.name,
-    url: sub.url,
-    secretPrefix: sub.secretPrefix,
-    events: sub.events,
-    enabled: sub.enabled,
-    consecutiveFailures: sub.consecutiveFailures,
-    disabledAt: sub.disabledAt ?? null,
-    createdBy: sub.createdBy ?? null,
-    created: sub.created ?? null,
-    lastUpdated: sub.lastUpdated ?? null,
-  };
-}
-
 function assertHttpsUrl(url: string) {
   if (!HTTPS_URL.test(url)) {
     throw new createHttpError.BadRequest("webhook-url-must-be-https");
@@ -61,7 +44,7 @@ function assertEvents(events: string[]): asserts events is WebhookEventType[] {
     throw new createHttpError.BadRequest("webhook-events-required");
   }
   for (const event of events) {
-    if (!isWebhookEventType(event)) {
+    if (!isEmittedWebhookEventType(event)) {
       throw new createHttpError.BadRequest(`unknown-webhook-event:${event}`);
     }
   }
@@ -69,7 +52,20 @@ function assertEvents(events: string[]): asserts events is WebhookEventType[] {
 
 export default class WebhookService {
   static toPublic(sub: WebhookSubscription): PublicWebhookSubscription {
-    return toPublic(sub);
+    return {
+      id: sub.id,
+      organizationId: sub.organizationId,
+      name: sub.name,
+      url: sub.url,
+      secretPrefix: sub.secretPrefix,
+      events: sub.events,
+      enabled: sub.enabled,
+      consecutiveFailures: sub.consecutiveFailures,
+      disabledAt: sub.disabledAt ?? null,
+      createdBy: sub.createdBy ?? null,
+      created: sub.created ?? null,
+      lastUpdated: sub.lastUpdated ?? null,
+    };
   }
 
   static async list(organizationId: string): Promise<PublicWebhookSubscription[]> {
@@ -77,7 +73,7 @@ export default class WebhookService {
       where: { organizationId },
       order: [["created", "DESC"]],
     });
-    return rows.map(toPublic);
+    return rows.map((row) => this.toPublic(row));
   }
 
   static async get(
@@ -122,7 +118,7 @@ export default class WebhookService {
       enabled: true,
       createdBy: params.createdBy ?? null,
     });
-    return { subscription: toPublic(row), secret };
+    return { subscription: this.toPublic(row), secret };
   }
 
   static async update(
@@ -159,7 +155,7 @@ export default class WebhookService {
       }
     }
     await sub.save();
-    return toPublic(sub);
+    return this.toPublic(sub);
   }
 
   static async remove(organizationId: string, webhookId: string): Promise<void> {
@@ -180,7 +176,7 @@ export default class WebhookService {
       secretAuthTag: encrypted.authTag,
       secretPrefix: prefix,
     });
-    return { subscription: toPublic(sub), secret };
+    return { subscription: this.toPublic(sub), secret };
   }
 
   static decryptSecret(sub: WebhookSubscription): string {

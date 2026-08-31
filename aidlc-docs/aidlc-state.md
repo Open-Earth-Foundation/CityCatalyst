@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation — UOW-02 Unit 2 implementation in progress
+- **Current Stage**: Code Generation — UOW-02 Unit 2 atomic commit approval pending
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -62,7 +62,8 @@
 - [x] UOW-02 Unit 1 implementation approved after TDD red checkpoint — 2026-08-30
 - [x] UOW-02 Unit 1 completion approved after atomic commit `c399c1951` — 2026-08-31
 - [x] UOW-02 Unit 2 implementation approved after TDD red checkpoint and cross-context test adjustment — 2026-08-31
-- [ ] UOW-02 Unit 2 green checkpoint approved
+- [x] UOW-02 Unit 2 green checkpoint complete — 2026-08-31
+- [ ] UOW-02 Unit 2 atomic commit approved after green checkpoint
 
 ## CONSTRUCTION PHASE
 - [x] Functional Design — UOW-01 artifacts approved 2026-08-29
@@ -74,5 +75,5 @@
 - [x] Functional Design — UOW-02 artifacts approved — 2026-08-29
 - [x] NFR Requirements — UOW-02 artifacts approved — 2026-08-29
 - [x] NFR Design — UOW-02 artifacts approved — 2026-08-29
-- [ ] Code Generation — UOW-02 Unit 2 implementation in progress
+- [ ] Code Generation — UOW-02 Unit 2 atomic commit approval pending
 - [ ] Build and Test — pending implementation

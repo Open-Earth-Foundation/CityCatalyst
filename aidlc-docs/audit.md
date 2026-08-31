@@ -704,4 +704,11 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Added `test_selection_cannot_cross_active_request_contexts`, which discovers a catalog/capability pair in `city-1`, attempts to bind that pair in `city-2`, and requires the stable `Requested capability is unavailable.` error without either context value in the exception. The focused suite still fails only during collection because the planned Unit 2 service module is absent; no production code was changed before the test. All other Unit 2 red-checkpoint constraints remain covered.
 **Approval Status**: Conditional approval granted by the user for Unit 2 implementation after this test adjustment; implementation may proceed.
 ---
+
+## Code Generation — UOW-02 Unit 2 TDD Green Checkpoint
+**Timestamp**: 2026-08-31T09:25:44-03:00
+**User Input**: "Provided the other constraints are met, approve the implementation of Unit 2 after this adjustment."
+**AI Response**: Implemented only the request-scoped `NativeInputCatalogService`. The seam performs one Core discovery call after an active context is resolved, retains only safe bounded projection fields, fails closed for disabled/empty/malformed/unavailable/timeout discovery, performs no selected reads or Climate Advisor capability loading during discovery, and binds only an exact current catalog/capability pair under the unchanged active context. The focused Unit 2 suite passes 13/13; the existing client suite passes 17/17; changed Python files compile. No AgentService, tool, streaming, Core, storage, or credential code was modified. The architecture documentation was updated to describe the new boundary; README/setup documentation remains accurate.
+**Approval Status**: Unit 2 implementation green checkpoint complete; atomic commit and unit-completion review pending.
+---
 ---

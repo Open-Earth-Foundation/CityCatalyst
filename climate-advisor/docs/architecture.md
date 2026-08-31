@@ -228,6 +228,23 @@ workflow state in PostgreSQL.
   - Orchestrates review staging, notation-key staging, preview, rollback, and
     draft-save flows.
   - Commits staged selection transitions through the repository and draft service.
+
+### NativeInputCatalog Consumption Boundary
+
+`services/native_input_catalog_service.py` provides the request-scoped
+consumer seam for the NativeInputCatalog integration. It accepts the resolved
+authenticated request context, calls the Core discovery capability at most
+once, and retains only the safe catalog/capability projection returned by
+Core. Discovery is limited to Core's lightweight readiness result: it does
+not load Climate Advisor capabilities, execute full reads, or construct
+source-specific tools for candidates.
+
+The same seam binds a selected `catalog_id` and opaque Core-issued
+`capability_id` only when the exact pair belongs to the current discovery and
+the active context is unchanged. This is a consumer-side integrity check, not
+authorization; selected reads remain behind the existing `CityCatalystClient`
+and Core revalidation boundary. Invalid or cross-context selections use the
+stable non-disclosing unavailable error.
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
     save-ready decision inputs for one persisted draft snapshot.

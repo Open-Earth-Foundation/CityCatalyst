@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 completion approved; Unit 2 implementation approved after cross-context test adjustment; implementation in progress.
+- **Status**: Plan approved; Unit 1 completion approved; Unit 2 implementation green; atomic commit approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -209,11 +209,11 @@ Steps:
    `capability_id` binding, stale/forged/unknown/mismatched selection rejection,
    and active-context mismatch.
 5. [x] Run the focused service tests to confirm failure before implementation.
-6. [ ] Implement request-scoped discovery validation and selection binding with
+6. [x] Implement request-scoped discovery validation and selection binding with
    bounded state; treat IDs as opaque and never derive routes/capabilities.
-7. [ ] Verify that Core remains the read-time authority and that no selection
+7. [x] Verify that Core remains the read-time authority and that no selection
    binding is treated as authorization.
-8. [ ] Run focused tests, lint/format checks, mandatory project skills, and a
+8. [x] Run focused tests, lint/format checks, mandatory project skills, and a
    serialized-field audit.
 9. [ ] Commit only this unit with:
    `feat(cc-737): add request-time catalog selection binding`.
@@ -229,6 +229,18 @@ code was modified. Implementation remains gated on explicit review of this
 red checkpoint. A follow-up test also proves that a pair discovered for one
 active context cannot be rebound under another context and receives the same
 stable undisclosed error.
+
+**TDD green checkpoint — Unit 2**: Implemented the bounded
+`NativeInputCatalogService` request-scoped seam. It performs one Core
+discovery call after a resolved context, caches only safe projection fields,
+fails closed for disabled/empty/malformed/unavailable/timeout discovery, never
+calls selected reads during discovery, and binds only an exact current pair
+under the unchanged active context. The Unit 2 suite passes 13/13, the
+existing client suite passes 17/17, and the changed Python files compile. The
+mandatory simplification pass removed no additional scoped code after the
+unused-test-import cleanup. The architecture documentation now records the
+new boundary; README/setup documentation remains accurate and unchanged.
+Atomic commit and unit-completion review remain pending.
 
 ### Unit 3 — Selected-only typed capability tools
 

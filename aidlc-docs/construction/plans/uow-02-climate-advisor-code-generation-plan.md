@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 and Unit 2 completion approved; Unit 3 atomic commit created; Unit 3 completion approval pending.
+- **Status**: Plan approved; Units 1–3 completion approved; Unit 4 TDD red checkpoint committed; Unit 4 implementation approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -325,14 +325,14 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests for catalog discovery/context handoff before agent
+1. [x] Add failing tests for catalog discovery/context handoff before agent
    creation and selected-only catalog tool composition.
-2. [ ] Add failing compatibility tests for general chat, inventory, Stationary
+2. [x] Add failing compatibility tests for general chat, inventory, Stationary
    Energy, Concept Note, legacy datasource, vector, missing context, feature
    disabled, Core unavailable, and empty discovery behavior.
 3. [ ] Add failing cancellation/cleanup and refreshed-token handoff tests if
    the shared streaming lifecycle participates in the new path.
-4. [ ] Run focused service/streaming tests to confirm failure before changes.
+4. [x] Run focused service/streaming tests to confirm failure before changes.
 5. [ ] Integrate the additive catalog pack at the narrowest existing
    composition seam without replacing or widening existing packs.
 6. [ ] Verify catalog discovery is not global/startup work and that only the
@@ -344,6 +344,16 @@ Steps:
 
 Story/requirement mapping: US-03, US-07, US-09; FR-04, FR-08, FR-10, FR-11;
 NFR-UOW02-01–08, 14–21.
+
+**TDD red checkpoint — Unit 4**: Added three AgentService composition tests
+covering discovery-before-agent construction, exact selected-tool composition,
+missing active context/selection fail-closed behavior, and preservation of the
+existing vector pack when discovery is empty. The focused AgentService suite
+collected 29 tests: 26 existing tests passed and the three new tests failed for
+the expected missing `native_input_catalog_service` constructor seam. No Unit
+4 production code, streaming changes, storage access, or credential changes
+were made. Explicit Unit 4 implementation approval is required before the
+green cycle.
 
 ### Unit 5 — Consumer security, contract, lifecycle, and compatibility hardening
 

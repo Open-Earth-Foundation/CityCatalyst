@@ -762,5 +762,21 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (implementation approval; atomic commit is the authorized unit workflow)
 **AI Response**: Created atomic commit `8388a41fe` (`feat(cc-737): add selected native input tools`) containing only the selected-only tool implementation, its test-fixture correction, architecture documentation, and AI-DLC evidence. Unrelated `app/package-lock.json`, root `package-lock.json`, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. Unit 4 has not been opened.
 **Approval Status**: Unit 3 commit created; explicit Unit 3 completion approval pending.
+
+---
+
+## Approval — UOW-02 Unit 3 Completion
+**Timestamp**: 2026-08-31T10:22:42-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of UOW-02 Unit 3 completion after atomic commit `8388a41fe` and its green verification evidence. The selected-only tool boundary, bounded Core reads, non-disclosure behavior, fault isolation, token-reference handling, and storage isolation are accepted. Opened Unit 4 at its test-first red-checkpoint gate; no Unit 4 production implementation is authorized yet.
+**Approval Status**: UOW-02 Unit 3 complete; Unit 4 red-test preparation in progress.
+
+---
+
+## Code Generation — UOW-02 Unit 4 TDD Red Checkpoint
+**Timestamp**: 2026-08-31T10:22:42-03:00
+**User Input**: "approved" (UOW-02 Unit 3 completion approval authorizing the next test-first unit)
+**AI Response**: Added only the Unit 4 AgentService composition tests. They cover discovery/context handoff before agent construction, exact selected-only catalog tool composition, missing active context/selection fail-closed behavior, and preservation of the existing vector pack when discovery is empty. The focused AgentService suite collected 29 tests: 26 existing tests passed and the three new tests failed because `AgentService` does not yet accept the planned `native_input_catalog_service` seam. No Unit 4 production code, streaming code, storage access, or credential changes were made.
+**Approval Status**: Unit 4 TDD red checkpoint complete; explicit implementation approval pending.
 ---
 ---

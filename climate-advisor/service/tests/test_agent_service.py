@@ -19,6 +19,11 @@ import unittest
 from uuid import uuid4
 
 from app.services.agent_service import AgentService
+from app.services.native_input_catalog_service import (
+    ActiveRequestContext,
+    NativeInputDiscovery,
+    NativeInputSelection,
+)
 
 
 def build_mock_settings(
@@ -407,6 +412,183 @@ class AgentCreationTests(unittest.IsolatedAsyncioTestCase):
                     call_kwargs = mock_agent_class.call_args[1]
                     # Tools should be included
                     self.assertIn("tools", call_kwargs)
+
+
+class NativeInputCatalogCompositionTests(unittest.IsolatedAsyncioTestCase):
+    """Tests for request-time selected catalog tool composition."""
+
+    def _context(self) -> ActiveRequestContext:
+        return ActiveRequestContext(
+            user_id="user-1",
+            thread_id="thread-1",
+            organization_id="organization-1",
+            project_id="project-1",
+            city_id="city-1",
+            inventory_id="inventory-1",
+        )
+
+    def _selection(self) -> NativeInputSelection:
+        return NativeInputSelection(
+            catalog_id="catalog-1",
+            capability_id="ghgi.inventory.status_overview",
+            context=self._context(),
+        )
+
+    async def test_create_agent_discovers_before_constructing_selected_catalog_tool(
+        self,
+    ) -> None:
+        settings = build_mock_settings()
+        events: list[str] = []
+        context = self._context()
+        selection = self._selection()
+        discovery = NativeInputDiscovery(
+            entries=(
+                {
+                    "catalog_id": "catalog-1",
+                    "kind": "inventory_import",
+                    "owning_module": "ghgi",
+                    "source_type": "inventory",
+                    "capability_ids": ("ghgi.inventory.status_overview",),
+                },
+            )
+        )
+        catalog_service = MagicMock()
+
+        async def discover(**kwargs):
+            events.append("discover")
+            self.assertEqual(kwargs, {"context": context, "token": "jwt-token"})
+            return discovery
+
+        def bind_selection(**kwargs):
+            events.append("bind")
+            self.assertEqual(
+                kwargs,
+                {
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                    "context": context,
+                },
+            )
+            return selection
+
+        catalog_service.discover = AsyncMock(side_effect=discover)
+        catalog_service.bind_selection.side_effect = bind_selection
+        selected_tool = SimpleNamespace(
+            name="native_input_ghgi_inventory_status_overview"
+        )
+
+        def build_tools(**kwargs):
+            events.append("tools")
+            self.assertIs(kwargs["selection"], selection)
+            self.assertIs(kwargs["discovery"], discovery)
+            self.assertEqual(kwargs["token_ref"]["value"], "jwt-token")
+            return [selected_tool]
+
+        def build_agent(**kwargs):
+            events.append("agent")
+            return SimpleNamespace(**kwargs)
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+                side_effect=build_tools,
+            ),
+            patch("app.services.agent_service.Agent", side_effect=build_agent),
+        ):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+                native_input_catalog_context=context,
+                native_input_selection={
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            )
+
+            agent = await service.create_agent()
+
+        self.assertEqual(events, ["discover", "bind", "tools", "agent"])
+        self.assertIn(selected_tool, agent.tools)
+
+    async def test_create_agent_skips_catalog_tools_without_active_context_or_selection(
+        self,
+    ) -> None:
+        settings = build_mock_settings()
+        catalog_service = MagicMock()
+        catalog_service.discover = AsyncMock()
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+            ) as build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+            )
+
+            await service.create_agent()
+
+        catalog_service.discover.assert_not_awaited()
+        build_tools.assert_not_called()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertIn("climate_vector_search", tool_names)
+
+    async def test_create_agent_preserves_existing_tools_when_catalog_discovery_is_empty(
+        self,
+    ) -> None:
+        settings = build_mock_settings()
+        context = self._context()
+        catalog_service = MagicMock()
+        catalog_service.discover = AsyncMock(
+            return_value=NativeInputDiscovery(entries=())
+        )
+
+        with (
+            patch("app.services.agent_service.get_settings", return_value=settings),
+            patch("app.services.agent_service.AsyncOpenAI"),
+            patch(
+                "app.services.agent_service.build_native_input_catalog_tools",
+                create=True,
+            ) as build_tools,
+            patch("app.services.agent_service.Agent") as mock_agent,
+        ):
+            service = AgentService(
+                cc_access_token="jwt-token",
+                cc_thread_id="thread-1",
+                cc_user_id="user-1",
+                native_input_catalog_service=catalog_service,
+                native_input_catalog_context=context,
+                native_input_selection={
+                    "catalog_id": "catalog-1",
+                    "capability_id": "ghgi.inventory.status_overview",
+                },
+            )
+
+            await service.create_agent()
+
+        catalog_service.discover.assert_awaited_once()
+        catalog_service.bind_selection.assert_not_called()
+        build_tools.assert_not_called()
+        tool_names = [
+            getattr(tool, "name", "")
+            for tool in mock_agent.call_args.kwargs["tools"]
+        ]
+        self.assertIn("climate_vector_search", tool_names)
 
 
 class SystemPromptLoadingTests(unittest.TestCase):

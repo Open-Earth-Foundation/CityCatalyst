@@ -17,7 +17,9 @@ topology, or production fallback.
 - **Status**: Deterministic verification evidence captured. Final local
   revalidation at `localhost:3000` passed 4/4 after another process occupying
   the port was cleared. UOW-03 completion was explicitly approved on
-  2026-08-31. No UOW-03 production implementation is planned.
+  2026-08-31. Build and Test/release-readiness verification has been executed;
+  final readiness and CC-737 closure approval remain pending. No UOW-03
+  production implementation is planned.
 
 ## Non-negotiable verification invariants
 
@@ -106,11 +108,27 @@ must stop verification and return to the owning design/unit gate.
   override. This is diagnostic evidence only and does not replace the
   requested 3000 run.
 - Core touched-file ESLint: passed.
-- Core touched-file Prettier check: passed.
+- Core scoped Prettier check: one pre-existing formatting drift was reported in
+  `tests/api/internal-ca-service-auth.jest.ts`; no formatting changes were made.
 - Climate Advisor touched-file compile and `git diff --check`: passed.
 - Climate Advisor Ruff: unavailable in the environment.
 - Full repository/PostgreSQL limitations remain documented in the evidence;
   they are not treated as green results.
+
+## Build and Test checkpoint
+
+- Core focused regression: 4 suites, 26/26 tests passed.
+- Climate Advisor focused regression: 109/109 tests passed.
+- Live CC–CA contract suite against the correctly configured Core at
+  `http://localhost:3000`: 4 passed, 0 failed, 0 skipped.
+- Standalone Core TypeScript compilation, targeted Core ESLint, Climate Advisor
+  Python compilation, and `git diff --check` passed.
+- Full Core lint and Prettier checks reported repository-wide findings outside
+  the CC-737-touched-file scope; Ruff was unavailable. The Core build compiled
+  successfully before failing while parsing TypeScript `--showConfig` output.
+- No application code was changed for this checkpoint, and no implementation
+  failure was observed. Final release-readiness and CC-737 closure remain
+  subject to explicit approval.
 
 **Initial evidence commit**: `96c089cfb` (`docs(cc-737): record UOW-03
 verification evidence`). The previous revalidation update is committed as

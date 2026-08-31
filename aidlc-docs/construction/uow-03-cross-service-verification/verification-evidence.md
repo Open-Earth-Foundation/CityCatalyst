@@ -1,9 +1,9 @@
 # UOW-03 Cross-Service Verification Evidence — CC-737
 
 **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`  
-**Status**: Deterministic evidence captured and final local revalidation at
-`localhost:3000` passed all four CC–CA contract tests. UOW-03 completion was
-explicitly approved on 2026-08-31.
+**Status**: UOW-03 is complete and approved. Build and Test/release-readiness
+verification is recorded below; no release-readiness or CC-737 closure claim
+has been made.
 
 ## Scope
 
@@ -100,7 +100,7 @@ from that environment. No secret values or fixture values are recorded here.
 The final run reached the intended token, capability authorization, wrong-key,
 and cross-user assertions successfully. The earlier 404 was an environment
 failure caused by another process occupying port 3000; it was resolved before
-this 4/4 run. UOW-03 remains pending explicit review and approval.
+this 4/4 run. UOW-03 completion was explicitly approved on 2026-08-31.
 
 ## Controlled current-Core diagnostic
 
@@ -126,8 +126,7 @@ configuration matches the serving port.
   authorization, wrong-key rejection, and cross-user token protection.
 - **Final result**: the correct Core at `localhost:3000` passed all four live
   contract tests.
-- UOW-03 is not approved, and no release-readiness or task-closure claim is
-  made.
+- UOW-03 is approved; no release-readiness or task-closure claim is made.
 
 ## Environment limitations
 
@@ -149,3 +148,44 @@ This evidence was explicitly reviewed and UOW-03 completion was approved on
 boundedness, lifecycle, or storage-isolation assertion returns the issue to
 the owning service/unit. No broader release-readiness or CC-737 closure claim
 is made by this approval.
+
+## Build and Test / release-readiness evidence
+
+### Fresh regression suites
+
+- Core focused NativeInputCatalog run: **4 suites passed, 26/26 tests
+  passed**.
+- Climate Advisor focused UOW-02 regression run: **109/109 passed**.
+- Live CC–CA contract run against the correctly configured Core at
+  `http://localhost:3000`: **4 passed, 0 failed, 0 skipped**.
+
+### Compile, lint, format, and diff checks
+
+- Core standalone TypeScript check (`npx tsc --noEmit`): **passed**.
+- Core CC-737-touched-file ESLint check: **passed**.
+- Climate Advisor Python compilation (`python3 -m compileall`): **passed**.
+- `git diff --check`: **passed**.
+- Climate Advisor Ruff: **unavailable** in the environment.
+- Full Core ESLint: **failed with 63 errors and 26 warnings** across the
+  repository; the CC-737-touched-file ESLint check passed, so this is recorded
+  as a repository-wide baseline finding outside this scope.
+- Full Core Prettier check: **failed with 254 files reported**. The scoped
+  check identified only the pre-existing formatting drift in
+  `tests/api/internal-ca-service-auth.jest.ts`; the CC-737 change in that file
+  adds only the two native-input route names. No formatting changes were made.
+- Core production build: compiled successfully, then failed while parsing the
+  TypeScript `--showConfig` output. Standalone `tsc --noEmit` passed; this is
+  recorded as a build/tooling limitation, not a CC-737 implementation failure.
+
+### Release-readiness classification
+
+- No available regression or live contract test identified a CC-737
+  implementation failure.
+- The remaining full-repository lint/format and Next build limitations are
+  baseline/tooling findings and require separate scope approval before any
+  remediation.
+- Core authorization, bounded reads, selected-only loading, non-disclosure,
+  storage isolation, and absence of Climate Advisor storage credentials remain
+  covered by the passing focused and live contract evidence above.
+- This artifact does not claim release readiness or close CC-737. A separate
+  explicit final approval gate remains pending.

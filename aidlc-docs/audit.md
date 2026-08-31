@@ -1028,4 +1028,43 @@ No broader release-readiness or CC-737 task-closure claim was inferred.
 **Approval Status**: UOW-03 completion approved; broader release-readiness and
 task-closure decisions remain separate.
 ---
+
+## Build and Test / Release-Readiness Verification — CC-737
+**Timestamp**: 2026-08-31T14:46:05-03:00
+**User Input**:
+```text
+UOW-03 completion is explicitly approved and recorded in commit 7867b5e94.
+
+Proceed to the planned Build and Test/release-readiness stage for CC-737.
+
+Requirements:
+
+- Do not introduce new functionality or unrelated refactoring.
+- Run the available Core and Climate Advisor regression suites.
+- Run the four live CC–CA contract tests against the correctly configured local Core on [http://localhost:3000](http://localhost:3000).
+- Run available compile, lint, format, and diff checks.
+- Preserve Core authorization, bounded reads, selected-only loading, non-disclosure, storage isolation, and the absence of storage credentials in Climate Advisor.
+- Distinguish environment limitations from implementation failures.
+- Update evidence, audit, AI-DLC state, and vault with observed results.
+- Do not claim release readiness or close CC-737 until the final approval gate.
+- If a failure requires code changes, stop and present the failure and proposed scope before modifying application code.
+```
+**AI Response**: Executed the planned Build and Test/release-readiness
+verification without modifying application code. Core focused regressions
+passed **26/26**; Climate Advisor focused regressions passed **109/109**; and
+the four live CC–CA contract tests passed **4/4** against the correctly
+configured Core at `http://localhost:3000`. Standalone Core TypeScript
+compilation, targeted Core ESLint, Climate Advisor Python compilation, and
+`git diff --check` passed. Full Core lint and Prettier checks reported
+repository-wide findings outside the CC-737-touched-file scope; the scoped
+Prettier check reported pre-existing drift in the CA auth test, and no
+formatting changes were made. The Core build compiled successfully before a
+TypeScript `--showConfig` parsing failure; Ruff was unavailable. These are
+environment/tooling or broader repository findings, not observed CC-737
+implementation failures. Core authorization, bounded reads, selected-only
+loading, non-disclosure, storage isolation, and the absence of storage
+credentials in Climate Advisor remain preserved by the passing focused and
+contract checks.
+**Approval Status**: Build and Test evidence recorded; final release-readiness
+and CC-737 closure approval remain pending. UOW-03 completion remains approved.
 ---

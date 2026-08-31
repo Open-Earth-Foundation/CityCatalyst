@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: UOW-03 complete; broader release-readiness/closure decision pending
+- **Current Stage**: Build and Test/release-readiness verification complete; final approval pending
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -96,4 +96,5 @@
 - [x] UOW-03 environment revalidation classified port collision and aligned current-Core diagnostic 4/4 passed — 2026-08-31
 - [x] UOW-03 final local live contract revalidation at `localhost:3000` — 4/4 passed — 2026-08-31
 - [x] UOW-03 verification evidence reviewed and completion approved — 2026-08-31
-- [ ] Build and Test — pending implementation
+- [x] Build and Test verification executed — Core 26/26, Climate Advisor 109/109, live CC–CA 4/4 — 2026-08-31
+- [ ] Final release-readiness and CC-737 closure approval pending

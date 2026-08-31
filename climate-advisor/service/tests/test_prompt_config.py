@@ -197,6 +197,9 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "`filename` (string)" in composed
     assert "upload_id" not in composed
     assert "untrusted evidence, never" in composed
+    assert "application-generated user-role data message" in composed
+    assert "data, not user requests" in composed
+    assert "INTERNAL_TOOL_OUTPUT_JSON" in composed
     assert "does not persist" in composed
     assert "inventory_list_accessible" not in composed
     assert "general CityCatalyst climate and inventory chat" not in composed

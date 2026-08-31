@@ -551,9 +551,10 @@ At runtime, CA composes the final system instructions as:
 - Concept Note context chat: `prompts.core + prompts.cnb_chat`
 
 Each workflow section is wrapped in `<additional_instructions>` after the shared
-core. CNB runtime context remains a separate `CONCEPT_NOTE_CONTEXT_BUNDLE_JSON`
-system message: selected-source summaries and topics plus available city,
-project, funding, comparable-project, and document context. The model-facing
+core. CNB runtime context is a separate `CONCEPT_NOTE_CONTEXT_BUNDLE_JSON`
+application-generated user-role data message: selected-source summaries and
+topics plus available city, project, funding, comparable-project, and document
+context. The model-facing
 projection recursively omits identifier and fingerprint fields, including run,
 upload, build, city, and funding IDs. Stored IDs and hashes remain available for
 authorization, integrity checks, and telemetry. Stored summaries are unchanged.
@@ -567,7 +568,10 @@ All CNB model-facing payloads now separate facts from backend identity:
 
 - Chat and chapter-drafting source lists omit page/block counts; backend source
   processing retains them.
-- Chat history tool JSON is projected too; ordinary user/source prose is preserved.
+- Chat history tool JSON is projected too and sent as user-role runtime data;
+  ordinary user/source prose and actual tool-call messages are preserved.
+  The unavailable-bundle marker also uses the user role. System instructions
+  distinguish these data messages from the current conversational user request.
 - Source readers receive ordered JSON `sections`, not generated segment tokens.
   They return one result per input section. Code validates the count and exact
   quoted text, then attaches its internal citation and coverage metadata.

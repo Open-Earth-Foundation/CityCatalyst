@@ -65,7 +65,7 @@ def readable_source_heading(anchor: str) -> str:
 
 
 def clean_cnb_history(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Project persisted tool metadata without touching transport call IDs or prose."""
+    """Demote generated tool history to runtime data, preserving transport and prose."""
     cleaned = []
     for message in messages:
         content = message.get("content")
@@ -95,6 +95,7 @@ def clean_cnb_history(messages: list[dict[str, Any]]) -> list[dict[str, Any]]:
                             pass
             message = {
                 **message,
+                "role": "user",
                 "content": "INTERNAL_TOOL_OUTPUT_JSON\n"
                 + json.dumps(omit_context_identifiers(payload), ensure_ascii=False),
             }

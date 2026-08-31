@@ -2244,7 +2244,12 @@ Prompt composition should follow the current CA pattern:
   (`prompts/cnb/chat.md`), using the same `<additional_instructions>` wrapper as
   Stationary Energy review chat. It provides source-query guidance, evidence
   handling, and no-fabrication rules without granting document-mutation tools.
-- Runtime context injection is separate from prompt-file composition.
+- Runtime context injection is separate from prompt-file composition. CNB bundle
+  JSON and its unavailable-bundle marker use application-generated `user`-role
+  data messages, not `system` messages. Retained `INTERNAL_TOOL_OUTPUT_JSON`
+  messages are likewise projected to the user role for CNB only; live tool-call
+  messages retain their protocol roles. The system prompt identifies these as
+  untrusted evidence rather than user requests and retains the behavioral rules.
 - Future chat-driven editing adds chapter-editing and approval rules separately;
   the current CNB chat must not claim that suggested wording was saved.
 

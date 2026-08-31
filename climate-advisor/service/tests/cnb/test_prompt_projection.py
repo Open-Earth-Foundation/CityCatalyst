@@ -185,6 +185,9 @@ def test_chat_history_cleans_nested_tool_json_but_not_user_prose():
     }
     user_message = {"role": "user", "content": tool_message["content"]}
     cleaned = clean_cnb_history([tool_message, user_message])
+    assert cleaned[0]["role"] == "user"
+    assert tool_message["role"] == "system"
+    assert clean_cnb_history(cleaned) == cleaned
     payload = json.loads(cleaned[0]["content"].split("\n", 1)[1])
     assert_clean(payload)
     assert payload["tools_used"][0]["result"]["text"] == old_result["text"]

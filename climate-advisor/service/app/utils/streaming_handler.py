@@ -421,7 +421,7 @@ class StreamingHandler:
         return self._stationary_energy_context_message(context_payload)
 
     async def _load_concept_note_context_message(self) -> Optional[Dict[str, str]]:
-        """Load compact bundle summaries for the authorized Concept Note run."""
+        """Load authorized CNB evidence as a user-role runtime-data message."""
         run_id_text = self.workflow_context.concept_note_run_id
         if not run_id_text or not self.session_factory:
             return None
@@ -441,14 +441,14 @@ class StreamingHandler:
             return None
         if context is None:
             return {
-                "role": "system",
+                "role": "user",
                 "content": (
                     "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n"
                     "The authorized Concept Note context bundle is not ready."
                 ),
             }
         return {
-            "role": "system",
+            "role": "user",
             "content": (
                 "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n"
                 f"{json.dumps(context, ensure_ascii=False, default=str)}"

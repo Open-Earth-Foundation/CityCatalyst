@@ -184,7 +184,11 @@ const getPrioritizationResultImpl = async (
   return json;
 };
 
-/** This Service works with the AI API. In development, run kubectl port-forward svc/hiap-service-dev 8080:80 to access it. */
+/**
+ * Poll HIAP for plan completion, persist the plan, and email on first create.
+ * Intended to run in the background after the generate route returns 202.
+ * In development, run: kubectl port-forward svc/hiap-service-dev 8080:80
+ */
 const startActionPlanJobImpl = async ({
   action,
   cityId,
@@ -341,71 +345,69 @@ const startActionPlanJobImpl = async ({
       throw new Error("Invalid plan data format");
     }
 
-    // Save action plan to database
-    try {
-      const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
+    // Ranked actions carry HighImpactActionRanked.id in `action.id` and the
+    // parent ranking UUID in `action.hiaRankingId`. Unranked actions leave
+    // hiaRankingId empty and must not pass a ranked-row FK.
+    const highImpactActionRankedId = action.hiaRankingId
+      ? action.id
+      : undefined;
+
+    // Persist first; only treat the job as successful once the plan is saved.
+    const { actionPlan, created } = await ActionPlanService.upsertActionPlan({
+      cityId,
+      actionId: action.actionId,
+      highImpactActionRankedId,
+      cityLocode,
+      inventoryId,
+      actionName: action.name,
+      language: lng,
+      planData,
+      createdBy,
+    });
+
+    logger.info(
+      { actionPlanId: actionPlan.id, created },
+      `Action plan ${created ? "created" : "updated"} in database`,
+    );
+
+    if (created) {
+      await WebhookService.emitForCity(cityId, "plan.generated", {
+        planId: actionPlan.id,
         cityId,
-        actionId: action.actionId,
-        highImpactActionRankedId: action.hiaRankingId, // This should be the ranked ID, not ranking ID
-        cityLocode,
-        inventoryId,
+        rankingId: action.hiaRankingId,
         actionName: action.name,
-        language: lng,
-        planData,
-        createdBy,
+        createdAt:
+          actionPlan.created?.toISOString() ?? new Date().toISOString(),
       });
-
-      logger.info(
-        { actionPlanId: actionPlan.id, created },
-        `Action plan ${created ? "created" : "updated"} in database`,
-      );
-
-      if (created) {
-        await WebhookService.emitForCity(cityId, "plan.generated", {
-          planId: actionPlan.id,
-          cityId,
-          rankingId: action.hiaRankingId,
-          actionName: action.name,
-          createdAt:
-            actionPlan.created?.toISOString() ?? new Date().toISOString(),
-        });
-      }
-
-      // Send email notification if action plan was successfully created
-      if (created && createdBy) {
-        try {
-          const user = await db.models.User.findByPk(createdBy);
-          if (user) {
-            await ActionPlanEmailService.sendActionPlanReadyEmailWithUrl(
-              user,
-              action.name,
-              planData.metadata?.cityName || cityLocode,
-              cityId,
-              inventoryId,
-              lng,
-            );
-          }
-        } catch (emailError) {
-          logger.error(
-            { error: emailError },
-            "Failed to send action plan email",
-          );
-          // Continue execution - email failure shouldn't break the API response
-        }
-      }
-    } catch (dbError) {
-      logger.error(
-        { error: dbError },
-        "Failed to save action plan to database",
-      );
-      // Continue execution - don't fail the API response due to DB issues
     }
 
-    // Update state with the generated plan
+    // Email only after a successful first-time save (not on regenerate/update).
+    if (created && createdBy) {
+      try {
+        const user = await db.models.User.findByPk(createdBy);
+        if (user) {
+          await ActionPlanEmailService.sendActionPlanReadyEmailWithUrl(
+            user,
+            action.name,
+            planData.metadata?.cityName || cityLocode,
+            cityId,
+            inventoryId,
+            lng,
+          );
+        }
+      } catch (emailError) {
+        logger.error(
+          { error: emailError },
+          "Failed to send action plan email",
+        );
+        // Plan is already saved — do not fail the request for email issues.
+      }
+    }
+
     return {
       plan,
       timestamp: new Date().toISOString(),
-      actionName: action.name, // Use the action name
+      actionName: action.name,
     };
   } catch (error) {
     logger.error({ error }, "Error generating plan");

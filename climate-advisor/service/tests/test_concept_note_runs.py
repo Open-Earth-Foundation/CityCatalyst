@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 from uuid import UUID, uuid4
 
 import pytest
@@ -7,7 +7,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import StaticPool
 
-from app.models.concept_note_runs import (
+from app.models.cnb.concept_note_runs import (
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )
@@ -18,6 +18,7 @@ from app.services.citycatalyst_client import (
     CityCatalystClient,
     CityCatalystClientError,
 )
+from app.services.cnb.context_bundle import ContextBundleService
 from app.services.cnb.funding_references import FundingReferenceValidator
 from app.services.concept_note_runs import (
     ConceptNoteRunService,
@@ -135,6 +136,51 @@ async def test_start_run_creates_after_scope_and_reference_validation() -> None:
         funder_id=None,
         selected_funding_opportunity_id=None,
     )
+
+
+@pytest.mark.parametrize("created", [True, False])
+async def test_start_run_schedules_only_new_context_after_commit(
+    monkeypatch,
+    created: bool,
+) -> None:
+    """Commit every accepted start and schedule only newly created runs."""
+    payload = _start_request()
+    service, repository, _, _ = _run_service()
+    repository.create_or_get.return_value = (
+        _persisted_run(
+            payload,
+            request_fingerprint=_request_fingerprint(payload),
+        ),
+        created,
+    )
+    context_bundle_service = Mock(spec=ContextBundleService)
+    schedule = Mock()
+    events: list[str] = []
+    service.session.commit.side_effect = lambda: events.append("commit")
+    schedule.side_effect = lambda **_: events.append("schedule")
+    monkeypatch.setattr(
+        "app.services.concept_note_runs.schedule_context_bundle_build",
+        schedule,
+    )
+
+    response = await service.start_run_and_schedule_context(
+        payload,
+        authorization="Bearer token",
+        context_bundle_service=context_bundle_service,
+    )
+
+    assert response.created is created
+    assert events == (["commit", "schedule"] if created else ["commit"])
+    service.session.commit.assert_awaited_once_with()
+    if created:
+        schedule.assert_called_once_with(
+            service=context_bundle_service,
+            user_id=payload.user_id,
+            run_id=response.run_id,
+            token="token",
+        )
+    else:
+        schedule.assert_not_called()
 
 
 async def test_start_run_rejects_reused_key_with_different_fingerprint() -> None:

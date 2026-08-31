@@ -14,6 +14,7 @@ on:
       - k8s/test/cc-test-ca-smoke-fixture.yml
       - k8s/test/cc-test-web-deploy.yml
       - k8s/test/cc-test-web.yml
+      - k8s/test/cc-test-check-hiap-jobs.yml
       - k8s/test/cc-test-process-pdf-ocr-jobs.yml
       - k8s/test/cc-test-process-webhook-deliveries.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
@@ -63,7 +64,7 @@ jobs:
           echo "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" >> .env.local
           echo "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" >> .env.local && \
           echo "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.network" >> .env.local && \
-          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" >> .env.local && \
+          echo "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,NUMERICAL_FORMATS,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" >> .env.local && \
           echo "NEXT_PUBLIC_POSTHOG_KEY=${{ secrets.NEXT_PUBLIC_POSTHOG_KEY }}" >> .env.local && \
           echo "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" >> .env.local
 
@@ -257,12 +258,12 @@ jobs:
             "NEXTAUTH_URL=https://citycatalyst-test.openearth.dev" \
             "NEXT_PUBLIC_API_URL=https://citycatalyst-test.openearth.dev" \
             "GLOBAL_API_URL=https://ccglobal-test.openearth.dev" \
-            "HIAP_API_URL=http://hiap-service-dev" \
+            "HIAP_API_URL=http://hiap-service-test" \
             "HIAP_MEED_API_URL=http://hiap-meed-service-test" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "OPENCLIMATE_API_URL=https://openclimate.openearth.dev" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
-            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,STATIONARY_ENERGY_AGENTIC" \
+            "NEXT_PUBLIC_FEATURE_FLAGS=ENTERPRISE_MODE,ACCOUNT_SETTINGS_ENABLED,OAUTH_ENABLED,ANALYTICS_ENABLED,JN_ENABLED,CA_SERVICE_INTEGRATION,CONCEPT_NOTE_BUILDER,STATIONARY_ENERGY_AGENTIC" \
             "NEXT_PUBLIC_POSTHOG_KEY=${{secrets.NEXT_PUBLIC_POSTHOG_KEY}}" \
             "NEXT_PUBLIC_POSTHOG_HOST=https://eu.i.posthog.com" \
             "NEXT_PUBLIC_DEPLOYMENT_ENV=staging" \
@@ -278,9 +279,9 @@ jobs:
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}" \
             "WEBHOOK_SECRET_ENCRYPTION_KEY=${{secrets.WEBHOOK_SECRET_ENCRYPTION_KEY}}"
           kubectl create -f k8s/test/cc-test-create-admin.yml -n default
+          kubectl apply -f k8s/test/cc-test-check-hiap-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-test-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
-          kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl apply -f k8s/test/cc-test-process-pdf-ocr-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-test-process-pdf-ocr-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"

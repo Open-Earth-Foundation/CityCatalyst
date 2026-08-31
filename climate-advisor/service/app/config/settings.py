@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional
 
 import yaml
-from dotenv import find_dotenv, load_dotenv, dotenv_values
+from dotenv import dotenv_values, find_dotenv, load_dotenv
 from pydantic import BaseModel, Field
 
 _ENV_LOADED = False
@@ -133,6 +133,7 @@ class ModelsConfig(BaseModel):
     funder_identity: ResearchModelConfig
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
+    cnb_chapter_drafter: ResearchModelConfig | None = None
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -148,7 +149,7 @@ class StationaryEnergyPromptBudgetConfig(BaseModel):
 
 
 class CnbSourcePromptBudgetConfig(BaseModel):
-    """Limits for page-preserving Concept Note source analysis."""
+    """Limits for source-preserving Concept Note analysis."""
 
     max_partition_tokens: int = Field(default=50000, ge=1000)
     max_concurrency: int = Field(default=3, ge=1, le=3)
@@ -185,6 +186,7 @@ class PromptsConfig(BaseModel):
     cnb_source_document_mapping: str = "prompts/cnb/source_document_mapping.md"
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
+    cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

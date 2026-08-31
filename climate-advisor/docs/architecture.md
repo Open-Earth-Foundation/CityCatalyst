@@ -273,16 +273,21 @@ workflow state in PostgreSQL.
 - `utils/token_handler.py`
   - Refreshes and persists CityCatalyst tokens.
 
-### Concept Note PDF Context
+### Concept Note Source Context
 
 The detailed bundle schema, persistence guards, source-analysis rules, and
 capability contract live in
 [`ConceptNoteBuilderArchitecture.md`](../../docs/ConceptNoteBuilderArchitecture.md#context-bundle).
-Operationally, a ready PDF triggers guarded background assembly, optional
-GHGI/HIAP failures do not block readiness, and eligible Concept Note turns use
-the existing stream with compact summaries plus one step-scoped read-only
-selected-document query. `llm_config.yaml` remains the source of truth for the
-reader models, prompts, partition budget, and concurrency limit.
+Operationally, run creation schedules guarded background assembly. A run with
+no uploaded source records `document_grounding: none`; a ready PDF or native
+Markdown source rebuilds it as `uploaded_evidence`. Separate
+`available_context` flags report CityCatalyst and uploaded-document presence.
+Evidence keeps page or heading/block locators, optional GHGI/HIAP failures do
+not block readiness, and eligible turns get one scoped read-only source query.
+During rebuilds, callers keep using the last completed bundle; unchanged
+document analyses are reused by digest and analysis-contract version. Reader
+and chapter-drafter configuration remains in `llm_config.yaml`, and the public
+CNB contracts live under `app/models/cnb`.
 
 ## SSE Contract
 

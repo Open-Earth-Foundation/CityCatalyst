@@ -16,6 +16,7 @@ const loadUpload = jest.fn<() => Promise<Record<string, unknown>>>();
 const updateUpload = jest.fn<() => Promise<void>>();
 const getJob = jest.fn<() => Promise<Record<string, unknown> | null>>();
 const retryOcr = jest.fn<() => Promise<"ocr" | "delivery" | "noop">>();
+const triggerProcessing = jest.fn<() => void>();
 const canAccessCity = jest.fn<() => Promise<void>>();
 const loggerInfo = jest.fn();
 
@@ -64,6 +65,12 @@ jest.unstable_mockModule("@/backend/PdfOcrService", () => ({
   normalizeConceptNotePdfOcrStatus: normalizeStatus,
   retryConceptNotePdfOcr: retryOcr,
 }));
+jest.unstable_mockModule(
+  "@/backend/ConceptNoteSourceProcessingService",
+  () => ({
+    triggerConceptNoteSourceProcessing: triggerProcessing,
+  }),
+);
 jest.unstable_mockModule("@/backend/permissions/PermissionService", () => ({
   PermissionService: { canAccessCity },
 }));
@@ -214,6 +221,7 @@ describe("Concept Note upload status and retry routes", () => {
         deliveryStatus: "delivered",
       }),
     );
+    expect(triggerProcessing).toHaveBeenCalledTimes(1);
     expect(loggerInfo).toHaveBeenCalledWith(
       {
         requestId,
@@ -253,6 +261,7 @@ describe("Concept Note upload status and retry routes", () => {
       stage: "delivery",
       retryKind: "delivery",
     });
+    expect(triggerProcessing).toHaveBeenCalledTimes(1);
   });
 
   it("still rejects an upload whose successful OCR was delivered", async () => {

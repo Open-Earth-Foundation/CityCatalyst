@@ -137,14 +137,13 @@ def _build_removed_action_legal_evidence(
         "verdict_score": evidence.get("legal_verdict_score"),
         "ownership_category": summary.get("ownership_category"),
         "ownership_score": summary.get("ownership_score"),
-        "ownership_description": summary.get("ownership_description"),
-        "ownership_description_es": summary.get("ownership_description_es"),
+        "ownership_description": dict(summary.get("ownership_description", {})),
         "restrictions_category": summary.get("restrictions_category"),
         "restrictions_score": summary.get("restrictions_score"),
-        "restrictions_description": summary.get("restrictions_description"),
-        "restrictions_description_es": summary.get("restrictions_description_es"),
-        "legal_justification": summary.get("legal_justification"),
-        "legal_justification_en": summary.get("legal_justification_en"),
+        "restrictions_description": dict(
+            summary.get("restrictions_description", {})
+        ),
+        "legal_justification": dict(summary.get("legal_justification", {})),
         "legal_references": list(summary.get("legal_references", [])),
     }
 
@@ -189,14 +188,15 @@ def _group_feasibility_evidence(evidence: dict[str, object]) -> dict[str, object
             ),
             "ownership_category": evidence.get("ownership_category"),
             "ownership_score": evidence.get("ownership_score"),
-            "ownership_description": evidence.get("ownership_description"),
-            "ownership_description_es": evidence.get("ownership_description_es"),
+            "ownership_description": dict(
+                evidence.get("ownership_description", {})
+            ),
             "restrictions_category": evidence.get("restrictions_category"),
             "restrictions_score": evidence.get("restrictions_score"),
-            "restrictions_description": evidence.get("restrictions_description"),
-            "restrictions_description_es": evidence.get("restrictions_description_es"),
-            "legal_justification": evidence.get("legal_justification"),
-            "legal_justification_en": evidence.get("legal_justification_en"),
+            "restrictions_description": dict(
+                evidence.get("restrictions_description", {})
+            ),
+            "legal_justification": dict(evidence.get("legal_justification", {})),
             "analysis_date": evidence.get("legal_analysis_date"),
             "generation_method": evidence.get("legal_generation_method"),
             "legal_references": list(evidence.get("legal_references", [])),
@@ -355,29 +355,26 @@ def _build_evidence_summary(
                 "ownership_score": feasibility_evidence.get("legal", {}).get(
                     "ownership_score"
                 ),
-                "ownership_description": feasibility_evidence.get("legal", {}).get(
-                    "ownership_description"
+                "ownership_description": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "ownership_description", {}
+                    )
                 ),
-                "ownership_description_es": feasibility_evidence.get(
-                    "legal", {}
-                ).get("ownership_description_es"),
                 "restrictions_category": feasibility_evidence.get("legal", {}).get(
                     "restrictions_category"
                 ),
                 "restrictions_score": feasibility_evidence.get("legal", {}).get(
                     "restrictions_score"
                 ),
-                "restrictions_description": feasibility_evidence.get("legal", {}).get(
-                    "restrictions_description"
+                "restrictions_description": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "restrictions_description", {}
+                    )
                 ),
-                "restrictions_description_es": feasibility_evidence.get(
-                    "legal", {}
-                ).get("restrictions_description_es"),
-                "legal_justification": feasibility_evidence.get("legal", {}).get(
-                    "legal_justification"
-                ),
-                "legal_justification_en": feasibility_evidence.get("legal", {}).get(
-                    "legal_justification_en"
+                "legal_justification": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "legal_justification", {}
+                    )
                 ),
                 "legal_references": list(
                     feasibility_evidence.get("legal", {}).get("legal_references", [])

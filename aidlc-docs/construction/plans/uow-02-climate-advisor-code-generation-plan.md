@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 committed after green checkpoint; unit-completion approval pending.
+- **Status**: Plan approved; Unit 1 completion approved; Unit 2 TDD red checkpoint committed; Unit 2 implementation approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -198,17 +198,17 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests proving discovery runs once after active context
+1. [x] Add failing tests proving discovery runs once after active context
    resolution and before catalog tool construction.
-2. [ ] Add failing tests proving discovery consumes safe Core projections,
+2. [x] Add failing tests proving discovery consumes safe Core projections,
    retains no omission reason/raw scope/source/storage data, and creates no
    source tool or full-read call for any candidate.
-3. [ ] Add failing tests for disabled, empty, unavailable, malformed, and
+3. [x] Add failing tests for disabled, empty, unavailable, malformed, and
    timeout discovery; assert no catalog tools and unchanged existing packs.
-4. [ ] Add failing tests for exact current `catalog_id` + Core-issued
+4. [x] Add failing tests for exact current `catalog_id` + Core-issued
    `capability_id` binding, stale/forged/unknown/mismatched selection rejection,
    and active-context mismatch.
-5. [ ] Run the focused service tests to confirm failure before implementation.
+5. [x] Run the focused service tests to confirm failure before implementation.
 6. [ ] Implement request-scoped discovery validation and selection binding with
    bounded state; treat IDs as opaque and never derive routes/capabilities.
 7. [ ] Verify that Core remains the read-time authority and that no selection
@@ -220,6 +220,13 @@ Steps:
 
 Story/requirement mapping: US-03, US-07, US-09; FR-01 through FR-04, FR-06,
 FR-07, FR-08, FR-11; NFR-UOW02-01–04, 07, 09–11, 15–17, 21–22.
+
+**TDD red checkpoint — Unit 2**: Added the request-time discovery and
+selection-binding tests. The focused suite fails during collection because
+the planned `app.services.native_input_catalog_service` module does not yet
+exist. No Unit 2 production code, tool factory, AgentService, or streaming
+code was modified. Implementation remains gated on explicit review of this
+red checkpoint.
 
 ### Unit 3 — Selected-only typed capability tools
 

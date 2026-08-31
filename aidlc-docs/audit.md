@@ -683,4 +683,18 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (Unit 1 implementation approval already recorded)
 **AI Response**: Created atomic commit `c399c1951` (`feat(cc-737): add Climate Advisor catalog client contract`) containing the Unit 1 Climate Advisor client implementation and its AI-DLC plan/state/audit evidence. The preceding red-test commit is `0c28762d8`. No unrelated application changes were staged; the pre-existing `app/package-lock.json` modification and untracked setup files remain untouched. Unit 2 is not opened.
 **Approval Status**: Unit 1 commit created; explicit unit-completion approval pending.
+
+## Approval — UOW-02 Unit 1 Completion
+**Timestamp**: 2026-08-31T09:25:44-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of UOW-02 Unit 1 completion and opened Unit 2 under the already approved Code Generation plan. Unit 1 remains represented by atomic implementation commit `c399c1951` plus its preceding red-test commit `0c28762d8`; no unrelated changes were included.
+**Approval Status**: UOW-02 Unit 1 complete; Unit 2 test-first red checkpoint opened.
+---
+
+## Code Generation — UOW-02 Unit 2 TDD Red Checkpoint
+**Timestamp**: 2026-08-31T09:25:44-03:00
+**User Input**: "approved" (Unit 1 completion approval)
+**AI Response**: Added only the Unit 2 Climate Advisor request-time discovery and selection-binding tests. The focused pytest command collected no tests because the planned `app.services.native_input_catalog_service` module does not yet exist, producing the expected `ModuleNotFoundError`. The tests cover once-per-request discovery after resolved context, safe projection/non-disclosure, no full-read or capability loading during discovery, disabled/empty/malformed/unavailable/timeout fail-closed behavior, and exact current catalog/capability-pair binding. No Unit 2 production code, tool factory, AgentService, or streaming code was modified.
+**Approval Status**: Unit 2 TDD red checkpoint complete; explicit implementation approval pending.
+---
 ---

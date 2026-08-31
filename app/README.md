@@ -111,6 +111,12 @@ Source PDFs have one fixed 20 MB product limit
 (`20 * 1024 * 1024` bytes) shared by the upload validator and OCR worker. See
 `env.example` for timeout, lease, concurrency, and model configuration.
 
+To use Concept Note Builder locally, run the sibling `climate-advisor` service
+at `http://localhost:8081`. The copied `env.example` enables
+both `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` and sets
+`CA_BASE_URL` to that address. Climate Advisor must also have its independent
+`CNB_DATABASE_URL` configured and migrated.
+
 ## Running
 
 ### Development

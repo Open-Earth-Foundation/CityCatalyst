@@ -11,8 +11,10 @@ import {
   jest,
 } from "@jest/globals";
 import { ChakraProvider } from "@chakra-ui/react";
-import { act } from "react";
+import { configureStore } from "@reduxjs/toolkit";
+import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { Provider } from "react-redux";
 
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type {
@@ -36,6 +38,10 @@ const translations: Record<string, string> = {
   "guided-review-template-unavailable-description":
     "Review application setup before running the review again.",
   "guided-review-progress": "{{current}} of {{total}} chapters reviewed",
+  "guided-review-partial-failure":
+    "{{completed}} chapters were reviewed, but {{count}} could not be checked.",
+  "guided-review-chapter-failed-service":
+    "The review service was temporarily unavailable.",
   "guided-review-running": "Reviewing the full document",
   "guided-review-running-description":
     "Up to three chapters at once. Completeness first, consistency second.",
@@ -75,6 +81,11 @@ const translations: Record<string, string> = {
   "review-no-missing-information": "No missing information",
   "review-fix-blockers": "Fix blockers ({{count}})",
   "review-review-warnings": "Review warnings ({{count}})",
+  "review-rerun": "Re-run review",
+  "review-retry-failed": "Retry {{count}} failed chapters",
+  "review-saved-results": "Saved review results",
+  "review-saved-results-at": "Showing saved results from {{date}}.",
+  "review-saved-results-description": "Showing saved results.",
   "review-open-chapter": "Open chapter to fix",
   "review-omitted-prompts": "Unanswered prompts are omitted from the file",
   "review-step-conflicts-logic": "Conflicts & logic",
@@ -121,15 +132,19 @@ jest.unstable_mockModule("@/i18n/client", () => ({
   }),
 }));
 
-jest.unstable_mockModule("@/services/api", () => ({
-  api: {
-    useValidateConceptNoteChapterMutation: () => [validateChapter],
-  },
-}));
-
 let ExportDialog: typeof import("@/components/ConceptNoteWorkspace/export-dialog").ExportDialog;
+let api: typeof import("@/services/api").api;
 let container: HTMLDivElement;
 let root: Root;
+let store: ReturnType<typeof createTestStore>;
+
+function createTestStore() {
+  return configureStore({
+    reducer: { [api.reducerPath]: api.reducer },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(api.middleware),
+  });
+}
 
 function chapter(
   chapterId: string,
@@ -229,6 +244,29 @@ function validationFor(
   };
 }
 
+function draftWithSavedValidations({
+  missingInformation = ["Add required information"],
+  ready = false,
+}: {
+  missingInformation?: string[];
+  ready?: boolean;
+} = {}): ConceptNoteDraftState {
+  const savedDraft = draft();
+  return {
+    ...savedDraft,
+    chapters: savedDraft.chapters.map((draftChapter) => {
+      const validation = validationFor(draftChapter.chapter_id);
+      return {
+        ...draftChapter,
+        missing_information: missingInformation,
+        validation: ready
+          ? { ...validation, checks: [], findings: [], status: "ready" }
+          : validation,
+      };
+    }),
+  };
+}
+
 function button(label: string): HTMLButtonElement {
   const match = [...document.body.querySelectorAll("button")].find((item) =>
     item.textContent?.includes(label),
@@ -247,9 +285,22 @@ async function click(label: string): Promise<void> {
 
 async function settle(): Promise<void> {
   await act(async () => {
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => resolve()),
+    );
     await Promise.resolve();
     await Promise.resolve();
     await Promise.resolve();
+  });
+}
+
+async function renderWithProviders(children: ReactNode): Promise<void> {
+  await act(async () => {
+    root.render(
+      <Provider store={store}>
+        <ChakraProvider value={appTheme}>{children}</ChakraProvider>
+      </Provider>,
+    );
   });
 }
 
@@ -260,11 +311,16 @@ function cloneForTest<Value>(value: Value): Value {
 beforeAll(async () => {
   globalThis.IS_REACT_ACT_ENVIRONMENT = true;
   globalThis.structuredClone = cloneForTest;
+  globalThis.fetch = jest.fn() as typeof fetch;
   globalThis.ResizeObserver = class {
     disconnect() {}
     observe() {}
     unobserve() {}
   };
+  ({ api } = await import("@/services/api"));
+  jest
+    .spyOn(api, "useValidateConceptNoteChapterMutation")
+    .mockImplementation(() => [validateChapter] as never);
   ({ ExportDialog } =
     await import("@/components/ConceptNoteWorkspace/export-dialog"));
 });
@@ -277,6 +333,7 @@ beforeEach(() => {
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
+  store = createTestStore();
   validateChapter.mockImplementation((request) => ({
     unwrap: async () => validationFor(request.chapterId),
   }));
@@ -307,27 +364,23 @@ describe("guided review before export", () => {
         }),
     }));
 
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <ExportDialog
-            draft={draftWithChapterCount(5)}
-            draftError={false}
-            hasApplicationTemplate
-            hasUploadedEvidence={false}
-            lng="en"
-            noteName="Kraków Tram"
-            onAddInformation={jest.fn()}
-            onOpenChange={jest.fn()}
-            onRetryDraft={jest.fn()}
-            onReviewComplete={onReviewComplete}
-            onReviewSetup={jest.fn()}
-            open
-            runId="run-1"
-          />
-        </ChakraProvider>,
-      );
-    });
+    await renderWithProviders(
+      <ExportDialog
+        draft={draftWithChapterCount(5)}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={onReviewComplete}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
     await settle();
 
     expect(validateChapter).toHaveBeenCalledTimes(3);
@@ -374,23 +427,11 @@ describe("guided review before export", () => {
       runId: "run-1",
     };
 
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <ExportDialog {...props} draft={null} />
-        </ChakraProvider>,
-      );
-    });
+    await renderWithProviders(<ExportDialog {...props} draft={null} />);
     await settle();
     expect(validateChapter).not.toHaveBeenCalled();
 
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <ExportDialog {...props} draft={draft()} />
-        </ChakraProvider>,
-      );
-    });
+    await renderWithProviders(<ExportDialog {...props} draft={draft()} />);
     await settle();
 
     expect(
@@ -399,32 +440,196 @@ describe("guided review before export", () => {
     expect(document.body.textContent).toContain("Missing information");
   });
 
+  it("opens current saved results without rerunning and offers an explicit rerun", async () => {
+    await renderWithProviders(
+      <ExportDialog
+        draft={draftWithSavedValidations()}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
+    await settle();
+
+    expect(validateChapter).not.toHaveBeenCalled();
+    expect(document.body.textContent).toContain("Saved review results");
+
+    await click("Re-run review");
+    await settle();
+
+    expect(
+      validateChapter.mock.calls.map(([request]) => request.chapterId),
+    ).toEqual(["chapter-target", "chapter-related"]);
+  });
+
+  it("revalidates a saved result whose revision no longer matches", async () => {
+    const savedDraft = draftWithSavedValidations();
+    savedDraft.chapters[1] = {
+      ...savedDraft.chapters[1],
+      revision_number: 2,
+    };
+
+    await renderWithProviders(
+      <ExportDialog
+        draft={savedDraft}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
+    await settle();
+
+    expect(validateChapter).toHaveBeenCalledTimes(1);
+    expect(validateChapter.mock.calls[0][0].chapterId).toBe("chapter-related");
+  });
+
+  it("keeps successful chapter results and retries only failed chapters", async () => {
+    let relatedChapterFailed = false;
+    validateChapter.mockImplementation((request) => ({
+      unwrap: async () => {
+        if (request.chapterId === "chapter-related" && !relatedChapterFailed) {
+          relatedChapterFailed = true;
+          throw Object.assign(new Error("Service unavailable"), {
+            status: 503,
+          });
+        }
+        return validationFor(request.chapterId);
+      },
+    }));
+
+    await renderWithProviders(
+      <ExportDialog
+        draft={draft()}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
+    await settle();
+
+    expect(document.body.textContent).toContain("A required amount is missing");
+    expect(document.body.textContent).toContain("Use of EUCF support");
+    expect(document.body.textContent).toContain(
+      "The review service was temporarily unavailable.",
+    );
+
+    await click("Retry 1 failed chapters");
+    await settle();
+
+    expect(
+      validateChapter.mock.calls.map(([request]) => request.chapterId),
+    ).toEqual(["chapter-target", "chapter-related", "chapter-related"]);
+    expect(document.body.textContent).not.toContain(
+      "The review service was temporarily unavailable.",
+    );
+  });
+
+  it("does not call a document ready while unanswered prompts will be omitted", async () => {
+    await renderWithProviders(
+      <ExportDialog
+        draft={draftWithSavedValidations({ ready: true })}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
+    await settle();
+    await click("Continue to conflicts & logic");
+    await click("Continue to decision");
+
+    expect(document.body.textContent).toContain("Incomplete");
+    expect(document.body.textContent).toContain("Export anyway");
+  });
+
+  it("renders a visible primary export label for a genuinely ready document", async () => {
+    await renderWithProviders(
+      <ExportDialog
+        draft={draftWithSavedValidations({
+          missingInformation: [],
+          ready: true,
+        })}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
+    await settle();
+    await click("Continue to conflicts & logic");
+    await click("Continue to decision");
+
+    expect(document.body.textContent).toContain("Ready");
+    expect(button("Continue to export").textContent).toContain(
+      "Continue to export",
+    );
+  });
+
   it("runs from the dialog button flow and presents both review stages before export", async () => {
     const onAddInformation = jest.fn();
     const onOpenChange = jest.fn();
     const onReviewComplete = jest.fn(async () => undefined);
 
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <ExportDialog
-            draft={draft()}
-            draftError={false}
-            hasApplicationTemplate
-            hasUploadedEvidence={false}
-            lng="en"
-            noteName="Kraków Tram"
-            onAddInformation={onAddInformation}
-            onOpenChange={onOpenChange}
-            onRetryDraft={jest.fn()}
-            onReviewComplete={onReviewComplete}
-            onReviewSetup={jest.fn()}
-            open
-            runId="run-1"
-          />
-        </ChakraProvider>,
-      );
-    });
+    await renderWithProviders(
+      <ExportDialog
+        draft={draft()}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={onAddInformation}
+        onOpenChange={onOpenChange}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={onReviewComplete}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
     await settle();
 
     expect(
@@ -466,27 +671,23 @@ describe("guided review before export", () => {
     const onOpenChange = jest.fn();
     const onReviewSetup = jest.fn();
 
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <ExportDialog
-            draft={draft()}
-            draftError={false}
-            hasApplicationTemplate={false}
-            hasUploadedEvidence={false}
-            lng="en"
-            noteName="Kraków Tram"
-            onAddInformation={jest.fn()}
-            onOpenChange={onOpenChange}
-            onRetryDraft={jest.fn()}
-            onReviewComplete={jest.fn()}
-            onReviewSetup={onReviewSetup}
-            open
-            runId="run-1"
-          />
-        </ChakraProvider>,
-      );
-    });
+    await renderWithProviders(
+      <ExportDialog
+        draft={draft()}
+        draftError={false}
+        hasApplicationTemplate={false}
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={onOpenChange}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={onReviewSetup}
+        open
+        runId="run-1"
+      />,
+    );
     await settle();
 
     expect(validateChapter).not.toHaveBeenCalled();
@@ -502,27 +703,23 @@ describe("guided review before export", () => {
   it("shows a retry action when loading the draft fails", async () => {
     const onRetryDraft = jest.fn();
 
-    await act(async () => {
-      root.render(
-        <ChakraProvider value={appTheme}>
-          <ExportDialog
-            draft={null}
-            draftError
-            hasApplicationTemplate
-            hasUploadedEvidence={false}
-            lng="en"
-            noteName="Kraków Tram"
-            onAddInformation={jest.fn()}
-            onOpenChange={jest.fn()}
-            onRetryDraft={onRetryDraft}
-            onReviewComplete={jest.fn()}
-            onReviewSetup={jest.fn()}
-            open
-            runId="run-1"
-          />
-        </ChakraProvider>,
-      );
-    });
+    await renderWithProviders(
+      <ExportDialog
+        draft={null}
+        draftError
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={jest.fn()}
+        onOpenChange={jest.fn()}
+        onRetryDraft={onRetryDraft}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
     await settle();
 
     expect(document.body.textContent).toContain(

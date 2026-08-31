@@ -69,8 +69,18 @@ describe("Concept Note chapter-validation presentation", () => {
         },
       }),
     ).toBe("template_unavailable");
-    expect(getChapterReviewErrorKind({ status: 503 })).toBe("generic");
+    expect(getChapterReviewErrorKind({ status: 400 })).toBe("generic");
+    expect(getChapterReviewErrorKind(new Error("Unknown failure"))).toBe(
+      "generic",
+    );
   });
+
+  it.each([{ status: 503 }, { status: "FETCH_ERROR" }])(
+    "presents retryable failure %p as a service outage",
+    (error) => {
+      expect(getChapterReviewErrorKind(error)).toBe("service_unavailable");
+    },
+  );
 
   it.each([
     [undefined, "draft"],
@@ -78,8 +88,18 @@ describe("Concept Note chapter-validation presentation", () => {
     [validation({ status: "needs_review" }), "needs_review"],
     [validation({ status: "incomplete" }), "incomplete"],
     [validation({ is_stale: true, status: "ready" }), "stale"],
+    [validation({ status: "ready", validated_revision_number: 2 }), "stale"],
   ] as const)("presents validation %p as %s", (result, expected) => {
     expect(getChapterDisplayStatus(chapter(result))).toBe(expected);
+  });
+
+  it("keeps an initial null-revision validation current", () => {
+    expect(
+      getChapterDisplayStatus({
+        ...chapter(validation({ validated_revision_number: null })),
+        revision_number: null,
+      }),
+    ).toBe("ready");
   });
 
   it("groups completeness, consistency, and evidence findings for the UI", () => {

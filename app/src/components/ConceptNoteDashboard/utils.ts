@@ -1,7 +1,11 @@
+import type { ConceptNoteDraftState } from "@/util/types";
+
+import { isChapterValidationCurrent } from "../ConceptNoteWorkspace/chapter-validation";
+
 export type RunStatusTone =
   "positive" | "warning" | "info" | "negative" | "neutral";
 
-interface RunStatusPresentation {
+export interface RunStatusPresentation {
   tone: RunStatusTone;
   translationKey: string;
 }
@@ -25,6 +29,24 @@ const statusPresentations: Record<string, RunStatusPresentation> = {
   running: { tone: "warning", translationKey: "status-in-progress" },
   succeeded: { tone: "positive", translationKey: "status-completed" },
 };
+
+const reviewStatusPresentations = {
+  needsFixes: {
+    tone: "negative",
+    translationKey: "status-needs-fixes",
+  },
+  ready: { tone: "positive", translationKey: "status-ready" },
+  reviewed: { tone: "warning", translationKey: "status-reviewed" },
+  stale: { tone: "warning", translationKey: "status-review-stale" },
+} satisfies Record<string, RunStatusPresentation>;
+
+const terminalRunStatuses = new Set([
+  "completed",
+  "error",
+  "exported",
+  "failed",
+  "succeeded",
+]);
 
 const workflowStepTranslationKeys: Record<string, string> = {
   assembling_context: "workflow-assembling-context",
@@ -72,6 +94,60 @@ export function getRunStatusPresentation(
       translationKey: "status-unknown",
     }
   );
+}
+
+export function getConceptNoteReviewStatusPresentation(
+  draft: ConceptNoteDraftState | null | undefined,
+): RunStatusPresentation | null {
+  if (draft?.status !== "complete" || draft.chapters.length === 0) {
+    return null;
+  }
+
+  const validations = draft.chapters.flatMap((chapter) =>
+    chapter.validation ? [chapter.validation] : [],
+  );
+  if (validations.length !== draft.chapters.length) {
+    return null;
+  }
+
+  if (draft.chapters.some((chapter) => !isChapterValidationCurrent(chapter))) {
+    return reviewStatusPresentations.stale;
+  }
+
+  if (
+    draft.chapters.some((chapter) => chapter.missing_information.length > 0) ||
+    validations.some(
+      (validation) =>
+        validation.status === "incomplete" ||
+        validation.findings.some((finding) => finding.severity === "blocking"),
+    )
+  ) {
+    return reviewStatusPresentations.needsFixes;
+  }
+  if (
+    validations.some(
+      (validation) =>
+        validation.status === "needs_review" ||
+        validation.findings.some((finding) => finding.severity === "warning"),
+    )
+  ) {
+    return reviewStatusPresentations.reviewed;
+  }
+  return reviewStatusPresentations.ready;
+}
+
+export function getConceptNoteStatusPresentation(
+  runStatus: string,
+  draft: ConceptNoteDraftState | null | undefined,
+): RunStatusPresentation {
+  const normalizedStatus = normalizeLifecycleValue(runStatus);
+  if (!terminalRunStatuses.has(normalizedStatus)) {
+    const reviewStatus = getConceptNoteReviewStatusPresentation(draft);
+    if (reviewStatus) {
+      return reviewStatus;
+    }
+  }
+  return getRunStatusPresentation(runStatus);
 }
 
 export function getWorkflowStepTranslationKey(value: string): string {

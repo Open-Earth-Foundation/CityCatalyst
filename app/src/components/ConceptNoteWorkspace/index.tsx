@@ -25,13 +25,18 @@ import {
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
+import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type { ConceptNoteUploadResponse } from "@/util/types";
+import type {
+  ConceptNoteChapterValidationFinding,
+  ConceptNoteDraftChapter,
+  ConceptNoteUploadResponse,
+} from "@/util/types";
 
 import {
   getConceptNoteBundleProgress,
-  getRunStatusPresentation,
+  getConceptNoteStatusPresentation,
   getWorkflowStepTranslationKey,
   normalizePopulationData,
 } from "../ConceptNoteDashboard/utils";
@@ -77,6 +82,14 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
+  const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(null);
+  const [chatComposerRequest, setChatComposerRequest] = useState<{
+    content: string;
+    id: string;
+  } | null>(null);
+  const [resolvingChapterId, setResolvingChapterId] = useState<string | null>(
+    null,
+  );
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -122,6 +135,7 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteContextBundleMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
+  const [validateChapter] = api.useValidateConceptNoteChapterMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
       { runId, uploadId: activeUploadId ?? "" },
@@ -244,6 +258,43 @@ export function ConceptNoteWorkspace({
     }
   }
 
+  async function resolveChapterFindings(chapterId: string): Promise<void> {
+    setResolvingChapterId(chapterId);
+    try {
+      await validateChapter({ chapterId, runId }).unwrap();
+      await refetchDraft();
+      toaster.create({
+        title: t("workspace-finding-rechecked"),
+        description: t("workspace-finding-rechecked-description"),
+        type: "success",
+        meta: { closable: true },
+      });
+    } catch {
+      toaster.create({
+        title: t("workspace-finding-recheck-failed"),
+        description: t("workspace-finding-recheck-failed-description"),
+        type: "error",
+        meta: { closable: true },
+      });
+    } finally {
+      setResolvingChapterId(null);
+    }
+  }
+
+  function askClimaToFixFinding(
+    chapter: ConceptNoteDraftChapter,
+    finding: ConceptNoteChapterValidationFinding,
+  ): void {
+    setChatComposerRequest({
+      id: crypto.randomUUID(),
+      content: t("workspace-ask-clima-prompt", {
+        action: finding.suggested_action,
+        chapter: chapter.title,
+        finding: finding.message,
+      }),
+    });
+  }
+
   if (runLoading) {
     return (
       <Box
@@ -328,7 +379,7 @@ export function ConceptNoteWorkspace({
     );
   }
 
-  const status = getRunStatusPresentation(run.status);
+  const status = getConceptNoteStatusPresentation(run.status, draft);
   const statusLabel = t(status.translationKey);
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
 
@@ -415,6 +466,7 @@ export function ConceptNoteWorkspace({
                 bg="sentiment.positiveDefault"
                 onClick={() => {
                   setReviewChapterId(null);
+                  setReviewFindingKey(null);
                   setReviewOpen(true);
                 }}
               >
@@ -485,6 +537,7 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
+              composerRequest={chatComposerRequest}
               documentGrounding={bundle.documentGrounding}
               lng={lng}
               onOpenContext={() => setTab("context")}
@@ -555,6 +608,7 @@ export function ConceptNoteWorkspace({
                   draft={draft ?? null}
                   draftError={draftStartError}
                   focusChapterId={reviewChapterId}
+                  focusFindingKey={reviewFindingKey}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -562,9 +616,15 @@ export function ConceptNoteWorkspace({
                   isStartingDraft={startDraftState.isLoading}
                   lng={lng}
                   noteName={run.name}
+                  onAskClima={askClimaToFixFinding}
+                  onClearFindingFocus={() => setReviewFindingKey(null)}
                   onOpenContext={() => setTab("context")}
                   onRetry={() => void retryContextBundle()}
+                  onResolveChapter={(chapterId) =>
+                    void resolveChapterFindings(chapterId)
+                  }
                   onStartDrafting={() => void startDrafting()}
+                  resolvingChapterId={resolvingChapterId}
                 />
               </Tabs.Content>
               <Tabs.Content
@@ -621,8 +681,9 @@ export function ConceptNoteWorkspace({
         noteName={run.name}
         open={reviewOpen}
         runId={runId}
-        onAddInformation={(chapterId) => {
+        onAddInformation={(chapterId, findingKey) => {
           setReviewChapterId(chapterId);
+          setReviewFindingKey(findingKey ?? null);
           setTab("draft");
         }}
         onReviewSetup={() => setTab("context")}

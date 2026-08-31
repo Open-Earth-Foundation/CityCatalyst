@@ -50,7 +50,6 @@ import {
   formatRelativeTime,
   getConceptNoteBundleProgress,
   getRunProgressPercent,
-  getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
   normalizePopulationData,
@@ -352,8 +351,6 @@ export function ConceptNoteDashboard({
           ) : runs.length ? (
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               {runs.map((run) => {
-                const status = getRunStatusPresentation(run.status);
-                const statusLabel = t(status.translationKey);
                 const workflowLabel = t(
                   getWorkflowStepTranslationKey(run.workflow_step),
                 );
@@ -376,8 +373,6 @@ export function ConceptNoteDashboard({
                     run={run}
                     t={t}
                     reducedMotion={reducedMotion}
-                    statusLabel={statusLabel}
-                    statusTone={status.tone}
                     scopeLabel={t("run-scope", {
                       city: cityName,
                       funding: runFundingLabel,

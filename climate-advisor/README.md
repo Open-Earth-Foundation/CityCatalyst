@@ -439,11 +439,9 @@ OPENROUTER_API_KEY=your-openrouter-api-key
 # CityCatalyst Postgres on localhost:5432)
 CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/climateadvisor
 
-# Optional unless CNB schema, importer, or matching access is needed.
-CNB_DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cnb
+# Required for the Concept Note Builder workspace and validation flow.
+CNB_DATABASE_URL=postgresql://climateadvisor:climateadvisor@localhost:5433/cnb
 
-# Optional
-CA_PORT=8080
 CA_LOG_LEVEL=info
 CA_CORS_ORIGINS=*
 OPENAI_API_KEY=your-openai-api-key
@@ -463,7 +461,13 @@ docker compose up -d postgres
 ```
 
 Make sure Docker Desktop (or another Docker daemon) is running before invoking
-`docker compose`.
+`docker compose`. A fresh Compose volume creates both the `climateadvisor` and
+`cnb` databases. If the volume predates Concept Note Builder support and does
+not yet contain `cnb`, create it once with:
+
+```bash
+docker compose exec postgres createdb -U climateadvisor cnb
+```
 
 If you use this compose-based PostgreSQL setup and run the CA service on your
 host (not in Docker), use:
@@ -486,6 +490,7 @@ docker run --name ca-postgres \
   -d pgvector/pgvector:pg15
 
 docker exec ca-postgres psql -U climateadvisor -d climateadvisor -c "CREATE EXTENSION IF NOT EXISTS vector;"
+docker exec ca-postgres createdb -U climateadvisor cnb
 ```
 
 ### 4. Install Dependencies And Setup Database
@@ -503,16 +508,16 @@ uv run --directory service alembic -c cnb-alembic.ini upgrade head
 
 ```bash
 cd climate-advisor
-uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uv run --directory service uvicorn app.main:app --host 0.0.0.0 --port 8081 --reload
 ```
 
 ### 6. Verify Setup
 
-- **API Docs**: http://localhost:8080/docs
-- **ReDoc**: http://localhost:8080/redoc
-- **Playground**: http://localhost:8080/playground
-- **Liveness Check**: http://localhost:8080/health
-- **Database Readiness Check**: http://localhost:8080/ready
+- **API Docs**: http://localhost:8081/docs
+- **ReDoc**: http://localhost:8081/redoc
+- **Playground**: http://localhost:8081/playground
+- **Liveness Check**: http://localhost:8081/health
+- **Database Readiness Check**: http://localhost:8081/ready
 
 ## Configuration
 
@@ -572,12 +577,11 @@ language, or client-side fallback behavior. The boundary is:
 
 - `OPENROUTER_API_KEY` - OpenRouter API key for LLM access
 - `CA_DATABASE_URL` - PostgreSQL connection string
-- `CNB_DATABASE_URL` - separate PostgreSQL connection string for the CNB
-  workspace and funding-reference tables; the repository migrates it through
-  the independent CNB Alembic chain, never the CA chain. The reviewed-reference
-  importer, similar-project reader, and runtime funding-reference validation
-  use it; requests without funding references do not require a runtime lookup
-- `CA_PORT` - Server port (default: `8080`)
+- `CNB_DATABASE_URL` - separate PostgreSQL connection string required by the
+  Concept Note Builder workspace and validation flow and used for its
+  funding-reference tables; the repository migrates it through the independent
+  CNB Alembic chain, never the CA chain. The reviewed-reference importer,
+  similar-project reader, and runtime funding-reference validation also use it
 - `CA_LOG_LEVEL` - Logging level: `info|debug` (default: `info`)
 - `CA_CORS_ORIGINS` - CORS allowed origins (default: `*`)
 - `OPENAI_API_KEY` - OpenAI API key for embeddings
@@ -1040,7 +1044,11 @@ docker build -f service/Dockerfile -t climate-advisor:dev .
 ```bash
 docker run --rm \
   --env-file .env \
-  -p 8080:8080 \
+  --add-host host.docker.internal:host-gateway \
+  -e CA_DATABASE_URL=postgresql://climateadvisor:climateadvisor@host.docker.internal:5433/climateadvisor \
+  -e CNB_DATABASE_URL=postgresql://climateadvisor:climateadvisor@host.docker.internal:5433/cnb \
+  -e CC_BASE_URL=http://host.docker.internal:3000 \
+  -p 8081:8080 \
   climate-advisor:dev
 ```
 
@@ -1073,6 +1081,8 @@ Notes:
   conflict with CityCatalyst's local PostgreSQL on `5432`
 - PostgreSQL is published on `localhost:5433` in compose to avoid conflicts
   with CityCatalyst's local PostgreSQL on `5432`
+- Climate Advisor is published on `localhost:8081` so CityCatalyst can keep
+  its local HIAP integration on `8080`
 - Inside the compose network, Climate Advisor still connects to PostgreSQL on
   `postgres:5432`
 - Because of this network difference, compose sets `CA_DATABASE_URL`

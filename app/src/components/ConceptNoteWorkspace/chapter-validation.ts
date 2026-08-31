@@ -36,7 +36,10 @@ export interface DocumentReviewSummary {
 }
 
 export type ChapterReviewErrorKind =
-  "draft_unavailable" | "generic" | "template_unavailable";
+  | "draft_unavailable"
+  | "generic"
+  | "service_unavailable"
+  | "template_unavailable";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -46,25 +49,46 @@ export function getChapterReviewErrorKind(
   error: unknown,
 ): ChapterReviewErrorKind {
   const payload = isRecord(error) && isRecord(error.data) ? error.data : error;
-  return isRecord(payload) &&
+  if (
+    isRecord(payload) &&
     payload.code === "chapter_validation_template_unavailable"
-    ? "template_unavailable"
-    : "generic";
+  ) {
+    return "template_unavailable";
+  }
+  const status = isRecord(error) ? error.status : null;
+  if (
+    status === "FETCH_ERROR" ||
+    status === "TIMEOUT_ERROR" ||
+    (typeof status === "number" && (status === 429 || status >= 500))
+  ) {
+    return "service_unavailable";
+  }
+  return "generic";
 }
 
 export function getChapterDisplayStatus(
   chapter: ConceptNoteDraftChapter,
 ): ChapterDisplayStatus {
-  if (chapter.validation?.is_stale) {
+  if (chapter.validation && !isChapterValidationCurrent(chapter)) {
     return "stale";
   }
   return chapter.validation?.status ?? chapter.status;
 }
 
+export function isChapterValidationCurrent(
+  chapter: ConceptNoteDraftChapter,
+): boolean {
+  return Boolean(
+    chapter.validation &&
+    !chapter.validation.is_stale &&
+    chapter.validation.validated_revision_number === chapter.revision_number,
+  );
+}
+
 export function chapterValidationFindingGroup(
   finding: ConceptNoteChapterValidationFinding,
 ): ChapterValidationFindingGroup {
-  const category = finding.category.toLocaleLowerCase();
+  const category = finding.category.toLowerCase();
   if (
     finding.phase === "evidence" ||
     category.includes("evidence") ||
@@ -101,21 +125,26 @@ export function groupChapterValidationFindings(
 
 function normalizedFindingText(value: string): string {
   return value
-    .toLocaleLowerCase()
+    .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, " ")
     .trim();
 }
 
-function documentFindingKey(entry: DocumentReviewFinding): string {
-  const involvedChapters = [...entry.finding.involved_chapter_ids]
-    .sort()
-    .join("|");
+export function chapterValidationFindingKey(
+  chapterId: string,
+  finding: ConceptNoteChapterValidationFinding,
+): string {
+  const involvedChapters = [...finding.involved_chapter_ids].sort().join("|");
   return [
-    chapterValidationFindingGroup(entry.finding),
-    entry.finding.category.toLocaleLowerCase(),
-    involvedChapters || entry.chapterId,
-    normalizedFindingText(entry.finding.message),
+    chapterValidationFindingGroup(finding),
+    finding.category.toLowerCase(),
+    involvedChapters || chapterId,
+    normalizedFindingText(finding.message),
   ].join("::");
+}
+
+function documentFindingKey(entry: DocumentReviewFinding): string {
+  return chapterValidationFindingKey(entry.chapterId, entry.finding);
 }
 
 export function buildDocumentReviewSummary(

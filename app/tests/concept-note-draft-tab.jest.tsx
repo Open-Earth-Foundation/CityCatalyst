@@ -11,7 +11,7 @@ import {
   jest,
 } from "@jest/globals";
 import { ChakraProvider } from "@chakra-ui/react";
-import { act } from "react";
+import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
 import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
@@ -24,6 +24,18 @@ const translations: Record<string, string> = {
   "hide-chapter-panel": "Hide chapter panel",
   "jump-to-chapter": "Jump to {{chapter}}",
   "show-chapter-panel": "Show chapter panel",
+  "validation-group-missing-information": "Missing information",
+  "validation-suggested-action": "Next step: {{action}}",
+  "workspace-ask-clima": "Ask Clima to fix",
+  "workspace-dismiss-finding": "Dismiss",
+  "workspace-dismissed-local-note": "Dismissed locally",
+  "workspace-draft-prompts": "Draft prompts",
+  "workspace-missing-information": "Missing information",
+  "workspace-missing-information-description": "Saved with this chapter",
+  "workspace-resolve-finding": "Resolve",
+  "workspace-review-findings": "Review findings",
+  "workspace-show-dismissed": "Show {{count}} dismissed",
+  "review-blocking": "Blocking",
 };
 
 jest.unstable_mockModule("@/i18n/client", () => ({
@@ -36,6 +48,16 @@ jest.unstable_mockModule("@/i18n/client", () => ({
       return value;
     },
   }),
+}));
+
+jest.unstable_mockModule("react-markdown", () => ({
+  __esModule: true,
+  default: ({ children }: { children?: ReactNode }) => children ?? null,
+}));
+
+jest.unstable_mockModule("remark-gfm", () => ({
+  __esModule: true,
+  default: () => undefined,
 }));
 
 let DraftTab: typeof import("@/components/ConceptNoteWorkspace/draft-tab").DraftTab;
@@ -88,7 +110,11 @@ const draft: ConceptNoteDraftState = {
 };
 
 function button(label: string): HTMLButtonElement {
-  const match = document.body.querySelector(`button[aria-label="${label}"]`);
+  const match = [...document.body.querySelectorAll("button")].find(
+    (item) =>
+      item.getAttribute("aria-label") === label ||
+      item.textContent?.includes(label),
+  );
   if (!(match instanceof HTMLButtonElement)) {
     throw new Error(`Button not found: ${label}`);
   }
@@ -113,6 +139,7 @@ beforeAll(async () => {
     observe() {}
     unobserve() {}
   };
+  HTMLElement.prototype.scrollTo = jest.fn();
   ({ DraftTab } = await import("@/components/ConceptNoteWorkspace/draft-tab"));
 });
 
@@ -121,6 +148,7 @@ afterAll(() => {
 });
 
 beforeEach(() => {
+  window.localStorage.clear();
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -145,14 +173,19 @@ describe("Concept Note draft chapter panel", () => {
             draft={draft}
             draftError={null}
             focusChapterId={null}
+            focusFindingKey={null}
             isDraftRunning={false}
             isRetrying={false}
             isStartingDraft={false}
             lng="en"
             noteName="Kraków Tram"
+            onAskClima={jest.fn()}
+            onClearFindingFocus={jest.fn()}
             onOpenContext={jest.fn()}
             onRetry={jest.fn()}
+            onResolveChapter={jest.fn()}
             onStartDrafting={jest.fn()}
+            resolvingChapterId={null}
           />
         </ChakraProvider>,
       );
@@ -179,5 +212,83 @@ describe("Concept Note draft chapter panel", () => {
     expect(document.getElementById("concept-note-chapter-list")?.hidden).toBe(
       false,
     );
+  });
+
+  it("keeps saved review findings actionable in the draft", async () => {
+    const finding = {
+      category: "missing_information",
+      involved_chapter_ids: ["chapter-1"],
+      message: "The confirmed co-financing amount is missing.",
+      phase: "completeness" as const,
+      severity: "blocking" as const,
+      suggested_action: "Add the confirmed amount and source.",
+    };
+    const reviewDraft: ConceptNoteDraftState = {
+      ...draft,
+      chapters: [
+        {
+          ...draft.chapters[0],
+          missing_information: ["Confirm the co-financing amount."],
+          validation: {
+            checks: [],
+            findings: [finding],
+            is_stale: false,
+            status: "incomplete",
+            validated_at: "2026-08-31T10:00:00Z",
+            validated_revision_number: 1,
+          },
+        },
+      ],
+    };
+    const onAskClima = jest.fn();
+    const onResolveChapter = jest.fn();
+
+    await act(async () => {
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <DraftTab
+            applicationContext={null}
+            applicationContextFailed={false}
+            applicationContextLoading={false}
+            bundle={bundle}
+            canStartDrafting
+            draft={reviewDraft}
+            draftError={null}
+            focusChapterId="chapter-1"
+            focusFindingKey={null}
+            isDraftRunning={false}
+            isRetrying={false}
+            isStartingDraft={false}
+            lng="en"
+            noteName="Kraków Tram"
+            onAskClima={onAskClima}
+            onClearFindingFocus={jest.fn()}
+            onOpenContext={jest.fn()}
+            onRetry={jest.fn()}
+            onResolveChapter={onResolveChapter}
+            onStartDrafting={jest.fn()}
+            resolvingChapterId={null}
+          />
+        </ChakraProvider>,
+      );
+      await Promise.resolve();
+    });
+
+    expect(document.body.textContent).toContain("Draft prompts");
+    expect(document.body.textContent).toContain("Review findings");
+    expect(document.body.textContent).toContain(finding.message);
+
+    await click("Resolve");
+    expect(onResolveChapter).toHaveBeenCalledWith("chapter-1");
+
+    await click("Ask Clima to fix");
+    expect(onAskClima).toHaveBeenCalledWith(reviewDraft.chapters[0], finding);
+
+    await click("Dismiss");
+    expect(document.body.textContent).not.toContain(finding.message);
+    expect(document.body.textContent).toContain("Show 1 dismissed");
+
+    await click("Show 1 dismissed");
+    expect(document.body.textContent).toContain(finding.message);
   });
 });

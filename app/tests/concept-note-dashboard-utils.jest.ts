@@ -4,6 +4,8 @@ import {
   conceptNoteResumeHref,
   formatRelativeTime,
   getConceptNoteBundleProgress,
+  getConceptNoteReviewStatusPresentation,
+  getConceptNoteStatusPresentation,
   getContextSourceStatusTranslationKey,
   getRunProgressPercent,
   getRunStatusPresentation,
@@ -11,6 +13,53 @@ import {
   hasPrioritizedHiapActions,
   normalizePopulationData,
 } from "@/components/ConceptNoteDashboard/utils";
+import type {
+  ConceptNoteChapterValidation,
+  ConceptNoteDraftState,
+} from "@/util/types";
+
+function reviewedDraft(
+  validation: ConceptNoteChapterValidation | null,
+  revisionNumber: number | null = 2,
+): ConceptNoteDraftState {
+  return {
+    chapters: [
+      {
+        body_markdown: "Draft body",
+        chapter_id: "chapter-1",
+        missing_information: [],
+        position: 0,
+        required: true,
+        revision_number: revisionNumber,
+        status: "ready",
+        template_section_id: "summary",
+        title: "Project summary",
+        user_locked: false,
+        validation,
+      },
+    ],
+    completed_chapters: 1,
+    current_chapter_id: null,
+    error_code: null,
+    run_id: "run-1",
+    status: "complete",
+    total_chapters: 1,
+  };
+}
+
+function validation(
+  overrides: Partial<ConceptNoteChapterValidation> = {},
+): ConceptNoteChapterValidation {
+  return {
+    checks: [],
+    findings: [],
+    is_stale: false,
+    status: "ready",
+    validated_at: "2026-08-31T12:00:00Z",
+    validated_revision_number: 2,
+    ...overrides,
+  };
+}
 
 describe("Concept Note dashboard presentation helpers", () => {
   it("normalizes valid population data and rejects missing values", () => {
@@ -53,6 +102,101 @@ describe("Concept Note dashboard presentation helpers", () => {
     expect(getContextSourceStatusTranslationKey("future-status")).toBe(
       "bundle-source-status-unknown",
     );
+  });
+
+  it("uses only complete, current chapter reviews for the visible status", () => {
+    expect(
+      getConceptNoteReviewStatusPresentation(reviewedDraft(null)),
+    ).toBeNull();
+    expect(
+      getConceptNoteReviewStatusPresentation(
+        reviewedDraft(validation({ is_stale: true })),
+      ),
+    ).toEqual({
+      tone: "warning",
+      translationKey: "status-review-stale",
+    });
+    expect(
+      getConceptNoteReviewStatusPresentation(
+        reviewedDraft(validation({ validated_revision_number: null }), null),
+      ),
+    ).toEqual({
+      tone: "positive",
+      translationKey: "status-ready",
+    });
+    expect(
+      getConceptNoteReviewStatusPresentation(reviewedDraft(validation(), 3)),
+    ).toEqual({
+      tone: "warning",
+      translationKey: "status-review-stale",
+    });
+  });
+
+  it.each([
+    {
+      expected: { tone: "negative", translationKey: "status-needs-fixes" },
+      result: validation({
+        findings: [
+          {
+            category: "missing_information",
+            involved_chapter_ids: ["chapter-1"],
+            message: "The budget is missing.",
+            phase: "completeness",
+            severity: "blocking",
+            suggested_action: "Add the budget.",
+          },
+        ],
+        status: "incomplete",
+      }),
+    },
+    {
+      expected: { tone: "warning", translationKey: "status-reviewed" },
+      result: validation({
+        findings: [
+          {
+            category: "evidence_gap",
+            involved_chapter_ids: ["chapter-1"],
+            message: "The claim needs evidence.",
+            phase: "evidence",
+            severity: "warning",
+            suggested_action: "Add a source.",
+          },
+        ],
+        status: "needs_review",
+      }),
+    },
+    {
+      expected: { tone: "positive", translationKey: "status-ready" },
+      result: validation(),
+    },
+  ] as const)(
+    "maps a fresh saved review to $expected.translationKey",
+    ({ expected, result }) => {
+      expect(
+        getConceptNoteReviewStatusPresentation(reviewedDraft(result)),
+      ).toEqual(expected);
+    },
+  );
+
+  it("preserves terminal lifecycle states after a review", () => {
+    expect(
+      getConceptNoteStatusPresentation("exported", reviewedDraft(validation())),
+    ).toEqual({
+      tone: "positive",
+      translationKey: "status-exported",
+    });
+  });
+
+  it("does not show Ready while export would omit unanswered prompts", () => {
+    const draftWithOmission = reviewedDraft(validation());
+    draftWithOmission.chapters[0].missing_information = [
+      "Confirm the co-financing amount.",
+    ];
+
+    expect(getConceptNoteReviewStatusPresentation(draftWithOmission)).toEqual({
+      tone: "negative",
+      translationKey: "status-needs-fixes",
+    });
   });
 
   it("formats run activity relative to a stable clock", () => {

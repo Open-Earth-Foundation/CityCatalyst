@@ -38,14 +38,17 @@ import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
 import type {
   ConceptNoteChapterValidationStatus,
+  ConceptNoteDraftChapter,
   ConceptNoteDraftState,
 } from "@/util/types";
 
 import {
   buildDocumentReviewSummary,
+  chapterValidationFindingKey,
   type ChapterReviewErrorKind,
   type DocumentReviewFinding,
   getChapterReviewErrorKind,
+  isChapterValidationCurrent,
   type ReviewedConceptNoteChapter,
 } from "./chapter-validation";
 import {
@@ -67,7 +70,10 @@ interface ExportDialogProps {
   hasUploadedEvidence: boolean;
   lng: string;
   noteName: string;
-  onAddInformation: (chapterId: string | null) => void;
+  onAddInformation: (
+    chapterId: string | null,
+    findingKey?: string | null,
+  ) => void;
   onOpenChange: (open: boolean) => void;
   onRetryDraft: () => void | Promise<unknown>;
   onReviewComplete: () => void | Promise<unknown>;
@@ -81,7 +87,7 @@ interface ReviewFindingListProps {
   emptyKey: string;
   entries: DocumentReviewFinding[];
   lng: string;
-  onOpenChapter: (chapterId: string) => void;
+  onOpenFinding: (entry: DocumentReviewFinding) => void;
 }
 
 interface ReviewImpactSummaryProps {
@@ -90,6 +96,11 @@ interface ReviewImpactSummaryProps {
   omittedPromptCount: number;
   status: ConceptNoteChapterValidationStatus;
   warningCount: number;
+}
+
+interface FailedChapterReview {
+  chapter: ConceptNoteDraftChapter;
+  errorKind: ChapterReviewErrorKind;
 }
 
 const reviewSteps: Array<{
@@ -132,12 +143,24 @@ function statusTranslationKey(
   return "validation-status-incomplete";
 }
 
+function chapterFailureDescriptionKey(
+  errorKind: ChapterReviewErrorKind,
+): string {
+  if (errorKind === "template_unavailable") {
+    return "guided-review-chapter-failed-template";
+  }
+  if (errorKind === "service_unavailable") {
+    return "guided-review-chapter-failed-service";
+  }
+  return "guided-review-chapter-failed-generic";
+}
+
 function ReviewFindingList({
   chapterTitles,
   emptyKey,
   entries,
   lng,
-  onOpenChapter,
+  onOpenFinding,
 }: ReviewFindingListProps) {
   const { t } = useTranslation(lng, "concept-notes");
 
@@ -214,7 +237,7 @@ function ReviewFindingList({
                 size="xs"
                 variant="ghost"
                 color="content.link"
-                onClick={() => onOpenChapter(entry.chapterId)}
+                onClick={() => onOpenFinding(entry)}
               >
                 {t("review-open-chapter")}
                 <Icon as={LuArrowRight} />
@@ -351,6 +374,9 @@ export function ExportDialog({
   const [reviewError, setReviewError] = useState<ChapterReviewErrorKind | null>(
     null,
   );
+  const [failedChapters, setFailedChapters] = useState<FailedChapterReview[]>(
+    [],
+  );
   const [completedChapterCount, setCompletedChapterCount] = useState(0);
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [acceptedMissingInformation, setAcceptedMissingInformation] =
@@ -375,20 +401,136 @@ export function ExportDialog({
   const progressPercent = chapters.length
     ? Math.round((completedChapterCount / chapters.length) * 100)
     : 0;
-  const firstActionableChapterId =
-    [
-      ...review.groups.missing_information,
-      ...review.groups.conflicts_logic,
-      ...review.groups.evidence,
-    ].find(({ finding }) => finding.severity === "blocking")?.chapterId ??
-    review.groups.missing_information[0]?.chapterId ??
+  const reviewFindings = [
+    ...review.groups.missing_information,
+    ...review.groups.conflicts_logic,
+    ...review.groups.evidence,
+  ];
+  const firstActionableFinding =
+    reviewFindings.find(({ finding }) => finding.severity === "blocking") ??
+    reviewFindings[0] ??
     null;
+  const effectiveReviewStatus: ConceptNoteChapterValidationStatus =
+    failedChapters.length > 0 || reviewedChapters.length < chapters.length
+      ? "incomplete"
+      : review.status === "ready" && unresolvedCount > 0
+        ? "incomplete"
+        : review.status;
+  const lastValidatedAt = useMemo(() => {
+    const timestamps = reviewedChapters
+      .map(({ validation }) => validation.validated_at)
+      .filter((value): value is string => Boolean(value))
+      .map((value) => Date.parse(value))
+      .filter(Number.isFinite);
+    return timestamps.length > 0
+      ? new Intl.DateTimeFormat(lng, {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(Math.max(...timestamps))
+      : null;
+  }, [lng, reviewedChapters]);
 
-  const runReview = useCallback(async () => {
-    const requestId = activeRequestRef.current + 1;
-    activeRequestRef.current = requestId;
+  const runReview = useCallback(
+    async ({
+      preservedResults,
+      targetChapters,
+    }: {
+      preservedResults: ReviewedConceptNoteChapter[];
+      targetChapters: ConceptNoteDraftChapter[];
+    }) => {
+      const requestId = activeRequestRef.current + 1;
+      activeRequestRef.current = requestId;
+      setStage("running");
+      setReviewedChapters(preservedResults);
+      setFailedChapters([]);
+      setReviewError(null);
+      setCompletedChapterCount(preservedResults.length);
+      setShowExportOptions(false);
+      setAcceptedMissingInformation(false);
+      setExportError(false);
+
+      const completedByChapterId = new Map(
+        preservedResults.map((result) => [result.chapter.chapter_id, result]),
+      );
+      let nextChapterIndex = 0;
+      let completedCount = preservedResults.length;
+      const failures: FailedChapterReview[] = [];
+
+      function publishResults(): void {
+        setReviewedChapters(
+          chapters.flatMap((chapter) => {
+            const result = completedByChapterId.get(chapter.chapter_id);
+            return result ? [result] : [];
+          }),
+        );
+        setFailedChapters([...failures]);
+        setCompletedChapterCount(completedCount);
+      }
+
+      async function validateNextChapters(): Promise<void> {
+        while (activeRequestRef.current === requestId) {
+          const chapterIndex = nextChapterIndex;
+          nextChapterIndex += 1;
+          if (chapterIndex >= targetChapters.length) {
+            return;
+          }
+
+          const chapter = targetChapters[chapterIndex];
+          try {
+            const validation = await validateChapter({
+              chapterId: chapter.chapter_id,
+              runId,
+            }).unwrap();
+            if (activeRequestRef.current !== requestId) {
+              return;
+            }
+            completedByChapterId.set(chapter.chapter_id, {
+              chapter,
+              validation,
+            });
+          } catch (error) {
+            if (activeRequestRef.current !== requestId) {
+              return;
+            }
+            failures.push({
+              chapter,
+              errorKind: getChapterReviewErrorKind(error),
+            });
+          }
+
+          completedCount += 1;
+          publishResults();
+        }
+      }
+
+      const workerCount = Math.min(
+        MAX_PARALLEL_CHAPTER_VALIDATIONS,
+        targetChapters.length,
+      );
+      await Promise.all(
+        Array.from({ length: workerCount }, () => validateNextChapters()),
+      );
+      if (activeRequestRef.current !== requestId) {
+        return;
+      }
+      try {
+        await onReviewComplete();
+      } catch {
+        // The completed validation responses remain usable if cache refresh fails.
+      } finally {
+        if (activeRequestRef.current === requestId) {
+          setStage("missing_information");
+        }
+      }
+    },
+    [chapters, onReviewComplete, runId, validateChapter],
+  );
+
+  const initializeReview = useCallback(() => {
+    activeRequestRef.current += 1;
     setStage("running");
     setReviewedChapters([]);
+    setFailedChapters([]);
     setReviewError(null);
     setCompletedChapterCount(0);
     setShowExportOptions(false);
@@ -399,85 +541,60 @@ export function ExportDialog({
       setReviewError("template_unavailable");
       return;
     }
-
     if (chapters.length === 0) {
       setReviewError("draft_unavailable");
       return;
     }
 
-    const completed: Array<ReviewedConceptNoteChapter | undefined> = new Array(
-      chapters.length,
+    const preservedResults = chapters.flatMap((chapter) =>
+      chapter.validation && isChapterValidationCurrent(chapter)
+        ? [{ chapter, validation: chapter.validation }]
+        : [],
     );
-    let nextChapterIndex = 0;
-    let completedCount = 0;
+    const preservedChapterIds = new Set(
+      preservedResults.map(({ chapter }) => chapter.chapter_id),
+    );
+    const targetChapters = chapters.filter(
+      (chapter) => !preservedChapterIds.has(chapter.chapter_id),
+    );
 
-    async function validateNextChapters(): Promise<void> {
-      while (activeRequestRef.current === requestId) {
-        const chapterIndex = nextChapterIndex;
-        nextChapterIndex += 1;
-        if (chapterIndex >= chapters.length) {
-          return;
-        }
-
-        const chapter = chapters[chapterIndex];
-        const validation = await validateChapter({
-          chapterId: chapter.chapter_id,
-          runId,
-        }).unwrap();
-        if (activeRequestRef.current !== requestId) {
-          return;
-        }
-
-        completed[chapterIndex] = { chapter, validation };
-        completedCount += 1;
-        setReviewedChapters(
-          completed.filter(
-            (result): result is ReviewedConceptNoteChapter =>
-              result !== undefined,
-          ),
-        );
-        setCompletedChapterCount(completedCount);
-      }
+    if (targetChapters.length === 0) {
+      setReviewedChapters(preservedResults);
+      setCompletedChapterCount(chapters.length);
+      setStage("missing_information");
+      return;
     }
-
-    try {
-      const workerCount = Math.min(
-        MAX_PARALLEL_CHAPTER_VALIDATIONS,
-        chapters.length,
-      );
-      await Promise.all(
-        Array.from({ length: workerCount }, () => validateNextChapters()),
-      );
-      if (activeRequestRef.current !== requestId) {
-        return;
-      }
-      await onReviewComplete();
-      if (activeRequestRef.current === requestId) {
-        setStage("missing_information");
-      }
-    } catch (error) {
-      if (activeRequestRef.current === requestId) {
-        activeRequestRef.current += 1;
-        setReviewError(getChapterReviewErrorKind(error));
-      }
-    }
-  }, [
-    chapters,
-    hasApplicationTemplate,
-    onReviewComplete,
-    runId,
-    validateChapter,
-  ]);
+    void runReview({ preservedResults, targetChapters });
+  }, [chapters, hasApplicationTemplate, runReview]);
 
   useEffect(() => {
-    if (open && draft !== null && !wasOpenRef.current) {
-      wasOpenRef.current = true;
-      void runReview();
+    if (open && !wasOpenRef.current) {
+      if (draft === null && !draftError) {
+        return;
+      }
+      const frame = requestAnimationFrame(() => {
+        if (!wasOpenRef.current) {
+          wasOpenRef.current = true;
+          initializeReview();
+        }
+      });
+      return () => cancelAnimationFrame(frame);
     } else if (!open && wasOpenRef.current) {
       wasOpenRef.current = false;
       activeRequestRef.current += 1;
     }
-  }, [draft, open, runReview]);
+  }, [draft, draftError, initializeReview, open]);
+
+  function rerunReview(): void {
+    void runReview({ preservedResults: [], targetChapters: chapters });
+  }
+
+  function retryFailedChapters(): void {
+    void runReview({
+      preservedResults: reviewedChapters,
+      targetChapters: failedChapters.map(({ chapter }) => chapter),
+    });
+  }
 
   function handleOpenChange(nextOpen: boolean): void {
     if (!nextOpen) {
@@ -487,9 +604,19 @@ export function ExportDialog({
     onOpenChange(nextOpen);
   }
 
-  function handleAddInformation(chapterId: string | null): void {
+  function handleAddInformation(
+    chapterId: string | null,
+    findingKey?: string | null,
+  ): void {
     handleOpenChange(false);
-    onAddInformation(chapterId);
+    onAddInformation(chapterId, findingKey);
+  }
+
+  function handleOpenFinding(entry: DocumentReviewFinding): void {
+    handleAddInformation(
+      entry.chapterId,
+      chapterValidationFindingKey(entry.chapterId, entry.finding),
+    );
   }
 
   function handleReviewSetup(): void {
@@ -504,7 +631,7 @@ export function ExportDialog({
     setExportError(false);
     setExportingFormat(format);
     try {
-      await exportConceptNote(format, noteName, chapters);
+      await exportConceptNote(format, noteName, chapters, lng);
     } catch {
       setExportError(true);
     } finally {
@@ -633,6 +760,92 @@ export function ExportDialog({
             px={{ base: 5, md: 8 }}
             py={6}
           >
+            {stage !== "running" && (
+              <VStack align="stretch" gap={3} mb={6}>
+                <Flex
+                  align={{ base: "start", sm: "center" }}
+                  direction={{ base: "column", sm: "row" }}
+                  gap={3}
+                  border="1px solid"
+                  borderColor="border.neutral"
+                  borderRadius="rounded"
+                  bg="background.neutral"
+                  px={4}
+                  py={3}
+                >
+                  <Box flex={1}>
+                    <Text
+                      fontSize="label.sm"
+                      fontWeight="semibold"
+                      color="content.primary"
+                    >
+                      {t("review-saved-results")}
+                    </Text>
+                    <Text fontSize="label.sm" color="content.tertiary">
+                      {lastValidatedAt
+                        ? t("review-saved-results-at", {
+                            date: lastValidatedAt,
+                          })
+                        : t("review-saved-results-description")}
+                    </Text>
+                  </Box>
+                  <Button size="xs" variant="outline" onClick={rerunReview}>
+                    <Icon as={LuSearchCheck} />
+                    {t("review-rerun")}
+                  </Button>
+                </Flex>
+
+                {failedChapters.length > 0 && (
+                  <Box
+                    role="alert"
+                    border="1px solid"
+                    borderColor="sentiment.negativeDefault"
+                    borderRadius="rounded"
+                    bg="sentiment.negativeOverlay"
+                    p={4}
+                  >
+                    <Text
+                      fontFamily="heading"
+                      fontSize="body.sm"
+                      fontWeight="semibold"
+                      color="content.primary"
+                    >
+                      {t("guided-review-partial-failure", {
+                        count: failedChapters.length,
+                        completed: reviewedChapters.length,
+                      })}
+                    </Text>
+                    <VStack align="stretch" gap={2} mt={3}>
+                      {failedChapters.map(({ chapter, errorKind }) => (
+                        <Box key={chapter.chapter_id}>
+                          <Text
+                            fontSize="label.sm"
+                            fontWeight="semibold"
+                            color="content.primary"
+                          >
+                            {chapter.title}
+                          </Text>
+                          <Text fontSize="label.sm" color="content.secondary">
+                            {t(chapterFailureDescriptionKey(errorKind))}
+                          </Text>
+                        </Box>
+                      ))}
+                    </VStack>
+                    <Button
+                      mt={4}
+                      size="xs"
+                      variant="outline"
+                      onClick={retryFailedChapters}
+                    >
+                      {t("review-retry-failed", {
+                        count: failedChapters.length,
+                      })}
+                    </Button>
+                  </Box>
+                )}
+              </VStack>
+            )}
+
             {stage === "running" && (
               <Flex h="full" minH="440px" align="center" justify="center">
                 <VStack maxW="420px" gap={5} textAlign="center">
@@ -702,7 +915,7 @@ export function ExportDialog({
                             {t("review-return-to-draft")}
                           </Button>
                         ) : (
-                          <Button onClick={() => void runReview()}>
+                          <Button onClick={rerunReview}>
                             {t("try-again")}
                           </Button>
                         )}
@@ -823,7 +1036,7 @@ export function ExportDialog({
                   emptyKey="review-no-missing-information"
                   entries={review.groups.missing_information}
                   lng={lng}
-                  onOpenChapter={handleAddInformation}
+                  onOpenFinding={handleOpenFinding}
                 />
 
                 <Box borderTop="1px solid" borderColor="border.neutral" pt={5}>
@@ -846,7 +1059,7 @@ export function ExportDialog({
                     emptyKey="review-no-evidence-warnings"
                     entries={review.groups.evidence}
                     lng={lng}
-                    onOpenChapter={handleAddInformation}
+                    onOpenFinding={handleOpenFinding}
                   />
                 </Box>
 
@@ -896,7 +1109,7 @@ export function ExportDialog({
                   emptyKey="review-no-conflicts"
                   entries={review.groups.conflicts_logic}
                   lng={lng}
-                  onOpenChapter={handleAddInformation}
+                  onOpenFinding={handleOpenFinding}
                 />
 
                 <Flex justify="space-between" gap={3} pt={2}>
@@ -951,7 +1164,7 @@ export function ExportDialog({
                       blockingCount={review.blockingCount}
                       lng={lng}
                       omittedPromptCount={unresolvedCount}
-                      status={review.status}
+                      status={effectiveReviewStatus}
                       warningCount={review.warningCount}
                     />
 
@@ -960,7 +1173,15 @@ export function ExportDialog({
                         <Button
                           justifyContent="flex-start"
                           onClick={() =>
-                            handleAddInformation(firstActionableChapterId)
+                            handleAddInformation(
+                              firstActionableFinding?.chapterId ?? null,
+                              firstActionableFinding
+                                ? chapterValidationFindingKey(
+                                    firstActionableFinding.chapterId,
+                                    firstActionableFinding.finding,
+                                  )
+                                : null,
+                            )
                           }
                         >
                           <Icon as={LuFileText} />
@@ -983,13 +1204,19 @@ export function ExportDialog({
                       )}
                       <Button
                         justifyContent="flex-start"
-                        variant={review.status === "ready" ? "solid" : "ghost"}
-                        color="content.link"
+                        variant={
+                          effectiveReviewStatus === "ready" ? "solid" : "ghost"
+                        }
+                        color={
+                          effectiveReviewStatus === "ready"
+                            ? "base.light"
+                            : "content.link"
+                        }
                         onClick={() => setShowExportOptions(true)}
                       >
                         <Icon as={LuDownload} />
                         {t(
-                          review.status === "ready"
+                          effectiveReviewStatus === "ready"
                             ? "review-continue-export"
                             : "review-export-as-is",
                         )}
@@ -1072,7 +1299,7 @@ export function ExportDialog({
                       blockingCount={review.blockingCount}
                       lng={lng}
                       omittedPromptCount={unresolvedCount}
-                      status={review.status}
+                      status={effectiveReviewStatus}
                       warningCount={review.warningCount}
                     />
 

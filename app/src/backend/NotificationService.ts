@@ -2,7 +2,7 @@ import { smtpOptions } from "@/lib/email";
 import AdminNotificationTemplate from "@/lib/emails/AdminNotificationTemplate";
 import { City } from "@/models/City";
 import { LANGUAGES, UserFileResponse } from "@/util/types";
-import { render } from "@react-email/components";
+import { render } from "react-email";
 import { createTransport, type Transporter } from "nodemailer";
 import { logger } from "@/services/logger";
 import EmailService from "./EmailService";
@@ -17,14 +17,18 @@ export interface EmailOptions {
 export interface SendEmailResponse {
   success: boolean;
   messageId?: string;
-  error?: any;
+  error?: unknown;
 }
 
 class NotificationService {
   private static instance: NotificationService;
   private static transporter: Transporter;
 
-  private constructor(transporter?: Transporter) {}
+  private constructor(transporter?: Transporter) {
+    if (transporter) {
+      NotificationService.transporter = transporter;
+    }
+  }
 
   static getInstance(transporter?: Transporter): NotificationService {
     if (!NotificationService.instance) {
@@ -79,8 +83,8 @@ class NotificationService {
         file: fileData,
         user: {
           cityName: city.name!,
-          email: user?.email!,
-          name: user?.name!,
+          email: user.email,
+          name: user.name,
         },
         inventoryId,
         language: user.preferredLanguage,

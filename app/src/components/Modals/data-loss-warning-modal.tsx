@@ -20,6 +20,8 @@ interface DataLossWarningModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   t: TFunction;
+  /** `reset-upload` when Cancel clears the file; `leave` when navigating away. */
+  variant?: "leave" | "reset-upload";
 }
 
 const DataLossWarningModal = ({
@@ -28,12 +30,22 @@ const DataLossWarningModal = ({
   onConfirm,
   onCancel,
   t,
+  variant = "leave",
 }: DataLossWarningModalProps) => {
+  const isResetUpload = variant === "reset-upload";
+  const titleKey = isResetUpload
+    ? "reset-upload-warning-title"
+    : "data-loss-warning-title";
+  const messageKey = isResetUpload
+    ? "reset-upload-warning-message"
+    : "data-loss-warning-message";
+  const confirmKey = isResetUpload ? "reset-upload-confirm" : "leave-page";
+
   return (
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => {
+      onOpenChange={(e) => {
         onOpenChange(e.open);
         if (!e.open) {
           onCancel();
@@ -56,7 +68,7 @@ const DataLossWarningModal = ({
           borderStyle="solid"
           borderColor="background.neutral"
         >
-          {t("data-loss-warning-title")}
+          {t(titleKey)}
         </DialogHeader>
         <DialogCloseTrigger mt={"2"} color="interactive.control" mr={"2"} />
         <HStack flexDirection="column" alignItems="center" padding="24px">
@@ -74,7 +86,7 @@ const DataLossWarningModal = ({
           </Badge>
           <Box w="70%" mt={6}>
             <Text fontSize="body.lg" textAlign="center">
-              {t("data-loss-warning-message")}
+              {t(messageKey)}
             </Text>
           </Box>
         </HStack>
@@ -103,7 +115,7 @@ const DataLossWarningModal = ({
             onClick={onConfirm}
             bg="sentiment.negativeDefault"
           >
-            {t("leave-page")}
+            {t(confirmKey)}
           </Button>
         </DialogFooter>
       </DialogContent>

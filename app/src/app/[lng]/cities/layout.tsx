@@ -22,24 +22,24 @@ export default function CitiesLayout(props: {
   const { children } = props;
 
   const { setOrganization, organization } = useOrganizationContext();
-  const { setTheme, theme } = useTheme();
+  const { setTheme } = useTheme();
 
   // Get organization data using organizationId from context
   const { data: orgData, isLoading: isOrgDataLoading } =
-    useGetOrganizationQuery(organization?.organizationId!, {
+    useGetOrganizationQuery(organization?.organizationId ?? "", {
       skip: !organization?.organizationId,
     });
 
   useEffect(() => {
-    if (orgData) {
-      const newOrgState = normalizeOrganizationState(orgData);
+    if (!orgData) return;
 
-      if (hasOrganizationChanged(organization, newOrgState)) {
-        setOrganization(newOrgState);
-      }
-      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
-    } else {
-      setTheme("blue_theme");
+    const newOrgState = normalizeOrganizationState(orgData);
+
+    if (hasOrganizationChanged(organization, newOrgState)) {
+      setOrganization(newOrgState);
+    }
+    if (orgData.theme?.themeKey) {
+      setTheme(orgData.theme.themeKey);
     }
   }, [isOrgDataLoading, orgData, organization, setOrganization, setTheme]);
 

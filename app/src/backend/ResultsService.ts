@@ -20,10 +20,6 @@ function multiplyBigIntByFraction(
   return result.toFixed(0); // Convert back to bigint, rounding if necessary
 }
 
-function sumBigIntBy(array: any[], fieldName: string): bigint {
-  return array.reduce((sum, item) => sum + BigInt(item[fieldName]), 0n);
-}
-
 function calculatePercentage(co2eq: Decimal, total: Decimal): number {
   if (total.lessThanOrEqualTo(0)) {
     return 0;
@@ -75,22 +71,6 @@ interface EmissionResults {
 interface GroupedActivityResult {
   byScope: ActivityDataByScope[];
 }
-
-interface ActivityForSectorBreakdown {
-  reference_number: string;
-  input_methodology: string;
-  activity_data_jsonb: Record<string, any>;
-  co2eq: Decimal;
-  subsector_name: string;
-  scope_name: string;
-  sector_name: SectorNamesInDB;
-  datasource_id: string;
-  datasource_name: string;
-}
-
-type ActivityForSectorBreakdownRecords = ActivityForSectorBreakdown & {
-  co2eq: bigint;
-};
 
 /** we get this names for the sectors in the query from the FE */
 export type SectorNamesInFE =
@@ -422,7 +402,7 @@ export const getEmissionsBreakdownBatch = async (
     }, new Decimal(0));
 
     const resultsByScope = Object.entries(bySubSectorAndDataSource).map(
-      ([_subsectorAndDataSource, scopeValues]) => {
+      ([, scopeValues]) => {
         // Group by scope within this subsector/datasource combination
         const byScope = groupBy(scopeValues, "scope_name");
 
@@ -493,8 +473,14 @@ export async function getEmissionsBreakdown(
 /** entry point for results */
 export async function getEmissionResults(inventory: string): Promise<{
   totalEmissions: Decimal;
-  totalEmissionsBySector: any;
-  topEmissionsBySubSector: any;
+  totalEmissionsBySector:
+    | {
+        sectorName: SectorNamesInFE;
+        co2eq: Decimal;
+        percentage: number;
+      }[]
+    | undefined;
+  topEmissionsBySubSector: TopEmission[] | undefined;
 }> {
   const EmissionResults = await getEmissionResultsBatch([inventory]);
   const inventoryEmissionResults = EmissionResults[inventory];

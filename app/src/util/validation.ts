@@ -1,6 +1,11 @@
 import { z } from "zod";
-import { GlobalWarmingPotentialTypeEnum, InventoryTypeEnum } from "./enums";
+import {
+  GlobalWarmingPotentialTypeEnum,
+  InventoryTypeEnum,
+  OrganizationPlanType,
+} from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
+import { WEBHOOK_EMITTED_EVENT_TYPES } from "@/backend/webhooks/events";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -94,7 +99,7 @@ export const resetPasswordRequest = z.object({
 export const createInventoryValue = z.object({
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
-  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   gpcReferenceNumber: z.string().optional(),
   unavailableReason: z.string().optional(),
@@ -104,11 +109,11 @@ export const createInventoryValue = z.object({
       z.object({
         gas: z.string(),
         // if not present, use activityValue with emissionsFactor instead
-        gasAmount: z.coerce.bigint().gte(0n).nullable().optional(),
+        gasAmount: z.coerce.bigint().nullable().optional(),
         emissionsFactorId: z.string().uuid().optional(),
         emissionsFactor: z
           .object({
-            emissionsPerActivity: z.number().gte(0),
+            emissionsPerActivity: z.number(),
             gas: z.string(),
             units: z.string(),
           })
@@ -121,7 +126,7 @@ export const createInventoryValue = z.object({
 export const patchInventoryValue = z.object({
   activityValue: z.number().nullable().optional(),
   activityUnits: z.string().nullable().optional(),
-  co2eq: z.coerce.bigint().gte(0n).optional(),
+  co2eq: z.coerce.bigint().optional(),
   co2eqYears: z.number().optional(),
   gpcReferenceNumber: z.string(),
   unavailableReason: z.string().optional(),
@@ -193,11 +198,13 @@ export const AcceptOrganizationInvite = z.object({
 
 export const CreateUsersInvite = z.object({
   projectId: z.string().uuid(),
-  cityIds: z.array(z.string()),
-  invites: z.array(z.object({
-    email: z.string().email(),
-    role: z.enum(["admin", "collaborator"]),
-  })),
+  cityIds: z.array(z.string()).min(1),
+  invites: z.array(
+    z.object({
+      email: z.string().email(),
+      role: z.enum(["admin", "collaborator"]),
+    }),
+  ),
 });
 
 export type CreateUserInvite = z.infer<typeof createUserInvite>;
@@ -206,10 +213,10 @@ const gasValueSchema = z.object({
   id: z.string().uuid().optional(),
   emissionsFactorId: z.string().uuid().optional(),
   gas: z.string(),
-  gasAmount: z.coerce.bigint().gte(0n).optional(),
+  gasAmount: z.coerce.bigint().optional(),
   emissionsFactor: z
     .object({
-      emissionsPerActivity: z.number().gte(0).optional(),
+      emissionsPerActivity: z.number().optional(),
       gas: z.string().optional(),
       units: z.string().optional(),
       gpcReferenceNumber: z.string().optional(),
@@ -260,8 +267,8 @@ export const fetchEmissionsFactorRequest = z.object({
 });
 
 export const updatePasswordRequest = z.object({
-  currentPassword: z.string().min(4).max(64),
-  confirmPassword: z.string().min(4).max(64).regex(passwordRegex),
+  currentPassword: z.string().min(8).max(64),
+  confirmPassword: z.string().min(8).max(64).regex(passwordRegex),
 });
 
 export type UpdatePasswordRequest = z.infer<typeof updatePasswordRequest>;
@@ -274,6 +281,7 @@ export const createOrganizationRequest = z.object({
       message: "Organization name cannot be 'cc_organization_default'",
     }),
   contactEmail: z.string().email().max(255),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
 });
 
 export type CreateOrganizationRequest = z.infer<
@@ -283,6 +291,8 @@ export type CreateOrganizationRequest = z.infer<
 export const updateOrganizationRequest = z.object({
   name: z.string().max(255).optional(),
   contactEmail: z.string().email().max(255).optional(),
+  planType: z.nativeEnum(OrganizationPlanType).optional(),
+  trialEndsAt: z.coerce.date().nullable().optional(),
 });
 
 export type UpdateOrganizationRequest = z.infer<
@@ -355,3 +365,87 @@ export const createChatThreadRequest = z.object({
 });
 
 export type CreateChatThreadRequest = z.infer<typeof createChatThreadRequest>;
+
+export const conceptNoteStartRequest = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    city_id: z.string().uuid(),
+    project_id: z.string().trim().min(1).max(255).nullable().optional(),
+    funder_id: z.string().uuid().nullable().optional(),
+    selected_funding_opportunity_id: z.string().uuid().nullable().optional(),
+    thread_id: z.string().uuid().nullable().optional(),
+    idempotency_key: z.string().uuid(),
+  })
+  .superRefine((request, context) => {
+    if (request.selected_funding_opportunity_id && !request.funder_id) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "funder_id is required when selected_funding_opportunity_id is provided",
+        path: ["funder_id"],
+      });
+    }
+  });
+
+export type ConceptNoteStartRequest = z.infer<typeof conceptNoteStartRequest>;
+
+export const nativeInputCatalogRegisterRequest = z.object({
+  kind: z.string().trim().min(1).max(64),
+  owningModule: z.string().trim().min(1).max(64),
+  sourceType: z.string().trim().min(1).max(64),
+  sourceId: z.string().trim().min(1).max(255),
+  userId: z.string().uuid().nullable().optional(),
+  inventoryId: z.string().uuid().nullable().optional(),
+  cityId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  organizationId: z.string().uuid().nullable().optional(),
+  contentDigest: z.string().trim().min(1).max(128).nullable().optional(),
+  markdownReady: z.boolean().nullable().optional(),
+  labels: z.record(z.string(), z.unknown()).nullable().optional(),
+});
+
+export type NativeInputCatalogRegisterRequest = z.infer<
+  typeof nativeInputCatalogRegisterRequest
+>;
+
+const webhookHttpsUrl = z
+  .string()
+  .url()
+  .refine((value) => value.toLowerCase().startsWith("https://"), {
+    message: "webhook-url-must-be-https",
+  });
+
+const webhookEmittedEvents = z
+  .array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES))
+  .min(1);
+
+export const createWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255),
+  url: webhookHttpsUrl,
+  events: webhookEmittedEvents,
+});
+
+export type CreateWebhookSubscriptionRequest = z.infer<
+  typeof createWebhookSubscriptionRequest
+>;
+
+export const updateWebhookSubscriptionRequest = z.object({
+  name: z.string().trim().min(1).max(255).optional(),
+  url: webhookHttpsUrl.optional(),
+  events: webhookEmittedEvents.optional(),
+  enabled: z.boolean().optional(),
+});
+
+export type UpdateWebhookSubscriptionRequest = z.infer<
+  typeof updateWebhookSubscriptionRequest
+>;
+
+export const nativeInputCatalogReconciliationRequest = z.object({
+  mode: z.enum(["dry-run", "apply"]),
+  limit: z.number().int().min(1).max(1000).optional(),
+  maxPages: z.number().int().min(1).max(1000).optional(),
+});
+
+export type NativeInputCatalogReconciliationRequest = z.infer<
+  typeof nativeInputCatalogReconciliationRequest
+>;

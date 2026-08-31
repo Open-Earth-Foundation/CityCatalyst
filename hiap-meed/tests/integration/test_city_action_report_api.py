@@ -8,6 +8,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.modules.prioritizer import api as prioritizer_api
 from app.modules.prioritizer.api import (
     get_action_financial_feasibility_scores_data_api_client,
     get_action_mitigation_feasibility_scores_data_api_client,
@@ -16,6 +17,10 @@ from app.modules.prioritizer.api import (
     get_city_data_api_client,
     get_legal_data_api_client,
 )
+from app.modules.prioritizer.services.report_translation import (
+    ReportTranslationProviderError,
+    ReportTranslationValidationError,
+)
 from app.modules.prioritizer.internal_models import (
     Action,
     ActionFinancialFeasibilityScoresFetchResult,
@@ -23,6 +28,10 @@ from app.modules.prioritizer.internal_models import (
     ActionPathwaysFetchResult,
     ActionPolicyScoresFetchResult,
     CityData,
+)
+from app.modules.prioritizer.report_models import (
+    ReportChapterInput,
+    ReportGenerationResult,
 )
 
 
@@ -90,9 +99,8 @@ class MockFinancialFeasibilityDataApiClient:
         return ActionFinancialFeasibilityScoresFetchResult(scores_by_action_id={})
 
 
-@pytest.mark.integration
-def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
-    """Output-plan endpoint should return one isolated report for one action."""
+def _configure_output_plan_dependency_overrides() -> None:
+    """Configure deterministic source clients for output-plan endpoint tests."""
     app.dependency_overrides[get_city_data_api_client] = lambda: MockCityDataApiClient(
         city=CityData(
             city_name="Santiago",
@@ -104,7 +112,17 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     )
     app.dependency_overrides[get_action_pathways_data_api_client] = (
         lambda: MockActionPathwaysDataApiClient(
-            actions=[Action(action_id="A_1", action_name="Bus electrification")]
+            actions=[
+                Action(
+                    action_id="A_1",
+                    action_name="Bus electrification",
+                    action_type="mitigation",
+                    name_i18n={
+                        "en": "Bus electrification",
+                        "es": "Electrificación de autobuses",
+                    },
+                )
+            ]
         )
     )
     app.dependency_overrides[get_legal_data_api_client] = lambda: MockLegalDataApiClient()
@@ -117,6 +135,12 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     app.dependency_overrides[get_action_financial_feasibility_scores_data_api_client] = (
         lambda: MockFinancialFeasibilityDataApiClient()
     )
+
+
+@pytest.mark.integration
+def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
+    """Output-plan endpoint should return one isolated report for one action."""
+    _configure_output_plan_dependency_overrides()
 
     try:
         with TestClient(app) as test_client:
@@ -131,12 +155,83 @@ def test_output_plan_endpoint_returns_debug_chapters_without_llm() -> None:
     body = response.json()
     assert body["locode"] == "CL-SCL"
     assert body["action_id"] == "A_1"
-    assert body["language"] == "en"
-    assert body["format"] == "json_chapters_markdown"
+    assert body["language"] == ["en", "es"]
+    assert body["format"] == "json_chapters_markdown_i18n"
+    assert body["meta"]["requestId"] == "report-req-1"
+    assert body["meta"]["totalRecords"] == 1
     assert len(body["chapters"]) == 8
+    assert body["chapters"][0]["title"] == {"en": "Snapshot", "es": "Resumen"}
+    for chapter in body["chapters"]:
+        assert set(chapter["title"]) == {"en", "es"}
+        assert set(chapter["markdown"]) == {"en", "es"}
+        assert set(chapter["limitations"]) == {"en", "es"}
     assert body["metadata"]["source_context"]["ranking_basis"] == (
         "frontend_prioritization_snapshot"
     )
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ("translation_error", "error_code", "retryable", "retry_after"),
+    [
+        (
+            ReportTranslationValidationError("invalid translated chapter"),
+            "report_translation_validation_failed",
+            False,
+            None,
+        ),
+        (
+            ReportTranslationProviderError(
+                "Report translation provider is temporarily unavailable"
+            ),
+            "report_translation_provider_unavailable",
+            True,
+            "5",
+        ),
+    ],
+)
+def test_output_plan_translation_failures_expose_safe_retry_contract(
+    monkeypatch: pytest.MonkeyPatch,
+    translation_error: Exception,
+    error_code: str,
+    retryable: bool,
+    retry_after: str | None,
+) -> None:
+    """Only transient provider failures should advise frontend retries."""
+    _configure_output_plan_dependency_overrides()
+    generate_chapters = prioritizer_api.generate_output_plan_chapters
+
+    def generate_without_llm(
+        *, chapter_inputs: list[ReportChapterInput], use_llm: bool
+    ) -> ReportGenerationResult:
+        """Build deterministic English chapters while exercising production flow."""
+        del use_llm
+        return generate_chapters(chapter_inputs=chapter_inputs, use_llm=False)
+
+    def fail_translation(**kwargs: object) -> None:
+        """Raise the configured translation failure after English generation."""
+        del kwargs
+        raise translation_error
+
+    monkeypatch.setattr(
+        prioritizer_api,
+        "generate_output_plan_chapters",
+        generate_without_llm,
+    )
+    monkeypatch.setattr(prioritizer_api, "translate_output_plan", fail_translation)
+    payload = _report_request_payload()
+    payload["requestData"]["debugContextOnly"] = False  # type: ignore[index]
+
+    try:
+        with TestClient(app) as test_client:
+            response = test_client.post("/v1/reports/output-plan", json=payload)
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 502
+    assert response.json()["detail"]["error_code"] == error_code
+    assert response.json()["detail"]["retryable"] is retryable
+    assert response.headers.get("Retry-After") == retry_after
 
 
 @pytest.mark.integration
@@ -152,6 +247,18 @@ def test_output_plan_endpoint_rejects_action_not_in_snapshot() -> None:
     assert "actionId" in response.json()["detail"]["error"]
 
 
+@pytest.mark.integration
+def test_output_plan_endpoint_rejects_scalar_language() -> None:
+    """The breaking multilingual contract should reject a scalar language value."""
+    payload = _report_request_payload()
+    payload["requestData"]["language"] = "en"  # type: ignore[index]
+
+    with TestClient(app) as test_client:
+        response = test_client.post("/v1/reports/output-plan", json=payload)
+
+    assert response.status_code == 422
+
+
 def _report_request_payload(*, action_id: str = "A_1") -> dict[str, object]:
     """Build one valid output-plan request payload for integration tests."""
     return {
@@ -159,27 +266,19 @@ def _report_request_payload(*, action_id: str = "A_1") -> dict[str, object]:
             "requestId": "report-req-1",
             "generatedAtUtc": "2026-07-14T00:00:00Z",
             "backendConsumer": "hiap-meed",
-            "upstreamProvider": "test",
+            "upstreamProvider": "city_catalyst_frontend",
             "apiContext": {"endpoint": "POST /v1/reports/output-plan"},
             "totalRecords": 1,
         },
         "requestData": {
             "locode": "CL-SCL",
             "actionId": action_id,
-            "language": "en",
+            "language": ["en", "es"],
             "debugContextOnly": True,
             "prioritizationSnapshot": {
                 "request": {
                     "meta": {
-                        "requestId": "prioritize-req-1",
-                        "generatedAtUtc": "2026-07-14T00:00:00Z",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "test",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                        "requestId": "prioritize-req-1"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],

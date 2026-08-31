@@ -1,4 +1,4 @@
-﻿"""Unit tests for data source selection and mock loading."""
+"""Unit tests for data source selection and mock loading."""
 
 from __future__ import annotations
 
@@ -11,12 +11,16 @@ import pytest
 from botocore.exceptions import ClientError, NoCredentialsError, PartialCredentialsError
 from pydantic import ValidationError
 
+from app.modules.prioritizer.internal_models import Action
 from app.modules.prioritizer.scoring_config import is_activity_data_level_mapping_enabled
 from app.modules.prioritizer.models import (
     ActionLegalAssessmentS3CsvRow,
     ActionPathwayApiItem,
     ActionPolicyScoreApiItem,
     PrioritizerApiRequest,
+)
+from app.modules.prioritizer.services.report_context_enrichment import (
+    _fetch_report_finance_evidence,
 )
 from app.services.action_policy_scores_api import (
     ACTION_POLICY_SCORES_ENDPOINT_TEMPLATE,
@@ -31,10 +35,19 @@ from app.services.action_financial_feasibility_scores_api import (
 from app.services.action_pathways_api import (
     ACTION_PATHWAYS_ENDPOINT,
     ActionPathwaysApiService,
+    select_prioritizable_actions,
 )
 from app.services.city_attributes_api import (
     DEFAULT_CITY_ATTRIBUTES_BASE_URL,
     CityAttributesApiService,
+)
+from app.services.climate_finance_opportunities_api import (
+    CLIMATE_FINANCE_OPPORTUNITIES_ENDPOINT,
+    ClimateFinanceOpportunitiesApiService,
+)
+from app.services.climate_finance_projects_api import (
+    CLIMATE_FINANCE_PROJECTS_ENDPOINT,
+    ClimateFinanceProjectsApiService,
 )
 from app.services.action_legal_assessments_api import (
     ActionLegalAssessmentsApiService,
@@ -92,6 +105,34 @@ def test_mock_action_client_loads_actions_from_file() -> None:
     assert isinstance(actions[0].emissions, dict)
     assert isinstance(actions[0].emissions.get("subsector_number"), list)
     assert isinstance(actions[0].co_benefits, dict)
+
+
+@pytest.mark.unit
+def test_select_prioritizable_actions_owns_action_membership() -> None:
+    """Shared selection keeps only mitigation and reports other or missing types."""
+    mitigation = Action(
+        action_id="mitigation",
+        action_name="Mitigation action",
+        action_type="Mitigation",
+    )
+    missing_type = Action(
+        action_id="missing",
+        action_name="Untyped action",
+        action_type=None,
+    )
+    adaptation = Action(
+        action_id="adaptation",
+        action_name="Adaptation action",
+        action_type="adaptation",
+    )
+
+    selected, excluded, missing = select_prioritizable_actions(
+        [mitigation, missing_type, adaptation]
+    )
+
+    assert [action.action_id for action in selected] == ["mitigation"]
+    assert [action.action_id for action in excluded] == ["adaptation"]
+    assert [action.action_id for action in missing] == ["missing"]
 
 
 @pytest.mark.unit
@@ -228,7 +269,7 @@ def test_action_pathways_service_uses_env_base_url_override(
     assert service.base_url == "https://pathways.example.test/root/"
     assert (
         service._build_action_pathways_url()
-        == "https://pathways.example.test/root/api/v1/action-pathways"
+        == "https://pathways.example.test/root/api/v1/action-pathways?lang=all"
     )
 
 
@@ -284,7 +325,7 @@ def test_api_action_pathways_client_maps_remote_payload_and_metadata(
         "2026-05-21T14:07:38.144930+00:00"
     )
     assert fetch_result.source_metadata["upstream_url"].endswith(
-        "/api/v1/action-pathways"
+        "/api/v1/action-pathways?lang=all"
     )
 
 
@@ -1318,10 +1359,10 @@ def test_action_financial_feasibility_scores_service_uses_env_base_url_override(
 
 
 @pytest.mark.unit
-def test_finance_client_fetches_named_report_opportunities_and_projects(
+def test_finance_catalogue_services_fetch_named_opportunities_and_projects(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Report finance enrichment should preserve names, links, and locations."""
+    """Endpoint-specific finance services preserve names, links, and locations."""
 
     def _mock_get(
         self: httpx.Client, url: str, headers: dict[str, str] | None = None
@@ -1390,38 +1431,272 @@ def test_finance_client_fetches_named_report_opportunities_and_projects(
                 "data": [
                     {
                         "project_name": "Street lighting upgrade",
+                        "project_name_i18n": {
+                            "en": "Street lighting upgrade",
+                            "es": "Mejora del alumbrado publico",
+                        },
+                        "sector": "stationary_energy",
                         "jurisdiction": "Santa Cruz",
                         "lifecycle_stage": "in-execution",
                         "funding_channel": "public investment",
+                        "cost_total": 1200,
+                        "amount_unit": "CLP_thousands",
+                        "funding_sources": [
+                            {
+                                "cycle": "2025",
+                                "amount": 1200,
+                                "amount_unit": "CLP_thousands",
+                                "funder_name": "Regional Fund",
+                            }
+                        ],
+                        "action_matches": [
+                            {
+                                "action_id": "icare_0040",
+                                "confidence": "goal_aligned",
+                            }
+                        ],
                     }
                 ],
             }
         return httpx.Response(200, request=request, json=payload)
 
     monkeypatch.setattr(httpx.Client, "get", _mock_get)
-    evidence = ApiActionFinancialFeasibilityScoresDataApiClient().get_report_finance_evidence(
-        action_id="icare_0040",
+    client = ApiActionFinancialFeasibilityScoresDataApiClient()
+    opportunities_result = client.get_report_finance_opportunities(
         country_code="CL",
         sector="stationary_energy",
         route="needs technical assistance",
     )
+    projects_result = client.get_report_finance_projects(
+        action_id="icare_0040",
+        country_code="CL",
+    )
 
-    assert evidence.opportunities[0].opportunity_name == "Municipal energy assistance"
-    assert evidence.opportunities[0].source_url == "https://agency.example/programme"
-    assert len(evidence.opportunities) == 2
-    assert evidence.opportunities[0].report_category == "current"
-    assert evidence.opportunities[1].opportunity_name == "Closed fund"
-    assert evidence.opportunities[1].report_category == "monitor"
-    assert evidence.opportunities[1].status_as_of == "2026-06-08"
-    assert evidence.source_metadata["opportunities"]["current_count"] == 1
-    assert evidence.source_metadata["opportunities"]["monitoring_count"] == 1
-    assert "not matched to the selected action" in evidence.source_metadata[
-        "opportunities"
-    ]["selection_scope"]
-    assert "limit=50" in evidence.source_metadata["opportunities"]["upstream_url"]
-    assert evidence.projects[0].project_name == "Street lighting upgrade"
-    assert evidence.projects[0].jurisdiction == "Santa Cruz"
-    assert evidence.source_metadata["projects"]["total"] == 1
+    assert (
+        opportunities_result.opportunities[0].opportunity_name
+        == "Municipal energy assistance"
+    )
+    assert (
+        opportunities_result.opportunities[0].source_url
+        == "https://agency.example/programme"
+    )
+    assert len(opportunities_result.opportunities) == 2
+    assert opportunities_result.opportunities[0].report_category == "current"
+    assert opportunities_result.opportunities[1].opportunity_name == "Closed fund"
+    assert opportunities_result.opportunities[1].report_category == "monitor"
+    assert opportunities_result.opportunities[1].status_as_of == "2026-06-08"
+    assert opportunities_result.source_metadata["current_count"] == 1
+    assert opportunities_result.source_metadata["monitoring_count"] == 1
+    assert "not matched to the selected action" in opportunities_result.source_metadata[
+        "selection_scope"
+    ]
+    assert "limit=50" in opportunities_result.source_metadata["upstream_url"]
+    assert (
+        opportunities_result.source_metadata["upstream_endpoint"]
+        == CLIMATE_FINANCE_OPPORTUNITIES_ENDPOINT
+    )
+    assert projects_result.projects[0].project_name == "Street lighting upgrade"
+    assert projects_result.projects[0].jurisdiction == "Santa Cruz"
+    assert projects_result.projects[0].sector == "stationary_energy"
+    assert projects_result.projects[0].cost_total == 1200
+    assert projects_result.projects[0].funding_sources[0]["funder_name"] == (
+        "Regional Fund"
+    )
+    assert projects_result.projects[0].action_matches[0] == {
+        "action_id": "icare_0040",
+        "confidence": "goal_aligned",
+    }
+    assert projects_result.source_metadata["total"] == 1
+    assert (
+        projects_result.source_metadata["upstream_endpoint"]
+        == CLIMATE_FINANCE_PROJECTS_ENDPOINT
+    )
+
+
+@pytest.mark.unit
+def test_project_404_does_not_discard_successful_finance_opportunities(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A no-projects 404 leaves successfully fetched opportunities intact."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        del self
+        request = httpx.Request("GET", url, headers=headers)
+        if "/opportunities?" in url:
+            return httpx.Response(
+                200,
+                request=request,
+                json={
+                    "meta": {"count": 1, "datasources": []},
+                    "data": [
+                        {
+                            "opportunity_name": "Municipal energy assistance",
+                            "status": "ongoing",
+                            "city_application": ["direct"],
+                            "climate_relevance": "explicit",
+                        }
+                    ],
+                },
+            )
+        return httpx.Response(
+            404,
+            request=request,
+            json={"detail": "No finance projects found"},
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+    monkeypatch.setenv("UPSTREAM_HTTP_MAX_RETRIES", "0")
+
+    evidence = _fetch_report_finance_evidence(
+        client=ApiActionFinancialFeasibilityScoresDataApiClient(),
+        action_id="c40_0012",
+        country_code="CL",
+        sector="stationary_energy",
+        route="self-deliverable",
+    )
+
+    assert [row.opportunity_name for row in evidence.opportunities] == [
+        "Municipal energy assistance"
+    ]
+    assert evidence.projects == []
+    assert evidence.source_metadata["opportunities"]["http_status_code"] == 200
+    assert evidence.source_metadata["projects"]["http_status_code"] == 404
+    assert evidence.warnings == [
+        "No comparable projects are available for this action."
+    ]
+
+
+@pytest.mark.unit
+def test_missing_sector_skips_cross_sector_opportunity_fetch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Missing action sector skips opportunities while projects remain available."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        del self
+        if "/opportunities?" in url:
+            pytest.fail(
+                "The opportunities API must not be called without an action sector"
+            )
+        request = httpx.Request("GET", url, headers=headers)
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {"total": 1, "count": 1, "datasources": []},
+                "data": [{"project_name": "School retrofit"}],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+
+    evidence = _fetch_report_finance_evidence(
+        client=ApiActionFinancialFeasibilityScoresDataApiClient(),
+        action_id="c40_0012",
+        country_code="CL",
+        sector=None,
+        route="self-deliverable",
+    )
+
+    assert evidence.opportunities == []
+    assert [row.project_name for row in evidence.projects] == ["School retrofit"]
+    assert (
+        evidence.source_metadata["opportunities"]["fetch_skipped_reason"]
+        == "missing_action_sector"
+    )
+    assert evidence.source_metadata["opportunities"]["requested_country_code"] == "CL"
+    assert evidence.warnings == [
+        "Finance opportunities were not fetched because the selected action's "
+        "sector is unavailable."
+    ]
+
+
+@pytest.mark.unit
+def test_opportunity_schema_failure_does_not_discard_successful_projects(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An invalid opportunities payload leaves successfully fetched projects intact."""
+
+    def _mock_get(
+        self: httpx.Client, url: str, headers: dict[str, str] | None = None
+    ) -> httpx.Response:
+        del self
+        request = httpx.Request("GET", url, headers=headers)
+        if "/opportunities?" in url:
+            return httpx.Response(
+                200,
+                request=request,
+                json={"meta": {"count": 1}, "data": [{"status": "open"}]},
+            )
+        return httpx.Response(
+            200,
+            request=request,
+            json={
+                "meta": {"total": 1, "count": 1, "datasources": []},
+                "data": [{"project_name": "School retrofit"}],
+            },
+        )
+
+    monkeypatch.setattr(httpx.Client, "get", _mock_get)
+
+    evidence = _fetch_report_finance_evidence(
+        client=ApiActionFinancialFeasibilityScoresDataApiClient(),
+        action_id="c40_0012",
+        country_code="CL",
+        sector="stationary_energy",
+        route="self-deliverable",
+    )
+
+    assert evidence.opportunities == []
+    assert [row.project_name for row in evidence.projects] == ["School retrofit"]
+    assert evidence.source_metadata["opportunities"]["http_status_code"] == 200
+    assert evidence.source_metadata["projects"]["http_status_code"] == 200
+    assert evidence.warnings == ["Detailed finance opportunities are unavailable."]
+
+
+@pytest.mark.unit
+def test_finance_catalogue_services_build_independent_urls() -> None:
+    """Each catalogue service owns only its endpoint URL contract."""
+    opportunities_service = ClimateFinanceOpportunitiesApiService(
+        base_url="https://finance.example.test/root/"
+    )
+    projects_service = ClimateFinanceProjectsApiService(
+        base_url="https://finance.example.test/root/"
+    )
+
+    assert opportunities_service._build_url(
+        country_code=" cl ",
+        sector=" stationary_energy ",
+    ) == (
+        "https://finance.example.test/root/api/v1/climate-finance/opportunities"
+        "?country_code=CL&sector=stationary_energy&eligible_actor=municipality&limit=50"
+    )
+    assert projects_service._build_url(
+        action_id=" c40_0012 ",
+        country_code=" cl ",
+        limit=5,
+    ) == (
+        "https://finance.example.test/root/api/v1/climate-finance/projects"
+        "?country_code=CL&action_id=c40_0012&limit=5"
+    )
+
+
+@pytest.mark.unit
+def test_finance_data_client_shares_injected_score_service_base_url() -> None:
+    """Injected score hosts also configure default catalogue services."""
+    client = ApiActionFinancialFeasibilityScoresDataApiClient(
+        service=ActionFinancialFeasibilityScoresApiService(
+            base_url="https://finance.example.test/root/"
+        )
+    )
+
+    assert client._opportunities_service.base_url == "https://finance.example.test/root/"
+    assert client._projects_service.base_url == "https://finance.example.test/root/"
+
 
 @pytest.mark.unit
 def test_mock_action_financial_feasibility_scores_client_loads_scores_from_file() -> None:
@@ -1692,15 +1967,7 @@ def test_prioritizer_request_accepts_activity_type_field() -> None:
     request = PrioritizerApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "req-1",
-                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "city_catalyst_frontend",
-                "apiContext": {
-                    "endpoint": "POST /v1/prioritize",
-                    "locodes": ["CL-SCL"],
-                },
-                "totalRecords": 1,
+              "requestId": "req-1"
             },
             "requestData": {
                 "requestedLanguages": ["en"],
@@ -1745,15 +2012,7 @@ def test_prioritizer_request_rejects_unexpected_frontend_field() -> None:
         PrioritizerApiRequest.model_validate(
             {
                 "meta": {
-                    "requestId": "req-1",
-                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/prioritize",
-                        "locodes": ["CL-SCL"],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-1"
                 },
                 "requestData": {
                     "requestedLanguages": ["en"],
@@ -1782,15 +2041,7 @@ def test_prioritizer_request_rejects_negative_non_afolu_total_emissions() -> Non
         PrioritizerApiRequest.model_validate(
             {
                 "meta": {
-                    "requestId": "req-1",
-                    "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/prioritize",
-                        "locodes": ["CL-SCL"],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-1"
                 },
                 "requestData": {
                     "requestedLanguages": ["en"],
@@ -1826,15 +2077,7 @@ def test_prioritizer_request_accepts_negative_afolu_total_emissions() -> None:
     request = PrioritizerApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "req-1",
-                "generatedAtUtc": "2026-05-12T00:00:00+00:00",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "city_catalyst_frontend",
-                "apiContext": {
-                    "endpoint": "POST /v1/prioritize",
-                    "locodes": ["CL-SCL"],
-                },
-                "totalRecords": 1,
+              "requestId": "req-1"
             },
             "requestData": {
                 "requestedLanguages": ["en"],

@@ -25,7 +25,7 @@ class _StubInventoryContextClient:
         self.emissions_response: Dict[str, Any] = {
             "action": "ghgi.inventory.emissions_context",
             "success": True,
-            "data": {"total_emissions_tco2e": "12500000"},
+            "data": {"total_emissions_kgco2e": "12500000"},
         }
         self.list_response: Dict[str, Any] = {
             "action": "ghgi.inventory.list_accessible",
@@ -140,7 +140,7 @@ class InventoryContextToolTests(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(data["action"], "ghgi.inventory.emissions_context")
         self.assertTrue(data["success"])
-        self.assertEqual(data["data"]["total_emissions_tco2e"], "12500000")
+        self.assertEqual(data["data"]["total_emissions_kgco2e"], "12500000")
         self.assertEqual(stub_client.requests[0]["action"], "emissions")
 
     async def test_tool_reports_missing_token_without_cc_call(self) -> None:

@@ -40,7 +40,6 @@
  *       401:
  *         description: Unauthorized.
  */
-import { db } from "@/models";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";

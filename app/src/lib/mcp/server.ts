@@ -33,7 +33,7 @@ export class CityCatalystMCPServer {
         capabilities: {
           tools: {},
         },
-      }
+      },
     );
 
     this.setupHandlers();
@@ -59,7 +59,7 @@ export class CityCatalystMCPServer {
 
     logger.info(
       { toolCount: this.tools.size },
-      "MCP tools registered successfully"
+      "MCP tools registered successfully",
     );
   }
 
@@ -67,9 +67,9 @@ export class CityCatalystMCPServer {
     // Handle tool listing
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       logger.debug("Listing available MCP tools");
-      
+
       const tools = Array.from(this.tools.values());
-      
+
       return {
         tools,
       };
@@ -81,22 +81,19 @@ export class CityCatalystMCPServer {
 
       logger.info(
         { tool: name, userId: this.session?.user?.id },
-        "Executing MCP tool"
+        "Executing MCP tool",
       );
 
       if (!this.session) {
         throw new McpError(
           ErrorCode.InvalidRequest,
-          "Authentication required to use tools"
+          "Authentication required to use tools",
         );
       }
 
       const tool = this.tools.get(name);
       if (!tool) {
-        throw new McpError(
-          ErrorCode.MethodNotFound,
-          `Tool not found: ${name}`
-        );
+        throw new McpError(ErrorCode.MethodNotFound, `Tool not found: ${name}`);
       }
 
       try {
@@ -114,17 +111,11 @@ export class CityCatalystMCPServer {
         };
       } catch (error) {
         logger.error({ error, tool: name }, "Error executing MCP tool");
-        
+
         if (error instanceof Error) {
-          throw new McpError(
-            ErrorCode.InternalError,
-            error.message
-          );
+          throw new McpError(ErrorCode.InternalError, error.message);
         }
-        throw new McpError(
-          ErrorCode.InternalError,
-          "Tool execution failed"
-        );
+        throw new McpError(ErrorCode.InternalError, "Tool execution failed");
       }
     });
 
@@ -134,9 +125,14 @@ export class CityCatalystMCPServer {
     };
   }
 
-  private async getToolHandler(toolName: string) {
+  private async getToolHandler(toolName: string): Promise<{
+    execute: (
+      params: Record<string, unknown>,
+      session: AppSession,
+    ) => Promise<unknown>;
+  }> {
     // Map tool names to their handler modules
-    const handlers: Record<string, () => Promise<any>> = {
+    const handlers: Record<string, () => Promise<unknown>> = {
       get_user_inventories: () => import("./tools/inventories"),
       get_inventory_emissions: () => import("./tools/emissions"),
       get_user_cities: () => import("./tools/cities"),
@@ -149,11 +145,16 @@ export class CityCatalystMCPServer {
     if (!handler) {
       throw new McpError(
         ErrorCode.MethodNotFound,
-        `No handler for tool: ${toolName}`
+        `No handler for tool: ${toolName}`,
       );
     }
 
-    return handler();
+    return (await handler()) as {
+      execute: (
+        params: Record<string, unknown>,
+        session: AppSession,
+      ) => Promise<unknown>;
+    };
   }
 
   async connect(transport?: StdioServerTransport) {
@@ -174,3 +175,4 @@ export class CityCatalystMCPServer {
 
 // Create singleton instance for HTTP endpoint use
 export const mcpServer = new CityCatalystMCPServer();
+

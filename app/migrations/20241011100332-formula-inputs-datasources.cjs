@@ -3,7 +3,7 @@
 const { DataTypes } = require("sequelize");
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.createTable("DataSourceFormulaInput", {
       datasource_id: {
         type: DataTypes.UUID,
@@ -36,7 +36,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("DatasourceFormulaInput");
   },
 };

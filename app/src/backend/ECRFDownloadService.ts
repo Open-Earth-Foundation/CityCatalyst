@@ -1,4 +1,5 @@
 import Excel, { Worksheet } from "exceljs";
+import type { TFunction } from "i18next";
 import createHttpError from "http-errors";
 import {
   InventoryValueWithActivityValues,
@@ -10,12 +11,26 @@ import { toDecimal } from "@/util/helpers";
 import Decimal from "decimal.js";
 import { bigIntToDecimal } from "@/util/big_int";
 import PopulationService from "@/backend/PopulationService";
-import CityBoundaryService from "@/backend/CityBoundaryService";
+import CityBoundaryService, {
+  CityBoundary,
+} from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
+import { toShort } from "@/util/notation-keys";
 import fs from "fs";
 import path from "path";
 
-const ECRF_TEMPLATE_PATH = "./templates/ecrf_template.xlsx";
+interface Template2Entry {
+  "notation-key"?: string;
+  explanation?: string;
+  total: bigint;
+  [key: string]: bigint | string | undefined;
+}
+
+interface DataSection {
+  notation_key?: string;
+  activityValues: Array<Record<string, unknown>>;
+  [key: string]: unknown;
+}
 
 export default class ECRFDownloadService {
   public static async downloadECRF(
@@ -66,7 +81,7 @@ export default class ECRFDownloadService {
   private static async writeToSheet1(
     workbook: Excel.Workbook,
     output: InventoryWithInventoryValuesAndActivityValues,
-    t: any,
+    t: TFunction,
   ) {
     // fetch population data
 
@@ -74,7 +89,7 @@ export default class ECRFDownloadService {
     const year = output.year;
 
     let cityPopulationData = null;
-    let cityBoundaryData: Record<string, any> = {};
+    let cityBoundaryData: CityBoundary | null = null;
     try {
       cityPopulationData = await PopulationService.getPopulationDataForCityYear(
         city.cityId,
@@ -83,13 +98,13 @@ export default class ECRFDownloadService {
       cityBoundaryData = await CityBoundaryService.getCityBoundary(
         city.locode as string,
       );
-    } catch (e) {
+    } catch {
       logger.warn("Failed to fetch city boundary or population");
     }
 
     // prepare the data for sheet 1
-    const sheetData: Record<string, any> = {
-      inventory_type: t?.(output.inventoryType),
+    const sheetData: Record<string, unknown> = {
+      inventory_type: t?.(output.inventoryType ?? ""),
       city_country: city.country,
       city_name: city.name,
       city_region: city.region,
@@ -100,7 +115,7 @@ export default class ECRFDownloadService {
 
     const worksheet = workbook.getWorksheet(1); // Get the worksheet by index (1st sheet)
 
-    worksheet?.eachRow((row, rowNumber) => {
+    worksheet?.eachRow((row) => {
       const placeholderCell = row.getCell(3);
       if (placeholderCell.value && typeof placeholderCell.value === "string") {
         const cellValue = placeholderCell.value as string;
@@ -108,7 +123,7 @@ export default class ECRFDownloadService {
         if (placeholderMatch) {
           const fieldName = placeholderMatch[1] as string;
           const replacementValue = sheetData[fieldName];
-          placeholderCell.value = replacementValue ?? "N/A";
+          placeholderCell.value = (replacementValue ?? "N/A") as Excel.CellValue;
         }
       }
     });
@@ -117,7 +132,7 @@ export default class ECRFDownloadService {
   private static async writeToSheet2(
     workbook: Excel.Workbook,
     output: InventoryWithInventoryValuesAndActivityValues,
-    t: any,
+    t: TFunction,
   ) {
     const sectorNameMapping: Record<string, string> = {
       I: `stationary`,
@@ -127,7 +142,7 @@ export default class ECRFDownloadService {
       V: `afolu`,
     };
 
-    const totals: Record<string, any> = {
+    const totals: Record<string, bigint> = {
       stationary1: 0n,
       stationary2: 0n,
       stationary3: 0n,
@@ -145,12 +160,12 @@ export default class ECRFDownloadService {
     };
 
     // prepare the data for sheet 2
-    const dataDictionary = this.transformDataForTemplate2(output, t);
+    const dataDictionary = this.transformDataForTemplate2(output);
     const fugitive_emissions_data =
       this.groupFugitiveEmissionData(dataDictionary);
     totals.stationary1 = fugitive_emissions_data?.total;
 
-    const updatedDataDictionary: Record<string, any> = {
+    const updatedDataDictionary: Record<string, Template2Entry> = {
       ...dataDictionary,
       fugitive: fugitive_emissions_data,
     };
@@ -158,7 +173,7 @@ export default class ECRFDownloadService {
     // now loop over the rows and columns.
     const worksheet = workbook.getWorksheet(2);
 
-    worksheet?.eachRow((row, rowNumber) => {
+    worksheet?.eachRow((row) => {
       let justificationString = "";
       // loop over each cell and then check if it's a placeholder.
       row.eachCell((cell) => {
@@ -219,7 +234,7 @@ export default class ECRFDownloadService {
   private static async writeToSheet3(
     workbook: Excel.Workbook,
     output: InventoryWithInventoryValuesAndActivityValues,
-    t: any,
+    t: TFunction,
   ) {
     const worksheet = workbook.getWorksheet(3); // Get the worksheet by index (3rd sheet)
     // Fetch data from the database
@@ -306,14 +321,14 @@ export default class ECRFDownloadService {
 
   private static transformDataForTemplate2(
     output: InventoryWithInventoryValuesAndActivityValues,
-    t: any,
-  ): Record<string, any> {
-    const dataDictionary: Record<string, any> = {};
+  ): Record<string, Template2Entry> {
+    const dataDictionary: Record<string, Template2Entry> = {};
 
     output.inventoryValues.map((inventoryValue) => {
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
-        "notation-key": inventoryValue.unavailableReason?.split("-")[1],
-        explanation: inventoryValue.unavailableExplanation,
+        "notation-key":
+          toShort(inventoryValue.unavailableReason) ?? undefined,
+        explanation: inventoryValue.unavailableExplanation ?? undefined,
         total: inventoryValue.unavailableReason
           ? 0n
           : BigInt(inventoryValue.co2eq ?? 0),
@@ -326,11 +341,11 @@ export default class ECRFDownloadService {
   private static transformDataForTemplate3(
     inventoryValues: InventoryValueWithActivityValues[],
     inventoryYear: number,
-    t: any,
-  ): Record<string, any> {
+    t: TFunction,
+  ): Record<string, DataSection> {
     // Get the translation
 
-    const dataDictionary: Record<string, any> = {};
+    const dataDictionary: Record<string, DataSection> = {};
     inventoryValues.forEach((inventoryValue) => {
       const gpcRefNo = inventoryValue.gpcReferenceNumber;
       const activityValues = inventoryValue.activityValues || [];
@@ -340,7 +355,8 @@ export default class ECRFDownloadService {
         dataDictionary[gpcRefNo as string] = {
           inventory_year: inventoryYear,
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
-          notation_key: inventoryValue.unavailableReason,
+          notation_key:
+            toShort(inventoryValue.unavailableReason) ?? undefined,
           activityValues: [
             {
               activity_type: null,
@@ -360,7 +376,7 @@ export default class ECRFDownloadService {
           ],
         };
       } else {
-        let methodologyDescription = inventoryValue.inputMethodology;
+        const methodologyDescription = inventoryValue.inputMethodology;
         const methodology = findMethodology(
           inventoryValue.inputMethodology as string,
           gpcRefNo,
@@ -371,15 +387,21 @@ export default class ECRFDownloadService {
           // InventoryValue fields
           inventory_year: inventoryYear,
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
-          notation_key: inventoryValue.unavailableReason,
-          input_methodology: t(inventoryValue.inputMethodology),
+          notation_key:
+            toShort(inventoryValue.unavailableReason) ?? undefined,
+          input_methodology: t(inventoryValue.inputMethodology ?? ""),
           activityValues: activityValues.map((activityValue) => {
-            let activityTitleKey = activityValue.metadata?.activityTitle;
-            let dataQuality = activityValue.metadata?.dataQuality;
-            let dataSource = activityValue.activityData?.["data-source"];
-            let activityAmount = activityValue.activityData?.[activityTitleKey];
-            let activityUnit = t(
-              activityValue.activityData?.[`${activityTitleKey}-unit`],
+            const activityTitleKey =
+              activityValue.metadata?.activityTitle.toString() ?? "";
+            const dataQuality = activityValue.metadata?.dataQuality;
+            const dataSource = activityValue.activityData?.["data-source"];
+            const activityAmount =
+              activityValue.activityData?.[activityTitleKey];
+            const activityUnit = t(
+              String(
+                activityValue.activityData?.[`${activityTitleKey}-unit`] ??
+                  "",
+              ),
             );
             let emission_co2 = null;
             let emission_ch4 = null;
@@ -389,13 +411,13 @@ export default class ECRFDownloadService {
             let ghg_n2o = null;
 
             if (activityValue.gasValues) {
-              let co2_gas = activityValue.gasValues.find(
+              const co2_gas = activityValue.gasValues.find(
                 (g) => g.gas === "CO2",
               );
-              let ch4_gas = activityValue.gasValues.find(
+              const ch4_gas = activityValue.gasValues.find(
                 (g) => g.gas === "CH4",
               );
-              let n2o_gas = activityValue.gasValues.find(
+              const n2o_gas = activityValue.gasValues.find(
                 (g) => g.gas === "N2O",
               );
 
@@ -411,7 +433,9 @@ export default class ECRFDownloadService {
               ghg_co2: bigIntToDecimal(ghg_co2 as bigint).toNumber(),
               ghg_ch4: bigIntToDecimal(ghg_ch4 as bigint).toNumber(),
               ghg_n2o: bigIntToDecimal(ghg_n2o as bigint).toNumber(),
-              activity_type: t(activityValue.activityData?.[activityKey]),
+              activity_type: t(
+                String(activityValue.activityData?.[activityKey] ?? ""),
+              ),
               emission_factor_unit: null,
               emission_co2,
               emission_ch4,
@@ -422,7 +446,7 @@ export default class ECRFDownloadService {
               emission_factor_description:
                 activityValue.metadata?.emissionFactorTypeReference,
               activity_unit: activityUnit,
-              methodology: t(methodologyDescription),
+              methodology: t(methodologyDescription ?? ""),
               activity_data_quality: dataQuality,
               activity_data_source: dataSource,
               total_co2e: toDecimal(activityValue.co2eq as bigint)
@@ -438,9 +462,9 @@ export default class ECRFDownloadService {
 
   private static replacePlaceholdersInRow(
     row: Excel.Row,
-    dataSection: Record<string, any>, // TODO: Define a type for this
+    dataSection: DataSection,
     rowNumber: number,
-    visitedScopes: Record<string, any>,
+    visitedScopes: Record<string, boolean>,
     worksheet: Worksheet,
   ) {
     const referenceCell = row.getCell(2);
@@ -451,10 +475,7 @@ export default class ECRFDownloadService {
     }
 
     if (dataSection.notation_key) {
-      this.markRowAsNotEstimated(
-        row,
-        dataSection["notation_key"].split("-")[1],
-      );
+      this.markRowAsNotEstimated(row, dataSection.notation_key);
       return;
     }
 
@@ -487,11 +508,10 @@ export default class ECRFDownloadService {
             const replacementValue = dataSection[fieldName];
 
             if (fieldName === "no_key" && dataSection["notation_key"]) {
-              // the stored value looks like "reason_NO", "reason_NE", etc.
-              cell.value = dataSection["notation_key"].split("-")[1];
+              cell.value = dataSection["notation_key"];
               return;
             } else if (replacementValue !== undefined) {
-              cell.value = replacementValue;
+              cell.value = replacementValue as Excel.CellValue;
             } else {
               logger.warn(
                 `No data found for field '${fieldName}' at row ${rowNumber}, column ${colNumber}`,

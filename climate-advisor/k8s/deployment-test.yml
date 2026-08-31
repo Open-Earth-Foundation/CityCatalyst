@@ -70,10 +70,10 @@ spec:
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /health
+              path: /ready
               port: http
               httpHeaders:
-                - name: X-Liveness-Probe
+                - name: X-Readiness-Probe
                   value: "True"
             initialDelaySeconds: 5
             periodSeconds: 5

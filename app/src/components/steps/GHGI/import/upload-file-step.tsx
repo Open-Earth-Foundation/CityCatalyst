@@ -13,7 +13,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { MdClose, MdUpload } from "react-icons/md";
+import { MdClose, MdOutlineFileUpload, MdUpload } from "react-icons/md";
 import Image from "next/image";
 import { useRef } from "react";
 
@@ -94,18 +94,21 @@ export default function UploadFileStep({
       <Card.Root
         px={6}
         py={8}
-        shadow="none"
         bg="white"
         w="full"
         borderRadius="lg"
-        borderWidth="1px"
-        borderColor="border.default"
+        shadow="xs"
       >
         {isUploading ? (
-          <VStack gap="16px" py={12} alignItems="center" justifyContent="center">
-            <Spinner size="lg" />
+          <VStack
+            gap="16px"
+            py={12}
+            alignItems="center"
+            justifyContent="center"
+          >
+            <Spinner size="lg" color="interactive.secondary" />
             <Box textAlign="center">
-              <Text fontWeight="medium" fontSize="body.md">
+              <Text fontWeight="bold" fontSize="body.md" mb="8px">
                 {t("uploading-file")}
               </Text>
               <Text fontSize="body.sm" color="content.tertiary">
@@ -123,7 +126,9 @@ export default function UploadFileStep({
             <Box display="flex" alignItems="center" gap="16px">
               <Image
                 src={getFileIcon(uploadedFile.name)}
-                alt={uploadedFile.name.split(".").pop()?.toUpperCase() ?? "file"}
+                alt={
+                  uploadedFile.name.split(".").pop()?.toUpperCase() ?? "file"
+                }
                 width={32}
                 height={32}
               />
@@ -164,18 +169,35 @@ export default function UploadFileStep({
             onClick={() => fileInputRef.current?.click()}
           >
             <VStack gap="16px">
-              <Icon as={MdUpload} boxSize={8} color="content.tertiary" />
+              <Icon
+                as={MdOutlineFileUpload}
+                boxSize={8}
+                color="content.tertiary"
+              />
               <Box>
                 <Text fontWeight="medium" fontSize="body.md">
                   {t("click-to-upload")}
                 </Text>
-                <Text fontSize="body.sm" color="content.tertiary" mt={2}>
+                <Text
+                  fontSize="body.sm"
+                  color="content.tertiary"
+                  mt={2}
+                  fontFamily="body"
+                >
                   {t("file-formats")}{" "}
-                  <Text as="span" fontWeight="bold">{t("file-formats-list")}</Text>
+                  <Text as="span" fontWeight="bold">
+                    {t("file-formats-list")}
+                  </Text>
                 </Text>
-                <Text fontSize="body.sm" color="content.tertiary">
+                <Text
+                  fontSize="body.sm"
+                  color="content.tertiary"
+                  fontFamily="body"
+                >
                   {t("max-file-size")}{" "}
-                  <Text as="span" fontWeight="bold">{t("max-file-size-value")}</Text>
+                  <Text as="span" fontWeight="bold">
+                    {t("max-file-size-value")}
+                  </Text>
                 </Text>
               </Box>
             </VStack>
@@ -190,45 +212,42 @@ export default function UploadFileStep({
           </Box>
         )}
 
-        {!isUploading && <Box
-          display="flex"
-          alignItems="center"
-          gap="12px"
-          mt={6}
-        >
-          <Image
-            src="/assets/data-portal-for-cities-logo.svg"
-            alt="Data Portal for Cities"
-            width={130}
-            height={36}
-            style={{ flexShrink: 0 }}
-          />
-          <Text
-            fontSize="body.lg"
-            color="content.tertiary"
-            fontFamily="body"
-            fontWeight="regular"
-            lineHeight="24"
-            letterSpacing="wide"
-          >
-            {t("data-portal-banner-text")}
-            <Link
-              display="block"
-              href="https://dataportalforcities.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              color="content.link"
-              fontFamily="body"
+        {!isUploading && !uploadedFile && (
+          <Box display="flex" alignItems="center" gap="12px" mt={6}>
+            <Image
+              src="/assets/data-portal-for-cities-logo.svg"
+              alt="Data Portal for Cities"
+              width={130}
+              height={36}
+              style={{ flexShrink: 0 }}
+            />
+            <Text
               fontSize="body.lg"
+              color="content.tertiary"
+              fontFamily="body"
               fontWeight="regular"
               lineHeight="24"
               letterSpacing="wide"
-              textDecoration="underline"
             >
-              {t("data-portal-link")}.
-            </Link>
-          </Text>
-        </Box>}
+              {t("data-portal-banner-text")}
+              <Link
+                display="block"
+                href="https://dataportalforcities.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+                color="content.link"
+                fontFamily="body"
+                fontSize="body.lg"
+                fontWeight="regular"
+                lineHeight="24"
+                letterSpacing="wide"
+                textDecoration="underline"
+              >
+                {t("data-portal-link")}.
+              </Link>
+            </Text>
+          </Box>
+        )}
       </Card.Root>
     </Box>
   );

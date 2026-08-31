@@ -50,7 +50,7 @@ describe("City Transfer API", () => {
   let organization: Organization;
   let project1: Project;
   let project2: Project;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();

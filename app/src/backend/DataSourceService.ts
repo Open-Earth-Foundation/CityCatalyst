@@ -6,7 +6,10 @@ import createHttpError from "http-errors";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
 import { SubSector } from "@/models/SubSector";
-import { DataSourceActivityDataRecord } from "@/components/GHGI/data-step/types";
+import type {
+  DataSourceActivityDataRecord,
+  GlobalAPISourceResponse,
+} from "@/components/GHGI/data-step/types";
 import { InventoryValue } from "@/models/InventoryValue";
 import { Publisher } from "@/models/Publisher";
 import { Scope } from "@/models/Scope";
@@ -18,6 +21,7 @@ import { PopulationAttributes } from "@/models/Population";
 import { maxPopulationYearDifference } from "@/util/constants";
 import { Op, Transaction } from "sequelize";
 import VersionHistoryService from "./VersionHistoryService";
+import WebhookService from "@/backend/webhooks/WebhookService";
 
 const EARTH_LOCATION = "EARTH";
 
@@ -175,7 +179,7 @@ export default class DataSourceService {
     });
     if (sector && sector.dataSources) {
       const found = sector.dataSources.find(
-        (ds: any) => ds.datasourceId === datasourceId,
+        (ds: { datasourceId: string }) => ds.datasourceId === datasourceId,
       );
       if (found) return found;
     }
@@ -186,7 +190,7 @@ export default class DataSourceService {
     });
     if (subSector && subSector.dataSources) {
       const found = subSector.dataSources.find(
-        (ds: any) => ds.datasourceId === datasourceId,
+        (ds: { datasourceId: string }) => ds.datasourceId === datasourceId,
       );
       if (found) return found;
     }
@@ -197,7 +201,7 @@ export default class DataSourceService {
     });
     if (subCategory && subCategory.dataSources) {
       const found = subCategory.dataSources.find(
-        (ds: any) => ds.datasourceId === datasourceId,
+        (ds: { datasourceId: string }) => ds.datasourceId === datasourceId,
       );
       if (found) return found;
     }
@@ -352,6 +356,19 @@ export default class DataSourceService {
       result.success = false;
     }
 
+    if (result.success) {
+      await WebhookService.emitForCity(
+        inventory.cityId,
+        "datasource.connected",
+        {
+          datasourceId: source.datasourceId,
+          inventoryId: inventory.inventoryId,
+          cityId: inventory.cityId,
+          datasourceName: source.datasourceName,
+        },
+      );
+    }
+
     return result;
   }
 
@@ -420,7 +437,7 @@ export default class DataSourceService {
   public static async retrieveGlobalAPISource(
     source: DataSource,
     inventory: Inventory,
-  ): Promise<any | string> {
+  ): Promise<GlobalAPISourceResponse | string> {
     const referenceNumber =
       source.subCategory?.referenceNumber || source.subSector?.referenceNumber;
     if (
@@ -868,12 +885,16 @@ export default class DataSourceService {
    * Gets a datasource from an inventory and scales it if necessary
    */
   public static async getSourceWithData(
-    source: any,
-    inventory: any,
+    source: DataSource,
+    inventory: Inventory,
     countryPopulationScaleFactor: number,
     regionPopulationScaleFactor: number,
     populationIssue: string | null,
-  ): Promise<{ error?: string; source: any; data?: any }> {
+  ): Promise<{
+    error?: string;
+    source: DataSource;
+    data?: GlobalAPISourceResponse;
+  }> {
     const data = await DataSourceService.retrieveGlobalAPISource(
       source,
       inventory,

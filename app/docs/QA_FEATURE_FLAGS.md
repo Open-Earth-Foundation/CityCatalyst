@@ -6,6 +6,9 @@ The QA Feature Flags system allows Quality Assurance teams to override environme
 
 **Key Concept:** QA overrides in localStorage take **precedence** over environment variables.
 
+Server-rendered page guards use environment flags directly. A localStorage QA
+override cannot enable a route protected with `hasServerFeatureFlag()`.
+
 ## How Flag Names Work
 
 ### Important: Flag Naming Convention
@@ -204,6 +207,7 @@ Result:       ❌ FALSE (localStorage wins)
 | `OAUTH_ENABLED` | OAuth authentication | ON |
 | `ANALYTICS_ENABLED` | Analytics tracking | ON |
 | `CCRA_MODULE` | Climate Change Risk Assessment | OFF |
+| `CONCEPT_NOTE_BUILDER` | Concept Note Builder pages; also requires `CA_SERVICE_INTEGRATION` | OFF |
 
 ## Code Implementation Examples
 

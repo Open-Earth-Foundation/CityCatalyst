@@ -25,7 +25,7 @@ export default function Credentials<
     id: "credentials",
     name: "Credentials",
     type: "credentials",
-    credentials: {} as any,
+    credentials: {} as C,
     authorize: () => null,
     options,
   };
@@ -63,7 +63,13 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials): Promise<any> {
+      async authorize(credentials): Promise<{
+        id: string;
+        name?: string;
+        email?: string;
+        image?: string | null;
+        role?: Roles;
+      } | null> {
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
@@ -76,7 +82,7 @@ export const authOptions: NextAuthOptions = {
           user = await db.models.User.findOne({
             where: { email: credentials.email.toLowerCase() },
           });
-        } catch (err: any) {
+        } catch (err: unknown) {
           logger.error({ err: err }, "Failed to login:");
           return null;
         }

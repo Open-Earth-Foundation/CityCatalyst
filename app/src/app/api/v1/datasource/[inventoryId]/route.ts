@@ -89,10 +89,7 @@
 import DataSourceService from "@/backend/DataSourceService";
 import { db } from "@/models";
 import { City } from "@/models/City";
-import { DataSourceI18n as DataSource } from "@/models/DataSourceI18n";
-import { Scope } from "@/models/Scope";
 import { SubCategory } from "@/models/SubCategory";
-import { InventoryValue } from "@/models/InventoryValue";
 import { SubSector } from "@/models/SubSector";
 import { apiHandler } from "@/util/api";
 import createHttpError from "http-errors";

@@ -47,6 +47,7 @@ import createHttpError from "http-errors";
 import { validate } from "uuid";
 import { db } from "@/models";
 import { Op } from "sequelize";
+import type { HighImpactActionRanked } from "@/models/HighImpactActionRanked";
 
 export const GET = apiHandler(async (_req, { params }) => {
   const { projectId } = params;
@@ -95,14 +96,14 @@ export const GET = apiHandler(async (_req, { params }) => {
       },
     ],
   });
-  const actionsByInventoryId: Record<string, any[]> = {};
+  const actionsByInventoryId: Record<string, HighImpactActionRanked[]> = {};
 
   actionRankings.map((ranking) => {
     if (!(ranking.inventoryId in actionsByInventoryId)) {
       actionsByInventoryId[ranking.inventoryId] = [];
     }
     actionsByInventoryId[ranking.inventoryId].push(
-      ranking.highImpactActionRanked,
+      ...ranking.highImpactActionRanked,
     );
   });
 

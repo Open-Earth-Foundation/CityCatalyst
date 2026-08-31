@@ -4,7 +4,7 @@ metadata:
   name: citycatalyst-test-process-webhook-deliveries
   namespace: default
 spec:
-  schedule: "* * * * *"
+  schedule: "*/5 * * * *"
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3

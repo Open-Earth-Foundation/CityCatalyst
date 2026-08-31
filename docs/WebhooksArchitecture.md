@@ -369,7 +369,8 @@ Unpublish / disconnect / delete do not emit until reserved events are implemente
 
 - Route: `POST /api/v1/cron/process-webhook-deliveries`
 - Auth: `Authorization: Bearer $CC_CRON_JOB_API_KEY` (same as PDF OCR / HIAP cron jobs)
-- k8s: `k8s/cc-process-webhook-deliveries.yml` (+ test/prod variants), curl on a short interval (e.g. every 1 minute)
+- k8s: `k8s/cc-process-webhook-deliveries.yml` (+ test/prod variants), CronJob every **5 minutes** (`*/5 * * * *`)
+- Terminal deliveries (`delivered` / `failed`) older than **30 days** are purged each worker run to keep the outbox bounded
 
 ### Environment
 

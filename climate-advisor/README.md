@@ -250,7 +250,7 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-5.4-mini"
+    "model": "openai/gpt-5.6-luna"
   }
 }
 ```
@@ -503,6 +503,23 @@ orchestrator and agentic-flow model settings, provider base URLs, retry and
 timeout settings, Stationary Energy review chat-context prompt budgets, and the
 CNB source reader/synthesizer roles, chapter drafter, and partition limits. The
 chapter drafter uses GPT-5.6 Terra with medium reasoning.
+
+Current CA model defaults:
+
+- General chat: `openai/gpt-5.6-luna`, reasoning `none`.
+- CNB and Stationary Energy chat: `openai/gpt-5.6-sol`, reasoning `none`.
+- Funding research and similar-project selection: `openai/gpt-5.6-sol`, reasoning `medium`.
+- Funder-identity matching: `openai/gpt-5.6-luna`, reasoning `low`.
+- Document mapping and question-focused source readers: `openai/gpt-5.6-luna`, reasoning `low`.
+- Document-summary synthesis: `openai/gpt-5.6-sol`, reasoning `medium`.
+
+Chat keeps the existing OpenRouter Chat Completions tool loop and explicitly sets
+reasoning to `none`; GPT-5.6 otherwise defaults to medium reasoning. The configured
+chat and source-worker requests omit `temperature`. Research keeps its Responses
+API path and existing reasoning settings. Prompt schemas, source partitions,
+concurrency limits, and embedding models are unchanged. Stored summaries are not
+automatically rebuilt by changing the model configuration.
+
 Stationary Energy draft proposals are generated deterministically from bounded
 CityCatalyst context, not by an LLM prompt. The environment is only for secrets
 such as `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, and `LANGSMITH_API_KEY`.
@@ -917,7 +934,7 @@ Content-Type: application/json
   "content": "What are climate risks?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inv-456",
-  "options": { "model": "openai/gpt-5.4-mini" }
+  "options": { "model": "openai/gpt-5.6-luna" }
 }
 ```
 

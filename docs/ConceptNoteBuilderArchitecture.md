@@ -1618,8 +1618,10 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.4 mini readers with process-wide concurrency no greater
-  than four, then GPT-5.4 for final document synthesis.
+- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+  final document synthesis. Both retain tool-free structured outputs through
+  OpenRouter Chat Completions and omit temperature.
 - Requires every partition reader to acknowledge every segment and verifies
   every retained excerpt as an exact substring of its cited source location.
 - Requires every factual sentence in a synthesized document summary to remain
@@ -1659,7 +1661,7 @@ after the bundle is ready, and only during `interviewing`,
 The main CNB agent selects one `upload_id` from the always-on summaries and asks
 one bounded natural-language question. Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.4 mini readers over every source-preserving partition using
+tool-free GPT-5.6 Luna readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -2192,14 +2194,22 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.4-mini
+    name: openai/gpt-5.6-luna
+    reasoning_effort: low
   cnb_source_synthesizer:
-    name: openai/gpt-5.4
+    name: openai/gpt-5.6-sol
+    reasoning_effort: medium
 prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
 ```
+
+The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+`reasoning_effort: none` for its Chat Completions function-tool loop. Funding
+research and similar-project selection use Sol with medium reasoning on the
+existing Responses API path; canonical-funder identity matching uses Luna with
+low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
 
 Prompt composition should follow the current CA pattern:
 

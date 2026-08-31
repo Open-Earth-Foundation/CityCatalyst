@@ -116,7 +116,10 @@ class RoleModelConfig(BaseModel):
     name: str
     description: Optional[str] = None
     supports_streaming: Optional[bool] = None
-    temperature: float
+    temperature: float | None = None
+    reasoning_effort: (
+        Literal["none", "low", "medium", "high", "xhigh", "max"] | None
+    ) = None
 
 
 class ResearchModelConfig(BaseModel):

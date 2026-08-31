@@ -22,6 +22,7 @@ on:
       - k8s/cc-web.yml
       - k8s/cc-web-deploy.yml
       - k8s/prod/cc-prod-process-pdf-ocr-jobs.yml
+      - k8s/prod/cc-prod-process-webhook-deliveries.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-tag.yml
     tags:
@@ -257,13 +258,17 @@ jobs:
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID_PROD}} \
           CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
-            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}" \
+            "WEBHOOK_SECRET_ENCRYPTION_KEY=${{secrets.WEBHOOK_SECRET_ENCRYPTION_KEY}}"
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl apply -f k8s/prod/cc-prod-process-pdf-ocr-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-prod-process-pdf-ocr-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/prod/cc-prod-process-webhook-deliveries.yml -n default
+          kubectl set env cronjob/citycatalyst-prod-process-webhook-deliveries \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s

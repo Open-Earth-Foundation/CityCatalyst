@@ -106,6 +106,16 @@ import type {
 } from "./PdfOcrJob";
 import { PdfOcrJob as _PdfOcrJob } from "./PdfOcrJob";
 import type {
+  WebhookSubscriptionAttributes,
+  WebhookSubscriptionCreationAttributes,
+} from "./WebhookSubscription";
+import { WebhookSubscription as _WebhookSubscription } from "./WebhookSubscription";
+import type {
+  WebhookDeliveryAttributes,
+  WebhookDeliveryCreationAttributes,
+} from "./WebhookDelivery";
+import { WebhookDelivery as _WebhookDelivery } from "./WebhookDelivery";
+import type {
   NativeInputCatalogAttributes,
   NativeInputCatalogCreationAttributes,
 } from "./NativeInputCatalog";
@@ -290,6 +300,8 @@ export {
   _Inventory as Inventory,
   _ImportedInventoryFile as ImportedInventoryFile,
   _PdfOcrJob as PdfOcrJob,
+  _WebhookSubscription as WebhookSubscription,
+  _WebhookDelivery as WebhookDelivery,
   _NativeInputCatalog as NativeInputCatalog,
   _ImportMappingFeedback as ImportMappingFeedback,
   _MeedActionRanked as MeedActionRanked,
@@ -373,6 +385,10 @@ export type {
   ImportedInventoryFileCreationAttributes,
   PdfOcrJobAttributes,
   PdfOcrJobCreationAttributes,
+  WebhookSubscriptionAttributes,
+  WebhookSubscriptionCreationAttributes,
+  WebhookDeliveryAttributes,
+  WebhookDeliveryCreationAttributes,
   NativeInputCatalogAttributes,
   NativeInputCatalogCreationAttributes,
   ImportMappingFeedbackAttributes,
@@ -475,6 +491,8 @@ export function initModels(sequelize: Sequelize) {
   const Inventory = _Inventory.initModel(sequelize);
   const ImportedInventoryFile = _ImportedInventoryFile.initModel(sequelize);
   const PdfOcrJob = _PdfOcrJob.initModel(sequelize);
+  const WebhookSubscription = _WebhookSubscription.initModel(sequelize);
+  const WebhookDelivery = _WebhookDelivery.initModel(sequelize);
   const NativeInputCatalog = _NativeInputCatalog.initModel(sequelize);
   const ImportMappingFeedback = _ImportMappingFeedback.initModel(sequelize);
   const MeedActionRanked = _MeedActionRanked.initModel(sequelize);
@@ -1006,6 +1024,42 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "CASCADE",
     onUpdate: "CASCADE",
   });
+  WebhookSubscription.belongsTo(Organization, {
+    as: "organization",
+    foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  Organization.hasMany(WebhookSubscription, {
+    as: "webhookSubscriptions",
+    foreignKey: "organizationId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  WebhookSubscription.belongsTo(User, {
+    as: "creator",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  User.hasMany(WebhookSubscription, {
+    as: "createdWebhookSubscriptions",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
+  WebhookDelivery.belongsTo(WebhookSubscription, {
+    as: "subscription",
+    foreignKey: "subscriptionId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
+  WebhookSubscription.hasMany(WebhookDelivery, {
+    as: "deliveries",
+    foreignKey: "subscriptionId",
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  });
   GasValue.belongsTo(InventoryValue, {
     as: "inventoryValue",
     foreignKey: "inventoryValueId",
@@ -1261,6 +1315,8 @@ export function initModels(sequelize: Sequelize) {
     Inventory: Inventory,
     ImportedInventoryFile: ImportedInventoryFile,
     PdfOcrJob: PdfOcrJob,
+    WebhookSubscription: WebhookSubscription,
+    WebhookDelivery: WebhookDelivery,
     NativeInputCatalog: NativeInputCatalog,
     ImportMappingFeedback: ImportMappingFeedback,
     MeedActionRanked: MeedActionRanked,

@@ -1000,6 +1000,39 @@ export interface PersonalAccessTokenCreateResponse {
   created: string;
 }
 
+export interface WebhookSubscriptionResponse {
+  id: string;
+  organizationId: string;
+  name: string;
+  url: string;
+  secretPrefix: string;
+  events: string[];
+  enabled: boolean;
+  consecutiveFailures: number;
+  disabledAt: string | null;
+  createdBy: string | null;
+  created: string | null;
+  lastUpdated: string | null;
+}
+
+export interface WebhookSubscriptionSecretResponse
+  extends WebhookSubscriptionResponse {
+  secret: string;
+}
+
+export interface CreateWebhookSubscriptionRequest {
+  name: string;
+  url: string;
+  events: string[];
+}
+
+export interface UpdateWebhookSubscriptionRequest {
+  name?: string;
+  url?: string;
+  events?: string[];
+  enabled?: boolean;
+}
+
 export type UserOrganizationsResponse = {
   organizationId: string;
   name: string;

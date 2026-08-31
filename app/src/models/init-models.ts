@@ -1024,6 +1024,12 @@ export function initModels(sequelize: Sequelize) {
     onDelete: "SET NULL",
     onUpdate: "CASCADE",
   });
+  User.hasMany(WebhookSubscription, {
+    as: "createdWebhookSubscriptions",
+    foreignKey: "createdBy",
+    onDelete: "SET NULL",
+    onUpdate: "CASCADE",
+  });
   WebhookDelivery.belongsTo(WebhookSubscription, {
     as: "subscription",
     foreignKey: "subscriptionId",

@@ -15,6 +15,7 @@ import CityBoundaryService, {
   CityBoundary,
 } from "@/backend/CityBoundaryService";
 import { logger } from "@/services/logger";
+import { toShort } from "@/util/notation-keys";
 import fs from "fs";
 import path from "path";
 
@@ -325,7 +326,8 @@ export default class ECRFDownloadService {
 
     output.inventoryValues.map((inventoryValue) => {
       dataDictionary[inventoryValue.gpcReferenceNumber as string] = {
-        "notation-key": inventoryValue.unavailableReason?.split("-")[1],
+        "notation-key":
+          toShort(inventoryValue.unavailableReason) ?? undefined,
         explanation: inventoryValue.unavailableExplanation ?? undefined,
         total: inventoryValue.unavailableReason
           ? 0n
@@ -353,7 +355,8 @@ export default class ECRFDownloadService {
         dataDictionary[gpcRefNo as string] = {
           inventory_year: inventoryYear,
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
-          notation_key: inventoryValue.unavailableReason ?? undefined,
+          notation_key:
+            toShort(inventoryValue.unavailableReason) ?? undefined,
           activityValues: [
             {
               activity_type: null,
@@ -384,7 +387,8 @@ export default class ECRFDownloadService {
           // InventoryValue fields
           inventory_year: inventoryYear,
           gpc_reference_number: inventoryValue.gpcReferenceNumber,
-          notation_key: inventoryValue.unavailableReason ?? undefined,
+          notation_key:
+            toShort(inventoryValue.unavailableReason) ?? undefined,
           input_methodology: t(inventoryValue.inputMethodology ?? ""),
           activityValues: activityValues.map((activityValue) => {
             const activityTitleKey =
@@ -471,10 +475,7 @@ export default class ECRFDownloadService {
     }
 
     if (dataSection.notation_key) {
-      this.markRowAsNotEstimated(
-        row,
-        dataSection["notation_key"].split("-")[1],
-      );
+      this.markRowAsNotEstimated(row, dataSection.notation_key);
       return;
     }
 
@@ -507,8 +508,7 @@ export default class ECRFDownloadService {
             const replacementValue = dataSection[fieldName];
 
             if (fieldName === "no_key" && dataSection["notation_key"]) {
-              // the stored value looks like "reason_NO", "reason_NE", etc.
-              cell.value = dataSection["notation_key"].split("-")[1];
+              cell.value = dataSection["notation_key"];
               return;
             } else if (replacementValue !== undefined) {
               cell.value = replacementValue as Excel.CellValue;

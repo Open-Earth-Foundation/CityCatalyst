@@ -68,7 +68,13 @@ type MeedResponseActionRemoved = {
   action_name: string;
   removal_reason?: string;
   removal_source?: string;
-  legal: {
+  /**
+   * Only populated for legal hard-filter removals. hiap-meed declares it
+   * `RemovedActionLegalEvidence | None` with `default=None`, so an action
+   * removed for any other reason — a user exclusion, for instance — arrives
+   * with `legal: null`.
+   */
+  legal?: {
     verdict_category?: string;
     ownership_category?: string;
     restrictions_category?: string;
@@ -237,13 +243,13 @@ export default class MeedApiService {
             actionName: action.action_name,
             removalReason: action.removal_reason,
             removalSource: action.removal_source,
-            verdictCategory: action.legal.verdict_category,
-            ownershipCategory: action.legal.ownership_category,
-            restrictionsCategory: action.legal.restrictions_category,
-            ownershipDescription: action.legal.ownership_description,
-            restrictionsDescription: action.legal.restrictions_description,
-            legalJustification: action.legal.legal_justification,
-            legalReferences: action.legal.legal_references,
+            verdictCategory: action.legal?.verdict_category,
+            ownershipCategory: action.legal?.ownership_category,
+            restrictionsCategory: action.legal?.restrictions_category,
+            ownershipDescription: action.legal?.ownership_description,
+            restrictionsDescription: action.legal?.restrictions_description,
+            legalJustification: action.legal?.legal_justification,
+            legalReferences: action.legal?.legal_references,
           }),
           { transaction },
         ),

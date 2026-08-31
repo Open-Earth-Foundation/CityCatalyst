@@ -16,8 +16,8 @@ topology, or production fallback.
   touched-file quality checks, and documented environment limitations.
 - **Status**: Deterministic verification evidence captured. Final local
   revalidation at `localhost:3000` passed 4/4 after another process occupying
-  the port was cleared. Completion review remains pending. No UOW-03
-  production implementation is planned.
+  the port was cleared. UOW-03 completion was explicitly approved on
+  2026-08-31. No UOW-03 production implementation is planned.
 
 ## Non-negotiable verification invariants
 
@@ -79,9 +79,11 @@ meaningful result; they are never bypassed or silently treated as green.
 ## Approval gates
 
 - **Gate A — Verification evidence review**: review the completed matrix,
-  contract comparison, security assertions, and limitations.
+  contract comparison, security assertions, and limitations. Approved
+  2026-08-31.
 - **Gate B — UOW-03 completion**: explicitly approve the evidence before any
-  release-readiness claim or task closure.
+  release-readiness claim or task closure. Approved 2026-08-31; no broader
+  release-readiness or task-closure claim is inferred.
 
 No UOW-03 application-code change is authorized by this plan. Any discovered
 contract mismatch, security regression, or new infrastructure/storage need
@@ -113,6 +115,6 @@ must stop verification and return to the owning design/unit gate.
 **Initial evidence commit**: `96c089cfb` (`docs(cc-737): record UOW-03
 verification evidence`). The previous revalidation update is committed as
 `9767f0f08`; the environment classification is committed as `de226492f`.
-The final 4/4 result is recorded in the current documentation update. Evidence
-is ready for explicit UOW-03 completion review. No release-readiness or
-task-closure claim is made until that approval is recorded.
+The final 4/4 result is recorded in the current documentation update. UOW-03
+completion was explicitly approved on 2026-08-31. No broader release-readiness
+or task-closure claim is inferred from this approval.

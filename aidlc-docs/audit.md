@@ -1016,4 +1016,16 @@ code was modified, and no other process identity or path was recorded.
 **Approval Status**: UOW-03 remains unapproved; explicit user approval is
 pending.
 ---
+
+## Approval — UOW-03 Completion
+**Timestamp**: 2026-08-31T14:35:52-03:00
+**User Input**: "approved"
+**AI Response**: Recorded the explicit approval of UOW-03 completion after
+the final local CC–CA contract revalidation passed **4 passed, 0 failed, 0
+skipped** at `http://localhost:3000`. Updated the verification evidence,
+verification plan, AI-DLC state, and vault. No application code was modified.
+No broader release-readiness or CC-737 task-closure claim was inferred.
+**Approval Status**: UOW-03 completion approved; broader release-readiness and
+task-closure decisions remain separate.
+---
 ---

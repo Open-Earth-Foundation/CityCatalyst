@@ -1,9 +1,9 @@
 # UOW-03 Cross-Service Verification Evidence — CC-737
 
 **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`  
-**Status**: Deterministic evidence captured; final local revalidation at
-`localhost:3000` passed all four CC–CA contract tests. UOW-03 completion review
-remains pending.
+**Status**: Deterministic evidence captured and final local revalidation at
+`localhost:3000` passed all four CC–CA contract tests. UOW-03 completion was
+explicitly approved on 2026-08-31.
 
 ## Scope
 
@@ -144,7 +144,8 @@ configuration matches the serving port.
 
 ## Required review
 
-This evidence requires explicit review and approval before a release-readiness
-claim or closure of CC-737. Any failed cross-service contract, scope,
-non-disclosure, boundedness, lifecycle, or storage-isolation assertion blocks
-completion and returns to the owning service/unit.
+This evidence was explicitly reviewed and UOW-03 completion was approved on
+2026-08-31. Any future failed cross-service contract, scope, non-disclosure,
+boundedness, lifecycle, or storage-isolation assertion returns the issue to
+the owning service/unit. No broader release-readiness or CC-737 closure claim
+is made by this approval.

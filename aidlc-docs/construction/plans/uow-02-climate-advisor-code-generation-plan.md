@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 completion approved; Unit 2 TDD red checkpoint committed; Unit 2 implementation approval pending.
+- **Status**: Plan approved; Unit 1 completion approved; Unit 2 implementation approved after cross-context test adjustment; implementation in progress.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -226,7 +226,9 @@ selection-binding tests. The focused suite fails during collection because
 the planned `app.services.native_input_catalog_service` module does not yet
 exist. No Unit 2 production code, tool factory, AgentService, or streaming
 code was modified. Implementation remains gated on explicit review of this
-red checkpoint.
+red checkpoint. A follow-up test also proves that a pair discovered for one
+active context cannot be rebound under another context and receives the same
+stable undisclosed error.
 
 ### Unit 3 — Selected-only typed capability tools
 

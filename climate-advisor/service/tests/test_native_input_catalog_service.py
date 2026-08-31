@@ -176,6 +176,25 @@ async def test_selection_binding_requires_exact_current_catalog_and_capability_p
 
 
 @pytest.mark.asyncio
+async def test_selection_cannot_cross_active_request_contexts() -> None:
+    client = _client(_discovery_response())
+    service = NativeInputCatalogService(core_client=client)
+    discovered_context = _context(city_id="city-1")
+    await service.discover(context=discovered_context, token="jwt-token")
+
+    with pytest.raises(NativeInputSelectionError) as captured:
+        service.bind_selection(
+            catalog_id="catalog-1",
+            capability_id="ghgi.inventory.status_overview",
+            context=_context(city_id="city-2"),
+        )
+
+    assert str(captured.value) == "Requested capability is unavailable."
+    assert "city-1" not in str(captured.value)
+    assert "city-2" not in str(captured.value)
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "catalog_id,capability_id",
     [

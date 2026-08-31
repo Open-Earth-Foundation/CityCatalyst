@@ -697,4 +697,11 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Added only the Unit 2 Climate Advisor request-time discovery and selection-binding tests. The focused pytest command collected no tests because the planned `app.services.native_input_catalog_service` module does not yet exist, producing the expected `ModuleNotFoundError`. The tests cover once-per-request discovery after resolved context, safe projection/non-disclosure, no full-read or capability loading during discovery, disabled/empty/malformed/unavailable/timeout fail-closed behavior, and exact current catalog/capability-pair binding. No Unit 2 production code, tool factory, AgentService, or streaming code was modified.
 **Approval Status**: Unit 2 TDD red checkpoint complete; explicit implementation approval pending.
 ---
+
+## Unit 2 Cross-Context Selection Test Adjustment and Approval
+**Timestamp**: 2026-08-31T09:25:44-03:00
+**User Input**: "Before approving the implementation of Unit 2, add an explicit test demonstrating that a selection discovered in an active context cannot be reused in another context, returning the stable \"undisclosed\" error. Provided the other constraints are met, approve the implementation of Unit 2 after this adjustment."
+**AI Response**: Added `test_selection_cannot_cross_active_request_contexts`, which discovers a catalog/capability pair in `city-1`, attempts to bind that pair in `city-2`, and requires the stable `Requested capability is unavailable.` error without either context value in the exception. The focused suite still fails only during collection because the planned Unit 2 service module is absent; no production code was changed before the test. All other Unit 2 red-checkpoint constraints remain covered.
+**Approval Status**: Conditional approval granted by the user for Unit 2 implementation after this test adjustment; implementation may proceed.
+---
 ---

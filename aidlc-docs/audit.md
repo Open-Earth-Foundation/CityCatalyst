@@ -711,4 +711,11 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Implemented only the request-scoped `NativeInputCatalogService`. The seam performs one Core discovery call after an active context is resolved, retains only safe bounded projection fields, fails closed for disabled/empty/malformed/unavailable/timeout discovery, performs no selected reads or Climate Advisor capability loading during discovery, and binds only an exact current catalog/capability pair under the unchanged active context. The focused Unit 2 suite passes 13/13; the existing client suite passes 17/17; changed Python files compile. No AgentService, tool, streaming, Core, storage, or credential code was modified. The architecture documentation was updated to describe the new boundary; README/setup documentation remains accurate.
 **Approval Status**: Unit 2 implementation green checkpoint complete; atomic commit and unit-completion review pending.
 ---
+
+## Code Generation — UOW-02 Unit 2 Atomic Commit
+**Timestamp**: 2026-08-31T09:25:44-03:00
+**User Input**: "Provided the other constraints are met, approve the implementation of Unit 2 after this adjustment." (conditional implementation approval already recorded)
+**AI Response**: Created atomic commit `b97525fd9` (`feat(cc-737): add request-time catalog selection binding`) containing only the Unit 2 request-scoped coordinator, its architecture documentation, and AI-DLC evidence updates. Unit 2 keeps discovery read-free and safe-projection-only, rejects cross-context reuse with the stable non-disclosing error, and does not modify AgentService, tools, streaming, Core, storage, or credentials. Unit 3 remains unopened.
+**Approval Status**: Unit 2 commit created; explicit unit-completion approval pending.
+---
 ---

@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 completion approved; Unit 2 implementation green; atomic commit approval pending.
+- **Status**: Plan approved; Unit 1 completion approved; Unit 2 committed after green checkpoint; unit-completion approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -215,7 +215,7 @@ Steps:
    binding is treated as authorization.
 8. [x] Run focused tests, lint/format checks, mandatory project skills, and a
    serialized-field audit.
-9. [ ] Commit only this unit with:
+9. [x] Commit only this unit with:
    `feat(cc-737): add request-time catalog selection binding`.
 
 Story/requirement mapping: US-03, US-07, US-09; FR-01 through FR-04, FR-06,
@@ -240,7 +240,10 @@ existing client suite passes 17/17, and the changed Python files compile. The
 mandatory simplification pass removed no additional scoped code after the
 unused-test-import cleanup. The architecture documentation now records the
 new boundary; README/setup documentation remains accurate and unchanged.
-Atomic commit and unit-completion review remain pending.
+Atomic commit `b97525fd9` (`feat(cc-737): add request-time catalog selection
+binding`) contains only the Unit 2 coordinator implementation and its
+AI-DLC/architecture evidence. Unit completion remains pending explicit review
+and approval.
 
 ### Unit 3 — Selected-only typed capability tools
 

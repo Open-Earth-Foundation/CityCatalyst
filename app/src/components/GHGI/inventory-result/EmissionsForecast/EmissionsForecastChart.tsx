@@ -138,14 +138,13 @@ const EmissionsForecastChartInner = ({
             ? getSectorByReferenceNumber(sectorRefNo)?.name || sector
             : getSubSectorByReferenceNumber(sector)?.name || sector,
           color: getColorForSeries(sector),
-          data: Object.entries(forecastData.forecast).map(
-            ([year, sectorsData]) => {
-              return {
-                x: year,
-                y: sectorsData[sector] || 0,
-              };
-            },
-          ),
+          data: Object.entries(forecastData.forecast)
+            .map(([year, sectorsData]) => ({
+              x: year,
+              y: sectorsData[sector] || 0,
+            }))
+            // filter out negative emissions (removals), not included in this graph
+            .filter(({ y }) => y >= 0),
         };
       })
       .reverse();

@@ -143,7 +143,7 @@
   "error-fetching-sector-data": "Erreur lors de la récupération des données du secteur",
   "projections-data": "Données de projections",
   "sector-emissions-forecast": "Prévisions des Émissions par Secteur",
-  "sector-emissions-forecast-description": "Sur la base d'un scénario sans action et d'une approche hybride, incluant les taux de croissance économique et d'émissions.",
+  "sector-emissions-forecast-description": "Pour les émissions totales (hors absorptions) fondées sur un scénario d'absence d'intervention et une approche hybride, incluant les taux de croissance économique et d'émission.",
   "no-action-emissions-forecast-by-sector": "Prévisions des émissions sans action par secteur",
   "emissions-forecast": "Prévisions des émissions",
   "about-growth-rates": "À propos des taux de croissance",

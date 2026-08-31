@@ -142,7 +142,7 @@
   "error-fetching-sector-data": "Erro ao buscar dados do setor",
   "projections-data": "Dados de projeções",
   "sector-emissions-forecast": "Previsão de emissões por setor",
-  "sector-emissions-forecast-description": "Baseado em um cenário de inação e uma abordagem híbrida, incluindo taxas de crescimento econômico e de emissões.",
+  "sector-emissions-forecast-description": "Para as emissões totais (excluindo remoções) com base em um cenário de ausência de ação e em uma abordagem híbrida, incluindo taxas de crescimento econômico e de emissões.",
   "no-action-emissions-forecast-by-sector": "Previsão de emissões por setor sem ação",
   "emissions-forecast": "Previsão de emissões",
   "about-growth-rates": "Sobre as taxas de crescimento",

@@ -89,8 +89,10 @@ async function addScope1ResidentialEmissions(
   ).toBeVisible({ timeout: 30000 });
 
   await openResidentialSubsector(page, cityId, inventoryId);
+  await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByLabel(/Scope 1/i);
+  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
     .isVisible()
@@ -99,9 +101,9 @@ async function addScope1ResidentialEmissions(
     return;
   }
 
-  await ensureMethodologySelected(page, /Fuel Consumption/i);
+  await ensureMethodologySelected(page, /Fuel Consumption/i, scopeOnePanel);
 
-  await addActivityButton(page).click();
+  await addActivityButton(page, scopeOnePanel).click();
   const addEmissionModal = page.getByTestId("add-emission-modal");
   await expect(addEmissionModal).toBeVisible();
 

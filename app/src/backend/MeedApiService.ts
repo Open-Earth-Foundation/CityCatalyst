@@ -189,8 +189,6 @@ export default class MeedApiService {
     });
 
     // make API request to MEED API
-    // hiap-meed calls this operation `prioritize`; `rank` is the CityCatalyst
-    // route's own name and does not exist upstream.
     const result: MeedRankResponse = await this.makeRequest(
       "prioritize",
       fullRequest,

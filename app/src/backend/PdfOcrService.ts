@@ -18,8 +18,52 @@ import {
 import { extractInventoryRowsFromDocument } from "@/backend/InventoryExtractionService";
 import { ImportStatusEnum } from "@/util/enums";
 import { logger } from "@/services/logger";
+import {
+  syncGHGIImportedInventorySource,
+  syncGHGIOcrArtifact,
+  syncPendingGHGIOcrArtifacts,
+  withdrawGHGIImportCatalog,
+} from "@/backend/GHGINativeInputCatalogService";
 
-const SOURCE_TYPE = "inventory_import" as const;
+const INVENTORY_SOURCE_TYPE = "inventory_import" as const;
+const CONCEPT_NOTE_SOURCE_TYPE = "concept_note_upload" as const;
+export const DIRECT_MARKDOWN_MODEL = "direct_markdown" as const;
+export type ConceptNoteSourceFormat = "pdf" | "markdown";
+
+export function conceptNotePdfSourceKey(uploadId: string): string {
+  return `pdf-ocr/sources/${CONCEPT_NOTE_SOURCE_TYPE}/${uploadId}/source.pdf`;
+}
+
+function resultKey(
+  sourceType: string,
+  sourceId: string,
+  resultRevision: number | string,
+): string {
+  return `pdf-ocr/results/${sourceType}/${sourceId}/${resultRevision}/combined_markdown.md`;
+}
+
+export function normalizeConceptNoteMarkdown(markdown: string): string {
+  const normalized = markdown.replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  if (normalized.includes("\0")) {
+    throw new PdfSourceError(
+      "invalid_markdown_source",
+      "Markdown source cannot contain NUL bytes",
+    );
+  }
+  if (!normalized.trim()) {
+    throw new PdfSourceError(
+      "empty_markdown_source",
+      "Markdown source must contain non-whitespace text",
+    );
+  }
+  return normalized;
+}
+
+export function getConceptNoteSourceFormat(job: {
+  model?: string | null;
+}): ConceptNoteSourceFormat {
+  return job.model === DIRECT_MARKDOWN_MODEL ? "markdown" : "pdf";
+}
 
 class PdfSourceError extends Error {
   constructor(
@@ -40,9 +84,12 @@ export async function enqueueInventoryPdfOcr(
   importedFile: ImportedInventoryFile,
 ): Promise<PdfOcrJob> {
   const [job] = await db.models.PdfOcrJob.findOrCreate({
-    where: { sourceType: SOURCE_TYPE, sourceId: importedFile.id },
+    where: {
+      sourceType: INVENTORY_SOURCE_TYPE,
+      sourceId: importedFile.id,
+    },
     defaults: {
-      sourceType: SOURCE_TYPE,
+      sourceType: INVENTORY_SOURCE_TYPE,
       sourceId: importedFile.id,
       status: "queued",
       attemptCount: 0,
@@ -55,7 +102,99 @@ export async function enqueueInventoryPdfOcr(
     errorLog: null,
     lastUpdated: new Date(),
   });
+  await syncGHGIImportedInventorySource(importedFile);
   return job;
+}
+
+export async function enqueueConceptNotePdfOcr(
+  uploadId: string,
+): Promise<PdfOcrJob> {
+  const [job] = await db.models.PdfOcrJob.findOrCreate({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+    },
+    defaults: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+      status: "queued",
+      attemptCount: 0,
+      runAfter: new Date(),
+      deliveryTarget: "climate_advisor",
+      deliveryStatus: "pending",
+      deliveryAttemptCount: 0,
+    },
+  });
+  return job;
+}
+
+export async function registerConceptNoteMarkdownUpload(
+  uploadId: string,
+  markdown: string,
+): Promise<PdfOcrJob> {
+  const now = new Date();
+  const normalized = normalizeConceptNoteMarkdown(markdown);
+  const resultBuffer = Buffer.from(normalized, "utf8");
+  const resultSha256 = createHash("sha256").update(resultBuffer).digest("hex");
+  const resultS3Key = resultKey(
+    CONCEPT_NOTE_SOURCE_TYPE,
+    uploadId,
+    `direct-${resultSha256}`,
+  );
+
+  const existing = await getConceptNotePdfOcrJob(uploadId);
+  if (existing) {
+    requireDirectMarkdownIdentity(existing, { resultS3Key, resultSha256 });
+    return existing;
+  }
+
+  await InventoryFileStorageService.putTextFile(resultS3Key, normalized);
+
+  const [job, created] = await db.models.PdfOcrJob.findOrCreate({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+    },
+    defaults: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+      status: "succeeded",
+      attemptCount: 0,
+      model: DIRECT_MARKDOWN_MODEL,
+      pageCount: null,
+      resultS3Key,
+      resultSizeBytes: resultBuffer.byteLength,
+      resultSha256,
+      startedAt: now,
+      completedAt: now,
+      deliveryTarget: "climate_advisor",
+      deliveryStatus: "pending",
+      deliveryAttemptCount: 0,
+      deliveryRunAfter: now,
+    },
+  });
+  if (!created) {
+    requireDirectMarkdownIdentity(job, { resultS3Key, resultSha256 });
+  }
+
+  return job;
+}
+
+function requireDirectMarkdownIdentity(
+  job: PdfOcrJob,
+  expected: { resultS3Key: string; resultSha256: string },
+): void {
+  if (
+    job.model !== DIRECT_MARKDOWN_MODEL ||
+    job.resultS3Key !== expected.resultS3Key ||
+    job.resultSha256 !== expected.resultSha256 ||
+    job.pageCount !== null
+  ) {
+    throw new PdfSourceError(
+      "markdown_identity_conflict",
+      "Markdown result identity cannot change",
+    );
+  }
 }
 
 export async function claimPdfOcrJobs(owner: string): Promise<PdfOcrJob[]> {
@@ -121,7 +260,7 @@ export async function claimInventoryExtractionJobs(
     // status is user-visible workflow state, not an atomic worker claim.
     const jobs = await db.models.PdfOcrJob.findAll({
       where: {
-        sourceType: SOURCE_TYPE,
+        sourceType: INVENTORY_SOURCE_TYPE,
         sourceId: {
           // Filter import eligibility before LIMIT so unrelated unfinished
           // imports cannot hide later OCR results that are ready to extract.
@@ -185,21 +324,14 @@ async function heartbeat(
 }
 
 async function validateSource(
-  importedFile: ImportedInventoryFile,
+  s3Key: string,
+  knownSize?: number,
 ): Promise<void> {
   const config = getPdfOcrConfig();
-  if (!importedFile.s3Key) {
-    throw new PdfSourceError(
-      "pdf_s3_required",
-      "PDF source is not stored in S3",
-    );
-  }
-  if (Number(importedFile.fileSize) > config.maxSourcePdfBytes) {
+  if (knownSize !== undefined && knownSize > config.maxSourcePdfBytes) {
     throw new PdfSourceError("pdf_too_large", "PDF exceeds the OCR size limit");
   }
-  const metadata = await InventoryFileStorageService.getFileMetadata(
-    importedFile.s3Key,
-  );
+  const metadata = await InventoryFileStorageService.getFileMetadata(s3Key);
   if (Number(metadata.ContentLength || 0) > config.maxSourcePdfBytes) {
     throw new PdfSourceError("pdf_too_large", "PDF exceeds the OCR size limit");
   }
@@ -209,10 +341,7 @@ async function validateSource(
       "PDF source has an invalid content type",
     );
   }
-  const prefix = await InventoryFileStorageService.getFilePrefix(
-    importedFile.s3Key,
-    5,
-  );
+  const prefix = await InventoryFileStorageService.getFilePrefix(s3Key, 5);
   if (prefix.toString("ascii") !== "%PDF-") {
     throw new PdfSourceError(
       "invalid_pdf_source",
@@ -221,24 +350,38 @@ async function validateSource(
   }
 }
 
-async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
+async function resolvePdfSource(job: PdfOcrJob): Promise<{
+  s3Key: string;
+  knownSize?: number;
+}> {
+  if (job.sourceType === CONCEPT_NOTE_SOURCE_TYPE) {
+    return { s3Key: conceptNotePdfSourceKey(job.sourceId) };
+  }
   const importedFile = await db.models.ImportedInventoryFile.findByPk(
     job.sourceId,
   );
-  if (!importedFile || importedFile.fileType !== "pdf") {
+  if (!importedFile || importedFile.fileType !== "pdf" || !importedFile.s3Key) {
     throw new PdfSourceError(
       "invalid_pdf_source",
       "PDF source no longer exists",
     );
   }
-  await validateSource(importedFile);
+  return {
+    s3Key: importedFile.s3Key,
+    knownSize: Number(importedFile.fileSize),
+  };
+}
+
+async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
+  const source = await resolvePdfSource(job);
+  await validateSource(source.s3Key, source.knownSize);
   const config = getPdfOcrConfig();
   const documentUrl = await InventoryFileStorageService.createSignedDownloadUrl(
-    importedFile.s3Key!,
+    source.s3Key,
     config.presignedUrlSeconds,
   );
   const result = await convertPdfUrlToMarkdown(documentUrl);
-  const resultS3Key = `pdf-ocr/results/${job.sourceType}/${job.sourceId}/${job.attemptCount}/combined_markdown.md`;
+  const resultS3Key = resultKey(job.sourceType, job.sourceId, job.attemptCount);
   const resultBuffer = Buffer.from(result.markdown, "utf8");
   await InventoryFileStorageService.putTextFile(resultS3Key, result.markdown);
   const completedAt = new Date();
@@ -267,6 +410,8 @@ async function persistOcrResult(job: PdfOcrJob, owner: string): Promise<void> {
   if (updated !== 1) {
     throw new Error("PDF OCR lease was lost before result registration");
   }
+  const completedJob = await db.models.PdfOcrJob.findByPk(job.id);
+  if (completedJob) await syncGHGIOcrArtifact(completedJob);
 }
 
 async function failOrRetry(
@@ -310,7 +455,7 @@ async function failOrRetry(
       },
     },
   );
-  if (!shouldRetry && job.sourceType === SOURCE_TYPE) {
+  if (!shouldRetry && job.sourceType === INVENTORY_SOURCE_TYPE) {
     await db.models.ImportedInventoryFile.update(
       {
         importStatus: ImportStatusEnum.FAILED,
@@ -319,6 +464,16 @@ async function failOrRetry(
       },
       { where: { id: job.sourceId } },
     );
+  }
+  if (!retryable && error instanceof PdfSourceError) {
+    try {
+      await withdrawGHGIImportCatalog(job.sourceId, job.id);
+    } catch (withdrawError) {
+      logger.error(
+        { err: withdrawError, importedFileId: job.sourceId, ocrJobId: job.id },
+        "Failed to withdraw invalid GHGI catalog entries",
+      );
+    }
   }
 }
 
@@ -505,7 +660,6 @@ export async function processPdfOcrJobs() {
   const expiredAt = new Date();
   const exhausted = await db.models.PdfOcrJob.findAll({
     where: {
-      sourceType: SOURCE_TYPE,
       status: "running",
       attemptCount: { [Op.gte]: config.maxAttempts },
       leaseExpiresAt: { [Op.lt]: expiredAt },
@@ -522,19 +676,22 @@ export async function processPdfOcrJobs() {
       leaseExpiresAt: null,
       heartbeatAt: null,
     });
-    await db.models.ImportedInventoryFile.update(
-      {
-        importStatus: ImportStatusEnum.FAILED,
-        errorLog: "attempts_exhausted",
-        lastUpdated: expiredAt,
-      },
-      { where: { id: job.sourceId } },
-    );
+    if (job.sourceType === INVENTORY_SOURCE_TYPE) {
+      await db.models.ImportedInventoryFile.update(
+        {
+          importStatus: ImportStatusEnum.FAILED,
+          errorLog: "attempts_exhausted",
+          lastUpdated: expiredAt,
+        },
+        { where: { id: job.sourceId } },
+      );
+    }
   }
 
   const owner = `pdf-ocr-${randomUUID()}`;
   const jobs = await claimPdfOcrJobs(owner);
   await Promise.all(jobs.map((job) => runOcrJob(job, owner)));
+  await syncPendingGHGIOcrArtifacts(config.batchSize);
 
   const extractionOwner = `pdf-extraction-${randomUUID()}`;
   const successfulJobs = await claimInventoryExtractionJobs(extractionOwner);
@@ -555,7 +712,7 @@ export async function getInventoryPdfOcrStatus(
   importStatus?: ImportStatusEnum,
 ) {
   const job = await db.models.PdfOcrJob.findOne({
-    where: { sourceType: SOURCE_TYPE, sourceId },
+    where: { sourceType: INVENTORY_SOURCE_TYPE, sourceId },
   });
   if (!job) return null;
   const canRetry =
@@ -565,4 +722,87 @@ export async function getInventoryPdfOcrStatus(
     ...(job.errorCode ? { errorCode: job.errorCode } : {}),
     canRetry,
   };
+}
+
+export async function getConceptNotePdfOcrJob(
+  uploadId: string,
+): Promise<PdfOcrJob | null> {
+  return db.models.PdfOcrJob.findOne({
+    where: {
+      sourceType: CONCEPT_NOTE_SOURCE_TYPE,
+      sourceId: uploadId,
+    },
+  });
+}
+
+export function normalizeConceptNotePdfOcrStatus(job: PdfOcrJob): {
+  status: "queued" | "processing" | "ready" | "failed";
+  stage: "ocr" | "delivery" | "complete";
+  canRetry: boolean;
+  retryKind?: "ocr" | "delivery";
+  errorCode?: string;
+} {
+  if (job.status === "queued") {
+    return { status: "queued", stage: "ocr", canRetry: false };
+  }
+  if (job.status === "running") {
+    return { status: "processing", stage: "ocr", canRetry: false };
+  }
+  if (job.status === "failed") {
+    return {
+      status: "failed",
+      stage: "ocr",
+      canRetry: true,
+      retryKind: "ocr",
+      ...(job.errorCode ? { errorCode: job.errorCode } : {}),
+    };
+  }
+  if (job.deliveryStatus === "delivered") {
+    return { status: "ready", stage: "complete", canRetry: false };
+  }
+  if (job.deliveryStatus === "failed") {
+    return {
+      status: "failed",
+      stage: "delivery",
+      canRetry: true,
+      retryKind: "delivery",
+      ...(job.deliveryErrorCode ? { errorCode: job.deliveryErrorCode } : {}),
+    };
+  }
+  return { status: "processing", stage: "delivery", canRetry: false };
+}
+
+export async function retryConceptNotePdfOcr(
+  job: PdfOcrJob,
+): Promise<"ocr" | "delivery" | "noop"> {
+  if (job.status === "failed") {
+    await job.update({
+      status: "queued",
+      attemptCount: 0,
+      runAfter: new Date(),
+      completedAt: null,
+      errorCode: null,
+      errorMessage: null,
+      leaseOwner: null,
+      leaseExpiresAt: null,
+      heartbeatAt: null,
+      deliveryStatus: "pending",
+      deliveryAttemptCount: 0,
+      deliveryRunAfter: null,
+      deliveredAt: null,
+      deliveryErrorCode: null,
+      deliveryErrorMessage: null,
+    });
+    return "ocr";
+  }
+  if (job.status === "succeeded" && job.deliveryStatus !== "delivered") {
+    await job.update({
+      deliveryStatus: "pending",
+      deliveryRunAfter: new Date(),
+      deliveryErrorCode: null,
+      deliveryErrorMessage: null,
+    });
+    return "delivery";
+  }
+  return "noop";
 }

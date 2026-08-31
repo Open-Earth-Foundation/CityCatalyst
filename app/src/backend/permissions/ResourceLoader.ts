@@ -2,6 +2,9 @@ import { db } from "@/models";
 import type { PermissionContext } from "./PermissionTypes";
 import { QueryTypes } from "sequelize";
 import { Inventory } from "@/models/Inventory";
+import { City } from "@/models/City";
+import { Project } from "@/models/Project";
+import { Organization } from "@/models/Organization";
 
 /**
  * Handles loading resources based on permission context
@@ -10,7 +13,9 @@ export class ResourceLoader {
   /**
    * Get resource based on context with appropriate includes
    */
-  static async getResource(context: PermissionContext): Promise<any> {
+  static async getResource(
+    context: PermissionContext,
+  ): Promise<Inventory | City | Project | Organization | null> {
     if (context.inventoryId) {
       return this.getInventoryWithFullContext(context.inventoryId);
     }

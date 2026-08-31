@@ -27,7 +27,7 @@ from app.modules.prioritizer.report_context import (
 def _report_request(
     *,
     action_id: str = "A_1",
-    language: str = "en",
+    language: list[str] | None = None,
     locode: str = "CL-SCL",
     response_results: list[dict[str, object]] | None = None,
 ) -> CityActionReportApiRequest:
@@ -73,30 +73,17 @@ def _report_request(
     return CityActionReportApiRequest.model_validate(
         {
             "meta": {
-                "requestId": "report-req-1",
-                "generatedAtUtc": "2026-07-14T00:00:00Z",
-                "backendConsumer": "hiap-meed",
-                "upstreamProvider": "test",
-                "apiContext": {"endpoint": "POST /v1/reports/output-plan"},
-                "totalRecords": 1,
+              "requestId": "report-req-1"
             },
             "requestData": {
                 "locode": locode,
                 "actionId": action_id,
-                "language": language,
+                "language": ["en"] if language is None else language,
                 "debugContextOnly": True,
                 "prioritizationSnapshot": {
                     "request": {
                         "meta": {
-                            "requestId": "prioritize-req-1",
-                            "generatedAtUtc": "2026-07-14T00:00:00Z",
-                            "backendConsumer": "hiap-meed",
-                            "upstreamProvider": "test",
-                            "apiContext": {
-                                "endpoint": "POST /v1/prioritize",
-                                "locodes": ["CL-SCL"],
-                            },
-                            "totalRecords": 1,
+                          "requestId": "prioritize-req-1"
                         },
                         "requestData": {
                             "requestedLanguages": ["en"],
@@ -112,6 +99,11 @@ def _report_request(
                         },
                     },
                     "response": {
+                        "meta": {
+                            "requestId": "prioritize-req-1",
+                            "generatedAtUtc": "2026-07-14T00:00:01Z",
+                            "totalRecords": len(response_results),
+                        },
                         "results": response_results,
                     },
                     "storedAtUtc": "2026-07-14T00:00:01Z",
@@ -182,7 +174,7 @@ def test_validate_report_snapshot_returns_selected_city_action_and_country() -> 
 def test_report_context_warns_when_language_was_not_in_source_request() -> None:
     """Report language can differ from the prioritization explanation languages."""
     context = build_report_context(
-        request=_report_request(language="es"),
+        request=_report_request(language=["es"]),
         action=Action(action_id="A_1", action_name="Bus electrification"),
         city=CityData(
             city_name="Santiago",
@@ -198,9 +190,10 @@ def test_report_context_warns_when_language_was_not_in_source_request() -> None:
         source_metadata={"city": {"source": "test"}},
     )
 
-    assert context.language == "es"
+    assert context.language == "en"
+    assert context.requested_languages == ["en", "es"]
     assert any(
-        "report language differs from the languages used in the original prioritization"
+        "report languages differ from the languages used in the original prioritization"
         in item
         for item in context.limitations
     )
@@ -235,17 +228,25 @@ def test_report_context_limitations_are_reader_safe() -> None:
 
 def test_report_request_normalizes_boundary_values() -> None:
     """Request DTO validation should normalize simple report boundary values."""
-    request = _report_request(action_id=" A_1 ", language=" EN ", locode=" cl-scl ")
+    request = _report_request(
+        action_id=" A_1 ", language=[" EN "], locode=" cl-scl "
+    )
 
     assert request.requestData.locode == "CL-SCL"
     assert request.requestData.actionId == "A_1"
-    assert request.requestData.language == "en"
+    assert request.requestData.language == ["en"]
 
 
 def test_report_request_rejects_blank_boundary_values() -> None:
     """Request DTO validation should reject blank report boundary values."""
     with pytest.raises(ValueError, match="actionId must not be blank"):
         _report_request(action_id="   ")
+
+
+def test_report_request_rejects_empty_language_list() -> None:
+    """Canonical English injection must not make an empty caller request valid."""
+    with pytest.raises(ValueError, match="language"):
+        _report_request(language=[])
 
 
 def test_report_request_rejects_empty_snapshot_response() -> None:
@@ -397,6 +398,12 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
                     "attribute_category": "very high",
                     "attribute_units": "percent",
                 },
+                {
+                    "attribute_name": "unemployment_rate",
+                    "attribute_value": 8.5,
+                    "attribute_category": "medium",
+                    "attribute_units": "percent",
+                },
             ],
         ),
         policy_score=None,
@@ -440,7 +447,33 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
                                     "contribution": -1.0,
                                 }
                             ],
-                        }
+                        },
+                        {
+                            "global_indicator": "inclusiveness",
+                            "city_indicators": [
+                                {
+                                    "city_indicator": "poverty_rate",
+                                    "category": "low",
+                                    "direction": "negative",
+                                    "capacity": 0.75,
+                                    "contribution": 0.5,
+                                },
+                                {
+                                    "city_indicator": "median_household_income",
+                                    "category": "medium",
+                                    "direction": "positive",
+                                    "capacity": 0.5,
+                                    "contribution": -0.5,
+                                },
+                                {
+                                    "city_indicator": "unemployment_rate",
+                                    "category": "medium",
+                                    "direction": "positive",
+                                    "capacity": 0.5,
+                                    "contribution": 0.0,
+                                },
+                            ],
+                        },
                     ]
                 },
                 "cost_effectiveness": {
@@ -470,7 +503,19 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
                                     "contribution": 0.4,
                                 }
                             ],
-                        }
+                        },
+                        {
+                            "global_indicator": "distributional_effects",
+                            "city_indicators": [
+                                {
+                                    "city_indicator": "poverty_rate",
+                                    "category": "low",
+                                    "direction": "negative",
+                                    "capacity": 0.75,
+                                    "contribution": 0.5,
+                                }
+                            ],
+                        },
                     ]
                 },
             },
@@ -498,9 +543,10 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
     assert "breakdown" not in mitigation
     assert "raw" not in mitigation
     assert "fixed_internet_household_share" not in str(city_fit.facts)
+    assert "unemployment_rate" not in str(city_fit.facts)
     assert city_fit.facts["supporting_conditions"] == [
         {
-            "indicator": "electricity_access_rate",
+            "indicator": "Electricity access rate",
             "display_value": "99.75% (high)",
             "implication": (
                 "In the feasibility assessment, this indicator strengthens "
@@ -508,25 +554,28 @@ def test_city_fit_input_uses_selected_action_and_curated_feasibility() -> None:
             ),
         },
         {
-            "indicator": "poverty_rate",
+            "indicator": "Poverty rate",
             "display_value": "19.72% (low)",
             "implication": (
                 "In the feasibility assessment, this indicator strengthens "
-                "affordability and value for money."
-            ),
-        },
-        {
-            "indicator": "median_household_income",
-            "display_value": "1,174,475 CLP (medium)",
-            "implication": (
-                "In the feasibility assessment, this indicator strengthens "
-                "affordability and value for money."
+                "inclusiveness, affordability and value for money, and "
+                "distributional effects."
             ),
         },
     ]
-    assert city_fit.facts["limiting_conditions"][0]["indicator"] == "renter_share"
+    assert city_fit.facts["limiting_conditions"][0]["indicator"] == "Renter share"
     assert "weakens public acceptance" in city_fit.facts["limiting_conditions"][0][
         "implication"
+    ]
+    assert city_fit.facts["mixed_conditions"] == [
+        {
+            "indicator": "Median household income",
+            "display_value": "1,174,475 CLP (medium)",
+            "implication": (
+                "In the feasibility assessment, this indicator strengthens "
+                "affordability and value for money, but weakens inclusiveness."
+            ),
+        }
     ]
     snapshot = next(
         chapter
@@ -692,9 +741,9 @@ def test_snapshot_finance_and_sources_inputs_expose_structured_report_rows() -> 
     impact = chapters["action_impact"].facts
     assert impact["action"]["co_benefits"] == [
         {
-            "label": "cost of living",
+            "label": "Cost of living",
             "relationship": "positive",
-            "strength": "medium",
+            "strength": "Medium",
         }
     ]
     assert "impact_score" not in impact["ranking"]

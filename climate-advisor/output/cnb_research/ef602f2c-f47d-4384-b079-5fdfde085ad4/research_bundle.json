@@ -1,8 +1,8 @@
 {
-  "schema_version": "2.0",
+  "schema_version": "3.0",
   "run_id": "ef602f2c-f47d-4384-b079-5fdfde085ad4",
   "run_metadata": {
-    "pipeline_version": "2.0",
+    "pipeline_version": "3.0",
     "model_name": "gpt-5.6-terra",
     "reasoning_effort": "medium",
     "prompt_sha256": "fcd8bf6b92d2f7e6c77a94a69ac96e93620a09fabef7e5d86227e49d5bb2fc24",
@@ -37,16 +37,10 @@
       "derived": {}
     }
   },
-  "funding_records": [
+  "funding_opportunities": [
     {
-      "funding_record_ref": "opportunity-001",
       "funder_ref": "funder-001",
-      "is_opportunity": true,
       "name": "European City Facility (EUCF) - Call 7",
-      "applicant_name": null,
-      "city": null,
-      "state_region": null,
-      "country": null,
       "category": "Clean energy and energy efficiency",
       "hazards": [],
       "interventions": [
@@ -59,16 +53,20 @@
       "region_scope": "EU-27 Member States, Iceland and Ukraine",
       "min_award": "60000.0",
       "max_award": "60000.0",
-      "award_amount": null,
       "currency": "EUR",
-      "award_year": null,
       "status": "Closed",
-      "summary": "Call 7 offered 71 fixed EUR 60,000 grants to develop investment concepts for sustainable-energy projects. It did not finance the underlying investments directly; grants could fund preparatory work required to develop the concepts. The application deadline was 18 December 2024 at 17:00 Brussels time."
-    },
+      "summary": "Call 7 offered 71 fixed EUR 60,000 grants to develop investment concepts for sustainable-energy projects. It did not finance the underlying investments directly; grants could fund preparatory work required to develop the concepts. The application deadline was 18 December 2024 at 17:00 Brussels time.",
+      "funding_opportunity_ref": "opportunity-001",
+      "applicant_type": null,
+      "sector": null,
+      "known_gaps": [
+        "funding_opportunities[opportunity-001].co_financing: The captured Call 7 sources do not establish a co-financing requirement or rate for the EUR 60,000 lump-sum grant."
+      ]
+    }
+  ],
+  "funded_projects": [
     {
-      "funding_record_ref": "project-001",
       "funder_ref": "funder-001",
-      "is_opportunity": false,
       "name": "Smart-controlled community-integrated photovoltaic-plus-storage and electric mobility infrastructure for municipality-owned sites",
       "applicant_name": "Nicosia",
       "city": "Nicosia",
@@ -83,19 +81,24 @@
       "finance_route": "EUCF grant support for investment-concept development",
       "instrument_type": "Fixed lump-sum grant",
       "region_scope": "Southern Europe",
-      "min_award": null,
-      "max_award": null,
       "award_amount": "60000.0",
       "currency": "EUR",
       "award_year": 2025,
       "status": "Selected beneficiary",
-      "summary": "Nicosia appears in EUCF's official Call 7 beneficiary list with this investment-concept title. EUCF announced in July 2025 that the 71 selected Call 7 beneficiaries would each receive its EUR 60,000 support package to develop clean-energy or energy-efficiency investment concepts and join capacity building."
+      "summary": "Nicosia appears in EUCF\u0027s official Call 7 beneficiary list with this investment-concept title. EUCF announced in July 2025 that the 71 selected Call 7 beneficiaries would each receive its EUR 60,000 support package to develop clean-energy or energy-efficiency investment concepts and join capacity building.",
+      "funded_project_ref": "project-001",
+      "applicant_type": null,
+      "sector": null,
+      "known_gaps": [
+        "funded_projects[project-001].status: The official source establishes 2025 selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status.",
+        "funded_projects[project-001].downstream_financing_status: No captured official source identifies financing secured for Nicosia\u0027s underlying photovoltaic, storage, or electric-mobility investment.",
+        "funded_projects[project-001].underlying_investment_amount: No captured official source publishes the total investment amount or pipeline value for Nicosia\u0027s proposed investment concept."
+      ]
     }
   ],
   "funder_templates": [
     {
       "template_ref": "template-call7-online-application",
-      "funding_record_ref": "opportunity-001",
       "template_name": "EUCF Call 7 online application form described in the Guidelines for Applicants",
       "output_format": "Online form in the EUCF website user zone, completed in English, with mandatory supporting documents uploaded as PDF files",
       "chapter_schema": [
@@ -146,99 +149,100 @@
         "Total expected sustainable-energy investment size in EUR",
         "Potential for replication or upscaling",
         "Activities for which EUCF support is needed and whether preparation is internal or external"
-      ]
+      ],
+      "funding_opportunity_ref": "opportunity-001"
     }
   ],
   "funder_criteria": [
     {
       "criterion_ref": "eligibility-1",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "eligibility",
       "label": "Eligible applicant type and location",
       "requirement_text": "Applicants must be municipalities/local authorities, groupings of municipalities/local authorities, or local public entities aggregating municipalities/local authorities, located entirely in the EU-27, Iceland or Ukraine.",
       "weight": null,
       "hard_gate": true,
-      "normalized_rule": "Applicant must be an eligible local-authority body wholly located in an eligible country."
+      "normalized_rule": "Applicant must be an eligible local-authority body wholly located in an eligible country.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "eligibility-2",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "eligibility",
       "label": "Climate or energy plan",
       "requirement_text": "Applicant must have and submit a SECAP or another local climate and/or energy plan with mitigation targets.",
       "weight": null,
       "hard_gate": true,
-      "normalized_rule": "Submit a qualifying local climate/energy plan containing at least one mitigation target."
+      "normalized_rule": "Submit a qualifying local climate/energy plan containing at least one mitigation target.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "eligibility-3",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "eligibility",
       "label": "Political commitment",
       "requirement_text": "Applicant must submit a letter of support for development of the investment concept, signed by the Mayor or another relevant political representative, using the EUCF template.",
       "weight": null,
       "hard_gate": true,
-      "normalized_rule": "Submit the mandatory-template political-support letter signed by an authorized political representative."
+      "normalized_rule": "Submit the mandatory-template political-support letter signed by an authorized political representative.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "eligibility-4",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "eligibility",
       "label": "Monitoring commitment",
       "requirement_text": "Applicant must commit to the two-year monitoring period following final submission of the investment concept.",
       "weight": null,
       "hard_gate": true,
-      "normalized_rule": "Commit to the required two-year post-submission monitoring period."
+      "normalized_rule": "Commit to the required two-year post-submission monitoring period.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "eligibility-5",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "eligibility",
       "label": "Prior EUCF beneficiary exclusion",
       "requirement_text": "Beneficiaries from previous EUCF calls cannot participate again.",
       "weight": null,
       "hard_gate": true,
-      "normalized_rule": "Applicant must not previously have received EUCF support."
+      "normalized_rule": "Applicant must not previously have received EUCF support.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "selection-1",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "evaluation",
       "label": "Ambition of the proposed investment concept",
       "requirement_text": "The proposal is assessed for investment-size and impact ambition, cost-effectiveness, energy-efficiency focus, and replication/upscaling potential. No quality threshold applies.",
       "weight": "7.0",
       "hard_gate": false,
-      "normalized_rule": "Score up to 7 points; no minimum threshold."
+      "normalized_rule": "Score up to 7 points; no minimum threshold.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "selection-2",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "evaluation",
       "label": "Governance structure",
       "requirement_text": "Governance roles, decision-making, responsible persons, internal capacity, external-expert needs, clarity and robustness are assessed. A quality threshold of 2.5 out of 5 applies.",
       "weight": "5.0",
       "hard_gate": true,
-      "normalized_rule": "Score at least 2.5 of 5 points."
+      "normalized_rule": "Score at least 2.5 of 5 points.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "selection-3",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "evaluation",
       "label": "Stakeholder engagement strategy",
       "requirement_text": "Relevant stakeholders, their needs, engagement activities and objectives, communication instruments, timing, clarity and appropriateness are assessed. A quality threshold of 2.5 out of 5 applies.",
       "weight": "5.0",
       "hard_gate": true,
-      "normalized_rule": "Score at least 2.5 of 5 points."
+      "normalized_rule": "Score at least 2.5 of 5 points.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "criterion_ref": "selection-4",
-      "funding_record_ref": "opportunity-001",
       "criterion_type": "evaluation",
       "label": "Coherence and plausibility",
       "requirement_text": "Completeness, coherence, plausibility and realism of expected investment size and impacts are assessed. A quality threshold of 1.5 out of 3 applies; identical or similar content to another application results in rejection.",
       "weight": "3.0",
       "hard_gate": true,
-      "normalized_rule": "Score at least 1.5 of 3 points and do not submit duplicate/similar content."
+      "normalized_rule": "Score at least 1.5 of 3 points and do not submit duplicate/similar content.",
+      "funding_opportunity_ref": "opportunity-001"
     }
   ],
   "sources": [
@@ -301,325 +305,325 @@
   "evidence": [
     {
       "evidence_ref": "evidence-001",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder.funder_type",
       "source_ref": "source-d1e21a755dbab87ae55e1f5f83531c894293ecbb1642acd37d46b8afeec6466b",
       "source_location": "Page heading and Featured Projects programme labels",
-      "quote_or_summary": "CINEA identifies LIFE as the LIFE Programme and labels projects as Programme for the Environment and Climate Action (LIFE)."
+      "quote_or_summary": "CINEA identifies LIFE as the LIFE Programme and labels projects as Programme for the Environment and Climate Action (LIFE).",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-002",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder.region",
       "source_ref": "source-d1e21a755dbab87ae55e1f5f83531c894293ecbb1642acd37d46b8afeec6466b",
       "source_location": "European City Facility link description",
-      "quote_or_summary": "The LIFE page describes EUCF as a European initiative supporting municipalities and local authorities across Europe."
+      "quote_or_summary": "The LIFE page describes EUCF as a European initiative supporting municipalities and local authorities across Europe.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-003",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder.profile.stated.purpose",
       "source_ref": "source-d1e21a755dbab87ae55e1f5f83531c894293ecbb1642acd37d46b8afeec6466b",
       "source_location": "LIFE page introduction",
-      "quote_or_summary": "The page states that LIFE is protecting the environment and climate."
+      "quote_or_summary": "The page states that LIFE is protecting the environment and climate.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-004",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder.profile.stated.EUCF_relationship",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "About the call; Objective",
-      "quote_or_summary": "Call 7 is funded by LIFE; EUCF supports local authorities to develop investment concepts for sustainable-energy investment."
+      "quote_or_summary": "Call 7 is funded by LIFE; EUCF supports local authorities to develop investment concepts for sustainable-energy investment.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-005",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].category",
+      "target_path": "funding_opportunities[opportunity-001].category",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "Related themes",
-      "quote_or_summary": "The Call 7 page classifies the call under Energy Efficiency and Clean Energy."
+      "quote_or_summary": "The Call 7 page classifies the call under Energy Efficiency and Clean Energy.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-006",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].interventions",
+      "target_path": "funding_opportunities[opportunity-001].interventions",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 1.3.3 and 4.2.1",
-      "quote_or_summary": "The grant can fund feasibility, engineering, legal, social, market and financial analyses, energy audits and other investment-concept tasks; EUCF also provides technical and capacity-building support."
+      "quote_or_summary": "The grant can fund feasibility, engineering, legal, social, market and financial analyses, energy audits and other investment-concept tasks; EUCF also provides technical and capacity-building support.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-007",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].finance_route",
+      "target_path": "funding_opportunities[opportunity-001].finance_route",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Section 1.1.1",
-      "quote_or_summary": "EUCF provides financial support to develop investment concepts and mobilise sustainable-energy finance."
+      "quote_or_summary": "EUCF provides financial support to develop investment concepts and mobilise sustainable-energy finance.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-008",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].instrument_type",
+      "target_path": "funding_opportunities[opportunity-001].instrument_type",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Section 1.3.2",
-      "quote_or_summary": "Successful applicants receive a EUR 60,000 lump sum in the form of a grant."
+      "quote_or_summary": "Successful applicants receive a EUR 60,000 lump sum in the form of a grant.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-009",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].region_scope",
+      "target_path": "funding_opportunities[opportunity-001].region_scope",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Section 2.2.1",
-      "quote_or_summary": "Eligible applicants must be located entirely in the EU-27, Iceland or Ukraine."
+      "quote_or_summary": "Eligible applicants must be located entirely in the EU-27, Iceland or Ukraine.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-010",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].min_award",
+      "target_path": "funding_opportunities[opportunity-001].min_award",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "Financial Support",
-      "quote_or_summary": "EUCF finances investment-concept development with a fixed grant of EUR 60,000."
+      "quote_or_summary": "EUCF finances investment-concept development with a fixed grant of EUR 60,000.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-011",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].max_award",
+      "target_path": "funding_opportunities[opportunity-001].max_award",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "Financial Support",
-      "quote_or_summary": "EUCF finances investment-concept development with a fixed grant of EUR 60,000."
+      "quote_or_summary": "EUCF finances investment-concept development with a fixed grant of EUR 60,000.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-012",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].currency",
+      "target_path": "funding_opportunities[opportunity-001].currency",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "Financial Support",
-      "quote_or_summary": "The fixed Call 7 grant is stated as 60 000 EUR."
+      "quote_or_summary": "The fixed Call 7 grant is stated as 60 000 EUR.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-013",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].status",
+      "target_path": "funding_opportunities[opportunity-001].status",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "About the call",
-      "quote_or_summary": "The official page explicitly says the call is closed and gives the final deadline as 18 December 2024."
+      "quote_or_summary": "The official page explicitly says the call is closed and gives the final deadline as 18 December 2024.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-014",
-      "funding_record_ref": "opportunity-001",
-      "target_path": "funding_records[opportunity-001].summary",
+      "target_path": "funding_opportunities[opportunity-001].summary",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "About the call; What can be financed; Timeline",
-      "quote_or_summary": "Call 7 supported 71 beneficiaries; grants funded resources and services to develop investment concepts rather than actual investments."
+      "quote_or_summary": "Call 7 supported 71 beneficiaries; grants funded resources and services to develop investment concepts rather than actual investments.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-015",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[eligibility-1]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Section 2.2.1, Eligibility criteria table",
-      "quote_or_summary": "Applicant type and wholly eligible-country location are among the five criteria to which an applicant must answer yes."
+      "quote_or_summary": "Applicant type and wholly eligible-country location are among the five criteria to which an applicant must answer yes.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-016",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[eligibility-2]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 2.2.1 and 2.4.1",
-      "quote_or_summary": "Applicants must have and submit a SECAP or other local climate/energy plan with mitigation targets."
+      "quote_or_summary": "Applicants must have and submit a SECAP or other local climate/energy plan with mitigation targets.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-017",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[eligibility-3]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 2.2.1 and 2.4.2",
-      "quote_or_summary": "A political representative's support letter is required and the EUCF-provided template must be used."
+      "quote_or_summary": "A political representative\u0027s support letter is required and the EUCF-provided template must be used.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-018",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[eligibility-4]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Section 2.2.1",
-      "quote_or_summary": "Eligibility includes commitment to a two-year monitoring period after final investment-concept submission."
+      "quote_or_summary": "Eligibility includes commitment to a two-year monitoring period after final investment-concept submission.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-019",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[eligibility-5]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 1.3.1 and 2.3.2",
-      "quote_or_summary": "Prior EUCF beneficiaries may not participate again."
+      "quote_or_summary": "Prior EUCF beneficiaries may not participate again.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-020",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[selection-1]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Section 3.1.4, evaluation scoring table",
-      "quote_or_summary": "Ambition is scored out of 7 points and has no quality threshold."
+      "quote_or_summary": "Ambition is scored out of 7 points and has no quality threshold.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-021",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[selection-2]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 3.1.3-3.1.4",
-      "quote_or_summary": "Governance structure is scored out of 5 points and has a threshold of 2.5/5."
+      "quote_or_summary": "Governance structure is scored out of 5 points and has a threshold of 2.5/5.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-022",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[selection-3]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 3.1.3-3.1.4",
-      "quote_or_summary": "Stakeholder engagement is scored out of 5 points and has a threshold of 2.5/5."
+      "quote_or_summary": "Stakeholder engagement is scored out of 5 points and has a threshold of 2.5/5.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-023",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_criteria[selection-4]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 3.1.2-3.1.4",
-      "quote_or_summary": "Coherence and plausibility is scored out of 3 points with a 1.5/3 threshold; duplicate content results in rejection."
+      "quote_or_summary": "Coherence and plausibility is scored out of 3 points with a 1.5/3 threshold; duplicate content results in rejection.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-024",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].name",
+      "target_path": "funded_projects[project-001].name",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Full list of new beneficiaries table, Nicosia row",
-      "quote_or_summary": "The beneficiary table lists Nicosia, Cyprus and this investment-concept title."
+      "quote_or_summary": "The beneficiary table lists Nicosia, Cyprus and this investment-concept title.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-025",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].applicant_name",
+      "target_path": "funded_projects[project-001].applicant_name",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Full list of new beneficiaries table, Nicosia row",
-      "quote_or_summary": "The table identifies Nicosia as the beneficiary city."
+      "quote_or_summary": "The table identifies Nicosia as the beneficiary city.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-026",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].country",
+      "target_path": "funded_projects[project-001].country",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Full list of new beneficiaries table, Nicosia row",
-      "quote_or_summary": "The Nicosia beneficiary row is listed under Cyprus."
+      "quote_or_summary": "The Nicosia beneficiary row is listed under Cyprus.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-027",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].interventions",
+      "target_path": "funded_projects[project-001].interventions",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Full list of new beneficiaries table, Nicosia row",
-      "quote_or_summary": "The published title specifies photovoltaic-plus-storage and electric-mobility infrastructure at municipality-owned sites."
+      "quote_or_summary": "The published title specifies photovoltaic-plus-storage and electric-mobility infrastructure at municipality-owned sites.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-028",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].award_amount",
+      "target_path": "funded_projects[project-001].award_amount",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Announcement introduction and beneficiary table",
-      "quote_or_summary": "EUCF states that the 71 selected Call 7 beneficiaries receive a EUR 60,000 support package; Nicosia is listed among them."
+      "quote_or_summary": "EUCF states that the 71 selected Call 7 beneficiaries receive a EUR 60,000 support package; Nicosia is listed among them.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-029",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].award_year",
+      "target_path": "funded_projects[project-001].award_year",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Publishing date and announcement introduction",
-      "quote_or_summary": "The beneficiary-selection announcement is dated 18 July 2025."
+      "quote_or_summary": "The beneficiary-selection announcement is dated 18 July 2025.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-030",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].status",
+      "target_path": "funded_projects[project-001].status",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Announcement introduction and beneficiary table",
-      "quote_or_summary": "Nicosia is in the published full list of 71 new selected beneficiaries."
+      "quote_or_summary": "Nicosia is in the published full list of 71 new selected beneficiaries.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-031",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].summary",
+      "target_path": "funded_projects[project-001].summary",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Announcement introduction; About the EUCF",
-      "quote_or_summary": "The announcement says selected cities use funding to develop clean-energy or energy-efficiency investment concepts and join capacity building."
+      "quote_or_summary": "The announcement says selected cities use funding to develop clean-energy or energy-efficiency investment concepts and join capacity building.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-032",
-      "funding_record_ref": "opportunity-001",
       "target_path": "funder_templates[template-call7-online-application]",
       "source_ref": "source-5b9596528993a0be9a1849fc9f67588f8802b310ed00d862a25571c0441bd1fb",
       "source_location": "Sections 2.3.1-2.3.2 and 2.4.1-2.4.5",
-      "quote_or_summary": "The official Guidelines describe an English online form in the EUCF user zone with four sections: applicant identification, political commitments, proposed investment project and use of EUCF support. They also specify the field content and the mandatory plan and political-support-letter annexes. This record describes the form structure; it is not the separate political-support-letter template."
+      "quote_or_summary": "The official Guidelines describe an English online form in the EUCF user zone with four sections: applicant identification, political commitments, proposed investment project and use of EUCF support. They also specify the field content and the mandatory plan and political-support-letter annexes. This record describes the form structure; it is not the separate political-support-letter template.",
+      "funding_opportunity_ref": "opportunity-001"
     },
     {
       "evidence_ref": "evidence-033",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].city",
+      "target_path": "funded_projects[project-001].city",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Full list of new beneficiaries table, Nicosia row",
-      "quote_or_summary": "The official Call 7 beneficiary table names Nicosia as the selected city."
+      "quote_or_summary": "The official Call 7 beneficiary table names Nicosia as the selected city.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-034",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].category",
+      "target_path": "funded_projects[project-001].category",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Full list of new beneficiaries table, Nicosia row",
-      "quote_or_summary": "The published Nicosia project title explicitly combines photovoltaic generation and storage with electric-mobility infrastructure, supporting the renewable-energy and sustainable-urban-mobility category."
+      "quote_or_summary": "The published Nicosia project title explicitly combines photovoltaic generation and storage with electric-mobility infrastructure, supporting the renewable-energy and sustainable-urban-mobility category.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-035",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].finance_route",
+      "target_path": "funded_projects[project-001].finance_route",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Announcement introduction, About the EUCF, and Nicosia beneficiary row",
-      "quote_or_summary": "The official announcement lists Nicosia among the Call 7 beneficiaries and states that EUCF financial support helps local authorities prepare investment concepts; it does not finance the underlying infrastructure investment."
+      "quote_or_summary": "The official announcement lists Nicosia among the Call 7 beneficiaries and states that EUCF financial support helps local authorities prepare investment concepts; it does not finance the underlying infrastructure investment.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-036",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].instrument_type",
+      "target_path": "funded_projects[project-001].instrument_type",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Announcement introduction and About the EUCF",
-      "quote_or_summary": "EUCF states that selected Call 7 beneficiaries receive EUR 60,000 lump sums, establishing the award as a fixed lump-sum grant."
+      "quote_or_summary": "EUCF states that selected Call 7 beneficiaries receive EUR 60,000 lump sums, establishing the award as a fixed lump-sum grant.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-037",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].region_scope",
+      "target_path": "funded_projects[project-001].region_scope",
       "source_ref": "source-e3985ab9d3c280d5d676dfaad9cbb5eb74b9730dcd5f5aa165d209ef5b94f44b",
       "source_location": "Call 7 regional budget table",
-      "quote_or_summary": "The official Call 7 allocation table places Cyprus in the Southern Europe region."
+      "quote_or_summary": "The official Call 7 allocation table places Cyprus in the Southern Europe region.",
+      "funded_project_ref": "project-001"
     },
     {
       "evidence_ref": "evidence-038",
-      "funding_record_ref": "project-001",
-      "target_path": "funding_records[project-001].currency",
+      "target_path": "funded_projects[project-001].currency",
       "source_ref": "source-07c74d4716f588b5716c0129e4f96e8ff592eef6aa66392fe0ec9710db12020c",
       "source_location": "Announcement introduction and Nicosia beneficiary row",
-      "quote_or_summary": "The official announcement states that each listed selected beneficiary receives a EUR 60,000 support package; Nicosia is one of those listed beneficiaries."
+      "quote_or_summary": "The official announcement states that each listed selected beneficiary receives a EUR 60,000 support package; Nicosia is one of those listed beneficiaries.",
+      "funded_project_ref": "project-001"
     }
   ],
   "gaps": [
     {
-      "target_path": "funding_records[opportunity-001].co_financing",
+      "target_path": "funding_opportunities[opportunity-001].co_financing",
       "reason": "The captured Call 7 sources do not establish a co-financing requirement or rate for the EUR 60,000 lump-sum grant."
     },
     {
-      "target_path": "funding_records[project-001].status",
+      "target_path": "funded_projects[project-001].status",
       "reason": "The official source establishes 2025 selection, but not grant-agreement signature, investment-concept completion or validation, or implementation status."
     },
     {
-      "target_path": "funding_records[project-001].downstream_financing_status",
-      "reason": "No captured official source identifies financing secured for Nicosia's underlying photovoltaic, storage, or electric-mobility investment."
+      "target_path": "funded_projects[project-001].downstream_financing_status",
+      "reason": "No captured official source identifies financing secured for Nicosia\u0027s underlying photovoltaic, storage, or electric-mobility investment."
     },
     {
-      "target_path": "funding_records[project-001].underlying_investment_amount",
-      "reason": "No captured official source publishes the total investment amount or pipeline value for Nicosia's proposed investment concept."
+      "target_path": "funded_projects[project-001].underlying_investment_amount",
+      "reason": "No captured official source publishes the total investment amount or pipeline value for Nicosia\u0027s proposed investment concept."
     },
     {
       "target_path": "source_assessments.license_status",

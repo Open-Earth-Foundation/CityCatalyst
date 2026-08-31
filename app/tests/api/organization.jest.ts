@@ -52,7 +52,7 @@ const mockUserSession: AppSession = {
 
 describe("Organization API", () => {
   let organization: Organization;
-  let prevGetServerSession = Auth.getServerSession;
+  const prevGetServerSession = Auth.getServerSession;
 
   beforeAll(async () => {
     setupTests();

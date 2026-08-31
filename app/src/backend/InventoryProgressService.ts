@@ -11,6 +11,7 @@ import {
   SECTORS,
 } from "@/util/constants";
 import { InventoryTypeEnum } from "@/util/enums";
+import { isNotEstimated, isNotOccurring } from "@/util/notation-keys";
 
 const romanTable: Record<string, number> = {
   I: 1,
@@ -144,9 +145,9 @@ export default class InventoryProgressService {
           (acc, inventoryValue) => {
             if (inventoryValue.dataSource) {
               acc.thirdParty++;
-            } else if (inventoryValue.unavailableReason === "reason-NE") {
+            } else if (isNotEstimated(inventoryValue.unavailableReason)) {
               acc.reasonNE++;
-            } else if (inventoryValue.unavailableReason === "reason-NO") {
+            } else if (isNotOccurring(inventoryValue.unavailableReason)) {
               acc.reasonNO++;
             } else {
               acc.uploaded++;
@@ -170,7 +171,7 @@ export default class InventoryProgressService {
               sectorConstant.referenceNumber === sector.referenceNumber,
           )?.inventoryTypes[inventory.inventoryType as InventoryTypeEnum]
             ?.scopes.length ?? 1;
-        let totalCount = Math.min(
+        const totalCount = Math.min(
           subCategoryCount,
           inventoryTypeSubCategoryCount,
         ); // TODO remove this when scope 3 is added back for SECTOR 1 and 2 in BASIC+;

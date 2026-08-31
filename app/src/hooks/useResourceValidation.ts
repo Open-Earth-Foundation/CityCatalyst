@@ -2,18 +2,22 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/services/api";
 import ProgressLoader from "@/components/ProgressLoader";
+import type { UserInfoResponse } from "@/util/types";
 
 interface UseResourceValidationOptions {
   resourceId: string | undefined;
-  resourceQuery: any; // RTK Query hook result
+  resourceQuery: {
+    data?: unknown;
+    error?: unknown;
+    isLoading: boolean;
+  }; // RTK Query hook result
   lng: string;
   resourceType: 'inventory' | 'city';
-  fallbackRoute?: string;
 }
 
 interface UseResourceValidationReturn {
-  userInfo: any;
-  resourceData: any;
+  userInfo: UserInfoResponse | undefined;
+  resourceData: unknown;
   isLoading: boolean;
   shouldRender: boolean;
   LoadingComponent: React.ComponentType;
@@ -24,7 +28,6 @@ export function useResourceValidation({
   resourceQuery,
   lng,
   resourceType,
-  fallbackRoute
 }: UseResourceValidationOptions): UseResourceValidationReturn {
   const router = useRouter();
   const { data: userInfo, isLoading: userInfoLoading } = api.useGetUserInfoQuery();

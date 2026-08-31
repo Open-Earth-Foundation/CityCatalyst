@@ -30,7 +30,7 @@ function getFormattedRows(rowsWithUserData) {
 
 /** @type {import("sequelize-cli").Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     const rowsWithUserData = await getRowsWithUserData(queryInterface);
     const formattedRows = getFormattedRows(rowsWithUserData);
     return queryInterface.sequelize.transaction(async (transaction) => {
@@ -40,7 +40,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.sequelize.query(`TRUNCATE TABLE "DataSourceI18n";`);
   }
 };

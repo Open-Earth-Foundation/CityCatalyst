@@ -1,9 +1,5 @@
 import { test, expect } from "@playwright/test";
-import {
-  completeThirdPartyDataOnboardingStep,
-  dismissCookieConsent,
-  pickE2EOnboardingInventoryYear,
-} from "./helpers";
+import { dismissCookieConsent } from "./helpers";
 
 test("City Onboarding", async ({ page }) => {
   test.setTimeout(120000);
@@ -61,65 +57,18 @@ test("City Onboarding", async ({ page }) => {
     await continueButton.click();
   }
 
-  /** "Step 2 – Inventory details" */
-  {
-    await expect(page.getByTestId("inventory-details-heading")).toBeVisible({
-      timeout: 15000,
-    });
-
-    const yearSelectTrigger = page
-      .locator('[data-testid="inventory-details-year"]')
-      .locator("button")
-      .first();
-    await yearSelectTrigger.click();
-    await page.waitForTimeout(500);
-    const inventoryYear = pickE2EOnboardingInventoryYear();
-    await page.getByRole("option", { name: inventoryYear }).click();
-
-    // Goal and global warming potential are pre-selected by the step
-    await expect(page.getByTestId("inventory-goal-gpc_basic")).toBeVisible();
-    await expect(page.getByTestId("inventory-goal-ar6")).toBeVisible();
-
-    const continueButton = page
-      .getByRole("button", { name: /^Continue$/ })
-      .last();
-    await expect(continueButton).toBeEnabled({ timeout: 30000 });
-    await continueButton.click();
-  }
-
-  /** "Step 3 – Population data is pre-populated" */
-  {
-    await expect(page.getByTestId("add-population-data-heading")).toBeVisible({
-      timeout: 15000,
-    });
-
-    const cityPopulationInput = page.getByPlaceholder("City population number");
-    await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {
-      timeout: 15000,
-    });
-
-    const continueButton = page
-      .getByRole("button", { name: /^Continue$/ })
-      .last();
-    await expect(continueButton).toBeEnabled({ timeout: 30000 });
-    await continueButton.click();
-  }
-
-  /** "Step 4 – Invite collaborators (skip)" */
+  /** "Step 2 – Invite collaborators (skip) completes onboarding" */
   {
     await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
       timeout: 15000,
     });
     await page.getByRole("button", { name: /Skip this step/i }).click();
-  }
 
-  /** "Step 5 – Third-party data opt-out completes onboarding" */
-  {
-    await completeThirdPartyDataOnboardingStep(page, "no");
-
-    // Wizard exits onto the newly created inventory page
-    await page.waitForURL(/\/en\/cities\/[a-f0-9-]+\/GHGI\/[a-f0-9-]+\/?$/, {
-      timeout: 30000,
+    // Wizard exits onto the "all set up" done screen -- city onboarding no
+    // longer creates an inventory as part of this flow (CC-612).
+    await page.waitForURL(/\/cities\/onboarding\/done/, { timeout: 30000 });
+    await expect(page.getByTestId("done-heading")).toBeVisible({
+      timeout: 15000,
     });
   }
 });

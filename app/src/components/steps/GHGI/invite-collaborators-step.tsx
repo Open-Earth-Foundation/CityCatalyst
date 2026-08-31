@@ -14,7 +14,6 @@ import {
   CloseButton,
   createListCollection,
   Flex,
-  Heading,
   HStack,
   Icon,
   Input,
@@ -32,8 +31,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { MdInfoOutline } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
-import { useGetUserProjectsQuery, useGetUserAccessStatusQuery, useInviteUsersMutation } from "@/services/api";
+import {
+  useGetUserProjectsQuery,
+  useGetUserAccessStatusQuery,
+  useInviteUsersMutation,
+} from "@/services/api";
 import { z } from "zod";
+import { copyInviteUrlsToClipboard } from "@/util/copy-invite-urls";
 
 interface InvitedMember {
   email: string;
@@ -41,14 +45,21 @@ interface InvitedMember {
 }
 
 export interface InviteCollaboratorsStepRef {
-  sendInvites: () => Promise<void>;
+  sendInvites: () => Promise<{
+    inviteUrls?: Record<string, string>;
+  } | void>;
 }
 
 const InviteCollaboratorsStep = forwardRef<
   InviteCollaboratorsStepRef,
-  { lng: string; onValidityChange?: (canSubmit: boolean) => void }
->(({ lng, onValidityChange }, ref) => {
+  {
+    lng: string;
+    onValidityChange?: (canSubmit: boolean) => void;
+    createdProjectId?: string | null;
+  }
+>(({ lng, onValidityChange, createdProjectId }, ref) => {
   const { t } = useTranslation(lng, "onboarding");
+  const { t: tSettings } = useTranslation(lng, "settings");
   const [emailInput, setEmailInput] = useState("");
   const [emailError, setEmailError] = useState("");
   const [selectedRole, setSelectedRole] = useState<"admin" | "collaborator">(
@@ -65,14 +76,36 @@ const InviteCollaboratorsStep = forwardRef<
   }, [invitedMembers.length]);
 
   useEffect(() => {
-    onValidityChange?.(invitedMembers.length > 0 && selectedProject.length > 0);
-  }, [invitedMembers.length, selectedProject.length, onValidityChange]);
+    onValidityChange?.(
+      invitedMembers.length > 0 &&
+        selectedProject.length > 0 &&
+        selectedCities.length > 0,
+    );
+  }, [
+    invitedMembers.length,
+    selectedProject.length,
+    selectedCities.length,
+    onValidityChange,
+  ]);
 
   const { data: projectsData } = useGetUserProjectsQuery({});
   const { data: accessStatus } = useGetUserAccessStatusQuery({});
   const [inviteUsers] = useInviteUsersMutation();
 
-  const isCollaborator = accessStatus?.isCollaborator && !accessStatus?.isOrgOwner && !accessStatus?.isProjectAdmin;
+  useEffect(() => {
+    if (
+      createdProjectId &&
+      selectedProject.length === 0 &&
+      projectsData?.some((p) => p.projectId === createdProjectId)
+    ) {
+      setSelectedProject([createdProjectId]);
+    }
+  }, [createdProjectId, projectsData, selectedProject.length]);
+
+  const isCollaborator =
+    accessStatus?.isCollaborator &&
+    !accessStatus?.isOrgOwner &&
+    !accessStatus?.isProjectAdmin;
 
   const projectCollection = useMemo(
     () =>
@@ -108,7 +141,10 @@ const InviteCollaboratorsStep = forwardRef<
       setEmailError("email-already-exists");
       return;
     }
-    setInvitedMembers((prev) => [...prev, { email: trimmed, role: selectedRole }]);
+    setInvitedMembers((prev) => [
+      ...prev,
+      { email: trimmed, role: selectedRole },
+    ]);
     setEmailInput("");
     setEmailError("");
   };
@@ -121,34 +157,45 @@ const InviteCollaboratorsStep = forwardRef<
 
   useImperativeHandle(ref, () => ({
     sendInvites: async () => {
-      if (!invitedMembers.length || !selectedProject.length) return;
-      await inviteUsers({
+      if (
+        !invitedMembers.length ||
+        !selectedProject.length ||
+        !selectedCities.length
+      )
+        return;
+      const result = await inviteUsers({
         projectId: selectedProject[0],
         cityIds: selectedCities,
         invites: invitedMembers.map((m) => ({ email: m.email, role: m.role })),
       }).unwrap();
+
+      await copyInviteUrlsToClipboard(result.inviteUrls);
+      return result;
     },
   }));
 
   return (
-    <Box w="full" display="flex" flexDirection="column" gap={8} data-testid="invite-collaborators-step">
+    <Box
+      w="full"
+      display="flex"
+      flexDirection="column"
+      gap={8}
+      data-testid="invite-collaborators-step"
+    >
       <Box>
-        <Heading
-          fontSize="headline.lg"
-          fontFamily="heading"
-          fontWeight="bold"
-          mb={2}
-        >
-          {t("invite-collaborators-heading")}
-        </Heading>
         <Text color="content.tertiary">
           {t("invite-collaborators-description")}
         </Text>
       </Box>
 
       <Box>
-        <Text fontWeight="semibold" mb={2}>
-          {t("select-project")}
+        <Text
+          fontFamily="heading"
+          fontWeight="semibold"
+          mb="16px"
+          fontSize="title.md"
+        >
+          {tSettings("select-a-project")}
         </Text>
         <SelectRoot
           value={selectedProject}
@@ -158,9 +205,17 @@ const InviteCollaboratorsStep = forwardRef<
           }}
           collection={projectCollection}
           variant="subtle"
+          shadow="sm"
+          borderWidth="1px"
+          borderColor="border.default"
+          borderRadius="4px"
+          h="48px"
         >
-          <SelectTrigger>
-            <SelectValueText placeholder={t("select-project")} />
+          <SelectTrigger h="full">
+            <SelectValueText
+              placeholder={tSettings("select-a-project")}
+              mt={1}
+            />
           </SelectTrigger>
           <SelectContent portalled={false}>
             {projectCollection.items.map((p) => (
@@ -183,6 +238,9 @@ const InviteCollaboratorsStep = forwardRef<
           mb={2}
         >
           {t("email")}
+          <Text as="span" color="sentiment.negativeDefault">
+            {" *"}
+          </Text>
         </Text>
         <HStack w="full" align="flex-start">
           {/* Input with role selector inlined on the right */}
@@ -192,24 +250,21 @@ const InviteCollaboratorsStep = forwardRef<
             alignItems="center"
             borderWidth="1px"
             borderColor={
-              emailError ? "sentiment.negativeDefault" : "border.neutral"
+              emailError ? "sentiment.negativeDefault" : "border.default"
             }
             borderRadius="md"
-            bg={
-              emailError ? "sentiment.negativeOverlay" : "background.default"
-            }
+            bg={emailError ? "sentiment.negativeOverlay" : "background.default"}
             overflow="hidden"
             h="40px"
             _focusWithin={{
               borderColor: "interactive.secondary",
-              boxShadow:
-                "0 0 0 1px var(--chakra-colors-interactive-secondary)",
+              boxShadow: "0 0 0 1px var(--chakra-colors-interactive-secondary)",
             }}
           >
             <Input
               flex={1}
-              border="none"
               bg="transparent"
+              border="none"
               h="full"
               borderRadius={0}
               _focusVisible={{ boxShadow: "none" }}
@@ -227,19 +282,19 @@ const InviteCollaboratorsStep = forwardRef<
                 onChange={(e) =>
                   setSelectedRole(e.target.value as "admin" | "collaborator")
                 }
-                bg="background.neutral"
+                bg="brand.light"
                 border="none"
                 borderRadius="md"
                 ps={2}
                 pe={1}
+                maxW="fit-content"
                 mx={2}
                 h="28px"
-                color="content.secondary"
+                color="content.tertiary"
                 fontFamily="body"
                 fontSize="body.sm"
                 fontWeight="normal"
                 lineHeight="16px"
-                letterSpacing="0.5px"
                 cursor="pointer"
                 flexShrink={0}
                 _focus={{ outline: "none", boxShadow: "none" }}
@@ -270,7 +325,6 @@ const InviteCollaboratorsStep = forwardRef<
           </HStack>
         ) : (
           <HStack mt={2}>
-            <Icon as={MdInfoOutline} color="interactive.secondary" boxSize={4} />
             <Text fontSize="body.sm" color="content.tertiary">
               {t("invite-collaborators-info")}
             </Text>
@@ -285,37 +339,21 @@ const InviteCollaboratorsStep = forwardRef<
                 alignItems="center"
                 bg="background.neutral"
                 borderRadius="9999px"
-                borderWidth="1px"
-                borderColor="border.neutral"
                 py={1}
                 px={3}
                 gap={2}
+                fontSize="body.lg"
               >
                 <Text
                   color="content.alternative"
                   fontFamily="body"
-                  fontSize="body.lg"
                   fontWeight="normal"
                   lineHeight="24px"
                   letterSpacing="0.5px"
                 >
                   {member.email}
                 </Text>
-                <Box
-                  bg="background.graySubtle"
-                  borderRadius="md"
-                  px={1}
-                  display="inline-flex"
-                  alignItems="center"
-                >
-                  <Text
-                    fontSize="label.sm"
-                    color="content.secondary"
-                    fontWeight="medium"
-                  >
-                    {t(member.role)}
-                  </Text>
-                </Box>
+                <Text color="content.secondary">({t(member.role)})</Text>
                 <CloseButton
                   w="24px"
                   h="24px"
@@ -337,84 +375,81 @@ const InviteCollaboratorsStep = forwardRef<
       </Box>
 
       {invitedMembers.length > 0 && selectedProject.length > 0 && (
-      <Box>
-        <Text
-          fontFamily="heading"
-          fontWeight="bold"
-          fontSize="headline.sm"
-          mb={4}
-        >
-          {t("invite-collaborators-select-cities")}
-        </Text>
-        {selectedProject.length > 0 ? (
-          <Box
-            bg="background.default"
-            px={6}
-            py={4}
+        <Box>
+          <Text
+            fontFamily="heading"
+            fontWeight="bold"
+            fontSize="headline.sm"
+            mb={4}
+            color="content.tertiary"
           >
-            <Checkbox
-              checked={
-                cityData.length > 0 &&
-                selectedCities.length === cityData.length
-              }
-              onChange={() => {
-                if (selectedCities.length === cityData.length) {
-                  setSelectedCities([]);
-                } else {
-                  setSelectedCities(cityData.map((c) => c.cityId));
-                }
-              }}
-              mb={4}
-            >
-              <Text
-                color="content.secondary"
-                fontFamily="body"
-                fontSize="body.lg"
-                fontWeight="normal"
-                lineHeight="24px"
-                letterSpacing="0.5px"
-              >
-                {t("invite-collaborators-all-cities")}
-              </Text>
-            </Checkbox>
-            <Separator borderColor="border.overlay" mb={4} />
-            <CheckboxGroup>
-              <Box
-                display="grid"
-                gridTemplateColumns={{
-                  base: "1fr",
-                  sm: "repeat(2, 1fr)",
-                  md: "repeat(3, 1fr)",
-                }}
-                gap={4}
-              >
-                {cityData.map(({ cityId, name }) => (
-                  <Checkbox
-                    key={cityId}
-                    checked={selectedCities.includes(cityId)}
-                    onChange={() => handleCityToggle(cityId)}
-                  >
-                    <Text
-                      color="content.secondary"
-                      fontFamily="body"
-                      fontSize="body.lg"
-                      fontWeight="normal"
-                      lineHeight="24px"
-                      letterSpacing="0.5px"
-                    >
-                      {name}
-                    </Text>
-                  </Checkbox>
-                ))}
-              </Box>
-            </CheckboxGroup>
-          </Box>
-        ) : (
-          <Text color="content.tertiary" fontSize="body.md">
-            {t("invite-collaborators-select-project-first")}
+            {t("invite-collaborators-select-cities")}
           </Text>
-        )}
-      </Box>
+          {selectedProject.length > 0 ? (
+            <Box bg="background.default" px={6} py={4}>
+              <Checkbox
+                checked={
+                  cityData.length > 0 &&
+                  selectedCities.length === cityData.length
+                }
+                onChange={() => {
+                  if (selectedCities.length === cityData.length) {
+                    setSelectedCities([]);
+                  } else {
+                    setSelectedCities(cityData.map((c) => c.cityId));
+                  }
+                }}
+                mb={4}
+              >
+                <Text
+                  color="content.secondary"
+                  fontFamily="body"
+                  fontSize="body.lg"
+                  fontWeight="normal"
+                  lineHeight="24px"
+                  letterSpacing="0.5px"
+                >
+                  {t("invite-collaborators-all-cities")}
+                </Text>
+              </Checkbox>
+              <Separator borderColor="border.overlay" mb={4} />
+              <CheckboxGroup>
+                <Box
+                  display="grid"
+                  gridTemplateColumns={{
+                    base: "1fr",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
+                  }}
+                  gap={4}
+                >
+                  {cityData.map(({ cityId, name }) => (
+                    <Checkbox
+                      key={cityId}
+                      checked={selectedCities.includes(cityId)}
+                      onChange={() => handleCityToggle(cityId)}
+                    >
+                      <Text
+                        color="content.secondary"
+                        fontFamily="body"
+                        fontSize="body.lg"
+                        fontWeight="normal"
+                        lineHeight="24px"
+                        letterSpacing="0.5px"
+                      >
+                        {name}
+                      </Text>
+                    </Checkbox>
+                  ))}
+                </Box>
+              </CheckboxGroup>
+            </Box>
+          ) : (
+            <Text color="content.tertiary" fontSize="body.md">
+              {t("invite-collaborators-select-project-first")}
+            </Text>
+          )}
+        </Box>
       )}
     </Box>
   );

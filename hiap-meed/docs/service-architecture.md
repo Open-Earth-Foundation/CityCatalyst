@@ -52,21 +52,25 @@ graph TD
     Fetch["Fetch additional source data through data clients"]
     Sources["Global API and private S3 legal CSV"]
     Context["ReportContext enrichment"]
-    ChapterInputs["Per-chapter input builder"]
-    LLM["Output-plan chapter generation"]
+    Queue["Per-pod report slots (3)"]
+    ChapterInputs["English per-chapter input builder"]
+    LLM["8 concurrent English chapter calls"]
+    Translate["One batched translation call"]
     Response["CityActionReportApiResponse returned to caller"]
 
     FE --> Request
     Request --> Snapshot
     Request --> Router
-    Router --> Validate
+    Router --> Queue
+    Queue --> Validate
     Snapshot --> Validate
     Validate --> Fetch
     Fetch --> Sources
     Sources --> Context
     Context --> ChapterInputs
     ChapterInputs --> LLM
-    LLM --> Response
+    LLM --> Translate
+    Translate --> Response
 ```
 
 ---
@@ -74,6 +78,8 @@ graph TD
 ## Concurrency model
 
 The `/v1/prioritize` and `/v1/reports/output-plan` routes are **synchronous** FastAPI routes (`def`, not `async def`). FastAPI automatically offloads sync routes to a threadpool worker, so the event loop thread remains free to accept and dispatch other requests.
+
+Output-plan requests use a per-process asynchronous bounded semaphore before enrichment or LLM work. Each pod admits three active report requests by default (`OUTPUT_PLAN_MAX_CONCURRENT_REPORTS=3`); additional callers wait up to `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS=120` without occupying FastAPI thread-pool workers or creating chapter workers, then receive HTTP `429`. Every admitted production report runs its eight isolated English chapter calls through an eight-worker pool, assembles and validates the canonical report, and makes one additional translation call covering all non-English target languages. Each pod owns its semaphore, so multiple Kubernetes replicas increase throughput independently.
 
 This is the right choice as long as the orchestrator, report context enrichment, and data clients are synchronous. If the data clients are later replaced with async counterparts (e.g. `httpx.AsyncClient`), the orchestrator, report path, and routes should be converted to `async def` / `await` end-to-end.
 
@@ -84,7 +90,7 @@ This is the right choice as long as the orchestrator, report context enrichment,
 | Client                    | Method                                | Status                                                                                  | Target upstream |
 | ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------- | --------------- |
 | City data client          | `get_city(locode)`                    | Mock/API switch (`HIAP_MEED_CITY_DATA_SOURCE`); `mock` is file-backed, `api` performs synchronous HTTP GET `/api/v0/city_attributes/{locode}` against the shared `CCGLOBAL_API_BASE_URL` (default `https://ccglobal.openearth.dev` locally; overridden in workflows per environment) | configurable city attributes API host |
-| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways` with no query parameters and returns the full upstream catalog plus fetch metadata; `mock` is file-backed and returns the same shape | Global API |
+| Action pathways data client | `list_actions()`                      | Mock/API switch (`HIAP_MEED_ACTION_PATHWAYS_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/action-pathways?lang=all` and returns the full upstream catalog, multilingual text maps, and fetch metadata; `mock` is file-backed and returns the same shape | Global API |
 | Legal data client         | `get_action_legal_assessments(country_code)` | S3/mock/deprecated API switch (`HIAP_MEED_LEGAL_DATA_SOURCE`); `s3` is the default and reads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`; `mock` is file-backed; `api` raises before HTTP as a deprecated guard | private S3 legal classification CSV |
 | Action policy scores data client | `get_action_policy_scores(locode)`    | Mock/API switch (`HIAP_MEED_ACTION_POLICY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-policy-scores`; `mock` is file-backed | Global API |
 | Action mitigation feasibility scores data client | `get_action_mitigation_feasibility_scores(locode, country_code)` | Mock/API switch (`HIAP_MEED_ACTION_MITIGATION_FEASIBILITY_SCORES_DATA_SOURCE`); `api` performs synchronous HTTP GET `/api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; `mock` is file-backed | Global API |
@@ -93,7 +99,7 @@ This is the right choice as long as the orchestrator, report context enrichment,
 Clients are injected via FastAPI's `Depends()` pattern. The city, action, action policy scores, mitigation feasibility, and financial feasibility clients default to their live upstream APIs. The legal client defaults to the internal S3-backed CSV source.
 
 Action API note:
-- `GET /api/v1/action-pathways` is called without `limit`, `lang`, or other query parameters
+- `GET /api/v1/action-pathways` is called with `lang=all` and without `limit` so all available localized text maps are retained
 - the old live legal endpoint `GET /api/v1/action-legal-assessments?countryCode=...` is intentionally retained only as a deprecated failure path; legal rows now come from the internal S3 CSV and are mapped into the existing legal record contract
 - legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return an upstream dependency error instead of running ranking with neutral legal defaults
 - mitigation feasibility now comes from the separate city-scoped scores endpoint and missing action rows use the neutral `0.5` fallback in Feasibility scoring
@@ -120,12 +126,16 @@ sequenceDiagram
     participant Orch as Orchestrator
     participant Clients as Data clients (mock by default)
 
-    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta + requestData.cityDataList)
+    FE->>API: POST /v1/prioritize PrioritizerApiRequest (meta.requestId + requestData.cityDataList)
     Note over API: FastAPI validates request body (Pydantic)
     API->>Orch: run_prioritization(locode, city_emissions_context, clients, per_city_options...)
     Orch->>Clients: get_city / list_actions / get_action_legal_assessments / get_action_policy_scores / feasibility score fetches
     Clients-->>Orch: CityData / Action[] / legal assessments / action policy scores / mitigation and financial feasibility scores
     Note over Orch: Hard Filter -> Impact -> Alignment -> Feasibility -> Weighted Sum
+    Orch->>LLM: Generate one canonical English explanation batch
+    LLM-->>Orch: Validated English explanations
+    Orch->>LLM: Translate canonical batch into all non-English requested languages
+    LLM-->>Orch: Vocabulary-constrained translations
     Orch-->>API: PrioritizationResponse (per city)
     API-->>FE: 200 PrioritizerApiResponse (results[])
 ```
@@ -141,18 +151,25 @@ sequenceDiagram
     participant LLM as OpenAI
 
     FE->>API: POST /v1/reports/output-plan CityActionReportApiRequest
-    Note over API: Validates one locode, one actionId, one language field, and full prioritization snapshot
+    Note over API: Queue for one of 3 per-pod report slots and prepend canonical en
     API->>Context: build_enriched_report_context(...)
     Context->>Context: Validate selected city/action against snapshot
     Context->>Clients: Fetch live city/action/policy/legal/feasibility enrichment
     Clients-->>Context: Source data and source metadata
     Context-->>API: ReportContext
-    API->>LLM: One isolated prompt per chapter
-    LLM-->>API: Structured chapter markdown
-    API-->>FE: 200 CityActionReportApiResponse (chapters[] for one action)
+    API->>Context: Build 8 isolated English chapter inputs
+    par Eight English chapter calls
+        API->>LLM: Generate one strict structured English chapter
+        LLM-->>API: Validated English chapter
+    end
+    API->>Context: Build deterministic terminology for target languages
+    API->>LLM: Translate complete English report into all target languages
+    LLM-->>API: Strict batched translation response
+    Note over API: Validate language/chapter coverage, order, URLs, and aggregate localized dictionaries
+    API-->>FE: 200 CityActionReportApiResponse (localized chapters[] for one action)
 ```
 
-The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report.
+The output-plan report endpoint is stateless. The frontend currently stores the prioritization snapshot in browser local storage and sends it back with the report request. Later CityCatalyst integration is expected to store that snapshot in the CityCatalyst database. `hiap-meed` does not persist report state; it validates the supplied snapshot and refetches additional source data only where the prioritization response is not detailed enough for the report. Report requests always include canonical English in their normalized response language list. English chapters are generated once, while all additional requested languages are faithful translations of that completed report. Reports, post-ranking action explanations, and the separate explanation-translation endpoint share recurring frontend terminology from `app/modules/prioritizer/translations.yaml`; official names remain unchanged while descriptive prose is generated or translated.
 
 Freshness caveat: the report exactly reflects the prioritization run only if the supplied snapshot is the one used for that run. Frontend/product still need to define staleness checks and user warnings when inputs or upstream source data changed after prioritization.
 

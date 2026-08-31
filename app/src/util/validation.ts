@@ -5,6 +5,7 @@ import {
   OrganizationPlanType,
 } from "./enums";
 import { OrganizationRole, LANGUAGES } from "@/util/types";
+import { WEBHOOK_EMITTED_EVENT_TYPES } from "@/backend/webhooks/events";
 
 export const emailPattern =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -407,19 +408,21 @@ export type NativeInputCatalogRegisterRequest = z.infer<
   typeof nativeInputCatalogRegisterRequest
 >;
 
-const httpsUrl = z
+const webhookHttpsUrl = z
   .string()
   .url()
   .refine((value) => value.toLowerCase().startsWith("https://"), {
     message: "webhook-url-must-be-https",
   });
 
-const webhookEventTypes = z.array(z.string().min(1)).min(1);
+const webhookEmittedEvents = z
+  .array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES))
+  .min(1);
 
 export const createWebhookSubscriptionRequest = z.object({
   name: z.string().trim().min(1).max(255),
-  url: httpsUrl,
-  events: webhookEventTypes,
+  url: webhookHttpsUrl,
+  events: webhookEmittedEvents,
 });
 
 export type CreateWebhookSubscriptionRequest = z.infer<
@@ -428,8 +431,8 @@ export type CreateWebhookSubscriptionRequest = z.infer<
 
 export const updateWebhookSubscriptionRequest = z.object({
   name: z.string().trim().min(1).max(255).optional(),
-  url: httpsUrl.optional(),
-  events: webhookEventTypes.optional(),
+  url: webhookHttpsUrl.optional(),
+  events: webhookEmittedEvents.optional(),
   enabled: z.boolean().optional(),
 });
 

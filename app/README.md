@@ -107,6 +107,9 @@ require `AWS_FILE_UPLOAD_S3_BUCKET_ID`, `AWS_FILE_UPLOAD_REGION`, and AWS
 credentials because Mistral receives a short-lived presigned URL. Set
 `MISTRAL_API_KEY` and `CC_CRON_JOB_API_KEY`; a separately managed scheduler must
 invoke the processor endpoint. CSV/XLSX imports retain the local BYTEA fallback.
+Outbound webhooks encrypt subscription signing secrets with
+`WEBHOOK_SECRET_ENCRYPTION_KEY` (32-byte AES-256-GCM key, base64) and drain
+deliveries via the same cron auth as PDF OCR. See `docs/WebhooksArchitecture.md`.
 Source PDFs have one fixed 20 MB product limit
 (`20 * 1024 * 1024` bytes) shared by the upload validator and OCR worker. See
 `env.example` for timeout, lease, concurrency, and model configuration.

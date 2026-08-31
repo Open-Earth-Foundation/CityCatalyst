@@ -21,6 +21,10 @@ from app.modules.prioritizer.models import (
 )
 from app.modules.prioritizer.services.explanations import generate_explanations
 from app.modules.prioritizer.services.translation import translate_explanations
+from app.services.action_pathways_api import (
+    PRIORITIZABLE_ACTION_TYPE,
+    select_prioritizable_actions,
+)
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionPathwaysDataApiClient,
@@ -43,35 +47,12 @@ from app.utils.timing import time_block
 
 
 logger = logging.getLogger(__name__)
-SUPPORTED_ACTION_TYPE = "mitigation"
 
 
 def _sorted_action_ids(actions: list[Action]) -> list[str]:
     """Return all action IDs in deterministic sorted order."""
     action_ids = [action.action_id for action in actions]
     return sorted(action_ids)
-
-
-def _filter_supported_action_type(
-    actions: list[Action],
-    *,
-    action_type: str,
-) -> tuple[list[Action], list[Action], list[Action]]:
-    """Split fetched actions into supported, filtered-out, and missing-type groups."""
-    normalized_action_type = action_type.strip().lower()
-    kept_actions: list[Action] = []
-    filtered_actions: list[Action] = []
-    missing_action_type_actions: list[Action] = []
-    for action in actions:
-        if action.action_type is None or not action.action_type.strip():
-            missing_action_type_actions.append(action)
-            kept_actions.append(action)
-            continue
-        if action.action_type.strip().lower() == normalized_action_type:
-            kept_actions.append(action)
-            continue
-        filtered_actions.append(action)
-    return kept_actions, filtered_actions, missing_action_type_actions
 
 
 def _score_stats(score_by_action_id: dict[str, float]) -> dict[str, float | int | bool]:
@@ -156,14 +137,13 @@ def _build_removed_action_legal_evidence(
         "verdict_score": evidence.get("legal_verdict_score"),
         "ownership_category": summary.get("ownership_category"),
         "ownership_score": summary.get("ownership_score"),
-        "ownership_description": summary.get("ownership_description"),
-        "ownership_description_es": summary.get("ownership_description_es"),
+        "ownership_description": dict(summary.get("ownership_description", {})),
         "restrictions_category": summary.get("restrictions_category"),
         "restrictions_score": summary.get("restrictions_score"),
-        "restrictions_description": summary.get("restrictions_description"),
-        "restrictions_description_es": summary.get("restrictions_description_es"),
-        "legal_justification": summary.get("legal_justification"),
-        "legal_justification_en": summary.get("legal_justification_en"),
+        "restrictions_description": dict(
+            summary.get("restrictions_description", {})
+        ),
+        "legal_justification": dict(summary.get("legal_justification", {})),
         "legal_references": list(summary.get("legal_references", [])),
     }
 
@@ -208,14 +188,15 @@ def _group_feasibility_evidence(evidence: dict[str, object]) -> dict[str, object
             ),
             "ownership_category": evidence.get("ownership_category"),
             "ownership_score": evidence.get("ownership_score"),
-            "ownership_description": evidence.get("ownership_description"),
-            "ownership_description_es": evidence.get("ownership_description_es"),
+            "ownership_description": dict(
+                evidence.get("ownership_description", {})
+            ),
             "restrictions_category": evidence.get("restrictions_category"),
             "restrictions_score": evidence.get("restrictions_score"),
-            "restrictions_description": evidence.get("restrictions_description"),
-            "restrictions_description_es": evidence.get("restrictions_description_es"),
-            "legal_justification": evidence.get("legal_justification"),
-            "legal_justification_en": evidence.get("legal_justification_en"),
+            "restrictions_description": dict(
+                evidence.get("restrictions_description", {})
+            ),
+            "legal_justification": dict(evidence.get("legal_justification", {})),
             "analysis_date": evidence.get("legal_analysis_date"),
             "generation_method": evidence.get("legal_generation_method"),
             "legal_references": list(evidence.get("legal_references", [])),
@@ -374,29 +355,26 @@ def _build_evidence_summary(
                 "ownership_score": feasibility_evidence.get("legal", {}).get(
                     "ownership_score"
                 ),
-                "ownership_description": feasibility_evidence.get("legal", {}).get(
-                    "ownership_description"
+                "ownership_description": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "ownership_description", {}
+                    )
                 ),
-                "ownership_description_es": feasibility_evidence.get(
-                    "legal", {}
-                ).get("ownership_description_es"),
                 "restrictions_category": feasibility_evidence.get("legal", {}).get(
                     "restrictions_category"
                 ),
                 "restrictions_score": feasibility_evidence.get("legal", {}).get(
                     "restrictions_score"
                 ),
-                "restrictions_description": feasibility_evidence.get("legal", {}).get(
-                    "restrictions_description"
+                "restrictions_description": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "restrictions_description", {}
+                    )
                 ),
-                "restrictions_description_es": feasibility_evidence.get(
-                    "legal", {}
-                ).get("restrictions_description_es"),
-                "legal_justification": feasibility_evidence.get("legal", {}).get(
-                    "legal_justification"
-                ),
-                "legal_justification_en": feasibility_evidence.get("legal", {}).get(
-                    "legal_justification_en"
+                "legal_justification": dict(
+                    feasibility_evidence.get("legal", {}).get(
+                        "legal_justification", {}
+                    )
                 ),
                 "legal_references": list(
                     feasibility_evidence.get("legal", {}).get("legal_references", [])
@@ -463,42 +441,13 @@ def _detail_filename(event_index: int | None, step_name: str) -> str:
 
 
 def _resolve_requested_output_languages(requested_languages: list[str]) -> list[str]:
-    """Return canonical English plus any additional requested target languages."""
-    resolved_languages = ["en"]
+    """Normalize output languages and make English the canonical first language."""
+    resolved_languages: list[str] = []
     for language in requested_languages:
         normalized = language.strip().lower()
         if normalized and normalized not in resolved_languages:
             resolved_languages.append(normalized)
-    return resolved_languages
-
-
-def _collect_generated_languages(
-    *,
-    requested_languages: list[str],
-    explanations_by_action_id: dict[str, str],
-    explanation_translations_by_action_id: dict[str, dict[str, str]],
-) -> list[str]:
-    """Return explanation languages actually present in the returned payload."""
-    generated_languages: list[str] = []
-    if explanations_by_action_id:
-        generated_languages.append("en")
-
-    translated_languages: set[str] = set()
-    for translations in explanation_translations_by_action_id.values():
-        for language in translations.keys():
-            normalized = language.strip().lower()
-            if normalized:
-                translated_languages.add(normalized)
-
-    for language in _resolve_requested_output_languages(requested_languages):
-        if language != "en" and language in translated_languages:
-            generated_languages.append(language)
-
-    # Keep unexpected-but-returned languages visible even if they were not requested.
-    for language in sorted(translated_languages):
-        if language not in generated_languages:
-            generated_languages.append(language)
-    return generated_languages
+    return ["en", *[language for language in resolved_languages if language != "en"]]
 
 
 def run_prioritization(
@@ -612,16 +561,13 @@ def run_prioritization(
             actions,
             filtered_out_action_type_actions,
             missing_action_type_actions,
-        ) = _filter_supported_action_type(
-            fetched_actions,
-            action_type=SUPPORTED_ACTION_TYPE,
-        )
+        ) = select_prioritizable_actions(fetched_actions)
     # Emit high-level and step-detail artifacts for action fetch.
     timings["fetch_actions"] = block.elapsed_seconds
     fetch_actions_payload = {
         "total_fetched_actions": len(fetched_actions),
         "total_actions": len(actions),
-        "supported_action_type": SUPPORTED_ACTION_TYPE,
+        "supported_action_type": PRIORITIZABLE_ACTION_TYPE,
         "filtered_out_action_type_actions_count": len(filtered_out_action_type_actions),
         "missing_action_type_actions_count": len(missing_action_type_actions),
         "source": (
@@ -642,7 +588,7 @@ def run_prioritization(
         {
             "total_fetched_actions": len(fetched_actions),
             "total_actions": len(actions),
-            "supported_action_type": SUPPORTED_ACTION_TYPE,
+            "supported_action_type": PRIORITIZABLE_ACTION_TYPE,
             "filtered_out_action_type_actions_count": len(
                 filtered_out_action_type_actions
             ),
@@ -671,7 +617,7 @@ def run_prioritization(
         len(actions),
         len(filtered_out_action_type_actions),
         len(missing_action_type_actions),
-        SUPPORTED_ACTION_TYPE,
+        PRIORITIZABLE_ACTION_TYPE,
         block.elapsed_seconds,
     )
 
@@ -947,7 +893,6 @@ def run_prioritization(
         "resolved_top_n": top_n,
         "create_explanations": create_explanations,
         "requested_languages": requested_languages,
-        "canonical_language": "en",
         "requested_output_languages": _resolve_requested_output_languages(
             requested_languages
         ),
@@ -1216,11 +1161,11 @@ def run_prioritization(
             ),
         }
 
-    # Phase 13: optionally generate post-ranking qualitative explanations in English.
-    explanations_by_action_id: dict[str, str] = {}
-    explanation_translations_by_action_id: dict[str, dict[str, str]] = {}
-    translation_warnings: list[str] = []
-    translation_event_index: int | None = None
+    # Phase 13: generate canonical English explanations, then translate once.
+    explanation_languages = _resolve_requested_output_languages(requested_languages)
+    explanations_by_language: dict[str, dict[str, str]] = {}
+    generated_explanation_action_ids: list[str] = []
+    explanation_warnings: list[str] = []
     if create_explanations:
         logger.info(
             "Explanation generation started internal_request_id=%s locode=%s actions_to_explain=%s",
@@ -1232,38 +1177,125 @@ def run_prioritization(
         explanation_error: Exception | None = None
         with time_block("explanations") as block:
             try:
-                explanations_by_action_id, llm_io_payload = generate_explanations(
+                canonical_explanations, canonical_llm_io = generate_explanations(
                     locode=locode,
+                    languages=["en"],
                     scored_actions=scored_actions,
                     city_preference_sectors=city_preference_sectors,
                     city_preference_co_benefit_keys=city_preference_co_benefit_keys,
                 )
+                explanations_by_language = {
+                    "en": canonical_explanations.get("en", {})
+                }
+                target_languages = [
+                    language
+                    for language in explanation_languages
+                    if language != "en"
+                ]
+                translation_llm_io: dict[str, object] = {
+                    "status": "skipped",
+                    "reason": "no_target_languages",
+                }
+                if target_languages:
+                    try:
+                        (
+                            translations_by_action_id,
+                            explanation_warnings,
+                            translation_llm_io,
+                        ) = translate_explanations(
+                            canonical_explanations_by_action_id=explanations_by_language[
+                                "en"
+                            ],
+                            target_languages=target_languages,
+                        )
+                    except Exception as translation_error:
+                        # Preserve canonical English when only localization fails.
+                        logger.warning(
+                            "Explanation translation failed; returning canonical English internal_request_id=%s locode=%s target_languages=%s error=%s",
+                            internal_request_id,
+                            locode,
+                            target_languages,
+                            translation_error,
+                        )
+                        explanation_warnings = [
+                            "Requested explanation translations could not be generated; canonical English explanations were returned."
+                        ]
+                        translation_llm_io = {
+                            "status": "failed",
+                            "target_languages": target_languages,
+                            "error": str(translation_error),
+                        }
+                    else:
+                        for action_id, translations in translations_by_action_id.items():
+                            for language, explanation in translations.items():
+                                explanations_by_language.setdefault(language, {})[
+                                    action_id
+                                ] = explanation
+                llm_io_payload = {
+                    "languages": {
+                        "en": canonical_llm_io.get("languages", {}).get("en", {})
+                    },
+                    "translation": translation_llm_io,
+                }
+                for scored_action in scored_actions:
+                    action_id = scored_action.action.action_id
+                    if all(
+                        explanations_by_language.get(language, {}).get(action_id)
+                        for language in explanation_languages
+                    ):
+                        generated_explanation_action_ids.append(action_id)
+                generated_explanation_action_ids.sort()
             except Exception as error:
                 explanation_error = error
+                explanations_by_language = {}
+                explanation_warnings = []
         if explanation_error is None and llm_io_payload is not None:
-            llm_input_payload = llm_io_payload.get("llm_input")
-            if isinstance(llm_input_payload, dict):
-                prompt_text = llm_input_payload.get("prompt_text")
-                if isinstance(prompt_text, str):
+            language_payloads = llm_io_payload.get("languages", {})
+            if isinstance(language_payloads, dict):
+                for language, language_payload in language_payloads.items():
+                    if not isinstance(language_payload, dict):
+                        continue
+                    llm_input_payload = language_payload.get("llm_input")
+                    if not isinstance(llm_input_payload, dict):
+                        continue
+                    prompt_text = llm_input_payload.get("prompt_text")
+                    if not isinstance(prompt_text, str):
+                        continue
+                    prompt_path = f"llm/explanations/{language}_prompt.txt"
                     prompt_file = artifact_writer.write_run_text_file(
-                        "llm/explanations_prompt.txt", prompt_text
+                        prompt_path, prompt_text
                     )
                     llm_input_payload["prompt_text_file"] = (
                         prompt_file.relative_to(artifact_writer._run_dir).as_posix()
                         if prompt_file is not None
-                        else "llm/explanations_prompt.txt"
+                        else prompt_path
                     )
                     llm_input_payload["prompt_text_characters"] = len(prompt_text)
                     llm_input_payload.pop("prompt_text", None)
+            translation_payload = llm_io_payload.get("translation")
+            if isinstance(translation_payload, dict):
+                prompt_text = translation_payload.get("prompt_text")
+                if isinstance(prompt_text, str):
+                    prompt_path = "llm/explanation_translations_prompt.txt"
+                    prompt_file = artifact_writer.write_run_text_file(
+                        prompt_path,
+                        prompt_text,
+                    )
+                    translation_payload["prompt_text_file"] = (
+                        prompt_file.relative_to(artifact_writer._run_dir).as_posix()
+                        if prompt_file is not None
+                        else prompt_path
+                    )
+                    translation_payload["prompt_text_characters"] = len(prompt_text)
+                    translation_payload.pop("prompt_text", None)
             llm_io_file = artifact_writer.write_run_file(
                 "llm/explanations_io.json", llm_io_payload
             )
-            explanation_ids = sorted(explanations_by_action_id.keys())
             explanations_payload = {
                 "requested": len(scored_actions),
-                "generated": len(explanations_by_action_id),
-                "generated_action_ids": explanation_ids,
-                "canonical_language": "en",
+                "generated": len(generated_explanation_action_ids),
+                "generated_action_ids": generated_explanation_action_ids,
+                "languages": explanation_languages,
                 "llm_io_file": (
                     llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
                     if llm_io_file is not None
@@ -1284,7 +1316,7 @@ def run_prioritization(
                 "Explanation generation completed internal_request_id=%s locode=%s generated=%s elapsed_seconds=%.3f",
                 internal_request_id,
                 locode,
-                len(explanations_by_action_id),
+                len(generated_explanation_action_ids),
                 block.elapsed_seconds,
             )
         elif explanation_error is not None:
@@ -1327,158 +1359,6 @@ def run_prioritization(
             )
         timings["explanations"] = block.elapsed_seconds
 
-        # Phase 13b: optionally translate canonical English explanations.
-        target_languages = [
-            language
-            for language in _resolve_requested_output_languages(requested_languages)
-            if language != "en"
-        ]
-        translation_error: Exception | None = None
-        translation_llm_io_payload: dict[str, object] | None = None
-        if target_languages and explanations_by_action_id:
-            logger.info(
-                "Explanation translation started internal_request_id=%s locode=%s target_languages=%s actions_to_translate=%s",
-                internal_request_id,
-                locode,
-                target_languages,
-                len(explanations_by_action_id),
-            )
-            with time_block("explanation_translations") as block:
-                try:
-                    (
-                        explanation_translations_by_action_id,
-                        translation_warnings,
-                        translation_llm_io_payload,
-                    ) = translate_explanations(
-                        canonical_explanations_by_action_id=explanations_by_action_id,
-                        target_languages=target_languages,
-                    )
-                except Exception as error:
-                    translation_error = error
-            timings["explanation_translations"] = block.elapsed_seconds
-            if translation_error is None and translation_llm_io_payload is not None:
-                llm_input_payload = translation_llm_io_payload.get("llm_input")
-                if isinstance(llm_input_payload, dict):
-                    prompt_text = llm_input_payload.get("prompt_text")
-                    if isinstance(prompt_text, str):
-                        prompt_file = artifact_writer.write_run_text_file(
-                            "llm/explanation_translations_prompt.txt", prompt_text
-                        )
-                        llm_input_payload["prompt_text_file"] = (
-                            prompt_file.relative_to(artifact_writer._run_dir).as_posix()
-                            if prompt_file is not None
-                            else "llm/explanation_translations_prompt.txt"
-                        )
-                        llm_input_payload["prompt_text_characters"] = len(prompt_text)
-                        llm_input_payload.pop("prompt_text", None)
-                llm_io_file = artifact_writer.write_run_file(
-                    "llm/explanation_translations_io.json",
-                    translation_llm_io_payload,
-                )
-                translation_payload = {
-                    "requested": len(explanations_by_action_id),
-                    "translated": len(explanation_translations_by_action_id),
-                    "target_languages": target_languages,
-                    "warning_count": len(translation_warnings),
-                    "llm_io_file": (
-                        llm_io_file.relative_to(artifact_writer._run_dir).as_posix()
-                        if llm_io_file is not None
-                        else "llm/explanation_translations_io.json"
-                    ),
-                    "elapsed_seconds": block.elapsed_seconds,
-                }
-                translation_event_index = artifact_writer.write_event(
-                    "explanation_translations.completed",
-                    translation_payload,
-                )
-                artifact_writer.write_step_detail(
-                    "explanation_translations",
-                    {
-                        **translation_payload,
-                        "warning_action_ids": (
-                            translation_llm_io_payload.get("llm_output", {}).get(
-                                "warning_action_ids", []
-                            )
-                            if isinstance(
-                                translation_llm_io_payload.get("llm_output"), dict
-                            )
-                            else []
-                        ),
-                        "warnings": translation_warnings,
-                    },
-                    event_index=translation_event_index,
-                    event_type="explanation_translations.completed",
-                )
-                if translation_warnings:
-                    warning_action_ids = (
-                        translation_llm_io_payload.get("llm_output", {}).get(
-                            "warning_action_ids", []
-                        )
-                        if isinstance(
-                            translation_llm_io_payload.get("llm_output"), dict
-                        )
-                        else []
-                    )
-                    logger.warning(
-                        "Explanation translation warning internal_request_id=%s locode=%s action_ids=%s",
-                        internal_request_id,
-                        locode,
-                        warning_action_ids,
-                    )
-                logger.info(
-                    "Explanation translation completed internal_request_id=%s locode=%s translated=%s elapsed_seconds=%.3f",
-                    internal_request_id,
-                    locode,
-                    len(explanation_translations_by_action_id),
-                    block.elapsed_seconds,
-                )
-            elif translation_error is not None:
-                logger.warning(
-                    "Explanation translation failed internal_request_id=%s locode=%s error=%s",
-                    internal_request_id,
-                    locode,
-                    translation_error,
-                )
-                llm_error_file = artifact_writer.write_run_file(
-                    "llm/explanation_translations_error.json",
-                    {
-                        "status": "failed",
-                        "locode": locode,
-                        "error": str(translation_error),
-                        "ranked_action_ids": sorted(explanations_by_action_id.keys()),
-                        "target_languages": target_languages,
-                    },
-                )
-                translation_failed_payload = {
-                    "requested": len(explanations_by_action_id),
-                    "translated": 0,
-                    "target_languages": target_languages,
-                    "error": str(translation_error),
-                    "llm_error_file": (
-                        llm_error_file.name
-                        if llm_error_file is not None
-                        else "llm/explanation_translations_error.json"
-                    ),
-                    "elapsed_seconds": block.elapsed_seconds,
-                }
-                translation_event_index = artifact_writer.write_event(
-                    "explanation_translations.failed",
-                    translation_failed_payload,
-                )
-                artifact_writer.write_step_detail(
-                    "explanation_translations",
-                    translation_failed_payload,
-                    event_index=translation_event_index,
-                    event_type="explanation_translations.failed",
-                )
-        else:
-            artifact_writer.write_event(
-                "explanation_translations.skipped",
-                {
-                    "target_languages": target_languages,
-                    "generated_english_explanations": len(explanations_by_action_id),
-                },
-            )
     else:
         artifact_writer.write_event(
             "explanations.skipped",
@@ -1505,12 +1385,9 @@ def run_prioritization(
                 feasibility_score=scored_action.feasibility_score,
                 evidence_summary=_build_evidence_summary(scored_action.evidence),
                 explanations={
-                    language: text
-                    for language, text in {
-                        "en": explanations_by_action_id.get(action_id),
-                        **explanation_translations_by_action_id.get(action_id, {}),
-                    }.items()
-                    if text
+                    language: explanations[action_id]
+                    for language, explanations in explanations_by_language.items()
+                    if explanations.get(action_id)
                 },
             )
         )
@@ -1523,11 +1400,11 @@ def run_prioritization(
         ],
         evidence_by_action_id=hard_filter_result.evidence,
     )
-    generated_languages = _collect_generated_languages(
-        requested_languages=requested_languages,
-        explanations_by_action_id=explanations_by_action_id,
-        explanation_translations_by_action_id=explanation_translations_by_action_id,
-    )
+    generated_languages = [
+        language
+        for language in explanation_languages
+        if explanations_by_language.get(language)
+    ]
 
     metadata: dict[str, object] = {
         "locode": locode,
@@ -1543,11 +1420,11 @@ def run_prioritization(
         "timings": timings,
         "explanations": {
             "requested": create_explanations,
-            "generated": len(explanations_by_action_id),
+            "generated": len(generated_explanation_action_ids),
             "requested_languages": requested_languages,
             "canonical_language": "en",
             "generated_languages": generated_languages,
-            "translation_warnings": translation_warnings,
+            "translation_warnings": explanation_warnings,
         },
         "hard_filter_evidence_by_action_id": hard_filter_result.evidence,
     }
@@ -1566,7 +1443,7 @@ def run_prioritization(
                     for removed_action in removed_actions
                 ],
                 "metadata": metadata,
-                "warnings": translation_warnings,
+                "warnings": explanation_warnings,
             }
         ]
     }
@@ -1591,7 +1468,7 @@ def run_prioritization(
             "counts": metadata["counts"],
             "weights": weights,
             "ranked_action_ids": ranked_action_ids,
-            "translation_warnings": translation_warnings,
+            "translation_warnings": explanation_warnings,
             "top_ranked_actions": [
                 {
                     "rank": ranked_action.rank,
@@ -1617,9 +1494,6 @@ def run_prioritization(
     impact_detail_file = _detail_filename(impact_event_index, "impact")
     alignment_detail_file = _detail_filename(alignment_event_index, "alignment")
     feasibility_detail_file = _detail_filename(feasibility_event_index, "feasibility")
-    explanation_translations_detail_file = _detail_filename(
-        translation_event_index, "explanation_translations"
-    )
     artifact_writer.write_manifest(
         {
             "counts": metadata["counts"],
@@ -1636,7 +1510,6 @@ def run_prioritization(
                     "alignment": alignment_detail_file,
                     "feasibility": feasibility_detail_file,
                 },
-                "explanation_translations": explanation_translations_detail_file,
             },
         }
     )
@@ -1652,6 +1525,6 @@ def run_prioritization(
         ranked_actions=ranked_actions,
         removed_actions=removed_actions,
         metadata=metadata,
-        warnings=translation_warnings,
+        warnings=explanation_warnings,
     )
 

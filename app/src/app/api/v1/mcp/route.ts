@@ -56,7 +56,7 @@
 import { apiHandler } from "@/util/api";
 import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/services/logger";
-import { McpError, ErrorCode, Tool } from "@modelcontextprotocol/sdk/types.js";
+import { ErrorCode, Tool } from "@modelcontextprotocol/sdk/types.js";
 import { AppSession } from "@/lib/auth";
 
 // Import tool implementations
@@ -67,8 +67,25 @@ import * as cityProfileTools from "@/lib/mcp/tools/city-profile";
 import * as actionPlansTools from "@/lib/mcp/tools/action-plans";
 import * as riskAssessmentTools from "@/lib/mcp/tools/risk-assessment";
 
+interface McpToolModule {
+  // `never` lets every tool's more specific `execute(params: SpecificShape, ...)`
+  // satisfy this — the registry dispatches dynamically and can't know each
+  // tool's exact param shape ahead of time.
+  execute: (params: never, session: AppSession) => Promise<unknown>;
+}
+
+interface JsonRpcRequest {
+  jsonrpc: "2.0";
+  method: string;
+  params?: Record<string, unknown>;
+  id?: string | number | null;
+}
+
 // Tool registry
-const toolRegistry = new Map<string, { definition: Tool; handler: any }>();
+const toolRegistry = new Map<
+  string,
+  { definition: Tool; handler: McpToolModule }
+>();
 
 // Register all tools
 function registerTools() {
@@ -143,7 +160,7 @@ export const POST = async (req: NextRequest) => {
 
   // If we have auth header, delegate to apiHandler for normal processing
   return apiHandler(async (req: NextRequest, { session }) => {
-    const body = await req.json();
+    const body = (await req.json()) as JsonRpcRequest;
 
     logger.debug(
       {
@@ -233,8 +250,8 @@ export const POST = async (req: NextRequest) => {
   })(req, { params: Promise.resolve({}) });
 };
 
-function handleInitialize(request: any) {
-  const { protocolVersion, capabilities, clientInfo } = request.params || {};
+function handleInitialize(request: JsonRpcRequest) {
+  const { protocolVersion, clientInfo } = request.params || {};
 
   logger.info({ clientInfo, protocolVersion }, "MCP client initializing");
 
@@ -256,7 +273,7 @@ function handleInitialize(request: any) {
   });
 }
 
-function handleListTools(request: any) {
+function handleListTools(request: JsonRpcRequest) {
   const tools = Array.from(toolRegistry.values()).map((t) => t.definition);
 
   logger.debug({ toolCount: tools.length }, "Listing MCP tools");
@@ -270,8 +287,11 @@ function handleListTools(request: any) {
   });
 }
 
-async function handleCallTool(request: any, session: AppSession) {
-  const { name, arguments: args } = request.params || {};
+async function handleCallTool(request: JsonRpcRequest, session: AppSession) {
+  const { name, arguments: args } = (request.params || {}) as {
+    name?: string;
+    arguments?: Record<string, unknown>;
+  };
 
   if (!name) {
     return NextResponse.json({
@@ -307,7 +327,13 @@ async function handleCallTool(request: any, session: AppSession) {
     );
 
     // Execute the tool with the session
-    const result = await tool.handler.execute(args || {}, session);
+    // Dynamic dispatch: each tool's `execute` has its own specific params
+    // shape (see McpToolModule), which we can't verify statically here.
+    const execute = tool.handler.execute as (
+      params: Record<string, unknown>,
+      session: AppSession,
+    ) => Promise<unknown>;
+    const result = await execute(args || {}, session);
 
     return NextResponse.json({
       jsonrpc: "2.0",
@@ -325,23 +351,10 @@ async function handleCallTool(request: any, session: AppSession) {
     logger.error({ error, tool: name }, "Tool execution failed");
 
     // Map error to appropriate MCP error code
-    let errorCode = ErrorCode.InternalError;
     let errorMessage = "Tool execution failed";
 
     if (error instanceof Error) {
       errorMessage = error.message;
-
-      if (
-        error.message.includes("Unauthorized") ||
-        error.message.includes("Authentication")
-      ) {
-        errorCode = ErrorCode.InvalidRequest;
-      } else if (
-        error.message.includes("not found") ||
-        error.message.includes("Not found")
-      ) {
-        errorCode = ErrorCode.InvalidParams;
-      }
     }
 
     return NextResponse.json({

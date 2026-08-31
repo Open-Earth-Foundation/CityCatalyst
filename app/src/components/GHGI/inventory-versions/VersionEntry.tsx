@@ -25,6 +25,27 @@ import {
   MdReplay,
 } from "react-icons/md";
 
+interface VersionChangeEntry {
+  versionId: string;
+  author: string;
+  date: Date;
+  isDeleted?: boolean;
+  // GHGI-specific fields
+  referenceNumber?: string;
+  subCategory?: string;
+  totalEmissions?: string;
+  previousTotalEmissions?: string;
+  totalEmissionsChangeSign?: number;
+  source?: string;
+  hasDataSource?: boolean;
+  previousSource?: string;
+  hasPreviousDataSource?: boolean;
+  // HIAP-specific fields
+  name?: string;
+  isSelected?: boolean;
+  rank?: number;
+}
+
 function toEmissionsString(totalEmissions: number, format?: string): string {
   const { value, unit } = formatEmissions(totalEmissions, format);
   return `${value} ${unit}CO2e`;
@@ -32,7 +53,7 @@ function toEmissionsString(totalEmissions: number, format?: string): string {
 
 function getChangeSign(entry: VersionHistoryEntry): number {
   const previousVersion = entry.version.previousVersion;
-  const co2eq = entry.version.data?.co2eq;
+  const co2eq = entry.version.data?.co2eq as number | undefined;
   if (!previousVersion && co2eq != null && co2eq > 0) {
     return 1;
   }
@@ -40,7 +61,7 @@ function getChangeSign(entry: VersionHistoryEntry): number {
     return 0;
   }
 
-  const previousCo2eq = previousVersion.data?.co2eq;
+  const previousCo2eq = previousVersion.data?.co2eq as number | undefined;
   if (previousCo2eq == null) {
     return 1;
   }
@@ -54,7 +75,7 @@ function getChangeSign(entry: VersionHistoryEntry): number {
 
 function renderChangeText(
   t: TFunction,
-  change: any,
+  change: VersionChangeEntry,
   moduleName: string = "ghgi",
 ): string {
   if (moduleName === "hiap") {
@@ -151,7 +172,7 @@ export default function VersionEntry({
     firstEntry.mostRecentAssociatedVersion?.versionId;
   const inventoryId = firstEntry.version.inventoryId;
 
-  let changes: Record<string, any>[] = [];
+  let changes: VersionChangeEntry[] = [];
 
   if (moduleName === "ghgi") {
     changes = versionEntries.map((entry) => ({
@@ -167,11 +188,14 @@ export default function VersionEntry({
           tData(entry.subCategory.subcategoryName ?? "")
         : "-",
       totalEmissions: entry.version.data?.co2eq
-        ? toEmissionsString(entry.version.data.co2eq, numberFormat)
+        ? toEmissionsString(
+            entry.version.data.co2eq as number,
+            numberFormat,
+          )
         : "-",
       previousTotalEmissions: entry.version.previousVersion?.data?.co2eq
         ? toEmissionsString(
-            entry.version.previousVersion?.data?.co2eq,
+            entry.version.previousVersion?.data?.co2eq as number,
             numberFormat,
           )
         : "-",
@@ -197,9 +221,9 @@ export default function VersionEntry({
       date: new Date(entry.version.created ?? 0),
       isDeleted: entry.version.isDeleted,
       // module specific fields
-      name: entry.version.data?.name,
-      isSelected: entry.version.data?.isSelected,
-      rank: entry.version.data?.rank,
+      name: entry.version.data?.name as string | undefined,
+      isSelected: entry.version.data?.isSelected as boolean | undefined,
+      rank: entry.version.data?.rank as number | undefined,
     }));
   }
 

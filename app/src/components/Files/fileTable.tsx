@@ -25,17 +25,23 @@ import {
 import DeleteFileModal from "@/components/Modals/delete-file-modal";
 import { FiTrash2 } from "react-icons/fi";
 import { FaFileCsv } from "react-icons/fa";
-import { TFunction } from "i18next";
-import { UserFile, UserFileAttributes } from "@/models/UserFile";
+import type { TFunction } from "i18next";
+import type { UserFileResponse } from "@/util/types";
 
-const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
+const FilesTable = ({
+  t,
+  files,
+}: {
+  t: TFunction;
+  files?: UserFileResponse[];
+}) => {
   const {
     open: isFileDeleteModalOpen,
     onOpen: onFileDeleteModalOpen,
     onClose: onFileDeleteModalClose,
   } = useDisclosure();
 
-  const [fileData, setFileData] = useState<UserFileAttributes>();
+  const [fileData, setFileData] = useState<UserFileResponse>();
 
   return (
     <>
@@ -91,11 +97,7 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                       ? "sentiment.warningDefault"
                       : "interactive.tertiary"
                   }
-                  color={
-                    file.status === "added to inventory"
-                      ? "interactive.tertiary"
-                      : "sentiment.warningDefault"
-                  }
+                  color="content.secondary"
                   backgroundColor={
                     file.status === "pending"
                       ? "sentiment.warningOverlay"
@@ -112,7 +114,7 @@ const FilesTable = ({ t, files }: { t: TFunction; files: UserFile[] }) => {
                 alignItems="center"
                 justifyContent="end"
               >
-                <span>{file.lastUpdated as any}</span>
+                <span>{file.lastUpdated.toString()}</span>
                 <Popover.Root lazyMount>
                   <PopoverTrigger>
                     <IconButton

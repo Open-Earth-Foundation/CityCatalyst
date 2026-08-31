@@ -495,7 +495,7 @@ function normalizeKeyValueRow(row: Record<string, unknown>): ExtractedRow {
   const sub = row.subsector ?? row.SubSector;
   if (str(sub)) out.subsector = str(sub);
 
-  let scopeVal = row.scope ?? row.Scope;
+  const scopeVal = row.scope ?? row.Scope;
   if (typeof scopeVal === "string") {
     const t = scopeVal.trim();
     if (/^[123]$/.test(t)) out.scope = t;
@@ -821,7 +821,7 @@ export async function shapeKeyValueToRows(
       ? responseContent.slice(0, LOG_LIMIT) + `...[truncated]`
       : responseContent;
   logger.debug(
-    { keyValueShapeLength: responseContent.length },
+    { keyValueShapeLength: responseContent.length, keyValueShapeResponse: truncated },
     "Key-value shape LLM output",
   );
 

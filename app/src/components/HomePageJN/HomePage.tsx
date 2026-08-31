@@ -34,7 +34,6 @@ import {
   hasOrganizationChanged,
   normalizeOrganizationState,
 } from "@/hooks/organization-context-provider/use-organizational-context";
-import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
 import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { useResourceValidation } from "@/hooks/useResourceValidation";
 import {
@@ -48,9 +47,10 @@ import { BodyLarge } from "@/components/package/Texts/Body";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { LuChevronDown } from "react-icons/lu";
 import { NoModulesCard } from "./NoModulesCard";
-import { Modules, SUPPORT_EMAIL } from "@/util/constants";
+import { SUPPORT_EMAIL } from "@/util/constants";
 import { stageOrder } from "@/config/stages";
 import { Trans } from "react-i18next";
+import { isModuleVisible } from "@/util/module-visibility";
 
 export default function HomePage({
   lng,
@@ -65,7 +65,9 @@ export default function HomePage({
   const router = useRouter();
 
   // Check if user is authenticated otherwise route to login page
-  isPublic || CheckUserSession();
+  if (!isPublic) {
+    CheckUserSession();
+  }
   const language = cookieLanguage ?? lng;
   const { cityId } = useParams();
 
@@ -75,7 +77,7 @@ export default function HomePage({
   const isCollaboratorRole = userInfo?.role === Roles.User;
 
   // make sure that the inventory ID is using valid values
-  let cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
+  const cityIdFromParam = (cityId as string) ?? userInfo?.defaultCityId;
 
   // If no city ID and no default city: redirect admins to onboarding, show empty state for collaborators
   useEffect(() => {
@@ -120,7 +122,9 @@ export default function HomePage({
   const { data: allModules, isLoading: isAllModulesLoading } =
     useGetModulesQuery();
   const { data: projectModules, isLoading: isProjectModulesLoading } =
-    useGetProjectModulesQuery(city?.projectId!, { skip: !city?.projectId });
+    useGetProjectModulesQuery(city?.projectId ?? "", {
+      skip: !city?.projectId,
+    });
 
   const modulesByStage =
     allModules?.reduce(
@@ -133,15 +137,15 @@ export default function HomePage({
     ) ?? {};
 
   useEffect(() => {
-    if (orgData) {
-      const newOrgState = normalizeOrganizationState(orgData);
+    if (!orgData) return;
 
-      if (hasOrganizationChanged(organization, newOrgState)) {
-        setOrganization(newOrgState);
-      }
-      setTheme(orgData?.theme?.themeKey ?? "blue_theme");
-    } else if (!isOrgDataLoading && !orgData) {
-      setTheme("blue_theme");
+    const newOrgState = normalizeOrganizationState(orgData);
+
+    if (hasOrganizationChanged(organization, newOrgState)) {
+      setOrganization(newOrgState);
+    }
+    if (orgData.theme?.themeKey) {
+      setTheme(orgData.theme.themeKey);
     }
   }, [isOrgDataLoading, orgData, organization, setOrganization, setTheme]);
 
@@ -253,6 +257,7 @@ export default function HomePage({
                 organization={orgData}
                 city={city}
                 ghgiCityData={ghgiCityData}
+                isCollaboratorRole={isCollaboratorRole}
               />
             </VStack>
           </Box>
@@ -279,14 +284,7 @@ export default function HomePage({
               <AccordionRoot multiple defaultValue={stageOrder} variant="plain">
                 {stageOrder.map((stage) => {
                   const modules = projectModules.filter((mod) => {
-                    // Filter out CCRA module unless feature flag is enabled
-                    if (
-                      mod.id === Modules.CCRA.id &&
-                      !hasFeatureFlag(FeatureFlags.CCRA_MODULE)
-                    ) {
-                      return false;
-                    }
-                    return mod.stage === stage;
+                    return mod.stage === stage && isModuleVisible(mod.id);
                   });
                   return (
                     <AccordionItem key={stage} value={stage} mb={12}>

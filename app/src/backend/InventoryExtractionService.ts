@@ -85,26 +85,6 @@ const SUBSECTOR_DICTIONARY_TEXT = Object.entries(SUBSECTOR_VARIANT_TO_CANONICAL)
   .map(([term, canonical]) => `"${term}" → ${canonical}`)
   .join("; ");
 
-const EXTRACTION_SCHEMA_FIELDS = [
-  "year",
-  "sector",
-  "subsector",
-  "scope",
-  "category",
-  "totalCO2e",
-  "co2",
-  "ch4",
-  "n2o",
-  "gpcRefNo",
-  "source",
-  "methodology",
-  "activityAmount",
-  "activityUnit",
-  "activityType",
-  "activityDataSource",
-  "activityDataQuality",
-] as const;
-
 export type ExtractedRow = {
   year: number | null;
   sector: string | null;

@@ -5,12 +5,11 @@ import React from "react";
 import type { TFunction } from "i18next";
 import { ButtonMedium } from "@/components/package/Texts/Button";
 import { BodyMedium, BodySmall } from "@/components/package/Texts/Body";
-import { MdArrowForward, MdOpenInNew } from "react-icons/md";
+import { MdOpenInNew } from "react-icons/md";
 import { MdInfoOutline } from "react-icons/md";
 import { TitleLarge } from "@/components/package/Texts/Title";
 import { ModuleAttributes } from "@/models/Module";
 import NextLink from "next/link";
-import { Modules } from "@/util/constants";
 
 export function ModuleCard({
   module,
@@ -69,7 +68,7 @@ export function ModuleCard({
     <Card.Root
       data-testid={`module-card-${module.id}`}
       width="320px"
-      minH="280px"
+      minH="310px"
       display="flex"
       flexDirection="column"
       opacity={enabled ? 1 : 0.5}
@@ -135,9 +134,7 @@ export function ModuleCard({
             display="flex"
             alignItems="flex-start"
           >
-            <TitleLarge lineClamp={2}>
-              {getTranslationInLanguage(name)}
-            </TitleLarge>
+            <TitleLarge>{getTranslationInLanguage(name)}</TitleLarge>
           </Card.Title>
         </VStack>
         <BodySmall lineClamp={1}>{t("by", { author: author })}</BodySmall>

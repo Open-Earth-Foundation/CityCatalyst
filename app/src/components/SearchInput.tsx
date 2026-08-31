@@ -1,6 +1,5 @@
 import { InputGroup } from "@/components/ui/input-group";
 import { Icon, IconButton, Input } from "@chakra-ui/react";
-import { LuSearch } from "react-icons/lu";
 import { MdClose, MdSearch } from "react-icons/md";
 import React from "react";
 
@@ -41,6 +40,7 @@ const SearchInput = ({
       }
     >
       <Input
+        h="12"
         minWidth="350px"
         onChange={(e) => setSearchTerm(e.target.value)}
         placeholder={placeholder}

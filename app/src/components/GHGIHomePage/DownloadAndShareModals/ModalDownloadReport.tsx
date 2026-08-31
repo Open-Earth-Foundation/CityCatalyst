@@ -1,6 +1,5 @@
 import { Box, Center, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
-import React from "react";
 import DownloadButtons from "./DownloadButtons";
 import ModalPublishButtons from "./PublishButtons";
 import { InventoryResponse } from "@/util/types";
@@ -30,7 +29,7 @@ const ModalDownloadReport = ({
   inventoryId: string | undefined;
   cityLocode: string | undefined;
   onPublishOpen: () => void;
-  inventory: InventoryResponse;
+  inventory?: InventoryResponse;
 }) => {
   return (
     <DialogRoot
@@ -41,7 +40,11 @@ const ModalDownloadReport = ({
       <DialogContent minW="544px">
         <DialogHeader>
           <Center>
-            <Text fontSize="headline.sm" mx="8px" data-testid="download-modal-title">
+            <Text
+              fontSize="headline.sm"
+              mx="8px"
+              data-testid="download-modal-title"
+            >
               {t("download-and-share")}
             </Text>
           </Center>
@@ -54,7 +57,7 @@ const ModalDownloadReport = ({
             lng={lng}
             inventoryId={inventoryId}
             cityLocode={cityLocode}
-            inventoryYear={inventory.year}
+            inventoryYear={inventory?.year}
           />
           <Box divideX="2px" my="12px" />
           <Box px="16px">

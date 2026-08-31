@@ -21,6 +21,12 @@ export enum ImportStatusEnum {
   FAILED = "failed",
 }
 
+export enum OrganizationPlanType {
+  TRIAL = "trial",
+  DEMO = "demo",
+  FULL = "full",
+}
+
 export enum NumberFormatEnum {
   DEFAULT = "default",
   COMMA_AND_DOT = "comma_and_dot",

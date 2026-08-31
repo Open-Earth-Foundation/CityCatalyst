@@ -11,6 +11,7 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `action_impact`
 - `title` (string): chapter title
 - `language` (string): requested report language
+- `terminology` (object): exact backend-localized recurring labels
 - `facts.action` (object): selected action ID, name, emissions references, intervention summary, outcome summary, implementation timeline, and co-benefits with prepared reader labels when available
 - `facts.ranking` (object): selected-action rank, returned action count, and qualitative impact category when available
 - `facts.impact_evidence` (object): selected-action impact indicators from the prioritization
@@ -23,7 +24,7 @@ Runtime input:
 
 <output>
 Use the shared OutputPlanChapterResponse contract:
-- `markdown` (string): 2-4 concise paragraphs or bullets explaining qualitative impact and co-benefits. Focus on what the action changes and why that matters locally. Preserve each prepared co-benefit `label`; do not rename or broaden it. Do not narrate score components, matches, model fields, or ranking mechanics. If rank is useful, describe it only as the action's relative position among the actions returned by this prioritization. Do not call the returned actions a city-approved, adopted, or selected priority set.
+- `markdown` (string): 2-4 concise paragraphs or bullets explaining qualitative impact and co-benefits. Focus on what the action changes and why that matters locally. Copy each prepared co-benefit `label` exactly because it is already localized by the backend; do not rename or broaden it. Translate descriptive source sentences into `language`. Do not narrate score components, matches, model fields, or ranking mechanics. If rank is useful, describe it only as the action's relative position among the actions returned by this prioritization. Do not call the returned actions a city-approved, adopted, or selected priority set.
 - `limitations` (array of strings): relevant impact-estimation limitations.
 
 Do not provide city-level per-action tCO2e estimates, annual reductions, or quantified benefits unless explicitly present in `facts`.

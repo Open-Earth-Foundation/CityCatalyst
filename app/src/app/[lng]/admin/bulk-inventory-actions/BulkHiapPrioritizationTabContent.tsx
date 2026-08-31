@@ -56,8 +56,8 @@ export interface BulkHiapPrioritizationInputs {
 
 const BulkHiapPrioritizationTabContent: FC<
   BulkHiapPrioritizationTabContentProps
-> = ({ t, lng }) => {
-  const { register, handleSubmit, reset, watch, setValue } =
+> = ({ t }) => {
+  const { register, handleSubmit, watch, setValue } =
     useForm<BulkHiapPrioritizationInputs>({
       defaultValues: {
         year: new Date().getFullYear(),
@@ -66,10 +66,9 @@ const BulkHiapPrioritizationTabContent: FC<
       },
     });
 
-  const { data: projectsList, isLoading: isProjectListLoading } =
-    api.useGetUserProjectsQuery({});
+  const { data: projectsList } = api.useGetUserProjectsQuery({});
   const [errorMessage, setErrorMessage] = useState("");
-  const [results, setResults] = useState<{
+  const [, setResults] = useState<{
     totalCities: number;
     firstBatchSize: number;
     message: string;
@@ -110,11 +109,7 @@ const BulkHiapPrioritizationTabContent: FC<
       selectedActionType.trim() !== "",
   );
 
-  const {
-    data: hiapJobs = [],
-    isLoading: isLoadingJobs,
-    error: hiapJobsError,
-  } = useGetHiapJobsQuery(
+  const { isLoading: isLoadingJobs, error: hiapJobsError } = useGetHiapJobsQuery(
     {
       projectId: selectedProjectId,
       year: selectedYear,

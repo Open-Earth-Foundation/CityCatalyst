@@ -38,10 +38,10 @@ drop table if exists "Module";
 `;
 
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.sequelize.query(sql_up);
   },
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.sequelize.query(sql_down);
   },
 };

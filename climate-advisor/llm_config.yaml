@@ -12,7 +12,19 @@ models:
     description: "Agentic flow model for high-context review and source selection workflows."
     temperature: 0.0
   funding_research:
-    name: "gpt-5.6-terra"
+    name: "openai/gpt-5.4"
+    reasoning_effort: "medium"
+  funder_identity:
+    name: "openai/gpt-5.4-mini"
+    reasoning_effort: "low"
+  cnb_source_reader:
+    name: "openai/gpt-5.4-mini"
+    reasoning_effort: "low"
+  cnb_source_synthesizer:
+    name: "openai/gpt-5.4"
+    reasoning_effort: "medium"
+  cnb_chapter_drafter:
+    name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
 
 # Generation Parameters
@@ -26,6 +38,12 @@ generation:
         max_prompt_tokens: 150000
         max_normalized_rows_per_candidate: 3
         include_source_data: false
+    cnb_sources:
+      max_partition_tokens: 50000
+      max_concurrency: 3
+      max_key_excerpts: 8
+      max_topics: 12
+      max_question_chars: 2000
 
 # System Prompts
 prompts:
@@ -39,7 +57,18 @@ prompts:
   stationary_energy_review: "prompts/stationary_energy_review.md"
 
   # Offline Concept Note Builder funder and program research
-  cnb_funding_opportunity_research: "prompts/cnb_funding_opportunity_research.md"
+  cnb_funding_opportunity_research: "prompts/cnb/funding_opportunity_research.md"
+
+  # Offline Concept Note Builder canonical-funder identity matching
+  cnb_funder_identity_matching: "prompts/cnb/funder_identity_matching.md"
+
+  # Internal Concept Note Builder funded-project selection
+  cnb_similar_project_matching: "prompts/cnb/similar_project_matching.md"
+  # Internal Concept Note Builder source-analysis agents
+  cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
+  cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
+  cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
+  cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
 
 # API Configuration
 api:

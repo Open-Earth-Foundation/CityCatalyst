@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { MdCloudUpload } from "react-icons/md";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import { getParamValueRequired } from "@/util/helpers";
+import { getApiErrorMessage, getParamValueRequired } from "@/util/helpers";
 import { HeadlineMedium } from "@/components/package/Texts/Headline";
 import { BodyLarge } from "@/components/package/Texts/Body";
 import { UseSuccessToast, UseErrorToast } from "@/hooks/Toasts";
@@ -32,23 +32,20 @@ function Page() {
 
   const handleConnectToCDP = async () => {
     try {
-      const res: { data?: any; error?: any } = await connectToCDP({
+      const res = await connectToCDP({
         inventoryId: inventory,
       });
 
       if (res.error) {
-        const message =
-          res.error?.data?.error?.message ||
-          res.error?.message ||
-          t("error-description");
+        const message = getApiErrorMessage(res.error, t("error-description"));
         showErrorToast({ title: t("error-title"), description: message });
       } else {
         showSuccessToast();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       showErrorToast({
         title: t("error-title"),
-        description: error?.message || t("error-description"),
+        description: getApiErrorMessage(error, t("error-description")),
       });
     }
   };

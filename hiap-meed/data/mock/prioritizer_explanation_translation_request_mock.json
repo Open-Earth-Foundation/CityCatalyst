@@ -1,18 +1,10 @@
 {
   "meta": {
-    "requestId": "1234567890-translate",
-    "generatedAtUtc": "2026-05-04T10:15:00.000000+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/explanations/translate",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890-translate"
   },
   "requestData": {
     "sourceLanguage": "en",
-    "targetLanguages": ["pt"],
+    "targetLanguages": ["es"],
     "rankedActions": [
       {
         "actionId": "c40_0010",

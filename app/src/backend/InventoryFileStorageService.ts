@@ -56,6 +56,24 @@ async function bodyToBuffer(body: unknown): Promise<Buffer> {
  *   AWS_FILE_UPLOAD_REGION        — AWS region (default: us-east-1)
  */
 export default class InventoryFileStorageService {
+  /** Store a file at an already-authorized deterministic object key. */
+  static async putFile(
+    s3Key: string,
+    buffer: Buffer,
+    contentType: string,
+  ): Promise<void> {
+    assertConfigured();
+    await getS3Client().send(
+      new PutObjectCommand({
+        Bucket: BUCKET!,
+        Key: s3Key,
+        Body: buffer,
+        ContentType: contentType,
+        ServerSideEncryption: "AES256",
+      }),
+    );
+  }
+
   /**
    * Upload a file buffer to S3 and return the object key.
    */
@@ -159,15 +177,10 @@ export default class InventoryFileStorageService {
   }
 
   static async putTextFile(s3Key: string, text: string): Promise<void> {
-    assertConfigured();
-    await getS3Client().send(
-      new PutObjectCommand({
-        Bucket: BUCKET!,
-        Key: s3Key,
-        Body: Buffer.from(text, "utf8"),
-        ContentType: "text/markdown; charset=utf-8",
-        ServerSideEncryption: "AES256",
-      }),
+    await this.putFile(
+      s3Key,
+      Buffer.from(text, "utf8"),
+      "text/markdown; charset=utf-8",
     );
   }
 

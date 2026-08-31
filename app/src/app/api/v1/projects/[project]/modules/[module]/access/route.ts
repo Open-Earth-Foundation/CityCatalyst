@@ -36,7 +36,6 @@ import { db } from "@/models";
 import UserService from "@/backend/UserService";
 import createHttpError from "http-errors";
 import { z } from "zod";
-import { ProjectModulesAttributes } from "@/models/ProjectModules";
 
 const paramsSchema = z.object({
   project: z.string().uuid("Project ID must be a valid UUID"),
@@ -63,7 +62,7 @@ export const GET = apiHandler(async (_req: Request, context) => {
   // They must be either an admin or have access to the organization/project
   try {
     UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
-  } catch (error) {
+  } catch {
     // If they're not an admin or org admin, check if they have access to the project
     if (session) {
       // Check if they're a project admin
@@ -172,7 +171,7 @@ export const POST = apiHandler(async (_req: Request, context) => {
   // They must be either an admin or have access to the organization/project
   try {
     UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
-  } catch (error) {
+  } catch {
     throw new createHttpError.Forbidden("Access denied");
   }
   let projectModule;
@@ -182,7 +181,7 @@ export const POST = apiHandler(async (_req: Request, context) => {
       projectId,
       moduleId,
     );
-  } catch (error) {
+  } catch {
     throw new createHttpError.InternalServerError(
       "Failed to enable module access",
     );
@@ -253,7 +252,7 @@ export const DELETE = apiHandler(async (_req: Request, context) => {
   }
   try {
     UserService.validateIsAdminOrOrgAdmin(session, project.organizationId);
-  } catch (error) {
+  } catch {
     throw new createHttpError.Forbidden("Access denied");
   }
 
@@ -264,7 +263,7 @@ export const DELETE = apiHandler(async (_req: Request, context) => {
       projectId,
       moduleId,
     );
-  } catch (error) {
+  } catch {
     throw new createHttpError.InternalServerError(
       "Failed to disable module access",
     );

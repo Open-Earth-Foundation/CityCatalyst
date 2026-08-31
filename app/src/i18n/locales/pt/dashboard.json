@@ -102,7 +102,7 @@
   "subsector": "Subsetor",
   "scope": "Escopo",
   "start-adding-data": "Comece a adicionar dados ao seu inventário para ver os resultados das emissões da sua cidade.",
-  "no-data-for-inventory-yet": "Ainda não há dados para o inventário",
+  "no-data-for-inventory-yet": "Sem dados",
   "residential-buildings": "Edifícios residenciais",
   "commercial-and-institutional-buildings-and-facilities": "Edifícios e instalações comerciais e institucionais",
   "manufacturing-industries-and-construction": "Indústrias de manufatura e construção",
@@ -154,6 +154,7 @@
   "methodology-and-assumptions-description": "O modelo de previsão de emissões sem ação para o Brasil assume uma forte correlação direta entre emissões e crescimento econômico, refletindo o estado atual do Brasil onde a expansão econômica e as emissões ainda não se desacoplaram.",
   "download-and-report": "Baixar e relatar",
   "invite-collaborators": "Convidar colaboradores",
+  "invite-collaborators-title": "Convide colaboradores para a sua equipe",
   "invite-your-colleagues": "Convide seus colegas",
   "select-cities-to-share": "Selecione as cidades que você deseja compartilhar",
   "select-cities-to-share-description": "Cada usuário que você convidar receberá um link por cidade para adicionar cada uma. Eles terão acesso a todos os inventários feitos em cada cidade.",
@@ -172,6 +173,7 @@
   "invite-error-toast-text": "Houve um erro ao enviar seus convites",
   "cancel": "Cancelar",
   "send-invites-action": "Enviar convites",
+  "select-a-project": "Selecione um projeto",
   "afolu-other-agriculture": "Outra agricultura",
   "afolu-livestock": "Gado",
   "afolu-land": "Terra",
@@ -309,7 +311,7 @@
   "status-beta": "Beta",
   "status-active": "Ativo",
   "legend": "Legenda",
-  "citycatalyst": "CityCatalyst",
+  "breadcrumb-tools": "Ferramentas",
   "breadcrumb-hiap": "Actions & Plans",
   "start-here": "Comece aqui",
   "inventory-versions-action-change": "{{name}} alterou a ação {{actionName}} para a posição {{rank}} e {{selectionStatus}}",
@@ -321,5 +323,8 @@
   "no-inventory-title": "Ainda não foi criado nenhum inventário de gases de efeito estufa",
   "no-inventory-description": "Entre em contato com seu administrador para criar um inventário e começar a contribuir. Ou entre em contato com <emailLink>{{supportEmail}}</emailLink> se você acha que isso é um erro.",
   "no-city-title": "Parece que seu projeto ainda não tem uma cidade criada",
-  "no-city-description": "Entre em contato com seu administrador ou procure <emailLink>{{supportEmail}}</emailLink> se você acha que isso é um erro."
+  "no-city-description": "Entre em contato com seu administrador ou procure <emailLink>{{supportEmail}}</emailLink> se você acha que isso é um erro.",
+  "all-tools": "Todas as ferramentas",
+  "useful-links": "Links úteis",
+  "learning-hub": "Centro de aprendizado"
 }

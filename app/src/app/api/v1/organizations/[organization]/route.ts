@@ -46,9 +46,13 @@ import { NextResponse } from "next/server";
 import createHttpError from "http-errors";
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
-import { DEFAULT_ORGANIZATION_ID, DEFAULT_PROJECT_ID } from "@/util/constants";
+import { DEFAULT_ORGANIZATION_ID } from "@/util/constants";
+import {
+  resolveOrganizationPlanType,
+  resolveOrganizationTrialEndsAt,
+} from "@/util/plan-details";
 
-export const GET = apiHandler(async (_req, { params, session }) => {
+export const GET = apiHandler(async (_req, { params }) => {
   const { organization: organizationId } = params;
   const org = await Organization.findByPk(organizationId as string, {
     include: [
@@ -143,7 +147,25 @@ export const PATCH = apiHandler(async (req, { params, session }) => {
   if (!org) {
     throw new createHttpError.NotFound("organization-not-found");
   } else {
-    const newOrg = await org.update(validatedData);
+    const planType = validatedData.planType
+      ? resolveOrganizationPlanType(validatedData.planType)
+      : org.planType;
+    const trialEndsAt =
+      validatedData.planType !== undefined ||
+      validatedData.trialEndsAt !== undefined
+        ? resolveOrganizationTrialEndsAt({
+            planType,
+            existingTrialEndsAt: org.trialEndsAt,
+            requestedTrialEndsAt: validatedData.trialEndsAt,
+          })
+        : org.trialEndsAt;
+
+    const newOrg = await org.update({
+      name: validatedData.name ?? org.name,
+      contactEmail: validatedData.contactEmail ?? org.contactEmail,
+      planType,
+      trialEndsAt,
+    });
     return NextResponse.json(newOrg);
   }
 });

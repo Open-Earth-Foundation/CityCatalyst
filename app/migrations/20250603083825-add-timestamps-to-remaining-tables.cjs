@@ -23,7 +23,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     // Remove timestamps from Catalogue table
     await queryInterface.removeColumn("Catalogue", "created");
 

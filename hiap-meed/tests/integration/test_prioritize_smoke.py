@@ -1,4 +1,4 @@
-﻿"""
+"""
 Integration smoke tests for the `/v1/prioritize` endpoint.
 """
 
@@ -158,17 +158,20 @@ class MockExplanationService:
     """In-memory explanation service double for endpoint integration tests."""
 
     explanations_by_action_id: dict[str, str] | None = None
+    explanations_by_language: dict[str, dict[str, str]] | None = None
     should_raise: bool = False
     seen_action_ids: list[str] | None = None
+    seen_languages: list[str] | None = None
 
     def __call__(
         self,
         *,
         locode: str,
+        languages: list[str],
         scored_actions: list[object],
         city_preference_sectors: list[str],
         city_preference_co_benefit_keys: list[str],
-    ) -> tuple[dict[str, str], dict[str, object]]:
+    ) -> tuple[dict[str, dict[str, str]], dict[str, object]]:
         """Return predefined explanations and capture which actions were requested."""
         del (
             locode,
@@ -179,11 +182,23 @@ class MockExplanationService:
             raise RuntimeError("simulated explanation provider failure")
         action_ids = [item.action.action_id for item in scored_actions]
         self.seen_action_ids = action_ids
-        return dict(self.explanations_by_action_id or {}), {
-            "status": "completed",
-            "provider": "mock",
-            "llm_input": {"curated_actions_count": len(action_ids)},
-            "llm_output": {"explanations_by_action_id": dict(self.explanations_by_action_id or {})},
+        self.seen_languages = list(languages)
+        localized = self.explanations_by_language or {
+            language: dict(self.explanations_by_action_id or {})
+            for language in languages
+        }
+        return localized, {
+            "languages": {
+                language: {
+                    "status": "completed",
+                    "provider": "mock",
+                    "llm_input": {"curated_actions_count": len(action_ids)},
+                    "llm_output": {
+                        "explanations_by_action_id": dict(explanations)
+                    },
+                }
+                for language, explanations in localized.items()
+            }
         }
 
 
@@ -243,7 +258,7 @@ def test_prioritize_rejects_invalid_weights_override(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -261,15 +276,7 @@ def test_prioritize_rejects_invalid_weights_override(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-weights",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-weights"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -323,15 +330,7 @@ def test_prioritize_returns_404_when_upstream_city_is_missing() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-404",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-404"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -384,15 +383,7 @@ def test_prioritize_returns_503_for_retryable_upstream_city_failure() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-503",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-503"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -471,15 +462,7 @@ def test_prioritize_returns_502_for_upstream_city_schema_drift(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-schema-drift",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-schema-drift"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -520,7 +503,7 @@ def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -538,15 +521,7 @@ def test_prioritize_rejects_negative_non_afolu_total_emissions() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-non-afolu-negative",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-non-afolu-negative"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -603,6 +578,7 @@ def test_prioritize_smoke() -> None:
         Action(
             action_id="c40_0010",
             action_name="Retrofit buildings",
+            action_type="mitigation",
             implementation_timeline="<5 years",
             emissions={
                 "sector_number": "I",
@@ -615,6 +591,7 @@ def test_prioritize_smoke() -> None:
         Action(
             action_id="c40_0020",
             action_name="Fleet expansion",
+            action_type="mitigation",
             implementation_timeline=">10 years",
             emissions={
                 "sector_number": "I",
@@ -642,15 +619,7 @@ def test_prioritize_smoke() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "1234567890",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "1234567890"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -677,6 +646,8 @@ def test_prioritize_smoke() -> None:
 
         assert "results" in body
         assert len(body["results"]) == 1
+        assert body["meta"]["requestId"] == "1234567890"
+        assert body["meta"]["totalRecords"] == 1
         result = body["results"][0]
         assert result["locode"] == "CL-SCL"
         assert result["ranked_action_ids"] == ["c40_0010", "c40_0020"]
@@ -716,11 +687,13 @@ def test_exclusion_preview_returns_deterministic_proposals(
         Action(
             action_id="A_waste",
             action_name="Waste action",
+            action_type="mitigation",
             emissions={"sector_number": "III"},
         ),
         Action(
             action_id="A_air",
             action_name="Air impact action",
+            action_type="mitigation",
             emissions={"sector_number": "II"},
             co_benefits={"air_quality": {"impact_numeric": -1}},
         ),
@@ -734,15 +707,7 @@ def test_exclusion_preview_returns_deterministic_proposals(
                 "/v1/prioritize/exclusions/preview",
                 json={
                     "meta": {
-                        "requestId": "req-exclusion-preview",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize/exclusions/preview",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-exclusion-preview"
                     },
                     "requestData": {
                         "cityDataList": [
@@ -792,15 +757,7 @@ def test_exclusion_preview_rejects_invalid_sector_tag() -> None:
                 "/v1/prioritize/exclusions/preview",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-sector-tag",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize/exclusions/preview",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-sector-tag"
                     },
                     "requestData": {
                         "cityDataList": [
@@ -828,15 +785,7 @@ def test_exclusion_preview_rejects_invalid_co_benefit_key() -> None:
                 "/v1/prioritize/exclusions/preview",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-co-benefit",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize/exclusions/preview",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-co-benefit"
                     },
                     "requestData": {
                         "cityDataList": [
@@ -867,8 +816,8 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
         city_context=[],
     )
     actions = [
-        Action(action_id="A_keep", action_name="Keep action"),
-        Action(action_id="A_exclude", action_name="Exclude action"),
+        Action(action_id="A_keep", action_name="Keep action", action_type="mitigation"),
+        Action(action_id="A_exclude", action_name="Exclude action", action_type="mitigation"),
     ]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
@@ -887,15 +836,7 @@ def test_prioritize_honors_confirmed_excluded_action_ids() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-confirmed-exclusions",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-confirmed-exclusions"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -940,7 +881,7 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -958,15 +899,7 @@ def test_prioritize_rejects_no_preference_with_other_timeframes() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-timeframes",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-timeframes"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1006,7 +939,7 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1024,15 +957,7 @@ def test_prioritize_rejects_invalid_city_preference_sector_tag() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-sector-tag",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-sector-tag"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1069,7 +994,7 @@ def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_ok", action_name="Action")]
+    actions = [Action(action_id="A_ok", action_name="Action", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1087,15 +1012,7 @@ def test_prioritize_rejects_invalid_city_preference_co_benefit_key() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-invalid-co-benefit-key",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-invalid-co-benefit-key"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1136,11 +1053,13 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
         Action(
             action_id="A_long",
             action_name="Long action",
+            action_type="mitigation",
             implementation_timeline=">10 years",
         ),
         Action(
             action_id="A_short",
             action_name="Short action",
+            action_type="mitigation",
             implementation_timeline="<5 years",
         ),
     ]
@@ -1161,15 +1080,7 @@ def test_prioritize_alignment_timeframe_multi_select_uses_best_match() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-timeframe-best-match",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-timeframe-best-match"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1224,8 +1135,8 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
         city_context=[],
     )
     actions = [
-        Action(action_id="A_ok", action_name="Aligned action"),
-        Action(action_id="A_blocked", action_name="Blocked action"),
+        Action(action_id="A_ok", action_name="Aligned action", action_type="mitigation"),
+        Action(action_id="A_blocked", action_name="Blocked action", action_type="mitigation"),
     ]
     assessments_by_action_id = {
         "A_blocked": LegalAssessmentRecord(
@@ -1254,15 +1165,7 @@ def test_prioritize_discards_hard_legal_mismatch() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-legal-discard",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-legal-discard"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1299,7 +1202,13 @@ def test_prioritize_keeps_missing_legal_category_and_uses_score() -> None:
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_unknown", action_name="Unknown legal evidence action")]
+    actions = [
+        Action(
+            action_id="A_unknown",
+            action_name="Unknown legal evidence action",
+            action_type="mitigation",
+        )
+    ]
     assessments_by_action_id = {
         "A_unknown": LegalAssessmentRecord(
             action_id="A_unknown",
@@ -1327,15 +1236,7 @@ def test_prioritize_keeps_missing_legal_category_and_uses_score() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-legal-no-evidence",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-legal-no-evidence"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1396,15 +1297,7 @@ def test_prioritize_rejects_country_code_mismatch_with_locode_prefix() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-country-mismatch",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-country-mismatch"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1458,15 +1351,7 @@ def test_prioritize_returns_502_for_city_country_code_mismatch() -> None:
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-city-country-mismatch",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /v1/prioritize",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-city-country-mismatch"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1505,7 +1390,7 @@ def test_prioritize_skips_explanations_when_flag_false(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1529,15 +1414,7 @@ def test_prioritize_skips_explanations_when_flag_false(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanations-skipped",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanations-skipped"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1577,8 +1454,8 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
         city_context=[],
     )
     actions = [
-        Action(action_id="A_top", action_name="Top action"),
-        Action(action_id="A_second", action_name="Second action"),
+        Action(action_id="A_top", action_name="Top action", action_type="mitigation"),
+        Action(action_id="A_second", action_name="Second action", action_type="mitigation"),
     ]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
@@ -1603,15 +1480,7 @@ def test_prioritize_generates_explanations_for_returned_top_n_only(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-topn-explanations",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-topn-explanations"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1653,7 +1522,7 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1675,15 +1544,7 @@ def test_prioritize_fails_open_when_explanation_generation_errors(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanation-failure",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanation-failure"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1723,7 +1584,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
@@ -1733,10 +1594,11 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
     def delayed_explanation_service(
         *,
         locode: str,
+        languages: list[str],
         scored_actions: list[object],
         city_preference_sectors: list[str],
         city_preference_co_benefit_keys: list[str],
-    ) -> tuple[dict[str, str], dict[str, object]]:
+    ) -> tuple[dict[str, dict[str, str]], dict[str, object]]:
         """Return one explanation after a small delay."""
         del (
             locode,
@@ -1744,12 +1606,10 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
             city_preference_co_benefit_keys,
         )
         time.sleep(0.01)
-        return {"A_1": "Delayed explanation"}, {
-            "status": "completed",
-            "provider": "mock",
-            "llm_input": {"curated_actions_count": len(scored_actions)},
-            "llm_output": {"explanations_by_action_id": {"A_1": "Delayed explanation"}},
+        localized = {
+            language: {"A_1": "Delayed explanation"} for language in languages
         }
+        return localized, {"languages": {language: {} for language in languages}}
 
     def capture_info(message: str, *args: object, **kwargs: object) -> None:
         """Capture the elapsed time logged for explanation completion."""
@@ -1773,15 +1633,7 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanation-timing",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanation-timing"
                     },
                     "requestData": {
                         "requestedLanguages": ["en"],
@@ -1812,10 +1664,10 @@ def test_prioritize_logs_non_zero_explanation_elapsed_time(
 
 
 @pytest.mark.integration
-def test_prioritize_returns_canonical_english_and_requested_translations(
+def test_prioritize_generates_every_requested_explanation_language(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Prioritization should always return English plus requested translated explanations."""
+    """Prioritization should generate exactly the requested explanation languages."""
     city = CityData(
         city_name="Santiago",
         locode="CL-SCL",
@@ -1824,16 +1676,18 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
     mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
-        explanations_by_action_id={"A_1": "English explanation"}
+        explanations_by_language={
+            "en": {"A_1": "English explanation"},
+        }
     )
     mock_translation_service = MockTranslationService(
-        translations_by_action_id={"A_1": {"es": "Explicacion de prueba"}}
+        translations_by_action_id={"A_1": {"es": "Explicación de prueba"}}
     )
 
     app.dependency_overrides[get_city_data_api_client] = lambda: mock_city_client
@@ -1858,15 +1712,7 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-explanation-language",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-explanation-language"
                     },
                     "requestData": {
                         "requestedLanguages": ["es", "en"],
@@ -1888,13 +1734,15 @@ def test_prioritize_returns_canonical_english_and_requested_translations(
         assert response.status_code == 200
         result = response.json()["results"][0]
         assert mock_explanation_service.seen_action_ids == ["A_1"]
+        assert mock_explanation_service.seen_languages == ["en"]
         assert mock_translation_service.seen_target_languages == ["es"]
         assert result["ranked_actions"][0]["explanations"] == {
             "en": "English explanation",
-            "es": "Explicacion de prueba",
+            "es": "Explicación de prueba",
         }
-        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["requested_languages"] == ["en", "es"]
         assert result["metadata"]["explanations"]["canonical_language"] == "en"
+        assert result["metadata"]["explanations"]["generated"] == 1
         assert result["metadata"]["explanations"]["generated_languages"] == ["en", "es"]
     finally:
         app.dependency_overrides.clear()
@@ -1913,13 +1761,13 @@ def test_prioritize_reports_only_successfully_generated_languages(
         country_code="CL",
         city_context=[],
     )
-    actions = [Action(action_id="A_1", action_name="Action one")]
+    actions = [Action(action_id="A_1", action_name="Action one", action_type="mitigation")]
     mock_city_client = MockCityDataApiClient(city=city)
     mock_action_client = MockActionPathwaysDataApiClient(actions=actions)
     mock_legal_client = MockLegalDataApiClient(assessments_by_action_id={})
     mock_policy_client = MockActionPolicyScoresDataApiClient(action_policy_scores_by_action_id={})
     mock_explanation_service = MockExplanationService(
-        explanations_by_action_id={"A_1": "English explanation"}
+        explanations_by_language={"en": {"A_1": "English explanation"}}
     )
     mock_translation_service = MockTranslationService(should_raise=True)
 
@@ -1945,15 +1793,7 @@ def test_prioritize_reports_only_successfully_generated_languages(
                 "/v1/prioritize",
                 json={
                     "meta": {
-                        "requestId": "req-translation-failure-languages",
-                        "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                        "backendConsumer": "hiap-meed",
-                        "upstreamProvider": "city_catalyst_frontend",
-                        "apiContext": {
-                            "endpoint": "POST /prioritizer/v1/start_prioritization",
-                            "locodes": ["CL-SCL"],
-                        },
-                        "totalRecords": 1,
+                      "requestId": "req-translation-failure-languages"
                     },
                     "requestData": {
                         "requestedLanguages": ["es", "en"],
@@ -1978,8 +1818,13 @@ def test_prioritize_reports_only_successfully_generated_languages(
         assert result["ranked_actions"][0]["explanations"] == {
             "en": "English explanation"
         }
-        assert result["metadata"]["explanations"]["requested_languages"] == ["es", "en"]
+        assert result["metadata"]["explanations"]["requested_languages"] == ["en", "es"]
+        assert result["metadata"]["explanations"]["canonical_language"] == "en"
+        assert result["metadata"]["explanations"]["generated"] == 0
         assert result["metadata"]["explanations"]["generated_languages"] == ["en"]
+        assert result["metadata"]["explanations"]["translation_warnings"] == [
+            "Requested explanation translations could not be generated; canonical English explanations were returned."
+        ]
     finally:
         app.dependency_overrides.clear()
 
@@ -1990,7 +1835,7 @@ def test_translate_endpoint_returns_requested_translations_only(
 ) -> None:
     """Translation endpoint should return only the requested non-English targets."""
     mock_translation_service = MockTranslationService(
-        translations_by_action_id={"A_1": {"pt": "Traducao de teste"}}
+        translations_by_action_id={"A_1": {"es": "Traducción de prueba"}}
     )
     monkeypatch.setattr(
         "app.modules.prioritizer.api.translate_explanations",
@@ -2002,19 +1847,11 @@ def test_translate_endpoint_returns_requested_translations_only(
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-endpoint",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-endpoint"
                 },
                 "requestData": {
                     "sourceLanguage": "en",
-                    "targetLanguages": ["pt"],
+                    "targetLanguages": ["es"],
                     "rankedActions": [
                         {
                             "actionId": "A_1",
@@ -2029,7 +1866,7 @@ def test_translate_endpoint_returns_requested_translations_only(
     body = response.json()
     assert body["warnings"] == []
     assert body["translations"] == [
-        {"actionId": "A_1", "explanations": {"pt": "Traducao de teste"}}
+        {"actionId": "A_1", "explanations": {"es": "Traducción de prueba"}}
     ]
 
 
@@ -2039,7 +1876,7 @@ def test_translate_endpoint_warns_when_source_text_is_likely_not_english(
 ) -> None:
     """Translation endpoint should still return translations when source text looks non-English."""
     mock_translation_service = MockTranslationService(
-        translations_by_action_id={"A_1": {"pt": "Traducao de teste"}},
+        translations_by_action_id={"A_1": {"es": "Traducción de prueba"}},
         warnings=[
             "One or more canonical explanations labeled as English appeared non-English or mixed-language. Translations were still returned."
         ],
@@ -2054,19 +1891,11 @@ def test_translate_endpoint_warns_when_source_text_is_likely_not_english(
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-warning",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-warning"
                 },
                 "requestData": {
                     "sourceLanguage": "en",
-                    "targetLanguages": ["pt"],
+                    "targetLanguages": ["es"],
                     "rankedActions": [
                         {
                             "actionId": "A_1",
@@ -2081,7 +1910,7 @@ def test_translate_endpoint_warns_when_source_text_is_likely_not_english(
     body = response.json()
     assert len(body["warnings"]) == 1
     assert body["translations"] == [
-        {"actionId": "A_1", "explanations": {"pt": "Traducao de teste"}}
+        {"actionId": "A_1", "explanations": {"es": "Traducción de prueba"}}
     ]
 
 
@@ -2093,19 +1922,37 @@ def test_translate_endpoint_rejects_non_english_source_language() -> None:
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-invalid-source",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-invalid-source"
                 },
                 "requestData": {
                     "sourceLanguage": "es",
-                    "targetLanguages": ["pt"],
+                    "targetLanguages": ["es"],
+                    "rankedActions": [
+                        {
+                            "actionId": "A_1",
+                            "canonicalExplanation": "English explanation",
+                        }
+                    ],
+                },
+            },
+        )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.integration
+def test_translate_endpoint_rejects_language_missing_from_catalogue() -> None:
+    """A target language must be fully configured before the endpoint accepts it."""
+    with TestClient(app) as test_client:
+        response = test_client.post(
+            "/v1/explanations/translate",
+            json={
+                "meta": {
+                  "requestId": "req-translate-unsupported-target"
+                },
+                "requestData": {
+                    "sourceLanguage": "en",
+                    "targetLanguages": ["de"],
                     "rankedActions": [
                         {
                             "actionId": "A_1",
@@ -2127,19 +1974,11 @@ def test_translate_endpoint_rejects_duplicate_action_ids() -> None:
             "/v1/explanations/translate",
             json={
                 "meta": {
-                    "requestId": "req-translate-duplicate-action-id",
-                    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-                    "backendConsumer": "hiap-meed",
-                    "upstreamProvider": "city_catalyst_frontend",
-                    "apiContext": {
-                        "endpoint": "POST /v1/explanations/translate",
-                        "locodes": [],
-                    },
-                    "totalRecords": 1,
+                  "requestId": "req-translate-duplicate-action-id"
                 },
                 "requestData": {
                     "sourceLanguage": "en",
-                    "targetLanguages": ["pt"],
+                    "targetLanguages": ["es"],
                     "rankedActions": [
                         {
                             "actionId": "A_1",

@@ -18,7 +18,7 @@ import {
 
 interface DeleteUserDialogProps {
   isOpen: boolean;
-  onClose: any;
+  onClose: () => void;
   cityInviteId: string;
   t: TFunction;
 }

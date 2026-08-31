@@ -20,7 +20,6 @@ import ProgressLoader from "@/components/ProgressLoader";
 import { FLOW_BUTTON_RADIUS } from "@/components/StationaryEnergyDraft/stationary-energy-chat-constants";
 import type {
   ArtifactRow,
-  DraftCounts,
   DraftStage,
 } from "@/components/StationaryEnergyDraft/flow";
 import type {

@@ -177,7 +177,7 @@ def build_native_input_catalog_tools(
                 "Selected capability could not be read.",
             )
         except Exception:
-            logger.exception(
+            logger.error(
                 "Selected NativeInputCatalog tool failed capability=%s",
                 selection.capability_id,
             )
@@ -259,7 +259,11 @@ def _success_payload(capability_id: str, response: Any) -> str:
             "CityCatalyst returned an invalid capability response.",
         )
     try:
-        serialized_data = json.dumps(safe_data, ensure_ascii=False)
+        serialized_data = json.dumps(
+            safe_data,
+            ensure_ascii=False,
+            allow_nan=False,
+        )
     except (TypeError, ValueError):
         return _error_payload(
             capability_id,
@@ -279,6 +283,7 @@ def _success_payload(capability_id: str, response: Any) -> str:
             "data": safe_data,
         },
         ensure_ascii=False,
+        allow_nan=False,
     )
 
 

@@ -653,14 +653,20 @@ class CityCatalystClient:
     ) -> Dict[str, Any]:
         """Read one selected bounded NativeInputCatalog capability through Core."""
         del thread_id
-        return await self.post_internal_capability(
-            "/api/v1/internal/ca/capabilities/native-inputs/read",
-            json_data=request_payload,
-            token=token,
-            request_timeout=self.timeout,
-            refresh_user_id=user_id,
-            safe_selection_error=True,
-        )
+        try:
+            return await self.post_internal_capability(
+                "/api/v1/internal/ca/capabilities/native-inputs/read",
+                json_data=request_payload,
+                token=token,
+                request_timeout=self.timeout,
+                refresh_user_id=user_id,
+                safe_selection_error=True,
+            )
+        except httpx.HTTPError as exc:
+            raise CityCatalystClientError(
+                "Selected capability request is unavailable.",
+                status_code=503,
+            ) from exc
 
     async def get_stationary_energy_allowed_capabilities(
         self,

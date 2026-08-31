@@ -405,16 +405,17 @@ Steps:
    unavailable, and readiness-negative selections.
 2. [x] Assert the stable safe error and no source existence/state, labels,
    scope, storage, credential, token, content, or upstream text disclosure.
-3. [ ] Assert discovery readiness versus selected execution invocation counts,
+3. [x] Assert discovery readiness versus selected execution invocation counts,
    selected-only loading, finite inputs/results, and no raw storage access.
-4. [ ] Cover one-time refresh, timeout, cancellation, cleanup on all terminal
+4. [x] Cover one-time refresh, timeout, cancellation, cleanup on all terminal
    paths, failure isolation, safe telemetry, and feature-gate behavior.
-5. [ ] Run the focused UOW-02 sweep and relevant existing Climate Advisor
+5. [x] Run the focused UOW-02 sweep and relevant existing Climate Advisor
    suites; record unrelated baseline failures separately.
-6. [ ] Add partial property-based tests for pure selection membership,
+6. [x] Add partial property-style tests through deterministic parameterized
+   selection/error/boundary cases for pure selection membership,
    selected-only registration, safe serialization, bounds, and safe-error
-   invariants with reproducible seeds and shrinking.
-7. [ ] Apply mandatory project skills, inspect the final diff for scope/storage
+   invariants; Hypothesis is not installed in the service environment.
+7. [x] Apply mandatory project skills, inspect the final diff for scope/storage
    boundary violations, and commit only hardening/evidence updates with:
    `test(cc-737): harden Climate Advisor catalog security evidence`.
 
@@ -437,6 +438,24 @@ stay gated on explicit approval of this red checkpoint.
 (`test(cc-737): add catalog hardening red tests`) with only the Unit 5
 hardening tests and AI-DLC evidence. Unit 5 production implementation remains
 gated on explicit approval.
+
+**TDD green checkpoint — Unit 5**: Implemented only the approved hardening
+gaps. Selected NativeInputCatalog reads now normalize HTTP transport failures
+to a safe bounded client error; model-facing result serialization rejects
+non-finite values; and generic tool failure telemetry records only a coarse
+capability/outcome message without exception text. Existing Core authorization,
+selected-only loading, bounded reads/results, one-time refresh, cancellation,
+cleanup, non-disclosure, and storage isolation behavior remains unchanged.
+
+The Unit 5 hardening suite passes 48/48, the broader UOW-02 regression suite
+passes 109/109, and local auth tests pass 5/5 with 4 live contract tests
+skipped because the contract environment is not configured. Compilation and
+`git diff --check` pass. Ruff could not run because it is not installed. The
+mandatory simplification pass found no redundant code after the minimal fixes;
+the documentation-impact review found the existing README and architecture
+documentation accurate, so no additional product documentation was needed.
+The full service-suite stall documented in the prior checkpoint remains a
+repository baseline limitation and is not claimed green.
 
 ## Atomic commit and review protocol
 

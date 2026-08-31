@@ -834,5 +834,29 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (UOW-02 Unit 4 completion approval authorizing the next test-first unit)
 **AI Response**: Created atomic red-test checkpoint commit `6fef305d3` (`test(cc-737): add catalog hardening red tests`) containing only the Unit 5 client/tool hardening tests and AI-DLC evidence. Unrelated lockfiles, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. Unit 5 production implementation remains gated on explicit review and approval.
 **Approval Status**: Red-test commit created; explicit Unit 5 implementation approval pending.
+
+---
+
+## Approval — UOW-02 Unit 5 Implementation
+**Timestamp**: 2026-08-31T10:57:25-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval to implement UOW-02 Unit 5 after the red checkpoint. Implementation remains limited to safe transport normalization at the selected Core read boundary, finite model-facing result serialization, and coarse non-disclosing failure telemetry. Existing Core authorization, bounded reads, selected-only loading, lifecycle, and storage isolation constraints remain mandatory.
+**Approval Status**: Unit 5 implementation authorized; green checkpoint and atomic commit review pending.
+
+---
+
+## Code Generation — UOW-02 Unit 5 TDD Green Checkpoint
+**Timestamp**: 2026-08-31T10:57:25-03:00
+**User Input**: "approved" (explicit Unit 5 implementation approval)
+**AI Response**: Implemented the approved Unit 5 hardening gaps only. Selected NativeInputCatalog reads normalize HTTP transport failures to a safe 503 client error; non-finite result values are rejected before model-facing serialization; and generic tool failure telemetry omits exception text. The Unit 5 suite passes 48/48; the broader UOW-02 regression suite passes 109/109; local auth tests pass 5/5 with 4 live contract tests skipped because the environment is not configured. Compile and `git diff --check` pass. Ruff is unavailable. Mandatory simplification found no redundant code; docs-after-change found the existing README and architecture docs accurate, so no product documentation update was required. No storage, authorization, route, or workflow boundary changed.
+**Approval Status**: Unit 5 green checkpoint complete; atomic commit review pending.
+
+---
+
+## Code Generation — UOW-02 Unit 5 Atomic Commit
+**Timestamp**: 2026-08-31T10:57:25-03:00
+**User Input**: "approved" (explicit Unit 5 implementation approval; atomic commit is the authorized unit workflow)
+**AI Response**: Created the Unit 5 atomic commit after the green checkpoint. It contains only the selected Core-client transport hardening, finite result/telemetry hardening, and AI-DLC evidence; unrelated lockfiles, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. UOW-02 completion remains pending explicit Unit 5 completion approval.
+**Approval Status**: Unit 5 commit created; explicit Unit 5 completion approval pending.
 ---
 ---

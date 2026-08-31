@@ -14,6 +14,7 @@ const processDeliveries = jest.fn<
     delivered: number;
     retried: number;
     failed: number;
+    purged: number;
   }>
 >();
 const initialize = jest.fn<() => Promise<void>>();
@@ -46,6 +47,7 @@ describe("webhook delivery cron authentication", () => {
       delivered: 1,
       retried: 1,
       failed: 0,
+      purged: 0,
     });
   });
 
@@ -76,6 +78,7 @@ describe("webhook delivery cron authentication", () => {
       delivered: 1,
       retried: 1,
       failed: 0,
+      purged: 0,
     });
   });
 });

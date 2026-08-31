@@ -17,9 +17,11 @@ import {
 import { Tooltip } from "@/components/ui/tooltip";
 import { Trans } from "react-i18next/TransWithoutContext";
 import {
+  findClosestYearToInventory,
   formatNumber,
   getShortenNumberUnit,
   shortenNumber,
+  PopulationEntry,
 } from "@/util/helpers";
 import Link from "next/link";
 import { hasFeatureFlag, FeatureFlags } from "@/util/feature-flags";
@@ -31,7 +33,6 @@ import {
   BreadcrumbRoot,
 } from "@/components/ui/breadcrumb";
 import { usePathname } from "next/navigation";
-import { NumberFormatEnum } from "@/util/enums";
 
 // only render map on the client
 const CityMap = dynamic(() => import("@/components/CityMap"), { ssr: false });
@@ -49,7 +50,6 @@ interface HeroProps {
 }
 
 export function Hero({
-  currentInventoryId,
   formattedEmissions: { unit, value },
   inventory,
   isInventoryLoading,
@@ -62,6 +62,7 @@ export function Hero({
   const { t } = useTranslation(lng, "dashboard");
   const pathname = usePathname();
   const activeCity = inventory?.city?.name ?? city?.name;
+  const cityArea = inventory?.city.area;
   const activeProject = (() => {
     const projectName = inventory?.city?.project?.name ?? city?.project?.name;
     return projectName === "cc_project_default"
@@ -76,14 +77,31 @@ export function Hero({
     },
   );
 
+  // Fall back to OpenClimate's population data when the city has no
+  // population recorded in our own DB for this inventory's year.
+  const effectivePopulation = useMemo(() => {
+    if (population?.population) return population;
+    const closest = findClosestYearToInventory(
+      cityData?.population as PopulationEntry[] | undefined,
+      inventory?.year ?? population?.year ?? new Date().getFullYear(),
+    );
+    return closest
+      ? { ...population, population: closest.population, year: closest.year }
+      : population;
+  }, [population, cityData?.population, inventory?.year]);
+
   const popWithDS = useMemo(
     () =>
       cityData?.population?.find(
         (p: { population: number; year: number }) =>
-          p.population === population?.population &&
-          p.year === population?.year,
+          p.population === effectivePopulation?.population &&
+          p.year === effectivePopulation?.year,
       ),
-    [cityData?.population, population?.population, population?.year],
+    [
+      cityData?.population,
+      effectivePopulation?.population,
+      effectivePopulation?.year,
+    ],
   );
 
   const moduleLabel = useMemo(() => {
@@ -119,10 +137,11 @@ export function Hero({
                   fontSize="body.md"
                   color="base.light"
                   lineHeight="20px"
-                  _hover={{ textDecoration: "underline" }}
+                  textDecoration="underline"
                   textUnderlineOffset="8px"
+                  _hover={{ opacity: 0.7 }}
                 >
-                  {t("citycatalyst")}
+                  {t("breadcrumb-tools")}
                 </Text>
               </Link>
             </BreadcrumbLink>
@@ -141,7 +160,7 @@ export function Hero({
           justifyContent="center"
           pt="36px"
         >
-          <Box display="flex" h="240px">
+          <Box display="flex" h="240px" gap={8}>
             <Box
               display="flex"
               gap="24px"
@@ -259,7 +278,7 @@ export function Hero({
                   />
                   <Box>
                     <Box display="flex" gap={1}>
-                      {population?.population ? (
+                      {effectivePopulation?.population ? (
                         <Text
                           fontFamily="heading"
                           color="base.light"
@@ -267,11 +286,14 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {shortenNumber(population.population, numberFormat)}
+                          {shortenNumber(
+                            effectivePopulation.population,
+                            numberFormat,
+                          )}
                           <Text as="span" fontSize="16px">
-                            {population?.population
-                              ? getShortenNumberUnit(population.population)
-                              : ""}
+                            {getShortenNumberUnit(
+                              effectivePopulation.population,
+                            )}
                           </Text>
                         </Text>
                       ) : (
@@ -282,7 +304,7 @@ export function Hero({
                           fontWeight="semibold"
                           lineHeight="32"
                         >
-                          {t("N/A")}
+                          {t("no-data-for-inventory-yet")}
                         </Text>
                       )}
                       <Tooltip
@@ -293,7 +315,7 @@ export function Hero({
                               : t("source-open-climate")}
                             <br />
                             {t("population-year", {
-                              year: population?.year,
+                              year: effectivePopulation?.year,
                             })}
                           </>
                         }
@@ -330,8 +352,7 @@ export function Hero({
                   />
                   <Box>
                     <Box display="flex" gap={1}>
-                      {inventory?.city.area === null ||
-                      inventory?.city.area! === 0 ? (
+                      {cityArea === null || cityArea === 0 ? (
                         <Text
                           fontFamily="heading"
                           color="border.neutral"
@@ -350,7 +371,7 @@ export function Hero({
                           lineHeight="32"
                         >
                           {formatNumber(
-                            Math.round(inventory?.city.area!),
+                            Math.round(cityArea!),
                             numberFormat,
                           )}
                           {/* eslint-disable-next-line i18next/no-literal-string */}

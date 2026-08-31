@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.modules.prioritizer.internal_models import (
     Action,
@@ -17,7 +17,6 @@ from app.modules.prioritizer.internal_models import (
     LegalAssessmentRecord,
 )
 from app.modules.prioritizer.models import (
-    CityActionReportChapter,
     PrioritizerApiCityResult,
     PrioritizerApiRequest,
     RankedActionResult,
@@ -49,6 +48,7 @@ class ReportContext(BaseModel):
     country_code: str
     action_id: str
     language: str
+    requested_languages: list[str] = Field(default_factory=list)
     prioritization_request: PrioritizerApiRequest
     prioritization_city_result: PrioritizerApiCityResult
     ranked_action: RankedActionResult
@@ -72,6 +72,7 @@ class ReportChapterInput(BaseModel):
     key: ChapterKey
     title: str
     language: str
+    terminology: dict[str, str] = Field(default_factory=dict)
     facts: dict[str, Any] = Field(default_factory=dict)
     source_refs: list[str] = Field(default_factory=list)
     limitations: list[str] = Field(default_factory=list)
@@ -93,5 +94,32 @@ class ReportChapterDraft(BaseModel):
 class ReportGenerationResult(BaseModel):
     """Chapter drafts plus provider I/O diagnostics."""
 
-    chapters: list[CityActionReportChapter]
+    chapters: list[ReportChapterDraft]
     llm_io: dict[str, Any] = Field(default_factory=dict)
+
+
+class ReportTranslatedChapter(BaseModel):
+    """One translated chapter returned by the report translation LLM."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: ChapterKey
+    markdown: str
+    limitations: list[str]
+
+
+class ReportLanguageTranslation(BaseModel):
+    """All translated chapters for one requested target language."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    language: str
+    chapters: list[ReportTranslatedChapter]
+
+
+class ReportTranslationBatch(BaseModel):
+    """Batched translations for every non-English report language."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    translations: list[ReportLanguageTranslation]

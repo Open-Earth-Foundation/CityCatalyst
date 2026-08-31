@@ -2,7 +2,7 @@ import createHttpError from "http-errors";
 import jwt from "jsonwebtoken";
 import OpenAI from "openai";
 import { NextRequest, NextResponse } from "next/server";
-import { ValidationError } from "sequelize";
+import { ForeignKeyConstraintError, ValidationError } from "sequelize";
 import { ZodError } from "zod";
 
 import "@/util/big_int_json";
@@ -282,19 +282,23 @@ export function apiHandler(
 ) {
   return async (
     req: NextRequest,
-    props: { params: Promise<Record<string, string>> },
+    props: {
+      params: Promise<Record<string, string>>;
+      searchParams?: Record<string, string>;
+    },
   ) => {
     const startTime = Date.now();
     let result: ApiResponse;
     let session: AppSession | null = null;
     let error: Error | null = null;
 
-    const span = hasServerFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED)
-      ? H.startWithHeaders(
-          `${req.method} ${new URL(req.url).pathname}`,
-          req.headers,
-        ).span
-      : null;
+    const span =
+      hasServerFeatureFlag(FeatureFlags.HIGHLIGHT_ENABLED) && H
+        ? H.startWithHeaders(
+            `${req.method} ${new URL(req.url).pathname}`,
+            req.headers,
+          ).span
+        : null;
 
     // Apply rate limiting (disabled during tests)
     if (apiLimiter) {
@@ -449,7 +453,8 @@ export function apiHandler(
       const { searchParams } = new URL(req.url);
       const context = {
         params: await props.params,
-        searchParams: Object.fromEntries(searchParams.entries()),
+        searchParams:
+          props.searchParams ?? Object.fromEntries(searchParams.entries()),
         session,
       };
 
@@ -528,6 +533,16 @@ function errorHandler(err: unknown) {
     return NextResponse.json(
       { error: { message: "Entity exists already.", issues: err.errors } },
       { status: 400 },
+    );
+  } else if (err instanceof ForeignKeyConstraintError) {
+    return NextResponse.json(
+      {
+        error: {
+          message:
+            "This entity is still referenced by other records and cannot be deleted or modified.",
+        },
+      },
+      { status: 409 },
     );
   } else if (err instanceof OpenAI.APIError) {
     const { name, status, headers, message } = err;

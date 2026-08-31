@@ -4,7 +4,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 export type InventoryUserFileAttributes = Omit<
   UserFileAttributes,
-  "id" | "subsectors" | "scopes"
+  "id" | "subsectors" | "scopes" | "data"
 > & {
   // unique identifier to be used to access the files
   fileId: string;
@@ -13,6 +13,8 @@ export type InventoryUserFileAttributes = Omit<
   subsectors: string | null;
   scopes: string | null;
   cityId: string | null;
+  // base64-encoded file contents, unlike the backend model's Buffer
+  data?: string;
 };
 
 interface SectorFileData {

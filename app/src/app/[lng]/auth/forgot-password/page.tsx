@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, use } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { logger } from "@/services/logger";
+import { getApiErrorMessage } from "@/util/helpers";
 
 type Inputs = {
   email: string;
@@ -45,8 +46,8 @@ export default function ForgotPassword(props: {
 
       setError("");
       router.push(`/auth/check-email?email=${data.email}&reset=true`);
-    } catch (err: any) {
-      setError(err);
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err));
     }
   };
 

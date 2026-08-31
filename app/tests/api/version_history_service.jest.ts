@@ -4,11 +4,11 @@ import { randomUUID } from "node:crypto";
 // --- Mock setup ---
 
 const mockVersionFindOne =
-  jest.fn<(...args: any[]) => Promise<Record<string, any> | null>>();
+  jest.fn<(...args: unknown[]) => Promise<Record<string, unknown> | null>>();
 const mockVersionFindAll =
-  jest.fn<(...args: any[]) => Promise<Record<string, any>[]>>();
+  jest.fn<(...args: unknown[]) => Promise<Record<string, unknown>[]>>();
 const mockVersionCreate =
-  jest.fn<(...args: any[]) => Promise<Record<string, any>>>();
+  jest.fn<(...args: unknown[]) => Promise<Record<string, unknown>>>();
 const mockTransaction = { id: "mock-transaction" };
 
 const mockInventoryValueModel = {
@@ -47,7 +47,9 @@ jest.unstable_mockModule("@/models", () => ({
       User: {},
     },
     sequelize: {
-      transaction: jest.fn((cb: (t: any) => any) => cb(mockTransaction)),
+      transaction: jest.fn((cb: (t: unknown) => unknown) =>
+        cb(mockTransaction),
+      ),
     },
   },
 }));
@@ -58,7 +60,7 @@ const { default: VersionHistoryService } = await import(
 
 // --- Helpers ---
 
-function createMockVersion(overrides: Record<string, any> = {}) {
+function createMockVersion(overrides: Record<string, unknown> = {}) {
   return {
     versionId: randomUUID(),
     inventoryId: randomUUID(),

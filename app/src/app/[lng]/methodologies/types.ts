@@ -1,5 +1,4 @@
 import { SectorNamesInFE } from "@/backend/ResultsService";
-import { LANGUAGES } from "@/util/types";
 
 interface MethodologyApproach {
   type: string;

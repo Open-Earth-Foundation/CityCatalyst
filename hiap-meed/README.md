@@ -1,4 +1,4 @@
-﻿# HIAP-MEED
+# HIAP-MEED
 
 `hiap-meed` is a synchronous FastAPI service that implements the MEED prioritization pipeline. It sits between the CityCatalyst frontend and the upstream Global API, fetching city context and action data before running a configurable scoring pipeline.
 
@@ -39,21 +39,23 @@ LOG_DIR=logs
 LOCAL_ARTIFACTS_ENABLED=true
 MLFLOW_ENABLED=true
 MLFLOW_TRACKING_URI=https://mlflow-dev.openearth.dev
+MLFLOW_TRACKING_USERNAME=<service-user>
+MLFLOW_TRACKING_PASSWORD=<service-password>
 MLFLOW_EXPERIMENT_NAME=hiap-meed
 MLFLOW_ENVIRONMENT=dev
-MLFLOW_HTTP_REQUEST_TIMEOUT=3
+MLFLOW_HTTP_REQUEST_TIMEOUT=10
 MLFLOW_HTTP_REQUEST_MAX_RETRIES=1
 MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR=1
 MLFLOW_HTTP_REQUEST_BACKOFF_JITTER=0
 GIT_PYTHON_REFRESH=quiet
 MLFLOW_ASYNC_LOGGING_ENABLED=true
-HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=false
-HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL=gpt-5.4-mini
 HIAP_MEED_CITY_DATA_SOURCE=api
 CCGLOBAL_API_BASE_URL=https://ccglobal.openearth.dev
 UPSTREAM_HTTP_TIMEOUT_SECONDS=30
 UPSTREAM_HTTP_MAX_RETRIES=2
 UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS=0.5
+OUTPUT_PLAN_MAX_CONCURRENT_REPORTS=3
+OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS=120
 HIAP_MEED_LEGAL_DATA_SOURCE=s3
 HIAP_MEED_LEGAL_S3_BUCKET=test-global-api
 HIAP_MEED_LEGAL_S3_KEY=raw_data/cl_ssg/cl_ssg_legal_signals/release/v2/legal-classification-v2.csv
@@ -76,21 +78,23 @@ Variables:
 - `LOCAL_ARTIFACTS_ENABLED`: if `true`, writes per-request artifact files under `LOG_DIR/requests/...`
 - `MLFLOW_ENABLED`: if `true`, enables best-effort MLflow run, direct artifact, and OpenAI trace logging
 - `MLFLOW_TRACKING_URI`: MLflow tracking server URL. The standard default is the hosted dev MLflow at `https://mlflow-dev.openearth.dev`. Override it to `http://mlflow:5000` only when running the fully local Docker Compose stack, or to `http://localhost:5000` when using `kubectl port-forward`.
+- `MLFLOW_TRACKING_USERNAME`: non-admin service-account username used by MLflow clients
+- `MLFLOW_TRACKING_PASSWORD`: service-account password; keep the real value only in local `.env` or GitHub Secrets
 - `MLFLOW_EXPERIMENT_NAME`: MLflow experiment name used for all hiap-meed runs
 - `MLFLOW_ENVIRONMENT`: environment tag attached to MLflow runs (use `dev`, `test`, or `prod`)
-- `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. Keep this low, for example `3`, so bad or unreachable tracking URLs fail fast instead of blocking startup or the first traced request for minutes.
+- `MLFLOW_HTTP_REQUEST_TIMEOUT`: MLflow client HTTP timeout in seconds. The default `10` accommodates short write bursts while keeping unavailable tracking calls bounded.
 - `MLFLOW_HTTP_REQUEST_MAX_RETRIES`: number of extra MLflow HTTP retry attempts after the initial failure. Keep this low, for example `1`, so unreachable tracking URLs do not delay startup or requests for several minutes.
 - `MLFLOW_HTTP_REQUEST_BACKOFF_FACTOR`: MLflow retry backoff multiplier. A value like `1` keeps the delay between retry attempts short and predictable.
 - `MLFLOW_HTTP_REQUEST_BACKOFF_JITTER`: extra random delay added between MLflow retry attempts. Set this to `0` when you want deterministic fail-fast behavior during local testing.
 - `GIT_PYTHON_REFRESH`: set to `quiet` to suppress mlflow related GitPython warnings when the `hiap-meed` process or `hiap-meed` container does not have a `git` executable; this only silences the warning and does not restore Git SHA capture
 - `MLFLOW_ASYNC_LOGGING_ENABLED`: if `true`, MLflow tags, params, and metrics use async fluent logging; run open/close and artifact uploads remain synchronous
-- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED`: if `true`, exposes one test-only endpoint that forces a simple OpenAI tool-calling flow for MLflow tracing checks
-- `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_MODEL`: model used only by the removable MLflow tool-call trace endpoint
 - `HIAP_MEED_CITY_DATA_SOURCE`: city input source (`api` or `mock`)
 - `CCGLOBAL_API_BASE_URL`: shared Global API base host for upstream API-backed clients (default `https://ccglobal.openearth.dev` for local/dev)
 - `UPSTREAM_HTTP_TIMEOUT_SECONDS`: shared timeout in seconds for upstream HTTP API calls (default `30`)
 - `UPSTREAM_HTTP_MAX_RETRIES`: shared retry count for transient upstream HTTP failures (default `2`)
 - `UPSTREAM_HTTP_RETRY_BACKOFF_SECONDS`: fixed sleep between upstream HTTP retry attempts (default `0.5`)
+- `OUTPUT_PLAN_MAX_CONCURRENT_REPORTS`: maximum active output-plan requests per service process/pod (default `3`)
+- `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS`: maximum time an output-plan request waits for a per-pod generation slot before HTTP `429` (default `120`)
 - `HIAP_MEED_LEGAL_DATA_SOURCE`: legal input source (`s3`, `mock`, or deprecated `api`; default `s3`)
 - `HIAP_MEED_LEGAL_S3_BUCKET`: private S3 bucket for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
 - `HIAP_MEED_LEGAL_S3_KEY`: private S3 object key for the legal classification CSV when `HIAP_MEED_LEGAL_DATA_SOURCE=s3`
@@ -117,6 +121,12 @@ LLM-specific non-secret settings now live in `llm_config.yaml`, including:
 
 When `MLFLOW_ENABLED=true`, the service best-effort logs request runs, direct request artifacts, and OpenAI traces to the configured MLflow server. MLflow initialization is lazy and happens only when a request enters an MLflow-backed run. If MLflow is down or unreachable, the API still completes normally and only emits warning logs. The MLflow client retries initialization on later requests after a fixed 60-second cooldown so transient failures do not disable logging for the lifetime of the worker.
 
+The hosted server requires `MLFLOW_TRACKING_USERNAME` and
+`MLFLOW_TRACKING_PASSWORD`. Deployment workflows read these values from GitHub
+Secrets and add them to the existing per-environment `kubectl set env`
+deployment command alongside the other service credentials. Use a shared
+non-admin service account, not the MLflow admin account or Flask signing secret.
+
 If the `hiap-meed` process or `hiap-meed` container that writes to MLflow does not have `git` installed, MLflow's GitPython integration may warn that Git SHA metadata is unavailable. This warning is about the MLflow client side in `hiap-meed`, not the MLflow server container. Setting `GIT_PYTHON_REFRESH=quiet` suppresses that warning. It does not install `git` or restore Git SHA capture; it only keeps logs quieter.
 
 Current MLflow sync vs async behavior:
@@ -124,22 +134,6 @@ Current MLflow sync vs async behavior:
 - request run lifecycle stays synchronous so runs still open and close deterministically
 - tags, params, and metrics use MLflow async fluent logging when `MLFLOW_ASYNC_LOGGING_ENABLED=true`
 - JSON and text artifact uploads stay synchronous because this helper path does not yet use a separate background queue
-
-Test-only MLflow tool trace endpoint:
-
-- `POST /v1/mlflow/trace-test/tool-calls` is intentionally isolated from the prioritization flow and exists only to inspect MLflow traces for OpenAI tool use
-- it is disabled by default and returns `404` unless `HIAP_MEED_MLFLOW_TOOL_TRACE_TEST_ENABLED=true`
-- the endpoint exposes exactly two local tools to the LLM: `add_numbers` and `reverse_text`
-- the endpoint logs one dedicated MLflow run named `mlflow_tool_trace_test_request` plus one MLflow JSON artifact containing the response payload
-- the endpoint is designed to be easy to remove later because all code lives under `app/modules/mlflow_trace_test/`
-
-Example test request:
-
-```bash
-curl -X POST http://localhost:8000/v1/mlflow/trace-test/tool-calls \
-  -H "Content-Type: application/json" \
-  -d "{\"left_number\": 2, \"right_number\": 3, \"text_to_reverse\": \"climate\"}"
-```
 
 MLflow tagging notes:
 
@@ -189,6 +183,13 @@ docker build -t hiap-meed .
 docker run -it --rm -p 8000:8000 --env-file .env hiap-meed
 ```
 
+Git Bash users can build the image and start the container with persisted logs
+in one command:
+
+```text
+bash docker_startup.sh
+```
+
 To persist file logs and per-request artifacts on your machine under `logs/`
 including `logs/requests/`, bind-mount the host logs directory to
 `/app/logs` in the container. This matches the default `LOG_DIR=logs`.
@@ -231,6 +232,42 @@ Verify the service:
 - Explanation translation endpoint: `POST /v1/explanations/translate`
 - Exclusion preview endpoint: `POST /v1/prioritize/exclusions/preview`
 
+Reference-data endpoints:
+
+- `GET /v1/cities/{locode}/attributes`
+- `GET /v1/action-pathways?language=es&language=en`
+- `GET /v1/cities/{locode}/action-policy-scores`
+- `GET /v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=CL`
+- `GET /v1/cities/{locode}/climate-finance/feasibility?country_code=CL`
+- `GET /v1/climate-finance/opportunities?country_code=CL&sector=stationary_energy&route=technical_assistance`
+- `GET /v1/climate-finance/projects?country_code=CL&action_id=c40_0012`
+
+These routes expose stable response fields rather than raw Global API payloads.
+Callers choose domain scope such as city, country, language, action, sector, and
+route. HIAP-MEED owns upstream URLs, technical query parameters, validation,
+normalization, missing-release behavior, ordering, and post-filtering. The routes,
+exclusion preview, prioritization, and output-plan generation call the same
+existing data-client methods and shared selectors; processing workflows do not
+call these HTTP routes. `select_prioritizable_actions()` defines the action
+membership used by all four action consumers.
+See
+[`reference-data-api-product-contract.md`](reference-data-api-product-contract.md)
+for the request/response contract and
+[`frontend-data-endpoint-examples.md`](frontend-data-endpoint-examples.md) for
+complete examples.
+
+Where the reference-data rules live:
+
+| Responsibility | Authoritative code |
+| --- | --- |
+| Caller-selectable parameters and HTTP errors | `app/modules/reference_data/api.py` |
+| Public request and response fields | `app/modules/reference_data/models.py` |
+| Public field mapping, localization, policy averages, and display-only ordering | `app/modules/reference_data/response_builders.py` |
+| Prioritizable action membership: actions explicitly typed as mitigation | `app/services/action_pathways_api.py` (`select_prioritizable_actions`) |
+| City, action, policy, mitigation, and financial Global API queries and missing-release behavior | Matching modules under `app/services/*_api.py` |
+| Opportunity eligibility, current/monitor selection, priority, and limits | `app/services/climate_finance_opportunities_api.py` |
+| Comparable-project country/action query and five-project limit | `app/services/climate_finance_projects_api.py` |
+
 For deployed workloads, use the hosted MLflow URLs directly.
 
 Example Kubernetes values:
@@ -248,35 +285,52 @@ Example Kubernetes values:
   - `MLFLOW_EXPERIMENT_NAME=hiap-meed`
   - `MLFLOW_ENVIRONMENT=prod`
 
-### External API contracts
+### API contracts
 
-The repository now includes explicit Pydantic contracts for upcoming request and
-upstream response integrations in `app/modules/prioritizer/models.py`.
+The repository includes strict public reference-data contracts in
+`app/modules/reference_data/models.py`, plus the existing processing request and
+additive-tolerant upstream response contracts in
+`app/modules/prioritizer/models.py`.
 
 Key models:
 
-- Frontend request envelope: `PrioritizerApiRequest`
-- Output-plan request envelope: `CityActionReportApiRequest`
+- Prioritization request: `PrioritizerApiRequest`
+- Output-plan request: `CityActionReportApiRequest`
 - Frontend city input row: `FrontendCityInput`
 - Global city API response: `CityApiResponse`
 - Global action pathways API response: `ActionPathwaysApiResponse`
 - Global legal assessment API row: `ActionLegalAssessmentApiItem`
 - Global policy alignment API response: `ActionPolicyScoresApiResponse`
+- Public reference-data response models: `CityAttributesResponse`,
+  `ActionPathwaysResponse`, `ActionPolicyScoresResponse`,
+  `ActionMitigationScoresResponse`, `ActionFinancialScoresResponse`,
+  `ClimateFinanceOpportunitiesResponse`, and `ClimateFinanceProjectsResponse`
 
 Design note:
 
-- For the upcoming frontend contract, single-city and multi-city payloads both
+- Workflow POST bodies contain `requestData` and caller metadata with only
+  `meta.requestId`.
+  Callers no longer
+  provide timestamps, endpoint names, service/provider labels, or record counts.
+  Legacy fields in `meta` are temporarily ignored so this backend-only contract
+  change does not require a coordinated frontend release.
+- Every successful workflow and reference-data response contains server-owned
+  `meta` with `requestId`, `generatedAtUtc`, and `totalRecords`. Workflow
+  responses echo `meta.requestId`; reference-data GET responses use a
+  server-generated ID.
+- For the processing frontend contract, single-city and multi-city payloads both
   use `cityDataList`; single-city is represented as a list with one item.
-- Boundary validation note: incoming frontend request contracts and upstream/mock
-  response contracts are handled differently by design. Frontend request DTOs
-  reject unexpected fields, while upstream response DTOs ignore unexpected extra
-  fields and still validate the fields we actually use.
+- Boundary validation note: public domain payloads and response DTOs reject
+  unexpected fields. The small workflow `meta` object and upstream/mock response
+  DTOs remain additive-tolerant while validating the fields HIAP-MEED uses.
 - Action API note: `ActionPathwaysApiResponse` now matches `GET /api/v1/action-pathways`
   without query parameters. The action payload includes the fields used by the
   current prioritization flow and action-pathways client.
-  The action client returns the full upstream catalog; the prioritization
-  pipeline then keeps only mitigation actions and records the filtered count in
-  fetch artifacts.
+  The action client returns the full upstream catalog. The shared
+  `select_prioritizable_actions()` function then keeps only actions explicitly
+  typed as mitigation. The action GET, exclusion preview, prioritization, and
+  output-plan enrichment all use that same set. Prioritization records the
+  filtered count in fetch artifacts.
 - Legal source note: legal assessments now come from the internal S3 legal
   classification CSV by default. The old public
   `GET /api/v1/action-legal-assessments?countryCode=...` path remains in code
@@ -290,23 +344,28 @@ Design note:
 
 - `requestData.locode`: the single city locode
 - `requestData.actionId`: the selected action ID
-- `requestData.language`: the requested report language
+- `requestData.language`: a non-empty list of requested report languages; currently `en` and `es` are supported. The backend normalizes this list to include canonical English first.
 - `requestData.prioritizationSnapshot.request`: the full original `/v1/prioritize` request
 - `requestData.prioritizationSnapshot.response`: the full `/v1/prioritize` response returned to the frontend
 
-The endpoint validates that the requested city and action exist in the supplied prioritization snapshot before it fetches live enrichment data. The report language is an output choice: it does not need to be one of the original prioritization `requestedLanguages`. If it differs, the response keeps a limitation note because action explanations from the original ranking may not exist in that language. The endpoint remains stateless: the prototype frontend stores the snapshot in browser local storage and sends it with the report request. When this frontend is later moved into CityCatalyst, snapshot persistence is expected to move into the CityCatalyst database, not into `hiap-meed`.
+Snapshots stored before response metadata was introduced remain accepted; all
+new `/v1/prioritize` responses include `meta`.
 
-The backend uses the supplied prioritization snapshot as the ranking basis and refetches additional city/action/policy/legal/feasibility data where the prioritize response does not carry enough detail for report writing. It fetches a broader finance catalogue and screens up to five active candidates by country, sector, municipal eligibility, climate relevance, municipal application route, and compatibility with the selected action's finance route; the upstream opportunities catalogue does not currently provide action-specific matching, so the report labels these as opportunities to assess. Closed programmes are excluded from that current list, but up to five are retained in a separate monitoring list when the catalogue marks them as annual, periodic, recurring, or sporadic. Expired, cancelled, and non-recurring closed entries are omitted. Comparable projects are filtered by the selected `actionId` and capped at five. Failure of these detail lookups is treated as a report data gap rather than a request failure. A report request still produces exactly one action plan; multiple plans should be requested as separate calls so each selected action gets isolated LLM context.
+The endpoint validates that the requested city and action exist in the supplied prioritization snapshot before it fetches live enrichment data. Report languages are output choices: they do not need to be a subset of the original prioritization `requestedLanguages`. If they differ, response metadata keeps a limitation note because action explanations from the original ranking may not exist in every requested language. The endpoint remains stateless: the prototype frontend stores the snapshot in browser local storage and sends it with the report request. When this frontend is later moved into CityCatalyst, snapshot persistence is expected to move into the CityCatalyst database, not into `hiap-meed`.
+
+The backend uses the supplied prioritization snapshot as the ranking basis and refetches additional city/action/policy/legal/feasibility data where the prioritize response does not carry enough detail for report writing. It fetches a broader finance catalogue and screens up to five active candidates by country, sector, municipal eligibility, climate relevance, municipal application route, and compatibility with the selected action's finance route; the upstream opportunities catalogue does not currently provide action-specific matching, so the report labels these as opportunities to assess. The action's financial-feasibility sector is required for this lookup; when it is missing, the backend skips the opportunities request and records a data gap instead of returning cross-sector programmes. Closed programmes are excluded from the current list, but up to five are retained in a separate monitoring list when the catalogue marks them as annual, periodic, recurring, or sporadic. Expired, cancelled, and non-recurring closed entries are omitted. Comparable projects are filtered by the selected `actionId` and capped at five. Financial feasibility scores, opportunities, and projects each use a dedicated upstream service and an independent failure boundary. A missing or unavailable projects response therefore produces an empty projects list and a project-specific data gap without discarding successfully fetched opportunities, and the inverse applies when only the opportunities lookup fails. A report request still produces exactly one action plan; multiple plans should be requested as separate calls so each selected action gets isolated LLM context.
 
 The Snapshot chapter starts with a prominent `**The ask:**` line. The backend derives that line from supplied action pathway, financial-feasibility, and legal-assessment facts so the wording stays defensible: for example, technical-assistance wording is used only when the finance route supports it, and direct municipal-leadership wording is used only when the legal facts show enabled ownership.
 
-The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users: Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, separates supporting/limiting tables, retains source units, omits indicators without a measured city value, and describes indicator effects specifically as contributions to the feasibility assessment; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and quotation; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Source names become links when public URLs are present and remain plain text otherwise; missing optional hyperlinks are not presented as data gaps. Co-benefit labels use the shared report taxonomy so source concepts such as `cost_of_living` remain "cost of living" in the report. Report prose must not narrate backend preparation or describe information as supplied to a model. Selection mechanics, request details, and diagnostics remain in structured metadata and artifacts. Missing substantive evidence is never filled from model knowledge.
+The reader-facing Markdown follows the report template and is written as a standalone report for non-technical municipal users. The eight canonical English chapters are generated concurrently from isolated chapter inputs. After all English chapters pass schema, source-reference, and language validation, one structured translation call translates the complete report into every additional requested language. The translation stage must preserve chapter order, facts, qualifications, Markdown structure, URLs, and source references while applying deterministic recurring terminology from `app/modules/prioritizer/translations.yaml`. URLs in chapter Markdown and limitations are replaced with chapter-specific placeholders before the LLM call and restored afterward, so URL destinations are not model-generated. Translation output that still fails validation after one internal retry returns HTTP `502` with `error_code=report_translation_validation_failed` and `retryable=false`; transient provider connectivity, rate-limit, or server failures return `error_code=report_translation_provider_unavailable`, `retryable=true`, and `Retry-After: 5`. The response `language` list contains canonical `en` first followed by the caller's deduplicated non-English languages, and response validation rejects incomplete language coverage. Snapshot uses a six-row signal table; City Fit uses the dedicated local-fit assessment, groups repeated uses of the same city indicator into one row, separates supporting and limiting conditions, adds a mixed-effects table only when an indicator has both contribution signs, retains source units, and omits indicators without a measured city value or non-neutral contribution; Policy Backing explains how the displayed excerpts are ordered and lists document, page, signal, and excerpt; Legal Mandate separates municipal and external roles and names the lead; Financing uses finance-specific evidence plus reader-ready legal delivery facts, and distinguishes current programmes, recurring programmes to monitor, and action-matched project precedents; and Where The Information Comes From separates public source references, rounded analyst figures, and plain-language data gaps. Official programme, document, agency, law, legal-citation, and place names remain in their source form. Report prose must not narrate backend preparation or describe information as supplied to a model. Missing substantive evidence is never filled from model knowledge.
 
 Source links are rendered only when the corresponding upstream record supplies a public URL. Optional policy-evidence `link` values are preserved when returned upstream; the current action-policy mock does not include them. The current legal classification CSV provides `legal_reference_1` through `legal_reference_6` as citation labels but has no URL columns, so these legal references appear as plain source names. Adding legal links requires an upstream legal-data schema change rather than inferred or hard-coded URLs in `hiap-meed`.
 
-Each LLM chapter call uses an explicit strict JSON Schema and validates the returned JSON with Pydantic before building the public response. The report path uses a standard OpenAI chat completion rather than the SDK's generic parsed-completion wrapper so MLflow autologging can serialize traces without `message.parsed` type warnings.
+Each English LLM chapter call uses an explicit strict JSON Schema and validates the returned JSON with Pydantic before building the canonical report. Source references must be a subset of those provided to the chapter, and a lightweight dominant-language check retries clearly wrong-language output once before failing closed. The batched translation call has its own strict schema and fails closed on missing languages, changed chapter order, wrong-language output, or changed URLs. Both report stages use standard OpenAI chat completions rather than the SDK's generic parsed-completion wrapper so MLflow autologging can serialize traces without `message.parsed` type warnings.
 
-Frontend-facing content is limited to `chapters[].markdown` and the concatenated `output_plan.md` artifact. The frontend renderer must support standard Markdown tables, headings, numbered lists, and links, and should preserve chapter order. Response metadata, chapter `limitations`, `source_context`, `chapter_inputs.json`, `report_context.json`, and MLflow artifacts are diagnostic/source-status surfaces; they can support frontend state, QA, and logging, but should not be rendered as report prose unless product explicitly approves a field and copy.
+Output-plan admission control is local to each pod. At most `OUTPUT_PLAN_MAX_CONCURRENT_REPORTS` requests actively enrich and generate reports in one pod; later requests wait asynchronously without occupying FastAPI thread-pool workers or creating chapter workers. Each active production request uses up to eight concurrent English chapter calls followed by one translation call. A waiting request that exceeds `OUTPUT_PLAN_QUEUE_TIMEOUT_SECONDS` receives HTTP `429`. Kubernetes replicas remain independent, so additional pods increase total throughput without duplicating reports.
+
+Frontend-facing content is `chapters[].title`, `chapters[].markdown`, and `chapters[].limitations` for the selected language. The frontend renderer must support standard Markdown tables, headings, numbered lists, and links, and should preserve chapter order. Chapter `source_refs`, response metadata, `source_context`, `chapter_inputs.json`, `report_context.json`, and MLflow artifacts are diagnostic/provenance surfaces and should not be rendered as report prose.
 
 Freshness note: ranking replay is exact only when the frontend or CityCatalyst stores the input snapshot used for prioritization. If a report is generated from live data after the user changed inputs or upstream sources changed, the report may no longer match the original ranking run. Product/frontend should define staleness checks and warnings for changed data after prioritization; the backend exposes source metadata but does not persist or own that UX decision.
 
@@ -316,13 +375,14 @@ Run commands from a Bash shell (Git Bash, WSL, Linux, macOS).
 
 Request body:
 
-- The endpoint accepts the frontend envelope `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
+- The endpoint accepts `PrioritizerApiRequest` (see `app/modules/prioritizer/models.py`).
 - Single-city and multi-city payloads both use `requestData.cityDataList`.
 - Optional flag: `requestData.createExplanations` controls whether the post-ranking
   explanation stage is executed.
-- `requestData.requestedLanguages` controls which explanation languages the backend attempts to return.
-- Canonical explanation generation is always English.
-- If non-English languages are requested, the backend generates English once and then translates from English into each requested target language.
+- `requestData.requestedLanguages` is a list of requested display languages. Supported values come from `app/modules/prioritizer/translations.yaml`; the backend always prepends canonical English (`en`) to the normalized response language list.
+- The explanation stage generates one English batch from the curated ranking evidence, then makes one vocabulary-constrained translation call for all requested non-English languages.
+- GPC sectors and subsectors, co-benefits, timeframes, feasibility components, finance routes, score labels, and legal verdict terms are localized deterministically from the shared catalogue. Official names remain in their source form.
+- Every successful language batch must contain one non-empty explanation per ranked action and pass dominant-language validation; otherwise explanation generation fails open for that city.
 - Response metadata reports `generated_languages` as the languages actually present in the returned explanation payload.
 
 Exclusions:
@@ -437,7 +497,7 @@ Response fields:
     - `evidence_summary` (`object`): compact explainability snapshot from hard-filter/impact/alignment/feasibility evidence; the feasibility section now keeps `feasibility_score` at the top level and groups details under `legal`, `mitigation_feasibility`, and `financial_feasibility`
     - `explanations` (`object`): optional explanation texts keyed by language code when `createExplanations=true`
   - `metadata` (`object`): request IDs, timings, counts, and hard-filter evidence.
-  - `warnings` (`string[]`): human-readable translation warnings when canonical English inputs appear non-English or mixed-language
+  - `warnings` (`string[]`): human-readable explanation-generation warnings
 
 Ranking details:
 
@@ -458,12 +518,12 @@ Explanation stage behavior:
      when feasibility is not a constraint.
 - Explanation text intentionally avoids repeating the numeric score bars already
   returned on each ranked action.
-- Explanations are always authored canonically in English.
-- Requested non-English explanations are translations of the canonical English text.
+- English is the canonical explanation language. Each non-English explanation is translated from that canonical batch, preserving its claims and caveats.
+- The translation prompt receives exact source/target term pairs from `app/modules/prioritizer/translations.yaml`; recurring domain labels use the configured target value while full descriptive sentences are translated naturally.
+- Official document, programme, agency, law, place, and action names remain in their source form.
 - In response metadata, `generated_languages` is the response-level union of explanation languages actually returned across `ranked_actions[].explanations`.
 - Explanations receive the selected `cityStrategicPreferenceCoBenefitKeys` directly.
-- If translation detects that a canonical explanation labeled as English appears non-English or mixed-language, translation still returns results and adds a warning to logs and the API response.
-- That language-check warning is determined internally per action, then aggregated by the backend into the public top-level `warnings` list returned by the API.
+- Each language batch must cover every ranked action. Dominant-language validation retries one clearly wrong-language batch once before failing the optional explanation stage open.
 - The backend logs a warning if the final explanation prompt becomes unusually large.
 - If explanation generation fails or times out, the endpoint fails open and
   returns normal ranking output with `explanations={}`.
@@ -472,11 +532,13 @@ Explanation stage behavior:
 
 - The endpoint accepts the frontend envelope `ExplanationTranslationApiRequest`.
 - `requestData.sourceLanguage` must be `en`.
-- `requestData.targetLanguages` must contain only non-English target languages.
+- `requestData.targetLanguages` must contain only non-English languages fully configured in `app/modules/prioritizer/translations.yaml`; currently that means `es`.
 - `requestData.rankedActions[*]` includes:
   - `actionId`
   - `canonicalExplanation`
-- The endpoint is stateless: the frontend sends the canonical English explanations it wants translated.
+- This separate endpoint remains stateless: the frontend sends canonical English explanations it wants translated. The normal prioritization explanation flow uses the same translation service internally after canonical English generation, retries invalid translation output once, and retains English explanations with a warning if translation still fails.
+- The LLM receives English source terms and exact target terms from the shared catalogue. It must preserve official names and use catalogue terminology instead of inventing recurring labels.
+- Returned rows must cover every requested action and language and pass dominant-language validation.
 - The endpoint returns only the requested target-language translations, not the original English text.
 
 Example JSON request bodies (using mock data from `data/`):
@@ -484,15 +546,7 @@ Example JSON request bodies (using mock data from `data/`):
 ```json
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize/exclusions/preview",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": ["en"],
@@ -536,7 +590,12 @@ Example exclusion preview response:
       },
       "warnings": []
     }
-  ]
+  ],
+  "meta": {
+    "requestId": "1234567890",
+    "generatedAtUtc": "2026-08-19T10:00:00Z",
+    "totalRecords": 1
+  }
 }
 ```
 
@@ -545,15 +604,7 @@ Example ranking request after review:
 ```json
 {
   "meta": {
-    "requestId": "1234567890",
-    "generatedAtUtc": "2026-02-26T11:43:40.011939+00:00",
-    "backendConsumer": "hiap-meed",
-    "upstreamProvider": "city_catalyst_frontend",
-    "apiContext": {
-      "endpoint": "POST /v1/prioritize",
-      "locodes": ["CL IQQ"]
-    },
-    "totalRecords": 1
+    "requestId": "1234567890"
   },
   "requestData": {
     "requestedLanguages": ["en"],
@@ -608,14 +659,20 @@ Example response:
                 "component_source": "verdict_score",
                 "ownership_category": "enabled",
                 "ownership_score": 1.0,
-                "ownership_description": "Municipality has explicit legal authority to act directly.",
-                "ownership_description_es": "El municipio cuenta con competencia legal expresa para actuar de forma directa.",
+                "ownership_description": {
+                  "en": "Municipality has explicit legal authority to act directly.",
+                  "es": "El municipio cuenta con competencia legal expresa para actuar de forma directa."
+                },
                 "restrictions_category": "conditional",
                 "restrictions_score": 0.5,
-                "restrictions_description": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
-                "restrictions_description_es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial.",
-                "legal_justification": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal.",
-                "legal_justification_en": "English legal reasoning text from the legal classification source.",
+                "restrictions_description": {
+                  "en": "Moderate legal risk; may require prior authorization or face potential legal challenge.",
+                  "es": "Riesgo juridico moderado; puede requerir autorizacion previa o enfrentar un eventual desafio judicial."
+                },
+                "legal_justification": {
+                  "en": "English legal reasoning text from the legal classification source.",
+                  "es": "Texto de razonamiento juridico en espanol desde la fuente de clasificacion legal."
+                },
                 "legal_references": ["Ley 18.695 (LOCM) - BCN"]
               },
               "mitigation_feasibility": {
@@ -641,12 +698,18 @@ Example response:
           "legal": {
             "verdict_category": "blocked",
             "verdict_score": 0.0,
-            "ownership_description": "Authority belongs to another level of government; municipality cannot act alone.",
-            "ownership_description_es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo.",
-            "restrictions_description": "There is a legal prohibition/restriction, or legal reform is needed.",
-            "restrictions_description_es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa.",
-            "legal_justification": "Texto de razonamiento juridico en espanol.",
-            "legal_justification_en": "English legal reasoning text.",
+            "ownership_description": {
+              "en": "Authority belongs to another level of government; municipality cannot act alone.",
+              "es": "La competencia pertenece a otro nivel de gobierno; el municipio no puede actuar por si solo."
+            },
+            "restrictions_description": {
+              "en": "There is a legal prohibition/restriction, or legal reform is needed.",
+              "es": "Existe una prohibicion o restriccion legal, o se requiere una reforma legislativa."
+            },
+            "legal_justification": {
+              "en": "English legal reasoning text.",
+              "es": "Texto de razonamiento juridico en espanol."
+            },
             "legal_references": ["Ley 18.695 (LOCM) - BCN"]
           }
         }
@@ -680,16 +743,21 @@ Example response:
         }
       }
     }
-  ]
+  ],
+  "meta": {
+    "requestId": "1234567890",
+    "generatedAtUtc": "2026-08-19T10:00:01Z",
+    "totalRecords": 1
+  }
 }
 ```
 
 When actions are removed before ranking, the prioritization response includes
 them in `removed_actions` for frontend display. Legally blocked rows include a
-`legal` object with the same public legal detail fields used by ranked actions,
-including `ownership_description`, `ownership_description_es`,
-`restrictions_description`, `restrictions_description_es`,
-`legal_justification`, `legal_justification_en`, and `legal_references`.
+`legal` object with the same public legal detail fields used by ranked actions.
+`ownership_description`, `restrictions_description`, and `legal_justification`
+are objects keyed by available language code (for example, `en` and `es`), and
+`legal_references` remains a list.
 The diagnostic `metadata.hard_filter_evidence_by_action_id` map remains
 available for artifact/debug views.
 
@@ -699,7 +767,7 @@ Common validation errors:
 - Missing `requestData.cityDataList` or empty `cityDataList` -> HTTP `422`.
 - Missing `locode` or empty `locode` in a city entry -> HTTP `422`.
 
-Note: city, action, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The legal client resolves to `s3` by default, still supports `mock`, and keeps `api` only as a deprecated failure path. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways` without query parameters and returns the full upstream catalog plus fetch metadata. The prioritization pipeline then keeps only mitigation actions and records fetched-versus-kept counts in the `fetch_actions` artifacts. The legal client downloads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`, parses multiline CSV fields, and maps rows into the existing legal assessment contract. Legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return HTTP `503` with a specific upstream dependency error rather than ranking with neutral legal defaults. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; output-plan generation additionally follows the selected action into the opportunities and projects catalogues for capped reader-facing detail. The API-backed clients default to `api`, except legal which defaults to `s3`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts include S3 source metadata such as the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available after a successful legal fetch.
+Note: city, action, policy-score, mitigation-feasibility, and financial-feasibility clients resolve to `mock` (file-backed) or `api`. The legal client resolves to `s3` by default, still supports `mock`, and keeps `api` only as a deprecated failure path. The city client uses synchronous HTTP for `GET /api/v0/city_attributes/{locode}`. The action client uses `GET /api/v1/action-pathways?lang=all` so the returned catalog includes every available upstream localization plus fetch metadata. The shared action selector then keeps only actions explicitly typed as mitigation for the action GET, exclusion preview, prioritization, and output-plan enrichment; prioritization records fetched-versus-kept counts and missing action types in the `fetch_actions` artifacts. The legal client downloads the private CSV configured by `HIAP_MEED_LEGAL_S3_BUCKET` and `HIAP_MEED_LEGAL_S3_KEY`, parses multiline CSV fields, and maps rows into the existing legal assessment contract. Legal S3 fetch failures are fail-closed: missing credentials, access denial, missing bucket/key, or S3 connectivity errors return HTTP `503` with a specific upstream dependency error rather than ranking with neutral legal defaults. Policy scores use `GET /api/v1/cities/{locode}/action-policy-scores`. Mitigation feasibility uses `GET /api/v1/cities/{locode}/action-mitigation-feasibility-scores?country_code=...`; 404 or missing rows are treated as neutral `0.5` in scoring. Financial feasibility uses `GET /api/v1/cities/{locode}/climate-finance/feasibility?country_code=...`; its public response retains missing scores as `null`, while prioritization applies its existing neutral fallback internally. Output-plan generation calls the opportunities and projects catalogues through separate services for capped reader-facing detail, so either optional catalogue can fail without clearing data returned by the other. The API-backed clients default to `api`, except legal which defaults to `s3`. The shared `CCGLOBAL_API_BASE_URL` defaults to `https://ccglobal.openearth.dev` for local/dev use; the hiap-meed GitHub workflows override it per environment, with dev using `https://ccglobal.openearth.dev` and test/prod using `https://api.citycatalyst.io/`. If that host mapping changes, update both the runtime config and the hiap-meed deploy workflows together. The shared upstream HTTP path also includes simple retries for transient failures, explicit timeout config, and route-level `404/502/503/504` error mapping. Upstream response DTOs are intentionally additive-tolerant right now: they ignore unexpected extra fields while still validating the fields the pipeline depends on. FastAPI runs synchronous routes in a threadpool, so the event loop stays free to handle concurrent requests. Legal fetch artifacts include S3 source metadata such as the logical `s3:GetObject legal classification CSV` operation, requested country code, object key suffix, ETag, and S3 `LastModified` timestamp when available after a successful legal fetch.
 
 ### 7. Logging and artifacts
 
@@ -741,21 +809,21 @@ What each local request run folder contains:
 - When MLflow is enabled, it uses the same default relative artifact paths as the optional local request folder so both outputs keep one consistent hierarchy
 - Prioritization request folders additionally include:
   - `llm/explanations_io.json`: explanation-stage LLM request/response artifact (only when explanations are generated successfully)
-  - `llm/explanations_prompt.txt`: plain-text rendered user prompt with preserved newlines (only when explanations are generated successfully)
+  - `llm/explanations/en_prompt.txt`: rendered canonical English explanation prompt (only when explanations are generated successfully)
+  - `llm/explanation_translations_prompt.txt`: rendered batched translation prompt when non-English languages are requested
   - `llm/explanations_error.json`: explanation-stage failure artifact with request context and error (only when explanation generation fails)
-  - `llm/explanation_translations_io.json`: translation-stage LLM request/response artifact (only when translations are generated successfully)
-  - `llm/explanation_translations_prompt.txt`: plain-text rendered translation prompt (only when translations are generated successfully)
-  - `llm/explanation_translations_error.json`: translation-stage failure artifact with request context and error (only when translation fails)
-- Prioritization explanation artifacts and response metadata record the original `requestedLanguages`, canonical language `en`, generated languages actually returned in the response, and any translation warnings.
+- Prioritization explanation artifacts and response metadata record canonical English, normalized requested languages, and generated languages actually returned in the response.
 - Explanation translation request folders additionally include:
   - `llm/explanation_translations_io.json`
   - `llm/explanation_translations_prompt.txt`
 - Explanation translation artifacts record the source language contract, requested target languages, and any LLM language-check warnings.
 - Output-plan report request folders additionally include:
   - `report_context.json`: normalized context for the selected city/action report
-  - `chapter_inputs.json`: the isolated per-chapter inputs retained for diagnostics, including internal guardrails not rendered as report prose
+  - `chapter_inputs.json`: the isolated per-language, per-chapter inputs retained for diagnostics, including internal guardrails not rendered as report prose
   - `llm/output_plan_io.json`: output-plan LLM request/response diagnostics, or a skipped marker when `debugContextOnly=true`
-  - `output_plan.md`: reader-friendly Markdown with all returned chapters concatenated in response order
+  - `llm/en/<chapter>_prompt.txt`: rendered prompt for each canonical English chapter
+  - `llm/report_translation_prompt.txt`: one rendered full-report translation prompt when non-English languages are requested
+  - `output_plan.<language>.md`: one reader-friendly concatenated Markdown report per generated language
 - For the direct other-preference feature, the `alignment` step detail includes evidence such as `resolved_preferred_co_benefits`, `matched_preferred_co_benefits`, and mapping source fields
 - The active request flow does not emit dedicated LLM prompt/response artifact files for Alignment because direct co-benefit selections are deterministic
 - Exclusion preview step-detail artifacts keep the city-level diagnostics, including:

@@ -9,8 +9,8 @@ import LabelLarge from "@/components/package/Texts/Label";
 
 interface EmissionFactorsSectionProps {
   t: TFunction;
-  control: Control<FieldValues, any>;
-  errors: Record<string, any>;
+  control: Control<FieldValues>;
+  errors: Record<string, unknown>;
   isDirectMeasure: boolean;
   hideEmissionFactors?: boolean;
   isEmissionFactorInputDisabled: boolean;
@@ -31,6 +31,11 @@ export const EmissionFactorsSection = ({
   if (isDirectMeasure || hideEmissionFactors) {
     return null;
   }
+
+  const getFieldError = (field: string): { message?: string } | undefined =>
+    (errors?.activity as Record<string, { message?: string }> | undefined)?.[
+      field
+    ];
 
   return (
     <>
@@ -64,11 +69,11 @@ export const EmissionFactorsSection = ({
                 </Text>
               )}
             </FormattedNumberInput>
-            {errors?.activity?.["CO2EmissionFactor"] ? (
+            {getFieldError("CO2EmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["CO2EmissionFactor"]?.message}
+                {getFieldError("CO2EmissionFactor")?.message}
               </BodyMedium>
             </Box>
           ) : (
@@ -98,11 +103,11 @@ export const EmissionFactorsSection = ({
               </Text>
             )}
           </FormattedNumberInput>
-          {errors?.activity?.["N2OEmissionFactor"] ? (
+          {getFieldError("N2OEmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["N2OEmissionFactor"]?.message}
+                {getFieldError("N2OEmissionFactor")?.message}
               </BodyMedium>
             </Box>
           ) : (
@@ -132,11 +137,11 @@ export const EmissionFactorsSection = ({
               </Text>
             )}
           </FormattedNumberInput>
-          {errors?.activity?.["CH4EmissionFactor"] ? (
+          {getFieldError("CH4EmissionFactor") ? (
             <Box display="flex" gap="6px" alignItems="center" mt="6px">
               <Icon as={MdWarning} color="sentiment.negativeDefault" />
               <BodyMedium>
-                {errors?.activity?.["CH4EmissionFactor"]?.message}
+                {getFieldError("CH4EmissionFactor")?.message}
               </BodyMedium>
             </Box>
           ) : (

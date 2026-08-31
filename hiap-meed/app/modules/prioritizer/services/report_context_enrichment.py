@@ -6,6 +6,8 @@ import logging
 
 from app.modules.prioritizer.internal_models import (
     Action,
+    ClimateFinanceOpportunitiesFetchResult,
+    ClimateFinanceProjectsFetchResult,
     ClimateFinanceReportEvidenceFetchResult,
 )
 from app.modules.prioritizer.models import CityActionReportApiRequest
@@ -14,6 +16,7 @@ from app.modules.prioritizer.report_context import (
     validate_report_snapshot,
 )
 from app.modules.prioritizer.report_models import ReportContext
+from app.services.action_pathways_api import select_prioritizable_actions
 from app.services.data_clients import (
     ApiActionFinancialFeasibilityScoresDataApiClient,
     ApiActionMitigationFeasibilityScoresDataApiClient,
@@ -51,7 +54,7 @@ def build_report_context_with_live_enrichment(
     Build a report context using snapshot validation plus live source refetches.
 
     Inputs:
-    - report request carrying one locode, action ID, language, and prioritization snapshot
+    - report request carrying one locode, action ID, language list, and prioritization snapshot
     - data clients for live city/action/policy/legal/feasibility enrichment
 
     Returns:
@@ -71,7 +74,8 @@ def build_report_context_with_live_enrichment(
     # Step 1: fetch live source data used by several report chapters.
     city = city_data_api_client.get_city(locode)
     actions_result = action_pathways_data_api_client.list_actions()
-    action = _find_action(actions_result.actions, action_id)
+    prioritizable_actions, _, _ = select_prioritizable_actions(actions_result.actions)
+    action = _find_action(prioritizable_actions, action_id)
     policy_result = action_policy_scores_data_api_client.get_action_policy_scores(locode)
     legal_assessments = legal_data_api_client.get_action_legal_assessments(country_code)
     mitigation_result = (
@@ -131,28 +135,109 @@ def _fetch_report_finance_evidence(
     sector: str | None,
     route: str | None,
 ) -> ClimateFinanceReportEvidenceFetchResult:
-    """Fetch selected-action finance details when the injected client supports it."""
-    fetch_evidence = getattr(client, "get_report_finance_evidence", None)
-    if fetch_evidence is None:
-        return ClimateFinanceReportEvidenceFetchResult(
-            warnings=["The finance client does not provide detailed report evidence."]
+    """Fetch opportunities and projects without coupling their failure boundaries."""
+    opportunities_result = _fetch_report_finance_opportunities(
+        client=client,
+        country_code=country_code,
+        sector=sector,
+        route=route,
+    )
+    projects_result = _fetch_report_finance_projects(
+        client=client,
+        action_id=action_id,
+        country_code=country_code,
+    )
+    return ClimateFinanceReportEvidenceFetchResult(
+        opportunities=opportunities_result.opportunities,
+        projects=projects_result.projects,
+        source_metadata={
+            "opportunities": opportunities_result.source_metadata,
+            "projects": projects_result.source_metadata,
+        },
+        warnings=[
+            warning
+            for warning in (
+                opportunities_result.warning,
+                projects_result.warning,
+            )
+            if warning
+        ],
+    )
+
+
+def _fetch_report_finance_opportunities(
+    *,
+    client: MockActionFinancialFeasibilityScoresDataApiClient
+    | ApiActionFinancialFeasibilityScoresDataApiClient,
+    country_code: str,
+    sector: str | None,
+    route: str | None,
+) -> ClimateFinanceOpportunitiesFetchResult:
+    """Fetch opportunities while containing failures to this endpoint."""
+    fetch_opportunities = getattr(client, "get_report_finance_opportunities", None)
+    if fetch_opportunities is None:
+        return ClimateFinanceOpportunitiesFetchResult(
+            warning="The finance client does not provide detailed opportunities."
         )
     try:
-        return fetch_evidence(
-            action_id=action_id,
+        return fetch_opportunities(
             country_code=country_code,
             sector=sector,
             route=route,
         )
     except UpstreamApiError as error:
         logger.warning(
-            "Detailed report finance evidence unavailable action_id=%s error=%s",
+            "Report finance opportunities unavailable country_code=%s sector=%s error=%s",
+            country_code,
+            sector,
+            error,
+        )
+        return ClimateFinanceOpportunitiesFetchResult(
+            source_metadata=_failed_catalogue_source_metadata(error),
+            warning="Detailed finance opportunities are unavailable.",
+        )
+
+
+def _fetch_report_finance_projects(
+    *,
+    client: MockActionFinancialFeasibilityScoresDataApiClient
+    | ApiActionFinancialFeasibilityScoresDataApiClient,
+    action_id: str,
+    country_code: str,
+) -> ClimateFinanceProjectsFetchResult:
+    """Fetch projects while containing failures to this endpoint."""
+    fetch_projects = getattr(client, "get_report_finance_projects", None)
+    if fetch_projects is None:
+        return ClimateFinanceProjectsFetchResult(
+            warning="The finance client does not provide comparable projects."
+        )
+    try:
+        return fetch_projects(
+            action_id=action_id,
+            country_code=country_code,
+        )
+    except UpstreamApiError as error:
+        if error.upstream_status_code == 404:
+            warning = "No comparable projects are available for this action."
+        else:
+            warning = "Detailed comparable projects are unavailable."
+        logger.warning(
+            "Report finance projects unavailable action_id=%s error=%s",
             action_id,
             error,
         )
-        return ClimateFinanceReportEvidenceFetchResult(
-            warnings=["Detailed finance opportunities and precedents are unavailable."]
+        return ClimateFinanceProjectsFetchResult(
+            source_metadata=_failed_catalogue_source_metadata(error),
+            warning=warning,
         )
+
+
+def _failed_catalogue_source_metadata(error: UpstreamApiError) -> dict[str, object]:
+    """Preserve endpoint failure evidence without exposing it as report prose."""
+    return {
+        "upstream_url": error.url,
+        "http_status_code": error.upstream_status_code,
+    }
 
 
 def _find_action(actions: list[Action], action_id: str) -> Action:

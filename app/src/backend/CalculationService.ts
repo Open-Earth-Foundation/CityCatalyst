@@ -100,7 +100,7 @@ export default class CalculationService {
       return "direct-measure";
     }
 
-    let formula = "activity-amount-times-emissions-factor"; // fallback value
+    const formula = "activity-amount-times-emissions-factor"; // fallback value
 
     // search manual-input-hierarchy.json for inputMethodology ID
     // TODO pass refNo from request into this function for faster search
@@ -182,7 +182,7 @@ export default class CalculationService {
         gases = handleVkt1Formula(activityValue, gasValues, inventoryValue);
         break;
       case "biological-treatment":
-        let formulaMapping =
+        const formulaMapping =
           CalculationService.getFormulaMapping(inputMethodology);
         gases = await handleBiologicalTreatmentFormula(
           activityValue,
@@ -198,7 +198,7 @@ export default class CalculationService {
           activityId === "wastewater-inside-domestic-calculator-activity" ||
           activityId === "wastewater-outside-domestic-calculator-activity"
         ) {
-          let prefixKey = activityId.split("-").slice(0, -1).join("-");
+          const prefixKey = activityId.split("-").slice(0, -1).join("-");
           const inventory = await db.models.Inventory.findByPk(
             inventoryValue.inventoryId,
           );
@@ -215,7 +215,7 @@ export default class CalculationService {
           activityId === "wastewater-inside-industrial-calculator-activity" ||
           activityId === "wastewater-outside-industrial-calculator-activity"
         ) {
-          let prefixKey = activityId.split("-").slice(0, -1).join("-");
+          const prefixKey = activityId.split("-").slice(0, -1).join("-");
           gases = await handleIndustrialWasteWaterFormula(
             activityValue,
             inventoryValue,

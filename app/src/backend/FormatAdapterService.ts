@@ -93,7 +93,7 @@ export default class FormatAdapterService {
     }
 
     // ── Adapter A (long-tidy): explicit Year + Sector + Emissions columns ──
-    const longTidy = this.detectLongTidy(primary, headers, headersLower);
+    const longTidy = this.detectLongTidy(primary, headers);
     if (longTidy) {
       return {
         adapterType: "long-tidy",
@@ -329,7 +329,6 @@ export default class FormatAdapterService {
   private static detectLongTidy(
     sheet: ParsedSheet,
     headers: string[],
-    headersLower: string[],
   ):
     | { yearCol: string; sectorCol: string; emissionsCol: string }
     | null {
@@ -606,7 +605,7 @@ export default class FormatAdapterService {
         header !== activityTypeHeader && header !== activityUnitHeader,
     );
 
-    const unpivotedRows: Record<string, unknown>[] = [];
+    const unpivotedRows: Record<string, string | number | null>[] = [];
 
     for (const year of years) {
       // Primary tCO2e column for this year (prefer 100yr GWP)
@@ -639,7 +638,7 @@ export default class FormatAdapterService {
         )
           continue;
 
-        const newRow: Record<string, unknown> = { year };
+        const newRow: Record<string, string | number | null> = { year };
         for (const catHeader of otherCategoryHeaders) {
           newRow[catHeader] = row[catHeader];
         }
@@ -714,7 +713,7 @@ export default class FormatAdapterService {
     }
     const allHeaders = [...allHeaderSet];
 
-    const mergedRows: Record<string, unknown>[] = [];
+    const mergedRows: Record<string, string | number | null>[] = [];
     for (const s of usableSheets) {
       for (const row of s.rows) {
         // Skip rows that look like sub-headers (all string, no numbers)

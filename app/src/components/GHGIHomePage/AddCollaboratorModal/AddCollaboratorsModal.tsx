@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { HStack, Text } from "@chakra-ui/react";
-import { MdPersonAdd } from "react-icons/md";
-import { HeadlineSmall } from "@/components/package/Texts/Headline";
 import InviteCollaboratorsStep, {
   type InviteCollaboratorsStepRef,
 } from "@/components/steps/GHGI/invite-collaborators-step";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
+import { TitleLarge } from "@/components/package";
+import { toaster } from "@/components/ui/toaster";
 
 const AddCollaboratorsDialog = ({
   lng,
@@ -31,13 +31,9 @@ const AddCollaboratorsDialog = ({
   organizationId?: string;
 }) => {
   const { t } = useTranslation(lng, "dashboard");
+  const { t: tSettings } = useTranslation(lng, "settings");
   const stepRef = useRef<InviteCollaboratorsStepRef>(null);
   const [canSubmit, setCanSubmit] = useState(false);
-
-  const { showSuccessToast } = UseSuccessToast({
-    title: t("invite-success-toast-title"),
-    description: t("invite-success-toast-description"),
-  });
 
   const { showErrorToast } = UseErrorToast({
     title: t("invite-error-toast-title"),
@@ -47,7 +43,12 @@ const AddCollaboratorsDialog = ({
   const handleSend = async () => {
     try {
       await stepRef.current?.sendInvites();
-      showSuccessToast();
+      toaster.create({
+        title: t("invite-success-toast-title"),
+        description: t("invite-link-copied-to-clipboard"),
+        type: "success",
+        duration: 3000,
+      });
       onClose();
     } catch {
       showErrorToast();
@@ -55,8 +56,19 @@ const AddCollaboratorsDialog = ({
   };
 
   return (
-    <DialogRoot open={isOpen} onOpenChange={onClose} onExitComplete={onClose}>
-      <DialogContent w="720px" maxH="90vh" overflowY="auto" marginTop="2%" p={0}>
+    <DialogRoot
+      open={isOpen}
+      onOpenChange={onClose}
+      onExitComplete={onClose}
+      placement="center"
+    >
+      <DialogContent
+        minW="779px"
+        minH="779px"
+        overflowY="auto"
+        px="48px"
+        py="24px"
+      >
         <DialogHeader
           display="flex"
           justifyContent="start"
@@ -69,15 +81,20 @@ const AddCollaboratorsDialog = ({
           borderBottomWidth="2px"
           borderStyle="solid"
           borderColor="background.neutral"
+          p="0px"
+          pb="24px"
         >
           <HStack>
-            <MdPersonAdd fontSize="32px" />
-            <HeadlineSmall text={t("invite-collaborators")} />
+            <TitleLarge>{tSettings("invite-collaborators-title")}</TitleLarge>
           </HStack>
         </DialogHeader>
-        <DialogCloseTrigger mt="2" color="interactive.control" mr="2" />
-        <DialogBody p={6}>
-          <InviteCollaboratorsStep ref={stepRef} lng={lng} onValidityChange={setCanSubmit} />
+        <DialogCloseTrigger mt="2" color="interactive.control" mr="4" />
+        <DialogBody p="0px" py="24px">
+          <InviteCollaboratorsStep
+            ref={stepRef}
+            lng={lng}
+            onValidityChange={setCanSubmit}
+          />
         </DialogBody>
         <DialogFooter
           paddingX={6}

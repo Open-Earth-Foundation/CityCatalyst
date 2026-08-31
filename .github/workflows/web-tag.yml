@@ -22,6 +22,7 @@ on:
       - k8s/cc-web.yml
       - k8s/cc-web-deploy.yml
       - k8s/prod/cc-prod-process-pdf-ocr-jobs.yml
+      - k8s/prod/cc-prod-process-webhook-deliveries.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-tag.yml
     tags:
@@ -202,6 +203,7 @@ jobs:
         run: kubectl get pods -n default
 
       - name: Deploying service
+        id: deploy
         run: |
           export VERSION=${REF#refs/tags/v}
           kubectl create -f k8s/prod/cc-prod-migrate.yml -n default
@@ -238,7 +240,8 @@ jobs:
             "NEXTAUTH_URL=https://citycatalyst.io" \
             "NEXT_PUBLIC_API_URL=https://api.citycatalyst.io" \
             "GLOBAL_API_URL=https://api.citycatalyst.io" \
-            "HIAP_API_URL=http://hiap-service-dev" \
+            "HIAP_API_URL=http://hiap-service-prod" \
+            "HIAP_MEED_API_URL=http://hiap-meed-service-prod" \
             "NEXT_PUBLIC_OPENCLIMATE_API_URL=https://app.openclimate.network" \
             "NEXT_PUBLIC_CC_CCRA_REPLIT_URL=https://citycatalyst-ccra.replit.app" \
             "OPENCLIMATE_API_URL=https://app.openclimate.network" \
@@ -255,7 +258,8 @@ jobs:
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY_PROD}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID_PROD}} \
           CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
-            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}" \
+            "WEBHOOK_SECRET_ENCRYPTION_KEY=${{secrets.WEBHOOK_SECRET_ENCRYPTION_KEY}}"
           kubectl create -f k8s/prod/cc-prod-create-admin.yml -n default
           kubectl set env cronjob/citycatalyst-check-hiap-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
@@ -263,8 +267,25 @@ jobs:
           kubectl apply -f k8s/prod/cc-prod-process-pdf-ocr-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-prod-process-pdf-ocr-jobs \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/prod/cc-prod-process-webhook-deliveries.yml -n default
+          kubectl set env cronjob/citycatalyst-prod-process-webhook-deliveries \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s
+
+      - name: Notify Slack - Deployment Success
+        if: steps.deploy.outputs.status == 'success'
+        uses: ./.github/actions/slack-notify
+        with:
+          type: deployment_success
+          webhook-url: ${{ secrets.SLACK_SUCCESS_WEBHOOK_URL }}
+          branch: ${{ github.ref_name }}
+          commit-sha: ${{ github.sha }}
+          commit-message: ${{ github.event.head_commit.message }}
+          author: ${{ github.event.head_commit.author.name }}
+          workflow-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          commit-url: ${{ github.event.repository.html_url }}/commit/${{ github.sha }}
+          environment: prod
 
   ccCaPostDeploySmoke:
     name: CA/CC post-deploy smoke

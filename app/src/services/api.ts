@@ -1,4 +1,4 @@
-import { env } from "next-runtime-env";
+import { env } from "@/lib/runtime-env";
 import {
   type CityAttributes,
   type InventoryAttributes,
@@ -6,10 +6,12 @@ import {
   type PopulationAttributes,
   type UserAttributes,
   type ModuleAttributes,
-  ProjectModulesAttributes,
-  ActionPlan,
+  type ProjectModulesAttributes,
+  type ActivityValueAttributes,
+  type ActionPlanAttributes,
 } from "@/models/init-models";
 import type { BoundingBox } from "@/util/geojson";
+import { OrganizationPlanType } from "@/util/enums";
 import {
   AcceptInviteRequest,
   AcceptInviteResponse,
@@ -60,28 +62,40 @@ import {
   FormulaInputValuesResponse,
   DataSourceResponse,
   Client,
-  LangMap,
   PermissionCheckResponse,
   Authz,
   CityDashboardResponse,
+  ConceptNoteApplicationContext,
+  ConceptNoteDraftState,
+  ConceptNoteRun,
+  ConceptNoteRunListResponse,
+  ConceptNoteUploadRequest,
+  ConceptNoteUploadResponse,
+  ConceptNoteUploadStatusRequest,
+  ConceptNoteContextBundleRetryResponse,
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
+  StartConceptNoteRunRequest,
+  WebhookSubscriptionResponse,
+  WebhookSubscriptionSecretResponse,
+  CreateWebhookSubscriptionRequest,
+  UpdateWebhookSubscriptionRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
-  DashboardResponseType,
   HIAPResponse,
-  ModuleDataSummaryResponse,
   GHGInventorySummary,
   HIAPSummary,
   CCRASummary,
   HIAction,
-  HighImpactActionRankingStatus,
-  BulkHiapPrioritizationResult,
   HiapJob,
   ImportedFileResponse,
   ImportStatusResponse,
   VersionHistoryResponse,
+  UserOrganizationsResponse,
+  OCCityAttributes,
+  OCCityDataResponse,
+  ProjectBoundary,
 } from "@/util/types";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
@@ -129,7 +143,11 @@ export const api = createApi({
     "ActionPlan",
     "VersionHistory",
     "PersonalAccessToken",
+    "Webhook",
     "AdminModules",
+    "ConceptNoteRuns",
+    "ConceptNoteUpload",
+    "ConceptNoteDraft",
   ],
   baseQuery: fetchBaseQuery({ baseUrl: "/api/v1/", credentials: "include" }),
   endpoints: (builder) => {
@@ -579,7 +597,8 @@ export const api = createApi({
         }
       >({
         query: (data) => `/city/${data.cityId}/user/${data.userId}`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         providesTags: ["UserData"],
       }),
 
@@ -603,7 +622,8 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         invalidatesTags: ["UserData"],
       }),
       getCityUsers: builder.query<
@@ -613,12 +633,14 @@ export const api = createApi({
         }
       >({
         query: (data) => `/city/${data.cityId}/user/`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: UserAttributes }) =>
+          response.data,
         providesTags: ["UserData"],
       }),
       getCityInvites: builder.query<GetUserCityInvitesResponse[], void>({
         query: () => `/user/invites`,
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: GetUserCityInvitesResponse[] }) =>
+          response.data,
         providesTags: ["Invites"],
       }),
       setUserData: builder.mutation<
@@ -632,20 +654,28 @@ export const api = createApi({
         }),
         invalidatesTags: ["UserData"],
       }),
-      cancelInvite: builder.mutation<void, { cityInviteId: string }>({
+      cancelInvite: builder.mutation<
+        { success: boolean },
+        { cityInviteId: string }
+      >({
         query: ({ cityInviteId }) => ({
           url: `/user/invites/${cityInviteId}`,
           method: "DELETE",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
         invalidatesTags: ["Invites"],
       }),
-      resetInvite: builder.mutation<void, { cityInviteId: string }>({
+      resetInvite: builder.mutation<
+        { success: boolean },
+        { cityInviteId: string }
+      >({
         query: ({ cityInviteId }) => ({
           url: `/user/invites/${cityInviteId}`,
           method: "PATCH",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: { success: boolean } }) =>
+          response.data,
         invalidatesTags: ["Invites"],
       }),
       getVerificationToken: builder.query({
@@ -656,7 +686,7 @@ export const api = createApi({
       }),
 
       requestVerification: builder.mutation<
-        string,
+        { comparePassword: boolean },
         { password: string; token: string }
       >({
         query: ({ password, token }) => ({
@@ -670,15 +700,17 @@ export const api = createApi({
           url: "/city",
           method: "GET",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: CityAttributes[] }) =>
+          response.data,
         providesTags: ["CityData"],
       }),
-      removeCity: builder.mutation<string, { cityId: string }>({
+      removeCity: builder.mutation<CityAttributes, { cityId: string }>({
         query: ({ cityId }) => ({
           url: `/city/${cityId}`,
           method: "DELETE",
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: CityAttributes }) =>
+          response.data,
         invalidatesTags: ["CityData", "Projects"],
       }),
       getInventories: builder.query<InventoryAttributes[], { cityId: string }>({
@@ -687,9 +719,13 @@ export const api = createApi({
           method: "GET",
         }),
         providesTags: ["Inventories"],
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: InventoryAttributes[] }) =>
+          response.data,
       }),
-      addUserFile: builder.mutation<UserFileResponse, any>({
+      addUserFile: builder.mutation<
+        UserFileResponse,
+        { formData: object; cityId: string }
+      >({
         query: ({ formData, cityId }) => {
           return {
             method: "POST",
@@ -701,14 +737,13 @@ export const api = createApi({
           response.data,
         invalidatesTags: ["FileData"],
       }),
-      getUserFiles: builder.query({
+      getUserFiles: builder.query<UserFileResponse[], string>({
         query: (cityId: string) => ({
           method: "GET",
           url: `/city/${cityId}/file`,
         }),
-        transformResponse: (response: { data: UserFileResponse }) => {
-          return response.data;
-        },
+        transformResponse: (response: { data: UserFileResponse[] }) =>
+          response.data,
 
         providesTags: ["FileData"],
       }),
@@ -727,7 +762,7 @@ export const api = createApi({
           methodologyId: string;
           inventoryId: string;
           referenceNumber: string;
-          metadata?: Record<string, any>;
+          metadata?: Record<string, unknown>;
         }
       >({
         query: (params) => {
@@ -806,8 +841,7 @@ export const api = createApi({
               body: data,
             };
           },
-          transformResponse: (response: { data: AcceptInviteResponse }) =>
-            response.data,
+          transformResponse: (response: AcceptInviteResponse) => response,
           invalidatesTags: [
             "Invites",
             "UserData",
@@ -835,7 +869,6 @@ export const api = createApi({
             body: data,
           };
         },
-        transformResponse: (response: any) => response,
         invalidatesTags: [
           "UserAccessStatus",
           "Projects",
@@ -889,7 +922,8 @@ export const api = createApi({
           },
           method: "GET",
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes[] }) =>
+          response.data,
         providesTags: ["ActivityValue"],
       }),
       createActivityValue: builder.mutation({
@@ -898,7 +932,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/activity-value`,
           body: data.requestData,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -914,7 +949,8 @@ export const api = createApi({
           method: "GET",
           url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         providesTags: ["ActivityValue"],
       }),
       updateActivityValue: builder.mutation({
@@ -923,7 +959,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/activity-value/${data.valueId}`,
           body: data.data,
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: ActivityValueAttributes }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -963,7 +1000,8 @@ export const api = createApi({
             gpcReferenceNumber: data.gpcReferenceNumber,
           },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: { deletedCount: number } }) =>
+          response.data,
         invalidatesTags: [
           "Inventory",
           "ActivityValue",
@@ -1014,7 +1052,8 @@ export const api = createApi({
           url: `/inventory/${data.inventoryId}/notation-keys`,
           method: "GET",
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { result: Record<string, unknown[]> }) =>
+          response,
       }),
       // Add notation keys to subsectors with missing data missing
       updateOrCreateNotationKeys: builder.mutation({
@@ -1030,10 +1069,14 @@ export const api = createApi({
           method: "POST",
           body: { notationKeys: data.notationKeys },
         }),
-        transformResponse: (response: any) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
       }),
       createOrganization: builder.mutation({
-        query: (data: { name: string; contactEmail: string }) => ({
+        query: (data: {
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+        }) => ({
           url: `/organizations`,
           method: "POST",
           body: { ...data },
@@ -1044,12 +1087,22 @@ export const api = createApi({
         invalidatesTags: ["Organizations"],
       }),
       updateOrganization: builder.mutation({
-        query: (data: { id: string; name: string; contactEmail: string }) => ({
+        query: (data: {
+          id: string;
+          name: string;
+          contactEmail: string;
+          planType?: OrganizationPlanType;
+          trialEndsAt?: string | null;
+        }) => ({
           url: `/organizations/${data.id}`,
           method: "PATCH",
           body: {
             name: data.name,
             contactEmail: data.contactEmail,
+            ...(data.planType !== undefined ? { planType: data.planType } : {}),
+            ...(data.trialEndsAt !== undefined
+              ? { trialEndsAt: data.trialEndsAt }
+              : {}),
           },
         }),
         transformResponse: (response: OrganizationResponse) => {
@@ -1182,7 +1235,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
       }),
       connectDataSources: builder.mutation({
         query: (data: {
@@ -1194,7 +1247,7 @@ export const api = createApi({
           method: "POST",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: { errors: unknown[] }) => response,
       }),
       markCitiesPublic: builder.mutation({
         query: (data: { projectId: string }) => ({
@@ -1321,7 +1374,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/projects/${data.projectId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteCityUser: builder.mutation({
@@ -1329,7 +1382,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${data.cityId}/user?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       deleteOrganizationAdminUser: builder.mutation({
@@ -1337,7 +1390,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/organizations/${data.organizationId}/users?email=${encodeURIComponent(data.email)}`,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["ProjectUsers"],
       }),
       getUserAccessStatus: builder.query({
@@ -1373,15 +1426,16 @@ export const api = createApi({
           method: "PATCH",
           body: data,
         }),
-        transformResponse: (response: any) => response,
+        transformResponse: (response: unknown) => response,
         invalidatesTags: ["Cities", "Organizations"],
       }),
-      getProjectBoundaries: builder.query({
+      getProjectBoundaries: builder.query<Array<ProjectBoundary>, string>({
         query: (projectId: string) => ({
           method: "GET",
           url: `projects/${projectId}/boundaries`,
         }),
-        transformResponse: (response: any) => response.result,
+        transformResponse: (response: { result: Array<ProjectBoundary> }) =>
+          response.result,
         providesTags: ["Inventory"],
       }),
       getProjectSummary: builder.query({
@@ -1428,10 +1482,14 @@ export const api = createApi({
       }),
       updateHiapSelection: builder.mutation<
         { success: boolean; updated: number },
-        { inventoryId: string; selectedActionIds: string[] }
+        {
+          inventoryId: string;
+          selectedActionIds: string[];
+          actionType: ACTION_TYPES;
+        }
       >({
-        query: ({ inventoryId, selectedActionIds }) => ({
-          url: `inventory/${inventoryId}/hiap`,
+        query: ({ inventoryId, selectedActionIds, actionType }) => ({
+          url: `inventory/${inventoryId}/hiap?actionType=${actionType}`,
           method: "PATCH",
           body: { selectedActionIds },
         }),
@@ -1444,14 +1502,13 @@ export const api = createApi({
         invalidatesTags: ["Hiap", "VersionHistory"],
       }),
       generateActionPlan: builder.mutation<
-        { plan: string; timestamp: string; actionName: string },
+        { accepted: boolean; message: string },
         {
           action: HIAction;
           inventoryId: string;
           cityLocode: string;
           lng?: string;
           cityId: string;
-          rankingId: string;
         }
       >({
         query: ({
@@ -1460,28 +1517,26 @@ export const api = createApi({
           cityId,
           lng,
           cityLocode,
-          rankingId,
         }: {
           action: HIAction;
           inventoryId: string;
           cityId: string;
           cityLocode?: string;
           lng?: string;
-          rankingId: string;
         }) => ({
-          url: `city/${cityId}/hiap/action-plan/generate/${rankingId}`,
+          url: `city/${cityId}/hiap/action-plan/generate`,
           method: "POST",
           body: { action, inventoryId, cityLocode, lng },
         }),
         transformResponse: (response: {
-          data: { plan: string; timestamp: string; actionName: string };
+          data: { accepted: boolean; message: string };
         }) => {
           return response.data;
         },
-        invalidatesTags: ["ActionPlan"],
+        // Plan is not ready yet (202); cache refresh happens when the user returns after email.
       }),
       getActionPlans: builder.query<
-        { actionPlans: ActionPlan[] },
+        { actionPlans: ActionPlanAttributes[] },
         { cityId: string; language?: string; actionId?: string }
       >({
         query: ({ cityId, language, actionId }) => {
@@ -1490,17 +1545,18 @@ export const api = createApi({
           if (actionId) params.append("actionId", actionId);
           return `city/${cityId}/hiap/action-plan?${params.toString()}`;
         },
-        transformResponse: (response: { data: ActionPlan[] }) => ({
+        transformResponse: (response: { data: ActionPlanAttributes[] }) => ({
           actionPlans: response.data,
         }),
         providesTags: ["ActionPlan"],
       }),
       getActionPlanById: builder.query<
-        ActionPlan,
+        ActionPlanAttributes,
         { cityId: string; id: string }
       >({
         query: ({ cityId, id }) => `city/${cityId}/hiap/action-plan/${id}`,
-        transformResponse: (response: { data: ActionPlan }) => response.data,
+        transformResponse: (response: { data: ActionPlanAttributes }) =>
+          response.data,
         providesTags: ["ActionPlan"],
       }),
       setOrgWhiteLabel: builder.mutation({
@@ -1508,6 +1564,7 @@ export const api = createApi({
           organizationId: string;
           whiteLabelData: {
             themeId: string;
+            themeKey?: string;
             logo?: File;
             clearLogoUrl?: boolean;
           };
@@ -1529,8 +1586,41 @@ export const api = createApi({
             body: formData,
           };
         },
-        transformResponse: (response: { data: OrganizationResponse }) =>
-          response.data,
+        transformResponse: (response: {
+          data: { logoUrl?: string | null; themeId?: string };
+        }) => response.data,
+        // Patch org cache immediately so the Brand tab's theme effect applies
+        // the saved theme without waiting for a full Organization refetch.
+        async onQueryStarted(
+          { organizationId, whiteLabelData },
+          { dispatch, queryFulfilled },
+        ) {
+          try {
+            const { data } = await queryFulfilled;
+            const themeKey = whiteLabelData.themeKey;
+
+            dispatch(
+              api.util.updateQueryData(
+                "getOrganization",
+                organizationId,
+                (draft) => {
+                  draft.themeId = whiteLabelData.themeId;
+                  if (data?.logoUrl !== undefined) {
+                    draft.logoUrl = data.logoUrl ?? undefined;
+                  }
+                  if (themeKey) {
+                    draft.theme = {
+                      themeId: whiteLabelData.themeId,
+                      themeKey,
+                    };
+                  }
+                },
+              ),
+            );
+          } catch {
+            // Leave cache alone; invalidation refetch will reconcile.
+          }
+        },
         invalidatesTags: ["Organizations", "Organization"],
       }),
       getThemes: builder.query({
@@ -1582,7 +1672,7 @@ export const api = createApi({
           method: "DELETE",
           url: `/city/${cityId}`,
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: [
           "CityData",
           "Projects",
@@ -1605,7 +1695,7 @@ export const api = createApi({
             active: activeStatus,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data,
+        transformResponse: (response: { data: unknown }) => response.data,
         invalidatesTags: ["Organizations", "Organization"],
       }),
       updateUserRoleInOrganization: builder.mutation({
@@ -1723,7 +1813,8 @@ export const api = createApi({
             csrfToken,
           },
         }),
-        transformResponse: (response: { data: any }) => response.data.code,
+        transformResponse: (response: { data: { code: string } }) =>
+          response.data.code,
       }),
       getBulkCityLocations: builder.query<
         CityLocationResponse[],
@@ -1824,7 +1915,10 @@ export const api = createApi({
       }),
 
       // Climate Advisor Chat Endpoints (CA Integration)
-      createChatThread: builder.mutation({
+      createChatThread: builder.mutation<
+        { threadId: string },
+        { inventory_id?: string; title?: string }
+      >({
         query: (data: { inventory_id?: string; title?: string }) => ({
           url: `/chat/threads`,
           method: "POST",
@@ -1915,7 +2009,7 @@ export const api = createApi({
           cityId: string;
           inventoryId: string;
           importedFileId: string;
-          mappingOverrides?: Record<string, any>;
+          mappingOverrides?: Record<string, unknown>;
         }
       >({
         query: ({ cityId, inventoryId, importedFileId, mappingOverrides }) => ({
@@ -2002,6 +2096,87 @@ export const api = createApi({
         },
       ),
 
+      getOrganizationWebhooks: builder.query<
+        WebhookSubscriptionResponse[],
+        string
+      >({
+        query: (organizationId) => `/organizations/${organizationId}/webhooks`,
+        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
+          response.data,
+        providesTags: (result, _err, organizationId) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({ type: "Webhook" as const, id })),
+                { type: "Webhook", id: `ORG-${organizationId}` },
+              ]
+            : [{ type: "Webhook", id: `ORG-${organizationId}` }],
+      }),
+      createOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; body: CreateWebhookSubscriptionRequest }
+      >({
+        query: ({ organizationId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId }) => [
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      updateOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionResponse,
+        {
+          organizationId: string;
+          webhookId: string;
+          body: UpdateWebhookSubscriptionRequest;
+        }
+      >({
+        query: ({ organizationId, webhookId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "PATCH",
+          body,
+        }),
+        transformResponse: (response: { data: WebhookSubscriptionResponse }) =>
+          response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      deleteOrganizationWebhook: builder.mutation<
+        { success: boolean },
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      rotateOrganizationWebhookSecret: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}/rotate-secret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
         query: () => "admin/modules",
@@ -2061,6 +2236,168 @@ export const api = createApi({
         }),
         invalidatesTags: ["AdminModules", "Modules"],
       }),
+
+      getUserOrganizations: builder.query<UserOrganizationsResponse, void>({
+        query: () => "user/organizations",
+        transformResponse: (response: { data: UserOrganizationsResponse }) =>
+          response.data,
+        providesTags: ["Organizations"],
+      }),
+      getConceptNoteRuns: builder.query<ConceptNoteRunListResponse, string>({
+        query: (cityId) => ({
+          url: "concept-notes",
+          params: { city_id: cityId },
+        }),
+        providesTags: (_result, _error, cityId) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteRun: builder.query<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          params: { city_id: cityId },
+        }),
+      }),
+      getConceptNoteApplicationContext: builder.query<
+        ConceptNoteApplicationContext,
+        string
+      >({
+        query: (runId) => `concept-notes/${runId}/application-context`,
+      }),
+      getConceptNoteDraft: builder.query<ConceptNoteDraftState, string>({
+        query: (runId) => `concept-notes/${runId}/draft`,
+        providesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
+      startConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        StartConceptNoteRunRequest
+      >({
+        query: ({
+          cityId,
+          idempotencyKey,
+          name,
+          projectId,
+          funderId,
+          selectedFundingOpportunityId,
+          threadId,
+        }) => ({
+          url: "concept-notes/start",
+          method: "POST",
+          body: {
+            city_id: cityId,
+            idempotency_key: idempotencyKey,
+            name,
+            project_id: projectId ?? null,
+            funder_id: funderId ?? null,
+            selected_funding_opportunity_id:
+              selectedFundingOpportunityId ?? null,
+            thread_id: threadId ?? null,
+          },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      renameConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; name: string; runId: string }
+      >({
+        query: ({ cityId, name, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "PATCH",
+          body: { name },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      duplicateConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ cityId, idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}/duplicate`,
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      deleteConceptNoteRun: builder.mutation<
+        void,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "DELETE",
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      uploadConceptNoteSource: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadRequest
+      >({
+        query: ({ formData, runId }) => ({
+          url: `concept-notes/${runId}/uploads`,
+          method: "POST",
+          body: formData,
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      getConceptNoteUploadStatus: builder.query<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) =>
+          `concept-notes/${runId}/uploads/${uploadId}`,
+        providesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteUpload: builder.mutation<
+        ConceptNoteUploadResponse,
+        ConceptNoteUploadStatusRequest
+      >({
+        query: ({ runId, uploadId }) => ({
+          url: `concept-notes/${runId}/uploads/${uploadId}/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { uploadId }) => [
+          { type: "ConceptNoteUpload", id: uploadId },
+        ],
+      }),
+      retryConceptNoteContextBundle: builder.mutation<
+        ConceptNoteContextBundleRetryResponse,
+        string
+      >({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/context-bundle/retry`,
+          method: "POST",
+        }),
+        invalidatesTags: ["ConceptNoteRuns"],
+      }),
+      startConceptNoteDraft: builder.mutation<ConceptNoteDraftState, string>({
+        query: (runId) => ({
+          url: `concept-notes/${runId}/draft`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, runId) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
     };
   },
 });
@@ -2073,15 +2410,17 @@ export const openclimateAPI = createApi({
       "https://app.openclimate.network",
   }),
   endpoints: (builder) => ({
-    getOCCity: builder.query<any, string>({
+    getOCCity: builder.query<OCCityAttributes[], string>({
       query: (q) => `/api/v1/search/city?q=${q}`,
-      transformResponse: (response: any) => {
-        return response.data.filter((item: any) => item.type === "city");
+      transformResponse: (response: {
+        data: Array<OCCityAttributes & { type: string }>;
+      }) => {
+        return response.data.filter((item) => item.type === "city");
       },
     }),
-    getOCCityData: builder.query<any, string>({
+    getOCCityData: builder.query<OCCityDataResponse, string>({
       query: (locode) => `/api/v1/actor/${locode}`,
-      transformResponse: (response: any) => {
+      transformResponse: (response: { data: OCCityDataResponse }) => {
         return response.data;
       },
     }),
@@ -2203,9 +2542,27 @@ export const {
   useGetPersonalAccessTokensQuery,
   useCreatePersonalAccessTokenMutation,
   useDeletePersonalAccessTokenMutation,
+  useGetOrganizationWebhooksQuery,
+  useCreateOrganizationWebhookMutation,
+  useUpdateOrganizationWebhookMutation,
+  useDeleteOrganizationWebhookMutation,
+  useRotateOrganizationWebhookSecretMutation,
   useGetAdminModulesQuery,
   useCreateModuleMutation,
   useUpdateModuleMutation,
   useDeleteModuleMutation,
+  useGetConceptNoteRunsQuery,
+  useGetConceptNoteRunQuery,
+  useGetConceptNoteApplicationContextQuery,
+  useGetConceptNoteDraftQuery,
+  useStartConceptNoteRunMutation,
+  useRenameConceptNoteRunMutation,
+  useDuplicateConceptNoteRunMutation,
+  useDeleteConceptNoteRunMutation,
+  useStartConceptNoteDraftMutation,
+  useUploadConceptNoteSourceMutation,
+  useGetConceptNoteUploadStatusQuery,
+  useRetryConceptNoteUploadMutation,
+  useRetryConceptNoteContextBundleMutation,
 } = api;
 export const { useGetOCCityQuery, useGetOCCityDataQuery } = openclimateAPI;

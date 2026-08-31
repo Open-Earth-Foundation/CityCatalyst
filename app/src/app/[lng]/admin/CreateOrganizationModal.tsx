@@ -19,6 +19,11 @@ import { MdWarning } from "react-icons/md";
 import { api } from "@/services/api";
 import { UseErrorToast, UseSuccessToast } from "@/hooks/Toasts";
 import { OrganizationRole } from "@/util/types";
+import { OrganizationPlanType } from "@/util/enums";
+import {
+  NativeSelectField,
+  NativeSelectRoot,
+} from "@/components/ui/native-select";
 import { CustomInviteError } from "@/lib/custom-errors/custom-invite-error";
 import { CustomOrganizationError } from "@/lib/custom-errors/organization-error";
 import { trackEvent } from "@/lib/analytics";
@@ -35,9 +40,10 @@ interface CreateOrganizationModalProps {
 const schema = z.object({
   email: z.string().email("invalid-email").min(1, "required"),
   name: z.string().min(3, "required"),
+  planType: z.nativeEnum(OrganizationPlanType),
   projectName: z.string().min(3, "required"),
   description: z.string().min(3, "required"),
-  cityCountLimit: z.number().min(1, "required"),
+  cityCountLimit: z.coerce.number().min(1, "required"),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -55,17 +61,15 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     handleSubmit,
     reset,
     watch,
-    setError,
-    clearErrors,
-    setFocus,
-    setValue,
     control,
-    getValues,
     trigger,
     formState: { errors },
   } = useForm<Schema>({
     mode: "all",
     resolver: zodResolver(schema),
+    defaultValues: {
+      planType: OrganizationPlanType.TRIAL,
+    },
   });
 
   const orgName = watch("name");
@@ -101,7 +105,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     reset();
   };
 
-  const handleCustomError = (error: any, fallbackTitle: string) => {
+  const handleCustomError = (error: CustomError, fallbackTitle: string) => {
     const errorBody = error?.data?.error;
     const errorData = errorBody?.data;
     const errorKey = errorData?.errorKey || "unknown-error";
@@ -123,11 +127,13 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
   };
 
   const handleFormSubmit = async (data: Schema) => {
-    const { name, email, projectName, description, cityCountLimit } = data;
+    const { name, email, planType, projectName, description, cityCountLimit } =
+      data;
 
     const response = await createOrganization({
       name,
       contactEmail: email,
+      planType,
     });
 
     if (response.data) {
@@ -178,7 +184,7 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => onOpenChange(e.open)}
+      onOpenChange={(e) => onOpenChange(e.open)}
       onExitComplete={closeFunction}
     >
       <DialogBackdrop />
@@ -277,6 +283,26 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                     </Box>
                   )}
                 </Field>
+                <Field labelClassName="font-semibold" label={t("plan-type")}>
+                  <NativeSelectRoot
+                    shadow="2dp"
+                    borderRadius="4px"
+                    border="inputBox"
+                    background="background.default"
+                  >
+                    <NativeSelectField {...register("planType")}>
+                      <option value={OrganizationPlanType.TRIAL}>
+                        {t("trial-plan")}
+                      </option>
+                      <option value={OrganizationPlanType.DEMO}>
+                        {t("demo-plan")}
+                      </option>
+                      <option value={OrganizationPlanType.FULL}>
+                        {t("full-plan")}
+                      </option>
+                    </NativeSelectField>
+                  </NativeSelectRoot>
+                </Field>
               </HStack>
             </Tabs.Content>
             <Tabs.Content value="project">
@@ -334,15 +360,13 @@ const CreateOrganizationModal: FC<CreateOrganizationModalProps> = ({
                   <FormattedNumberInput
                     placeholder="00"
                     max={99999}
-                    setError={setError}
-                    clearErrors={clearErrors}
                     min={1}
                     control={control}
                     name={`cityCountLimit`}
                     t={t}
                     w="full"
                   />
-                  {errors.description && (
+                  {errors.cityCountLimit && (
                     <Box display="flex" gap="6px" alignItems="center" mt="6px">
                       <Icon as={MdWarning} color="sentiment.negativeDefault" />
                       <Text color="error" fontSize="body.sm">

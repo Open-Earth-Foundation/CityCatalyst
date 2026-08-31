@@ -1,10 +1,8 @@
 import UserService from "@/backend/UserService";
 import { db } from "@/models";
 import { apiHandler } from "@/util/api";
-import { createUserRequest } from "@/util/validation";
 import createHttpError from "http-errors";
 import { NextResponse } from "next/server";
-import { randomUUID } from "node:crypto";
 
 /**
  * @swagger
@@ -37,7 +35,7 @@ import { randomUUID } from "node:crypto";
  *       200:
  *         description: User found or message returned.
  */
-export const POST = apiHandler(async (req, { params, session }) => {
+export const POST = apiHandler(async (req) => {
   const body = await req.json();
 
   // check if the user exists

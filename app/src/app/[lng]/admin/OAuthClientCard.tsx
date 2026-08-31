@@ -14,7 +14,7 @@ const OAuthClientCard = (props: {
   client: Client;
   onDelete?: (client: Client) => void;
 }) => {
-  const { lng, client, onDelete } = props;
+  const { lng, client } = props;
   const { t } = useTranslation(lng, "admin");
   const [deleteClient, { isLoading }] = api.useDeleteClientMutation();
 
@@ -30,7 +30,7 @@ const OAuthClientCard = (props: {
           description: t("oauth-clients-success-deleting-client"),
           duration: 5000,
         });
-      } catch (error) {
+      } catch {
         toaster.error({
           title: t("error"),
           description: t("oauth-clients-error-deleting-client"),

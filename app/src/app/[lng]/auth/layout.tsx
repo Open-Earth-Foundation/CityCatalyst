@@ -1,6 +1,6 @@
 "use client";
 import { use } from "react";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
 import { NavigationBar } from "@/components/navigation-bar";
 import { Toaster } from "@/components/ui/toaster";
@@ -30,7 +30,7 @@ export default function AuthLayout(props: {
         <Box w="full">
           <Box pt={148} pb={4} w="480px" maxW="full" mx="auto" px={4}>
             <Toaster />
-            {props.children}
+            <Suspense fallback={null}>{props.children}</Suspense>
           </Box>
         </Box>
       </Box>

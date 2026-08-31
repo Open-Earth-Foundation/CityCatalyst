@@ -57,7 +57,7 @@ module.exports = {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable("UnrankedActionSelection");
   },
 };

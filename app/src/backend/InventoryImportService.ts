@@ -1,5 +1,5 @@
 import { db } from "@/models";
-import ECRFImportService, { type ECRFImportResult } from "./ECRFImportService";
+import { type ECRFImportResult } from "./ECRFImportService";
 import { randomUUID } from "node:crypto";
 import Decimal from "decimal.js";
 import { decimalToBigInt } from "@/util/big_int";
@@ -11,23 +11,12 @@ import {
   type ExtraField,
 } from "@/util/form-schema";
 import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
+import { toCanonical } from "@/util/notation-keys";
 
 /** Options for import (e.g. PDF): default data source from file name. */
 export type ImportECRFDataOptions = {
   /** When set (e.g. file name), used as activity data source when row does not provide one. */
   defaultActivityDataSource?: string;
-};
-
-/**
- * Maps eCRF notation keys to unavailableReason enum values
- * eCRF uses: NO, NE, C, IE
- * Database uses: no-occurrance, not-estimated, confidential-information, included-elsewhere
- */
-const notationKeyMapping: Record<string, string> = {
-  NO: "no-occurrance",
-  NE: "not-estimated",
-  C: "confidential-information",
-  IE: "included-elsewhere",
 };
 
 /**
@@ -358,7 +347,8 @@ export default class InventoryImportService {
 
         // Priority: Emission values take precedence over notation keys
         // Only use notation keys if there are NO emission values
-        if (totalCO2e && totalCO2e > 0) {
+        // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
+        if (totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0) {
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing emissions: totalCO2e=${totalCO2e} tonnes -> ${new Decimal(totalCO2e).mul(1000)} kg`,
           );
@@ -522,7 +512,7 @@ export default class InventoryImportService {
                 // Find the exclusive option for the group-by field
                 if (groupByField && activity["extra-fields"]) {
                   const groupByFieldDef = activity["extra-fields"].find(
-                    (f: any) => f.id === groupByField && f.exclusive,
+                    (f) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
                     groupByDefaultValue = groupByFieldDef.exclusive;
@@ -530,11 +520,11 @@ export default class InventoryImportService {
                 }
               } else if (methodology && "group-by" in methodology) {
                 // DirectMeasure: group-by and extra-fields are at the top level
-                groupByField = (methodology as any)["group-by"];
+                groupByField = methodology["group-by"];
 
                 if (groupByField && methodology["extra-fields"]) {
                   const groupByFieldDef = methodology["extra-fields"].find(
-                    (f: any) => f.id === groupByField && f.exclusive,
+                    (f) => f.id === groupByField && f.exclusive,
                   );
                   if (groupByFieldDef?.exclusive) {
                     groupByDefaultValue = groupByFieldDef.exclusive;
@@ -543,7 +533,8 @@ export default class InventoryImportService {
               }
 
               // Build activityData JSONB object using schema mapping
-              const activityData: Record<string, any> = {};
+              const activityData: Record<string, string | number | string[]> =
+                {};
 
               // Map activity amount using activityTitle from schema
               if (row.activityAmount !== undefined) {
@@ -583,9 +574,13 @@ export default class InventoryImportService {
                 options?.defaultActivityDataSource?.trim();
               if (dataSource) {
                 let sourceFieldName = "data-source";
-                if ((methodology as any)?.["extra-fields"]) {
-                  const methodSourceField = (methodology as any)["extra-fields"].find(
-                    (f: any) => f.id.includes("-source") && f.type === "text",
+                if (
+                  methodology &&
+                  "extra-fields" in methodology &&
+                  methodology["extra-fields"]
+                ) {
+                  const methodSourceField = methodology["extra-fields"].find(
+                    (f) => f.id.includes("-source") && f.type === "text",
                   );
                   if (methodSourceField) {
                     sourceFieldName = methodSourceField.id;
@@ -624,7 +619,7 @@ export default class InventoryImportService {
               }
 
               // Build metadata JSONB object
-              const metadata: Record<string, any> = {};
+              const metadata: Record<string, string | number | string[]> = {};
 
               // Set activityId from schema
               if (activityId) {
@@ -674,8 +669,9 @@ export default class InventoryImportService {
               metadata.emissionFactorType = "";
 
               // Convert activity CO2e to kilograms (if available)
+              // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
               const activityCO2eq =
-                totalCO2e && totalCO2e > 0
+                totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0
                   ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
                   : undefined;
 
@@ -708,13 +704,12 @@ export default class InventoryImportService {
           }
         } else if (row.notationKey) {
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Processing notation key: "${row.notationKey}" (normalized: "${row.notationKey.toUpperCase()}")`,
+            `[Import] GPC ${row.gpcRefNo} - Processing notation key: "${row.notationKey}"`,
           );
-          // Handle notation keys only if there are NO emission values
-          const unavailableReason =
-            notationKeyMapping[row.notationKey.toUpperCase()];
+          // Accept short, kebab, or legacy reason-* spellings → canonical kebab
+          const unavailableReason = toCanonical(row.notationKey);
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Mapped notation key "${row.notationKey.toUpperCase()}" -> "${unavailableReason}"`,
+            `[Import] GPC ${row.gpcRefNo} - Mapped notation key "${row.notationKey}" -> "${unavailableReason}"`,
           );
 
           if (!unavailableReason) {

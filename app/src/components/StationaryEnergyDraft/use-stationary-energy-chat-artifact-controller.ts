@@ -1323,7 +1323,6 @@ export function useStationaryEnergyChatArtifactController(
       proposal: DraftProposal,
       action: DraftDecisionAction,
       selectedSourceId = "",
-      _label = "Selected",
     ): void => {
       setDecisionState((current) =>
         nextDecisionState(

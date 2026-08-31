@@ -32,7 +32,6 @@ function AddDataCard({
   number,
   buttonText,
   title,
-  inventory,
 }: AddDataCardProps) {
   const router = useRouter();
   const pathname = usePathname();

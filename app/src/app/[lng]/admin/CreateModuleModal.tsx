@@ -135,7 +135,7 @@ const CreateModuleModal: FC<CreateModuleModalProps> = ({
     <DialogRoot
       preventScroll
       open={isOpen}
-      onOpenChange={(e: any) => onOpenChange(e.open)}
+      onOpenChange={(e) => onOpenChange(e.open)}
       onExitComplete={closeFunction}
     >
       <DialogBackdrop />

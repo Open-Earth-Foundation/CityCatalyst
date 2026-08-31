@@ -11,6 +11,7 @@ Input is one JSON object derived from ReportChapterInput with user-facing eviden
 - `key` (string): must be `snapshot`
 - `title` (string): chapter title
 - `language` (string): requested report language
+- `terminology` (object): exact localized ask label and table-column labels
 - `facts.city` (object): city name, locode, country, and region facts when available
 - `facts.action` (object): selected action ID and name
 - `facts.ask` (object): one-line ask summary plus support, action, and legal-position components when available
@@ -25,7 +26,7 @@ Runtime input:
 
 <output>
 Use the shared OutputPlanChapterResponse contract:
-- `markdown` (string): The first line must be `**The ask:** {{facts.ask.summary}}` when present. Follow it with one concise city/action/rank sentence, then a Markdown table with exactly these columns: `What we checked | Reading | Detail`. Preserve the order of `facts.signals`. Include all six checks, using `Not available` where a row lacks a reading or detail. Add at most one short sentence after the table for the main evidence tension. Describe that tension as a report conclusion; do not refer to scoring inputs, supplied facts, or analytical mechanics.
+- `markdown` (string): The first line must use `terminology.ask_label` in bold and express the meaning of `facts.ask` fluently in `language`; do not copy a differently worded source-language sentence. Follow it with one concise city/action/rank sentence, then a Markdown table using exactly `terminology.what_we_checked | terminology.reading | terminology.detail`. Preserve the order of `facts.signals` and copy their already-localized recurring labels exactly. Include all six checks, using a natural target-language equivalent of "not available" where a row lacks a reading or detail. Add at most one short sentence after the table for the main evidence tension. Describe that tension as a report conclusion; do not refer to scoring inputs, supplied facts, or analytical mechanics.
 - `limitations` (array of strings): relevant limitations, especially missing track-record data.
 
 Do not rewrite the ask into a stronger financing, legal-authority, implementation-status, or city-level emissions claim than `facts.ask` and the other facts support. Do not claim comparable project counts, implementation status, or city-level per-action emissions unless explicitly present in `facts`.

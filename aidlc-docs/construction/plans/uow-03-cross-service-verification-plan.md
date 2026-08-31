@@ -14,11 +14,10 @@ topology, or production fallback.
 - **Scope**: deterministic Core route/contract tests, Climate Advisor
   request-time/security regression tests, cross-service contract comparison,
   touched-file quality checks, and documented environment limitations.
-- **Status**: Deterministic verification evidence captured. The requested
-  `localhost:3000` live run was blocked by an unrelated process occupying the
-  port; the aligned current-Core diagnostic passed 4/4 on port 3001.
-  Completion review remains pending. No UOW-03 production implementation is
-  planned.
+- **Status**: Deterministic verification evidence captured. Final local
+  revalidation at `localhost:3000` passed 4/4 after another process occupying
+  the port was cleared. Completion review remains pending. No UOW-03
+  production implementation is planned.
 
 ## Non-negotiable verification invariants
 
@@ -93,11 +92,13 @@ must stop verification and return to the owning design/unit gate.
 - Core NativeInputCatalog suites: **37/37 passed**.
 - Climate Advisor UOW-02 regression suite: **109/109 passed**.
 - Climate Advisor local auth tests: **5/5 passed**.
-- Requested live CC–CA contract run at `http://localhost:3000`: **4 failed, 0
-  passed, 0 skipped**. All four tests received HTTP 404 from
-  `POST /api/v1/internal/ca/user-token` because port 3000 was serving the
-  unrelated English-for-Devs process; the capability/cross-user assertions
-  were not reached.
+- Final requested live CC–CA contract run at `http://localhost:3000`: **4
+  passed, 0 failed, 0 skipped**. The correct Core resolved
+  `POST /api/v1/internal/ca/user-token`, and token, capability authorization,
+  wrong-key, and cross-user assertions all passed.
+- Prior failed attempt: another process was using port 3000 and caused the
+  observed HTTP 404; this environment failure was resolved before the final
+  run.
 - Controlled aligned current-Core diagnostic at `http://localhost:3001`:
   **4 passed, 0 failed, 0 skipped** after a temporary matching `HOST`
   override. This is diagnostic evidence only and does not replace the
@@ -111,8 +112,7 @@ must stop verification and return to the owning design/unit gate.
 
 **Initial evidence commit**: `96c089cfb` (`docs(cc-737): record UOW-03
 verification evidence`). The previous revalidation update is committed as
-`9767f0f08`; this environment revalidation update is committed as `de226492f`
-(`docs(cc-737): classify local contract environment`). Evidence is ready for
-explicit UOW-03 completion review after the requested port/configuration issue
-is addressed. No release-readiness or task-closure claim is made until that
-approval is recorded.
+`9767f0f08`; the environment classification is committed as `de226492f`.
+The final 4/4 result is recorded in the current documentation update. Evidence
+is ready for explicit UOW-03 completion review. No release-readiness or
+task-closure claim is made until that approval is recorded.

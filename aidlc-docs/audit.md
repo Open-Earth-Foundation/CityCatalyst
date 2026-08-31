@@ -958,9 +958,8 @@ Tasks:
 11. Do not modify application code, create an implementation commit, or mark UOW-03 as approved. Wait for my explicit approval.
 ```
 **AI Response**: Confirmed the repository root and requested branch. No stale
-CityCatalyst Core process was present, but port 3000 was occupied by an
-unrelated Next.js process from `/home/david/work/projects/saas/english-for-devs`,
-which was not stopped. Started the current Core from `app/` on port 3001
+CityCatalyst Core process was present, but port 3000 was occupied by another
+process, which was not stopped. Started the current Core from `app/` on port 3001
 because 3000 was unavailable. Started `citycatalyst-db`; migrations reported
 the schema already current; the deterministic smoke fixture upsert completed.
 Confirmed `CC_SERVICE_API_KEY` and `VERIFICATION_TOKEN_SECRET` were configured
@@ -983,5 +982,38 @@ The observed results and classification were committed as the docs-only
 commit `de226492f` (`docs(cc-737): classify local contract environment`).
 **Approval Status**: UOW-03 remains unapproved; evidence review and explicit
 user approval are pending.
+
+---
+
+## Documentation Privacy Adjustment — UOW-03 Environment Evidence
+**Timestamp**: 2026-08-31T14:05:00-03:00
+**User Input**: "não faz sentido expormos o outro projeto que estava rodando no campo de auditoria, pode fazer a remoção disso nos artefatos e apenas dizer que outro processo estava fazendo uso da porta?"
+**AI Response**: Removed the external project identifier and filesystem path from the UOW-03 audit entry, verification evidence, verification plan, and CC-737 vault context. The records now state only that another process occupied port 3000. Technical results, environment classification, security conclusions, and approval status were preserved.
+**Approval Status**: Documentation privacy adjustment applied; UOW-03 completion remains unapproved.
+---
+
+## Verification — UOW-03 Final Local Live Contract Revalidation
+**Timestamp**: 2026-08-31T14:30:22-03:00
+**User Input**:
+```text
+Local revalidation was successfully completed after freeing up port 3000.
+
+Result:
+
+- 4 passed
+- 0 failed
+- 0 skipped
+
+The correct Core responded at [http://localhost:3000](http://localhost:3000), and the four CC–CA contract tests passed. The previous failure was caused solely by another process occupying port 3000. No application code was modified.
+
+Update the verification evidence, audit, AI-DLC state, and vault to reflect the 4/4 result on port 3000. Do not include the name or path of the other process; simply state that another process was occupying the port. Do not mark UOW-03 as approved. Await my explicit approval.
+```
+**AI Response**: Recorded the final local CC–CA contract result as **4
+passed, 0 failed, 0 skipped** against the correct Core at
+`http://localhost:3000`. The prior HTTP 404 was recorded as an environment
+failure caused solely by another process occupying port 3000. No application
+code was modified, and no other process identity or path was recorded.
+**Approval Status**: UOW-03 remains unapproved; explicit user approval is
+pending.
 ---
 ---

@@ -4,8 +4,11 @@ import React, { FC, useEffect } from "react";
 import { TFunction } from "i18next";
 import { Box, Checkbox, HStack, Input, Text, VStack } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  createWebhookSubscriptionRequest,
+  type CreateWebhookSubscriptionRequest,
+} from "@/util/validation";
 import {
   DialogBackdrop,
   DialogCloseTrigger,
@@ -26,18 +29,7 @@ import type { WebhookSubscriptionResponse } from "@/util/types";
 
 const DEFAULT_EVENTS = [WEBHOOK_EMITTED_EVENT_TYPES[0]];
 
-const schema = z.object({
-  name: z.string().trim().min(1).max(255),
-  url: z
-    .string()
-    .url()
-    .refine((value) => value.toLowerCase().startsWith("https://"), {
-      message: "webhook-url-https",
-    }),
-  events: z.array(z.enum(WEBHOOK_EMITTED_EVENT_TYPES)).min(1),
-});
-
-type Schema = z.infer<typeof schema>;
+type Schema = CreateWebhookSubscriptionRequest;
 
 interface CreateEditWebhookModalProps {
   isOpen: boolean;
@@ -82,7 +74,7 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
     formState: { errors },
   } = useForm<Schema>({
     mode: "onSubmit",
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createWebhookSubscriptionRequest),
     defaultValues: {
       name: "",
       url: "",
@@ -188,7 +180,11 @@ const CreateEditWebhookModal: FC<CreateEditWebhookModalProps> = ({
               invalid={Boolean(errors.url)}
               errorText={
                 errors.url
-                  ? t(errors.url.message || "webhook-url-https")
+                  ? t(
+                      errors.url.message === "webhook-url-must-be-https"
+                        ? "webhook-url-https"
+                        : errors.url.message || "webhook-url-https",
+                    )
                   : undefined
               }
               helperText={t("webhook-url-https")}

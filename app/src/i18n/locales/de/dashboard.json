@@ -312,6 +312,7 @@
   "legend": "Legende",
   "breadcrumb-tools": "Werkzeuge",
   "breadcrumb-hiap": "Actions & Plans",
+  "breadcrumb-meed": "Maßnahmen & Pläne v2",
   "start-here": "Hier starten",
   "inventory-versions-action-change": "{{name}} hat die Aktion {{actionName}} auf Rang {{rank}} geändert und {{selectionStatus}}",
   "inventory-versions-action-deleted": "{{name}} hat die Aktion {{actionName}} gelöscht",

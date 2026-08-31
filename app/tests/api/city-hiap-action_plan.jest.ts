@@ -577,6 +577,67 @@ describe("City HIAP Prioritization API", () => {
       await expectStatusCode(res, 401);
     });
 
+    it("deletes action plan successfully", async () => {
+      const ranking = await db.models.HighImpactActionRanking.create({
+        id: randomUUID(),
+        inventoryId,
+        locode: "XX-APT",
+        type: ACTION_TYPES.Mitigation,
+        langs: ["en"],
+        jobId: randomUUID(),
+        status: HighImpactActionRankingStatus.SUCCESS,
+      });
+
+      const rankedAction = await db.models.HighImpactActionRanked.create({
+        id: randomUUID(),
+        hiaRankingId: ranking.id,
+        actionId: "delete-action",
+        rank: 1,
+        explanation: { explanations: { en: "Test" } },
+        lang: "en",
+        type: "mitigation",
+        name: "Delete Action",
+        isSelected: true,
+      });
+
+      const actionPlan = await db.models.ActionPlan.create({
+        id: randomUUID(),
+        actionId: rankedAction.actionId,
+        highImpactActionRankedId: rankedAction.id,
+        cityLocode: "XX-APT",
+        cityId: testData.cityId,
+        inventoryId,
+        actionName: "Delete Action",
+        language: "en",
+        subactions: [{ name: "Test subaction" }],
+        createdBy: testData.userId,
+      });
+
+      const req = mockRequest();
+      const wrongCityRes = await deleteActionPlan(req, {
+        params: Promise.resolve({ city: randomUUID(), id: actionPlan.id }),
+      });
+      await expectStatusCode(wrongCityRes, 400);
+
+      const res = await deleteActionPlan(req, {
+        params: Promise.resolve({ city: testData.cityId, id: actionPlan.id }),
+      });
+
+      await expectStatusCode(res, 200);
+      const body = await res.json();
+      expect(body.success).toBe(true);
+
+      const deleted = await db.models.ActionPlan.findByPk(actionPlan.id);
+      expect(deleted).toBeNull();
+
+      await db.models.HighImpactActionRanked.destroy({
+        where: { id: rankedAction.id },
+      });
+      await db.models.HighImpactActionRanking.destroy({
+        where: { id: ranking.id },
+      });
+    });
+
     it("returns 404 when action plan does not exist", async () => {
       const req = mockRequest();
       const res = await deleteActionPlan(req, {

@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Units 1–4 completion approved; Unit 5 TDD red checkpoint committed; Unit 5 implementation approval pending.
+- **Status**: Plan approved; Units 1–5 implementation complete; Unit 5 atomic commit `447364707` created; Unit 5 completion approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -456,6 +456,11 @@ the documentation-impact review found the existing README and architecture
 documentation accurate, so no additional product documentation was needed.
 The full service-suite stall documented in the prior checkpoint remains a
 repository baseline limitation and is not claimed green.
+
+**Atomic commit**: Created `447364707`
+(`test(cc-737): harden Climate Advisor catalog security evidence`) containing
+only the Unit 5 production hardening and AI-DLC evidence. Unit 5 completion
+remains pending explicit review and approval; UOW-03 is not opened.
 
 ## Atomic commit and review protocol
 

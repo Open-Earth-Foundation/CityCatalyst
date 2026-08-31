@@ -856,7 +856,7 @@ reviewable unit. Stop at every required approval gate."
 ## Code Generation — UOW-02 Unit 5 Atomic Commit
 **Timestamp**: 2026-08-31T10:57:25-03:00
 **User Input**: "approved" (explicit Unit 5 implementation approval; atomic commit is the authorized unit workflow)
-**AI Response**: Created the Unit 5 atomic commit after the green checkpoint. It contains only the selected Core-client transport hardening, finite result/telemetry hardening, and AI-DLC evidence; unrelated lockfiles, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. UOW-02 completion remains pending explicit Unit 5 completion approval.
+**AI Response**: Created Unit 5 atomic commit `447364707` (`test(cc-737): harden Climate Advisor catalog security evidence`) after the green checkpoint. It contains only the selected Core-client transport hardening, finite result/telemetry hardening, and AI-DLC evidence; unrelated lockfiles, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. UOW-02 completion remains pending explicit Unit 5 completion approval.
 **Approval Status**: Unit 5 commit created; explicit Unit 5 completion approval pending.
 ---
 ---

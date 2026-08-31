@@ -49,6 +49,12 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "cnb_source_summary_synthesis": prompts.cnb_source_summary_synthesis,
         "cnb_source_question_reading": prompts.cnb_source_question_reading,
         "cnb_chapter_drafting": prompts.cnb_chapter_drafting,
+        "cnb_chapter_validation_completeness": (
+            prompts.cnb_chapter_validation_completeness
+        ),
+        "cnb_chapter_validation_consistency": (
+            prompts.cnb_chapter_validation_consistency
+        ),
     }
 
     for prompt_name, prompt_path in prompt_entries.items():
@@ -209,6 +215,26 @@ def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
         prompt = config.prompts.get_prompt(prompt_name)
         assert '"page":3' in prompt
         assert '"anchor":' in prompt
+
+
+def test_cnb_chapter_validation_configuration_matches_two_pass_contract() -> None:
+    config = _load_llm_config()
+
+    assert config.models.cnb_chapter_validator.name == "openai/gpt-5.6-terra"
+    assert config.models.cnb_chapter_validator.reasoning_effort == "medium"
+    assert config.generation.prompt_budget.cnb_validation.max_prompt_tokens == 50000
+
+    completeness = config.prompts.get_prompt("cnb_chapter_validation_completeness")
+    consistency = config.prompts.get_prompt("cnb_chapter_validation_consistency")
+    assert "missing required information" in completeness
+    assert "do not check internal contradictions" in completeness
+    assert "Then compare the target" in consistency
+    assert "never report a conflict solely between two compared chapters" in consistency
+    assert "requires two affirmative, mutually incompatible" in consistency
+    assert "Merely naming or describing the same project" in consistency
+    assert "do not transfer a delivery claim from a compared chapter" in consistency
+    assert "<example_output>" in completeness
+    assert "<example_output>" in consistency
 
 
 def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:

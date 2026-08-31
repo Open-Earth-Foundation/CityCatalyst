@@ -45,8 +45,14 @@ class FakeWorkspace:
     def __init__(self, chapters: list[WorkspaceChapterSnapshot]) -> None:
         self.chapters = chapters
 
-    async def list_chapters(self, *, run_id: UUID) -> list[WorkspaceChapterSnapshot]:
+    async def list_chapters(
+        self,
+        *,
+        run_id: UUID,
+        template_fingerprint: str | None = None,
+    ) -> list[WorkspaceChapterSnapshot]:
         assert run_id == RUN_ID
+        assert template_fingerprint is not None
         return list(self.chapters)
 
     async def save_generated_chapter(

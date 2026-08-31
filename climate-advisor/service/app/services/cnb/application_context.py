@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+from hashlib import sha256
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
@@ -168,3 +170,16 @@ def included_sources_from_bundle(
         ccra=context.ccra is not None,
         hiap=context.hiap is not None,
     )
+
+
+def calculate_application_template_fingerprint(
+    template: ApplicationContextTemplate,
+) -> str:
+    """Hash every application-template field supplied to chapter validation."""
+    canonical = json.dumps(
+        template.model_dump(mode="json"),
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return sha256(canonical.encode("utf-8")).hexdigest()

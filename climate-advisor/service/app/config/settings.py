@@ -134,6 +134,7 @@ class ModelsConfig(BaseModel):
     cnb_source_reader: ResearchModelConfig
     cnb_source_synthesizer: ResearchModelConfig
     cnb_chapter_drafter: ResearchModelConfig | None = None
+    cnb_chapter_validator: ResearchModelConfig
 
 
 class StationaryEnergyPromptBudgetFlowConfig(BaseModel):
@@ -158,6 +159,12 @@ class CnbSourcePromptBudgetConfig(BaseModel):
     max_question_chars: int = Field(default=2000, ge=1, le=10000)
 
 
+class CnbValidationPromptBudgetConfig(BaseModel):
+    """Full-prompt limit for non-truncating chapter validation batches."""
+
+    max_prompt_tokens: int = Field(default=50000, ge=1000)
+
+
 class PromptBudgetConfig(BaseModel):
     tokenizer_encoding: str = "o200k_base"
     stationary_energy: StationaryEnergyPromptBudgetConfig = Field(
@@ -165,6 +172,9 @@ class PromptBudgetConfig(BaseModel):
     )
     cnb_sources: CnbSourcePromptBudgetConfig = Field(
         default_factory=CnbSourcePromptBudgetConfig,
+    )
+    cnb_validation: CnbValidationPromptBudgetConfig = Field(
+        default_factory=CnbValidationPromptBudgetConfig,
     )
 
 
@@ -187,6 +197,12 @@ class PromptsConfig(BaseModel):
     cnb_source_summary_synthesis: str = "prompts/cnb/source_summary_synthesis.md"
     cnb_source_question_reading: str = "prompts/cnb/source_question_reading.md"
     cnb_chapter_drafting: str = "prompts/cnb/chapter_drafting.md"
+    cnb_chapter_validation_completeness: str = (
+        "prompts/cnb/chapter_validation_completeness.md"
+    )
+    cnb_chapter_validation_consistency: str = (
+        "prompts/cnb/chapter_validation_consistency.md"
+    )
 
     def get_prompt(self, prompt_type: str) -> str:
         """Load prompt content from file."""

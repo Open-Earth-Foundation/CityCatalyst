@@ -66,6 +66,7 @@ import {
   Authz,
   CityDashboardResponse,
   ConceptNoteApplicationContext,
+  ConceptNoteChapterValidationResponse,
   ConceptNoteDraftState,
   ConceptNoteRun,
   ConceptNoteRunListResponse,
@@ -76,6 +77,7 @@ import {
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
+  ValidateConceptNoteChapterRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -2312,6 +2314,18 @@ export const api = createApi({
           { type: "ConceptNoteDraft", id: runId },
         ],
       }),
+      validateConceptNoteChapter: builder.mutation<
+        ConceptNoteChapterValidationResponse,
+        ValidateConceptNoteChapterRequest
+      >({
+        query: ({ chapterId, runId }) => ({
+          url: `concept-notes/${runId}/chapters/${chapterId}/validation`,
+          method: "POST",
+        }),
+        invalidatesTags: (_result, _error, { runId }) => [
+          { type: "ConceptNoteDraft", id: runId },
+        ],
+      }),
     };
   },
 });
@@ -2469,6 +2483,7 @@ export const {
   useDuplicateConceptNoteRunMutation,
   useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
+  useValidateConceptNoteChapterMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,
   useRetryConceptNoteUploadMutation,

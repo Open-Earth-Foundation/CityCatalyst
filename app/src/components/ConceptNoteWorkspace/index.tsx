@@ -18,10 +18,10 @@ import { motion, useReducedMotion } from "framer-motion";
 import NextLink from "next/link";
 import {
   LuArrowLeft,
-  LuDownload,
   LuFileText,
   LuLayers3,
   LuRefreshCw,
+  LuShieldCheck,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -74,7 +74,8 @@ export function ConceptNoteWorkspace({
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
-  const [exportOpen, setExportOpen] = useState(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -374,10 +375,13 @@ export function ConceptNoteWorkspace({
               size="sm"
               variant="solid"
               bg="sentiment.positiveDefault"
-              onClick={() => setExportOpen(true)}
+              onClick={() => {
+                setReviewChapterId(null);
+                setReviewOpen(true);
+              }}
             >
-              <Icon as={LuDownload} />
-              {t("export")}
+              <Icon as={LuShieldCheck} />
+              {t("review-and-export")}
             </Button>
           </Flex>
 
@@ -467,6 +471,7 @@ export function ConceptNoteWorkspace({
                   canStartDrafting={canStartDrafting}
                   draft={draft ?? null}
                   draftError={draftStartError}
+                  focusChapterId={reviewChapterId}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -529,8 +534,14 @@ export function ConceptNoteWorkspace({
         hasUploadedEvidence={bundle.availableContext.uploadedDocuments}
         lng={lng}
         noteName={run.name}
-        open={exportOpen}
-        onOpenChange={setExportOpen}
+        open={reviewOpen}
+        runId={runId}
+        onAddInformation={(chapterId) => {
+          setReviewChapterId(chapterId);
+          setTab("draft");
+        }}
+        onOpenChange={setReviewOpen}
+        onReviewComplete={() => refetchDraft()}
       />
     </Box>
   );

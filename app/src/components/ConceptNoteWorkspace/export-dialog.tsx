@@ -1,14 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Box, Flex, Grid, HStack, Icon, Text, VStack } from "@chakra-ui/react";
 import {
+  Box,
+  Flex,
+  Grid,
+  HStack,
+  Icon,
+  Spinner,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import {
+  LuArrowLeft,
+  LuArrowRight,
   LuCheck,
   LuCircleAlert,
   LuDownload,
   LuFileText,
-  LuInfo,
+  LuListChecks,
+  LuSearchCheck,
+  LuShieldCheck,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
@@ -17,14 +30,22 @@ import {
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogRoot,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useTranslation } from "@/i18n/client";
-import type { ConceptNoteDraftState } from "@/util/types";
+import { api } from "@/services/api";
+import type {
+  ConceptNoteChapterValidationStatus,
+  ConceptNoteDraftState,
+} from "@/util/types";
 
+import {
+  buildDocumentReviewSummary,
+  type DocumentReviewFinding,
+  type ReviewedConceptNoteChapter,
+} from "./chapter-validation";
 import {
   canExportConceptNote,
   countUnresolvedExportItems,
@@ -32,13 +53,148 @@ import {
   type ConceptNoteExportFormat,
 } from "./concept-note-export";
 
+type ReviewStage =
+  "running" | "missing_information" | "conflicts_logic" | "decision";
+
 interface ExportDialogProps {
   draft: ConceptNoteDraftState | null;
   hasUploadedEvidence: boolean;
   lng: string;
   noteName: string;
+  onAddInformation: (chapterId: string | null) => void;
   onOpenChange: (open: boolean) => void;
+  onReviewComplete: () => void | Promise<unknown>;
   open: boolean;
+  runId: string;
+}
+
+interface ReviewFindingListProps {
+  chapterTitles: Record<string, string>;
+  emptyKey: string;
+  entries: DocumentReviewFinding[];
+  lng: string;
+}
+
+const reviewSteps: Array<{
+  icon: typeof LuListChecks;
+  key: Exclude<ReviewStage, "running">;
+  labelKey: string;
+}> = [
+  {
+    key: "missing_information",
+    labelKey: "review-step-missing-information",
+    icon: LuListChecks,
+  },
+  {
+    key: "conflicts_logic",
+    labelKey: "review-step-conflicts-logic",
+    icon: LuSearchCheck,
+  },
+  {
+    key: "decision",
+    labelKey: "review-step-decision",
+    icon: LuShieldCheck,
+  },
+];
+
+function stageIndex(stage: ReviewStage): number {
+  return stage === "running"
+    ? -1
+    : reviewSteps.findIndex((step) => step.key === stage);
+}
+
+function statusTranslationKey(
+  status: ConceptNoteChapterValidationStatus,
+): string {
+  if (status === "ready") {
+    return "validation-status-ready";
+  }
+  if (status === "needs_review") {
+    return "validation-status-needs-review";
+  }
+  return "validation-status-incomplete";
+}
+
+function ReviewFindingList({
+  chapterTitles,
+  emptyKey,
+  entries,
+  lng,
+}: ReviewFindingListProps) {
+  const { t } = useTranslation(lng, "concept-notes");
+
+  if (entries.length === 0) {
+    return (
+      <HStack gap={2} py={5} color="sentiment.positiveDefault">
+        <Icon as={LuCheck} />
+        <Text fontSize="body.sm">{t(emptyKey)}</Text>
+      </HStack>
+    );
+  }
+
+  return (
+    <VStack align="stretch" gap={0}>
+      {entries.map((entry, index) => {
+        const relatedChapters = entry.finding.involved_chapter_ids
+          .filter((chapterId) => chapterId !== entry.chapterId)
+          .map((chapterId) => chapterTitles[chapterId])
+          .filter((title): title is string => Boolean(title));
+        const isBlocking = entry.finding.severity === "blocking";
+
+        return (
+          <Box
+            key={`${entry.chapterId}-${entry.finding.category}-${index}`}
+            borderBottom="1px solid"
+            borderColor="border.neutral"
+            py={4}
+          >
+            <Flex align="start" justify="space-between" gap={4}>
+              <Box minW={0}>
+                <Text
+                  fontFamily="heading"
+                  fontSize="label.sm"
+                  fontWeight="semibold"
+                  color="content.tertiary"
+                >
+                  {entry.chapterTitle}
+                </Text>
+                <Text mt={1} fontSize="body.sm" color="content.primary">
+                  {entry.finding.message}
+                </Text>
+              </Box>
+              <HStack
+                flexShrink={0}
+                gap={1.5}
+                color={
+                  isBlocking
+                    ? "sentiment.negativeDefault"
+                    : "sentiment.warningDefault"
+                }
+              >
+                <Icon as={LuCircleAlert} boxSize={3.5} />
+                <Text fontSize="label.sm" fontWeight="semibold">
+                  {t(isBlocking ? "review-blocking" : "review-warning")}
+                </Text>
+              </HStack>
+            </Flex>
+            {relatedChapters.length > 0 && (
+              <Text mt={2} fontSize="label.sm" color="content.tertiary">
+                {t("validation-related-chapters", {
+                  chapters: relatedChapters.join(", "),
+                })}
+              </Text>
+            )}
+            <Text mt={2} fontSize="label.sm" color="content.secondary">
+              <Text as="span" fontWeight="semibold" color="content.primary">
+                {t("review-action-label")}
+              </Text>{" "}
+              {entry.finding.suggested_action}
+            </Text>
+          </Box>
+        );
+      })}
+    </VStack>
+  );
 }
 
 export function ExportDialog({
@@ -46,41 +202,133 @@ export function ExportDialog({
   hasUploadedEvidence,
   lng,
   noteName,
+  onAddInformation,
   onOpenChange,
+  onReviewComplete,
   open,
+  runId,
 }: ExportDialogProps) {
   const { t } = useTranslation(lng, "concept-notes");
+  const [validateChapter] = api.useValidateConceptNoteChapterMutation();
+  const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
+  const chapterTitles = useMemo(
+    () =>
+      Object.fromEntries(
+        chapters.map((chapter) => [chapter.chapter_id, chapter.title]),
+      ),
+    [chapters],
+  );
+  const [stage, setStage] = useState<ReviewStage>("running");
+  const [reviewedChapters, setReviewedChapters] = useState<
+    ReviewedConceptNoteChapter[]
+  >([]);
+  const [reviewError, setReviewError] = useState(false);
+  const [progressIndex, setProgressIndex] = useState(0);
+  const [progressTitle, setProgressTitle] = useState("");
+  const [showExportOptions, setShowExportOptions] = useState(false);
   const [acceptedMissingInformation, setAcceptedMissingInformation] =
     useState(false);
   const [exportError, setExportError] = useState(false);
   const [exportingFormat, setExportingFormat] =
     useState<ConceptNoteExportFormat | null>(null);
-  const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
+  const activeRequestRef = useRef(0);
+  const wasOpenRef = useRef(false);
+
+  const review = useMemo(
+    () => buildDocumentReviewSummary(reviewedChapters),
+    [reviewedChapters],
+  );
   const unresolvedCount = useMemo(
     () => countUnresolvedExportItems(chapters),
     [chapters],
   );
-  const hasExportableDraft = chapters.some((chapter) =>
-    Boolean(chapter.body_markdown?.trim()),
-  );
   const canExport =
     canExportConceptNote(chapters, acceptedMissingInformation) &&
     !exportingFormat;
+  const progressPercent = chapters.length
+    ? Math.round((progressIndex / chapters.length) * 100)
+    : 0;
+  const firstActionableChapterId =
+    [
+      ...review.groups.missing_information,
+      ...review.groups.conflicts_logic,
+      ...review.groups.evidence,
+    ].find(({ finding }) => finding.severity === "blocking")?.chapterId ??
+    review.groups.missing_information[0]?.chapterId ??
+    null;
+
+  const runReview = useCallback(async () => {
+    const requestId = activeRequestRef.current + 1;
+    activeRequestRef.current = requestId;
+    setStage("running");
+    setReviewedChapters([]);
+    setReviewError(false);
+    setProgressIndex(0);
+    setProgressTitle(chapters[0]?.title ?? "");
+    setShowExportOptions(false);
+    setAcceptedMissingInformation(false);
+    setExportError(false);
+
+    if (chapters.length === 0) {
+      setReviewError(true);
+      return;
+    }
+
+    const completed: ReviewedConceptNoteChapter[] = [];
+    try {
+      for (let index = 0; index < chapters.length; index += 1) {
+        const chapter = chapters[index];
+        setProgressIndex(index);
+        setProgressTitle(chapter.title);
+        const validation = await validateChapter({
+          chapterId: chapter.chapter_id,
+          runId,
+        }).unwrap();
+        if (activeRequestRef.current !== requestId) {
+          return;
+        }
+        completed.push({ chapter, validation });
+        setReviewedChapters([...completed]);
+        setProgressIndex(index + 1);
+      }
+      await onReviewComplete();
+      if (activeRequestRef.current === requestId) {
+        setStage("missing_information");
+      }
+    } catch {
+      if (activeRequestRef.current === requestId) {
+        setReviewError(true);
+      }
+    }
+  }, [chapters, onReviewComplete, runId, validateChapter]);
+
+  useEffect(() => {
+    if (open && draft !== null && !wasOpenRef.current) {
+      wasOpenRef.current = true;
+      void runReview();
+    } else if (!open && wasOpenRef.current) {
+      wasOpenRef.current = false;
+      activeRequestRef.current += 1;
+    }
+  }, [draft, open, runReview]);
 
   function handleOpenChange(nextOpen: boolean): void {
     if (!nextOpen) {
-      setAcceptedMissingInformation(false);
-      setExportError(false);
+      activeRequestRef.current += 1;
       setExportingFormat(null);
     }
     onOpenChange(nextOpen);
+  }
+
+  function handleAddInformation(): void {
+    handleOpenChange(false);
+    onAddInformation(firstActionableChapterId);
   }
 
   async function handleExport(format: ConceptNoteExportFormat): Promise<void> {
     if (!canExport) {
       return;
     }
-
     setExportError(false);
     setExportingFormat(format);
     try {
@@ -92,15 +340,18 @@ export function ExportDialog({
     }
   }
 
+  const currentStepIndex = stageIndex(stage);
+
   return (
     <DialogRoot
       open={open}
       onOpenChange={(details) => handleOpenChange(details.open)}
-      size="lg"
+      size="cover"
     >
       <DialogContent
-        maxW="640px"
-        maxH="calc(100dvh - 32px)"
+        w="calc(100vw - 32px)"
+        maxW="980px"
+        h="min(820px, calc(100dvh - 32px))"
         my={4}
         overflow="hidden"
         borderRadius="rounded"
@@ -109,135 +360,556 @@ export function ExportDialog({
       >
         <DialogHeader
           display="block"
+          flexShrink={0}
           borderBottom="1px solid"
           borderColor="border.neutral"
-          px={6}
+          px={{ base: 5, md: 7 }}
           py={5}
-          pe={12}
+          pe={14}
         >
           <DialogTitle
             fontFamily="heading"
             fontSize="title.lg"
             color="content.primary"
           >
-            {t("export-concept-note")}
+            {t("guided-review-title")}
           </DialogTitle>
           <Text mt={1} fontSize="body.sm" color="content.tertiary">
-            {t("export-description")}
+            {t("guided-review-description")}
           </Text>
         </DialogHeader>
         <DialogCloseTrigger aria-label={t("close")} />
 
-        <DialogBody minH={0} overflowY="auto" px={6} py={5}>
-          <VStack align="stretch" gap={5}>
-            <Box>
-              <Text
-                mb={3}
-                fontFamily="heading"
-                fontSize="overline"
-                fontWeight="semibold"
-                letterSpacing="widest"
-                color="content.tertiary"
-                textTransform="uppercase"
-              >
-                {t("preflight-checks")}
-              </Text>
-              <VStack align="stretch" gap={2}>
+        <DialogBody display="flex" minH={0} overflow="hidden" p={0}>
+          <VStack
+            display={{ base: "none", md: "flex" }}
+            w="230px"
+            flexShrink={0}
+            align="stretch"
+            gap={1}
+            borderRight="1px solid"
+            borderColor="border.neutral"
+            bg="background.neutral"
+            px={4}
+            py={6}
+          >
+            <Text
+              mb={3}
+              px={3}
+              fontFamily="heading"
+              fontSize="overline"
+              fontWeight="semibold"
+              letterSpacing="widest"
+              color="content.tertiary"
+              textTransform="uppercase"
+            >
+              {t("guided-review-steps")}
+            </Text>
+            {reviewSteps.map((step, index) => {
+              const isActive = currentStepIndex === index;
+              const isComplete = currentStepIndex > index;
+              return (
                 <HStack
+                  key={step.key}
+                  aria-current={isActive ? "step" : undefined}
                   gap={3}
-                  border="1px solid"
-                  borderColor={
-                    hasUploadedEvidence
-                      ? "sentiment.positiveDefault"
-                      : "sentiment.warningDefault"
-                  }
                   borderRadius="rounded"
-                  bg={
-                    hasUploadedEvidence
-                      ? "sentiment.positiveOverlay"
-                      : "sentiment.warningOverlay"
+                  bg={isActive ? "base.light" : "transparent"}
+                  color={
+                    isActive || isComplete
+                      ? "content.primary"
+                      : "content.tertiary"
                   }
-                  p={3}
+                  px={3}
+                  py={3}
+                  boxShadow={isActive ? "1dp" : "none"}
                 >
-                  <Icon
-                    as={hasUploadedEvidence ? LuCheck : LuCircleAlert}
-                    color={
-                      hasUploadedEvidence
+                  <Flex
+                    boxSize="28px"
+                    align="center"
+                    justify="center"
+                    flexShrink={0}
+                    borderRadius="full"
+                    bg={
+                      isComplete
                         ? "sentiment.positiveDefault"
-                        : "sentiment.warningDefault"
+                        : isActive
+                          ? "content.link"
+                          : "background.alternativeLight"
                     }
-                  />
-                  <Box flex={1}>
-                    <Text
-                      fontSize="body.sm"
-                      fontWeight="semibold"
-                      color="content.primary"
-                    >
-                      {hasUploadedEvidence
-                        ? t("source-context-ready")
-                        : t("source-context-recommended")}
+                    color={isActive || isComplete ? "base.light" : "inherit"}
+                  >
+                    <Icon as={isComplete ? LuCheck : step.icon} boxSize={3.5} />
+                  </Flex>
+                  <Box>
+                    <Text fontSize="label.sm" color="content.tertiary">
+                      {t("review-step-number", { number: index + 1 })}
                     </Text>
-                    <Text fontSize="label.sm" color="content.secondary">
-                      {hasUploadedEvidence
-                        ? t("source-context-ready-export")
-                        : t("source-context-recommended-export")}
+                    <Text fontSize="body.sm" fontWeight="semibold">
+                      {t(step.labelKey)}
                     </Text>
                   </Box>
                 </HStack>
-                <HStack
-                  align="start"
-                  gap={3}
-                  border="1px solid"
-                  borderColor={
-                    hasExportableDraft && unresolvedCount === 0
-                      ? "sentiment.positiveDefault"
-                      : "sentiment.warningDefault"
-                  }
-                  borderRadius="rounded"
-                  bg={
-                    hasExportableDraft && unresolvedCount === 0
-                      ? "sentiment.positiveOverlay"
-                      : "sentiment.warningOverlay"
-                  }
-                  p={3}
-                >
-                  <Icon
-                    as={
-                      hasExportableDraft && unresolvedCount === 0
-                        ? LuCheck
-                        : LuCircleAlert
-                    }
-                    mt={0.5}
-                    color={
-                      hasExportableDraft && unresolvedCount === 0
-                        ? "sentiment.positiveDefault"
-                        : "sentiment.warningDefault"
-                    }
+              );
+            })}
+          </VStack>
+
+          <Box
+            flex={1}
+            minW={0}
+            overflowY="auto"
+            px={{ base: 5, md: 8 }}
+            py={6}
+          >
+            {stage === "running" && (
+              <Flex h="full" minH="440px" align="center" justify="center">
+                <VStack maxW="420px" gap={5} textAlign="center">
+                  {reviewError ? (
+                    <>
+                      <Flex
+                        boxSize="56px"
+                        align="center"
+                        justify="center"
+                        borderRadius="full"
+                        bg="sentiment.negativeOverlay"
+                        color="sentiment.negativeDefault"
+                      >
+                        <Icon as={LuCircleAlert} boxSize={6} />
+                      </Flex>
+                      <Box role="alert">
+                        <Text
+                          as="h2"
+                          fontFamily="heading"
+                          fontSize="title.md"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t("guided-review-failed")}
+                        </Text>
+                        <Text
+                          mt={2}
+                          fontSize="body.sm"
+                          color="content.secondary"
+                        >
+                          {t("guided-review-failed-description")}
+                        </Text>
+                      </Box>
+                      <HStack gap={3}>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleOpenChange(false)}
+                        >
+                          {t("cancel")}
+                        </Button>
+                        <Button onClick={() => void runReview()}>
+                          {t("try-again")}
+                        </Button>
+                      </HStack>
+                    </>
+                  ) : (
+                    <>
+                      <Flex
+                        boxSize="64px"
+                        align="center"
+                        justify="center"
+                        position="relative"
+                        borderRadius="full"
+                        bg="background.neutral"
+                        color="content.link"
+                      >
+                        <Spinner
+                          position="absolute"
+                          boxSize="64px"
+                          borderWidth="2px"
+                        />
+                        <Icon as={LuSearchCheck} boxSize={6} />
+                      </Flex>
+                      <Box aria-live="polite">
+                        <Text
+                          as="h2"
+                          fontFamily="heading"
+                          fontSize="title.md"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t("guided-review-running")}
+                        </Text>
+                        <Text
+                          mt={2}
+                          fontSize="body.sm"
+                          color="content.secondary"
+                        >
+                          {t("guided-review-progress", {
+                            current: Math.min(
+                              progressIndex + 1,
+                              chapters.length,
+                            ),
+                            total: chapters.length,
+                            chapter: progressTitle,
+                          })}
+                        </Text>
+                      </Box>
+                      <Box w="full" maxW="340px">
+                        <Box
+                          h="6px"
+                          overflow="hidden"
+                          borderRadius="full"
+                          bg="background.neutral"
+                        >
+                          <Box
+                            h="full"
+                            w={`${progressPercent}%`}
+                            borderRadius="full"
+                            bg="content.link"
+                            transition="width 180ms ease-out"
+                          />
+                        </Box>
+                        <Text
+                          mt={3}
+                          fontSize="label.sm"
+                          color="content.tertiary"
+                        >
+                          {t("guided-review-running-description")}
+                        </Text>
+                      </Box>
+                    </>
+                  )}
+                </VStack>
+              </Flex>
+            )}
+
+            {stage === "missing_information" && (
+              <VStack align="stretch" gap={6}>
+                <Box>
+                  <Text
+                    fontSize="label.sm"
+                    fontWeight="semibold"
+                    color="content.link"
+                  >
+                    {t("review-step-number", { number: 1 })}
+                  </Text>
+                  <Text
+                    as="h2"
+                    mt={1}
+                    fontFamily="heading"
+                    fontSize="title.lg"
+                    fontWeight="semibold"
+                    color="content.primary"
+                  >
+                    {t("review-missing-title")}
+                  </Text>
+                  <Text
+                    mt={2}
+                    maxW="640px"
+                    fontSize="body.sm"
+                    color="content.secondary"
+                  >
+                    {t("review-missing-description", {
+                      count: review.groups.missing_information.length,
+                    })}
+                  </Text>
+                  {review.templateFailureCount > 0 && (
+                    <HStack mt={4} gap={2} color="sentiment.warningDefault">
+                      <Icon as={LuCircleAlert} />
+                      <Text fontSize="label.sm">
+                        {t("review-template-failures", {
+                          count: review.templateFailureCount,
+                        })}
+                      </Text>
+                    </HStack>
+                  )}
+                </Box>
+
+                <ReviewFindingList
+                  chapterTitles={chapterTitles}
+                  emptyKey="review-no-missing-information"
+                  entries={review.groups.missing_information}
+                  lng={lng}
+                />
+
+                <Box borderTop="1px solid" borderColor="border.neutral" pt={5}>
+                  <Text
+                    as="h3"
+                    fontFamily="heading"
+                    fontSize="body.md"
+                    fontWeight="semibold"
+                    color="content.primary"
+                  >
+                    {t("review-evidence-title")}
+                  </Text>
+                  <Text mt={1} fontSize="body.sm" color="content.secondary">
+                    {t("review-evidence-description", {
+                      count: review.evidenceCount,
+                    })}
+                  </Text>
+                  <ReviewFindingList
+                    chapterTitles={chapterTitles}
+                    emptyKey="review-no-evidence-warnings"
+                    entries={review.groups.evidence}
+                    lng={lng}
                   />
-                  <Box flex={1}>
-                    <Text
-                      fontSize="body.sm"
-                      fontWeight="semibold"
-                      color="content.primary"
+                </Box>
+
+                <Flex justify="flex-end" pt={2}>
+                  <Button onClick={() => setStage("conflicts_logic")}>
+                    {t("review-next-conflicts")}
+                    <Icon as={LuArrowRight} />
+                  </Button>
+                </Flex>
+              </VStack>
+            )}
+
+            {stage === "conflicts_logic" && (
+              <VStack align="stretch" gap={6}>
+                <Box>
+                  <Text
+                    fontSize="label.sm"
+                    fontWeight="semibold"
+                    color="content.link"
+                  >
+                    {t("review-step-number", { number: 2 })}
+                  </Text>
+                  <Text
+                    as="h2"
+                    mt={1}
+                    fontFamily="heading"
+                    fontSize="title.lg"
+                    fontWeight="semibold"
+                    color="content.primary"
+                  >
+                    {t("review-conflicts-title")}
+                  </Text>
+                  <Text
+                    mt={2}
+                    maxW="640px"
+                    fontSize="body.sm"
+                    color="content.secondary"
+                  >
+                    {t("review-conflicts-description", {
+                      count: review.groups.conflicts_logic.length,
+                    })}
+                  </Text>
+                </Box>
+
+                <ReviewFindingList
+                  chapterTitles={chapterTitles}
+                  emptyKey="review-no-conflicts"
+                  entries={review.groups.conflicts_logic}
+                  lng={lng}
+                />
+
+                <Flex justify="space-between" gap={3} pt={2}>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setStage("missing_information")}
+                  >
+                    <Icon as={LuArrowLeft} />
+                    {t("review-back-missing")}
+                  </Button>
+                  <Button onClick={() => setStage("decision")}>
+                    {t("review-next-decision")}
+                    <Icon as={LuArrowRight} />
+                  </Button>
+                </Flex>
+              </VStack>
+            )}
+
+            {stage === "decision" && (
+              <VStack align="stretch" gap={6}>
+                {!showExportOptions ? (
+                  <>
+                    <Box>
+                      <Text
+                        fontSize="label.sm"
+                        fontWeight="semibold"
+                        color="content.link"
+                      >
+                        {t("review-step-number", { number: 3 })}
+                      </Text>
+                      <Text
+                        as="h2"
+                        mt={1}
+                        fontFamily="heading"
+                        fontSize="title.lg"
+                        fontWeight="semibold"
+                        color="content.primary"
+                      >
+                        {t("review-decision-title")}
+                      </Text>
+                      <Text
+                        mt={2}
+                        maxW="640px"
+                        fontSize="body.sm"
+                        color="content.secondary"
+                      >
+                        {t("review-decision-description")}
+                      </Text>
+                    </Box>
+
+                    <Flex
+                      align={{ base: "start", sm: "center" }}
+                      direction={{ base: "column", sm: "row" }}
+                      justify="space-between"
+                      gap={5}
+                      borderY="1px solid"
+                      borderColor="border.neutral"
+                      py={5}
                     >
-                      {!hasExportableDraft
-                        ? t("draft-preflight-empty")
-                        : unresolvedCount > 0
-                          ? t("draft-preflight-warning")
-                          : t("draft-preflight-ready")}
-                    </Text>
-                    <Text fontSize="label.sm" color="content.secondary">
-                      {!hasExportableDraft
-                        ? t("draft-preflight-empty-description")
-                        : unresolvedCount > 0
-                          ? t("draft-preflight-warning-description", {
-                              count: unresolvedCount,
-                            })
-                          : t("draft-preflight-ready-description")}
-                    </Text>
-                    {hasExportableDraft && unresolvedCount > 0 && (
+                      <Box>
+                        <Text fontSize="label.sm" color="content.tertiary">
+                          {t("review-document-status")}
+                        </Text>
+                        <Text
+                          mt={1}
+                          fontFamily="heading"
+                          fontSize="title.md"
+                          fontWeight="semibold"
+                          color={
+                            review.status === "ready"
+                              ? "sentiment.positiveDefault"
+                              : review.status === "needs_review"
+                                ? "sentiment.warningDefault"
+                                : "sentiment.negativeDefault"
+                          }
+                        >
+                          {t(statusTranslationKey(review.status))}
+                        </Text>
+                      </Box>
+                      <HStack gap={6}>
+                        <Box>
+                          <Text
+                            fontSize="title.md"
+                            fontWeight="semibold"
+                            color="content.primary"
+                          >
+                            {review.blockingCount}
+                          </Text>
+                          <Text fontSize="label.sm" color="content.tertiary">
+                            {t("review-blocking-items")}
+                          </Text>
+                        </Box>
+                        <Box>
+                          <Text
+                            fontSize="title.md"
+                            fontWeight="semibold"
+                            color="content.primary"
+                          >
+                            {review.warningCount}
+                          </Text>
+                          <Text fontSize="label.sm" color="content.tertiary">
+                            {t("review-warning-items")}
+                          </Text>
+                        </Box>
+                      </HStack>
+                    </Flex>
+
+                    <VStack align="stretch" gap={3}>
+                      {review.status !== "ready" && (
+                        <Button
+                          justifyContent="flex-start"
+                          onClick={handleAddInformation}
+                        >
+                          <Icon as={LuFileText} />
+                          {t("review-add-information")}
+                        </Button>
+                      )}
+                      <Button
+                        justifyContent="flex-start"
+                        variant="outline"
+                        onClick={() => handleOpenChange(false)}
+                      >
+                        <Icon as={LuCheck} />
+                        {t("review-accept")}
+                      </Button>
+                      <Button
+                        justifyContent="flex-start"
+                        variant={review.status === "ready" ? "solid" : "ghost"}
+                        color="content.link"
+                        onClick={() => setShowExportOptions(true)}
+                      >
+                        <Icon as={LuDownload} />
+                        {t(
+                          review.status === "ready"
+                            ? "review-continue-export"
+                            : "review-export-as-is",
+                        )}
+                      </Button>
+                    </VStack>
+
+                    <Button
+                      alignSelf="flex-start"
+                      variant="ghost"
+                      onClick={() => setStage("conflicts_logic")}
+                    >
+                      <Icon as={LuArrowLeft} />
+                      {t("review-back-conflicts")}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Box>
+                      <Text
+                        fontSize="label.sm"
+                        fontWeight="semibold"
+                        color="content.link"
+                      >
+                        {t("review-step-number", { number: 3 })}
+                      </Text>
+                      <Text
+                        as="h2"
+                        mt={1}
+                        fontFamily="heading"
+                        fontSize="title.lg"
+                        fontWeight="semibold"
+                        color="content.primary"
+                      >
+                        {t("review-export-title")}
+                      </Text>
+                      <Text mt={2} fontSize="body.sm" color="content.secondary">
+                        {t("review-export-description")}
+                      </Text>
+                    </Box>
+
+                    <HStack
+                      align="start"
+                      gap={3}
+                      borderY="1px solid"
+                      borderColor="border.neutral"
+                      py={4}
+                    >
+                      <Icon
+                        as={hasUploadedEvidence ? LuCheck : LuCircleAlert}
+                        mt={0.5}
+                        color={
+                          hasUploadedEvidence
+                            ? "sentiment.positiveDefault"
+                            : "sentiment.warningDefault"
+                        }
+                      />
+                      <Box>
+                        <Text
+                          fontSize="body.sm"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t(
+                            hasUploadedEvidence
+                              ? "source-context-ready"
+                              : "source-context-recommended",
+                          )}
+                        </Text>
+                        <Text fontSize="label.sm" color="content.secondary">
+                          {t(
+                            hasUploadedEvidence
+                              ? "source-context-ready-export"
+                              : "source-context-recommended-export",
+                          )}
+                        </Text>
+                      </Box>
+                    </HStack>
+
+                    {unresolvedCount > 0 && (
                       <Checkbox
-                        mt={3}
                         alignItems="start"
                         checked={acceptedMissingInformation}
                         onCheckedChange={(details) =>
@@ -247,8 +919,8 @@ export function ExportDialog({
                         }
                       >
                         <Text
-                          fontSize="label.sm"
-                          lineHeight="20px"
+                          fontSize="body.sm"
+                          lineHeight="22px"
                           color="content.primary"
                         >
                           {t("missing-information-export-confirmation", {
@@ -257,147 +929,91 @@ export function ExportDialog({
                         </Text>
                       </Checkbox>
                     )}
-                  </Box>
-                </HStack>
-              </VStack>
-            </Box>
 
-            <Box>
-              <Text
-                mb={3}
-                fontFamily="heading"
-                fontSize="overline"
-                fontWeight="semibold"
-                letterSpacing="widest"
-                color="content.tertiary"
-                textTransform="uppercase"
-              >
-                {t("export-formats")}
-              </Text>
-              <Grid
-                gap={3}
-                gridTemplateColumns={{
-                  base: "1fr",
-                  sm: "repeat(2, minmax(0, 1fr))",
-                }}
-              >
-                {(
-                  [
-                    {
-                      format: "docx",
-                      label: "DOCX",
-                      description: t("docx-description"),
-                    },
-                    {
-                      format: "pdf",
-                      label: "PDF",
-                      description: t("pdf-description"),
-                    },
-                  ] satisfies Array<{
-                    description: string;
-                    format: ConceptNoteExportFormat;
-                    label: string;
-                  }>
-                ).map((item) => (
-                  <VStack
-                    key={item.format}
-                    align="stretch"
-                    gap={3}
-                    border="1px solid"
-                    borderColor="border.neutral"
-                    borderRadius="rounded"
-                    bg="background.alternativeLight"
-                    p={4}
-                  >
-                    <Flex align="center" gap={3}>
-                      <Flex
-                        boxSize="36px"
-                        align="center"
-                        justify="center"
-                        borderRadius="rounded"
-                        bg="base.light"
-                        color="content.link"
-                      >
-                        <Icon as={LuFileText} />
-                      </Flex>
-                      <Box>
-                        <Text
-                          fontFamily="heading"
-                          fontSize="body.sm"
-                          fontWeight="semibold"
-                          color="content.primary"
-                        >
-                          {item.label}
-                        </Text>
-                        <Text fontSize="label.sm" color="content.tertiary">
-                          {item.description}
-                        </Text>
-                      </Box>
-                    </Flex>
-                    <Button
-                      disabled={!canExport}
-                      loading={exportingFormat === item.format}
-                      size="sm"
-                      variant="outline"
-                      onClick={() => void handleExport(item.format)}
+                    <Grid
+                      gap={3}
+                      gridTemplateColumns={{
+                        base: "1fr",
+                        sm: "repeat(2, 1fr)",
+                      }}
                     >
-                      <Icon as={LuDownload} />
-                      {t("export-format", { format: item.label })}
+                      {(
+                        [
+                          {
+                            format: "docx",
+                            label: "DOCX",
+                            description: t("docx-description"),
+                          },
+                          {
+                            format: "pdf",
+                            label: "PDF",
+                            description: t("pdf-description"),
+                          },
+                        ] satisfies Array<{
+                          description: string;
+                          format: ConceptNoteExportFormat;
+                          label: string;
+                        }>
+                      ).map((item) => (
+                        <VStack
+                          key={item.format}
+                          align="stretch"
+                          gap={3}
+                          border="1px solid"
+                          borderColor="border.neutral"
+                          borderRadius="rounded"
+                          p={4}
+                        >
+                          <Box>
+                            <Text
+                              fontFamily="heading"
+                              fontWeight="semibold"
+                              color="content.primary"
+                            >
+                              {item.label}
+                            </Text>
+                            <Text fontSize="label.sm" color="content.tertiary">
+                              {item.description}
+                            </Text>
+                          </Box>
+                          <Button
+                            disabled={!canExport}
+                            loading={exportingFormat === item.format}
+                            variant="outline"
+                            onClick={() => void handleExport(item.format)}
+                          >
+                            <Icon as={LuDownload} />
+                            {t("export-format", { format: item.label })}
+                          </Button>
+                        </VStack>
+                      ))}
+                    </Grid>
+
+                    {exportError && (
+                      <HStack
+                        role="alert"
+                        gap={2}
+                        color="sentiment.negativeDefault"
+                      >
+                        <Icon as={LuCircleAlert} />
+                        <Text fontSize="label.sm">{t("export-failed")}</Text>
+                      </HStack>
+                    )}
+
+                    <Button
+                      alignSelf="flex-start"
+                      variant="ghost"
+                      onClick={() => setShowExportOptions(false)}
+                    >
+                      <Icon as={LuArrowLeft} />
+                      {t("review-back-decision")}
                     </Button>
-                  </VStack>
-                ))}
-              </Grid>
-            </Box>
-
-            {exportError && (
-              <HStack
-                role="alert"
-                align="start"
-                gap={2}
-                color="sentiment.negativeDefault"
-              >
-                <Icon as={LuCircleAlert} mt={0.5} />
-                <Text fontSize="label.sm">{t("export-failed")}</Text>
-              </HStack>
+                  </>
+                )}
+              </VStack>
             )}
-
-            <HStack
-              align="start"
-              gap={2}
-              border="1px solid"
-              borderColor="border.neutral"
-              borderRadius="rounded"
-              bg="background.neutral"
-              p={3}
-            >
-              <Icon as={LuInfo} mt={0.5} color="content.link" />
-              <Text
-                fontSize="label.sm"
-                lineHeight="20px"
-                color="content.secondary"
-              >
-                {t("export-backend-note")}
-              </Text>
-            </HStack>
-          </VStack>
+          </Box>
         </DialogBody>
-
-        <DialogFooter
-          gap={3}
-          borderTop="1px solid"
-          borderColor="border.neutral"
-          px={6}
-          py={4}
-        >
-          <Button
-            variant="ghost"
-            color="content.link"
-            _hover={{ color: "content.link" }}
-            onClick={() => handleOpenChange(false)}
-          >
-            {t("go-back")}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </DialogRoot>
   );

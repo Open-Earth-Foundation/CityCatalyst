@@ -17,9 +17,13 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
-  ConceptNoteDraftChapter,
   ConceptNoteDraftState,
 } from "@/util/types";
+
+import {
+  type ChapterDisplayStatus,
+  getChapterDisplayStatus,
+} from "./chapter-validation";
 
 const initialChapterKeys = [
   "chapter-project-summary",
@@ -55,7 +59,7 @@ interface StructureTabProps {
 }
 
 function chapterStatusTranslationKey(
-  status: ConceptNoteDraftChapter["status"] | null,
+  status: ChapterDisplayStatus | null,
 ): string {
   switch (status) {
     case "draft":
@@ -64,20 +68,25 @@ function chapterStatusTranslationKey(
       return "chapter-status-needs-review";
     case "ready":
       return "chapter-status-ready";
+    case "incomplete":
+      return "chapter-status-validation-incomplete";
+    case "stale":
+      return "chapter-status-validation-stale";
     case "empty":
     default:
       return "not-started";
   }
 }
 
-function chapterStatusColor(
-  status: ConceptNoteDraftChapter["status"] | null,
-): string {
+function chapterStatusColor(status: ChapterDisplayStatus | null): string {
   switch (status) {
     case "ready":
       return "sentiment.positiveDefault";
     case "needs_review":
+    case "stale":
       return "sentiment.warningDefault";
+    case "incomplete":
+      return "sentiment.negativeDefault";
     case "draft":
       return "content.link";
     case "empty":
@@ -233,7 +242,9 @@ export function StructureTab({
             : chapter.translationKey
               ? t(chapter.translationKey)
               : t("custom-chapter", { number: index + 1 });
-          const runtimeStatus = draftChapter?.status ?? null;
+          const runtimeStatus = draftChapter
+            ? getChapterDisplayStatus(draftChapter)
+            : null;
           const runtimeStatusColor = chapterStatusColor(runtimeStatus);
 
           return (

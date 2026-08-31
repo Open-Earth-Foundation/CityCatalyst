@@ -1076,6 +1076,53 @@ export type ConceptNoteDraftRunStatus =
 export type ConceptNoteDraftChapterStatus =
   "empty" | "draft" | "needs_review" | "ready";
 
+export type ConceptNoteChapterValidationStatus =
+  "ready" | "needs_review" | "incomplete";
+
+export type ConceptNoteChapterValidationCheckStatus =
+  "pass" | "warning" | "fail";
+
+export type ConceptNoteChapterValidationFindingPhase =
+  "completeness" | "consistency" | "evidence";
+
+export type ConceptNoteChapterValidationFindingSeverity =
+  "warning" | "blocking";
+
+export interface ConceptNoteChapterValidationCheck {
+  key: string;
+  label?: string | null;
+  status: ConceptNoteChapterValidationCheckStatus;
+  message?: string | null;
+}
+
+export interface ConceptNoteChapterValidationFinding {
+  phase: ConceptNoteChapterValidationFindingPhase;
+  category: string;
+  severity: ConceptNoteChapterValidationFindingSeverity;
+  message: string;
+  suggested_action: string;
+  involved_chapter_ids: string[];
+  excerpts?: string[];
+}
+
+export interface ConceptNoteChapterValidation {
+  status: ConceptNoteChapterValidationStatus;
+  is_stale: boolean;
+  validated_revision_number: number | null;
+  validated_at: string | null;
+  checks: ConceptNoteChapterValidationCheck[];
+  findings: ConceptNoteChapterValidationFinding[];
+}
+
+export interface ConceptNoteChapterValidationResponse extends ConceptNoteChapterValidation {
+  chapter_id: string;
+}
+
+export interface ValidateConceptNoteChapterRequest {
+  chapterId: string;
+  runId: string;
+}
+
 export interface ConceptNoteDraftChapter {
   chapter_id: string;
   template_section_id: string | null;
@@ -1087,6 +1134,7 @@ export interface ConceptNoteDraftChapter {
   body_markdown: string | null;
   missing_information: string[];
   revision_number: number | null;
+  validation?: ConceptNoteChapterValidation | null;
 }
 
 export interface ConceptNoteDraftState {

@@ -9,7 +9,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { IconType } from "react-icons";
 import {
   LuCheck,
@@ -27,7 +27,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
-  ConceptNoteDraftChapterStatus,
   ConceptNoteDraftRunStatus,
   ConceptNoteDraftState,
 } from "@/util/types";
@@ -39,6 +38,10 @@ import {
   MISSING_INFORMATION_LINK,
   replaceMissingInformationMarkers,
 } from "./draft-markdown";
+import {
+  type ChapterDisplayStatus,
+  getChapterDisplayStatus,
+} from "./chapter-validation";
 
 interface DraftTabProps {
   applicationContext: ConceptNoteApplicationContext | null;
@@ -48,6 +51,7 @@ interface DraftTabProps {
   canStartDrafting: boolean;
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
+  focusChapterId: string | null;
   isDraftRunning: boolean;
   isRetrying: boolean;
   isStartingDraft: boolean;
@@ -194,7 +198,7 @@ function draftStatusKey(status: ConceptNoteDraftRunStatus): string {
   }
 }
 
-function chapterTone(status: ConceptNoteDraftChapterStatus): {
+function chapterTone(status: ChapterDisplayStatus): {
   dot: string;
 } {
   switch (status) {
@@ -207,8 +211,13 @@ function chapterTone(status: ConceptNoteDraftChapterStatus): {
         dot: "content.link",
       };
     case "needs_review":
+    case "stale":
       return {
         dot: "sentiment.warningDefault",
+      };
+    case "incomplete":
+      return {
+        dot: "sentiment.negativeDefault",
       };
     case "empty":
     default:
@@ -248,6 +257,7 @@ export function DraftTab({
   canStartDrafting,
   draft,
   draftError,
+  focusChapterId,
   isDraftRunning,
   isRetrying,
   isStartingDraft,
@@ -268,7 +278,7 @@ export function DraftTab({
   const draftStarted = Boolean(draft && draft.status !== "not_started");
   const showDraftSetup = !draftStarted || draft?.status === "failed";
   const activeChapterTitle = currentChapter(draft);
-  const chapters = draft?.chapters ?? [];
+  const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
   const selectedChapterId =
     focusedChapterId ?? draft?.current_chapter_id ?? chapters[0]?.chapter_id;
   const totalChapters =
@@ -291,6 +301,31 @@ export function DraftTab({
       : t("drafting-setup-missing", {
           requirements: missingDraftingRequirements.join(", "),
         });
+
+  useEffect(() => {
+    if (
+      !focusChapterId ||
+      !chapters.some((chapter) => chapter.chapter_id === focusChapterId)
+    ) {
+      return;
+    }
+
+    const frame = requestAnimationFrame(() => {
+      setFocusedChapterId(focusChapterId);
+      const preview = previewElement.current;
+      const chapterElement = chapterElements.current[focusChapterId];
+      if (!preview || !chapterElement) {
+        return;
+      }
+      const chapterTop =
+        chapterElement.getBoundingClientRect().top -
+        preview.getBoundingClientRect().top +
+        preview.scrollTop -
+        48;
+      preview.scrollTo({ behavior: "smooth", top: Math.max(0, chapterTop) });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [chapters, focusChapterId]);
 
   let status: DraftStatusPresentation = {
     background: "background.neutral",
@@ -591,7 +626,7 @@ export function DraftTab({
                 pr={1}
               >
                 {chapters.map((chapter) => {
-                  const tone = chapterTone(chapter.status);
+                  const tone = chapterTone(getChapterDisplayStatus(chapter));
                   const isSelected = selectedChapterId === chapter.chapter_id;
 
                   return (

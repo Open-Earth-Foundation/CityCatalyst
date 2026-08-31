@@ -52,6 +52,26 @@ Climate Advisor runs three chat modes through the same `/v1/messages` endpoint:
    - Uses the detailed contract in
      [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#context-bundle)
 
+### Concept Note chapter validation
+
+Chapter validation is triggered from CityCatalyst's **Review & export** button,
+not from chat. The guided review calls
+`POST /v1/concept-notes/{run_id}/chapters/{chapter_id}/validation` for every
+active chapter. Each call runs two structured passes in strict order:
+completeness/template/evidence first, then internal and target-involved
+cross-chapter consistency. The second call receives the first result and every
+active chapter; large documents are batched without truncating the target or
+comparisons.
+
+`llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
+medium reasoning and a 50,000-token validation prompt budget. The service uses
+temperature zero. Model or parse failures persist nothing. Successful results
+store concise checks and actionable findings, never reasoning, and are guarded
+by a transactional fingerprint covering the active document plus target gaps
+and evidence links. See
+[`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#chapter-validation)
+for status aggregation, staleness, persistence, API, and the guided export UI.
+
 At runtime:
 
 - `ThreadService` and `ThreadResolver` own chat-thread lifecycle.

@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LuArrowUpRight,
   LuBuilding2,
@@ -70,6 +71,7 @@ export function ConceptNoteDashboard({
   lng,
 }: ConceptNoteDashboardProps) {
   const { t } = useTranslation(lng, "concept-notes");
+  const router = useRouter();
   const reducedMotion = useReducedMotion() ?? false;
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [lifecycleDialog, setLifecycleDialog] = useState<{
@@ -94,10 +96,10 @@ export function ConceptNoteDashboard({
     api.useGetUserFilesQuery(cityId);
   const { data: cityDashboard, isLoading: modulesLoading } =
     api.useGetCityDashboardQuery({ cityId, lng });
-  const { currentData: exportDraft } = api.useGetConceptNoteDraftQuery(
-    exportRun?.run_id ?? "",
-    { skip: !exportRun },
-  );
+  const { currentData: exportDraft, refetch: refetchExportDraft } =
+    api.useGetConceptNoteDraftQuery(exportRun?.run_id ?? "", {
+      skip: !exportRun,
+    });
 
   const runs = runList?.runs ?? [];
   const cityFiles = files ?? [];
@@ -469,7 +471,14 @@ export function ConceptNoteDashboard({
           lng={lng}
           noteName={exportRun.name}
           open
+          runId={exportRun.run_id}
+          onAddInformation={() => {
+            const runId = exportRun.run_id;
+            setExportRun(null);
+            router.push(conceptNoteResumeHref(lng, cityId, runId));
+          }}
           onOpenChange={(open) => !open && setExportRun(null)}
+          onReviewComplete={() => refetchExportDraft()}
         />
       )}
     </Box>

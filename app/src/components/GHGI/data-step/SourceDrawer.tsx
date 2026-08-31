@@ -86,13 +86,15 @@ export function SourceDrawer({
     }
 
     const emissionsData = sourceData?.totals?.emissions?.co2eq_100yr;
-    if (sourceData?.issue) {
+    // Issue on the API payload means totals are unreliable — but an explicit
+    // totalEmissionsData override (e.g. from activity-tab) may still be valid.
+    if (sourceData?.issue && !converted) {
       return { number: "?", unit: "" };
     }
 
     // Format kg directly — do not round-trip through formatNumber/parseFloat
     // (thousands separators break parseFloat, e.g. "6,790" → 6).
-    if (emissionsData != null && emissionsData !== "") {
+    if (!sourceData?.issue && emissionsData != null && emissionsData !== "") {
       const kg =
         Number(emissionsData) * (sourceData?.scaleFactor ?? 1.0);
       if (Number.isFinite(kg)) {

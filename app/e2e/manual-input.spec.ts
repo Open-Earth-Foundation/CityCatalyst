@@ -76,6 +76,9 @@ async function navigateToFirstSubsector(
   await page.waitForURL(
     new RegExp(`/GHGI/${inventoryId}/data/${sector.sectorPath}/[^/]+`),
   );
+  await expect(
+    page.getByText(/Select methodology|Select The Methodology|Add data to sub-sector/i).first(),
+  ).toBeVisible({ timeout: 30000 });
 }
 
 async function navigateToResidentialSubsector(
@@ -94,6 +97,14 @@ async function navigateToResidentialSubsector(
   await expect(residentialCard.first()).toBeVisible({ timeout: 30000 });
   await residentialCard.first().click();
   await page.waitForURL(new RegExp(`/GHGI/${inventoryId}/data/1/[^/]+`));
+
+  await expect(page.getByText(/I\.1.*Residential/i)).toBeVisible({
+    timeout: 30000,
+  });
+  // Both scope ActivityTabs mount headers; assert the selected scope content.
+  await expect(
+    page.getByText(/Select methodology|Select The Methodology|Add data to sub-sector/i).first(),
+  ).toBeVisible({ timeout: 30000 });
 }
 
 async function openScopeOnePanel(
@@ -108,9 +119,29 @@ async function openScopeOnePanel(
     await navigateToFirstSubsector(page, cityId, inventoryId, sector);
   }
 
-  await page.getByRole("tab", { name: /Scope 1/i }).click();
-  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  const scopeOneTab = page.getByRole("tab", { name: /Scope 1/i });
+  await scopeOneTab.click();
+  await expect(scopeOneTab).toHaveAttribute("aria-selected", "true", {
+    timeout: 10000,
+  });
+
+  // Prefer the open panel — Firefox/Chakra often expose tabpanel name as "Scope"
+  // instead of "Scope 1", which breaks getByRole(...{ name: /Scope 1/i }).
+  const scopeOnePanel = page
+    .locator('[role="tabpanel"][data-state="open"]')
+    .or(page.getByRole("tabpanel", { name: /Scope 1/i }))
+    .or(page.getByLabel(/^Scope 1$/i))
+    .first();
   await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
+
+  await expect(
+    scopeOnePanel
+      .getByText(/Select methodology|Select The Methodology|Add activity/i)
+      .or(scopeOnePanel.getByTestId(testIds.methodologyCard))
+      .or(addActivityButton(scopeOnePanel))
+      .first(),
+  ).toBeVisible({ timeout: 30000 });
+
   return scopeOnePanel;
 }
 
@@ -328,9 +359,24 @@ test.describe.serial("Manual Input", () => {
           inventoryId,
           sector,
         );
+
+        // Prefer methodology picker; if a methodology is already applied, the
+        // activity button means the scope loaded successfully.
         const methodologyCards = scopeOnePanel.getByTestId(
           testIds.methodologyCard,
         );
+        const alreadySelected = await addActivityButton(scopeOnePanel)
+          .isVisible()
+          .catch(() => false);
+
+        if (alreadySelected && (await methodologyCards.count()) === 0) {
+          await expect(addActivityButton(scopeOnePanel)).toBeVisible();
+          return;
+        }
+
+        await expect(
+          scopeOnePanel.getByText(/Select methodology|Select The Methodology/i).first(),
+        ).toBeVisible({ timeout: 30000 });
         await expect(methodologyCards.first()).toBeVisible({ timeout: 30000 });
         expect(await methodologyCards.count()).toBeGreaterThan(0);
       });

@@ -14,12 +14,12 @@ topology, or production fallback.
 - **Scope**: deterministic Core route/contract tests, Climate Advisor
   request-time/security regression tests, cross-service contract comparison,
   touched-file quality checks, and documented environment limitations.
-- **Status**: Deterministic verification evidence captured. Final local
+- **Status**: Complete. Deterministic verification evidence captured. Final local
   revalidation at `localhost:3000` passed 4/4 after another process occupying
   the port was cleared. UOW-03 completion was explicitly approved on
   2026-08-31. Build and Test/release-readiness verification has been executed;
-  final readiness and CC-737 closure approval remain pending. No UOW-03
-  production implementation is planned.
+  final release-readiness and CC-737 closure were explicitly approved on
+  2026-08-31. No UOW-03 production implementation was added.
 
 ## Non-negotiable verification invariants
 
@@ -86,8 +86,11 @@ meaningful result; they are never bypassed or silently treated as green.
 - **Gate B — UOW-03 completion**: explicitly approve the evidence before any
   release-readiness claim or task closure. Approved 2026-08-31; no broader
   release-readiness or task-closure claim is inferred.
+- **Gate C — Final release-readiness and CC-737 closure**: review the Build and
+  Test evidence and explicitly approve readiness and closure. Approved
+  2026-08-31.
 
-No UOW-03 application-code change is authorized by this plan. Any discovered
+No UOW-03 application-code change was authorized or required by this plan. Any discovered
 contract mismatch, security regression, or new infrastructure/storage need
 must stop verification and return to the owning design/unit gate.
 
@@ -127,12 +130,12 @@ must stop verification and return to the owning design/unit gate.
   the CC-737-touched-file scope; Ruff was unavailable. The Core build compiled
   successfully before failing while parsing TypeScript `--showConfig` output.
 - No application code was changed for this checkpoint, and no implementation
-  failure was observed. Final release-readiness and CC-737 closure remain
-  subject to explicit approval.
+  failure was observed. Final release-readiness and CC-737 closure were
+  explicitly approved on 2026-08-31.
 
 **Initial evidence commit**: `96c089cfb` (`docs(cc-737): record UOW-03
 verification evidence`). The previous revalidation update is committed as
 `9767f0f08`; the environment classification is committed as `de226492f`.
 The final 4/4 result is recorded in the current documentation update. UOW-03
-completion was explicitly approved on 2026-08-31. No broader release-readiness
-or task-closure claim is inferred from this approval.
+completion and final release-readiness/CC-737 closure were explicitly approved
+on 2026-08-31.

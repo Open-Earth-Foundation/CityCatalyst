@@ -1068,3 +1068,19 @@ contract checks.
 **Approval Status**: Build and Test evidence recorded; final release-readiness
 and CC-737 closure approval remain pending. UOW-03 completion remains approved.
 ---
+
+## Approval — Final Release-Readiness and CC-737 Closure
+**Timestamp**: 2026-08-31T15:42:30-03:00
+**User Input**:
+```text
+approved
+```
+**AI Response**: Recorded the explicit approval of the Build and Test/release-
+readiness evidence and CC-737 closure. The approval accepts the observed Core
+26/26 regression result, Climate Advisor 109/109 regression result, and live
+CC–CA contract result of 4/4 at `http://localhost:3000`, with the documented
+repository/tooling limitations retained as non-remediated findings. No
+application code or unrelated files were modified.
+**Approval Status**: Final release-readiness and CC-737 closure approved;
+UOW-03 completion remains approved.
+---

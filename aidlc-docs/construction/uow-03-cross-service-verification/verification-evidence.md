@@ -2,8 +2,8 @@
 
 **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`  
 **Status**: UOW-03 is complete and approved. Build and Test/release-readiness
-verification is recorded below; no release-readiness or CC-737 closure claim
-has been made.
+verification is recorded below; final release-readiness and CC-737 closure
+were explicitly approved on 2026-08-31.
 
 ## Scope
 
@@ -187,5 +187,6 @@ is made by this approval.
 - Core authorization, bounded reads, selected-only loading, non-disclosure,
   storage isolation, and absence of Climate Advisor storage credentials remain
   covered by the passing focused and live contract evidence above.
-- This artifact does not claim release readiness or close CC-737. A separate
-  explicit final approval gate remains pending.
+- Final release-readiness and CC-737 closure were explicitly approved on
+  2026-08-31 after review of this evidence. The documented repository/tooling
+  limitations remain visible and were not remediated within CC-737.

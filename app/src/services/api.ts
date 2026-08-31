@@ -76,6 +76,10 @@ import {
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
+  WebhookSubscriptionResponse,
+  WebhookSubscriptionSecretResponse,
+  CreateWebhookSubscriptionRequest,
+  UpdateWebhookSubscriptionRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -93,6 +97,16 @@ import type {
   OCCityDataResponse,
   ProjectBoundary,
 } from "@/util/types";
+import type {
+  MeedRankRouteResponse,
+  MeedReferenceActionsResponse,
+  MeedReferenceCityAttributesResponse,
+  MeedReferenceFinanceFeasibilityResponse,
+  MeedReferenceFinanceOpportunitiesResponse,
+  MeedReferenceFinanceProjectsResponse,
+  MeedReferencePolicyScoresResponse,
+  MeedRunRankingRequest,
+} from "@/util/types/meed";
 import type { GeoJSON } from "geojson";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -139,7 +153,10 @@ export const api = createApi({
     "ActionPlan",
     "VersionHistory",
     "PersonalAccessToken",
+    "Webhook",
     "AdminModules",
+    "Meed",
+    "MeedRanking",
     "ConceptNoteRuns",
     "ConceptNoteUpload",
     "ConceptNoteDraft",
@@ -219,6 +236,139 @@ export const api = createApi({
         transformResponse: (response: { data: ResultsResponse }) =>
           response.data,
         providesTags: ["ReportResults"],
+      }),
+      // ─── MEED+ module (Global API proxies — see backend/meed/MeedGlobalApiService) ───
+      getMeedActions: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/actions`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedCityAttributes: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/city-attributes`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedPolicyScores: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) => `city/${cityId}/modules/meed/policy-scores`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedFinanceFeasibility: builder.query<unknown, { cityId: string }>({
+        query: ({ cityId }) =>
+          `city/${cityId}/modules/meed/finance/feasibility`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedFinanceLink: builder.query<
+        unknown,
+        { cityId: string; link: string }
+      >({
+        query: ({ cityId, link }) =>
+          `city/${cityId}/modules/meed/finance/follow?link=${encodeURIComponent(link)}`,
+        transformResponse: (response: { data: unknown }) => response.data,
+        providesTags: ["Meed"],
+      }),
+      /**
+       * The stored ranking for one inventory. Separate cache tag from "Meed"
+       * so running a ranking does not invalidate the catalog and reference
+       * data, which do not change when it runs.
+       */
+      getMeedRanking: builder.query<
+        MeedRankRouteResponse,
+        { cityId: string; inventoryId: string }
+      >({
+        query: ({ cityId, inventoryId }) =>
+          `city/${cityId}/meed/rank?inventoryId=${encodeURIComponent(inventoryId)}`,
+        transformResponse: (response: { data: MeedRankRouteResponse }) =>
+          response.data,
+        providesTags: ["MeedRanking"],
+      }),
+      // ─── MEED reference data (city-scoped routes) ───
+      //
+      // These six replace the `modules/meed/*` proxies above. They are pure
+      // pass-throughs to hiap-meed, so unlike the ranking route their payloads
+      // are snake_case with a `meta`/`warnings` envelope — see the contract
+      // types. The older proxies stay until their consumers are migrated;
+      // that migration also retires `finance/follow`, whose guard only permits
+      // `/api/v1/cities/` while the real links are `/api/v1/climate-finance/`,
+      // so both of its calls 400 and the cards silently render "no data".
+      getMeedReferenceActions: builder.query<
+        MeedReferenceActionsResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/actions`,
+        transformResponse: (r: { data: MeedReferenceActionsResponse }) =>
+          r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferenceCityAttributes: builder.query<
+        MeedReferenceCityAttributesResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/city-attributes`,
+        transformResponse: (r: { data: MeedReferenceCityAttributesResponse }) =>
+          r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferencePolicyScores: builder.query<
+        MeedReferencePolicyScoresResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/policy-scores`,
+        transformResponse: (r: { data: MeedReferencePolicyScoresResponse }) =>
+          r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferenceFinanceFeasibility: builder.query<
+        MeedReferenceFinanceFeasibilityResponse,
+        { cityId: string }
+      >({
+        query: ({ cityId }) => `city/${cityId}/meed/finance/feasibility`,
+        transformResponse: (r: {
+          data: MeedReferenceFinanceFeasibilityResponse;
+        }) => r.data,
+        providesTags: ["Meed"],
+      }),
+      /** `financeRoute`, not `route` — the payload's `route` is a value. */
+      getMeedReferenceFinanceOpportunities: builder.query<
+        MeedReferenceFinanceOpportunitiesResponse,
+        { cityId: string; sector: string; financeRoute: string }
+      >({
+        query: ({ cityId, sector, financeRoute }) =>
+          `city/${cityId}/meed/finance/opportunities?sector=${encodeURIComponent(
+            sector,
+          )}&financeRoute=${encodeURIComponent(financeRoute)}`,
+        transformResponse: (r: {
+          data: MeedReferenceFinanceOpportunitiesResponse;
+        }) => r.data,
+        providesTags: ["Meed"],
+      }),
+      getMeedReferenceFinanceProjects: builder.query<
+        MeedReferenceFinanceProjectsResponse,
+        { cityId: string; actionId: string }
+      >({
+        query: ({ cityId, actionId }) =>
+          `city/${cityId}/meed/finance/projects?actionId=${encodeURIComponent(
+            actionId,
+          )}`,
+        transformResponse: (r: {
+          data: MeedReferenceFinanceProjectsResponse;
+        }) => r.data,
+        providesTags: ["Meed"],
+      }),
+      /** Runs the ranking, stores it, and returns the same envelope as the GET. */
+      runMeedRanking: builder.mutation<
+        MeedRankRouteResponse,
+        { cityId: string; body: MeedRunRankingRequest }
+      >({
+        query: ({ cityId, body }) => ({
+          url: `city/${cityId}/meed/rank`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: { data: MeedRankRouteResponse }) =>
+          response.data,
+        invalidatesTags: ["MeedRanking"],
       }),
       getEmissionsForecast: builder.query<EmissionsForecastData, string>({
         query: (inventoryId: string) =>
@@ -2091,6 +2241,87 @@ export const api = createApi({
         },
       ),
 
+      getOrganizationWebhooks: builder.query<
+        WebhookSubscriptionResponse[],
+        string
+      >({
+        query: (organizationId) => `/organizations/${organizationId}/webhooks`,
+        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
+          response.data,
+        providesTags: (result, _err, organizationId) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({ type: "Webhook" as const, id })),
+                { type: "Webhook", id: `ORG-${organizationId}` },
+              ]
+            : [{ type: "Webhook", id: `ORG-${organizationId}` }],
+      }),
+      createOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; body: CreateWebhookSubscriptionRequest }
+      >({
+        query: ({ organizationId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId }) => [
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      updateOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionResponse,
+        {
+          organizationId: string;
+          webhookId: string;
+          body: UpdateWebhookSubscriptionRequest;
+        }
+      >({
+        query: ({ organizationId, webhookId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "PATCH",
+          body,
+        }),
+        transformResponse: (response: { data: WebhookSubscriptionResponse }) =>
+          response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      deleteOrganizationWebhook: builder.mutation<
+        { success: boolean },
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      rotateOrganizationWebhookSecret: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}/rotate-secret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
         query: () => "admin/modules",
@@ -2166,8 +2397,14 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
-        query: (runId) => `concept-notes/${runId}`,
+      getConceptNoteRun: builder.query<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          params: { city_id: cityId },
+        }),
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
@@ -2206,6 +2443,47 @@ export const api = createApi({
               selectedFundingOpportunityId ?? null,
             thread_id: threadId ?? null,
           },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      renameConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; name: string; runId: string }
+      >({
+        query: ({ cityId, name, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "PATCH",
+          body: { name },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      duplicateConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ cityId, idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}/duplicate`,
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      deleteConceptNoteRun: builder.mutation<
+        void,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "DELETE",
+          params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
@@ -2342,6 +2620,19 @@ export const {
   useGetInventoryValuesBySubsectorQuery,
   useDeleteInventoryValueMutation,
   useGetResultsQuery,
+  useGetMeedActionsQuery,
+  useGetMeedCityAttributesQuery,
+  useGetMeedPolicyScoresQuery,
+  useGetMeedFinanceFeasibilityQuery,
+  useGetMeedFinanceLinkQuery,
+  useGetMeedRankingQuery,
+  useRunMeedRankingMutation,
+  useGetMeedReferenceActionsQuery,
+  useGetMeedReferenceCityAttributesQuery,
+  useGetMeedReferencePolicyScoresQuery,
+  useGetMeedReferenceFinanceFeasibilityQuery,
+  useGetMeedReferenceFinanceOpportunitiesQuery,
+  useGetMeedReferenceFinanceProjectsQuery,
   useGetEmissionsForecastQuery,
   useUpdateInventoryMutation,
   useUpdateOrCreateInventoryValueMutation,
@@ -2409,6 +2700,11 @@ export const {
   useGetPersonalAccessTokensQuery,
   useCreatePersonalAccessTokenMutation,
   useDeletePersonalAccessTokenMutation,
+  useGetOrganizationWebhooksQuery,
+  useCreateOrganizationWebhookMutation,
+  useUpdateOrganizationWebhookMutation,
+  useDeleteOrganizationWebhookMutation,
+  useRotateOrganizationWebhookSecretMutation,
   useGetAdminModulesQuery,
   useCreateModuleMutation,
   useUpdateModuleMutation,
@@ -2418,6 +2714,9 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useRenameConceptNoteRunMutation,
+  useDuplicateConceptNoteRunMutation,
+  useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

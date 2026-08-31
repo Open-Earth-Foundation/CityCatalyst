@@ -11,7 +11,7 @@ type QueryValue = string | number | boolean | null | undefined;
 
 type ClimateAdvisorRequest = {
   path: string;
-  method?: "GET" | "POST";
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: Record<string, unknown>;
   headers?: HeadersInit;
   searchParams?: Record<string, QueryValue>;

@@ -331,5 +331,6 @@
   "workflow-interviewing": "Befragung",
   "workflow-unknown": "Unbekannte Phase",
   "autosaved": "Laufzustand automatisch gespeichert",
-  "export": "Export"
+  "export": "Export",
+  "chat-generating": "Antwort generieren"
 }

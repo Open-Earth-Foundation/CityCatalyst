@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Units 1–3 completion approved; Unit 4 TDD red checkpoint committed; Unit 4 implementation approval pending.
+- **Status**: Plan approved; Units 1–3 completion approved; Unit 4 implementation green; atomic commit approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -330,14 +330,14 @@ Steps:
 2. [x] Add failing compatibility tests for general chat, inventory, Stationary
    Energy, Concept Note, legacy datasource, vector, missing context, feature
    disabled, Core unavailable, and empty discovery behavior.
-3. [ ] Add failing cancellation/cleanup and refreshed-token handoff tests if
+3. [x] Add failing cancellation/cleanup and refreshed-token handoff tests if
    the shared streaming lifecycle participates in the new path.
 4. [x] Run focused service/streaming tests to confirm failure before changes.
-5. [ ] Integrate the additive catalog pack at the narrowest existing
+5. [x] Integrate the additive catalog pack at the narrowest existing
    composition seam without replacing or widening existing packs.
-6. [ ] Verify catalog discovery is not global/startup work and that only the
+6. [x] Verify catalog discovery is not global/startup work and that only the
    selected capability enters the final agent tool list.
-7. [ ] Run focused tests, lint/format checks, mandatory project skills, and
+7. [x] Run focused tests, lint/format checks, mandatory project skills, and
    existing workflow regressions.
 8. [ ] Commit only this unit with:
    `feat(cc-737): integrate request-time catalog tools`.
@@ -359,6 +359,27 @@ green cycle.
 (`test(cc-737): add AgentService catalog composition red tests`) containing
 only the Unit 4 red tests and AI-DLC evidence. Unit 4 production implementation
 remains gated on explicit approval.
+
+**TDD green checkpoint — Unit 4**: Added the narrow AgentService catalog
+composition seam and the StreamingHandler active-context handoff. AgentService
+performs request-scoped discovery before agent construction, binds only the
+exact current selection, composes only the selected tool additively, and keeps
+existing workflow packs unchanged when context, selection, or discovery is
+missing. StreamingHandler derives user/thread from its authenticated state,
+accepts only safe scope fields, ignores caller-supplied user identity, and
+forwards only the catalog/capability selection pair. The implementation owns
+no catalog authorization, route derivation, storage, or S3 access.
+
+The Unit 4-focused and catalog regression suite passes 90/90. The selected
+files compile and `git diff --check` passes. Ruff could not run because it is
+not installed in the service environment. The complete 393-test service suite
+was attempted but stalled on the first CNB test
+(`service/tests/cnb/test_concept_note_agent_scope.py`) without a result and was
+interrupted; this environment limitation is recorded rather than treated as a
+green result. The mandatory simplification pass removed redundant context
+extraction and corrected formatting. The architecture documentation records
+the AgentService/StreamingHandler handoff; README/setup documentation remains
+accurate.
 
 ### Unit 5 — Consumer security, contract, lifecycle, and compatibility hardening
 

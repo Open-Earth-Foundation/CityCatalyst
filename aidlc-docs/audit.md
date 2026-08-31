@@ -786,5 +786,21 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (UOW-02 Unit 3 completion approval authorizing the next test-first unit)
 **AI Response**: Created atomic commit `470bcfc87` (`test(cc-737): add AgentService catalog composition red tests`) containing only the Unit 4 red tests and AI-DLC evidence. No Unit 4 production, streaming, storage, or credential code was staged.
 **Approval Status**: Unit 4 red-test commit created; explicit Unit 4 implementation approval pending.
+
+---
+
+## Approval — UOW-02 Unit 4 Implementation
+**Timestamp**: 2026-08-31T10:39:58-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval to implement Unit 4 after the AgentService composition red checkpoint. Implementation remains limited to the existing AgentService/StreamingHandler request-time seams and additive selected-only tool composition; Core authorization, bounded reads, non-disclosure, workflow compatibility, and storage isolation remain mandatory.
+**Approval Status**: Unit 4 implementation authorized; green checkpoint and atomic commit review pending.
+
+---
+
+## Code Generation — UOW-02 Unit 4 TDD Green Checkpoint
+**Timestamp**: 2026-08-31T10:39:58-03:00
+**User Input**: "approved" (explicit Unit 4 implementation approval)
+**AI Response**: Implemented request-scoped catalog composition in AgentService and safe active-context/selection handoff in StreamingHandler. Discovery occurs before agent construction; only the exact current selected capability is composed; missing context, selection, empty discovery, and discovery failure preserve existing packs. Authenticated handler identity is authoritative, only safe scope fields are forwarded, and no catalog/storage/S3 authorization or direct access was added. The focused and catalog regression suite passes 90/90; changed files compile and `git diff --check` passes. Ruff is unavailable. The complete 393-test service suite stalled on the first CNB test before a result and was interrupted; it is not claimed green. Architecture documentation was updated and README/setup documentation remains accurate.
+**Approval Status**: Unit 4 green checkpoint complete; atomic commit and explicit unit-completion review pending.
 ---
 ---

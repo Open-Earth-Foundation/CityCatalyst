@@ -245,6 +245,15 @@ the active context is unchanged. This is a consumer-side integrity check, not
 authorization; selected reads remain behind the existing `CityCatalystClient`
 and Core revalidation boundary. Invalid or cross-context selections use the
 stable non-disclosing unavailable error.
+
+`AgentService` invokes this coordinator before constructing the Agents SDK
+agent, then adds only the selected tool to the existing workflow-specific tool
+packs. `StreamingHandler` supplies the authenticated user/thread identity and
+safe request scope; it ignores caller-supplied user identity and forwards only
+the selected catalog/capability pair for current Core binding. Missing context,
+missing selection, empty discovery, or unavailable discovery leaves existing
+tool-pack behavior unchanged.
+
 - `services/stationary_energy/stationary_energy_review_resolver.py`
   - Resolves selectable sources, notation-key targets, pending review rows, and
     save-ready decision inputs for one persisted draft snapshot.

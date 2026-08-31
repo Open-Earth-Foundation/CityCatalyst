@@ -802,5 +802,13 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (explicit Unit 4 implementation approval)
 **AI Response**: Implemented request-scoped catalog composition in AgentService and safe active-context/selection handoff in StreamingHandler. Discovery occurs before agent construction; only the exact current selected capability is composed; missing context, selection, empty discovery, and discovery failure preserve existing packs. Authenticated handler identity is authoritative, only safe scope fields are forwarded, and no catalog/storage/S3 authorization or direct access was added. The focused and catalog regression suite passes 90/90; changed files compile and `git diff --check` passes. Ruff is unavailable. The complete 393-test service suite stalled on the first CNB test before a result and was interrupted; it is not claimed green. Architecture documentation was updated and README/setup documentation remains accurate.
 **Approval Status**: Unit 4 green checkpoint complete; atomic commit and explicit unit-completion review pending.
+
+---
+
+## Code Generation — UOW-02 Unit 4 Atomic Commit
+**Timestamp**: 2026-08-31T10:39:58-03:00
+**User Input**: "approved" (implementation approval; atomic commit is the authorized unit workflow)
+**AI Response**: Created atomic commit `1005e2d35` (`feat(cc-737): integrate request-time catalog tools`) containing only the AgentService/StreamingHandler request-time integration, its handoff test, architecture documentation, and AI-DLC evidence. Unrelated `app/package-lock.json`, root `package-lock.json`, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. Unit 5 has not been opened.
+**Approval Status**: Unit 4 commit created; explicit Unit 4 completion approval pending.
 ---
 ---

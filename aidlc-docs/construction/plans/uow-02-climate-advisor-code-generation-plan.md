@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Units 1–3 completion approved; Unit 4 implementation green; atomic commit approval pending.
+- **Status**: Plan approved; Units 1–3 completion approved; Unit 4 atomic commit created; Unit 4 completion approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -339,7 +339,7 @@ Steps:
    selected capability enters the final agent tool list.
 7. [x] Run focused tests, lint/format checks, mandatory project skills, and
    existing workflow regressions.
-8. [ ] Commit only this unit with:
+8. [x] Commit only this unit with:
    `feat(cc-737): integrate request-time catalog tools`.
 
 Story/requirement mapping: US-03, US-07, US-09; FR-04, FR-08, FR-10, FR-11;
@@ -380,6 +380,12 @@ green result. The mandatory simplification pass removed redundant context
 extraction and corrected formatting. The architecture documentation records
 the AgentService/StreamingHandler handoff; README/setup documentation remains
 accurate.
+
+**Atomic commit**: Created `1005e2d35`
+(`feat(cc-737): integrate request-time catalog tools`) containing only the
+Unit 4 AgentService/StreamingHandler integration, its handoff test,
+architecture documentation, and AI-DLC evidence. Unit 4 completion remains
+pending explicit review and approval; Unit 5 is not opened.
 
 ### Unit 5 — Consumer security, contract, lifecycle, and compatibility hardening
 

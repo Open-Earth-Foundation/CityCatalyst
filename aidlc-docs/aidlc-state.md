@@ -71,6 +71,7 @@
 - [x] UOW-02 Unit 4 TDD red checkpoint created — `470bcfc87` — 2026-08-31
 - [x] UOW-02 Unit 4 implementation approved after TDD red checkpoint — 2026-08-31
 - [x] UOW-02 Unit 4 green checkpoint complete — 2026-08-31
+- [x] UOW-02 Unit 4 atomic commit created — `1005e2d35` — 2026-08-31
 - [ ] UOW-02 Unit 4 completion approved after atomic commit
 
 ## CONSTRUCTION PHASE

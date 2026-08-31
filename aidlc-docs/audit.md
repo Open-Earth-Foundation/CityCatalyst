@@ -979,6 +979,8 @@ audience mismatch; after restarting that current Core with a process-only
 This distinguishes an environment/port/configuration failure from an
 implementation failure. No application source code was modified. The
 temporary current-Core process was stopped after verification.
+The observed results and classification were committed as the docs-only
+commit `de226492f` (`docs(cc-737): classify local contract environment`).
 **Approval Status**: UOW-03 remains unapproved; evidence review and explicit
 user approval are pending.
 ---

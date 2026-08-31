@@ -866,5 +866,29 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved"
 **AI Response**: Recorded explicit approval of UOW-02 Unit 5 completion after atomic commit `447364707`. UOW-02 Code Generation is now complete: Units 1–5 are committed with focused security, contract, lifecycle, compatibility, bounded-read, Core-authorization, non-disclosure, and storage-isolation evidence. UOW-03 cross-service verification has not started.
 **Approval Status**: UOW-02 Code Generation complete; explicit authorization to begin UOW-03 cross-service verification remains pending.
+
+---
+
+## Approval — UOW-03 Cross-Service Verification
+**Timestamp**: 2026-08-31T11:27:14-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit authorization to begin UOW-03 cross-service verification. Created the UOW-03 verification plan and evidence artifact. Initial deterministic Core contract suites pass 37/37, and the Climate Advisor UOW-02 regression suite passes 109/109; live contract and infrastructure limitations remain documented. No application code was modified and no release-readiness claim is being made.
+**Approval Status**: UOW-03 verification in progress; evidence review and completion approval pending.
+
+---
+
+## Verification — UOW-03 Cross-Service Evidence Checkpoint
+**Timestamp**: 2026-08-31T11:28:05-03:00
+**User Input**: "approved" (UOW-03 authorization)
+**AI Response**: Completed the deterministic cross-service verification checkpoint. Core NativeInputCatalog route/registry/service/adapter suites pass 37/37; Climate Advisor UOW-02 regression passes 109/109; local auth tests pass 5/5 and four live auth-contract tests are skipped because required environment variables are not configured. Core touched-file ESLint and Prettier checks pass; Climate Advisor compile and diff checks pass; Ruff is unavailable. The verification plan and evidence artifact record the contract, security, boundedness, lifecycle, compatibility, and storage-isolation results and limitations. No application code was modified.
+**Approval Status**: UOW-03 evidence captured; explicit completion approval pending.
+
+---
+
+## Verification — UOW-03 Evidence Atomic Commit
+**Timestamp**: 2026-08-31T11:28:05-03:00
+**User Input**: "approved" (UOW-03 authorization; atomic evidence commit is the authorized workflow)
+**AI Response**: Created the atomic UOW-03 verification evidence commit containing only the verification plan, evidence artifact, and AI-DLC records. No application code, storage, credentials, or unrelated worktree files were staged. UOW-03 completion remains pending explicit review and approval.
+**Approval Status**: Evidence commit created; explicit UOW-03 completion approval pending.
 ---
 ---

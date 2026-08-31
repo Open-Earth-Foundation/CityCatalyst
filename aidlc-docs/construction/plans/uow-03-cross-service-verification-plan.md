@@ -104,8 +104,9 @@ must stop verification and return to the owning design/unit gate.
 - Full repository/PostgreSQL limitations remain documented in the evidence;
   they are not treated as green results.
 
-**Evidence commit**: `96c089cfb`
-(`docs(cc-737): record UOW-03 verification evidence`). Evidence is ready for
-explicit UOW-03 completion review after the configured local revalidation
-result is addressed. No release-readiness or task-closure claim is made until
-that approval is recorded.
+**Initial evidence commit**: `96c089cfb` (`docs(cc-737): record UOW-03
+verification evidence`). The configured local revalidation update is committed
+as `9767f0f08` (`docs(cc-737): record live contract revalidation result`).
+Evidence is ready for explicit UOW-03 completion review after the configured
+local revalidation result is addressed. No release-readiness or task-closure
+claim is made until that approval is recorded.

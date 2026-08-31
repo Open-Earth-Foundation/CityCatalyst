@@ -92,6 +92,6 @@
 - [x] Code Generation — UOW-02 complete with Units 1–5 committed and verified — 2026-08-31
 - [x] UOW-03 cross-service verification authorized — 2026-08-31
 - [x] UOW-03 verification evidence committed — `96c089cfb` — 2026-08-31
-- [x] UOW-03 configured local live contract revalidation attempted — 4 failed at Core token endpoint HTTP 404 — 2026-08-31
+- [x] UOW-03 configured local live contract revalidation attempted — 4 failed at Core token endpoint HTTP 404 — committed `9767f0f08` — 2026-08-31
 - [ ] UOW-03 verification evidence review and completion approval pending
 - [ ] Build and Test — pending implementation

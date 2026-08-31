@@ -915,6 +915,8 @@ four tests failed during `POST /api/v1/internal/ca/user-token` because the
 local Core process returned HTTP 404. The wrong-key test therefore observed
 404 before its expected 401 assertion, and the capability/cross-user
 assertions were not reached. No application code was modified.
+The evidence, plan, state, and audit updates were committed atomically as
+`9767f0f08` (`docs(cc-737): record live contract revalidation result`).
 **Approval Status**: UOW-03 remains unapproved; completion review and explicit
 user approval are pending.
 ---

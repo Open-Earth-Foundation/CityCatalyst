@@ -78,23 +78,23 @@ async function openResidentialSubsector(
   await expect(page.getByText(/I\.1.*Residential/i)).toBeVisible({
     timeout: 30000,
   });
-  await expect(
-    page.getByText(/Select methodology|Select The Methodology/i).first(),
-  ).toBeVisible({ timeout: 30000 });
 }
 
-function addActivityButton(page: Page) {
-  return page.getByLabel("activity-button");
+function addActivityButton(page: Page, panel?: Locator) {
+  const button = page.getByLabel("activity-button");
+  return panel ? panel.getByLabel("activity-button") : button.first();
 }
 
-async function ensureMethodologySelected(page: Page) {
-  const addActivity = addActivityButton(page);
+async function ensureMethodologySelected(page: Page, panel?: Locator) {
+  const addActivity = addActivityButton(page, panel);
   if (await addActivity.isVisible({ timeout: 3000 }).catch(() => false)) {
     return;
   }
 
-  const fuelCombustionCard = page
-    .getByTestId("methodology-card")
+  const methodologyCards = panel
+    ? panel.getByTestId("methodology-card")
+    : page.getByTestId("methodology-card");
+  const fuelCombustionCard = methodologyCards
     .filter({ hasText: /Fuel Consumption/i })
     .first();
   await expect(fuelCombustionCard).toBeVisible({ timeout: 30000 });
@@ -138,8 +138,10 @@ async function addScope1ResidentialEmissions(
   ).toBeVisible({ timeout: 30000 });
 
   await openResidentialSubsector(page, cityId, inventoryId);
+  await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByLabel(/Scope 1/i);
+  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
     .isVisible()
@@ -148,9 +150,9 @@ async function addScope1ResidentialEmissions(
     return;
   }
 
-  await ensureMethodologySelected(page);
+  await ensureMethodologySelected(page, scopeOnePanel);
 
-  await addActivityButton(page).click();
+  await addActivityButton(page, scopeOnePanel).click();
   const addEmissionModal = page.getByTestId("add-emission-modal");
   await expect(addEmissionModal).toBeVisible();
 

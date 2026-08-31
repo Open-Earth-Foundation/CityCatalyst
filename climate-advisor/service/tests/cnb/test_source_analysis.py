@@ -8,8 +8,10 @@ from collections.abc import AsyncIterator
 from types import SimpleNamespace
 from uuid import uuid4
 
+import httpx
 import pytest
 import pytest_asyncio
+from agents import RunConfig, Runner
 from app.config import Settings, get_settings
 from app.models.cnb.context_bundle import (
     SourceDocumentSynthesis,
@@ -22,6 +24,7 @@ from app.services.cnb.source_analysis import (
     SourceAnalysisError,
     SourceBlock,
     SourcePage,
+    _run_agent,
     analyze_document,
     gather_all_or_raise,
     parse_markdown_blocks,
@@ -30,6 +33,7 @@ from app.services.cnb.source_analysis import (
     prompt_token_count,
     query_document,
     render_partition,
+    source_analysis_contract_version,
     verify_source_artifact,
 )
 from openai import AsyncOpenAI
@@ -361,3 +365,110 @@ async def test_parallel_workers_are_all_awaited_before_a_failure_is_raised() -> 
     with pytest.raises(SourceAnalysisError):
         await gather_all_or_raise(fail(), finish())
     assert completed.is_set()
+
+
+@pytest.mark.parametrize(
+    ("role", "model_name", "effort", "output_type", "output"),
+    [
+        (
+            "cnb_source_reader",
+            "openai/gpt-5.6-luna",
+            "low",
+            SourceQuestionReading,
+            {"excerpts": [], "caveats": [], "covered_segment_ids": ["p1-s1"]},
+        ),
+        (
+            "cnb_source_synthesizer",
+            "openai/gpt-5.6-sol",
+            "medium",
+            SourceDocumentSynthesis,
+            {
+                "summary": "No budget is stated.",
+                "topics": ["budget"],
+                "key_excerpts": [],
+            },
+        ),
+    ],
+)
+@pytest.mark.asyncio
+async def test_source_worker_serializes_sol_luna_requests_without_temperature(
+    role,
+    model_name,
+    effort,
+    output_type,
+    output,
+) -> None:
+    """Exercise the real Agents/OpenAI adapters without sending network requests."""
+    settings = get_settings().model_copy(deep=True)
+    captured = []
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        assert str(request.url) == "https://openrouter.ai/api/v1/chat/completions"
+        payload = json.loads(request.content)
+        captured.append(payload)
+        return httpx.Response(
+            200,
+            json={
+                "id": "chatcmpl-local-test",
+                "object": "chat.completion",
+                "created": 0,
+                "model": payload["model"],
+                "choices": [
+                    {
+                        "index": 0,
+                        "message": {"role": "assistant", "content": json.dumps(output)},
+                        "finish_reason": "stop",
+                    }
+                ],
+                "usage": {
+                    "prompt_tokens": 10,
+                    "completion_tokens": 10,
+                    "total_tokens": 20,
+                },
+            },
+        )
+
+    class LocalRunner:
+        @staticmethod
+        async def run(agent, input_text):
+            return await Runner.run(
+                agent, input_text, run_config=RunConfig(tracing_disabled=True)
+            )
+
+    async with AsyncOpenAI(
+        api_key="local-test-only",
+        base_url="https://openrouter.ai/api/v1",
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(respond)),
+    ) as client:
+        result = await _run_agent(
+            name="Source model compatibility test",
+            prompt=settings.llm.prompts.get_prompt(
+                "cnb_source_question_reading"
+                if role == "cnb_source_reader"
+                else "cnb_source_summary_synthesis"
+            ),
+            model_name=getattr(settings.llm.models, role).name,
+            output_type=output_type,
+            input_text="No budget is stated.",
+            settings=settings,
+            client=client,
+            runner=LocalRunner,
+        )
+
+    assert result == output_type.model_validate(output)
+    assert len(captured) == 1
+    request = captured[0]
+    assert request["model"] == model_name
+    assert request["reasoning_effort"] == effort
+    assert "temperature" not in request
+    assert not request.get("tools")
+    assert request["response_format"]["type"] == "json_schema"
+    assert request["response_format"]["json_schema"]["strict"] is True
+
+
+@pytest.mark.parametrize("role", ["cnb_source_reader", "cnb_source_synthesizer"])
+def test_source_model_change_invalidates_analysis_reuse_contract(role) -> None:
+    settings = get_settings().model_copy(deep=True)
+    current_contract = source_analysis_contract_version(settings)
+    getattr(settings.llm.models, role).name = "previous-model"
+    assert source_analysis_contract_version(settings) != current_contract

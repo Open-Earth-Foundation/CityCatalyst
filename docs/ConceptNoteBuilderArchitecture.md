@@ -1618,8 +1618,10 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.4 mini readers with process-wide concurrency no greater
-  than four, then GPT-5.4 for final document synthesis.
+- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+  final document synthesis. Both use tool-free structured outputs through
+  OpenRouter Chat Completions without a temperature parameter.
 - Requires every partition reader to acknowledge every segment and verifies
   every retained excerpt as an exact substring of its cited source location.
 - Requires every factual sentence in a synthesized document summary to remain
@@ -1656,10 +1658,15 @@ source content. Climate Advisor registers its function-tool implementation
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.
 
-The main CNB agent selects one `upload_id` from the always-on summaries and asks
-one bounded natural-language question. Questions spanning documents require
+The model-facing context excludes identifier and fingerprint fields recursively;
+the persisted bundle above retains its backend IDs and integrity metadata. The
+main CNB agent selects a source by its exact `source_label` and `filename` from
+the always-on summaries and asks one bounded natural-language question. The tool
+resolves the upload inside the authorized run and rejects duplicate label/filename
+pairs rather than selecting arbitrarily. Its model-facing result omits upload IDs.
+Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.4 mini readers over every source-preserving partition using
+tool-free GPT-5.6 Luna readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -2192,9 +2199,11 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.4-mini
+    name: openai/gpt-5.6-luna
+    reasoning_effort: low
   cnb_source_synthesizer:
-    name: openai/gpt-5.4
+    name: openai/gpt-5.6-sol
+    reasoning_effort: medium
 prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
@@ -2204,11 +2213,13 @@ prompts:
 Prompt composition should follow the current CA pattern:
 
 - General chat keeps using the default prompt.
-- Active CNB runs currently keep the default prompt; the dedicated Concept Note
-  prompt belongs with the future writing and editing workflow.
+- Active CNB context chat composes `prompts.core` with `prompts.cnb_chat`
+  (`prompts/cnb/chat.md`), using the same `<additional_instructions>` wrapper as
+  Stationary Energy review chat. It provides source-query guidance, evidence
+  handling, and no-fabrication rules without granting document-mutation tools.
 - Runtime context injection is separate from prompt-file composition.
-- That future prompt should describe chapter editing rules, evidence-review
-  rules, and no-fabrication guardrails.
+- Future chat-driven editing adds chapter-editing and approval rules separately;
+  the current CNB chat must not claim that suggested wording was saved.
 
 CNB context should be injected as a bounded JSON block:
 
@@ -2220,6 +2231,14 @@ UI_CONTEXT
 ```
 
 ## MLflow Interaction Names
+
+Run logging uses explicit `MlflowClient` run IDs stored in a task-local context,
+not MLflow's thread-local fluent active-run stack. All shared logging helpers and
+run termination target that ID. Failed starts mask the enclosing target, queued
+writes drain before closure, and exceptions/cancellation terminate only the
+affected request. Trace metadata explicitly links to the source run through
+`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
 
 All user-initiated CNB telemetry uses the `Clima` experiment and the visible
 `workflow=CNB` tag. The durable CNB `run_id` remains a correlation tag; it must

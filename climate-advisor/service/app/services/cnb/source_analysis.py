@@ -14,6 +14,7 @@ from typing import Any, TypeVar, cast
 
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel, Runner
 from app.config import Settings, get_settings
+from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.models.cnb.context_bundle import (
     SelectedSource,
     SourceDocumentSynthesis,
@@ -22,7 +23,6 @@ from app.models.cnb.context_bundle import (
     SourceQueryResult,
     SourceQuestionReading,
 )
-from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.services.citycatalyst_client import ConceptNoteMarkdownArtifact
 from app.services.openrouter_client import build_openrouter_client_options
 from app.utils.prompt_budget import count_prompt_tokens
@@ -414,7 +414,7 @@ async def _run_agent(
     client: AsyncOpenAI,
     runner: Any,
 ) -> OutputModel:
-    """Run one deterministic, tool-free Agents SDK worker."""
+    """Run one tool-free worker with its configured model and reasoning effort."""
     model_config = (
         settings.llm.models.cnb_source_reader
         if model_name == settings.llm.models.cnb_source_reader.name
@@ -428,7 +428,7 @@ async def _run_agent(
             openai_client=client,
         ),
         model_settings=ModelSettings(
-            temperature=0.0,
+            # Sol/Luna reasoning requests omit unsupported sampling controls.
             include_usage=True,
             reasoning={"effort": model_config.reasoning_effort},
         ),

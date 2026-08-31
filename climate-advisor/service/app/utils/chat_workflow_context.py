@@ -65,7 +65,7 @@ class ChatWorkflowContext:
             workflow = CNB_WORKFLOW_TAG
             workflow_name = "concept_note_context_chat"
             interaction = CNBInteraction.CHAT.value
-            prompt_name = "chat"
+            prompt_name = "cnb_chat"
             context_mode = "concept_note_run"
         elif self.stationary_energy_draft_run_id:
             workflow = "stationary_energy_context_chat"

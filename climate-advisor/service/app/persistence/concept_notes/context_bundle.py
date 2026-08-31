@@ -10,13 +10,14 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
-from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
 from app.models.cnb.concept_note_markdown import source_format_from_filename
+from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
+from app.utils.concept_note_context import omit_context_identifiers
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -379,9 +380,10 @@ async def load_query_source(
     session_factory: async_sessionmaker[AsyncSession],
     user_id: str,
     run_id: UUID,
-    upload_id: UUID,
+    source_label: str,
+    filename: str,
 ) -> ContextBundleQuerySource:
-    """Authorize a ready selected source for the active workflow step."""
+    """Resolve a human-readable source selection and authorize its backend upload."""
     try:
         async with session_factory() as session:
             run = await _require_owned_run(
@@ -406,21 +408,25 @@ async def load_query_source(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            source = next(
-                (
-                    item
-                    for item in bundle.selected_sources
-                    if item.upload_id == upload_id
-                ),
-                None,
-            )
-            if source is None:
+            matches = [
+                item
+                for item in bundle.selected_sources
+                if item.source_label == source_label and item.filename == filename
+            ]
+            if not matches:
                 raise ContextBundlePersistenceError(
                     "concept_note_source_not_selected",
                     404,
                     "Selected Concept Note source was not found",
                 )
-            upload = await session.get(ConceptNoteUpload, upload_id)
+            if len(matches) != 1:
+                raise ContextBundlePersistenceError(
+                    "concept_note_source_ambiguous",
+                    409,
+                    "More than one selected document has this label and filename",
+                )
+            source = matches[0]
+            upload = await session.get(ConceptNoteUpload, source.upload_id)
             if (
                 upload is None
                 or upload.run_id != run_id
@@ -454,7 +460,7 @@ async def load_agent_context(
     user_id: str,
     run_id: UUID,
 ) -> dict[str, Any] | None:
-    """Return the last completed context for the authorized CNB agent."""
+    """Return the authorized CNB context without model-facing identity metadata."""
     try:
         async with session_factory() as session:
             # Keep the last usable bundle available during a later rebuild.
@@ -473,28 +479,28 @@ async def load_agent_context(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            return {
-                "concept_note_run_id": str(run_id),
-                "workflow_step": run.workflow_step,
-                "context_bundle_status": bundle_progress,
-                "selected_sources": [
-                    {
-                        "upload_id": str(source.upload_id),
-                        "source_label": source.source_label,
-                        "filename": source.filename,
-                        "source_format": source.source_format,
-                        "page_count": source.page_count,
-                        "block_count": source.block_count,
-                        "summary": source.summary,
-                        "topics": source.topics,
-                    }
-                    for source in bundle.selected_sources
-                ],
-                "cc_context": bundle.cc_context.model_dump(mode="json"),
-                "funder_context": bundle.funder_context,
-                "similar_projects": bundle.similar_projects,
-                "document_context": bundle.document_context,
-            }
+            return omit_context_identifiers(
+                {
+                    "workflow_step": run.workflow_step,
+                    "context_bundle_status": bundle_progress,
+                    "selected_sources": [
+                        {
+                            "source_label": source.source_label,
+                            "filename": source.filename,
+                            "source_format": source.source_format,
+                            "page_count": source.page_count,
+                            "block_count": source.block_count,
+                            "summary": source.summary,
+                            "topics": source.topics,
+                        }
+                        for source in bundle.selected_sources
+                    ],
+                    "cc_context": bundle.cc_context.model_dump(mode="json"),
+                    "funder_context": bundle.funder_context,
+                    "similar_projects": bundle.similar_projects,
+                    "document_context": bundle.document_context,
+                }
+            )
     except ContextBundlePersistenceError:
         raise
     except (OSError, SQLAlchemyError, ValueError) as exc:

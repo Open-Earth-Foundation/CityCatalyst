@@ -7,13 +7,10 @@ import inspect
 import json
 import logging
 import time
-from contextlib import nullcontext
 from typing import Any, AsyncIterator, Dict, List, Optional, Union
 from uuid import UUID
 
 from agents import RunConfig, Runner, gen_trace_id
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.config import Settings, get_settings
 from app.middleware import get_request_id
 from app.models.requests import MessageCreateRequest
@@ -55,6 +52,7 @@ from app.utils.sse import format_sse
 from app.utils.stationary_energy_context import extract_stationary_energy_draft_run_id
 from app.utils.token_handler import TokenHandler
 from app.utils.tool_handler import persist_assistant_message
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -680,22 +678,21 @@ class StreamingHandler:
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
         workflow_metadata = self.workflow_context.telemetry()
-        trace_span_context = (
-            start_trace_span(
-                name=CNB_WORKFLOW_TAG,
-                span_type="CHAIN",
-                attributes={
-                    "workflow": workflow_metadata["workflow"],
-                    "workflow_name": workflow_metadata["workflow_name"],
-                    "interaction": workflow_metadata["interaction"],
-                },
-            )
-            if self.workflow_context.concept_note_run_id
-            else nullcontext()
-        )
-
-        # Keep one active CNB root span so trace tags attach before model streaming.
-        with trace_span_context:
+        # Every chat mode needs a root to retain explicit run/trace correlation.
+        with start_trace_span(
+            name=(
+                CNB_WORKFLOW_TAG
+                if self.workflow_context.concept_note_run_id
+                else self.workflow_context.trace_workflow_name
+            ),
+            span_type="CHAIN",
+            attributes={
+                "workflow": workflow_metadata["workflow"],
+                "workflow_name": workflow_metadata["workflow_name"],
+                "interaction": workflow_metadata["interaction"],
+            },
+        ):
+            trace_context_updated = self._update_mlflow_trace_context(payload)
             # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
             try:
                 result = Runner.run_streamed(
@@ -721,7 +718,6 @@ class StreamingHandler:
                     yield event_bytes
                 return
 
-            trace_context_updated = self._update_mlflow_trace_context(payload)
             trace_context_attempted_after_start = False
 
             # Convert SDK stream events into the app's SSE event contract.

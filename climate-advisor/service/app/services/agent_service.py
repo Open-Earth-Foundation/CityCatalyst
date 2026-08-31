@@ -9,15 +9,12 @@ management.
 from __future__ import annotations
 
 import logging
-from urllib.parse import urlparse
 from typing import Dict, Optional, Sequence, Union
+from urllib.parse import urlparse
 from uuid import UUID
 
 import openai
 from agents import Agent, ModelSettings, OpenAIChatCompletionsModel
-from openai import AsyncOpenAI
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
 from app.config import get_settings
 from app.persistence.concept_notes.context_bundle import (
     ALLOWED_SOURCE_QUERY_STEPS,
@@ -37,6 +34,8 @@ from app.tools.stationary_energy_start_draft_tools import (
     build_stationary_energy_start_draft_tools,
 )
 from app.utils.agent_tracing import configure_agents_tracing
+from openai import AsyncOpenAI
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -118,11 +117,12 @@ class AgentService:
             if self.settings.llm.prompts.stationary_energy_review
             else None
         )
-        self.system_prompt = (
-            None
-            if self._uses_stationary_energy_review_prompt
-            else self.chat_system_prompt
-        )
+        if self._uses_stationary_energy_review_prompt:
+            self.system_prompt = None
+        elif self._has_concept_note_context:
+            self.system_prompt = self.settings.llm.prompts.compose_prompt("cnb_chat")
+        else:
+            self.system_prompt = self.chat_system_prompt
 
         orchestrator_model = self.settings.llm.models.orchestrator
         agentic_flow_model = self.settings.llm.models.agentic_flow or orchestrator_model
@@ -257,6 +257,10 @@ class AgentService:
                 or self.settings.llm.prompts.compose_prompt(
                     "stationary_energy_review"
                 )
+            )
+        elif self._has_concept_note_context:
+            agent_instructions = (
+                self.system_prompt or self.settings.llm.prompts.compose_prompt("cnb_chat")
             )
         else:
             agent_instructions = (

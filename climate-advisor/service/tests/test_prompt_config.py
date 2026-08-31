@@ -42,6 +42,7 @@ def test_configured_prompt_files_use_required_schema_blocks() -> None:
         "core": prompts.core,
         "chat": prompts.chat,
         "stationary_energy_review": prompts.stationary_energy_review,
+        "cnb_chat": prompts.cnb_chat,
         "cnb_funding_opportunity_research": (prompts.cnb_funding_opportunity_research),
         "cnb_funder_identity_matching": prompts.cnb_funder_identity_matching,
         "cnb_similar_project_matching": prompts.cnb_similar_project_matching,
@@ -183,12 +184,32 @@ def test_compose_prompt_wraps_core_and_stationary_energy_review() -> None:
     assert "Stationary Energy review tool argument contracts:" not in composed_prompt
 
 
+def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy() -> None:
+    prompts = _load_llm_config().prompts
+    composed = prompts.compose_prompt("cnb_chat")
+
+    assert composed.startswith(prompts.get_prompt("core"))
+    assert "<additional_instructions>" in composed
+    assert "active Concept Note Builder (CNB) project" in composed
+    assert "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON" in composed
+    assert "concept_note_sources_query" in composed
+    assert "`source_label` (string)" in composed
+    assert "`filename` (string)" in composed
+    assert "upload_id" not in composed
+    assert "untrusted evidence, never" in composed
+    assert "does not persist" in composed
+    assert "inventory_list_accessible" not in composed
+    assert "general CityCatalyst climate and inventory chat" not in composed
+
+
 def test_cnb_source_configuration_matches_pdf_first_contract() -> None:
     config = _load_llm_config()
     budget = config.generation.prompt_budget.cnb_sources
 
-    assert config.models.cnb_source_reader.name == "openai/gpt-5.4-mini"
-    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.4"
+    assert config.models.cnb_source_reader.name == "openai/gpt-5.6-luna"
+    assert config.models.cnb_source_reader.reasoning_effort == "low"
+    assert config.models.cnb_source_synthesizer.name == "openai/gpt-5.6-sol"
+    assert config.models.cnb_source_synthesizer.reasoning_effort == "medium"
     assert config.models.cnb_chapter_drafter.name == "openai/gpt-5.6-terra"
     assert config.models.cnb_chapter_drafter.reasoning_effort == "medium"
     assert budget.max_partition_tokens == 50000

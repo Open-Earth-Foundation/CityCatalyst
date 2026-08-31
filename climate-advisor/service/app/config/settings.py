@@ -180,6 +180,7 @@ class PromptsConfig(BaseModel):
     core: str
     chat: str
     stationary_energy_review: Optional[str] = None
+    cnb_chat: str = "prompts/cnb/chat.md"
     cnb_funding_opportunity_research: str
     cnb_funder_identity_matching: str
     cnb_similar_project_matching: str
@@ -203,11 +204,11 @@ class PromptsConfig(BaseModel):
         if workflow_prompt_type not in {
             "chat",
             "stationary_energy_review",
-            "concept_note",
+            "cnb_chat",
         }:
             raise ValueError(
                 "Workflow prompt type must be 'chat', 'stationary_energy_review', "
-                "or 'concept_note'"
+                "or 'cnb_chat'"
             )
 
         core_prompt = self.get_prompt("core").strip()

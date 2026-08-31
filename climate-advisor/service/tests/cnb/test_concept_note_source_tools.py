@@ -114,7 +114,8 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
         TOOL_CONTEXT,
         json.dumps(
             {
-                "upload_id": str(upload_id),
+                "source_label": "City plan",
+                "filename": "plan.pdf",
                 "question": "What evidence is stated?",
             }
         ),
@@ -123,11 +124,22 @@ async def test_source_tool_refetches_one_selected_document_in_captured_run() -> 
     assert payload["action"] == "concept_note.sources.query"
     assert payload["success"] is True
     assert payload["data"]["found"] is False
+    assert "upload_id" not in payload["data"]
+    assert str(upload_id) not in output
+    assert set(tool.params_json_schema["properties"]) == {
+        "source_label",
+        "filename",
+        "question",
+    }
     load_query_source.assert_awaited_once_with(
         session_factory=None,
         user_id="owner",
         run_id=run_id,
-        upload_id=upload_id,
+        source_label="City plan",
+        filename="plan.pdf",
+    )
+    client.get_concept_note_markdown.assert_awaited_once_with(
+        upload_id=str(upload_id), token="token"
     )
     client.close.assert_awaited_once_with()
 
@@ -145,7 +157,13 @@ async def test_source_tool_rejects_missing_token_before_loading_run() -> None:
     )[0]
     output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
         TOOL_CONTEXT,
-        json.dumps({"upload_id": str(uuid4()), "question": "Question"}),
+        json.dumps(
+            {
+                "source_label": "City plan",
+                "filename": "plan.pdf",
+                "question": "Question",
+            }
+        ),
     )
     assert json.loads(output)["error_code"] == "missing_token"
     load_query_source.assert_not_awaited()

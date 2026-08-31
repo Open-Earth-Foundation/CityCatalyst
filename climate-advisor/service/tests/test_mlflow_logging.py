@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 from contextlib import contextmanager, nullcontext
+from contextvars import ContextVar
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
 from unittest.mock import AsyncMock
@@ -22,6 +23,9 @@ def _reset_mlflow_state(monkeypatch) -> None:
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", False)
     monkeypatch.setattr(mlflow_logging, "_LAST_INITIALIZATION_FAILURE_AT", None)
     monkeypatch.setattr(mlflow_logging, "_EXPERIMENT_IDS", {})
+    monkeypatch.setattr(
+        mlflow_logging, "_RUN_CONTEXT", ContextVar("test_run", default=None)
+    )
     monkeypatch.delenv("MLFLOW_ENVIRONMENT", raising=False)
     monkeypatch.delenv("MLFLOW_RUN_USER", raising=False)
 
@@ -39,13 +43,6 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
     _reset_mlflow_state(monkeypatch)
     recorded: dict[str, object] = {}
 
-    class RunContext:
-        def __enter__(self) -> object:
-            return object()
-
-        def __exit__(self, exc_type, exc, tb) -> None:
-            recorded["closed"] = True
-
     class Client:
         def get_experiment_by_name(self, name: str) -> None:
             recorded["looked_up"] = name
@@ -54,6 +51,19 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
         def create_experiment(self, name: str) -> str:
             recorded["created"] = name
             return "exp-created"
+
+        def create_run(
+            self, *, run_name: str, experiment_id: str, tags: dict[str, str]
+        ):
+            recorded.update(run_name=run_name, experiment_id=experiment_id, tags=tags)
+            return SimpleNamespace(info=SimpleNamespace(run_id="run-1"))
+
+        def log_batch(self, *, run_id: str, params, **kwargs) -> None:
+            recorded["run_id"] = run_id
+            recorded["params"] = {param.key: param.value for param in params}
+
+        def set_terminated(self, run_id: str, *, status: str) -> None:
+            recorded["closed"] = (run_id, status)
 
     class RecordingMlflow:
         tracking = SimpleNamespace(MlflowClient=Client)
@@ -65,28 +75,8 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
             recorded["tracking_uri"] = uri
 
         @staticmethod
-        def active_run() -> object:
-            return object()
-
-        @staticmethod
-        def start_run(
-            *,
-            run_name: str,
-            experiment_id: str,
-            nested: bool,
-        ) -> RunContext:
-            recorded["run_name"] = run_name
-            recorded["experiment_id"] = experiment_id
-            recorded["nested"] = nested
-            return RunContext()
-
-        @staticmethod
-        def set_tags(tags: dict[str, str], synchronous: bool) -> None:
-            recorded["tags"] = tags
-
-        @staticmethod
-        def log_params(params: dict[str, object], synchronous: bool) -> None:
-            recorded["params"] = params
+        def set_experiment(name: str):
+            return SimpleNamespace(name=name, experiment_id="trace-experiment")
 
     monkeypatch.setenv("MLFLOW_ENABLED", "true")
     monkeypatch.setenv("MLFLOW_TRACKING_URI", "https://mlflow.example")
@@ -94,25 +84,26 @@ def test_start_run_uses_named_experiment_id(monkeypatch) -> None:
 
     with mlflow_logging.start_run(
         run_name="test-run",
-        experiment_name="Clima",
+        experiment_name="run-experiment",
         tags={"workflow": "stationary_energy_draft"},
         params={"records": 2},
     ) as run:
         assert run is not None
 
     assert recorded["tracking_uri"] == "https://mlflow.example"
-    assert recorded["looked_up"] == "Clima"
-    assert recorded["created"] == "Clima"
+    assert recorded["looked_up"] == "run-experiment"
+    assert recorded["created"] == "run-experiment"
     assert recorded["experiment_id"] == "exp-created"
     assert recorded["run_name"] == "test-run"
-    assert recorded["closed"] is True
+    assert recorded["run_id"] == "run-1"
+    assert recorded["closed"] == ("run-1", "FINISHED")
     assert recorded["tags"] == {
         "mlflow.user": "climate-advisor",
         "service": "climate-advisor",
         "environment": "dev",
         "workflow": "stationary_energy_draft",
     }
-    assert recorded["params"] == {"records": 2}
+    assert recorded["params"] == {"records": "2"}
 
 
 def test_mlflow_run_user_defaults_and_overrides(monkeypatch) -> None:
@@ -182,23 +173,30 @@ def test_log_json_artifact_redacts_before_logging(monkeypatch) -> None:
 
     class RecordingMlflow:
         @staticmethod
-        def active_run() -> object:
-            return object()
-
-        @staticmethod
-        def log_dict(payload: dict[str, object], artifact_file: str) -> None:
+        def log_dict(
+            run_id: str, payload: dict[str, object], artifact_file: str
+        ) -> None:
+            recorded["run_id"] = run_id
             recorded["payload"] = payload
             recorded["artifact_file"] = artifact_file
 
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
     monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
 
+    monkeypatch.setattr(
+        mlflow_logging,
+        "_RUN_CONTEXT",
+        ContextVar(
+            "test_run", default=mlflow_logging._RunContext(RecordingMlflow, "run-1")
+        ),
+    )
     mlflow_logging.log_json_artifact(
         "request.json",
         {"access_token": "secret-token", "token_count": 7},
     )
 
     assert recorded["artifact_file"] == "request.json"
+    assert recorded["run_id"] == "run-1"
     assert recorded["payload"] == {
         "access_token": mlflow_logging.REDACTED_VALUE,
         "token_count": 7,
@@ -264,23 +262,28 @@ def test_log_directory_artifacts_uploads_exact_source_directory(
 
     class RecordingMlflow:
         @staticmethod
-        def active_run() -> object:
-            return object()
-
-        @staticmethod
-        def log_artifacts(local_dir: str, *, artifact_path: str) -> None:
+        def log_artifacts(run_id: str, local_dir: str, *, artifact_path: str) -> None:
+            recorded["run_id"] = run_id
             recorded["local_dir"] = local_dir
             recorded["artifact_path"] = artifact_path
 
     monkeypatch.setattr(mlflow_logging, "_INITIALIZED", True)
     monkeypatch.setattr(mlflow_logging, "mlflow", RecordingMlflow)
 
+    monkeypatch.setattr(
+        mlflow_logging,
+        "_RUN_CONTEXT",
+        ContextVar(
+            "test_run", default=mlflow_logging._RunContext(RecordingMlflow, "run-1")
+        ),
+    )
     mlflow_logging.log_directory_artifacts(
         source_directory,
         artifact_path="sources",
     )
 
     assert recorded == {
+        "run_id": "run-1",
         "local_dir": str(source_directory),
         "artifact_path": "sources",
     }
@@ -314,10 +317,13 @@ def test_update_current_trace_context_sets_session_and_metadata(monkeypatch) -> 
     assert ok is True
     assert recorded == {
         "tags": {"workflow": "stationary_energy_context_chat"},
-        "metadata": {"thread_id": "thread-1", "turn": "2"},
+        "metadata": {
+            "thread_id": "thread-1",
+            "turn": "2",
+            "mlflow.trace.session": "thread-1",
+            "mlflow.trace.user": "user-1",
+        },
         "client_request_id": "request-1",
-        "session_id": "thread-1",
-        "user": "user-1",
     }
 
 
@@ -390,6 +396,7 @@ def test_concept_note_context_uses_the_shared_chat_routing() -> None:
     assert context.telemetry()["workflow_name"] == "concept_note_context_chat"
     assert context.telemetry()["interaction"] == "chat"
     assert context.telemetry()["context_mode"] == "concept_note_run"
+    assert context.telemetry()["prompt_name"] == "cnb_chat"
 
 
 def test_cnb_interactions_have_distinct_stable_mlflow_run_names() -> None:

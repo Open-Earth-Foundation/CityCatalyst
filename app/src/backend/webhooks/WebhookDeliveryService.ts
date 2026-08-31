@@ -14,6 +14,9 @@ const MAX_ATTEMPTS = 8;
 const AUTO_DISABLE_FAILURES = 10;
 const DELIVERY_TIMEOUT_MS = 15_000;
 const BATCH_SIZE = 10;
+/** Purge terminal deliveries older than this to keep the outbox table bounded. */
+const DELIVERY_RETENTION_DAYS = 30;
+const MAX_LOG_BODY_CHARS = 500;
 
 function backoffMs(attempt: number): number {
   return Math.min(60_000 * 2 ** Math.max(0, attempt - 1), 900_000);
@@ -23,12 +26,29 @@ function isRetryableStatus(status: number): boolean {
   return status === 408 || status === 429 || status >= 500;
 }
 
+function truncateForLog(value: string): string {
+  return value.slice(0, MAX_LOG_BODY_CHARS);
+}
+
 export type ProcessWebhookDeliveriesResult = {
   claimed: number;
   delivered: number;
   retried: number;
   failed: number;
+  purged: number;
 };
+
+async function purgeOldDeliveries(): Promise<number> {
+  const cutoff = new Date(
+    Date.now() - DELIVERY_RETENTION_DAYS * 24 * 60 * 60 * 1000,
+  );
+  return db.models.WebhookDelivery.destroy({
+    where: {
+      status: { [Op.in]: ["delivered", "failed"] },
+      created: { [Op.lt]: cutoff },
+    },
+  });
+}
 
 async function markSuccess(
   delivery: WebhookDelivery,
@@ -57,6 +77,7 @@ async function markAttemptFailure(params: {
   retryable: boolean;
   httpStatus?: number | null;
   error: string;
+  responseBody?: string;
 }): Promise<"retried" | "failed"> {
   const attempt = params.delivery.attemptCount + 1;
   const exhausted = !params.retryable || attempt >= MAX_ATTEMPTS;
@@ -79,7 +100,16 @@ async function markAttemptFailure(params: {
 
   if (shouldDisable) {
     logger.warn(
-      { subscriptionId: params.subscription.id, consecutiveFailures },
+      {
+        subscriptionId: params.subscription.id,
+        url: params.subscription.url,
+        consecutiveFailures,
+        httpStatus: params.httpStatus ?? null,
+        error: params.error,
+        responseBody: params.responseBody
+          ? truncateForLog(params.responseBody)
+          : undefined,
+      },
       "Webhook subscription auto-disabled after consecutive failures",
     );
   }
@@ -90,7 +120,13 @@ async function markAttemptFailure(params: {
 async function postDelivery(
   delivery: WebhookDelivery,
   subscription: WebhookSubscription,
-): Promise<{ ok: boolean; status?: number; error?: string; retryable: boolean }> {
+): Promise<{
+  ok: boolean;
+  status?: number;
+  error?: string;
+  responseBody?: string;
+  retryable: boolean;
+}> {
   let secret: string;
   try {
     secret = WebhookService.decryptSecret(subscription);
@@ -128,11 +164,13 @@ async function postDelivery(
     if (response.ok) {
       return { ok: true, status: response.status, retryable: false };
     }
+    const responseBody = await response.text().catch(() => "");
     return {
       ok: false,
       status: response.status,
       retryable: isRetryableStatus(response.status),
       error: `HTTP ${response.status}`,
+      responseBody,
     };
   } catch (error) {
     return {
@@ -149,7 +187,10 @@ export async function processWebhookDeliveries(): Promise<ProcessWebhookDeliveri
     delivered: 0,
     retried: 0,
     failed: 0,
+    purged: 0,
   };
+
+  result.purged = await purgeOldDeliveries();
 
   const due = await db.models.WebhookDelivery.findAll({
     where: {
@@ -201,6 +242,7 @@ export async function processWebhookDeliveries(): Promise<ProcessWebhookDeliveri
       retryable: outcome.retryable,
       httpStatus: outcome.status,
       error: outcome.error ?? "Delivery failed",
+      responseBody: outcome.responseBody,
     });
     if (next === "failed") {
       result.failed += 1;
@@ -208,7 +250,12 @@ export async function processWebhookDeliveries(): Promise<ProcessWebhookDeliveri
         {
           deliveryId: delivery.id,
           subscriptionId: subscription.id,
+          url: subscription.url,
+          httpStatus: outcome.status ?? null,
           error: outcome.error,
+          responseBody: outcome.responseBody
+            ? truncateForLog(outcome.responseBody)
+            : undefined,
         },
         "Webhook delivery marked failed",
       );

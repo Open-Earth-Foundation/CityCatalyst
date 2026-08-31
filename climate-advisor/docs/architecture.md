@@ -260,6 +260,12 @@ stable non-disclosing unavailable error.
 
 ### Tool Layer
 
+- `tools/native_input_catalog_tools.py`
+  - Exposes only the request-selected, Core-issued NativeInputCatalog
+    capability as a bounded model-facing tool.
+  - Captures active request scope, rejects arbitrary runtime routing/scope or
+    credential arguments, redacts forbidden result fields, and closes the
+    short-lived Core client after each invocation.
 - `tools/climate_vector_sync.py`
   - General climate knowledge retrieval.
 - `tools/cc_inventory_wrappers.py`

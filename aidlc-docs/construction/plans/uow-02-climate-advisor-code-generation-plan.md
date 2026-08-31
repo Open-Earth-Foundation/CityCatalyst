@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 and Unit 2 completion approved; Unit 3 TDD red checkpoint committed; Unit 3 implementation approval pending.
+- **Status**: Plan approved; Unit 1 and Unit 2 completion approved; Unit 3 implementation green; atomic commit approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -266,10 +266,10 @@ Steps:
    storage/credential absence, stable unavailable errors, upstream-error
    suppression, failure isolation, and resource cleanup.
 5. [x] Run the focused tool tests to confirm failure before implementation.
-6. [ ] Implement selected-only wrappers using the typed client and existing
+6. [x] Implement selected-only wrappers using the typed client and existing
    Agents SDK/tool conventions; do not call storage or module endpoints.
-7. [ ] Preserve refreshed token-reference updates without exposing tokens.
-8. [ ] Run focused tests, lint/format checks, mandatory project skills, and
+7. [x] Preserve refreshed token-reference updates without exposing tokens.
+8. [x] Run focused tests, lint/format checks, mandatory project skills, and
    property-based invariants for pure selection/result/error functions where
    practical.
 9. [ ] Commit only this unit with:
@@ -287,6 +287,27 @@ checkpoint. The test set now also explicitly covers malicious runtime
 arguments and oversized input, finite output rejection, isolated selected
 tool failure with cleanup, and discovery sets whose unselected entries remain
 unloaded, unexposed, and unread.
+
+**TDD green checkpoint — Unit 3**: Implemented the selected-only typed tool
+factory over the existing Agents SDK and `CityCatalystClient` boundary. Static
+capability descriptors are the only source of tool schemas; request context,
+catalog selection, and bounded inputs are captured internally. Runtime scope,
+route, source, storage, credential, and oversized arguments are rejected before
+Core. Only the selected capability invokes a bounded Core read; success data is
+finite and recursively redacted, unavailable and upstream failures use stable
+safe envelopes, refreshed token references are propagated without exposure,
+and each created client is closed after invocation. No Climate Advisor storage,
+S3, raw source, or direct module access was added.
+
+The Unit 3 focused suite passes 12/12. The combined Unit 2/client regression
+suite passes 30/30, and the inventory-context regression suite passes 8/8.
+The selected tool, service, and related tests compile, and `git diff --check`
+passes. Ruff could not run because it is not installed in the service
+environment. The mandatory simplification pass removed an unused import and a
+redundant argument discard; the documentation-impact review updated
+`climate-advisor/docs/architecture.md`, while README/setup documentation
+remains accurate. The final implementation commit remains pending explicit
+review of this green checkpoint.
 
 ### Unit 4 — AgentService composition and workflow compatibility
 

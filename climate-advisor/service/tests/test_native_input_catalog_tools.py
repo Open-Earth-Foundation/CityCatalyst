@@ -382,6 +382,17 @@ def test_unknown_selected_capability_creates_no_tool() -> None:
 
     tools = build_native_input_catalog_tools(
         selection=_selection(capability_id="forged.capability"),
+        discovery=NativeInputDiscovery(
+            entries=(
+                {
+                    "catalog_id": "catalog-1",
+                    "kind": "inventory_import",
+                    "owning_module": "ghgi",
+                    "source_type": "inventory",
+                    "capability_ids": ("forged.capability",),
+                },
+            )
+        ),
         token_ref={"value": "jwt-token"},
         client_factory=lambda: client,
     )

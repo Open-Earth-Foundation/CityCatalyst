@@ -738,5 +738,21 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "Before approving the implementation of Unit 3, add explicit tests for malicious runtime arguments, finite input/output limits, fault isolation, and guarantees that unselected inputs are never loaded or read. Provided the constraints regarding core authorization, bounded reads, non-disclosure, and the absence of storage credentials are met, I will approve the implementation following these adjustments."
 **AI Response**: Extended the Unit 3 test file with explicit malicious runtime-argument and oversized-input rejection, finite oversized-output rejection without serialization, isolated selected-tool failure with cleanup and no upstream error disclosure, and a discovery set containing an unselected entry that must not create a tool or trigger a read. The focused suite still fails only during collection because the planned `app.tools.native_input_catalog_tools` module is absent. No production code was modified.
 **Approval Status**: Test adjustments complete; explicit Unit 3 implementation approval remains pending.
+
+---
+
+## Approval — UOW-02 Unit 3 Implementation
+**Timestamp**: 2026-08-31T09:59:35-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval to implement Unit 3 after the requested malicious-runtime-argument, finite input/output, fault-isolation, and unselected-entry tests were added. Implementation remains limited to the selected-only Climate Advisor tool seam and its evidence; Core authorization, bounded reads, non-disclosure, and storage isolation remain mandatory.
+**Approval Status**: Unit 3 implementation authorized; green checkpoint review and atomic commit remain pending.
+
+---
+
+## Code Generation — UOW-02 Unit 3 TDD Green Checkpoint
+**Timestamp**: 2026-08-31T09:59:35-03:00
+**User Input**: "approved" (explicit Unit 3 implementation approval)
+**AI Response**: Implemented the selected-only typed NativeInputCatalog tool factory. It uses static capability descriptors, captures the approved request context and exact selection, rejects arbitrary runtime scope/route/source/storage/credential arguments and oversized inputs before Core, invokes only the selected bounded Core read, enforces finite/redacted result envelopes, suppresses upstream error text, propagates refreshed token references without exposure, and closes each created client. No Climate Advisor storage, S3, raw source, or direct module access was added. Unit 3 passes 12/12; the combined Unit 2/client regression suite passes 30/30; inventory-context regression passes 8/8; compile and `git diff --check` pass. Ruff is unavailable in the service environment. The Climate Advisor architecture documentation was updated; README/setup documentation remains accurate.
+**Approval Status**: Unit 3 green checkpoint complete; atomic commit and explicit unit-completion review pending.
 ---
 ---

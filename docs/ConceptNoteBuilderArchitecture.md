@@ -928,9 +928,10 @@ their source records:
   restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-CityCatalyst-owned chat thread. The CA database must not create a foreign key to
-a local `threads` table. CityCatalyst validates thread ownership before passing
-the identifier into the Climate Advisor workflow.
+dedicated chat thread. It deliberately has no database foreign key so legacy
+thread bindings remain compatible. Rename updates the owned thread title and
+delete removes the dedicated thread. CityCatalyst validates thread ownership
+before passing the identifier into the workflow.
 
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
@@ -1535,12 +1536,23 @@ object; this contract does not infer percentages or document/upload counts.
 CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
+Its single-run read, rename, duplicate, and delete routes also require `city_id` so
+CityCatalyst can authorize the requested city before issuing the Climate Advisor
+token. Climate Advisor remains authoritative for run ownership and stored city
+binding.
 The CityCatalyst dashboard consumes this contract at
-`/{lng}/cities/{cityId}/concept-notes`. Its first implementation exposes only
-new-note and resume navigation. Resume carries the durable run ID and loads the
-authorized single-run detail before continuing; inferred progress percentages
-and unsupported duplicate, delete, and export actions remain intentionally
-absent.
+`/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
+Export, and Delete, with a compact rename button beside the title. Rename uses
+the single-run patch contract; Duplicate remains on the dashboard while its
+working copy is created; Delete requires permanent-deletion confirmation and
+removes the card only after server confirmation. Resume carries the durable run
+ID and loads the authorized single-run detail before continuing.
+
+Duplicate creates a fresh thread, copies current context and chapter content
+into new mutable records, and reuses immutable Markdown artifacts by key. Delete
+removes the managed workspace before deleting the CA run and dedicated thread.
+Shared city/project files and immutable source artifacts remain outside the
+deletion boundary. No archive or restore state is added.
 
 The dashboard and wiring pages are hidden unless both
 `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` are present in
@@ -2267,6 +2279,9 @@ POST /v1/concept-notes/start
 GET  /v1/concept-notes?user_id={user_id}&city_id={city_id}
 POST /v1/concept-notes/{run_id}/cc-context
 GET  /v1/concept-notes/{run_id}
+PATCH /v1/concept-notes/{run_id}
+POST /v1/concept-notes/{run_id}/duplicate
+DELETE /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
 POST /v1/concept-notes/{run_id}/context-bundle/retry
@@ -2288,7 +2303,10 @@ POST /v1/concept-notes/{run_id}/export/pdf
 ```text
 POST /api/v1/concept-notes/start
 GET  /api/v1/concept-notes?city_id={city_id}
-GET  /api/v1/concept-notes/{run_id}
+GET  /api/v1/concept-notes/{run_id}?city_id={city_id}
+PATCH /api/v1/concept-notes/{run_id}?city_id={city_id}
+POST /api/v1/concept-notes/{run_id}/duplicate?city_id={city_id}
+DELETE /api/v1/concept-notes/{run_id}?city_id={city_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads
 GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}

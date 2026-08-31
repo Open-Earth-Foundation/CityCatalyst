@@ -16,6 +16,7 @@ on:
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
       - k8s/cc-process-pdf-ocr-jobs.yml
+      - k8s/cc-process-webhook-deliveries.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
   pull_request:
@@ -26,6 +27,7 @@ on:
       - k8s/cc-web-deploy.yml
       - k8s/cc-web.yml
       - k8s/cc-process-pdf-ocr-jobs.yml
+      - k8s/cc-process-webhook-deliveries.yml
       - .github/scripts/cc-ca-post-deploy-smoke.sh
       - .github/workflows/web-develop.yml
 
@@ -494,7 +496,8 @@ jobs:
             "AWS_SECRET_ACCESS_KEY"=${{secrets.AWS_SECRET_ACCESS_KEY}} \
             "AWS_S3_BUCKET_ID"=${{secrets.AWS_S3_BUCKET_ID}} \
             CDP_API_KEY=${{secrets.CDP_API_KEY_TEST}} \
-            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}" \
+            "WEBHOOK_SECRET_ENCRYPTION_KEY=${{secrets.WEBHOOK_SECRET_ENCRYPTION_KEY}}"
           kubectl apply -f k8s/cc-sync-catalogue.yml -n default # cronjob
           kubectl create -f k8s/cc-sync-catalogue-manual.yml -n default # on deployment
           # TODO this (running cronjob on deploy) doesn't work since it can't randomize names. Needs own randomness source
@@ -506,6 +509,9 @@ jobs:
           kubectl apply -f k8s/cc-check-hiap-jobs.yml -n default
           kubectl apply -f k8s/cc-process-pdf-ocr-jobs.yml -n default
           kubectl set env cronjob/citycatalyst-process-pdf-ocr-jobs \
+            "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
+          kubectl apply -f k8s/cc-process-webhook-deliveries.yml -n default
+          kubectl set env cronjob/citycatalyst-process-webhook-deliveries \
             "CC_CRON_JOB_API_KEY=${{secrets.CC_CRON_JOB_API_KEY}}"
           kubectl rollout restart deployment cc-web-deploy -n default
           kubectl rollout status deployment/cc-web-deploy -n default --timeout=300s

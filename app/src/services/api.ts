@@ -76,6 +76,10 @@ import {
   PersonalAccessToken,
   PersonalAccessTokenCreateResponse,
   StartConceptNoteRunRequest,
+  WebhookSubscriptionResponse,
+  WebhookSubscriptionSecretResponse,
+  CreateWebhookSubscriptionRequest,
+  UpdateWebhookSubscriptionRequest,
 } from "@/util/types";
 import type {
   CityLocationResponse,
@@ -149,6 +153,7 @@ export const api = createApi({
     "ActionPlan",
     "VersionHistory",
     "PersonalAccessToken",
+    "Webhook",
     "AdminModules",
     "Meed",
     "MeedRanking",
@@ -2236,6 +2241,87 @@ export const api = createApi({
         },
       ),
 
+      getOrganizationWebhooks: builder.query<
+        WebhookSubscriptionResponse[],
+        string
+      >({
+        query: (organizationId) => `/organizations/${organizationId}/webhooks`,
+        transformResponse: (response: { data: WebhookSubscriptionResponse[] }) =>
+          response.data,
+        providesTags: (result, _err, organizationId) =>
+          result
+            ? [
+                ...result.map(({ id }) => ({ type: "Webhook" as const, id })),
+                { type: "Webhook", id: `ORG-${organizationId}` },
+              ]
+            : [{ type: "Webhook", id: `ORG-${organizationId}` }],
+      }),
+      createOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; body: CreateWebhookSubscriptionRequest }
+      >({
+        query: ({ organizationId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks`,
+          method: "POST",
+          body,
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId }) => [
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      updateOrganizationWebhook: builder.mutation<
+        WebhookSubscriptionResponse,
+        {
+          organizationId: string;
+          webhookId: string;
+          body: UpdateWebhookSubscriptionRequest;
+        }
+      >({
+        query: ({ organizationId, webhookId, body }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "PATCH",
+          body,
+        }),
+        transformResponse: (response: { data: WebhookSubscriptionResponse }) =>
+          response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      deleteOrganizationWebhook: builder.mutation<
+        { success: boolean },
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}`,
+          method: "DELETE",
+        }),
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+      rotateOrganizationWebhookSecret: builder.mutation<
+        WebhookSubscriptionSecretResponse,
+        { organizationId: string; webhookId: string }
+      >({
+        query: ({ organizationId, webhookId }) => ({
+          url: `/organizations/${organizationId}/webhooks/${webhookId}/rotate-secret`,
+          method: "POST",
+        }),
+        transformResponse: (response: {
+          data: WebhookSubscriptionSecretResponse;
+        }) => response.data,
+        invalidatesTags: (_result, _err, { organizationId, webhookId }) => [
+          { type: "Webhook", id: webhookId },
+          { type: "Webhook", id: `ORG-${organizationId}` },
+        ],
+      }),
+
       // Admin Modules endpoints
       getAdminModules: builder.query<ModuleAttributes[], void>({
         query: () => "admin/modules",
@@ -2311,8 +2397,14 @@ export const api = createApi({
           { type: "ConceptNoteRuns", id: cityId },
         ],
       }),
-      getConceptNoteRun: builder.query<ConceptNoteRun, string>({
-        query: (runId) => `concept-notes/${runId}`,
+      getConceptNoteRun: builder.query<
+        ConceptNoteRun,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          params: { city_id: cityId },
+        }),
       }),
       getConceptNoteApplicationContext: builder.query<
         ConceptNoteApplicationContext,
@@ -2351,6 +2443,47 @@ export const api = createApi({
               selectedFundingOpportunityId ?? null,
             thread_id: threadId ?? null,
           },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      renameConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; name: string; runId: string }
+      >({
+        query: ({ cityId, name, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "PATCH",
+          body: { name },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      duplicateConceptNoteRun: builder.mutation<
+        ConceptNoteRun,
+        { cityId: string; idempotencyKey: string; runId: string }
+      >({
+        query: ({ cityId, idempotencyKey, runId }) => ({
+          url: `concept-notes/${runId}/duplicate`,
+          method: "POST",
+          headers: { "Idempotency-Key": idempotencyKey },
+          params: { city_id: cityId },
+        }),
+        invalidatesTags: (_result, _error, { cityId }) => [
+          { type: "ConceptNoteRuns", id: cityId },
+        ],
+      }),
+      deleteConceptNoteRun: builder.mutation<
+        void,
+        { cityId: string; runId: string }
+      >({
+        query: ({ cityId, runId }) => ({
+          url: `concept-notes/${runId}`,
+          method: "DELETE",
+          params: { city_id: cityId },
         }),
         invalidatesTags: (_result, _error, { cityId }) => [
           { type: "ConceptNoteRuns", id: cityId },
@@ -2567,6 +2700,11 @@ export const {
   useGetPersonalAccessTokensQuery,
   useCreatePersonalAccessTokenMutation,
   useDeletePersonalAccessTokenMutation,
+  useGetOrganizationWebhooksQuery,
+  useCreateOrganizationWebhookMutation,
+  useUpdateOrganizationWebhookMutation,
+  useDeleteOrganizationWebhookMutation,
+  useRotateOrganizationWebhookSecretMutation,
   useGetAdminModulesQuery,
   useCreateModuleMutation,
   useUpdateModuleMutation,
@@ -2576,6 +2714,9 @@ export const {
   useGetConceptNoteApplicationContextQuery,
   useGetConceptNoteDraftQuery,
   useStartConceptNoteRunMutation,
+  useRenameConceptNoteRunMutation,
+  useDuplicateConceptNoteRunMutation,
+  useDeleteConceptNoteRunMutation,
   useStartConceptNoteDraftMutation,
   useUploadConceptNoteSourceMutation,
   useGetConceptNoteUploadStatusQuery,

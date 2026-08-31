@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 completion approved; Unit 2 committed after green checkpoint; unit-completion approval pending.
+- **Status**: Plan approved; Unit 1 and Unit 2 completion approved; Unit 3 TDD red checkpoint committed; Unit 3 implementation approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -255,17 +255,17 @@ Files:
 
 Steps:
 
-1. [ ] Add failing tests proving only the selected descriptor creates a tool;
+1. [x] Add failing tests proving only the selected descriptor creates a tool;
    unselected entries remain unloaded and unread.
-2. [ ] Add failing tests for capability-specific typed inputs, finite limits,
+2. [x] Add failing tests for capability-specific typed inputs, finite limits,
    active-context binding, and rejection of arbitrary scope/route/source/
    storage/credential arguments.
-3. [ ] Add failing tests proving one selected invocation calls only the
+3. [x] Add failing tests proving one selected invocation calls only the
    selected Core read and never executes readiness/full reads for other entries.
-4. [ ] Add failing tests for bounded success results, forbidden fields, raw
+4. [x] Add failing tests for bounded success results, forbidden fields, raw
    storage/credential absence, stable unavailable errors, upstream-error
    suppression, failure isolation, and resource cleanup.
-5. [ ] Run the focused tool tests to confirm failure before implementation.
+5. [x] Run the focused tool tests to confirm failure before implementation.
 6. [ ] Implement selected-only wrappers using the typed client and existing
    Agents SDK/tool conventions; do not call storage or module endpoints.
 7. [ ] Preserve refreshed token-reference updates without exposing tokens.
@@ -277,6 +277,13 @@ Steps:
 
 Story/requirement mapping: US-03, US-07, US-09; FR-03 through FR-10, FR-11;
 NFR-UOW02-03, 05, 07–18, 21–22.
+
+**TDD red checkpoint — Unit 3**: Added the selected-only capability-tool tests.
+The focused suite fails during collection because the planned
+`app.tools.native_input_catalog_tools` module does not yet exist. No Unit 3
+production tool, AgentService, streaming, Core, storage, or credential code
+was modified. Implementation remains gated on explicit review of this red
+checkpoint.
 
 ### Unit 4 — AgentService composition and workflow compatibility
 

@@ -718,4 +718,18 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Created atomic commit `b97525fd9` (`feat(cc-737): add request-time catalog selection binding`) containing only the Unit 2 request-scoped coordinator, its architecture documentation, and AI-DLC evidence updates. Unit 2 keeps discovery read-free and safe-projection-only, rejects cross-context reuse with the stable non-disclosing error, and does not modify AgentService, tools, streaming, Core, storage, or credentials. Unit 3 remains unopened.
 **Approval Status**: Unit 2 commit created; explicit unit-completion approval pending.
 ---
+
+## Approval — UOW-02 Unit 2 Completion
+**Timestamp**: 2026-08-31T09:42:53-03:00
+**User Input**: "approved"
+**AI Response**: Recorded explicit approval of UOW-02 Unit 2 completion after atomic commit `b97525fd9`. Opened Unit 3 under the approved Code Generation plan; Unit 3 is limited to selected-only Climate Advisor capability-tool wrappers and their contract/security tests.
+**Approval Status**: UOW-02 Unit 2 complete; Unit 3 test-first red checkpoint opened.
+---
+
+## Code Generation — UOW-02 Unit 3 TDD Red Checkpoint
+**Timestamp**: 2026-08-31T09:42:53-03:00
+**User Input**: "approved" (Unit 2 completion approval)
+**AI Response**: Added only the Unit 3 selected-only capability-tool tests. The focused pytest command collected no tests because the planned `app.tools.native_input_catalog_tools` module does not yet exist, producing the expected `ModuleNotFoundError`. The tests cover selected-only tool construction, bound-context Core reads, absence of arbitrary scope/route/source/storage/credential arguments, bounded result redaction, stable unavailable errors without upstream text, missing-token behavior, token-reference refresh, client cleanup, and unknown-capability omission. No Unit 3 production code was modified.
+**Approval Status**: Unit 3 TDD red checkpoint complete; explicit implementation approval pending.
+---
 ---

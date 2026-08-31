@@ -888,7 +888,7 @@ reviewable unit. Stop at every required approval gate."
 ## Verification — UOW-03 Evidence Atomic Commit
 **Timestamp**: 2026-08-31T11:28:05-03:00
 **User Input**: "approved" (UOW-03 authorization; atomic evidence commit is the authorized workflow)
-**AI Response**: Created the atomic UOW-03 verification evidence commit containing only the verification plan, evidence artifact, and AI-DLC records. No application code, storage, credentials, or unrelated worktree files were staged. UOW-03 completion remains pending explicit review and approval.
+**AI Response**: Created atomic UOW-03 verification evidence commit `96c089cfb` (`docs(cc-737): record UOW-03 verification evidence`) containing only the verification plan, evidence artifact, and AI-DLC records. No application code, storage, credentials, or unrelated worktree files were staged. UOW-03 completion remains pending explicit review and approval.
 **Approval Status**: Evidence commit created; explicit UOW-03 completion approval pending.
 ---
 ---

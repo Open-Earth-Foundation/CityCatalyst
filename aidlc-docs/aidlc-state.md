@@ -91,5 +91,6 @@
 - [x] NFR Design — UOW-02 artifacts approved — 2026-08-29
 - [x] Code Generation — UOW-02 complete with Units 1–5 committed and verified — 2026-08-31
 - [x] UOW-03 cross-service verification authorized — 2026-08-31
+- [x] UOW-03 verification evidence committed — `96c089cfb` — 2026-08-31
 - [ ] UOW-03 verification evidence review and completion approval pending
 - [ ] Build and Test — pending implementation

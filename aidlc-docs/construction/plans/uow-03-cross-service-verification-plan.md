@@ -98,5 +98,7 @@ must stop verification and return to the owning design/unit gate.
 - Full repository/PostgreSQL limitations remain documented in the evidence;
   they are not treated as green results.
 
-**Gate**: Evidence is ready for explicit UOW-03 completion review. No release
-readiness or task-closure claim is made until that approval is recorded.
+**Evidence commit**: `96c089cfb`
+(`docs(cc-737): record UOW-03 verification evidence`). Evidence is ready for
+explicit UOW-03 completion review. No release-readiness or task-closure claim
+is made until that approval is recorded.

@@ -14,10 +14,11 @@ topology, or production fallback.
 - **Scope**: deterministic Core route/contract tests, Climate Advisor
   request-time/security regression tests, cross-service contract comparison,
   touched-file quality checks, and documented environment limitations.
-- **Status**: Deterministic verification evidence captured. Configured local
-  live revalidation completed with 4/4 contract-test failures at the Core
-  token endpoint; completion review remains pending. No UOW-03 production
-  implementation is planned.
+- **Status**: Deterministic verification evidence captured. The requested
+  `localhost:3000` live run was blocked by an unrelated process occupying the
+  port; the aligned current-Core diagnostic passed 4/4 on port 3001.
+  Completion review remains pending. No UOW-03 production implementation is
+  planned.
 
 ## Non-negotiable verification invariants
 
@@ -92,11 +93,15 @@ must stop verification and return to the owning design/unit gate.
 - Core NativeInputCatalog suites: **37/37 passed**.
 - Climate Advisor UOW-02 regression suite: **109/109 passed**.
 - Climate Advisor local auth tests: **5/5 passed**.
-- Configured live CC–CA contract revalidation: **4 failed, 0 passed, 0
-  skipped**. All four tests received HTTP 404 from
-  `POST /api/v1/internal/ca/user-token`; the wrong-key test consequently did
-  not reach its expected HTTP 401 assertion, and the capability/cross-user
-  assertions were not reached.
+- Requested live CC–CA contract run at `http://localhost:3000`: **4 failed, 0
+  passed, 0 skipped**. All four tests received HTTP 404 from
+  `POST /api/v1/internal/ca/user-token` because port 3000 was serving the
+  unrelated English-for-Devs process; the capability/cross-user assertions
+  were not reached.
+- Controlled aligned current-Core diagnostic at `http://localhost:3001`:
+  **4 passed, 0 failed, 0 skipped** after a temporary matching `HOST`
+  override. This is diagnostic evidence only and does not replace the
+  requested 3000 run.
 - Core touched-file ESLint: passed.
 - Core touched-file Prettier check: passed.
 - Climate Advisor touched-file compile and `git diff --check`: passed.

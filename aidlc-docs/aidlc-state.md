@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: UOW-03 live contract revalidation complete; completion approval pending
+- **Current Stage**: UOW-03 environment revalidation complete; completion approval pending
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -93,5 +93,6 @@
 - [x] UOW-03 cross-service verification authorized — 2026-08-31
 - [x] UOW-03 verification evidence committed — `96c089cfb` — 2026-08-31
 - [x] UOW-03 configured local live contract revalidation attempted — 4 failed at Core token endpoint HTTP 404 — committed `9767f0f08` — 2026-08-31
+- [x] UOW-03 environment revalidation classified port collision and aligned current-Core diagnostic 4/4 passed — 2026-08-31
 - [ ] UOW-03 verification evidence review and completion approval pending
 - [ ] Build and Test — pending implementation

@@ -920,4 +920,66 @@ The evidence, plan, state, and audit updates were committed atomically as
 **Approval Status**: UOW-03 remains unapproved; completion review and explicit
 user approval are pending.
 ---
+
+## Verification — UOW-03 Local Environment Revalidation and Classification
+**Timestamp**: 2026-08-31T14:06:11-03:00
+**User Input**:
+```text
+Do not approve UOW-03 yet. Revalidate the CC-737 local environment without modifying application code.
+
+Context:
+
+- Branch: cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities
+- The last run failed 4/4 with HTTP 404 at:
+  POST /api/v1/internal/ca/user-token
+- The authorization assertions were not reached.
+- The expected route exists at:
+  app/src/app/api/v1/internal/ca/user-token/route.ts
+
+Tasks:
+
+1. Confirm that the Core is running from the correct branch and directory.
+2. Stop any stale Core server and start the current Core at [http://localhost:3000](http://localhost:3000).
+3. Start the local citycatalyst-db container if needed.
+4. Run npm run db:migrate and npm run upsert-ca-smoke-fixture from app/.
+5. Confirm that the Core has:
+   - CC\_SERVICE\_API\_KEY configured;
+   - VERIFICATION\_TOKEN\_SECRET configured;
+   - CA\_SERVICE\_INTEGRATION and STATIONARY\_ENERGY\_AGENTIC enabled.
+6. Confirm that POST /api/v1/internal/ca/user-token resolves to the expected route without exposing the service key.
+7. In Climate Advisor, use:
+   - CC\_BASE\_URL=[http://localhost:3000](http://localhost:3000)
+   - CC\_API\_KEY equal to the local Core CC\_SERVICE\_API\_KEY
+   - the four CA\_AUTH\_CONTRACT\_\* variables already configured in climate-advisor/.env
+8. Run:
+   uv run --directory service pytest tests/test\_citycatalyst\_client\_auth\_contract.py -q
+9. Clearly distinguish environment failures from implementation failures.
+10. Update verification evidence, audit, and vault only with observed results.
+11. Do not modify application code, create an implementation commit, or mark UOW-03 as approved. Wait for my explicit approval.
+```
+**AI Response**: Confirmed the repository root and requested branch. No stale
+CityCatalyst Core process was present, but port 3000 was occupied by an
+unrelated Next.js process from `/home/david/work/projects/saas/english-for-devs`,
+which was not stopped. Started the current Core from `app/` on port 3001
+because 3000 was unavailable. Started `citycatalyst-db`; migrations reported
+the schema already current; the deterministic smoke fixture upsert completed.
+Confirmed `CC_SERVICE_API_KEY` and `VERIFICATION_TOKEN_SECRET` were configured
+without recording values, and confirmed both requested feature flags were
+enabled through `NEXT_PUBLIC_FEATURE_FLAGS`. A credential-free route probe
+returned 404 on 3000 and 401 on the current Core at 3001 after redirect.
+
+The mandated Climate Advisor command with `CC_BASE_URL=http://localhost:3000`
+collected four tests and resulted in **4 failed, 0 passed, 0 skipped**. All
+failed during token refresh because the unrelated process returned HTTP 404
+from `POST /api/v1/internal/ca/user-token`; authorization assertions were not
+reached. For classification, the identical four tests against the current
+Core on 3001 first reached the route but exposed a temporary `HOST`/port JWT
+audience mismatch; after restarting that current Core with a process-only
+`HOST=http://localhost:3001` override, the identical tests passed **4/4**.
+This distinguishes an environment/port/configuration failure from an
+implementation failure. No application source code was modified. The
+temporary current-Core process was stopped after verification.
+**Approval Status**: UOW-03 remains unapproved; evidence review and explicit
+user approval are pending.
+---
 ---

@@ -1,8 +1,10 @@
 # UOW-03 Cross-Service Verification Evidence — CC-737
 
 **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`  
-**Status**: Deterministic evidence captured; configured local live revalidation
-failed at the Core token endpoint; UOW-03 completion review pending.
+**Status**: Deterministic evidence captured; the requested `localhost:3000`
+run was blocked by an unrelated process occupying that port. The current Core
+contract passes on its available port after temporary environment alignment;
+UOW-03 completion review remains pending.
 
 ## Scope
 
@@ -26,9 +28,8 @@ a new cross-service runtime.
 
 - UOW-02 request-time/client/tool regression suite: **109/109 passed**.
 - Local client-auth suite: **5/5 passed**.
-- Live auth-contract suite: the configured-local revalidation is recorded
-  below; it did not reach the capability assertions because the local Core
-  token endpoint returned HTTP 404.
+- Live auth-contract suite: the requested `localhost:3000` run and the
+  controlled current-Core diagnostic are recorded below.
 - Covered: authenticated request context, request-time discovery, selected-only
   tool registration/execution, Core-mediated bounded reads, stable errors,
   cross-context/stale/forged selection protection, finite result handling,
@@ -53,6 +54,26 @@ a new cross-service runtime.
 - Climate Advisor touched-file Python compilation: passed.
 - Climate Advisor `git diff --check`: passed.
 - Climate Advisor Ruff: unavailable in the environment.
+
+## Local environment and route resolution
+
+- Workspace root: `/home/david/work/projects/open-earth/CityCatalyst`.
+- Branch: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
+- Expected route file is present at
+  `app/src/app/api/v1/internal/ca/user-token/route.ts`.
+- No stale CityCatalyst Core process was found before restart. Port 3000 was
+  occupied by an unrelated Next.js process from
+  `/home/david/work/projects/saas/english-for-devs`; it was not stopped.
+- The current Core was started from `app/` on its available port, 3001. A
+  credential-free POST probe returned HTTP 404 on port 3000 and HTTP 401 on
+  port 3001 after following the route redirect, confirming route resolution
+  on the current Core without exposing a service key.
+- The existing `citycatalyst-db` container was started. `npm run db:migrate`
+  reported that the schema was already up to date, and
+  `npm run upsert-ca-smoke-fixture` completed successfully.
+- `CC_SERVICE_API_KEY` and `VERIFICATION_TOKEN_SECRET` were configured. The
+  `CA_SERVICE_INTEGRATION` and `STATIONARY_ENERGY_AGENTIC` flags were enabled
+  through `NEXT_PUBLIC_FEATURE_FLAGS`. Values were not recorded.
 
 ## Configured local live CC–CA contract revalidation
 
@@ -85,13 +106,36 @@ Core process at `localhost:3000` did not expose the expected
 failure/blocker, not an approval or a release-readiness result; UOW-03 remains
 pending explicit review and approval.
 
+## Controlled current-Core diagnostic
+
+Using the same four tests, deterministic fixtures, and local service key with
+`CC_BASE_URL=http://localhost:3001` initially produced **1 passed, 3 failed**:
+the route and authorization checks were reached, but the three successful-token
+paths rejected the JWT audience because the Core process inherited
+`HOST=http://localhost:3000`. After restarting the current Core with the
+temporary process-only override `HOST=http://localhost:3001`, the same command
+completed **4 passed, 0 failed, 0 skipped**. This confirms the contract and
+implementation work with the current branch and fixtures when the local host
+configuration matches the serving port.
+
+### Classification
+
+- **Environment failure**: the mandated `localhost:3000` run hit an unrelated
+  application and returned HTTP 404; the current Core could not bind to 3000.
+- **Environment failure**: the first 3001 diagnostic inherited a mismatched
+  `HOST` and failed JWT audience validation.
+- **Implementation diagnostic**: the aligned current Core on 3001 passed all
+  four contract tests, including shared-key authentication, capability
+  authorization, wrong-key rejection, and cross-user token protection.
+- UOW-03 is not approved, and no release-readiness or task-closure claim is
+  made.
+
 ## Environment limitations
 
-- The live auth-contract suite was initially skipped because its required
-  CC/CA contract environment variables were not configured. After the local
-  environment was configured, the four-test revalidation ran but all four
-  failed at the Core token endpoint with HTTP 404; see the revalidation table
-  above.
+- The required contract environment variables were configured for this run.
+  The requested `localhost:3000` execution remains blocked by the unrelated
+  port occupant described above; the aligned current-Core diagnostic passed
+  4/4.
 - The pre-existing GHGI integration limitation remains: local PostgreSQL is
   not covered by this auth-contract setup and remains a separate validation
   limitation.

@@ -5,7 +5,7 @@
 - **Project Type**: Brownfield
 - **Start Date**: 2026-08-27T11:41:58-03:00
 - **Current Phase**: CONSTRUCTION
-- **Current Stage**: Code Generation — UOW-02 Unit 5 TDD red checkpoint in progress
+- **Current Stage**: Code Generation — UOW-02 Unit 5 TDD red checkpoint approval pending
 
 ## Workspace State
 - **Existing Code**: Yes
@@ -73,6 +73,7 @@
 - [x] UOW-02 Unit 4 green checkpoint complete — 2026-08-31
 - [x] UOW-02 Unit 4 atomic commit created — `1005e2d35` — 2026-08-31
 - [x] UOW-02 Unit 4 completion approved after atomic commit `1005e2d35` — 2026-08-31
+- [x] UOW-02 Unit 5 TDD red checkpoint created — `6fef305d3` — 2026-08-31
 - [ ] UOW-02 Unit 5 TDD red checkpoint approval pending
 
 ## CONSTRUCTION PHASE

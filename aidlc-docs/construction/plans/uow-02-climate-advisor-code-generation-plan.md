@@ -283,7 +283,10 @@ The focused suite fails during collection because the planned
 `app.tools.native_input_catalog_tools` module does not yet exist. No Unit 3
 production tool, AgentService, streaming, Core, storage, or credential code
 was modified. Implementation remains gated on explicit review of this red
-checkpoint.
+checkpoint. The test set now also explicitly covers malicious runtime
+arguments and oversized input, finite output rejection, isolated selected
+tool failure with cleanup, and discovery sets whose unselected entries remain
+unloaded, unexposed, and unread.
 
 ### Unit 4 — AgentService composition and workflow compatibility
 

@@ -11,6 +11,7 @@ from agents.tool import ToolContext
 from app.services.citycatalyst_client import CityCatalystClientError
 from app.services.native_input_catalog_service import (
     ActiveRequestContext,
+    NativeInputDiscovery,
     NativeInputSelection,
 )
 from app.tools.native_input_catalog_tools import build_native_input_catalog_tools
@@ -96,6 +97,24 @@ def _build(
     ref = token_ref or {"value": "jwt-token"}
     tools = build_native_input_catalog_tools(
         selection=_selection(capability_id=capability_id),
+        discovery=NativeInputDiscovery(
+            entries=(
+                {
+                    "catalog_id": "catalog-1",
+                    "kind": "inventory_import",
+                    "owning_module": "ghgi",
+                    "source_type": "inventory",
+                    "capability_ids": (capability_id,),
+                },
+                {
+                    "catalog_id": "catalog-unselected",
+                    "kind": "hiap_ranking",
+                    "owning_module": "hiap",
+                    "source_type": "hiap_ranking",
+                    "capability_ids": ("hiap.inventory.context",),
+                },
+            )
+        ),
         token_ref=ref,
         client_factory=lambda: client,
     )
@@ -109,6 +128,40 @@ async def test_only_selected_capability_creates_a_tool_without_preloading_or_rea
     tool, _ = _build(client)
 
     assert getattr(tool, "name", "") == "native_input_ghgi_inventory_status_overview"
+    assert client.requests == []
+    assert not client.closed
+
+
+def test_unselected_discovery_entries_are_never_loaded_or_exposed_as_tools() -> None:
+    client = _StubClient()
+
+    tools = build_native_input_catalog_tools(
+        selection=_selection(),
+        discovery=NativeInputDiscovery(
+            entries=(
+                {
+                    "catalog_id": "catalog-1",
+                    "kind": "inventory_import",
+                    "owning_module": "ghgi",
+                    "source_type": "inventory",
+                    "capability_ids": ("ghgi.inventory.status_overview",),
+                },
+                {
+                    "catalog_id": "catalog-unselected",
+                    "kind": "hiap_ranking",
+                    "owning_module": "hiap",
+                    "source_type": "hiap_ranking",
+                    "capability_ids": ("hiap.inventory.context",),
+                },
+            )
+        ),
+        token_ref={"value": "jwt-token"},
+        client_factory=lambda: client,
+    )
+
+    assert [getattr(tool, "name", "") for tool in tools] == [
+        "native_input_ghgi_inventory_status_overview"
+    ]
     assert client.requests == []
     assert not client.closed
 
@@ -196,6 +249,76 @@ async def test_selected_tool_removes_forbidden_fields_from_success_result() -> N
         "safe_label": "Downtown inventory",
     }
     assert "private" not in output
+
+
+@pytest.mark.asyncio
+async def test_selected_tool_rejects_malicious_runtime_arguments_before_core_call() -> None:
+    client = _StubClient()
+    tool, _ = _build(client)
+    malicious_arguments = json.dumps(
+        {
+            "user_id": "attacker-user",
+            "catalog_id": "attacker-catalog",
+            "capability_id": "forged.capability",
+            "route": "/private/raw/source",
+            "source_id": "private-source-id",
+            "storage_path": "s3://private-bucket/object",
+            "token": "private-token",
+            "input": {"payload": "x" * 100_000},
+        }
+    )
+
+    output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
+        _tool_context(getattr(tool, "name")),
+        malicious_arguments,
+    )
+
+    payload = json.loads(output)
+    assert payload["success"] is False
+    assert payload["error_code"] == "invalid_arguments"
+    assert "attacker" not in output
+    assert "private" not in output
+    assert client.requests == []
+
+
+@pytest.mark.asyncio
+async def test_selected_tool_rejects_oversized_result_without_serializing_it() -> None:
+    client = _StubClient(
+        response={
+            "action": "ghgi.inventory.status_overview",
+            "success": True,
+            "data": {"payload": "x" * 100_000, "object_key": "private/raw/object"},
+        }
+    )
+    tool, _ = _build(client)
+
+    output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
+        _tool_context(getattr(tool, "name")),
+        "{}",
+    )
+
+    payload = json.loads(output)
+    assert payload["success"] is False
+    assert payload["error_code"] == "invalid_response"
+    assert len(output) < 2_000
+    assert "private/raw/object" not in output
+
+
+@pytest.mark.asyncio
+async def test_selected_tool_isolates_execution_failure_and_closes_client() -> None:
+    client = _StubClient(error=RuntimeError("private upstream failure"))
+    tool, _ = _build(client)
+
+    output = await tool.on_invoke_tool(  # type: ignore[attr-defined]
+        _tool_context(getattr(tool, "name")),
+        "{}",
+    )
+
+    payload = json.loads(output)
+    assert payload["success"] is False
+    assert payload["error_code"] == "tool_error"
+    assert "private upstream failure" not in output
+    assert client.closed
 
 
 @pytest.mark.asyncio

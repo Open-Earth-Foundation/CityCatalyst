@@ -732,4 +732,11 @@ reviewable unit. Stop at every required approval gate."
 **AI Response**: Added only the Unit 3 selected-only capability-tool tests. The focused pytest command collected no tests because the planned `app.tools.native_input_catalog_tools` module does not yet exist, producing the expected `ModuleNotFoundError`. The tests cover selected-only tool construction, bound-context Core reads, absence of arbitrary scope/route/source/storage/credential arguments, bounded result redaction, stable unavailable errors without upstream text, missing-token behavior, token-reference refresh, client cleanup, and unknown-capability omission. No Unit 3 production code was modified.
 **Approval Status**: Unit 3 TDD red checkpoint complete; explicit implementation approval pending.
 ---
+
+## Unit 3 Security and Boundedness Test Adjustments
+**Timestamp**: 2026-08-31T09:42:53-03:00
+**User Input**: "Before approving the implementation of Unit 3, add explicit tests for malicious runtime arguments, finite input/output limits, fault isolation, and guarantees that unselected inputs are never loaded or read. Provided the constraints regarding core authorization, bounded reads, non-disclosure, and the absence of storage credentials are met, I will approve the implementation following these adjustments."
+**AI Response**: Extended the Unit 3 test file with explicit malicious runtime-argument and oversized-input rejection, finite oversized-output rejection without serialization, isolated selected-tool failure with cleanup and no upstream error disclosure, and a discovery set containing an unselected entry that must not create a tool or trigger a read. The focused suite still fails only during collection because the planned `app.tools.native_input_catalog_tools` module is absent. No production code was modified.
+**Approval Status**: Test adjustments complete; explicit Unit 3 implementation approval remains pending.
+---
 ---

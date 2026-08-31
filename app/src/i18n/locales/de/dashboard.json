@@ -142,7 +142,7 @@
   "error-fetching-sector-data": "Fehler beim Abrufen der Sektordaten",
   "projections-data": "Projektionen Daten",
   "sector-emissions-forecast": "Sektor Emissionsprognose",
-  "sector-emissions-forecast-description": "Basierend auf einem No-Action-Szenario und einem hybriden Ansatz, einschließlich Wirtschafts- und Emissionswachstumsraten.",
+  "sector-emissions-forecast-description": "Für die Gesamtemissionen (ohne Senken) auf der Grundlage eines Szenarios ohne Maßnahmen und eines hybriden Ansatzes, einschließlich der Wachstumsraten für Wirtschaft und Emissionen.",
   "no-action-emissions-forecast-by-sector": "No-Action-Emissionsprognose nach Sektor",
   "emissions-forecast": "Emissionsprognose",
   "about-growth-rates": "Über Wachstumsraten",

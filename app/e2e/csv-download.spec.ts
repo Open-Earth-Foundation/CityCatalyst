@@ -1,9 +1,10 @@
-import { test, expect, type Page, type Download } from "@playwright/test";
+import { test, expect, type Page, type Download, type Locator } from "@playwright/test";
 import { parse } from "csv-parse/sync";
 import {
   createCityAndInventoryThroughOnboarding,
   dismissCookieConsent,
   dismissToasts,
+  navigateToDataPage,
 } from "./helpers";
 import * as fs from "fs";
 
@@ -55,6 +56,118 @@ async function saveDownload(
   await download.saveAs(outputPath);
   expect(fs.existsSync(outputPath)).toBeTruthy();
   return fs.readFileSync(outputPath, "utf-8");
+}
+
+async function openResidentialSubsector(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/data/1/`);
+  await expect(
+    page.getByRole("heading", { name: /Stationary energy/i }),
+  ).toBeVisible({ timeout: 30000 });
+
+  const residentialCard = page
+    .getByTestId("subsector-card")
+    .filter({ hasText: /Residential/i });
+  await expect(residentialCard.first()).toBeVisible({ timeout: 30000 });
+  await residentialCard.first().click();
+  await page.waitForURL(new RegExp(`/GHGI/${inventoryId}/data/1/[^/]+`));
+
+  await expect(page.getByText(/I\.1.*Residential/i)).toBeVisible({
+    timeout: 30000,
+  });
+  await expect(
+    page.getByText(/Select methodology|Select The Methodology/i).first(),
+  ).toBeVisible({ timeout: 30000 });
+}
+
+function addActivityButton(page: Page) {
+  return page.getByLabel("activity-button");
+}
+
+async function ensureMethodologySelected(page: Page) {
+  const addActivity = addActivityButton(page);
+  if (await addActivity.isVisible({ timeout: 3000 }).catch(() => false)) {
+    return;
+  }
+
+  const fuelCombustionCard = page
+    .getByTestId("methodology-card")
+    .filter({ hasText: /Fuel Consumption/i })
+    .first();
+  await expect(fuelCombustionCard).toBeVisible({ timeout: 30000 });
+  await fuelCombustionCard.click();
+
+  await expect(addActivity).toBeVisible({ timeout: 30000 });
+}
+
+async function fillCustomEmissionFactors(addEmissionModal: Locator) {
+  await addEmissionModal
+    .getByLabel(/Select emission factor type/i)
+    .selectOption("custom");
+  await addEmissionModal.getByLabel("CO2 emission factor").fill("10");
+  await addEmissionModal.getByLabel("N2O emission factor").fill("10");
+  await addEmissionModal.getByLabel("CH4 emission factor").fill("1");
+  await addEmissionModal.getByLabel(/Data Quality/i).selectOption("high");
+  await addEmissionModal.getByLabel("Data source").fill("test");
+  await addEmissionModal.getByLabel("Explanatory comments").fill("test");
+}
+
+async function addScope1ResidentialEmissions(
+  page: Page,
+  cityId: string,
+  inventoryId: string,
+) {
+  await navigateToDataPage(page, cityId, inventoryId);
+
+  await expect(
+    page.getByText("Add Data to Complete Your GHG Inventory"),
+  ).toBeVisible();
+  const stationaryEnergyCard = page.getByTestId(
+    "stationary-energy-sector-card",
+  );
+  const sectorDataUrlGlob = `**/cities/${cityId}/GHGI/${inventoryId}/data/1/`;
+  await Promise.all([
+    page.waitForURL(sectorDataUrlGlob),
+    stationaryEnergyCard.getByTestId("sector-card-button").click(),
+  ]);
+  await expect(
+    page.getByRole("heading", { name: /Stationary energy/i }),
+  ).toBeVisible({ timeout: 30000 });
+
+  await openResidentialSubsector(page, cityId, inventoryId);
+
+  const scopeOnePanel = page.getByLabel(/Scope 1/i);
+  const hasExistingActivity = await scopeOnePanel
+    .getByText(/Propane/i)
+    .isVisible()
+    .catch(() => false);
+  if (hasExistingActivity) {
+    return;
+  }
+
+  await ensureMethodologySelected(page);
+
+  await addActivityButton(page).click();
+  const addEmissionModal = page.getByTestId("add-emission-modal");
+  await expect(addEmissionModal).toBeVisible();
+
+  await addEmissionModal
+    .getByLabel(/Building type/i)
+    .selectOption("building-type-all");
+  await addEmissionModal
+    .getByLabel(/Fuel type/i)
+    .selectOption("fuel-type-propane");
+  await addEmissionModal.getByLabel("Total fuel consumption").fill("100");
+  await addEmissionModal
+    .getByLabel(/Select Unit/i)
+    .selectOption("units-cubic-meters");
+  await fillCustomEmissionFactors(addEmissionModal);
+
+  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
+  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
 }
 
 test.describe("CSV Download", () => {
@@ -234,7 +347,45 @@ test.describe("CSV Download", () => {
     await download.delete();
   });
 
-  test.skip("CSV download contains actual inventory data", async () => {
-    // Full data-entry flow is covered by manual-input.spec.ts.
+  test("CSV download contains actual inventory data", async ({
+    page,
+  }, testInfo) => {
+    test.setTimeout(180000);
+
+    await addScope1ResidentialEmissions(page, cityId, inventoryId);
+
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    await dismissCookieConsent(page);
+    await expect(page.getByTestId("download-action-card")).toBeVisible({
+      timeout: 60000,
+    });
+
+    await openDownloadModal(page);
+
+    const download = await downloadCsv(page);
+    const downloadPath = testInfo.outputPath("inventory-with-data.csv");
+    const csvContent = await saveDownload(download, downloadPath);
+
+    const records = parse(csvContent, {
+      columns: true,
+      skip_empty_lines: true,
+    }) as Record<string, string>[];
+
+    expect(records.length).toBeGreaterThan(0);
+
+    const residentialRecord = records.find(
+      (record) =>
+        record["GPC Reference Number"] === "I.1.1" &&
+        record["Data source name"] === "test",
+    );
+    expect(residentialRecord).toBeTruthy();
+    expect(residentialRecord?.["Subsector name"]).toBe("Residential buildings");
+    expect(residentialRecord?.["Total Emission Units"]).toBe("t CO2e");
+
+    const totalEmissions = parseFloat(residentialRecord?.["Total Emissions"] ?? "");
+    expect(Number.isNaN(totalEmissions)).toBe(false);
+    expect(totalEmissions).toBeGreaterThan(0);
+
+    await download.delete();
   });
 });

@@ -66,6 +66,7 @@
 - [x] UOW-02 Unit 2 completion approved after atomic commit `b97525fd9` — 2026-08-31
 - [x] UOW-02 Unit 3 implementation approved after TDD red checkpoint and security/boundedness test adjustments — 2026-08-31
 - [x] UOW-02 Unit 3 green checkpoint complete — 2026-08-31
+- [x] UOW-02 Unit 3 atomic commit created — `8388a41fe` — 2026-08-31
 - [ ] UOW-02 Unit 3 completion approved after atomic commit
 
 ## CONSTRUCTION PHASE

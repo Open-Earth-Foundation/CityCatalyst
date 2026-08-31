@@ -754,5 +754,13 @@ reviewable unit. Stop at every required approval gate."
 **User Input**: "approved" (explicit Unit 3 implementation approval)
 **AI Response**: Implemented the selected-only typed NativeInputCatalog tool factory. It uses static capability descriptors, captures the approved request context and exact selection, rejects arbitrary runtime scope/route/source/storage/credential arguments and oversized inputs before Core, invokes only the selected bounded Core read, enforces finite/redacted result envelopes, suppresses upstream error text, propagates refreshed token references without exposure, and closes each created client. No Climate Advisor storage, S3, raw source, or direct module access was added. Unit 3 passes 12/12; the combined Unit 2/client regression suite passes 30/30; inventory-context regression passes 8/8; compile and `git diff --check` pass. Ruff is unavailable in the service environment. The Climate Advisor architecture documentation was updated; README/setup documentation remains accurate.
 **Approval Status**: Unit 3 green checkpoint complete; atomic commit and explicit unit-completion review pending.
+
+---
+
+## Code Generation — UOW-02 Unit 3 Atomic Commit
+**Timestamp**: 2026-08-31T09:59:35-03:00
+**User Input**: "approved" (implementation approval; atomic commit is the authorized unit workflow)
+**AI Response**: Created atomic commit `8388a41fe` (`feat(cc-737): add selected native input tools`) containing only the selected-only tool implementation, its test-fixture correction, architecture documentation, and AI-DLC evidence. Unrelated `app/package-lock.json`, root `package-lock.json`, `AGENTS.md`, and `.aidlc-rule-details/` were not staged. Unit 4 has not been opened.
+**Approval Status**: Unit 3 commit created; explicit Unit 3 completion approval pending.
 ---
 ---

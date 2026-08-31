@@ -13,7 +13,7 @@ answered and explicitly approved.
 - **Branch**: `cc-737-connect-nativeinputcatalog-to-climate-advisor-capabilities`.
 - **Unit**: UOW-02 — Climate Advisor Request-Time Integration.
 - **Stage**: CONSTRUCTION — Code Generation planning.
-- **Status**: Plan approved; Unit 1 and Unit 2 completion approved; Unit 3 implementation green; atomic commit approval pending.
+- **Status**: Plan approved; Unit 1 and Unit 2 completion approved; Unit 3 atomic commit created; Unit 3 completion approval pending.
 - **Prerequisite**: UOW-02 Functional Design and NFR Design artifacts approved
   2026-08-29; UOW-01 Core implementation/contract/evidence approved with its
   documented GHGI/PostgreSQL validation limitation.
@@ -272,7 +272,7 @@ Steps:
 8. [x] Run focused tests, lint/format checks, mandatory project skills, and
    property-based invariants for pure selection/result/error functions where
    practical.
-9. [ ] Commit only this unit with:
+9. [x] Commit only this unit with:
    `feat(cc-737): add selected native input tools`.
 
 Story/requirement mapping: US-03, US-07, US-09; FR-03 through FR-10, FR-11;
@@ -306,8 +306,13 @@ passes. Ruff could not run because it is not installed in the service
 environment. The mandatory simplification pass removed an unused import and a
 redundant argument discard; the documentation-impact review updated
 `climate-advisor/docs/architecture.md`, while README/setup documentation
-remains accurate. The final implementation commit remains pending explicit
-review of this green checkpoint.
+remains accurate.
+
+**Atomic commit**: Created `8388a41fe`
+(`feat(cc-737): add selected native input tools`) containing only the Unit 3
+selected-tool implementation, its test-fixture correction, architecture
+documentation, and AI-DLC evidence. Unit 3 completion remains pending explicit
+review and approval; Unit 4 is not opened.
 
 ### Unit 4 — AgentService composition and workflow compatibility
 

@@ -35,8 +35,6 @@ import {
   type TestData,
 } from "../helpers/testDataCreationHelper";
 
-process.env.WEBHOOK_SECRET_ENCRYPTION_KEY = randomBytes(32).toString("base64");
-
 const mockAdminSession: AppSession = {
   user: { id: testUserID, role: Roles.Admin },
   expires: "1h",
@@ -55,10 +53,13 @@ const createBody = {
 
 describe("Organization webhook API", () => {
   const prevGetServerSession = Auth.getServerSession;
+  let prevEncryptionKey: string | undefined;
   let testData: TestData;
   let organizationParams: { params: Promise<{ organization: string }> };
 
   beforeAll(async () => {
+    prevEncryptionKey = process.env.WEBHOOK_SECRET_ENCRYPTION_KEY;
+    process.env.WEBHOOK_SECRET_ENCRYPTION_KEY = randomBytes(32).toString("base64");
     setupTests();
     await db.initialize();
     testData = await createTestData({
@@ -80,6 +81,11 @@ describe("Organization webhook API", () => {
 
   afterAll(async () => {
     Auth.getServerSession = prevGetServerSession;
+    if (prevEncryptionKey === undefined) {
+      delete process.env.WEBHOOK_SECRET_ENCRYPTION_KEY;
+    } else {
+      process.env.WEBHOOK_SECRET_ENCRYPTION_KEY = prevEncryptionKey;
+    }
     if (testData) {
       await db.models.WebhookSubscription.destroy({
         where: { organizationId: testData.organizationId },
@@ -209,7 +215,9 @@ describe("Organization webhook API", () => {
       year: 2024,
     });
 
-    const deliveries = await db.models.WebhookDelivery.findAll();
+    const deliveries = await db.models.WebhookDelivery.findAll({
+      where: { subscriptionId: matching.subscription.id },
+    });
     expect(deliveries).toHaveLength(1);
     expect(deliveries[0].subscriptionId).toBe(matching.subscription.id);
     expect(deliveries[0].status).toBe("pending");

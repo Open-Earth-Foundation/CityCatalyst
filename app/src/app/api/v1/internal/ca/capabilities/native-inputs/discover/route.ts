@@ -7,6 +7,17 @@
  *     operationId: postInternalCaNativeInputDiscovery
  *     summary: Discover caller-authorized NativeInputCatalog capabilities
  *     description: Internal Climate Advisor capability route. Returns only safe Core-approved catalog selection metadata; source pointers and content remain in CityCatalyst.
+ *     responses:
+ *       200:
+ *         description: Caller-authorized catalog entries returned.
+ *       400:
+ *         description: Invalid discovery request.
+ *       401:
+ *         description: Missing or invalid authentication.
+ *       403:
+ *         description: Request scope is not authorized.
+ *       404:
+ *         description: Capability is unavailable without disclosing source metadata.
  */
 
 import { NextResponse } from "next/server";

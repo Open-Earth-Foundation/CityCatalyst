@@ -1084,3 +1084,22 @@ application code or unrelated files were modified.
 **Approval Status**: Final release-readiness and CC-737 closure approved;
 UOW-03 completion remains approved.
 ---
+
+## CI Follow-up — OpenAPI lint correction
+**Timestamp**: 2026-08-31T23:00:57-03:00
+**User Input**:
+```text
+Autorizado
+```
+**AI Response**: Investigated the failing CI job for PR #3085. The failure
+was an OpenAPI lint error because the two CC-737 native-input route
+descriptions omitted required `responses` declarations. Added only the
+missing response documentation to the discover and read route contracts;
+no runtime behavior or unrelated application code was changed. The exact CI
+OpenAPI build/lint command now completes with **0 errors, 24 warnings, 0
+infos, 0 hints**. The four focused Core suites pass **26/26**; targeted
+ESLint, Prettier, and `git diff --check` also pass. The remaining 24 OpenAPI
+warnings are pre-existing findings outside this correction.
+**Approval Status**: The minimal documentation correction was authorized;
+UOW-03 and final CC-737 approval state are unchanged.
+---

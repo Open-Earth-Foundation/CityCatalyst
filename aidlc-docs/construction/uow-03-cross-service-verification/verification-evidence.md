@@ -190,3 +190,22 @@ is made by this approval.
 - Final release-readiness and CC-737 closure were explicitly approved on
   2026-08-31 after review of this evidence. The documented repository/tooling
   limitations remain visible and were not remediated within CC-737.
+
+## CI follow-up — OpenAPI lint correction
+
+- The PR CI job failed before API tests because the generated OpenAPI contract
+  lacked required `responses` declarations for the CC-737 native-input
+  discovery and selected-read operations.
+- The authorized correction added response documentation to those two route
+  contracts only; runtime behavior, authorization, bounded reads,
+  selected-only loading, non-disclosure, and storage isolation were not
+  changed.
+- Re-running the exact OpenAPI build/lint command locally completed with
+  **0 errors, 24 warnings, 0 infos, 0 hints**. The remaining warnings are
+  existing findings outside these operations.
+- The four focused Core suites passed **26/26**. Targeted ESLint, Prettier,
+  and `git diff --check` passed.
+- The failed CI run is therefore classified as an implementation-adjacent
+  OpenAPI documentation defect, corrected within the CC-737 route contract
+  scope. GitHub CI must still be observed after the branch update; no new CI
+  green result is claimed here.

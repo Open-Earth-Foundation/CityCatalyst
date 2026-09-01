@@ -7,6 +7,17 @@
  *     operationId: postInternalCaNativeInputRead
  *     summary: Execute one caller-authorized bounded NativeInputCatalog capability
  *     description: Internal Climate Advisor capability route. Core revalidates the selected catalog entry, capability mapping, scope, readiness, and bounded result before executing one source-owned capability.
+ *     responses:
+ *       200:
+ *         description: Bounded result from the selected capability.
+ *       400:
+ *         description: Invalid selected-read request.
+ *       401:
+ *         description: Missing or invalid authentication.
+ *       403:
+ *         description: Request scope is not authorized.
+ *       404:
+ *         description: Selected capability is unavailable without disclosing source metadata.
  */
 
 import createHttpError from "http-errors";

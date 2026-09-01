@@ -6,6 +6,7 @@ import json
 import logging
 import re
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 from typing import Any, Literal, cast
 from uuid import UUID
 
@@ -44,6 +45,20 @@ ValidationPassRunner = Callable[
     [ValidationPass, dict[str, Any]],
     Awaitable[ValidationPassOutput],
 ]
+
+
+@dataclass(frozen=True)
+class _ValidationPlan:
+    """Prepared prompt inputs and limits shared by both validation passes."""
+
+    completeness_payload: dict[str, Any]
+    consistency_prompt: str
+    fallback_encoding: str
+    max_prompt_tokens: int
+    model_name: str
+    target: ChapterValidationChapter
+    target_payload: dict[str, Any]
+
 
 _CHECK_LABELS: dict[ChapterValidationCheckKey, str] = {
     "required_content": "Required content",
@@ -214,7 +229,7 @@ class ConceptNoteChapterValidationService:
         request: ChapterValidationRequest,
     ) -> ChapterValidationDecision:
         """Return a persistence-ready decision without writing workspace state."""
-        # Step 1: resolve the immutable target snapshot and empty fast path.
+        # Step 1: resolve and prepare one immutable validation plan.
         target = next(
             chapter
             for chapter in request.chapters
@@ -222,13 +237,59 @@ class ConceptNoteChapterValidationService:
         )
         if not (target.body_markdown or "").strip():
             return _empty_chapter_decision(request)
+        plan = self._build_validation_plan(request, target)
 
-        model_config = self._settings.llm.models.cnb_chapter_validator
-        prompts = self._settings.llm.prompts
-        completeness_prompt = prompts.get_prompt("cnb_chapter_validation_completeness")
-        consistency_prompt = prompts.get_prompt("cnb_chapter_validation_consistency")
-        budget = self._settings.llm.generation.prompt_budget.cnb_validation
-        tokenizer = self._settings.llm.generation.prompt_budget.tokenizer_encoding
+        logger.info(
+            "Starting Concept Note chapter validation target_chapter_id=%s chapters=%s",
+            request.target_chapter_id,
+            len(request.chapters),
+        )
+
+        # Step 2: execute both model passes with no persistence side effects.
+        (
+            completeness,
+            consistency_outputs,
+            consistency_batch_count,
+        ) = await self._run_validation_passes(request, plan)
+
+        # Step 3: merge model findings with deterministic gap/evidence guardrails.
+        findings = _merge_findings(
+            request=request,
+            completeness=completeness,
+            consistency_outputs=consistency_outputs,
+        )
+        checks = _merge_checks(
+            request=request,
+            completeness=completeness,
+            consistency_outputs=consistency_outputs,
+            findings=findings,
+        )
+        status = _aggregate_status(checks, findings)
+
+        logger.info(
+            "Completed Concept Note chapter validation target_chapter_id=%s "
+            "status=%s findings=%s consistency_batches=%s",
+            request.target_chapter_id,
+            status,
+            len(findings),
+            consistency_batch_count,
+        )
+        return ChapterValidationDecision(
+            target_chapter_id=request.target_chapter_id,
+            validated_revision_number=plan.target.revision_number,
+            validation_input_fingerprint=request.validation_input_fingerprint,
+            status=status,
+            checks=checks,
+            findings=findings,
+        )
+
+    def _build_validation_plan(
+        self,
+        request: ChapterValidationRequest,
+        target: ChapterValidationChapter,
+    ) -> _ValidationPlan:
+        """Prepare shared prompt inputs and enforce the completeness budget."""
+        # Build the immutable target-only completeness input.
         target_payload = target.model_dump(mode="json")
         completeness_payload = {
             "target_chapter": target_payload,
@@ -242,23 +303,44 @@ class ConceptNoteChapterValidationService:
                 evidence.model_dump(mode="json") for evidence in request.evidence_links
             ],
         }
+        prompts = self._settings.llm.prompts
+        budget = self._settings.llm.generation.prompt_budget.cnb_validation
+        model_name = self._settings.llm.models.cnb_chapter_validator.name
+        fallback_encoding = (
+            self._settings.llm.generation.prompt_budget.tokenizer_encoding
+        )
+
+        # Reject oversized input before opening an external model client.
         _require_prompt_fit(
-            prompt=completeness_prompt,
+            prompt=prompts.get_prompt("cnb_chapter_validation_completeness"),
             payload=completeness_payload,
             output_schema=ChapterCompletenessValidationOutput.model_json_schema(),
-            model=model_config.name,
-            fallback_encoding=tokenizer,
+            model=model_name,
+            fallback_encoding=fallback_encoding,
             max_prompt_tokens=budget.max_prompt_tokens,
             description="target chapter completeness input",
         )
-
-        logger.info(
-            "Starting Concept Note chapter validation target_chapter_id=%s chapters=%s",
-            request.target_chapter_id,
-            len(request.chapters),
+        return _ValidationPlan(
+            completeness_payload=completeness_payload,
+            consistency_prompt=prompts.get_prompt("cnb_chapter_validation_consistency"),
+            fallback_encoding=fallback_encoding,
+            max_prompt_tokens=budget.max_prompt_tokens,
+            model_name=model_name,
+            target=target,
+            target_payload=target_payload,
         )
 
-        # Step 2: execute both passes with one client and no persistence side effects.
+    async def _run_validation_passes(
+        self,
+        request: ChapterValidationRequest,
+        plan: _ValidationPlan,
+    ) -> tuple[
+        ChapterCompletenessValidationOutput,
+        list[ChapterConsistencyValidationOutput],
+        int,
+    ]:
+        """Execute completeness and every required consistency batch."""
+        # Reuse a test runner or create one shared production client.
         client: AsyncOpenAI | None = None
         run_pass = self._run_pass_override
         if run_pass is None:
@@ -284,101 +366,99 @@ class ConceptNoteChapterValidationService:
             run_pass = configured_runner
 
         try:
-            completeness = await _invoke_pass(
+            # Feed verified completeness output into every consistency batch.
+            completeness = await self._run_completeness_pass(
                 run_pass,
-                "completeness",
-                completeness_payload,
-                ChapterCompletenessValidationOutput,
+                request,
+                plan.completeness_payload,
             )
-            _validate_completeness_findings(
-                completeness,
-                target_chapter_id=request.target_chapter_id,
-            )
-            _ensure_non_pass_findings(
-                completeness,
-                target_chapter_id=request.target_chapter_id,
-            )
-            completeness_result = completeness.model_dump(mode="json")
-
-            other_chapters = sorted(
-                (
-                    chapter
-                    for chapter in request.chapters
-                    if chapter.chapter_id != request.target_chapter_id
-                ),
-                key=lambda chapter: (chapter.position, str(chapter.chapter_id)),
-            )
-            consistency_batches = _build_consistency_batches(
-                target=target_payload,
-                completeness=completeness_result,
+            batches = _build_consistency_batches(
+                target=plan.target_payload,
+                completeness=completeness.model_dump(mode="json"),
                 other_chapters=[
-                    chapter.model_dump(mode="json") for chapter in other_chapters
+                    chapter.model_dump(mode="json")
+                    for chapter in sorted(
+                        (
+                            chapter
+                            for chapter in request.chapters
+                            if chapter.chapter_id != request.target_chapter_id
+                        ),
+                        key=lambda chapter: (chapter.position, str(chapter.chapter_id)),
+                    )
                 ],
-                prompt=consistency_prompt,
-                model=model_config.name,
-                fallback_encoding=tokenizer,
-                max_prompt_tokens=budget.max_prompt_tokens,
+                prompt=plan.consistency_prompt,
+                model=plan.model_name,
+                fallback_encoding=plan.fallback_encoding,
+                max_prompt_tokens=plan.max_prompt_tokens,
             )
-
-            consistency_outputs: list[ChapterConsistencyValidationOutput] = []
-            for batch in consistency_batches:
-                payload = {
-                    "target_chapter": target_payload,
-                    "completeness_result": completeness_result,
-                    "compared_chapters": batch,
-                }
-                output = await _invoke_pass(
-                    run_pass,
-                    "consistency",
-                    payload,
-                    ChapterConsistencyValidationOutput,
-                )
-                _validate_consistency_findings(
-                    output,
-                    target_chapter_id=request.target_chapter_id,
-                    compared_chapter_ids={
-                        UUID(chapter["chapter_id"]) for chapter in batch
-                    },
-                )
-                _ensure_non_pass_findings(
-                    output,
-                    target_chapter_id=request.target_chapter_id,
-                )
-                consistency_outputs.append(output)
+            consistency = await self._run_consistency_passes(
+                run_pass,
+                request,
+                plan.target_payload,
+                completeness,
+                batches,
+            )
+            return completeness, consistency, len(batches)
         finally:
             if client is not None:
                 await client.close()
 
-        # Step 3: merge model findings with deterministic gap/evidence guardrails.
-        findings = _merge_findings(
-            request=request,
-            completeness=completeness,
-            consistency_outputs=consistency_outputs,
+    async def _run_completeness_pass(
+        self,
+        run_pass: ValidationPassRunner,
+        request: ChapterValidationRequest,
+        payload: dict[str, Any],
+    ) -> ChapterCompletenessValidationOutput:
+        """Run and verify the target-only completeness pass."""
+        output = await _invoke_pass(
+            run_pass,
+            "completeness",
+            payload,
+            ChapterCompletenessValidationOutput,
         )
-        checks = _merge_checks(
-            request=request,
-            completeness=completeness,
-            consistency_outputs=consistency_outputs,
-            findings=findings,
-        )
-        status = _aggregate_status(checks, findings)
-
-        logger.info(
-            "Completed Concept Note chapter validation target_chapter_id=%s "
-            "status=%s findings=%s consistency_batches=%s",
-            request.target_chapter_id,
-            status,
-            len(findings),
-            len(consistency_batches),
-        )
-        return ChapterValidationDecision(
+        _validate_completeness_findings(
+            output,
             target_chapter_id=request.target_chapter_id,
-            validated_revision_number=target.revision_number,
-            validation_input_fingerprint=request.validation_input_fingerprint,
-            status=status,
-            checks=checks,
-            findings=findings,
         )
+        _ensure_non_pass_findings(
+            output,
+            target_chapter_id=request.target_chapter_id,
+        )
+        return output
+
+    async def _run_consistency_passes(
+        self,
+        run_pass: ValidationPassRunner,
+        request: ChapterValidationRequest,
+        target_payload: dict[str, Any],
+        completeness: ChapterCompletenessValidationOutput,
+        batches: list[list[dict[str, Any]]],
+    ) -> list[ChapterConsistencyValidationOutput]:
+        """Run and verify each non-truncated cross-chapter comparison batch."""
+        outputs: list[ChapterConsistencyValidationOutput] = []
+        completeness_result = completeness.model_dump(mode="json")
+        for batch in batches:
+            output = await _invoke_pass(
+                run_pass,
+                "consistency",
+                {
+                    "target_chapter": target_payload,
+                    "completeness_result": completeness_result,
+                    "compared_chapters": batch,
+                },
+                ChapterConsistencyValidationOutput,
+            )
+            _validate_consistency_findings(
+                output,
+                target_chapter_id=request.target_chapter_id,
+                compared_chapter_ids={UUID(chapter["chapter_id"]) for chapter in batch},
+            )
+            _ensure_non_pass_findings(
+                output,
+                target_chapter_id=request.target_chapter_id,
+            )
+            outputs.append(output)
+        return outputs
 
     async def _run_configured_pass(
         self,

@@ -332,137 +332,28 @@ class ConceptNoteWorkspaceRepository:
     ) -> WorkspaceCopyResult:
         """Replace a destination with an independent copy of current workspace state."""
         async with self._session_factory() as session, session.begin():
-            # Make retries deterministic after any earlier transaction failure.
+            # Step 1: make retries deterministic and load the source in bulk.
             await _delete_workspace_rows(session, destination_run_id)
-            source_chapters = list(
-                (
-                    await session.scalars(
-                        select(ConceptNoteChapter)
-                        .where(
-                            ConceptNoteChapter.run_id == source_run_id,
-                            ConceptNoteChapter.status != "deleted",
-                        )
-                        .order_by(
-                            ConceptNoteChapter.position.asc(),
-                            ConceptNoteChapter.chapter_id.asc(),
-                        )
-                    )
-                ).all()
+            source_chapters = await _active_chapters(session, source_run_id)
+            chapter_ids = [chapter.chapter_id for chapter in source_chapters]
+            revisions = await _latest_revisions(session, chapter_ids)
+            evidence_by_chapter = await _evidence_by_chapter(session, chapter_ids)
+            gaps = await _run_gaps(session, source_run_id)
+            matches = await _run_matches(session, source_run_id)
+
+            # Step 2: clone chapters first so dependent rows can be remapped.
+            chapter_map, completed_chapters = await _copy_chapters(
+                session,
+                destination_run_id=destination_run_id,
+                source_chapters=source_chapters,
+                revisions=revisions,
+                evidence_by_chapter=evidence_by_chapter,
+                gaps=gaps,
             )
-            gaps = list(
-                (
-                    await session.scalars(
-                        select(ConceptNoteGap).where(
-                            ConceptNoteGap.run_id == source_run_id
-                        )
-                    )
-                ).all()
-            )
-            chapters_with_open_gaps = {
-                gap.chapter_id
-                for gap in gaps
-                if gap.chapter_id is not None and gap.status == "open"
-            }
-            chapter_map: dict[UUID, UUID] = {}
-            completed_chapters = 0
 
-            # Copy chapter metadata and only the latest body as revision one.
-            for source_chapter in source_chapters:
-                latest = await _latest_revision(session, source_chapter.chapter_id)
-                if latest is None:
-                    destination_status = "empty"
-                elif source_chapter.chapter_id in chapters_with_open_gaps:
-                    destination_status = "needs_review"
-                else:
-                    destination_status = "draft"
-                destination_chapter = ConceptNoteChapter(
-                    run_id=destination_run_id,
-                    template_section_id=source_chapter.template_section_id,
-                    title=source_chapter.title,
-                    position=source_chapter.position,
-                    status=destination_status,
-                    required=source_chapter.required,
-                    user_locked=source_chapter.user_locked,
-                )
-                session.add(destination_chapter)
-                await session.flush()
-                chapter_map[source_chapter.chapter_id] = destination_chapter.chapter_id
-
-                if latest is not None:
-                    session.add(
-                        ConceptNoteChapterRevision(
-                            chapter_id=destination_chapter.chapter_id,
-                            revision_number=1,
-                            author_type="system",
-                            change_type="draft",
-                            body_markdown=latest.body_markdown,
-                            patch_summary={
-                                "duplicated_from_revision_id": str(latest.revision_id)
-                            },
-                        )
-                    )
-                    completed_chapters += 1
-
-                evidence_links = list(
-                    (
-                        await session.scalars(
-                            select(ConceptNoteEvidenceLink).where(
-                                ConceptNoteEvidenceLink.chapter_id
-                                == source_chapter.chapter_id
-                            )
-                        )
-                    ).all()
-                )
-                for evidence in evidence_links:
-                    session.add(
-                        ConceptNoteEvidenceLink(
-                            chapter_id=destination_chapter.chapter_id,
-                            selected_source_label=evidence.selected_source_label,
-                            source_location=evidence.source_location,
-                            claim_ref=evidence.claim_ref,
-                            quote_or_summary=evidence.quote_or_summary,
-                        )
-                    )
-
-            # Copy run-scoped gaps and remap any chapter relationship.
-            for gap in gaps:
-                session.add(
-                    ConceptNoteGap(
-                        run_id=destination_run_id,
-                        chapter_id=(
-                            chapter_map.get(gap.chapter_id)
-                            if gap.chapter_id is not None
-                            else None
-                        ),
-                        field_key=gap.field_key,
-                        severity=gap.severity,
-                        reason=gap.reason,
-                        status=gap.status,
-                    )
-                )
-
-            # Copy selected project matches as independent mutable rows.
-            matches = list(
-                (
-                    await session.scalars(
-                        select(ConceptNoteMatchedProject).where(
-                            ConceptNoteMatchedProject.run_id == source_run_id
-                        )
-                    )
-                ).all()
-            )
-            for match in matches:
-                session.add(
-                    ConceptNoteMatchedProject(
-                        run_id=destination_run_id,
-                        funded_project_id=match.funded_project_id,
-                        decision=match.decision,
-                        fit_rationale=match.fit_rationale,
-                        matched_tags=deepcopy(match.matched_tags),
-                        evidence=deepcopy(match.evidence),
-                        caveats=deepcopy(match.caveats),
-                    )
-                )
+            # Step 3: clone run-scoped rows after chapter identities are known.
+            _copy_gaps(session, destination_run_id, gaps, chapter_map)
+            _copy_matches(session, destination_run_id, matches)
 
             return WorkspaceCopyResult(
                 completed_chapters=completed_chapters,
@@ -473,6 +364,150 @@ class ConceptNoteWorkspaceRepository:
         """Delete every managed workspace row owned by one CA run."""
         async with self._session_factory() as session, session.begin():
             await _delete_workspace_rows(session, run_id)
+
+
+async def _run_gaps(
+    session: AsyncSession,
+    run_id: UUID,
+) -> list[ConceptNoteGap]:
+    """Load every run-scoped gap copied into a duplicated workspace."""
+    return list(
+        (
+            await session.scalars(
+                select(ConceptNoteGap).where(ConceptNoteGap.run_id == run_id)
+            )
+        ).all()
+    )
+
+
+async def _run_matches(
+    session: AsyncSession,
+    run_id: UUID,
+) -> list[ConceptNoteMatchedProject]:
+    """Load selected project matches copied into a duplicated workspace."""
+    return list(
+        (
+            await session.scalars(
+                select(ConceptNoteMatchedProject).where(
+                    ConceptNoteMatchedProject.run_id == run_id
+                )
+            )
+        ).all()
+    )
+
+
+async def _copy_chapters(
+    session: AsyncSession,
+    *,
+    destination_run_id: UUID,
+    source_chapters: list[ConceptNoteChapter],
+    revisions: dict[UUID, ConceptNoteChapterRevision],
+    evidence_by_chapter: dict[UUID, list[ConceptNoteEvidenceLink]],
+    gaps: list[ConceptNoteGap],
+) -> tuple[dict[UUID, UUID], int]:
+    """Clone active chapters, latest bodies, and evidence with new identities."""
+    # Open gaps determine the destination chapter's initial review state.
+    chapters_with_open_gaps = {
+        gap.chapter_id
+        for gap in gaps
+        if gap.chapter_id is not None and gap.status == "open"
+    }
+    chapter_map: dict[UUID, UUID] = {}
+    completed_chapters = 0
+
+    # Persist each chapter before cloning rows that require its new identity.
+    for source in source_chapters:
+        latest = revisions.get(source.chapter_id)
+        if latest is None:
+            status = "empty"
+        elif source.chapter_id in chapters_with_open_gaps:
+            status = "needs_review"
+        else:
+            status = "draft"
+        destination = ConceptNoteChapter(
+            run_id=destination_run_id,
+            template_section_id=source.template_section_id,
+            title=source.title,
+            position=source.position,
+            status=status,
+            required=source.required,
+            user_locked=source.user_locked,
+        )
+        session.add(destination)
+        await session.flush()
+        chapter_map[source.chapter_id] = destination.chapter_id
+
+        if latest is not None:
+            session.add(
+                ConceptNoteChapterRevision(
+                    chapter_id=destination.chapter_id,
+                    revision_number=1,
+                    author_type="system",
+                    change_type="draft",
+                    body_markdown=latest.body_markdown,
+                    patch_summary={
+                        "duplicated_from_revision_id": str(latest.revision_id)
+                    },
+                )
+            )
+            completed_chapters += 1
+
+        for evidence in evidence_by_chapter[source.chapter_id]:
+            session.add(
+                ConceptNoteEvidenceLink(
+                    chapter_id=destination.chapter_id,
+                    selected_source_label=evidence.selected_source_label,
+                    source_location=evidence.source_location,
+                    claim_ref=evidence.claim_ref,
+                    quote_or_summary=evidence.quote_or_summary,
+                )
+            )
+
+    return chapter_map, completed_chapters
+
+
+def _copy_gaps(
+    session: AsyncSession,
+    destination_run_id: UUID,
+    gaps: list[ConceptNoteGap],
+    chapter_map: dict[UUID, UUID],
+) -> None:
+    """Clone gaps while remapping optional chapter relationships."""
+    for gap in gaps:
+        session.add(
+            ConceptNoteGap(
+                run_id=destination_run_id,
+                chapter_id=(
+                    chapter_map.get(gap.chapter_id)
+                    if gap.chapter_id is not None
+                    else None
+                ),
+                field_key=gap.field_key,
+                severity=gap.severity,
+                reason=gap.reason,
+                status=gap.status,
+            )
+        )
+
+
+def _copy_matches(
+    session: AsyncSession,
+    destination_run_id: UUID,
+    matches: list[ConceptNoteMatchedProject],
+) -> None:
+    """Clone selected project matches as independent mutable rows."""
+    for match in matches:
+        session.add(
+            ConceptNoteMatchedProject(
+                run_id=destination_run_id,
+                funded_project_id=match.funded_project_id,
+                decision=match.decision,
+                fit_rationale=match.fit_rationale,
+                matched_tags=deepcopy(match.matched_tags),
+                evidence=deepcopy(match.evidence),
+                caveats=deepcopy(match.caveats),
+            )
+        )
 
 
 async def _latest_revision(
@@ -602,7 +637,9 @@ def _validation_chapters(
                 position=chapter.position,
                 status=chapter.status,
                 required=chapter.required,
-                body_markdown=(revision.body_markdown if revision is not None else None),
+                body_markdown=(
+                    revision.body_markdown if revision is not None else None
+                ),
                 revision_id=(revision.revision_id if revision is not None else None),
                 revision_number=(
                     revision.revision_number if revision is not None else None
@@ -659,7 +696,9 @@ def calculate_validation_input_fingerprint(
                 "position": chapter.position,
                 "required": chapter.required,
                 "revision_id": (
-                    str(chapter.revision_id) if chapter.revision_id is not None else None
+                    str(chapter.revision_id)
+                    if chapter.revision_id is not None
+                    else None
                 ),
             }
             for chapter in chapters
@@ -724,9 +763,7 @@ async def _load_validation_context(
     open_gaps = _validation_gaps(gap_rows[chapter_id])
     evidence_links = _validation_evidence(evidence_rows[chapter_id])
     target_snapshot = next(
-        chapter
-        for chapter in validation_chapters
-        if chapter.chapter_id == chapter_id
+        chapter for chapter in validation_chapters if chapter.chapter_id == chapter_id
     )
     fingerprint = calculate_validation_input_fingerprint(
         chapters=validation_chapters,
@@ -770,85 +807,117 @@ async def _snapshot_chapters(
         ).all()
     }
     validation_chapters = _validation_chapters(chapters, revisions)
+    validated_revision_numbers = await _validated_revision_numbers(
+        session,
+        validations,
+        revisions,
+    )
 
-    # Resolve revision numbers for validations that predate the current revision.
-    validated_revision_numbers = {
+    # Compute every target's freshness against the same document snapshot.
+    return [
+        _chapter_snapshot(
+            chapter=chapter,
+            detached=detached,
+            validation_chapters=validation_chapters,
+            gaps=gaps[chapter.chapter_id],
+            evidence=evidence[chapter.chapter_id],
+            stored_validation=validations.get(chapter.chapter_id),
+            validated_revision_numbers=validated_revision_numbers,
+            template_fingerprint=template_fingerprint,
+        )
+        for chapter, detached in zip(chapters, validation_chapters, strict=True)
+    ]
+
+
+async def _validated_revision_numbers(
+    session: AsyncSession,
+    validations: dict[UUID, ConceptNoteChapterValidation],
+    current_revisions: dict[UUID, ConceptNoteChapterRevision],
+) -> dict[UUID, int]:
+    """Resolve revision numbers referenced by current and historical validations."""
+    revision_numbers = {
         revision.revision_id: revision.revision_number
-        for revision in revisions.values()
+        for revision in current_revisions.values()
     }
-    old_revision_ids = {
+    historical_ids = {
         validation.validated_revision_id
         for validation in validations.values()
         if validation.validated_revision_id is not None
-        and validation.validated_revision_id not in validated_revision_numbers
+        and validation.validated_revision_id not in revision_numbers
     }
-    if old_revision_ids:
-        old_revisions = (
+    if historical_ids:
+        historical_revisions = (
             await session.execute(
                 select(
                     ConceptNoteChapterRevision.revision_id,
                     ConceptNoteChapterRevision.revision_number,
-                ).where(ConceptNoteChapterRevision.revision_id.in_(old_revision_ids))
+                ).where(ConceptNoteChapterRevision.revision_id.in_(historical_ids))
             )
         ).all()
-        validated_revision_numbers.update(dict(old_revisions))
+        revision_numbers.update(dict(historical_revisions))
+    return revision_numbers
 
-    # Compute each target's freshness against the same document snapshot.
-    snapshots: list[WorkspaceChapterSnapshot] = []
-    for chapter, detached in zip(chapters, validation_chapters, strict=True):
-        current_fingerprint = calculate_validation_input_fingerprint(
-            chapters=validation_chapters,
-            target_chapter_id=chapter.chapter_id,
-            open_gaps=_validation_gaps(gaps[chapter.chapter_id]),
-            evidence_links=_validation_evidence(evidence[chapter.chapter_id]),
-            template_fingerprint=template_fingerprint,
+
+def _chapter_snapshot(
+    *,
+    chapter: ConceptNoteChapter,
+    detached: WorkspaceValidationChapter,
+    validation_chapters: list[WorkspaceValidationChapter],
+    gaps: list[ConceptNoteGap],
+    evidence: list[ConceptNoteEvidenceLink],
+    stored_validation: ConceptNoteChapterValidation | None,
+    validated_revision_numbers: dict[UUID, int],
+    template_fingerprint: str | None,
+) -> WorkspaceChapterSnapshot:
+    """Project one chapter and derive validation freshness and display status."""
+    # Compare the stored validation with the chapter's complete current input.
+    current_fingerprint = calculate_validation_input_fingerprint(
+        chapters=validation_chapters,
+        target_chapter_id=chapter.chapter_id,
+        open_gaps=_validation_gaps(gaps),
+        evidence_links=_validation_evidence(evidence),
+        template_fingerprint=template_fingerprint,
+    )
+    validation_snapshot = None
+    if stored_validation is not None:
+        validation_snapshot = WorkspaceValidationSnapshot(
+            validation_id=stored_validation.validation_id,
+            status=stored_validation.status,
+            is_stale=(
+                stored_validation.validation_input_fingerprint != current_fingerprint
+            ),
+            validated_revision_id=stored_validation.validated_revision_id,
+            validated_revision_number=validated_revision_numbers.get(
+                stored_validation.validated_revision_id
+            ),
+            validation_input_fingerprint=stored_validation.validation_input_fingerprint,
+            validated_at=stored_validation.validated_at,
+            checks=deepcopy(stored_validation.checks),
+            findings=deepcopy(stored_validation.findings),
         )
-        stored_validation = validations.get(chapter.chapter_id)
-        validation_snapshot = None
-        if stored_validation is not None:
-            is_stale = (
-                stored_validation.validation_input_fingerprint
-                != current_fingerprint
-            )
-            validation_snapshot = WorkspaceValidationSnapshot(
-                validation_id=stored_validation.validation_id,
-                status=stored_validation.status,
-                is_stale=is_stale,
-                validated_revision_id=stored_validation.validated_revision_id,
-                validated_revision_number=validated_revision_numbers.get(
-                    stored_validation.validated_revision_id
-                ),
-                validation_input_fingerprint=(
-                    stored_validation.validation_input_fingerprint
-                ),
-                validated_at=stored_validation.validated_at,
-                checks=deepcopy(stored_validation.checks),
-                findings=deepcopy(stored_validation.findings),
-            )
-        effective_status = chapter.status
-        if (
-            validation_snapshot is not None
-            and validation_snapshot.is_stale
-            and effective_status == "ready"
-        ):
-            effective_status = "needs_review"
-        snapshots.append(
-            WorkspaceChapterSnapshot(
-                chapter_id=chapter.chapter_id,
-                chapter_ref=chapter.template_section_id,
-                title=chapter.title,
-                position=chapter.position,
-                status=effective_status,
-                required=chapter.required,
-                user_locked=chapter.user_locked,
-                body_markdown=detached.body_markdown,
-                missing_information=[gap.reason for gap in gaps[chapter.chapter_id]],
-                revision_number=detached.revision_number,
-                revision_id=detached.revision_id,
-                validation=validation_snapshot,
-            )
-        )
-    return snapshots
+
+    # A stale ready result must return to review without deleting its details.
+    effective_status = chapter.status
+    if (
+        validation_snapshot is not None
+        and validation_snapshot.is_stale
+        and effective_status == "ready"
+    ):
+        effective_status = "needs_review"
+    return WorkspaceChapterSnapshot(
+        chapter_id=chapter.chapter_id,
+        chapter_ref=chapter.template_section_id,
+        title=chapter.title,
+        position=chapter.position,
+        status=effective_status,
+        required=chapter.required,
+        user_locked=chapter.user_locked,
+        body_markdown=detached.body_markdown,
+        missing_information=[gap.reason for gap in gaps],
+        revision_number=detached.revision_number,
+        revision_id=detached.revision_id,
+        validation=validation_snapshot,
+    )
 
 
 async def _delete_workspace_rows(session: AsyncSession, run_id: UUID) -> None:

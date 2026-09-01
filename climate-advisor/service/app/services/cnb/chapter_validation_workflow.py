@@ -9,6 +9,7 @@ from app.db.cnb_reference import get_cnb_reference_session_factory
 from app.models.cnb.concept_note_application_context import (
     ApplicationContextTemplate,
 )
+from app.models.cnb.concept_note_chapter_validation import ChapterValidationDecision
 from app.models.cnb.concept_note_draft import (
     ConceptNoteChapterValidationResponse,
     ConceptNoteValidationCheckResponse,
@@ -17,6 +18,7 @@ from app.models.cnb.concept_note_draft import (
 from app.models.db.concept_note import ConceptNoteRun
 from app.persistence.concept_notes.workspace import (
     ConceptNoteWorkspaceRepository,
+    WorkspaceValidationContext,
     WorkspaceValidationInputChangedError,
     WorkspaceValidationSnapshot,
 )
@@ -34,6 +36,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 logger = logging.getLogger(__name__)
 
 ALLOWED_CHAPTER_VALIDATION_STEPS = frozenset({"drafting_document", "editing_document"})
+REVISION_CHANGED_MESSAGE = (
+    "The document or application template changed during validation; "
+    "run validation again"
+)
+STORAGE_UNAVAILABLE_MESSAGE = "Concept Note validation storage is unavailable"
 
 
 class ChapterValidationWorkflowError(Exception):
@@ -85,14 +92,13 @@ class ConceptNoteChapterValidationWorkflowService:
             ChapterValidationWorkflowError: When workflow state, storage, chapter
                 identity, or concurrent input changes prevent a safe write.
         """
+        # Step 1: authorize the workflow state and freeze the reviewed template.
         if run.workflow_step not in ALLOWED_CHAPTER_VALIDATION_STEPS:
             raise ChapterValidationWorkflowError(
                 "chapter_validation_not_allowed",
                 409,
                 "Chapter validation is available only while drafting or editing",
             )
-
-        # Step 1: load the reviewed template included in the validation input.
         template = await self._load_template(run=run, chapter_id=chapter_id)
         if template is None:
             raise ChapterValidationWorkflowError(
@@ -103,8 +109,49 @@ class ConceptNoteChapterValidationWorkflowService:
         template_fingerprint = calculate_application_template_fingerprint(template)
 
         # Step 2: snapshot all remaining LLM and deterministic inputs.
+        context = await self._load_validation_context(
+            run=run,
+            chapter_id=chapter_id,
+            template_fingerprint=template_fingerprint,
+        )
+
+        # Step 3: run both LLM passes against the fingerprinted snapshot.
+        decision = await self._validator.validate(
+            build_chapter_validation_request(context, template=template)
+        )
+
+        # Step 4: recheck the independently stored template before publishing.
+        latest_template = await self._load_template(run=run, chapter_id=chapter_id)
+        if (
+            latest_template is None
+            or calculate_application_template_fingerprint(latest_template)
+            != template_fingerprint
+        ):
+            raise ChapterValidationWorkflowError(
+                "chapter_revision_changed",
+                409,
+                REVISION_CHANGED_MESSAGE,
+            )
+
+        # Step 5: recheck workspace inputs and publish result/status together.
+        stored = await self._persist_decision(
+            run=run,
+            chapter_id=chapter_id,
+            template_fingerprint=template_fingerprint,
+            decision=decision,
+        )
+        return chapter_validation_response(stored)
+
+    async def _load_validation_context(
+        self,
+        *,
+        run: ConceptNoteRun,
+        chapter_id: UUID,
+        template_fingerprint: str,
+    ) -> WorkspaceValidationContext:
+        """Load the fingerprinted workspace context with stable public errors."""
         try:
-            context = await self._workspace.load_validation_context(
+            return await self._workspace.load_validation_context(
                 run_id=run.run_id,
                 chapter_id=chapter_id,
                 template_fingerprint=template_fingerprint,
@@ -124,33 +171,20 @@ class ConceptNoteChapterValidationWorkflowService:
             raise ChapterValidationWorkflowError(
                 "cnb_storage_unavailable",
                 503,
-                "Concept Note validation storage is unavailable",
+                STORAGE_UNAVAILABLE_MESSAGE,
             ) from exc
 
-        # Step 3: run both LLM passes against the fingerprinted snapshot.
-        request = build_chapter_validation_request(
-            context,
-            template=template,
-        )
-        decision = await self._validator.validate(request)
-
-        # Step 4: recheck the independently stored template before publishing.
-        latest_template = await self._load_template(run=run, chapter_id=chapter_id)
-        if (
-            latest_template is None
-            or calculate_application_template_fingerprint(latest_template)
-            != template_fingerprint
-        ):
-            raise ChapterValidationWorkflowError(
-                "chapter_revision_changed",
-                409,
-                "The document or application template changed during validation; "
-                "run validation again",
-            )
-
-        # Step 5: recheck workspace inputs and publish result/status together.
+    async def _persist_decision(
+        self,
+        *,
+        run: ConceptNoteRun,
+        chapter_id: UUID,
+        template_fingerprint: str,
+        decision: ChapterValidationDecision,
+    ) -> WorkspaceValidationSnapshot:
+        """Atomically publish a decision if the workspace fingerprint is current."""
         try:
-            stored = await self._workspace.upsert_validation(
+            return await self._workspace.upsert_validation(
                 run_id=run.run_id,
                 chapter_id=chapter_id,
                 template_fingerprint=template_fingerprint,
@@ -165,8 +199,7 @@ class ConceptNoteChapterValidationWorkflowService:
             raise ChapterValidationWorkflowError(
                 "chapter_revision_changed",
                 409,
-                "The document or application template changed during validation; "
-                "run validation again",
+                REVISION_CHANGED_MESSAGE,
             ) from exc
         except (OSError, SQLAlchemyError) as exc:
             logger.exception(
@@ -177,10 +210,8 @@ class ConceptNoteChapterValidationWorkflowService:
             raise ChapterValidationWorkflowError(
                 "cnb_storage_unavailable",
                 503,
-                "Concept Note validation storage is unavailable",
+                STORAGE_UNAVAILABLE_MESSAGE,
             ) from exc
-
-        return chapter_validation_response(stored)
 
     async def _load_template(
         self,
@@ -200,7 +231,7 @@ class ConceptNoteChapterValidationWorkflowService:
             raise ChapterValidationWorkflowError(
                 "cnb_storage_unavailable",
                 503,
-                "Concept Note validation storage is unavailable",
+                STORAGE_UNAVAILABLE_MESSAGE,
             ) from exc
         return application_context.template
 

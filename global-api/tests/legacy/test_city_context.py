@@ -31,7 +31,7 @@ def test_get_city_context_success(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/USNYC")
     
@@ -84,7 +84,7 @@ def test_get_city_context_minimal_data(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/GBLON")
     
@@ -137,7 +137,7 @@ def test_get_city_context_zero_values(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/FRPAR")
     
@@ -165,7 +165,7 @@ def test_get_city_context_no_data(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/NONEXISTENT")
     
@@ -184,7 +184,7 @@ def test_get_city_context_invalid_locode(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/INVALID")
     
@@ -221,7 +221,7 @@ def test_database_query_parameters(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     client.get("/api/v0/city_context/city/TESTCITY")
     
@@ -255,7 +255,7 @@ def test_get_city_context_different_locodes(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     # Test different locode formats
     locodes = ["USNYC", "GBLON", "FRPAR", "DEBER", "ITROM", "ESMAD"]
@@ -294,7 +294,7 @@ def test_get_city_context_special_characters(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/MXMEX")
     
@@ -329,7 +329,7 @@ def test_get_city_context_large_numbers(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/CNBEI")
     
@@ -364,7 +364,7 @@ def test_get_city_context_decimal_precision(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/JPTYO")
     
@@ -401,7 +401,7 @@ def test_city_context_response_structure(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/AUSYD")
     
@@ -450,7 +450,7 @@ def test_city_context_data_types(monkeypatch):
                     }]
             return DummyResult()
     
-    monkeypatch.setattr("routes.city_context.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.city_context.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/city_context/city/BRSAO")
     

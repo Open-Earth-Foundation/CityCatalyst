@@ -79,7 +79,7 @@ class _DummySession:
 
 def test_get_finance_projects_success(monkeypatch):
     monkeypatch.setattr(
-        "routes.city_finance_projects.SessionLocal", lambda: _DummySession()
+        "routes.legacy.city_finance_projects.SessionLocal", lambda: _DummySession()
     )
     resp = client.get("/api/v1/climate-finance/projects", params={"country_code": "CL"})
     assert resp.status_code == 200
@@ -107,7 +107,7 @@ def test_get_finance_projects_no_release(monkeypatch):
             return _Result([], scalar_value=0)
 
     monkeypatch.setattr(
-        "routes.city_finance_projects.SessionLocal", lambda: _EmptySession()
+        "routes.legacy.city_finance_projects.SessionLocal", lambda: _EmptySession()
     )
     resp = client.get("/api/v1/climate-finance/projects")
     assert resp.status_code == 404

@@ -9,7 +9,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Skeleton,
   Tabs,
   Text,
   VStack,
@@ -18,33 +17,30 @@ import { motion, useReducedMotion } from "framer-motion";
 import NextLink from "next/link";
 import {
   LuArrowLeft,
-  LuDownload,
   LuFileText,
   LuLayers3,
   LuRefreshCw,
+  LuShieldCheck,
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
-import { api } from "@/services/api";
-import type { ConceptNoteUploadResponse } from "@/util/types";
 
 import {
-  getConceptNoteBundleProgress,
-  getRunStatusPresentation,
+  getConceptNoteStatusPresentation,
   getWorkflowStepTranslationKey,
 } from "../ConceptNoteDashboard/utils";
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
-import {
-  conceptNoteSourceLabel,
-  shouldPollConceptNoteUpload,
-  validateConceptNoteSourceFile,
-} from "../ConceptNoteWiringHarness/utils";
 import { ConceptNoteChatPanel } from "./chat-panel";
 import { ContextTab } from "./context-tab";
 import { DraftTab } from "./draft-tab";
 import { ExportDialog } from "./export-dialog";
 import { StructureTab } from "./structure-tab";
+import { useConceptNoteWorkspaceData } from "./use-concept-note-workspace-data";
+import {
+  WorkspaceLoadingState,
+  WorkspaceUnavailableState,
+} from "./workspace-states";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -74,234 +70,61 @@ export function ConceptNoteWorkspace({
   const { t } = useTranslation(lng, "concept-notes");
   const reducedMotion = useReducedMotion() ?? false;
   const [tab, setTab] = useState<WorkspaceTab>("draft");
-  const [exportOpen, setExportOpen] = useState(false);
-  const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
-  const [uploadDetails, setUploadDetails] =
-    useState<ConceptNoteUploadResponse | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
+  const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(null);
   const {
-    data: run,
-    isError: runFailed,
-    isLoading: runLoading,
-    refetch: refetchRun,
-  } = api.useGetConceptNoteRunQuery(
-    { cityId, runId },
-    {
-      pollingInterval: 5_000,
-      skipPollingIfUnfocused: true,
-    },
-  );
-  const { data: city } = api.useGetCityQuery(cityId);
-  const {
-    data: applicationContext,
-    isError: applicationContextFailed,
-    isLoading: applicationContextLoading,
-  } = api.useGetConceptNoteApplicationContextQuery(runId);
-  const { data: draft, refetch: refetchDraft } =
-    api.useGetConceptNoteDraftQuery(runId, {
-      pollingInterval: 3_000,
-      skipPollingIfUnfocused: true,
-    });
-  const { data: population } = api.useGetMostRecentCityPopulationQuery({
-    cityId,
-  });
-  const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
-  const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
-  const [uploadSourceMutation, uploadState] =
-    api.useUploadConceptNoteSourceMutation();
-  const [retryUpload, retryUploadState] =
-    api.useRetryConceptNoteUploadMutation();
-  const [retryBundle, retryBundleState] =
-    api.useRetryConceptNoteContextBundleMutation();
-  const [startDraftMutation, startDraftState] =
-    api.useStartConceptNoteDraftMutation();
-  const { data: refreshedUpload, isError: uploadRefreshFailed } =
-    api.useGetConceptNoteUploadStatusQuery(
-      { runId, uploadId: activeUploadId ?? "" },
-      {
-        skip: !activeUploadId,
-        pollingInterval:
-          activeUploadId &&
-          shouldPollConceptNoteUpload(uploadDetails?.status ?? null)
-            ? 2_000
-            : activeUploadId
-              ? 5_000
-              : 0,
-        skipPollingIfUnfocused: true,
-      },
-    );
-
-  const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
-  const effectiveUpload = refreshedUpload ?? uploadDetails;
-  const effectiveUploadError = uploadRefreshFailed
-    ? t("refresh-status-error")
-    : uploadError;
-  const cityName = city?.name || t("selected-city");
-  const populationLabel = population
-    ? t("population", {
-        population: new Intl.NumberFormat(lng).format(population.population),
-        year: population.year,
-      })
-    : t("population-unavailable");
-  const files = cityFiles ?? [];
-  const canStartDrafting = Boolean(
-    applicationContext?.funder &&
-    applicationContext.opportunity &&
-    applicationContext.template,
-  );
-  const draftStartError = startDraftState.isError
-    ? t("draft-start-error")
-    : null;
-  const isDraftRunning = draft?.status === "running";
-
-  async function uploadSource(file: File): Promise<void> {
-    setUploadError(null);
-    const validationError = await validateConceptNoteSourceFile(file);
-    if (validationError) {
-      setUploadError(t(validationError));
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.set("file", file);
-      formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
-      const upload = await uploadSourceMutation({
-        cityId,
-        formData,
-        runId,
-      }).unwrap();
-      setActiveUploadId(upload.uploadId);
-      setUploadDetails(upload);
-      void refetchRun();
-    } catch {
-      setUploadError(t("upload-source-error"));
-    }
-  }
-
-  async function retryActiveUpload(): Promise<void> {
-    if (!activeUploadId) {
-      return;
-    }
-    setUploadError(null);
-    try {
-      const upload = await retryUpload({
-        runId,
-        uploadId: activeUploadId,
-      }).unwrap();
-      setUploadDetails(upload);
-    } catch {
-      setUploadError(t("conversion-retry-error"));
-    }
-  }
-
-  async function retryContextBundle(): Promise<void> {
-    try {
-      await retryBundle(runId).unwrap();
-      await refetchRun();
-    } catch {
-      setUploadError(t("context-retry-error"));
-    }
-  }
-
-  async function startDrafting(): Promise<void> {
-    if (!canStartDrafting || isDraftRunning) {
-      return;
-    }
-
-    try {
-      await startDraftMutation(runId).unwrap();
-      await Promise.all([refetchDraft(), refetchRun()]);
-    } catch {
-      return;
-    }
-  }
+    applicationContext,
+    applicationContextFailed,
+    applicationContextLoading,
+    bundle,
+    canStartDrafting,
+    city,
+    cityName,
+    draft,
+    draftFailed,
+    draftLoading,
+    draftStartError,
+    effectiveUpload,
+    effectiveUploadError,
+    files,
+    hasApplicationTemplate,
+    inventory,
+    isDraftRunning,
+    populationLabel,
+    refetchDraft,
+    refetchRun,
+    retryActiveUpload,
+    retryBundleState,
+    retryContextBundle,
+    retryUploadState,
+    reviewAvailabilityDescription,
+    run,
+    runFailed,
+    runLoading,
+    startDrafting,
+    startDraftState,
+    uploadSource,
+    uploadState,
+  } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
+  const canReview = reviewAvailabilityDescription === null;
 
   if (runLoading) {
+    return <WorkspaceLoadingState />;
+  }
+
+  if (!run || run.city_id !== cityId) {
     return (
-      <Box
-        h="calc(100dvh - 80px)"
-        minH={0}
-        overflow="hidden"
-        bg="background.alternativeLight"
-        px={{ base: 4, md: 10 }}
-        py={8}
-      >
-        <VStack
-          align="stretch"
-          gap={5}
-          h="full"
-          minH={0}
-          maxW="1480px"
-          mx="auto"
-        >
-          <Skeleton h="70px" />
-          <Grid
-            flex={1}
-            minH={0}
-            gap={5}
-            gridTemplateColumns={{
-              base: "minmax(0, 1fr)",
-              md: "440px minmax(0, 1fr)",
-            }}
-            gridTemplateRows={{
-              base: "repeat(2, minmax(0, 1fr))",
-              md: "minmax(0, 1fr)",
-            }}
-          >
-            <Skeleton h="full" minH={0} />
-            <Skeleton h="full" minH={0} />
-          </Grid>
-        </VStack>
-      </Box>
+      <WorkspaceUnavailableState
+        cityId={cityId}
+        lng={lng}
+        transientLoadFailure={runFailed && !run}
+        onRetry={() => void refetchRun()}
+      />
     );
   }
 
-  if (runFailed || !run || run.city_id !== cityId) {
-    return (
-      <Flex
-        h="calc(100dvh - 80px)"
-        minH={0}
-        overflow="hidden"
-        align="center"
-        justify="center"
-        bg="background.alternativeLight"
-        p={6}
-      >
-        <VStack
-          align="start"
-          gap={4}
-          maxW="560px"
-          border="1px solid"
-          borderColor="sentiment.negativeDefault"
-          borderRadius="rounded"
-          bg="sentiment.negativeOverlay"
-          p={6}
-        >
-          <Heading
-            as="h1"
-            fontFamily="heading"
-            fontSize="title.md"
-            color="content.primary"
-          >
-            {t("workspace-load-error-title")}
-          </Heading>
-          <Text fontSize="body.sm" color="content.secondary">
-            {t("workspace-load-error-description")}
-          </Text>
-          <Button asChild size="sm" variant="outline">
-            <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
-              <Icon as={LuArrowLeft} />
-              {t("all-concept-notes")}
-            </NextLink>
-          </Button>
-        </VStack>
-      </Flex>
-    );
-  }
-
-  const status = getRunStatusPresentation(run.status);
+  const status = getConceptNoteStatusPresentation(run.status, draft);
   const statusLabel = t(status.translationKey);
   const workflowLabel = t(getWorkflowStepTranslationKey(run.workflow_step));
 
@@ -370,15 +193,75 @@ export function ConceptNoteWorkspace({
                 {cityName} · {workflowLabel} · {t("autosaved")}
               </Text>
             </Box>
-            <Button
-              size="sm"
-              variant="solid"
-              bg="sentiment.positiveDefault"
-              onClick={() => setExportOpen(true)}
+            <VStack
+              align={{ base: "stretch", md: "end" }}
+              flexShrink={0}
+              gap={1}
+              w={{ base: "full", md: "320px" }}
             >
-              <Icon as={LuDownload} />
-              {t("export")}
-            </Button>
+              <Button
+                aria-describedby={
+                  reviewAvailabilityDescription
+                    ? "review-availability-reason"
+                    : undefined
+                }
+                disabled={!canReview}
+                size="sm"
+                variant="solid"
+                bg="sentiment.positiveDefault"
+                onClick={() => {
+                  setReviewChapterId(null);
+                  setReviewFindingKey(null);
+                  setReviewOpen(true);
+                }}
+              >
+                <Icon as={LuShieldCheck} />
+                {t("review-and-export")}
+              </Button>
+              {reviewAvailabilityDescription && (
+                <VStack align={{ base: "start", md: "end" }} gap={0}>
+                  <Text
+                    id="review-availability-reason"
+                    maxW="320px"
+                    fontSize="label.xs"
+                    color="content.tertiary"
+                    textAlign={{ base: "left", md: "right" }}
+                  >
+                    {reviewAvailabilityDescription}
+                  </Text>
+                  {draftFailed && !draftLoading ? (
+                    <Button
+                      h="auto"
+                      minW="auto"
+                      size="xs"
+                      variant="ghost"
+                      px={1}
+                      py={0}
+                      color="content.link"
+                      onClick={() => void refetchDraft()}
+                    >
+                      {t("try-again")}
+                    </Button>
+                  ) : (
+                    (applicationContextFailed || !hasApplicationTemplate) &&
+                    !applicationContextLoading && (
+                      <Button
+                        h="auto"
+                        minW="auto"
+                        size="xs"
+                        variant="ghost"
+                        px={1}
+                        py={0}
+                        color="content.link"
+                        onClick={() => setTab("context")}
+                      >
+                        {t("review-application-setup")}
+                      </Button>
+                    )
+                  )}
+                </VStack>
+              )}
+            </VStack>
           </Flex>
 
           <Grid
@@ -389,15 +272,17 @@ export function ConceptNoteWorkspace({
             alignItems="stretch"
             gridTemplateColumns={{
               base: "minmax(0, 1fr)",
-              md: "440px minmax(0, 1fr)",
+              lg: "360px minmax(0, 1fr)",
+              xl: "440px minmax(0, 1fr)",
             }}
             gridTemplateRows={{
               base: "repeat(2, minmax(0, 1fr))",
-              md: "minmax(0, 1fr)",
+              lg: "minmax(0, 1fr)",
             }}
           >
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
+              composerRequest={null}
               documentGrounding={bundle.documentGrounding}
               lng={lng}
               onOpenContext={() => setTab("context")}
@@ -467,6 +352,8 @@ export function ConceptNoteWorkspace({
                   canStartDrafting={canStartDrafting}
                   draft={draft ?? null}
                   draftError={draftStartError}
+                  focusChapterId={reviewChapterId}
+                  focusFindingKey={reviewFindingKey}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -526,11 +413,22 @@ export function ConceptNoteWorkspace({
 
       <ExportDialog
         draft={draft ?? null}
+        draftError={draftFailed}
+        hasApplicationTemplate={hasApplicationTemplate}
         hasUploadedEvidence={bundle.availableContext.uploadedDocuments}
         lng={lng}
         noteName={run.name}
-        open={exportOpen}
-        onOpenChange={setExportOpen}
+        open={reviewOpen}
+        runId={runId}
+        onAddInformation={(chapterId, findingKey) => {
+          setReviewChapterId(chapterId);
+          setReviewFindingKey(findingKey ?? null);
+          setTab("draft");
+        }}
+        onReviewSetup={() => setTab("context")}
+        onOpenChange={setReviewOpen}
+        onRetryDraft={() => refetchDraft()}
+        onReviewComplete={() => refetchDraft()}
       />
     </Box>
   );

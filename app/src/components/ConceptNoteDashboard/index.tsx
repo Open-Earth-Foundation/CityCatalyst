@@ -15,6 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { motion, useReducedMotion } from "framer-motion";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import {
   LuArrowUpRight,
   LuBuilding2,
@@ -49,9 +50,9 @@ import {
   formatRelativeTime,
   getConceptNoteBundleProgress,
   getRunProgressPercent,
-  getRunStatusPresentation,
   getWorkflowStepTranslationKey,
   hasPrioritizedHiapActions,
+  normalizePopulationData,
 } from "./utils";
 
 interface ConceptNoteDashboardProps {
@@ -70,6 +71,7 @@ export function ConceptNoteDashboard({
   lng,
 }: ConceptNoteDashboardProps) {
   const { t } = useTranslation(lng, "concept-notes");
+  const router = useRouter();
   const reducedMotion = useReducedMotion() ?? false;
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [lifecycleDialog, setLifecycleDialog] = useState<{
@@ -94,10 +96,20 @@ export function ConceptNoteDashboard({
     api.useGetUserFilesQuery(cityId);
   const { data: cityDashboard, isLoading: modulesLoading } =
     api.useGetCityDashboardQuery({ cityId, lng });
-  const { currentData: exportDraft } = api.useGetConceptNoteDraftQuery(
-    exportRun?.run_id ?? "",
-    { skip: !exportRun },
-  );
+  const {
+    currentData: exportDraft,
+    isError: exportDraftFailed,
+    isLoading: exportDraftLoading,
+    refetch: refetchExportDraft,
+  } = api.useGetConceptNoteDraftQuery(exportRun?.run_id ?? "", {
+    skip: !exportRun,
+  });
+  const {
+    currentData: exportApplicationContext,
+    isLoading: exportApplicationContextLoading,
+  } = api.useGetConceptNoteApplicationContextQuery(exportRun?.run_id ?? "", {
+    skip: !exportRun,
+  });
 
   const runs = runList?.runs ?? [];
   const cityFiles = files ?? [];
@@ -105,10 +117,13 @@ export function ConceptNoteDashboard({
   const cityLocation = city?.country
     ? t("city-location", { city: cityName, country: city.country })
     : cityName;
-  const populationLabel = population
+  const populationData = normalizePopulationData(population);
+  const populationLabel = populationData
     ? t("population", {
-        population: new Intl.NumberFormat(lng).format(population.population),
-        year: population.year,
+        population: new Intl.NumberFormat(lng).format(
+          populationData.population,
+        ),
+        year: populationData.year,
       })
     : t("population-unavailable");
   const inventoryLabel = inventory?.year
@@ -336,8 +351,6 @@ export function ConceptNoteDashboard({
           ) : runs.length ? (
             <Grid gap={5} gridTemplateColumns={runGridColumns}>
               {runs.map((run) => {
-                const status = getRunStatusPresentation(run.status);
-                const statusLabel = t(status.translationKey);
                 const workflowLabel = t(
                   getWorkflowStepTranslationKey(run.workflow_step),
                 );
@@ -360,8 +373,6 @@ export function ConceptNoteDashboard({
                     run={run}
                     t={t}
                     reducedMotion={reducedMotion}
-                    statusLabel={statusLabel}
-                    statusTone={status.tone}
                     scopeLabel={t("run-scope", {
                       city: cityName,
                       funding: runFundingLabel,
@@ -460,16 +471,31 @@ export function ConceptNoteDashboard({
           onClose={() => setLifecycleDialog(null)}
         />
       )}
-      {exportRun && (
+      {exportRun && !exportApplicationContextLoading && !exportDraftLoading && (
         <ExportDialog
           draft={exportDraft ?? null}
+          draftError={exportDraftFailed && exportDraft === undefined}
+          hasApplicationTemplate={Boolean(exportApplicationContext?.template)}
           hasUploadedEvidence={
             exportBundle?.availableContext.uploadedDocuments ?? false
           }
           lng={lng}
           noteName={exportRun.name}
           open
+          runId={exportRun.run_id}
+          onAddInformation={() => {
+            const runId = exportRun.run_id;
+            setExportRun(null);
+            router.push(conceptNoteResumeHref(lng, cityId, runId));
+          }}
+          onReviewSetup={() => {
+            const runId = exportRun.run_id;
+            setExportRun(null);
+            router.push(conceptNoteResumeHref(lng, cityId, runId));
+          }}
           onOpenChange={(open) => !open && setExportRun(null)}
+          onRetryDraft={() => refetchExportDraft()}
+          onReviewComplete={() => refetchExportDraft()}
         />
       )}
     </Box>

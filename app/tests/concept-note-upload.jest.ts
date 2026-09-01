@@ -156,6 +156,8 @@ describe("Concept Note source upload route", () => {
       status: "queued",
       stage: "ocr",
       canRetry: false,
+      filename: "plan.pdf",
+      sourceLabel: "Climate plan",
     });
     expect(payload.uploadId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
@@ -215,6 +217,8 @@ describe("Concept Note source upload route", () => {
       status: "processing",
       stage: "delivery",
       canRetry: false,
+      filename: "plan.md",
+      sourceLabel: "Climate plan",
     });
     expect(putFile).not.toHaveBeenCalled();
     expect(registerMarkdown).toHaveBeenCalledWith(

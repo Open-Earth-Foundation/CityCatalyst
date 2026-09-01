@@ -68,7 +68,7 @@ def test_get_projects_success(monkeypatch):
 
             return DummyResult()
 
-    monkeypatch.setattr("routes.projects.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.projects.SessionLocal", lambda: DummySession())
 
     response = client.get("/api/v1/projects?country_code=CL&limit=10&offset=0")
     assert response.status_code == 200
@@ -102,7 +102,7 @@ def test_get_projects_no_data(monkeypatch):
 
             return DummyResult()
 
-    monkeypatch.setattr("routes.projects.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.projects.SessionLocal", lambda: DummySession())
 
     response = client.get("/api/v1/projects")
     assert response.status_code == 404
@@ -165,7 +165,7 @@ def test_get_project_by_id_success(monkeypatch):
 
             return DummyResult()
 
-    monkeypatch.setattr("routes.projects.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.projects.SessionLocal", lambda: DummySession())
 
     response = client.get(f"/api/v1/projects/{project_id}")
     assert response.status_code == 200
@@ -194,7 +194,7 @@ def test_get_project_by_id_not_found(monkeypatch):
 
             return DummyResult()
 
-    monkeypatch.setattr("routes.projects.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.projects.SessionLocal", lambda: DummySession())
 
     response = client.get(f"/api/v1/projects/{project_id}")
     assert response.status_code == 404

@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from routes.ccra_assessment import db_risk_assessment, db_impactchain_indicator, db_ccra_cities
+from routes.legacy.ccra_assessment import db_risk_assessment, db_impactchain_indicator, db_ccra_cities
 
 client = TestClient(app)
 
@@ -56,9 +56,9 @@ mock_ccra_cities_data = [
 # Mock the database functions
 @pytest.fixture(autouse=True)
 def mock_db_functions(monkeypatch):
-    monkeypatch.setattr("routes.ccra_assessment.db_risk_assessment", lambda actor_id, scenario_name: mock_risk_assessment_data)
-    monkeypatch.setattr("routes.ccra_assessment.db_impactchain_indicator", lambda actor_id, scenario_name: mock_impactchain_indicator_data)
-    monkeypatch.setattr("routes.ccra_assessment.db_ccra_cities", lambda country_code: mock_ccra_cities_data)
+    monkeypatch.setattr("routes.legacy.ccra_assessment.db_risk_assessment", lambda actor_id, scenario_name: mock_risk_assessment_data)
+    monkeypatch.setattr("routes.legacy.ccra_assessment.db_impactchain_indicator", lambda actor_id, scenario_name: mock_impactchain_indicator_data)
+    monkeypatch.setattr("routes.legacy.ccra_assessment.db_ccra_cities", lambda country_code: mock_ccra_cities_data)
 
 # Test the /ccra/city/{country_code} endpoint
 def test_get_ccra_cities():
@@ -74,7 +74,7 @@ def test_get_ccra_cities():
     ]
 
 def test_get_ccra_cities_not_found(monkeypatch):
-    monkeypatch.setattr("routes.ccra_assessment.db_ccra_cities", lambda country_code: [])
+    monkeypatch.setattr("routes.legacy.ccra_assessment.db_ccra_cities", lambda country_code: [])
     response = client.get("/api/v0/ccra/city/NOPE")
     assert response.status_code == 404
     assert response.json() == {"detail": "No data available"}

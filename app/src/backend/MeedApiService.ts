@@ -4,6 +4,8 @@ import PopulationService from "./PopulationService";
 import createHttpError from "http-errors";
 import { InventoryService } from "./InventoryService";
 import { randomUUID } from "node:crypto";
+import { Op } from "sequelize";
+import { logger } from "@/services/logger";
 
 const MEED_API_URL = process.env.HIAP_MEED_API_URL + "/v1/";
 
@@ -341,6 +343,83 @@ export default class MeedApiService {
       `climate-finance/projects?country_code=${countryLocode}&action_id=${actionId}`,
     );
     return result;
+  }
+
+  public static async translateExplanations(
+    inventoryId: string,
+    sourceLanguage: string,
+    targetLanguages: string[],
+    rankedActionIds: string[],
+  ) {
+    const actions = await db.models.MeedActionRanked.findAll({
+      where: { inventoryId, actionId: { [Op.in]: rankedActionIds } },
+    });
+    const rankedActions = actions
+      .map((action) => {
+        const canonicalExplanation = action.explanations?.[sourceLanguage];
+        if (!canonicalExplanation) {
+          logger.error(
+            {
+              id: action.id,
+              inventoryId: action.inventoryId,
+              actionId: action.actionId,
+              sourceLanguage,
+            },
+            "MEED: Explanation missing in source language for translation, skipping translation",
+          );
+        }
+        return {
+          actionId: action.actionId,
+          canonicalExplanation,
+        };
+      })
+      .filter((rankedAction) => !!rankedAction.canonicalExplanation);
+
+    const result = await this.makeRequest("explanations/translate", {
+      sourceLanguage,
+      targetLanguages,
+      rankedActions,
+    });
+
+    if (!result.translations) {
+      logger.error(
+        {
+          inventoryId,
+          sourceLanguage,
+          result,
+        },
+        "MEED: Translation failed",
+      );
+      return null;
+    }
+
+    // save to database
+    await db.sequelize?.transaction(async (transaction) => {
+      for (const translation of result.translations) {
+        const action = actions.find(
+          (action) => action.actionId == translation.actionId,
+        );
+        if (!action) {
+          logger.error(
+            {
+              inventoryId,
+              sourceLanguage,
+              result,
+              actionId: translation.actionId,
+            },
+            "MEED: Failed to find action for translation result",
+          );
+          continue;
+        }
+        action.explanations = {
+          ...action.explanations,
+          ...translation.explanations,
+        };
+        await action.save({ transaction });
+      }
+    });
+
+    return actions;
   }
 
   private static async makeRequest(route: string, data: object | null = null) {

@@ -1,11 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/i18n/client";
-import {
-  api,
-  useAddCityMutation,
-  useAddCityPopulationMutation,
-} from "@/services/api";
+import { api, useAddCityMutation } from "@/services/api";
 
 import { OCCityAttributes } from "@/util/types";
 import { GHGIFormInputs, GHGIOnboardingData } from "@/util/GHGI/types";
@@ -14,15 +10,9 @@ import { Box, Icon, Text, useSteps } from "@chakra-ui/react";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
-import type {
-  Control,
-  FieldErrors,
-  SubmitHandler,
-  UseFormSetValue,
-} from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import SelectCityStep from "@/components/steps/select-city-steps";
-import SetPopulationDataStep from "@/components/steps/GHGI/set-population-data-step";
 import InviteCollaboratorsStep, {
   type InviteCollaboratorsStepRef,
 } from "@/components/steps/GHGI/invite-collaborators-step";
@@ -38,6 +28,10 @@ import ProjectLimitModal from "@/components/project-limit";
 type Inputs = { city: string } & GHGIFormInputs;
 type OnboardingData = GHGIOnboardingData;
 
+/**
+ * City onboarding (no city yet): select city → invite collaborators.
+ * Population is collected later during GHGI inventory onboarding.
+ */
 export default function OnboardingSetup(props: {
   params: Promise<{ lng: string }>;
 }) {
@@ -64,8 +58,6 @@ export default function OnboardingSetup(props: {
     { skip: !EnterpriseMode },
   );
 
-  const { data: userInfo } = api.useGetUserInfoQuery();
-
   useEffect(() => {
     if (projectsList && projectsList.length > 0) {
       setSelectedProject([projectsList[0].projectId]);
@@ -74,11 +66,10 @@ export default function OnboardingSetup(props: {
 
   const steps = [
     { title: t("setup-step") },
-    { title: t("set-population-step") },
     { title: t("invite-collaborators-step") },
   ];
 
-  const inviteCollaboratorsStepIndex = 2;
+  const inviteCollaboratorsStepIndex = 1;
 
   const {
     value: activeStep,
@@ -90,7 +81,6 @@ export default function OnboardingSetup(props: {
   });
 
   const [addCity] = useAddCityMutation();
-  const [addCityPopulation] = useAddCityPopulationMutation();
 
   const [data, setData] = useState<OnboardingData>({
     name: "",
@@ -102,6 +92,9 @@ export default function OnboardingSetup(props: {
   const [ocCityData, setOcCityData] = useState<OCCityAttributes>();
   const [isProjectLimitModalOpen, setIsProjectLimitModalOpen] = useState(false);
   const [createdCityId, setCreatedCityId] = useState<string | null>(null);
+  const [createdProjectId, setCreatedProjectId] = useState<string | null>(
+    null,
+  );
   const [isSubmittingStep, setIsSubmittingStep] = useState(false);
   const [isFinishing, setIsFinishing] = useState(false);
   // Continue on the invite step requires project + email(s) + city (CC-652).
@@ -119,32 +112,6 @@ export default function OnboardingSetup(props: {
     { skip: !ocCityData?.actor_id },
   );
 
-  // Watched form fields used for per-step validation and population payload
-  const cityPopulation = watch("cityPopulation");
-  const regionPopulation = watch("regionPopulation");
-  const countryPopulation = watch("countryPopulation");
-  const cityPopulationYear = watch("cityPopulationYear");
-  const regionPopulationYear = watch("regionPopulationYear");
-  const countryPopulationYear = watch("countryPopulationYear");
-
-  // A field is "filled" if it is not undefined/null/empty string
-  const hasValue = (v: unknown) => v !== undefined && v !== null && v !== "";
-  const isPopulationValid = [
-    cityPopulation,
-    cityPopulationYear,
-    regionPopulation,
-    regionPopulationYear,
-    countryPopulation,
-    countryPopulationYear,
-  ].every(hasValue);
-
-  const currentYear = new Date().getFullYear();
-  const numberOfYearsDisplayed = 20;
-  const years = Array.from(
-    { length: numberOfYearsDisplayed },
-    (_x, i) => currentYear - i,
-  );
-
   // Final step: send invites (if any) and finish onboarding. The user's
   // default city is already set server-side when the city is created.
   // Inventory creation happens separately, outside onboarding.
@@ -157,97 +124,72 @@ export default function OnboardingSetup(props: {
     setIsFinishing(false);
   };
 
-  // Step 0: validate project limit, create city, then advance.
-  // Step 1: persist population data, then advance.
+  // Step 0: validate project limit, create city, then advance to invite.
   const onSubmit: SubmitHandler<Inputs> = async (formData) => {
-    if (activeStep === 0) {
-      // Guaranteed by the disabled state of the submit button, which requires ocCityData.
-      if (!ocCityData) return;
+    if (activeStep !== 0) return;
 
-      const selectedProjectId =
-        selectedProject.length > 0 ? selectedProject[0] : undefined;
-      if (EnterpriseMode && selectedProjectId) {
-        const project = projectsList?.find(
-          (proj) => proj.projectId === selectedProjectId,
-        );
-        const isCityAlreadyAdded = project?.cities.some(
-          (city) =>
-            city.name === formData.city && city.locode === ocCityData?.actor_id,
-        );
-        if (
-          Number(project?.cities.length) >=
-            Number(project?.cityCountLimit as unknown as string) &&
-          !isCityAlreadyAdded
-        ) {
-          setIsProjectLimitModalOpen(true);
-          return;
-        }
+    // Guaranteed by the disabled state of the submit button, which requires ocCityData.
+    if (!ocCityData) return;
+
+    const selectedProjectId =
+      selectedProject.length > 0 ? selectedProject[0] : undefined;
+    if (EnterpriseMode && selectedProjectId) {
+      const project = projectsList?.find(
+        (proj) => proj.projectId === selectedProjectId,
+      );
+      const isCityAlreadyAdded = project?.cities.some(
+        (city) =>
+          city.name === formData.city && city.locode === ocCityData?.actor_id,
+      );
+      if (
+        Number(project?.cities.length) >=
+          Number(project?.cityCountLimit as unknown as string) &&
+        !isCityAlreadyAdded
+      ) {
+        setIsProjectLimitModalOpen(true);
+        return;
       }
+    }
 
-      const nextData: OnboardingData = {
-        ...data,
-        ...formData,
-        locode: ocCityData.actor_id,
-        name: ocCityData.name,
-      };
-      setData(nextData);
+    const nextData: OnboardingData = {
+      ...data,
+      ...formData,
+      locode: ocCityData.actor_id,
+      name: ocCityData.name,
+    };
+    setData(nextData);
 
-      // Create city now (was previously done in the removed confirm step)
-      if (!createdCityId) {
-        setIsSubmittingStep(true);
-        const area = cityArea?.area ?? ocCityData?.area ?? undefined;
-        const region = ocCityData?.root_path_geo.filter(
-          (item) => item.type === "adm1",
-        )[0];
-        const country = ocCityData?.root_path_geo.filter(
-          (item) => item.type === "country",
-        )[0];
-
-        try {
-          const city = await addCity({
-            name: nextData.name,
-            locode: nextData.locode!,
-            area: area ? Math.round(area) : undefined,
-            region: region?.name ?? undefined,
-            country: country?.name ?? undefined,
-            regionLocode: region?.actor_id ?? undefined,
-            countryLocode: country?.actor_id ?? undefined,
-            projectId: EnterpriseMode ? selectedProjectId : undefined,
-          }).unwrap();
-          setCreatedCityId(city?.cityId ?? null);
-        } catch (err: unknown) {
-          logger.error({ err }, "Onboarding - Failed to add city");
-          const errorData = isFetchBaseQueryError(err)
-            ? (err.data as { error?: { message?: string } })
-            : undefined;
-          makeErrorToast(
-            t("failed-to-add-city"),
-            t(errorData?.error?.message ?? ""),
-          );
-          setIsSubmittingStep(false);
-          return;
-        }
-        setIsSubmittingStep(false);
-      }
-    } else if (activeStep === 1) {
-      if (!createdCityId) return;
+    if (!createdCityId) {
       setIsSubmittingStep(true);
+      const area = cityArea?.area ?? ocCityData?.area ?? undefined;
+      const region = ocCityData?.root_path_geo.filter(
+        (item) => item.type === "adm1",
+      )[0];
+      const country = ocCityData?.root_path_geo.filter(
+        (item) => item.type === "country",
+      )[0];
+
       try {
-        await addCityPopulation({
-          cityId: createdCityId,
-          cityPopulation: cityPopulation!,
-          cityPopulationYear: cityPopulationYear!,
-          regionPopulation: regionPopulation!,
-          regionPopulationYear: regionPopulationYear!,
-          countryPopulation: countryPopulation!,
-          countryPopulationYear: countryPopulationYear!,
+        const city = await addCity({
+          name: nextData.name,
+          locode: nextData.locode!,
+          area: area ? Math.round(area) : undefined,
+          region: region?.name ?? undefined,
+          country: country?.name ?? undefined,
+          regionLocode: region?.actor_id ?? undefined,
+          countryLocode: country?.actor_id ?? undefined,
+          projectId: EnterpriseMode ? selectedProjectId : undefined,
         }).unwrap();
-        setData({ ...data, ...formData });
-      } catch (err: any) {
-        logger.error({ err }, "Onboarding - Failed to add population");
+        setCreatedCityId(city?.cityId ?? null);
+        setCreatedProjectId(city?.projectId ?? null);
+      } catch (err: unknown) {
+        logger.error({ err }, "Onboarding - Failed to add city");
+        const errorData = isFetchBaseQueryError(err)
+          ? (err.data as { error?: { message?: string } })
+          : undefined;
         makeErrorToast(
           t("failed-to-add-city"),
-          t(err.data?.error?.message ?? ""),
+          t(errorData?.error?.message ?? ""),
         );
         setIsSubmittingStep(false);
         return;
@@ -313,25 +255,12 @@ export default function OnboardingSetup(props: {
               t={t}
             />
           )}
-          {activeStep === 1 && (
-            <SetPopulationDataStep
-              t={t}
-              control={control as unknown as Control<GHGIFormInputs>}
-              errors={errors as unknown as FieldErrors<GHGIFormInputs>}
-              years={years}
-              numberOfYearsDisplayed={numberOfYearsDisplayed}
-              setData={setData}
-              setValue={setValue as unknown as UseFormSetValue<GHGIFormInputs>}
-              watch={watch}
-              ocCityData={ocCityData}
-              numberFormat={userInfo?.numberFormat}
-            />
-          )}
           {activeStep === inviteCollaboratorsStepIndex && (
             <InviteCollaboratorsStep
               ref={inviteStepRef}
               lng={lng}
               onValidityChange={setCanSubmitInvite}
+              createdProjectId={createdProjectId}
             />
           )}
         </Box>
@@ -351,7 +280,7 @@ export default function OnboardingSetup(props: {
               <ProgressSteps steps={steps} currentStep={activeStep} />
             </Box>
             <Box w="full" display="flex" justifyContent="end" px="135px">
-              {(activeStep === 0 || activeStep === 1) && (
+              {activeStep === 0 && (
                 <Button
                   w="auto"
                   gap="8px"
@@ -361,11 +290,7 @@ export default function OnboardingSetup(props: {
                   h="64px"
                   type="submit"
                   loading={isSubmittingStep}
-                  disabled={
-                    isSubmittingStep ||
-                    (activeStep === 0 && !ocCityData) ||
-                    (activeStep === 1 && !isPopulationValid)
-                  }
+                  disabled={isSubmittingStep || !ocCityData}
                 >
                   <Text
                     fontFamily="button.md"

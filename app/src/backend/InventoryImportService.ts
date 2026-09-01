@@ -11,23 +11,12 @@ import {
   type ExtraField,
 } from "@/util/form-schema";
 import manageSubsectorsEn from "@/i18n/locales/en/manage-subsectors.json";
+import { toCanonical } from "@/util/notation-keys";
 
 /** Options for import (e.g. PDF): default data source from file name. */
 export type ImportECRFDataOptions = {
   /** When set (e.g. file name), used as activity data source when row does not provide one. */
   defaultActivityDataSource?: string;
-};
-
-/**
- * Maps eCRF notation keys to unavailableReason enum values
- * eCRF uses: NO, NE, C, IE
- * Database uses: no-occurrance, not-estimated, confidential-information, included-elsewhere
- */
-const notationKeyMapping: Record<string, string> = {
-  NO: "no-occurrance",
-  NE: "not-estimated",
-  C: "confidential-information",
-  IE: "included-elsewhere",
 };
 
 /**
@@ -358,7 +347,8 @@ export default class InventoryImportService {
 
         // Priority: Emission values take precedence over notation keys
         // Only use notation keys if there are NO emission values
-        if (totalCO2e && totalCO2e > 0) {
+        // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
+        if (totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0) {
           console.log(
             `[Import] GPC ${row.gpcRefNo} - Storing emissions: totalCO2e=${totalCO2e} tonnes -> ${new Decimal(totalCO2e).mul(1000)} kg`,
           );
@@ -679,8 +669,9 @@ export default class InventoryImportService {
               metadata.emissionFactorType = "";
 
               // Convert activity CO2e to kilograms (if available)
+              // (negative totalCO2e is a valid value, e.g. emissions sinks/removals)
               const activityCO2eq =
-                totalCO2e && totalCO2e > 0
+                totalCO2e != null && !isNaN(totalCO2e) && totalCO2e !== 0
                   ? decimalToBigInt(new Decimal(totalCO2e).mul(1000))
                   : undefined;
 
@@ -713,13 +704,12 @@ export default class InventoryImportService {
           }
         } else if (row.notationKey) {
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Processing notation key: "${row.notationKey}" (normalized: "${row.notationKey.toUpperCase()}")`,
+            `[Import] GPC ${row.gpcRefNo} - Processing notation key: "${row.notationKey}"`,
           );
-          // Handle notation keys only if there are NO emission values
-          const unavailableReason =
-            notationKeyMapping[row.notationKey.toUpperCase()];
+          // Accept short, kebab, or legacy reason-* spellings → canonical kebab
+          const unavailableReason = toCanonical(row.notationKey);
           console.log(
-            `[Import] GPC ${row.gpcRefNo} - Mapped notation key "${row.notationKey.toUpperCase()}" -> "${unavailableReason}"`,
+            `[Import] GPC ${row.gpcRefNo} - Mapped notation key "${row.notationKey}" -> "${unavailableReason}"`,
           );
 
           if (!unavailableReason) {

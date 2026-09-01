@@ -2,23 +2,21 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import json
 import logging
-
-from openai import OpenAI
-from pydantic import JsonValue, ValidationError
+from dataclasses import dataclass
 
 from app.models.cnb.research import (
     AgentTurn,
+    FundedProjectResearchResult,
     FunderProfileResearchResult,
     FunderResearchResult,
-    FundedProjectResearchResult,
-    FundingOpportunityResearchResultRow,
     FundingOpportunityResearchRequest,
     FundingOpportunityResearchResult,
+    FundingOpportunityResearchResultRow,
     ResearchGap,
 )
+from app.models.cnb.research_prompt import ResearchPromptResult
 from app.services.cnb.research_bundle import (
     convert_agent_result,
     evidence_covers,
@@ -26,12 +24,20 @@ from app.services.cnb.research_bundle import (
     material_paths,
     uncovered_material_paths,
 )
+from app.services.cnb.research_prompt import (
+    model_field_path,
+    model_research_state,
+    restore_research_state,
+)
 from app.tools.firecrawl import (
     FIRECRAWL_TOOL_DEFINITIONS,
     FirecrawlClient,
     FirecrawlError,
     execute_firecrawl_tool,
 )
+from app.utils.concept_note_context import omit_context_identifiers
+from openai import OpenAI
+from pydantic import JsonValue, ValidationError
 
 logger = logging.getLogger(__name__)
 TARGET_FUNDED_PROJECTS_GAP_PATH = "funded_projects.target_funded_projects"
@@ -125,15 +131,22 @@ def run_agent_loop(
             source.source_ref for source in firecrawl.captured_sources
         },
     )
+    research_request = omit_context_identifiers(
+        request.model_dump(mode="json", exclude={"current_filled_object", "max_turns"})
+    )
+    if research_request.get("target_project"):
+        research_request["target_project"].pop("funder_scope", None)
+        research_request["target_project"].pop("limit", None)
     current_input: str | list[dict[str, JsonValue]] = json.dumps(
         {
-            "research_request": request.model_dump(
-                mode="json",
-                exclude={"current_filled_object"},
-            ),
-            "current_filled_object": current_filled_object.model_dump(mode="json"),
-            "seed_sources": seed_sources,
-            "missing_data": missing_data,
+            "research_request": research_request,
+            "current_filled_object": model_research_state(
+                current_filled_object, firecrawl.captured_sources
+            ).model_dump(mode="json"),
+            "seed_sources": omit_context_identifiers(seed_sources),
+            "missing_data": [
+                model_field_path(item, current_filled_object) for item in missing_data
+            ],
             "turn_budget": turn_budget(
                 turn_number=1,
                 max_turns=request.max_turns,
@@ -159,6 +172,7 @@ def run_agent_loop(
                     turn_number=turn_number,
                     max_turns=request.max_turns,
                     final_audit=is_final_audit,
+                    captured_sources=firecrawl.captured_sources,
                 )
             )
 
@@ -168,7 +182,7 @@ def run_agent_loop(
             "reasoning": {"effort": reasoning_effort},
             "instructions": prompt,
             "input": current_input,
-            "text_format": FundingOpportunityResearchResult,
+            "text_format": ResearchPromptResult,
             "store": True,
         }
         if previous_response_id is not None:
@@ -187,15 +201,24 @@ def run_agent_loop(
         )
         # Repair transient schema-invalid output without spending another agent turn.
         parse_attempt = 0
+        restored_result = None
         while True:
             try:
                 response = openai_client.responses.parse(**request_kwargs)
-                break
-            except ValidationError as exc:
-                if (
-                    exc.title != FundingOpportunityResearchResult.__name__
-                    or parse_attempt >= MAX_STRUCTURED_OUTPUT_RETRIES
+                if response.output_parsed is not None and not any(
+                    item.type == "function_call" for item in response.output
                 ):
+                    restored_result = restore_research_state(
+                        response.output_parsed,
+                        current_filled_object,
+                        firecrawl.captured_sources,
+                    )
+                break
+            except ValueError as exc:
+                if (
+                    isinstance(exc, ValidationError)
+                    and exc.title != ResearchPromptResult.__name__
+                ) or parse_attempt >= MAX_STRUCTURED_OUTPUT_RETRIES:
                     raise
                 parse_attempt += 1
                 logger.warning(
@@ -236,7 +259,7 @@ def run_agent_loop(
             }
             current_filled_object = preserve_evidence_qualified_funded_projects(
                 previous_result=current_filled_object,
-                candidate_result=response.output_parsed,
+                candidate_result=restored_result,
                 captured_source_refs=captured_source_refs,
                 target_funded_projects=request.target_funded_projects,
             )
@@ -298,10 +321,14 @@ def run_agent_loop(
 def structured_output_retry_input(
     *,
     current_input: str | list[dict[str, JsonValue]],
-    validation_error: ValidationError,
+    validation_error: ValueError,
 ) -> str | list[dict[str, JsonValue]]:
     """Add a compact correction instruction for a schema-invalid model result."""
-    errors = validation_error.errors(include_url=False, include_input=False)
+    errors = (
+        validation_error.errors(include_url=False, include_input=False)
+        if isinstance(validation_error, ValidationError)
+        else [{"loc": (), "msg": str(validation_error)}]
+    )
     error_lines = []
     for error in errors:
         location = ".".join(str(part) for part in error["loc"]) or "result"
@@ -312,8 +339,8 @@ def structured_output_retry_input(
         "The previous response for this same agent turn failed schema validation.\n"
         "Validation errors:\n"
         f"{error_details}\n"
-        "Return one complete corrected FundingOpportunityResearchResult. Reuse only "
-        "references defined in that same object. Do not call tools. This correction "
+        "Return one complete corrected ResearchPromptResult. Use public source URLs "
+        "and zero-based array positions, never identifiers. Do not call tools. This correction "
         "retry does not consume another agent turn or change the turn budget.\n"
         "</structured_output_correction>"
     )
@@ -527,7 +554,7 @@ def execute_tool_calls(
             {
                 "type": "function_call_output",
                 "call_id": tool_call.call_id,
-                "output": json.dumps(tool_result, ensure_ascii=False),
+                "output": json.dumps(omit_context_identifiers(tool_result), ensure_ascii=False),
             }
         )
     return tool_outputs
@@ -540,6 +567,7 @@ def turn_context_message(
     turn_number: int,
     max_turns: int,
     final_audit: bool,
+    captured_sources: list[object] | None = None,
 ) -> dict[str, JsonValue]:
     """Build the explicit progress, missing-data, and remaining-turn reminder."""
     # Derive the code-owned budget and final-audit instruction.
@@ -548,7 +576,13 @@ def turn_context_message(
         max_turns=max_turns,
         final_audit=final_audit,
     )
-    missing_lines = "\n".join(f"- {item}" for item in missing_data) or "- none"
+    missing_lines = (
+        "\n".join(
+            f"- {model_field_path(item, current_filled_object)}"
+            for item in missing_data
+        )
+        or "- none"
+    )
     final_instruction = (
         f"\n<final_gap_audit>{FINAL_GAP_AUDIT}</final_gap_audit>" if final_audit else ""
     )
@@ -556,7 +590,7 @@ def turn_context_message(
     # Render the current dossier state as one user-context message.
     content = (
         "<current_filled_object>\n"
-        f"{current_filled_object.model_dump_json(indent=2)}\n"
+        f"{model_research_state(current_filled_object, captured_sources or []).model_dump_json(indent=2)}\n"
         "</current_filled_object>\n"
         "<missing_data>\n"
         f"{missing_lines}\n"

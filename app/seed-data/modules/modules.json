@@ -58,6 +58,36 @@
     "url": "/HIAP"
   },
   {
+    "id": "7a2d4acc-230f-4810-ace6-a3c339f1f60e",
+    "stage": "implement",
+    "name": {
+      "de": "Konzeptnotiz-Generator",
+      "en": "Concept Note Builder",
+      "es": "Generador de notas conceptuales",
+      "fr": "Générateur de notes conceptuelles",
+      "pt": "Gerador de notas conceituais"
+    },
+    "description": {
+      "de": "Erstellen Sie mit Clima aus dem Stadtkontext, priorisierten Maßnahmen und unterstützenden Quellen eine förderfähige Konzeptnotiz. Prüfen Sie Informationslücken und exportieren Sie eine strukturierte Bewerbung.",
+      "en": "Use Clima to turn city context, prioritized actions, and supporting sources into a funder-ready concept note. Review information gaps and export a structured application.",
+      "es": "Utiliza Clima para convertir el contexto de la ciudad, las acciones priorizadas y las fuentes de apoyo en una nota conceptual lista para financiación. Revisa los vacíos de información y exporta una solicitud estructurada.",
+      "fr": "Utilisez Clima pour transformer le contexte de la ville, les actions prioritaires et les sources d'appui en une note conceptuelle prête à financer. Examinez les informations manquantes et exportez une candidature structurée.",
+      "pt": "Use o Clima para transformar o contexto da cidade, as ações priorizadas e as fontes de apoio em uma nota conceitual pronta para financiamento. Revise lacunas de informação e exporte uma candidatura estruturada."
+    },
+    "tagline": {
+      "de": "Vom Klimakontext zur förderfähigen Konzeptnotiz",
+      "en": "From city climate context to a funder-ready concept note",
+      "es": "Del contexto climático de la ciudad a una nota conceptual financiable",
+      "fr": "Du contexte climatique de la ville à une note conceptuelle finançable",
+      "pt": "Do contexto climático da cidade a uma nota conceitual financiável"
+    },
+    "author": "Open Earth Foundation",
+    "type": "OEF",
+    "status": "beta",
+    "url": "/concept-notes",
+    "logo": "/assets/modules/concept-note-builder.svg"
+  },
+  {
     "id": "def76a39-6650-4860-8755-e9153073d661",
     "type": "POC",
     "stage": "assess-&-analyze",
@@ -143,7 +173,7 @@
     },
     "author": "Open Earth Foundation",
     "status": "poc",
-    "url": "https://nbs-project-preparation.replit.app/",
+    "url": "https://cougar-nbs.replit.app",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/image-20260203-162443.png"
   },
   {
@@ -325,5 +355,34 @@
     "status": "poc",
     "url": "https://ccrav3.replit.app/asset-ccra",
     "logo": "https://cc-pocs.s3.us-east-2.amazonaws.com/logos/Screenshot+2026-02-03+at+1.42.48%E2%80%AFPM.png"
+  },
+  {
+    "id": "9f622243-fba8-4f32-a000-ce6e66982bd1",
+    "stage": "plan",
+    "name": {
+      "de": "Maßnahmen & Pläne v2",
+      "en": "Actions & Plans v2",
+      "es": "Acciones y Planes v2",
+      "fr": "Actions et Plans v2",
+      "pt": "Ações e Planos v2"
+    },
+    "description": {
+      "de": "Priorisieren Sie wirkungsstarke Klimaschutzmaßnahmen auf Basis des Treibhausgasinventars, des sozioökonomischen Kontexts, der Vorschriften und der strategischen Prioritäten Ihrer Stadt. Das Modul erstellt eine bewertete Maßnahmenliste und umsetzungsreife Aktionspläne.",
+      "en": "Prioritize high-impact climate mitigation actions based on your city's greenhouse gas inventory, socioeconomic context, regulations and strategic priorities. The module produces a ranked action list and implementation-ready output plans.",
+      "es": "Prioriza acciones de mitigación climática de alto impacto según el inventario de gases de efecto invernadero, el contexto socioeconómico, las regulaciones y las prioridades estratégicas de tu ciudad. El módulo produce una lista de acciones clasificadas y planes de implementación listos para usar.",
+      "fr": "Priorisez des actions d'atténuation climatique à fort impact selon l'inventaire des gaz à effet de serre, le contexte socio-économique, les réglementations et les priorités stratégiques de votre ville. Le module produit une liste d'actions classées et des plans de mise en œuvre prêts à l'emploi.",
+      "pt": "Priorize ações de mitigação climática de alto impacto com base no inventário de gases de efeito estufa, no contexto socioeconômico, nas regulamentações e nas prioridades estratégicas da sua cidade. O módulo produz uma lista de ações classificadas e planos de implementação prontos para uso."
+    },
+    "tagline": {
+      "de": "Nächste Generation der Maßnahmenpriorisierung, gestützt auf das Treibhausgasinventar Ihrer Stadt.",
+      "en": "Next-generation action prioritization, driven by your city's greenhouse gas inventory.",
+      "es": "Priorización de acciones de nueva generación, impulsada por el inventario de gases de efecto invernadero de tu ciudad.",
+      "fr": "Priorisation des actions de nouvelle génération, fondée sur l'inventaire des gaz à effet de serre de votre ville.",
+      "pt": "Priorização de ações de nova geração, orientada pelo inventário de gases de efeito estufa da sua cidade."
+    },
+    "author": "OEF",
+    "type": "OEF",
+    "status": "beta",
+    "url": "/MEED"
   }
 ]

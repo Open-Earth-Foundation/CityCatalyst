@@ -16,8 +16,8 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Tuple
 
 import httpx
-
 from app.config import get_settings
+from app.models.cnb.concept_note_markdown import ConceptNoteSourceFormat
 from app.utils.token_manager import (
     is_token_expired,
     parse_jwt_claims,
@@ -33,7 +33,8 @@ class ConceptNoteMarkdownArtifact:
     markdown: str
     markdown_s3_key: str
     sha256: str
-    page_count: int
+    source_format: ConceptNoteSourceFormat = "pdf"
+    page_count: int | None = None
 
 
 class TokenRefreshError(Exception):
@@ -518,6 +519,7 @@ class CityCatalystClient:
                 # Capture immutable identity metadata before closing the response.
                 markdown_s3_key = response.headers.get("X-Markdown-S3-Key")
                 sha256 = response.headers.get("X-Markdown-SHA256")
+                source_format = response.headers.get("X-Source-Format")
                 page_count_header = response.headers.get("X-Page-Count")
         except httpx.HTTPError as exc:
             raise CityCatalystClientError(
@@ -525,24 +527,49 @@ class CityCatalystClient:
                 status_code=503,
             ) from exc
         try:
-            page_count = int(page_count_header or "")
             markdown = markdown_bytes.decode("utf-8")
-        except (UnicodeDecodeError, ValueError) as exc:
+        except UnicodeDecodeError as exc:
             raise CityCatalystClientError(
                 "CC Markdown artifact metadata is invalid",
                 status_code=502,
             ) from exc
 
-        if not markdown_s3_key or not sha256 or len(sha256) != 64 or page_count < 1:
+        if (
+            not markdown_s3_key
+            or not sha256
+            or len(sha256) != 64
+            or source_format not in ("pdf", "markdown")
+        ):
             raise CityCatalystClientError(
                 "CC Markdown artifact metadata is invalid",
                 status_code=502,
             )
+        if source_format == "pdf":
+            try:
+                page_count = int(page_count_header or "")
+            except ValueError as exc:
+                raise CityCatalystClientError(
+                    "CC Markdown artifact metadata is invalid",
+                    status_code=502,
+                ) from exc
+            if page_count < 1:
+                raise CityCatalystClientError(
+                    "CC Markdown artifact metadata is invalid",
+                    status_code=502,
+                )
+        else:
+            if page_count_header is not None:
+                raise CityCatalystClientError(
+                    "CC Markdown artifact metadata is invalid",
+                    status_code=502,
+                )
+            page_count = None
 
         return ConceptNoteMarkdownArtifact(
             markdown=markdown,
             markdown_s3_key=markdown_s3_key,
             sha256=sha256,
+            source_format=source_format,
             page_count=page_count,
         )
 

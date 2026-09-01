@@ -30,8 +30,11 @@ from app.services.stationary_energy.stationary_energy_tool_events import (
     build_stationary_energy_tool_result_payload,
 )
 from app.services.thread_service import ThreadService
-from app.utils.chat_workflow_context import ChatWorkflowContext
-from app.utils.concept_note_context import extract_concept_note_run_id
+from app.utils.chat_workflow_context import CNB_WORKFLOW_TAG, ChatWorkflowContext
+from app.utils.concept_note_context import (
+    clean_cnb_history,
+    extract_concept_note_run_id,
+)
 from app.utils.history_manager import load_conversation_history
 from app.utils.mlflow_logging import (
     climate_advisor_experiment_name,
@@ -40,6 +43,7 @@ from app.utils.mlflow_logging import (
     log_tags,
     log_text_artifact,
     start_run,
+    start_trace_span,
     update_current_trace_context,
 )
 from app.utils.prompt_budget import (
@@ -221,6 +225,8 @@ class StreamingHandler:
                     "model": self.agent_model,
                     "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
                     "workflow": workflow_metadata["workflow"],
+                    "workflow_name": workflow_metadata["workflow_name"],
+                    "interaction": workflow_metadata["interaction"],
                     "prompt_name": workflow_metadata["prompt_name"],
                     "stationary_energy_draft_run_id": draft_run_id,
                     "concept_note_run_id": concept_note_run_id,
@@ -334,6 +340,8 @@ class StreamingHandler:
             user_id=self.user_id,
             session_factory=self.session_factory,
         )
+        if self.workflow_context.concept_note_run_id:
+            conversation_history = clean_cnb_history(conversation_history)
         context_message = await self._load_stationary_energy_context_message(payload)
         if context_message:
             context_message = self._stationary_energy_system_context_message(
@@ -419,7 +427,7 @@ class StreamingHandler:
         return self._stationary_energy_context_message(context_payload)
 
     async def _load_concept_note_context_message(self) -> Optional[Dict[str, str]]:
-        """Load compact bundle summaries for the authorized Concept Note run."""
+        """Load authorized CNB evidence as a user-role runtime-data message."""
         run_id_text = self.workflow_context.concept_note_run_id
         if not run_id_text or not self.session_factory:
             return None
@@ -439,14 +447,14 @@ class StreamingHandler:
             return None
         if context is None:
             return {
-                "role": "system",
+                "role": "user",
                 "content": (
                     "CONCEPT_NOTE_CONTEXT_BUNDLE_UNAVAILABLE\n"
                     "The authorized Concept Note context bundle is not ready."
                 ),
             }
         return {
-            "role": "system",
+            "role": "user",
             "content": (
                 "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON\n"
                 f"{json.dumps(context, ensure_ascii=False, default=str)}"
@@ -594,15 +602,14 @@ class StreamingHandler:
     def _stationary_energy_review_instruction_text(self) -> str:
         """Return the active Stationary Energy review prompt text."""
         instruction_text = self._agent_instruction_text().strip()
-        if (
-            instruction_text
-            or not self.workflow_context.stationary_energy_draft_run_id
-        ):
+        if instruction_text or not self.workflow_context.stationary_energy_draft_run_id:
             return instruction_text
         try:
-            return get_settings().llm.prompts.compose_prompt(
-                "stationary_energy_review"
-            ).strip()
+            return (
+                get_settings()
+                .llm.prompts.compose_prompt("stationary_energy_review")
+                .strip()
+            )
         except Exception as exc:
             logger.warning(
                 "Failed to load Stationary Energy review prompt for embedded context: %s",
@@ -671,9 +678,8 @@ class StreamingHandler:
         restore_agent_instructions = False
         original_agent_instructions: Any = None
         # Stationary Energy chats carry more context, so enforce the configured budget.
-        if (
-            self.workflow_context.stationary_energy_draft_run_id
-            and isinstance(runner_input, list)
+        if self.workflow_context.stationary_energy_draft_run_id and isinstance(
+            runner_input, list
         ):
             if self._has_embedded_stationary_energy_system_context(runner_input):
                 if hasattr(agent, "instructions"):
@@ -682,41 +688,59 @@ class StreamingHandler:
                 self._clear_agent_instructions(agent)
             runner_input = self._enforce_chat_prompt_budget(agent, runner_input)
 
-        # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
-        try:
-            result = Runner.run_streamed(
-                agent,
-                runner_input,
-                run_config=self._run_config(payload),
-            )
-        except Exception as runner_exc:
-            logger.warning(
-                "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
-                runner_exc,
-            )
-            # The fallback only sends raw user content, so restore the scoped prompt.
-            if restore_agent_instructions:
-                try:
-                    setattr(agent, "instructions", original_agent_instructions)
-                except Exception as exc:
-                    logger.debug(
-                        "Could not restore embedded agent instructions before fallback: %s",
-                        exc,
-                    )
-            async for event_bytes in self._fallback_stream(agent, payload):
-                yield event_bytes
-            return
+        workflow_metadata = self.workflow_context.telemetry()
+        # Every chat mode needs a root to retain explicit run/trace correlation.
+        with start_trace_span(
+            name=(
+                CNB_WORKFLOW_TAG
+                if self.workflow_context.concept_note_run_id
+                else self.workflow_context.trace_workflow_name
+            ),
+            span_type="CHAIN",
+            attributes={
+                "workflow": workflow_metadata["workflow"],
+                "workflow_name": workflow_metadata["workflow_name"],
+                "interaction": workflow_metadata["interaction"],
+            },
+        ):
+            trace_context_updated = self._update_mlflow_trace_context(payload)
+            # Prefer the Agents SDK streamed runner and keep the legacy fallback path.
+            try:
+                result = Runner.run_streamed(
+                    agent,
+                    runner_input,
+                    run_config=self._run_config(payload),
+                )
+            except Exception as runner_exc:
+                logger.warning(
+                    "Agents Runner streaming failed (%s); falling back to agent.messages.run_stream",
+                    runner_exc,
+                )
+                # The fallback only sends raw user content, so restore the scoped prompt.
+                if restore_agent_instructions:
+                    try:
+                        setattr(agent, "instructions", original_agent_instructions)
+                    except Exception as exc:
+                        logger.debug(
+                            "Could not restore embedded agent instructions before fallback: %s",
+                            exc,
+                        )
+                async for event_bytes in self._fallback_stream(agent, payload):
+                    yield event_bytes
+                return
 
-        trace_context_updated = self._update_mlflow_trace_context(payload)
-        trace_context_attempted_after_start = False
+            trace_context_attempted_after_start = False
 
-        # Convert SDK stream events into the app's SSE event contract.
-        async for chunk in result.stream_events():
-            if not trace_context_updated and not trace_context_attempted_after_start:
-                trace_context_attempted_after_start = True
-                trace_context_updated = self._update_mlflow_trace_context(payload)
-            async for event_bytes in self._process_chunk(chunk):
-                yield event_bytes
+            # Convert SDK stream events into the app's SSE event contract.
+            async for chunk in result.stream_events():
+                if (
+                    not trace_context_updated
+                    and not trace_context_attempted_after_start
+                ):
+                    trace_context_attempted_after_start = True
+                    trace_context_updated = self._update_mlflow_trace_context(payload)
+                async for event_bytes in self._process_chunk(chunk):
+                    yield event_bytes
 
     @staticmethod
     def _has_embedded_stationary_energy_system_context(
@@ -759,6 +783,7 @@ class StreamingHandler:
         trace_metadata: dict[str, Any] = {
             "service": "climate-advisor",
             "workflow": workflow_metadata["workflow"],
+            "interaction": workflow_metadata["interaction"],
             "trace_category": workflow_metadata["trace_category"],
             "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
             "context_mode": workflow_metadata["context_mode"],
@@ -767,6 +792,8 @@ class StreamingHandler:
             "thread_id": self.thread_identifier,
             "inventory_id": self.inventory_id,
         }
+        if workflow_name := workflow_metadata["workflow_name"]:
+            trace_metadata["workflow_name"] = workflow_name
         if has_stationary_energy_context:
             trace_metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"
             trace_metadata["stationary_energy_draft_run_id"] = str(draft_run_id)
@@ -1039,7 +1066,9 @@ class StreamingHandler:
         if current_token == self.cc_access_token:
             return
 
-        await self.token_handler.handle_refreshed_token(current_token, self.agent_service)
+        await self.token_handler.handle_refreshed_token(
+            current_token, self.agent_service
+        )
         self.cc_access_token = current_token
 
     def _format_completion_event(self, req_id: str, ok: bool = None) -> bytes:
@@ -1082,10 +1111,11 @@ class StreamingHandler:
     def _mlflow_tags(self, payload: MessageCreateRequest) -> dict[str, object]:
         """Return low-cardinality MLflow tags for one chat request."""
         workflow_metadata = self.workflow_context.telemetry()
-        return {
+        tags: dict[str, object] = {
             "request_kind": "message_stream",
             "endpoint": "/v1/messages",
             "workflow": workflow_metadata["workflow"],
+            "interaction": workflow_metadata["interaction"],
             "trace_category": workflow_metadata["trace_category"],
             "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
             "context_mode": workflow_metadata["context_mode"],
@@ -1099,6 +1129,9 @@ class StreamingHandler:
             ],
             "concept_note_run_id": workflow_metadata["concept_note_run_id"],
         }
+        if workflow_name := workflow_metadata["workflow_name"]:
+            tags["workflow_name"] = workflow_name
+        return tags
 
     def _mlflow_params(self, payload: MessageCreateRequest) -> dict[str, object]:
         """Return stable MLflow params for one chat request."""
@@ -1134,6 +1167,7 @@ class StreamingHandler:
         metadata: dict[str, object] = {
             "service": "climate-advisor",
             "workflow": workflow_metadata["workflow"],
+            "interaction": workflow_metadata["interaction"],
             "trace_category": workflow_metadata["trace_category"],
             "context_mode": workflow_metadata["context_mode"],
             "prompt_name": workflow_metadata["prompt_name"],
@@ -1143,6 +1177,7 @@ class StreamingHandler:
         }
         tags: dict[str, object] = {
             "workflow": workflow_metadata["workflow"],
+            "interaction": workflow_metadata["interaction"],
             "trace_category": workflow_metadata["trace_category"],
             "ca_agentic_flow": workflow_metadata["ca_agentic_flow"],
             "context_mode": workflow_metadata["context_mode"],
@@ -1150,6 +1185,9 @@ class StreamingHandler:
             "thread_id": self.thread_identifier,
             "inventory_id": inventory_id,
         }
+        if workflow_name := workflow_metadata["workflow_name"]:
+            metadata["workflow_name"] = workflow_name
+            tags["workflow_name"] = workflow_name
         draft_run_id = workflow_metadata["stationary_energy_draft_run_id"]
         if draft_run_id:
             metadata["feature_flag"] = "STATIONARY_ENERGY_AGENTIC"

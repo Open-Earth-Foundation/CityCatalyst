@@ -7,7 +7,6 @@ from types import SimpleNamespace
 from uuid import uuid4
 
 import pytest
-
 from app.models.cnb.research import CanonicalFunder, FundedProjectDraft
 from app.services.cnb.funder_identity_match import (
     FunderIdentityLlmDecision,
@@ -52,16 +51,16 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
         FunderIdentityLlmDecisionSet(
             decisions=[
                 FunderIdentityLlmDecision(
-                    funded_project_ref="project-reported",
+                    project_name="Record project-reported",
                     matches=[
                         FunderIdentityLlmMatch(
-                            funder_id=canonical_funder.funder_id,
+                            funder_name=canonical_funder.name,
                             match_reason="MPCA is the agency's established acronym.",
                         )
                     ],
                 ),
                 FunderIdentityLlmDecision(
-                    funded_project_ref="project-dossier",
+                    project_name="Record project-dossier",
                     matches=[],
                 ),
             ]
@@ -104,17 +103,17 @@ def test_identity_scan_uses_one_llm_call_and_keeps_selection_manual() -> None:
     assert dossier_project.candidate_funders == []
 
 
-def test_identity_scan_rejects_model_invented_funder_id() -> None:
+def test_identity_scan_rejects_model_invented_funder_name() -> None:
     canonical_funder = CanonicalFunder(funder_id=uuid4(), name="Known Funder")
-    invented_id = uuid4()
+    invented_name = "Invented Funder"
     responses = FakeResponses(
         FunderIdentityLlmDecisionSet(
             decisions=[
                 FunderIdentityLlmDecision(
-                    funded_project_ref="project-001",
+                    project_name="Record project-001",
                     matches=[
                         FunderIdentityLlmMatch(
-                            funder_id=invented_id,
+                            funder_name=invented_name,
                             match_reason="Unsupported candidate.",
                         )
                     ],
@@ -123,7 +122,7 @@ def test_identity_scan_rejects_model_invented_funder_id() -> None:
         )
     )
 
-    with pytest.raises(ValueError, match=str(invented_id)):
+    with pytest.raises(ValueError, match=invented_name):
         propose_funder_identity_candidates(
             funded_projects=[
                 _record("project-001", reported_funder_name="Possible Funder")

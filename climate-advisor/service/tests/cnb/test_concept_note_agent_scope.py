@@ -74,7 +74,7 @@ async def test_source_query_registration_requires_ready_bundle_and_allowed_step(
         )
         agent = await service.create_agent()
         assert [tool.name for tool in agent.tools] == ["concept_note_sources_query"]
-        assert service.active_instructions == settings.llm.prompts.compose_prompt("chat")
+        assert service.active_instructions == settings.llm.prompts.compose_prompt("cnb_chat")
         await service.close()
 
         async with session_factory() as session, session.begin():

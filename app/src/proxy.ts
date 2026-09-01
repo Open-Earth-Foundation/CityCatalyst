@@ -122,10 +122,6 @@ export async function proxy(req: NextRequestWithAuth) {
     lng = fallbackLng;
   }
 
-  if ([`/${lng}`, `/${lng}/`].includes(req.nextUrl.pathname)) {
-    return NextResponse.redirect(new URL(`/${lng}/cities/`, req.url));
-  }
-
   const legacyInventoryRedirect = await maybeRedirectLegacyInventoryUrl(req);
   if (legacyInventoryRedirect) {
     return legacyInventoryRedirect;

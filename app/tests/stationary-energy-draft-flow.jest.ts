@@ -856,7 +856,7 @@ describe("Stationary Energy draft flow", () => {
     });
 
     expect(rows.find((row) => row.id === "proposal-conflict")?.value).toBe(
-      "6.82 Mt CO2e",
+      "6.82 MtCO₂e",
     );
     expect(rows.find((row) => row.id === "proposal-conflict")?.sourceName).toBe(
       "SEEG",
@@ -868,7 +868,7 @@ describe("Stationary Energy draft flow", () => {
       expect.objectContaining({
         recommendedOption: expect.objectContaining({
           meta: "2024",
-          value: "6.82 Mt CO2e",
+          value: "6.82 MtCO₂e",
         }),
       }),
     );

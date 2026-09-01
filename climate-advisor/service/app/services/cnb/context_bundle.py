@@ -1,4 +1,4 @@
-"""Automatic PDF-first Concept Note context-bundle assembly."""
+"""Automatic Concept Note context-bundle assembly."""
 
 from __future__ import annotations
 
@@ -23,9 +23,10 @@ from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
 from app.services.citycatalyst_client import CityCatalystClient, CityCatalystClientError
 from app.services.cnb.source_analysis import (
     SourceAnalysisError,
-    SourcePage,
+    SourceUnit,
     analyze_document,
     gather_all_or_raise,
+    source_analysis_contract_version,
     verify_source_artifact,
 )
 from app.services.concept_note_city_context import (
@@ -43,14 +44,16 @@ CONTEXT_BUNDLE_STALE_AFTER = timedelta(hours=1)
 
 
 class ContextBundleService:
-    """Coordinate immutable PDF analysis and optional CityCatalyst context."""
+    """Coordinate source analysis and optional CityCatalyst context."""
 
     def __init__(
         self,
         session_factory: async_sessionmaker[AsyncSession],
         *,
-        analyze_document_fn: Callable[..., Awaitable[SelectedSource]] = analyze_document,
-        verify_source_artifact_fn: Callable[..., list[SourcePage]] = (
+        analyze_document_fn: Callable[
+            ..., Awaitable[SelectedSource]
+        ] = analyze_document,
+        verify_source_artifact_fn: Callable[..., list[SourceUnit]] = (
             verify_source_artifact
         ),
         cc_client_factory: Callable[[], CityCatalystClient] = CityCatalystClient,
@@ -86,7 +89,7 @@ class ContextBundleService:
         force: bool = False,
         snapshot: ContextBundleBuildSnapshot | None = None,
     ) -> bool:
-        """Build every ready PDF and best-effort GHGI/HIAP context."""
+        """Build a usable bundle with or without uploaded document evidence."""
         active = snapshot or await self.begin(
             user_id=user_id,
             run_id=run_id,
@@ -94,40 +97,72 @@ class ContextBundleService:
         )
         if active.already_current:
             return True
-        if not active.uploads:
-            await self._record_failure(
-                user_id=user_id,
-                snapshot=active,
-                error_code="no_ready_city_pdf",
-                warning="At least one successfully ingested city PDF is required.",
-            )
-            return False
 
         cc_client: CityCatalystClient | None = None
         try:
             cc_client = self.cc_client_factory()
-            analysis_settings = get_settings()
-            reader_limit = asyncio.Semaphore(
-                analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
-            )
-            selected_sources = await gather_all_or_raise(
-                *(
-                    self._analyze_upload(
-                        upload=upload,
-                        token=token,
-                        cc_client=cc_client,
-                        analysis_settings=analysis_settings,
-                        reader_limit=reader_limit,
-                    )
-                    for upload in active.uploads
+            selected_sources: list[SelectedSource] = []
+
+            # Reuse unchanged source analyses and run the LLM only for new inputs.
+            if active.uploads:
+                analysis_settings = get_settings()
+                contract_version = source_analysis_contract_version(
+                    analysis_settings
                 )
-            )
+                reader_limit = asyncio.Semaphore(
+                    analysis_settings.llm.generation.prompt_budget.cnb_sources.max_concurrency
+                )
+                previous_by_upload = {
+                    source.upload_id: source for source in active.previous_sources
+                }
+                selected_by_upload: dict[UUID, SelectedSource] = {}
+                uploads_to_analyze: list[ConceptNoteUploadSnapshot] = []
+                for upload in active.uploads:
+                    previous = previous_by_upload.get(upload.upload_id)
+                    if previous is not None and _can_reuse_source_analysis(
+                        upload,
+                        previous,
+                        contract_version,
+                    ):
+                        selected_by_upload[upload.upload_id] = previous
+                    else:
+                        uploads_to_analyze.append(upload)
+
+                if uploads_to_analyze:
+                    analyzed_sources = await gather_all_or_raise(
+                        *(
+                            self._analyze_upload(
+                                upload=upload,
+                                token=token,
+                                cc_client=cc_client,
+                                analysis_settings=analysis_settings,
+                                reader_limit=reader_limit,
+                                contract_version=contract_version,
+                            )
+                            for upload in uploads_to_analyze
+                        )
+                    )
+                    selected_by_upload.update(
+                        {source.upload_id: source for source in analyzed_sources}
+                    )
+                selected_sources = [
+                    selected_by_upload[upload.upload_id] for upload in active.uploads
+                ]
+
+            # Enrich every run with best-effort CityCatalyst context.
             ghgi, hiap, optional_statuses, warnings = await self._load_optional_context(
                 user_id=user_id,
                 city_id=UUID(active.city_id),
                 token=token,
                 cc_client=cc_client,
             )
+            if not active.uploads:
+                warnings.insert(
+                    0,
+                    "No source document is attached; responses use limited context until a source is added.",
+                )
+
+            # A bundle without uploads is ready and can be rebuilt after an upload.
             return await complete_build(
                 session_factory=self.session_factory,
                 user_id=user_id,
@@ -144,7 +179,7 @@ class ContextBundleService:
                 user_id=user_id,
                 snapshot=active,
                 error_code=exc.code,
-                warning="A ready city PDF could not be fully analyzed.",
+                warning="A ready city source could not be fully analyzed.",
             )
             return False
         except Exception:
@@ -172,17 +207,20 @@ class ContextBundleService:
         cc_client: CityCatalystClient,
         analysis_settings: Settings,
         reader_limit: asyncio.Semaphore,
+        contract_version: str,
     ) -> SelectedSource:
         """Re-fetch, revalidate, and fully analyze one ready upload."""
+        # Require the immutable metadata needed for the declared source format.
         if (
             upload.markdown_s3_key is None
             or upload.markdown_sha256 is None
-            or upload.page_count is None
+            or (upload.source_format == "pdf" and upload.page_count is None)
         ):
             raise SourceAnalysisError(
                 "incomplete_source_pointer",
                 "Ready upload is missing immutable source metadata",
             )
+        # Read through CC, then verify identity before any LLM analysis.
         try:
             artifact = await cc_client.get_concept_note_markdown(
                 upload_id=str(upload.upload_id),
@@ -193,20 +231,26 @@ class ContextBundleService:
                 "source_fetch_failed",
                 "Ready upload could not be fetched from CityCatalyst",
             ) from exc
-        pages = self.verify_source_artifact_fn(
+        source_units = self.verify_source_artifact_fn(
             artifact=artifact,
             markdown_s3_key=upload.markdown_s3_key,
             sha256=upload.markdown_sha256,
+            source_format=upload.source_format,
             page_count=upload.page_count,
         )
-        return await self.analyze_document_fn(
+        # Analyze only the verified source units under the shared reader limit.
+        analysis = await self.analyze_document_fn(
             upload_id=upload.upload_id,
             filename=upload.filename,
             source_label=upload.source_label,
             sha256=upload.markdown_sha256,
-            pages=pages,
+            source_format=upload.source_format,
+            pages=source_units,
             settings=analysis_settings,
             reader_limit=reader_limit,
+        )
+        return analysis.model_copy(
+            update={"analysis_contract_version": contract_version}
         )
 
     async def _load_optional_context(
@@ -234,15 +278,11 @@ class ContextBundleService:
             )
         except (CityCatalystClientError, ConceptNoteCityContextDataError):
             statuses = {"ghgi": "unavailable", "hiap": "unavailable"}
-            return None, None, statuses, [
-                "GHGI and HIAP context were unavailable; PDF context is ready."
-            ]
+            return None, None, statuses, ["GHGI and HIAP context were unavailable."]
         except Exception:
             logger.exception("Unexpected optional inventory lookup failure")
             statuses = {"ghgi": "unavailable", "hiap": "unavailable"}
-            return None, None, statuses, [
-                "GHGI and HIAP context were unavailable; PDF context is ready."
-            ]
+            return None, None, statuses, ["GHGI and HIAP context were unavailable."]
 
         ghgi_result, hiap_result = await asyncio.gather(
             self._try_load_ghgi(
@@ -340,6 +380,23 @@ class ContextBundleService:
             error_code=error_code,
             warning=warning,
         )
+
+
+def _can_reuse_source_analysis(
+    upload: ConceptNoteUploadSnapshot,
+    previous: SelectedSource,
+    contract_version: str,
+) -> bool:
+    """Return whether a persisted analysis matches this immutable source input."""
+    return (
+        upload.markdown_sha256 is not None
+        and previous.upload_id == upload.upload_id
+        and previous.sha256 == upload.markdown_sha256
+        and previous.source_format == upload.source_format
+        and previous.filename == upload.filename
+        and previous.source_label == (upload.source_label or upload.filename)
+        and previous.analysis_contract_version == contract_version
+    )
 
 
 def schedule_context_bundle_build(

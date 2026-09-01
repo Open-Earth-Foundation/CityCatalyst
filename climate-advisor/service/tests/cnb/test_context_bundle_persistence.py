@@ -17,6 +17,7 @@ from app.persistence.concept_notes.context_bundle import (
     begin_build,
     complete_build,
     fail_build,
+    load_agent_context,
     load_query_source,
     recover_stale_builds,
 )
@@ -192,6 +193,17 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             "processing": 0,
             "failed": 0,
         }
+        assert progress["document_grounding"] == "uploaded_evidence"
+        assert progress["available_context"] == {
+            "city": True,
+            "project": False,
+            "ghgi": False,
+            "ccra": False,
+            "hiap": False,
+            "uploaded_documents": True,
+        }
+        assert "context_mode" not in progress
+        assert progress["missing_context"] == []
         assert progress["completion_event"] == "concept_note_context_bundle_ready"
         assert (
             await fail_build(
@@ -209,15 +221,32 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
-            upload_id=ready_id,
+            source_index=1,
         )
         assert query_source.source.upload_id == ready_id
+        replacement = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+            force=True,
+        )
+        assert [source.upload_id for source in replacement.previous_sources] == [
+            ready_id
+        ]
+        rebuilding_query_source = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=1,
+        )
+        assert rebuilding_query_source.source.upload_id == ready_id
         with pytest.raises(ContextBundlePersistenceError) as forbidden:
             await load_query_source(
                 session_factory=session_factory,
                 user_id="other-user",
                 run_id=run_id,
-                upload_id=ready_id,
+                source_index=1,
             )
         assert forbidden.value.code == "concept_note_run_forbidden"
         with pytest.raises(ContextBundlePersistenceError) as unavailable:
@@ -225,7 +254,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                upload_id=queued_id,
+                source_index=2,
             )
         assert unavailable.value.code == "concept_note_source_not_selected"
 
@@ -238,9 +267,247 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                upload_id=ready_id,
+                source_index=1,
             )
         assert wrong_step.value.code == "concept_note_source_query_not_allowed"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_agent_projection_removes_ids_but_keeps_backend_identity(
+    tmp_path,
+) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    source_upload = upload(
+        run_id=run_id,
+        upload_id=uuid4(),
+        status="ready",
+        received_at=datetime.now(timezone.utc),
+    )
+    source_upload.filename = "plan.pdf"
+    source = selected(source_upload)
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all(
+                [
+                    concept_note_run(run_id),
+                    source_upload,
+                    ConceptNoteContextBundle(
+                        run_id=run_id,
+                        context_bundle={
+                            "cc_context": {
+                                "city": {
+                                    "cityId": "internal-city",
+                                    "name": "Example City",
+                                }
+                            },
+                            "funder_context": {
+                                "funder_id": "internal-funder",
+                                "name": "Example Fund",
+                            },
+                            "document_context": {
+                                "revision_id": "internal-revision",
+                                "title": "Proposal",
+                            },
+                        },
+                    ),
+                ]
+            )
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await commit_build(session_factory, snapshot, [source])
+        context = await load_agent_context(
+            session_factory=session_factory, user_id="owner", run_id=run_id
+        )
+        assert context is not None
+        assert "concept_note_run_id" not in context
+        assert "upload_id" not in context["selected_sources"][0]
+        assert context["selected_sources"][0]["source_index"] == 1
+        assert "page_count" not in context["selected_sources"][0]
+        assert "block_count" not in context["selected_sources"][0]
+        assert "build_id" not in context["context_bundle_status"]
+        assert "source_fingerprint" not in context["context_bundle_status"]
+        assert context["cc_context"]["city"] == {"name": "Example City"}
+        assert context["funder_context"] == {"name": "Example Fund"}
+        assert context["document_context"] == {"title": "Proposal"}
+        async with session_factory() as session:
+            bundle = await session.get(ConceptNoteContextBundle, run_id)
+            run = await session.get(ConceptNoteRun, run_id)
+            assert bundle.context_bundle["selected_sources"][0]["upload_id"] == str(
+                source_upload.upload_id
+            )
+            assert (
+                bundle.context_bundle["selected_sources"][0]["sha256"] == source.sha256
+            )
+            assert bundle.context_bundle["selected_sources"][0]["page_count"] == source.page_count
+            assert bundle.context_bundle["selected_sources"][0]["block_count"] == source.block_count
+            assert (
+                bundle.context_bundle["cc_context"]["city"]["cityId"] == "internal-city"
+            )
+            assert run.context_summary["context_bundle"]["build_id"] == str(
+                snapshot.build_id
+            )
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_source_index_lookup_disambiguates_duplicate_names(tmp_path) -> None:
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    uploads = [
+        upload(
+            run_id=run_id,
+            upload_id=uuid4(),
+            status="ready",
+            received_at=datetime.now(timezone.utc),
+        )
+        for _ in range(2)
+    ]
+    for source_upload in uploads:
+        source_upload.filename = "plan.pdf"
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all([concept_note_run(run_id), *uploads])
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert await commit_build(
+            session_factory, snapshot, [selected(item) for item in uploads]
+        )
+        context = await load_agent_context(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert context is not None
+        assert [source["source_index"] for source in context["selected_sources"]] == [
+            1,
+            2,
+        ]
+        first = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=1,
+        )
+        second = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=2,
+        )
+        assert first.source.upload_id == uploads[0].upload_id
+        assert second.source.upload_id == uploads[1].upload_id
+        with pytest.raises(ContextBundlePersistenceError) as unavailable:
+            await load_query_source(
+                session_factory=session_factory,
+                user_id="owner",
+                run_id=run_id,
+                source_index=3,
+            )
+        assert unavailable.value.code == "concept_note_source_not_selected"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.asyncio
+async def test_no_upload_commit_advances_run_and_loads_agent_context(
+    tmp_path,
+) -> None:
+    """Persist an interview-ready bundle even when no source is attached."""
+    engine, session_factory = await database(tmp_path)
+    run_id = uuid4()
+    try:
+        async with session_factory() as session, session.begin():
+            session.add_all(
+                [
+                    concept_note_run(run_id),
+                    ConceptNoteContextBundle(run_id=run_id, context_bundle={}),
+                ]
+            )
+
+        snapshot = await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+        )
+        assert snapshot.uploads == []
+        assert await complete_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=snapshot.build_id,
+            selected_sources=[],
+            ghgi=None,
+            hiap=None,
+            optional_sources={"ghgi": "missing", "hiap": "missing"},
+            warnings=["No source document is attached."],
+        )
+
+        async with session_factory() as session:
+            run = await session.get(ConceptNoteRun, run_id)
+        assert run is not None
+        assert run.workflow_step == "interviewing"
+        progress = run.context_summary["context_bundle"]
+        assert progress["status"] == "ready"
+        assert progress["document_grounding"] == "none"
+        assert progress["available_context"] == {
+            "city": False,
+            "project": False,
+            "ghgi": False,
+            "ccra": False,
+            "hiap": False,
+            "uploaded_documents": False,
+        }
+        assert "context_mode" not in progress
+        assert progress["missing_context"] == ["source_documents"]
+        assert progress["source_counts"]["ready"] == 0
+
+        agent_context = await load_agent_context(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert agent_context is not None
+        assert agent_context["selected_sources"] == []
+        assert agent_context["context_bundle_status"]["document_grounding"] == "none"
+
+        await begin_build(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            build_id=uuid4(),
+            force=True,
+        )
+        rebuilding_context = await load_agent_context(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert rebuilding_context is not None
+        assert rebuilding_context["context_bundle_status"]["status"] == "building"
+        assert (
+            rebuilding_context["context_bundle_status"]["document_grounding"] == "none"
+        )
+        assert rebuilding_context["context_bundle_status"]["available_context"] == {
+            "city": False,
+            "project": False,
+            "ghgi": False,
+            "ccra": False,
+            "hiap": False,
+            "uploaded_documents": False,
+        }
     finally:
         await engine.dispose()
 
@@ -325,8 +592,8 @@ async def test_failed_build_is_retryable_and_keeps_bundle_unready(tmp_path) -> N
                 user_id="owner",
                 run_id=run_id,
                 build_id=snapshot.build_id,
-                error_code="no_ready_city_pdf",
-                warning="A ready PDF is required.",
+                error_code="context_bundle_build_failed",
+                warning="The context bundle could not be built.",
             )
             is True
         )

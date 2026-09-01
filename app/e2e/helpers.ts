@@ -106,7 +106,7 @@ export async function signup(
   name: string = "Test Account",
   acceptTerms: boolean = true,
 ) {
-  const result = await request.post("/api/v1/auth/register", {
+  const result = await request.post("/api/v1/auth/register/", {
     data: {
       email,
       password,
@@ -152,9 +152,9 @@ export function pickE2EOnboardingInventoryYear(): string {
 }
 
 /**
- * Walks the city onboarding wizard (city select + population + invite
- * collaborators). Creating a city no longer creates an inventory as part of
- * this flow -- the wizard ends on `/cities/onboarding/done`. See
+ * Walks the city onboarding wizard (city select + invite collaborators).
+ * Creating a city no longer creates an inventory as part of this flow --
+ * the wizard ends on `/cities/onboarding/done`. See
  * createCityAndInventoryThroughOnboarding to also create the first
  * inventory via the separate GHGI onboarding flow.
  *
@@ -163,9 +163,9 @@ export function pickE2EOnboardingInventoryYear(): string {
 async function walkCitiesOnboardingWizard(
   page: Page,
 ): Promise<{ cityId: string }> {
-  const inventoryYear = pickE2EOnboardingInventoryYear();
-  // Step 0: welcome page → click "Get Started"
+  // Step 0: welcome page → click "Get started"
   await page.goto("/en/cities/onboarding/");
+  await page.waitForLoadState("domcontentloaded");
 
   if (page.url().includes("/auth/login")) {
     throw new Error("Authentication failed - redirected to login page");
@@ -174,8 +174,12 @@ async function walkCitiesOnboardingWizard(
   await page.waitForTimeout(500);
   await dismissCookieConsent(page);
 
-  const getStartedButton = page.getByRole("button", { name: /Get Started/i });
-  await expect(getStartedButton).toBeVisible();
+  await expect(page.getByTestId("start-page-title")).toBeVisible({
+    timeout: 60000,
+  });
+
+  const getStartedButton = page.getByTestId("start-inventory-button");
+  await expect(getStartedButton).toBeVisible({ timeout: 30000 });
   await getStartedButton.click();
 
   // Step 0: select city
@@ -192,7 +196,7 @@ async function walkCitiesOnboardingWizard(
   await expect(citySearchResults.first()).toBeVisible({ timeout: 30000 });
   await citySearchResults.first().click();
 
-  // Continue (creates the city, advances to population)
+  // Continue (creates the city, advances to invite collaborators)
   {
     const continueButton = page
       .getByRole("button", { name: /^Continue$/ })
@@ -201,46 +205,7 @@ async function walkCitiesOnboardingWizard(
     await continueButton.click();
   }
 
-  // Step 1: population — pre-filled by OpenClimate query
-  await expect(page.getByTestId("add-population-data-heading")).toBeVisible({
-    timeout: 15000,
-  });
-
-  const cityPopulationInput = page.getByPlaceholder("City population number");
-  try {
-    await expect(cityPopulationInput).toHaveValue(/^\d{1,3}(,\d{3})*$/, {
-      timeout: 10000,
-    });
-  } catch {
-    // OpenClimate pre-fill failed — fill manually
-    await cityPopulationInput.fill("1000000");
-    await page
-      .locator('select[name="cityPopulationYear"]')
-      .selectOption(inventoryYear);
-    await page
-      .getByPlaceholder("Region or province population number")
-      .fill("5000000");
-    await page
-      .locator('select[name="regionPopulationYear"]')
-      .selectOption(inventoryYear);
-    await page.getByPlaceholder("Country population number").fill("10000000");
-    await page
-      .locator('select[name="countryPopulationYear"]')
-      .selectOption(inventoryYear);
-  }
-
-  {
-    // Dismiss any toast notifications that may block the Continue button
-    await dismissToasts(page);
-
-    const continueButton = page
-      .getByRole("button", { name: /^Continue$/ })
-      .last();
-    await expect(continueButton).toBeEnabled({ timeout: 30000 });
-    await continueButton.click();
-  }
-
-  // Step 2: invite collaborators — skip for speed/determinism
+  // Step 1: invite collaborators — skip for speed/determinism
   await expect(page.getByTestId("invite-collaborators-step")).toBeVisible({
     timeout: 15000,
   });

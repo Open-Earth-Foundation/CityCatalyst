@@ -1,3 +1,8 @@
+---
+name: docs-simplify-after-change
+description: After any code change, simplify the changed code so it is boring, readable, and minimal while preserving behavior.
+---
+
 # simplify-after-change
 
 ## Purpose

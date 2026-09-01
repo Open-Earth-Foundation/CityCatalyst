@@ -1,5 +1,5 @@
 ---
-name: non-tech-contribute
+name: nontech-contribute
 description: Guide non-technical contributors through making safe code changes to CityCatalyst. Use when someone without coding experience wants to update text, translations, colors, copy, or small UI details, and needs the agent to handle git, verification, and PR creation for them.
 ---
 
@@ -100,7 +100,7 @@ Do not ask the user to type git commands.
    git push -u origin <branch-name>
    ```
 
-3. Open the PR by **delegating to the [pull-request-standards skill](../pull-request-standards/SKILL.md)**. Do not hand-roll a title or body here — that skill owns the format, uses `.github/PULL_REQUEST_TEMPLATE.md`, and picks the right GitHub tool. Give it the plain-language description you got from the user so it can fill:
+3. Open the PR by **delegating to the [dev-pull-request-standards skill](../dev-pull-request-standards/SKILL.md)**. Do not hand-roll a title or body here — that skill owns the format, uses `.github/PULL_REQUEST_TEMPLATE.md`, and picks the right GitHub tool. Give it the plain-language description you got from the user so it can fill:
 
    - **Summary** — the outcome in the user's own words (1–3 sentences).
    - **Changes** — the minimal bullet list of what was touched.

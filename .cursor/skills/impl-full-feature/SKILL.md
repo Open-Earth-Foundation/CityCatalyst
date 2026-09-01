@@ -1,5 +1,5 @@
 ---
-name: full-feature
+name: impl-full-feature
 description: End-to-end feature development workflow for CityCatalyst covering database, API, frontend, and tests. Use when the user asks to build a complete feature, implement a full user story, or create an end-to-end functionality.
 ---
 
@@ -13,7 +13,7 @@ A complete feature in CityCatalyst touches up to 7 layers. Follow this order to 
 
 ### Phase 1: Database Layer
 
-1. **Migration**: Create migration file in `app/migrations/` (see [create-migration skill](../create-migration/SKILL.md))
+1. **Migration**: Create migration file in `app/migrations/` (see [impl-create-migration skill](../impl-create-migration/SKILL.md))
 2. **Model**: Create Sequelize model in `app/src/models/`
 3. **Register**: Add to `app/src/models/init-models.ts`
 4. **Run**: `cd app && npm run db:migrate`

@@ -1,5 +1,5 @@
 ---
-name: refine-ticket
+name: ticket-refine
 description: Enrich an existing ticket with detailed technical breakdown, sub-tasks, code references, and estimation guidance. Use when an engineer asks to refine a ticket, break down a story, add technical details, estimate a task, or decompose work into sub-tasks.
 ---
 
@@ -7,7 +7,7 @@ description: Enrich an existing ticket with detailed technical breakdown, sub-ta
 
 Take an existing ticket (pasted markdown or description) and enrich it with engineering-specific details: sub-task breakdown, precise code references, implementation approach, and estimation rationale.
 
-For ticket taxonomy and estimation conventions, see [../create-ticket/reference.md](../create-ticket/reference.md).
+For ticket taxonomy and estimation conventions, see [../ticket-create/reference.md](../ticket-create/reference.md).
 
 ## Workflow
 
@@ -136,7 +136,7 @@ Brief description of the recommended approach, referencing existing patterns.
 ## Conventions
 
 - Always verify file paths by searching the codebase — never invent paths.
-- Reference the [full-feature skill](../full-feature/SKILL.md) layer order for consistency.
+- Reference the [impl-full-feature skill](../impl-full-feature/SKILL.md) layer order for consistency.
 - Sub-tasks should map to potential PRs (reviewable independently).
 - If total estimate exceeds 13 points, recommend splitting into multiple tickets.
 - For Spikes: instead of sub-tasks, output a list of investigation steps and expected deliverables (decision doc, PoC, etc.).

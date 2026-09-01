@@ -1,7 +1,7 @@
 import { expect, Locator, Page, test } from "@playwright/test";
 import {
   createCityAndInventoryThroughOnboarding,
-  navigateToDashboard,
+  dismissCookieConsent,
   navigateToDataPage,
 } from "./helpers";
 
@@ -25,25 +25,32 @@ async function openResidentialSubsector(
   await expect(page.getByText(/I\.1.*Residential/i)).toBeVisible({
     timeout: 30000,
   });
-  await expect(page.getByTestId("manual-input-header")).toBeVisible({
-    timeout: 30000,
-  });
 }
 
-/** Select a methodology when the picker is shown; no-op if already in data-entry mode. */
-async function ensureMethodologySelected(page: Page) {
-  const addActivity = page.getByText(/Add activity/i);
+function addActivityButton(page: Page, panel?: Locator) {
+  const button = page.getByLabel("activity-button");
+  return panel ? panel.getByLabel("activity-button") : button.first();
+}
+
+async function ensureMethodologySelected(
+  page: Page,
+  methodologyName: RegExp,
+  panel?: Locator,
+) {
+  const addActivity = addActivityButton(page, panel);
   if (await addActivity.isVisible({ timeout: 3000 }).catch(() => false)) {
     return;
   }
 
-  await expect(
-    page.getByText(/Select methodology|Select The Methodology/i).first(),
-  ).toBeVisible({ timeout: 30000 });
+  const methodologyCards = panel
+    ? panel.getByTestId("methodology-card")
+    : page.getByTestId("methodology-card");
+  const methodologyCard = methodologyCards
+    .filter({ hasText: methodologyName })
+    .first();
+  await expect(methodologyCard).toBeVisible({ timeout: 30000 });
+  await methodologyCard.click();
 
-  const methodologyCards = page.getByTestId("methodology-card");
-  await expect(methodologyCards.first()).toBeVisible({ timeout: 30000 });
-  await methodologyCards.first().click();
   await expect(addActivity).toBeVisible({ timeout: 30000 });
 }
 
@@ -77,14 +84,15 @@ async function addScope1ResidentialEmissions(
     page.waitForURL(sectorDataUrlGlob),
     stationaryEnergyCard.getByTestId("sector-card-button").click(),
   ]);
-  await page.waitForLoadState("networkidle");
   await expect(
     page.getByRole("heading", { name: /Stationary energy/i }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30000 });
 
   await openResidentialSubsector(page, cityId, inventoryId);
+  await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByLabel(/Scope 1/i);
+  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
     .isVisible()
@@ -93,9 +101,9 @@ async function addScope1ResidentialEmissions(
     return;
   }
 
-  await ensureMethodologySelected(page);
+  await ensureMethodologySelected(page, /Fuel Consumption/i, scopeOnePanel);
 
-  await page.getByText(/Add activity/i).click();
+  await addActivityButton(page, scopeOnePanel).click();
   const addEmissionModal = page.getByTestId("add-emission-modal");
   await expect(addEmissionModal).toBeVisible();
 
@@ -122,11 +130,9 @@ async function addScope2ResidentialEmissions(
 ) {
   await openResidentialSubsector(page, cityId, inventoryId);
   await page.getByRole("tab", { name: /Scope 2/i }).click();
-  await expect(page.getByTestId("manual-input-header")).toBeVisible({
-    timeout: 30000,
-  });
 
-  const scopeTwoPanel = page.getByRole("tabpanel");
+  const scopeTwoPanel = page.getByRole("tabpanel", { name: /Scope 2/i });
+  await expect(scopeTwoPanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeTwoPanel
     .getByText(/activities added/i)
     .isVisible()
@@ -135,9 +141,9 @@ async function addScope2ResidentialEmissions(
     return;
   }
 
-  await ensureMethodologySelected(page);
+  await ensureMethodologySelected(page, /Energy Consumption/i, scopeTwoPanel);
 
-  await page.getByText(/Add activity/i).click();
+  await addActivityButton(page, scopeTwoPanel).click();
   const addEmissionModal = page.getByTestId("add-emission-modal");
   await expect(addEmissionModal).toBeVisible();
 
@@ -157,27 +163,47 @@ async function addScope2ResidentialEmissions(
   await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
 }
 
-// Serial flow: one city/inventory, scope 1 + scope 2 data, then dashboard assertions.
+async function openEmissionInventoryResultsTab(page: Page) {
+  await page.getByTestId("tab-emission-inventory-results-title").click();
+  await expect(
+    page.getByRole("tabpanel", { name: /Emission inventory results/i }),
+  ).toBeVisible({ timeout: 30000 });
+}
+
+// Serial flow: one city/inventory, scope 1 + scope 2 data, then results tab assertions.
 test.describe.serial("Report Results", () => {
-  test.skip();
   test.setTimeout(120000);
 
   let cityId: string;
   let inventoryId: string;
 
   test.beforeAll(async ({ browser }) => {
-    const page = await browser.newPage();
+    test.setTimeout(180000);
+
+    const context = await browser.newContext({
+      storageState: "playwright/.auth/user.json",
+    });
+    const page = await context.newPage();
+
     const cityInventoryData =
       await createCityAndInventoryThroughOnboarding(page);
     cityId = cityInventoryData.cityId;
     inventoryId = cityInventoryData.inventoryId;
-    await page.close();
+
+    await context.close();
+  });
+
+  test.beforeEach(async ({ page }) => {
+    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
+    await dismissCookieConsent(page);
+
+    const heroCityName = page.getByTestId("hero-city-name");
+    await expect(heroCityName).toBeVisible({ timeout: 60000 });
+    await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
   });
 
   test("User can navigate to GHGI module", async ({ page }) => {
-    await page.goto(`/en/cities/${cityId}/GHGI/${inventoryId}/`);
-    await page.waitForLoadState("networkidle");
-    await expect(page.getByText("Chicago")).toBeVisible();
+    await expect(page.getByTestId("hero-city-name")).toHaveText("Chicago");
   });
 
   test("User can navigate to subsector page and enter scope 1 emissions data", async ({
@@ -193,18 +219,16 @@ test.describe.serial("Report Results", () => {
   });
 
   test("User can navigate to dashboard and verify data", async ({ page }) => {
-    await navigateToDashboard(page, cityId);
-    await expect(page.getByText("Chicago")).toBeVisible();
+    await openEmissionInventoryResultsTab(page);
 
     const topEmissionsTable = page.locator("table").filter({
       has: page.getByText(/Total emissions \(CO2eq\)/i),
     });
-    await expect(topEmissionsTable).toBeVisible({ timeout: 30000 });
+    await expect(topEmissionsTable).toBeVisible({ timeout: 60000 });
 
-    const topEmissionsHeading = page.getByRole("heading", {
-      name: /Top Emissions/i,
+    await expect(page.getByText(/Top Emissions/i).first()).toBeVisible({
+      timeout: 10000,
     });
-    await expect(topEmissionsHeading).toBeVisible();
 
     const residentialRows = topEmissionsTable
       .locator("tbody tr")

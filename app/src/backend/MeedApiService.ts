@@ -190,7 +190,7 @@ export default class MeedApiService {
 
     // make API request to MEED API
     const result: MeedRankResponse = await this.makeRequest(
-      "rank",
+      "prioritize",
       fullRequest,
     );
 

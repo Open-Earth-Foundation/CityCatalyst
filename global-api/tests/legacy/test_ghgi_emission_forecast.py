@@ -49,7 +49,7 @@ def test_get_emission_forecast_success(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/CITY123/2023")
     
@@ -96,7 +96,7 @@ def test_get_emission_forecast_single_record(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/CITY456/2022")
     
@@ -121,7 +121,7 @@ def test_get_emission_forecast_no_data(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/NONEXISTENT/2023")
     
@@ -140,7 +140,7 @@ def test_get_emission_forecast_invalid_spatial_granularity(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/invalid/CITY123/2023")
     
@@ -159,7 +159,7 @@ def test_get_emission_forecast_future_year_no_data(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/CITY123/2050")
     
@@ -191,7 +191,7 @@ def test_get_emission_forecast_country_granularity(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/country/COUNTRY123/2023")
     
@@ -224,7 +224,7 @@ def test_get_emission_forecast_region_granularity(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/region/REGION123/2023")
     
@@ -278,7 +278,7 @@ def test_get_emission_forecast_multiple_sectors_same_year(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/CITY789/2023")
     
@@ -319,7 +319,7 @@ def test_get_emission_forecast_zero_growth_rate(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/CITY999/2023")
     
@@ -351,7 +351,7 @@ def test_get_emission_forecast_negative_growth_rate(monkeypatch):
                     ]
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     response = client.get("/api/v0/ghgi/emissions_forecast/city/CITY888/2023")
     
@@ -394,7 +394,7 @@ def test_database_query_parameters(monkeypatch):
                 def all(self): return []
             return DummyResult()
     
-    monkeypatch.setattr("routes.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
+    monkeypatch.setattr("routes.legacy.ghgi_emission_forecast.SessionLocal", lambda: DummySession())
     
     client.get("/api/v0/ghgi/emissions_forecast/city/TESTCITY/2023")
     

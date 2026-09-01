@@ -4,31 +4,34 @@ from difflib import SequenceMatcher
 from typing import Any
 
 from db.database import SessionLocal
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, HTTPException, Query
 from sqlalchemy import text
 
 api_router = APIRouter(prefix="/api/v1")
 
 MAX_LIMIT = 50
 DEFAULT_LIMIT = 20
+MAX_QUERY_LENGTH = 100
+MIN_NORMALIZED_QUERY_LENGTH = 2
 
 
 def _normalize(value: str | None) -> str:
-    """Return a lower-case ASCII search string with punctuation collapsed."""
+    """Return a case-folded search string with accents and punctuation collapsed."""
     if not value:
         return ""
 
-    normalized = unicodedata.normalize("NFKD", value)
+    normalized = unicodedata.normalize("NFKD", value.casefold())
     without_accents = "".join(
         char for char in normalized if not unicodedata.combining(char)
     )
-    lowered = without_accents.lower().strip()
-    return re.sub(r"\s+", " ", re.sub(r"[^a-z0-9]+", " ", lowered)).strip()
+    words_and_spaces = "".join(
+        char if char.isalnum() else " " for char in without_accents
+    )
+    return re.sub(r"\s+", " ", words_and_spaces).strip()
 
 
-def _score_city(query: str, city: dict[str, Any]) -> float:
+def _score_city(normalized_query: str, city: dict[str, Any]) -> float:
     """Score a city result for autocomplete-style search ranking."""
-    normalized_query = _normalize(query)
     normalized_name = _normalize(city.get("city_name"))
     normalized_locode = _normalize(city.get("locode"))
 
@@ -55,6 +58,10 @@ def db_search_cities(
     limit: int,
 ) -> list[dict[str, Any]]:
     """Fetch city candidates from city_polygon and rank them in Python."""
+    normalized_query = _normalize(query)
+    if len(normalized_query) < MIN_NORMALIZED_QUERY_LENGTH:
+        return []
+
     params: dict[str, Any] = {}
     where_sql = ""
     if country_code:
@@ -86,22 +93,35 @@ def db_search_cities(
     scored_rows = []
     for row in rows:
         city = dict(row)
-        score = _score_city(query, city)
+        score = _score_city(normalized_query, city)
         if score >= 0.45:
             city["score"] = round(score, 4)
             scored_rows.append(city)
 
-    scored_rows.sort(key=lambda city: city["score"], reverse=True)
+    scored_rows.sort(
+        key=lambda city: (
+            -city["score"],
+            city.get("country_code") or "",
+            _normalize(city.get("city_name")),
+            city.get("locode") or "",
+        )
+    )
     return scored_rows[:limit]
 
 
 @api_router.get("/cities/search", summary="Search supported cities")
 def search_cities(
-    q: str = Query(..., min_length=2, description="City name or locode search text."),
+    q: str = Query(
+        ...,
+        min_length=2,
+        max_length=MAX_QUERY_LENGTH,
+        description="City name or locode search text.",
+    ),
     country_code: str | None = Query(
         default=None,
         min_length=2,
         max_length=2,
+        pattern=r"^[A-Za-z]{2}$",
         description="Optional ISO 3166-1 alpha-2 country filter.",
     ),
     limit: int = Query(
@@ -112,5 +132,11 @@ def search_cities(
     ),
 ) -> dict[str, list[dict[str, Any]]]:
     """Search cities that are available in modelled.city_polygon."""
+    if len(_normalize(q)) < MIN_NORMALIZED_QUERY_LENGTH:
+        raise HTTPException(
+            status_code=422,
+            detail="Search text must contain at least two letters or numbers.",
+        )
+
     records = db_search_cities(q, country_code, limit)
     return {"data": records}

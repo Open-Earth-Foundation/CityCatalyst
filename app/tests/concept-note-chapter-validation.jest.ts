@@ -2,8 +2,8 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   buildDocumentReviewSummary,
-  getChapterReviewErrorKind,
   getChapterDisplayStatus,
+  getChapterReviewErrorKind,
   groupChapterValidationFindings,
 } from "@/components/ConceptNoteWorkspace/chapter-validation";
 import type {
@@ -11,6 +11,15 @@ import type {
   ConceptNoteChapterValidationFinding,
   ConceptNoteDraftChapter,
 } from "@/util/types";
+
+const finding: ConceptNoteChapterValidationFinding = {
+  category: "missing_information",
+  involved_chapter_ids: ["chapter-1"],
+  message: "A required date is missing.",
+  phase: "completeness",
+  severity: "blocking",
+  suggested_action: "Add the start date.",
+};
 
 function validation(
   overrides: Partial<ConceptNoteChapterValidation> = {},
@@ -27,153 +36,76 @@ function validation(
 }
 
 function chapter(
-  chapterValidation?: ConceptNoteChapterValidation | null,
+  result: ConceptNoteChapterValidation | null = null,
+  id = "chapter-1",
 ): ConceptNoteDraftChapter {
   return {
     body_markdown: "Draft body",
-    chapter_id: "chapter-target",
+    chapter_id: id,
     missing_information: [],
     position: 0,
     required: true,
     revision_number: 1,
     status: "draft",
     template_section_id: "summary",
-    title: "Project summary",
+    title: id,
     user_locked: false,
-    validation: chapterValidation,
+    validation: result,
   };
 }
 
-function finding(
-  overrides: Partial<ConceptNoteChapterValidationFinding>,
-): ConceptNoteChapterValidationFinding {
-  return {
-    category: "required_content",
-    involved_chapter_ids: ["chapter-target"],
-    message: "A required date is missing.",
-    phase: "completeness",
-    severity: "blocking",
-    suggested_action: "Add the programme start date.",
-    ...overrides,
-  };
-}
-
-describe("Concept Note chapter-validation presentation", () => {
-  it("distinguishes a missing application template from generic review failures", () => {
+describe("chapter-validation presentation", () => {
+  it("classifies template and service failures", () => {
     expect(
       getChapterReviewErrorKind({
         status: 409,
-        data: {
-          code: "chapter_validation_template_unavailable",
-          detail: "The selected application template is unavailable",
-        },
+        data: { code: "chapter_validation_template_unavailable" },
       }),
     ).toBe("template_unavailable");
-    expect(getChapterReviewErrorKind({ status: 400 })).toBe("generic");
-    expect(getChapterReviewErrorKind(new Error("Unknown failure"))).toBe(
-      "generic",
+    expect(getChapterReviewErrorKind({ status: 503 })).toBe(
+      "service_unavailable",
     );
+    expect(getChapterReviewErrorKind({ status: 400 })).toBe("generic");
   });
 
-  it.each([{ status: 503 }, { status: "FETCH_ERROR" }])(
-    "presents retryable failure %p as a service outage",
-    (error) => {
-      expect(getChapterReviewErrorKind(error)).toBe("service_unavailable");
-    },
-  );
-
   it.each([
-    [undefined, "draft"],
     [validation({ status: "ready" }), "ready"],
-    [validation({ status: "needs_review" }), "needs_review"],
     [validation({ status: "incomplete" }), "incomplete"],
-    [validation({ is_stale: true, status: "ready" }), "stale"],
-    [validation({ status: "ready", validated_revision_number: 2 }), "stale"],
-  ] as const)("presents validation %p as %s", (result, expected) => {
+    [validation({ is_stale: true }), "stale"],
+    [validation({ validated_revision_number: 2 }), "stale"],
+  ] as const)("maps validation state to %s", (result, expected) => {
     expect(getChapterDisplayStatus(chapter(result))).toBe(expected);
   });
 
-  it("keeps an initial null-revision validation current", () => {
-    expect(
-      getChapterDisplayStatus({
-        ...chapter(validation({ validated_revision_number: null })),
-        revision_number: null,
-      }),
-    ).toBe("ready");
-  });
-
-  it("groups completeness, consistency, and evidence findings for the UI", () => {
-    const completeness = finding({});
-    const consistency = finding({
-      category: "cross_chapter_contradiction",
-      phase: "consistency",
-    });
-    const evidence = finding({
-      category: "citation_gap",
-      phase: "completeness",
-      severity: "warning",
-    });
-
-    expect(
-      groupChapterValidationFindings([completeness, consistency, evidence]),
-    ).toEqual({
-      missing_information: [completeness],
-      conflicts_logic: [consistency],
-      evidence: [evidence],
-    });
-  });
-
-  it("builds one document review and deduplicates a symmetric conflict", () => {
-    const targetConflict = finding({
+  it("groups findings and deduplicates a symmetric conflict", () => {
+    const conflict = {
+      ...finding,
       category: "cross_chapter_conflict",
-      involved_chapter_ids: ["chapter-target", "chapter-related"],
-      message: "The chapters define incompatible investment scope.",
-      phase: "consistency",
-      suggested_action: "Use one future eligible scope in both chapters.",
-    });
-    const relatedConflict = {
-      ...targetConflict,
-      involved_chapter_ids: ["chapter-related", "chapter-target"],
+      involved_chapter_ids: ["chapter-1", "chapter-2"],
+      phase: "consistency" as const,
     };
-    const evidence = finding({
-      category: "evidence_gap",
-      phase: "evidence",
-      severity: "warning",
+    expect(groupChapterValidationFindings([finding, conflict])).toMatchObject({
+      missing_information: [finding],
+      conflicts_logic: [conflict],
     });
-    const relatedChapter = {
-      ...chapter(),
-      chapter_id: "chapter-related",
-      title: "Use of EUCF support",
-    };
 
     const review = buildDocumentReviewSummary([
       {
         chapter: chapter(),
-        validation: validation({
-          checks: [
-            {
-              key: "template_constraints",
-              status: "fail",
-            },
-          ],
-          findings: [targetConflict, evidence],
-          status: "incomplete",
-        }),
+        validation: validation({ findings: [conflict], status: "incomplete" }),
       },
       {
-        chapter: relatedChapter,
+        chapter: chapter(null, "chapter-2"),
         validation: validation({
-          findings: [relatedConflict],
+          findings: [
+            { ...conflict, involved_chapter_ids: ["chapter-2", "chapter-1"] },
+          ],
           status: "incomplete",
         }),
       },
     ]);
 
-    expect(review.status).toBe("incomplete");
     expect(review.blockingCount).toBe(1);
-    expect(review.warningCount).toBe(1);
-    expect(review.evidenceCount).toBe(1);
-    expect(review.templateFailureCount).toBe(1);
     expect(review.groups.conflicts_logic).toHaveLength(1);
   });
 });

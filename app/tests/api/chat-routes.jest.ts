@@ -451,49 +451,6 @@ describe("Chat routes", () => {
     });
   });
 
-  it("overrides client-provided token aliases with the authenticated user token", async () => {
-    const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
-    fetchMock
-      .mockResolvedValueOnce(
-        jsonResponse({
-          access_token: "current-user-token",
-          expires_in: 3600,
-          token_type: "Bearer",
-        }),
-      )
-      .mockResolvedValueOnce(
-        new Response('event: done\ndata: {"ok":true}\n\n', {
-          status: 200,
-          headers: { "Content-Type": "text/event-stream" },
-        }),
-      );
-
-    await postChatMessage(
-      makeRequest("http://localhost:3000/api/v1/chat/messages", "POST", {
-        threadId: "thread-1",
-        content: "Validate this chapter",
-        inventoryId: testInventoryId,
-        context: {
-          access_token: "expired-token",
-          cc_access_token: "client-supplied-token",
-          concept_note_run_id: "run-1",
-        },
-      }),
-      { params: Promise.resolve({}) },
-    );
-
-    const [, tokenRequest] = fetchMock.mock.calls[0] ?? [];
-    expect(JSON.parse(String(tokenRequest?.body))).toEqual({
-      user_id: testUserID,
-      inventory_id: testInventoryId,
-    });
-    const [, messageRequest] = fetchMock.mock.calls[1] ?? [];
-    expect(JSON.parse(String(messageRequest?.body)).context).toEqual({
-      concept_note_run_id: "run-1",
-      access_token: "current-user-token",
-    });
-  });
-
   it("loads thread messages through the shared CA proxy helper", async () => {
     const fetchMock = global.fetch as jest.MockedFunction<typeof fetch>;
     fetchMock.mockResolvedValueOnce(

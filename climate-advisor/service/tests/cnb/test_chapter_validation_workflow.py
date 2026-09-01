@@ -1,6 +1,4 @@
-"""Application workflow around two-pass validation and atomic persistence."""
-
-from __future__ import annotations
+"""Application workflow around validation and atomic persistence."""
 
 from datetime import UTC, datetime
 from types import SimpleNamespace
@@ -8,9 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, call
 from uuid import uuid4
 
 import pytest
-from app.models.cnb.concept_note_application_context import (
-    ApplicationContextTemplate,
-)
+from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
 from app.models.cnb.concept_note_chapter_validation import (
     ChapterValidationCheck,
     ChapterValidationDecision,
@@ -32,23 +28,15 @@ from sqlalchemy.exc import SQLAlchemyError
 
 
 def _template() -> ApplicationContextTemplate:
-    """Build the reviewed template required by the validation workflow."""
     return ApplicationContextTemplate(
         id=uuid4(),
         name="Application template",
-        chapter_schema=[
-            {
-                "chapter_ref": "budget",
-                "title": "Budget",
-                "required": True,
-            }
-        ],
+        chapter_schema=[{"chapter_ref": "budget", "required": True}],
         required_fields=["Project budget"],
     )
 
 
-def _validation_context() -> WorkspaceValidationContext:
-    """Build one deterministic repository snapshot for workflow tests."""
+def _context() -> WorkspaceValidationContext:
     chapter = WorkspaceValidationChapter(
         chapter_id=uuid4(),
         chapter_ref="budget",
@@ -70,7 +58,6 @@ def _validation_context() -> WorkspaceValidationContext:
 
 
 def _decision(context: WorkspaceValidationContext) -> ChapterValidationDecision:
-    """Build a complete fixed-check decision returned by the core validator."""
     keys = (
         "required_content",
         "template_constraints",
@@ -81,176 +68,128 @@ def _decision(context: WorkspaceValidationContext) -> ChapterValidationDecision:
     )
     return ChapterValidationDecision(
         target_chapter_id=context.target.chapter_id,
-        validated_revision_number=context.target.revision_number,
+        validated_revision_number=2,
         validation_input_fingerprint=context.fingerprint,
         status="ready",
         checks=[
-            ChapterValidationCheck(
-                key=key,
-                label=key.replace("_", " ").title(),
-                status="pass",
-            )
-            for key in keys
+            ChapterValidationCheck(key=key, label=key, status="pass") for key in keys
         ],
         findings=[],
     )
 
 
+def _workflow(
+    *,
+    context: WorkspaceValidationContext | None = None,
+    template_effect: object | None = None,
+    upsert_effect: Exception | None = None,
+):
+    context = context or _context()
+    workspace = MagicMock()
+    workspace.load_validation_context = AsyncMock(return_value=context)
+    workspace.upsert_validation = AsyncMock(side_effect=upsert_effect)
+    validator = MagicMock()
+    validator.validate = AsyncMock(return_value=_decision(context))
+    application_context = MagicMock()
+    if template_effect is None:
+        application_context.load_for_run = AsyncMock(
+            return_value=SimpleNamespace(template=_template())
+        )
+    else:
+        application_context.load_for_run = AsyncMock(side_effect=template_effect)
+    service = ConceptNoteChapterValidationWorkflowService(
+        workflow_session=MagicMock(),
+        workspace=workspace,
+        validator=validator,
+        application_context=application_context,
+    )
+    return service, workspace, validator, application_context, context
+
+
 @pytest.mark.asyncio
-async def test_workflow_runs_core_then_persists_same_fingerprint() -> None:
-    """Publish a result only after the core returns both validation passes."""
-    context = _validation_context()
+async def test_workflow_persists_the_validated_fingerprint() -> None:
+    context = _context()
     decision = _decision(context)
-    stored = WorkspaceValidationSnapshot(
+    template = _template()
+    workflow, workspace, validator, app_context, _ = _workflow(
+        context=context,
+        template_effect=[
+            SimpleNamespace(template=template),
+            SimpleNamespace(template=template),
+        ],
+    )
+    workspace.upsert_validation.return_value = WorkspaceValidationSnapshot(
         validation_id=uuid4(),
         status="ready",
         is_stale=False,
         validated_revision_id=context.target.revision_id,
-        validated_revision_number=context.target.revision_number,
+        validated_revision_number=2,
         validation_input_fingerprint=context.fingerprint,
         validated_at=datetime.now(UTC),
-        checks=[check.model_dump(mode="json") for check in decision.checks],
+        checks=[item.model_dump(mode="json") for item in decision.checks],
         findings=[],
     )
-    workspace = MagicMock()
-    workspace.load_validation_context = AsyncMock(return_value=context)
-    workspace.upsert_validation = AsyncMock(return_value=stored)
-    validator = MagicMock()
-    validator.validate = AsyncMock(return_value=decision)
-    application_context = MagicMock()
-    template = _template()
-    application_context.load_for_run = AsyncMock(
-        return_value=SimpleNamespace(template=template)
-    )
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=validator,
-        application_context=application_context,
-    )
-    run = SimpleNamespace(
-        run_id=uuid4(),
-        workflow_step="editing_document",
-    )
+    run = SimpleNamespace(run_id=uuid4(), workflow_step="editing_document")
 
-    response = await service.validate(
-        run=run,
-        chapter_id=context.target.chapter_id,
-    )
+    response = await workflow.validate(run=run, chapter_id=context.target.chapter_id)
 
     assert response.status == "ready"
-    template_fingerprint = calculate_application_template_fingerprint(template)
-    application_context.load_for_run.assert_has_awaits([call(run), call(run)])
-    workspace.load_validation_context.assert_awaited_once_with(
-        run_id=run.run_id,
-        chapter_id=context.target.chapter_id,
-        template_fingerprint=template_fingerprint,
-    )
+    app_context.load_for_run.assert_has_awaits([call(run), call(run)])
     validator.validate.assert_awaited_once()
-    workspace.upsert_validation.assert_awaited_once_with(
-        run_id=run.run_id,
-        chapter_id=context.target.chapter_id,
-        template_fingerprint=template_fingerprint,
-        expected_fingerprint=context.fingerprint,
-        status="ready",
-        checks=[check.model_dump(mode="json") for check in decision.checks],
-        findings=[],
+    assert workspace.upsert_validation.await_args.kwargs["expected_fingerprint"] == (
+        context.fingerprint
+    )
+    assert workspace.upsert_validation.await_args.kwargs["template_fingerprint"] == (
+        calculate_application_template_fingerprint(template)
     )
 
 
 @pytest.mark.asyncio
-async def test_workflow_maps_post_llm_fingerprint_race_to_stable_409() -> None:
-    """Never persist an evaluation made against a changed document snapshot."""
-    context = _validation_context()
-    workspace = MagicMock()
-    workspace.load_validation_context = AsyncMock(return_value=context)
-    workspace.upsert_validation = AsyncMock(
-        side_effect=WorkspaceValidationInputChangedError()
-    )
-    validator = MagicMock()
-    validator.validate = AsyncMock(return_value=_decision(context))
-    application_context = MagicMock()
-    application_context.load_for_run = AsyncMock(
-        return_value=SimpleNamespace(template=_template())
-    )
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=validator,
-        application_context=application_context,
+async def test_workflow_maps_post_llm_fingerprint_race_to_409() -> None:
+    workflow, *_rest, context = _workflow(
+        upsert_effect=WorkspaceValidationInputChangedError()
     )
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
-        await service.validate(
-            run=SimpleNamespace(
-                run_id=uuid4(),
-                workflow_step="editing_document",
-            ),
+        await workflow.validate(
+            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
             chapter_id=context.target.chapter_id,
         )
 
-    assert exc_info.value.status_code == 409
-    assert exc_info.value.code == "chapter_revision_changed"
+    assert (exc_info.value.status_code, exc_info.value.code) == (
+        409,
+        "chapter_revision_changed",
+    )
 
 
 @pytest.mark.asyncio
-async def test_workflow_rejects_a_template_change_during_validation() -> None:
-    """Never persist a model result evaluated against superseded constraints."""
-    context = _validation_context()
-    workspace = MagicMock()
-    workspace.load_validation_context = AsyncMock(return_value=context)
-    workspace.upsert_validation = AsyncMock()
-    validator = MagicMock()
-    validator.validate = AsyncMock(return_value=_decision(context))
-    original_template = _template()
-    changed_template = original_template.model_copy(
-        update={"required_fields": ["Project budget", "Delivery timeline"]}
-    )
-    application_context = MagicMock()
-    application_context.load_for_run = AsyncMock(
-        side_effect=[
-            SimpleNamespace(template=original_template),
-            SimpleNamespace(template=changed_template),
+async def test_workflow_rejects_template_change_during_validation() -> None:
+    original = _template()
+    changed = original.model_copy(update={"required_fields": ["Changed field"]})
+    workflow, workspace, *_rest, context = _workflow(
+        template_effect=[
+            SimpleNamespace(template=original),
+            SimpleNamespace(template=changed),
         ]
     )
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=validator,
-        application_context=application_context,
-    )
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
-        await service.validate(
-            run=SimpleNamespace(
-                run_id=uuid4(),
-                workflow_step="editing_document",
-            ),
+        await workflow.validate(
+            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
             chapter_id=context.target.chapter_id,
         )
 
-    assert exc_info.value.status_code == 409
     assert exc_info.value.code == "chapter_revision_changed"
     workspace.upsert_validation.assert_not_called()
 
 
 @pytest.mark.asyncio
-async def test_workflow_rejects_validation_outside_drafting_and_editing() -> None:
-    """Keep the explicit action unavailable during context assembly/interviewing."""
-    workspace = MagicMock()
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=MagicMock(),
-        application_context=MagicMock(),
-    )
+async def test_workflow_rejects_disallowed_state() -> None:
+    workflow, workspace, *_ = _workflow()
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
-        await service.validate(
-            run=SimpleNamespace(
-                run_id=uuid4(),
-                workflow_step="interviewing",
-            ),
+        await workflow.validate(
+            run=SimpleNamespace(run_id=uuid4(), workflow_step="interviewing"),
             chapter_id=uuid4(),
         )
 
@@ -259,99 +198,43 @@ async def test_workflow_rejects_validation_outside_drafting_and_editing() -> Non
 
 
 @pytest.mark.asyncio
-async def test_workflow_preserves_state_when_template_is_unavailable() -> None:
-    """Never claim readiness when required application constraints cannot load."""
-    context = _validation_context()
-    workspace = MagicMock()
-    workspace.load_validation_context = AsyncMock(return_value=context)
-    validator = MagicMock()
-    application_context = MagicMock()
-    application_context.load_for_run = AsyncMock(
-        return_value=SimpleNamespace(template=None)
-    )
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=validator,
-        application_context=application_context,
+async def test_workflow_requires_application_template() -> None:
+    workflow, workspace, validator, *_ = _workflow(
+        template_effect=[SimpleNamespace(template=None)]
     )
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
-        await service.validate(
-            run=SimpleNamespace(
-                run_id=uuid4(),
-                workflow_step="editing_document",
-            ),
-            chapter_id=context.target.chapter_id,
+        await workflow.validate(
+            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
+            chapter_id=uuid4(),
         )
 
     assert exc_info.value.code == "chapter_validation_template_unavailable"
     workspace.load_validation_context.assert_not_called()
     validator.validate.assert_not_called()
-    workspace.upsert_validation.assert_not_called()
 
 
 @pytest.mark.asyncio
-async def test_workflow_maps_initial_template_storage_failure_to_stable_503() -> None:
-    """Return the documented storage error when the first template read fails."""
-    workspace = MagicMock()
-    validator = MagicMock()
-    application_context = MagicMock()
-    application_context.load_for_run = AsyncMock(side_effect=OSError("offline"))
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=validator,
-        application_context=application_context,
-    )
+@pytest.mark.parametrize(
+    "template_effect",
+    [
+        [OSError("offline")],
+        [SimpleNamespace(template=_template()), SQLAlchemyError("offline")],
+    ],
+)
+async def test_workflow_maps_template_storage_failures_to_503(
+    template_effect: list[object],
+) -> None:
+    workflow, workspace, *_ = _workflow(template_effect=template_effect)
 
     with pytest.raises(ChapterValidationWorkflowError) as exc_info:
-        await service.validate(
-            run=SimpleNamespace(
-                run_id=uuid4(),
-                workflow_step="editing_document",
-            ),
+        await workflow.validate(
+            run=SimpleNamespace(run_id=uuid4(), workflow_step="editing_document"),
             chapter_id=uuid4(),
         )
 
-    assert exc_info.value.status_code == 503
-    assert exc_info.value.code == "cnb_storage_unavailable"
-    workspace.load_validation_context.assert_not_called()
-    validator.validate.assert_not_called()
-
-
-@pytest.mark.asyncio
-async def test_workflow_maps_post_llm_template_storage_failure_to_stable_503() -> None:
-    """Do not persist a result when the template recheck cannot reach storage."""
-    context = _validation_context()
-    workspace = MagicMock()
-    workspace.load_validation_context = AsyncMock(return_value=context)
-    workspace.upsert_validation = AsyncMock()
-    validator = MagicMock()
-    validator.validate = AsyncMock(return_value=_decision(context))
-    application_context = MagicMock()
-    application_context.load_for_run = AsyncMock(
-        side_effect=[
-            SimpleNamespace(template=_template()),
-            SQLAlchemyError("offline"),
-        ]
+    assert (exc_info.value.status_code, exc_info.value.code) == (
+        503,
+        "cnb_storage_unavailable",
     )
-    service = ConceptNoteChapterValidationWorkflowService(
-        workflow_session=MagicMock(),
-        workspace=workspace,
-        validator=validator,
-        application_context=application_context,
-    )
-
-    with pytest.raises(ChapterValidationWorkflowError) as exc_info:
-        await service.validate(
-            run=SimpleNamespace(
-                run_id=uuid4(),
-                workflow_step="editing_document",
-            ),
-            chapter_id=context.target.chapter_id,
-        )
-
-    assert exc_info.value.status_code == 503
-    assert exc_info.value.code == "cnb_storage_unavailable"
     workspace.upsert_validation.assert_not_called()

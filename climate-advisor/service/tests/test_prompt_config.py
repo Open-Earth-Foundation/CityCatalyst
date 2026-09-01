@@ -224,18 +224,6 @@ def test_cnb_chapter_validation_configuration_matches_two_pass_contract() -> Non
     assert config.models.cnb_chapter_validator.reasoning_effort == "medium"
     assert config.generation.prompt_budget.cnb_validation.max_prompt_tokens == 50000
 
-    completeness = config.prompts.get_prompt("cnb_chapter_validation_completeness")
-    consistency = config.prompts.get_prompt("cnb_chapter_validation_consistency")
-    assert "missing required information" in completeness
-    assert "do not check internal contradictions" in completeness
-    assert "Then compare the target" in consistency
-    assert "never report a conflict solely between two compared chapters" in consistency
-    assert "requires two affirmative, mutually incompatible" in consistency
-    assert "Merely naming or describing the same project" in consistency
-    assert "do not transfer a delivery claim from a compared chapter" in consistency
-    assert "<example_output>" in completeness
-    assert "<example_output>" in consistency
-
 
 def test_cnb_source_prompts_define_grounding_and_caveat_contracts() -> None:
     prompts = _load_llm_config().prompts

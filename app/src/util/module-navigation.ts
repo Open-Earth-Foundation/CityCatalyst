@@ -1,13 +1,14 @@
 import { Modules } from "./constants";
 
 export type ModuleRouteSegment = {
-  segment: "GHGI" | "HIAP" | "concept-notes" | "dashboard";
+  segment: "GHGI" | "HIAP" | "MEED" | "concept-notes" | "dashboard";
   moduleId?: string; // undefined => ungated route
 };
 
 const MODULE_ROUTES: ModuleRouteSegment[] = [
   { segment: "GHGI", moduleId: Modules.GHGI.id },
   { segment: "HIAP", moduleId: Modules.HIAP.id },
+  { segment: "MEED", moduleId: Modules.MEED.id },
   { segment: "concept-notes", moduleId: Modules.CONCEPT_NOTE_BUILDER.id },
   { segment: "dashboard" },
 ];

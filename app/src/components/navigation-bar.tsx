@@ -131,6 +131,8 @@ export function NavigationBar({
         return t("page-title-ghg-inventories");
       case "HIAP":
         return t("page-title-hiap");
+      case "MEED":
+        return t("page-title-meed");
       case "dashboard":
         return t("page-title-dashboard");
       default:

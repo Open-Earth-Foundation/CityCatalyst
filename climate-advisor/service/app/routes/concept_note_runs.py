@@ -11,6 +11,7 @@ from app.models.cnb.concept_note_application_context import (
 )
 from app.models.cnb.concept_note_draft import ConceptNoteDraftResponse
 from app.models.cnb.concept_note_runs import (
+    ConceptNoteRenameRequest,
     ConceptNoteRunListResponse,
     ConceptNoteRunResponse,
     ConceptNoteStartRequest,
@@ -29,6 +30,7 @@ from app.services.cnb.context_bundle import (
     get_context_bundle_service,
 )
 from app.services.concept_note_runs import ConceptNoteRunService
+from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -102,6 +104,74 @@ async def get_concept_note_run(
         requested_user_id=user_id,
         authorization=authorization,
     )
+
+
+@router.patch(
+    "/concept-notes/{run_id}",
+    response_model=ConceptNoteRunResponse,
+)
+async def rename_concept_note_run(
+    run_id: UUID,
+    payload: ConceptNoteRenameRequest,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> ConceptNoteRunResponse:
+    """Rename one active concept note and its dedicated chat."""
+    service = ConceptNoteLifecycleService(session)
+    return await service.rename_run(
+        run_id=run_id,
+        payload=payload,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+
+
+@router.post(
+    "/concept-notes/{run_id}/duplicate",
+    response_model=ConceptNoteRunResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses={200: {"model": ConceptNoteRunResponse}},
+)
+async def duplicate_concept_note_run(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    idempotency_key: UUID = Header(alias="Idempotency-Key"),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> JSONResponse:
+    """Create or replay an independent working copy of a concept note."""
+    service = ConceptNoteLifecycleService(session)
+    response, created = await service.duplicate_run(
+        run_id=run_id,
+        idempotency_key=idempotency_key,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        content=jsonable_encoder(response),
+    )
+
+
+@router.delete(
+    "/concept-notes/{run_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_concept_note_run(
+    run_id: UUID,
+    user_id: str = Query(..., min_length=1),
+    authorization: str | None = Header(default=None),
+    session: AsyncSession = Depends(get_session),
+) -> Response:
+    """Permanently delete one concept note and its dedicated chat."""
+    service = ConceptNoteLifecycleService(session)
+    await service.delete_run(
+        run_id=run_id,
+        requested_user_id=user_id,
+        authorization=authorization,
+    )
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.get(

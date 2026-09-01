@@ -7,6 +7,7 @@
   "account-frozen-warning-text": "Your account is frozen. Please reach out to an admin or to <bold>{{ email }}</bold> to reactivate it",
   "page-title-ghg-inventories": "GHG Inventories",
   "page-title-hiap": "Actions & Plans",
+  "page-title-meed": "Actions & Plans v2",
   "page-title-dashboard": "Dashboard",
   "module-unavailable-for-city": "{{module}} isn't available for this city. Showing the city overview instead."
 }

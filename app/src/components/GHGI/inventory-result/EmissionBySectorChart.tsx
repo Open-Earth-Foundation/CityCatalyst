@@ -394,7 +394,7 @@ const EmissionBySectorChart: React.FC<EmissionBySectorChartProps> = ({
             tickSize: 5,
             tickPadding: 5,
             tickRotation: 0,
-            legend: "CO2eq",
+            legend: "CO₂e",
             legendPosition: "middle",
             legendOffset: -100,
             format: (value) => convertKgToTonnes(value, numberFormat),

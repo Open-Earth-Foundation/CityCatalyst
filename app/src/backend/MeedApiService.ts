@@ -362,6 +362,19 @@ export default class MeedApiService {
     return result.results;
   }
 
+  public static async getFeasibilityScores(cityId: string) {
+    const city = await db.models.City.findOne({ where: { cityId } });
+    if (!city) {
+      throw new createHttpError.NotFound("City not found");
+    }
+    const cityLocode = city.locode;
+    const countryLocode = city.countryLocode;
+    const result = await this.makeRequest(
+      `cities/${cityLocode}/action-mitigation-feasibility-scores?country_code=${countryLocode}`,
+    );
+    return result;
+  }
+
   public static async translateExplanations(
     inventoryId: string,
     sourceLanguage: string,

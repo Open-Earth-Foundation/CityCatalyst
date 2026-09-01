@@ -70,10 +70,11 @@ The CityCatalyst Global API serves city-scale climate data (emissions, risk, fin
 
 ### API versions
 
-This server exposes two API versions. Use the **version selector** in the top-right to switch between them.
+- **v1** — the established API surface. It includes endpoint URLs numbered both `/api/v0` and
+  `/api/v1`. These endpoints are stable and supported; current integrations rely on them.
 
-- **v0 / v1** — the established endpoints. Stable and supported; current integrations rely on them.
-- **v2** — the next iteration of the API, with self-describing responses.
+Version 2 is in development and will introduce versioned datasets and a standardized API
+contract. No public v2 endpoints are available yet.
 """
 
 # Tag descriptions render as section intros in the docs. Order here = order in the page.
@@ -94,10 +95,7 @@ TAGS_METADATA = [
     {"name": "Action Legal Assessments", "description": "Legal viability assessments per action."},
 ]
 
-"""
-FastApi application instance: legacy (v0/v1) surface, with a version selector pointing at
-both the legacy spec and the mounted v2 spec.
-"""
+"""FastAPI application instance for the established v0/v1 surface."""
 app = FastAPI(
     title=settings.PROJECT_NAME,
     description=APP_DESCRIPTION,
@@ -147,8 +145,8 @@ def custom_openapi():
 app.openapi = custom_openapi
 
 
-# Custom Swagger UI with a version selector (top-right dropdown). Uses ONLY `urls` so
-# Swagger UI loads the selected spec; the standalone preset provides the dropdown topbar.
+# Custom Swagger UI. Keeping the single named spec preserves the v1 label in the top bar and
+# leaves room to add v2 once its contract is defined and its first endpoint is ready.
 from fastapi.responses import HTMLResponse  # noqa: E402
 
 _DOCS_HTML = """<!DOCTYPE html>
@@ -164,10 +162,9 @@ _DOCS_HTML = """<!DOCTYPE html>
   <script>
     window.ui = SwaggerUIBundle({
       urls: [
-        {name: "v0 / v1", url: "/openapi.json"},
-        {name: "v2", url: "/api/v2/openapi.json"}
+        {name: "v1", url: "/openapi.json"}
       ],
-      "urls.primaryName": "v0 / v1",
+      "urls.primaryName": "v1",
       dom_id: "#swagger-ui",
       deepLinking: true,
       presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
@@ -377,29 +374,6 @@ app.include_router(
     action_legal_assessments_route,
     tags=["Action Legal Assessments"],
 )
-
-"""
-v2 surface, mounted as its own sub-application.
-
-Mounting (rather than including the router on the main app) gives v2 a self-contained,
-clean docs page at /api/v2/docs that shows ONLY v2 - the canonical view of the new surface.
-The mount point supplies the /api/v2 path segment, which is why v2_router is prefix-less.
-The legacy /docs version selector points at this sub-app's spec (/api/v2/openapi.json).
-"""
-from routes.v2 import v2_router  # noqa: E402
-
-V2_DESCRIPTION = (
-    "Version 2 of the API, with self-describing responses"
-)
-
-v2_app = FastAPI(
-    title=f"{settings.PROJECT_NAME} — v2",
-    description=V2_DESCRIPTION,
-    version="2.0",
-    openapi_tags=[{"name": "Climate Finance", "description": "Funding opportunities (v2)."}],
-)
-v2_app.include_router(v2_router)
-app.mount("/api/v2", v2_app)
 
 
 """

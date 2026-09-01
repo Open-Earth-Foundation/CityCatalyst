@@ -1,13 +1,16 @@
-# API Response Semantics — v2 Conformance Standard
+# API Response Semantics — Draft v2 Conformance Standard
 
-This document defines what the **response body** of a CityCatalyst Global API endpoint must
-contain. [`api-design.md`](./api-design.md) governs the *outside* of an endpoint — URLs,
-versioning, parameters, errors. This document governs the *inside* — the shape and meaning of
-what comes back. It works alongside [`data-model-design.md`](./data-model-design.md), which
-guarantees the provenance and units this standard surfaces.
+> **Status: Draft.** This is a working proposal for the future v2 contract. It may change before
+> the first public v2 endpoint is released. There is currently no public `/api/v2` surface.
 
-It also defines what **v2** means. Conformance to this standard is the bar an endpoint must clear
-to live under `/api/v2`.
+This document proposes what the **response body** of a future v2 CityCatalyst Global API
+endpoint must contain. [`api-design.md`](./api-design.md) governs the *outside* of an endpoint —
+URLs, versioning, parameters, errors. This document covers the *inside* — the shape and meaning
+of what comes back. It works alongside [`data-model-design.md`](./data-model-design.md), which
+guarantees the provenance and units this proposal surfaces.
+
+It proposes what **v2** will mean. Once the standard is approved, conformance will be the bar an
+endpoint must clear before it can live under `/api/v2`.
 
 ---
 
@@ -24,22 +27,24 @@ The fix is to make every value **self-describing**: it travels with its unit, it
 context, its provenance, and — when absent — the reason it is absent. The API states the meaning
 once; every consumer reads it the same way.
 
-This is not aspirational. It is the contract a v2 endpoint signs.
+This is the intended direction for the contract; the details remain open to refinement while
+the standard is in draft.
 
 ---
 
 ## What "v2" Means
 
-`v2` is **not a folder** and **not a per-endpoint counter**. It is the name of a contract
-generation — a quality mark. Everything under `/api/v2` conforms to this standard, by definition.
-An endpoint "becomes v2" when it passes the [Conformance Checklist](#conformance-checklist), not
-when it is moved.
+`v2` will be **neither a folder nor a per-endpoint counter**. It will name a contract generation
+and act as a quality mark. Everything eventually published under `/api/v2` must
+conform to the approved standard. An endpoint will become v2 when it passes the
+[Draft Conformance Checklist](#draft-conformance-checklist), not merely when it is moved.
 
-- There is one current clean generation. Consumers point at `/api/v2` and know what they get.
+- There will be one clean contract generation. Consumers will be able to point at `/api/v2` and
+  know what they get.
 - `v0` and `v1` remain live and frozen for existing consumers (e.g. HIAP). They are *the old API*,
   not "resource X's version." No consumer is forced to migrate on our schedule.
-- Endpoints join `/api/v2` incrementally, resource by resource (strangler migration). Until an
-  endpoint conforms, it stays where it is.
+- After the first conforming endpoint is released, other endpoints can join `/api/v2`
+  incrementally, resource by resource. Until an endpoint conforms, it stays where it is.
 
 A version bump is still triggered only by a breaking change, per `api-design.md`. The point of v2
 is that the break is *intentional and uniform*: it is the move to self-describing responses.
@@ -91,9 +96,8 @@ value must be self-explaining — never an ambiguous `0`, `""`, `"empty"`, or a 
 
 ## The Response Envelope
 
-A v2 response wraps observations in two blocks: `meta` (what was asked) and `data` (what was
-found, including where it came from). This mirrors the pattern already used by
-`routes/finance_opportunities.py`.
+The draft v2 response wraps observations in two blocks: `meta` (what was asked) and `data` (what
+was found, including where it came from).
 
 ```jsonc
 {
@@ -162,16 +166,16 @@ Versus a conforming v2 body (above): typed numbers, explicit `unit`, `gwp`/`time
 the payload, `dataQuality` as a real value, `provenance` resolved from the release, notation key
 folded in, request echoed in `meta`.
 
-Note that `routes/finance_opportunities.py` and `routes/action_legal_assessments.py` already do
-most of this — typed values via `_normalize_value`, camelCase keys, release-based provenance, and
-a `meta` block. They are the **reference implementation**; emissions is the migration target.
+Some legacy endpoints already contain useful pieces of this proposal, such as typed values,
+release-based provenance, and a `meta` block. They can inform the design, but no legacy endpoint
+defines the future v2 contract.
 
 ---
 
-## Conformance Checklist
+## Draft Conformance Checklist
 
-An endpoint may live under `/api/v2` only when **all** of the following hold. Use this as the PR
-review checklist for any v2 endpoint.
+Before an endpoint is published under `/api/v2`, the final version of this checklist must be
+approved and every item must hold.
 
 1. **URL & params** follow `api-design.md` grammar — resource nouns, path identifies / query
    filters, no path-packed filter lists (e.g. not `/source/{ds}/{gran}/{actor}/{gpc}/{year}`).
@@ -205,7 +209,6 @@ MCP then inherits it.
 
 ## Migration Pointer
 
-The rollout (strangler approach, frozen v0/v1, first slice selection, MCP-on-the-slice proof) is
-tracked separately. In brief: the **finance / action** resources are the first slice — they are
-already closest to this standard, so the first migration validates the standard itself on a
-friendly case before it is applied to emissions and the long tail.
+The rollout (strangler approach, frozen v0/v1, first-slice selection, and MCP-on-the-slice proof)
+is tracked separately. The first public v2 resource should be selected only after the guidelines
+are approved and a versioned dataset is ready to validate the contract end to end.

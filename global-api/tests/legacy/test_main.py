@@ -9,6 +9,30 @@ def test_read_root():
     assert response.status_code == 200
     assert response.json() == {"message": "Welcome"}
 
+
+def test_docs_label_established_surface_as_v1():
+    response = client.get("/docs")
+    assert response.status_code == 200
+    assert '{name: "v1", url: "/openapi.json"}' in response.text
+    assert 'name: "v2"' not in response.text
+    assert "/api/v2/openapi.json" not in response.text
+    assert '"urls.primaryName": "v1"' in response.text
+
+    schema = client.get("/openapi.json").json()
+    description = schema["info"]["description"]
+    assert "endpoint URLs numbered both `/api/v0`" in description
+    assert "`/api/v1`" in description
+    assert "Version 2 is in development" in description
+    assert "versioned datasets" in description
+    assert "No public v2 endpoints are available yet" in description
+    assert not any(path.startswith("/api/v2") for path in schema["paths"])
+
+
+def test_v2_is_not_publicly_available():
+    response = client.get("/api/v2/climate-finance/opportunities")
+    assert response.status_code == 404
+
+
 def test_health_check(monkeypatch):
     class DummyConnection:
         def close(self): pass

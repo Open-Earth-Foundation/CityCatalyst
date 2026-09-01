@@ -242,7 +242,7 @@ test.describe.serial("Report Results", () => {
     ).toHaveCount(1);
 
     await expect(
-      residentialRows.locator("td").filter({ hasText: /268\.8 t CO2e/i }),
+      residentialRows.locator("td").filter({ hasText: /268\.8 mtCO₂e/i }),
     ).toHaveCount(2);
 
     const percentageTexts = await residentialRows

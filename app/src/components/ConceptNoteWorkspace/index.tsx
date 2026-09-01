@@ -9,7 +9,6 @@ import {
   Heading,
   HStack,
   Icon,
-  Skeleton,
   Tabs,
   Text,
   VStack,
@@ -26,26 +25,22 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
-import { api } from "@/services/api";
-import type { ConceptNoteUploadResponse } from "@/util/types";
 
 import {
-  getConceptNoteBundleProgress,
   getConceptNoteStatusPresentation,
   getWorkflowStepTranslationKey,
-  normalizePopulationData,
 } from "../ConceptNoteDashboard/utils";
 import { StatusBadge } from "../ConceptNoteDashboard/status-badge";
-import {
-  conceptNoteSourceLabel,
-  shouldPollConceptNoteUpload,
-  validateConceptNoteSourceFile,
-} from "../ConceptNoteWiringHarness/utils";
 import { ConceptNoteChatPanel } from "./chat-panel";
 import { ContextTab } from "./context-tab";
 import { DraftTab } from "./draft-tab";
 import { ExportDialog } from "./export-dialog";
 import { StructureTab } from "./structure-tab";
+import { useConceptNoteWorkspaceData } from "./use-concept-note-workspace-data";
+import {
+  WorkspaceLoadingState,
+  WorkspaceUnavailableState,
+} from "./workspace-states";
 
 type WorkspaceTab = "draft" | "structure" | "context";
 
@@ -78,295 +73,54 @@ export function ConceptNoteWorkspace({
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
   const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(null);
-  const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
-  const [uploadDetails, setUploadDetails] =
-    useState<ConceptNoteUploadResponse | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-
   const {
-    data: run,
-    isError: runFailed,
-    isLoading: runLoading,
-    refetch: refetchRun,
-  } = api.useGetConceptNoteRunQuery(
-    { cityId, runId },
-    {
-      pollingInterval: 15_000,
-      skipPollingIfUnfocused: true,
-    },
-  );
-  const { data: city } = api.useGetCityQuery(cityId);
-  const {
-    data: applicationContext,
-    isError: applicationContextFailed,
-    isLoading: applicationContextLoading,
-  } = api.useGetConceptNoteApplicationContextQuery(runId);
-  const {
-    data: draft,
-    isError: draftQueryFailed,
-    isLoading: draftLoading,
-    refetch: refetchDraft,
-  } = api.useGetConceptNoteDraftQuery(runId, {
-    pollingInterval: 15_000,
-    skipPollingIfUnfocused: true,
-  });
-  const { data: population } = api.useGetMostRecentCityPopulationQuery({
-    cityId,
-  });
-  const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
-  const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
-  const persistedUpload = run?.uploads?.[0];
-  const selectedUploadId = activeUploadId ?? persistedUpload?.upload_id ?? null;
-  const persistedUploadStatus =
-    persistedUpload?.upload_id === selectedUploadId
-      ? persistedUpload.status
-      : null;
-  const [uploadSourceMutation, uploadState] =
-    api.useUploadConceptNoteSourceMutation();
-  const [retryUpload, retryUploadState] =
-    api.useRetryConceptNoteUploadMutation();
-  const [retryBundle, retryBundleState] =
-    api.useRetryConceptNoteContextBundleMutation();
-  const [startDraftMutation, startDraftState] =
-    api.useStartConceptNoteDraftMutation();
-  const { data: refreshedUpload, isError: uploadRefreshFailed } =
-    api.useGetConceptNoteUploadStatusQuery(
-      { runId, uploadId: selectedUploadId ?? "" },
-      {
-        skip: !selectedUploadId,
-        pollingInterval:
-          selectedUploadId &&
-          shouldPollConceptNoteUpload(
-            persistedUploadStatus ?? uploadDetails?.status ?? null,
-          )
-            ? 2_000
-            : 0,
-        skipPollingIfUnfocused: true,
-      },
-    );
-
-  const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
-  const persistedUploadDetails: ConceptNoteUploadResponse | null =
-    persistedUpload
-      ? {
-          uploadId: persistedUpload.upload_id,
-          runId: persistedUpload.run_id,
-          status: persistedUpload.status,
-          filename: persistedUpload.filename,
-          sourceLabel: persistedUpload.source_label,
-          pageCount: persistedUpload.page_count,
-          errorCode: persistedUpload.error_code ?? undefined,
-          receivedAt: persistedUpload.received_at,
-          completedAt: persistedUpload.completed_at,
-        }
-      : null;
-  const effectiveUpload =
-    refreshedUpload ?? uploadDetails ?? persistedUploadDetails;
-  const effectiveUploadError = uploadRefreshFailed
-    ? t("refresh-status-error")
-    : uploadError;
-  const cityName = city?.name || t("selected-city");
-  const populationData = normalizePopulationData(population);
-  const populationLabel = populationData
-    ? t("population", {
-        population: new Intl.NumberFormat(lng).format(
-          populationData.population,
-        ),
-        year: populationData.year,
-      })
-    : t("population-unavailable");
-  const files = cityFiles ?? [];
-  const canStartDrafting = Boolean(
-    applicationContext?.funder &&
-    applicationContext.opportunity &&
-    applicationContext.template,
-  );
-  const hasApplicationTemplate = Boolean(applicationContext?.template);
-  const hasDraftChapters = Boolean(draft?.chapters.length);
-  const draftFailed = draftQueryFailed && draft === undefined;
-  const reviewAvailabilityDescription = applicationContextFailed
-    ? t("review-setup-load-error")
-    : draftFailed
-      ? t("review-draft-load-error")
-      : applicationContextLoading || draftLoading
-        ? t("review-setup-loading")
-        : !hasApplicationTemplate && !hasDraftChapters
-          ? t("review-requires-template-and-draft")
-          : !hasApplicationTemplate
-            ? t("review-requires-template")
-            : !hasDraftChapters
-              ? t("review-requires-draft")
-              : null;
+    applicationContext,
+    applicationContextFailed,
+    applicationContextLoading,
+    bundle,
+    canStartDrafting,
+    city,
+    cityName,
+    draft,
+    draftFailed,
+    draftLoading,
+    draftStartError,
+    effectiveUpload,
+    effectiveUploadError,
+    files,
+    hasApplicationTemplate,
+    inventory,
+    isDraftRunning,
+    populationLabel,
+    refetchDraft,
+    refetchRun,
+    retryActiveUpload,
+    retryBundleState,
+    retryContextBundle,
+    retryUploadState,
+    reviewAvailabilityDescription,
+    run,
+    runFailed,
+    runLoading,
+    startDrafting,
+    startDraftState,
+    uploadSource,
+    uploadState,
+  } = useConceptNoteWorkspaceData({ cityId, initialUploadId, lng, runId });
   const canReview = reviewAvailabilityDescription === null;
-  const draftStartError = startDraftState.isError
-    ? t("draft-start-error")
-    : null;
-  const isDraftRunning = draft?.status === "running";
-
-  async function uploadSource(file: File): Promise<void> {
-    setUploadError(null);
-    const validationError = await validateConceptNoteSourceFile(file);
-    if (validationError) {
-      setUploadError(t(validationError));
-      return;
-    }
-
-    try {
-      const formData = new FormData();
-      formData.set("file", file);
-      formData.set("sourceLabel", conceptNoteSourceLabel(file.name));
-      const upload = await uploadSourceMutation({
-        cityId,
-        formData,
-        runId,
-      }).unwrap();
-      setActiveUploadId(upload.uploadId);
-      setUploadDetails(upload);
-      void refetchRun();
-    } catch {
-      setUploadError(t("upload-source-error"));
-    }
-  }
-
-  async function retryActiveUpload(): Promise<void> {
-    if (!activeUploadId) {
-      return;
-    }
-    setUploadError(null);
-    try {
-      const upload = await retryUpload({
-        runId,
-        uploadId: activeUploadId,
-      }).unwrap();
-      setUploadDetails(upload);
-    } catch {
-      setUploadError(t("conversion-retry-error"));
-    }
-  }
-
-  async function retryContextBundle(): Promise<void> {
-    try {
-      await retryBundle(runId).unwrap();
-      await refetchRun();
-    } catch {
-      setUploadError(t("context-retry-error"));
-    }
-  }
-
-  async function startDrafting(): Promise<void> {
-    if (!canStartDrafting || isDraftRunning) {
-      return;
-    }
-
-    try {
-      await startDraftMutation(runId).unwrap();
-      await Promise.all([refetchDraft(), refetchRun()]);
-    } catch {
-      return;
-    }
-  }
 
   if (runLoading) {
-    return (
-      <Box
-        h="calc(100dvh - 80px)"
-        minH={0}
-        overflow="hidden"
-        bg="background.alternativeLight"
-        px={{ base: 4, md: 10 }}
-        py={8}
-      >
-        <VStack
-          align="stretch"
-          gap={5}
-          h="full"
-          minH={0}
-          maxW="1480px"
-          mx="auto"
-        >
-          <Skeleton h="70px" />
-          <Grid
-            flex={1}
-            minH={0}
-            gap={5}
-            gridTemplateColumns={{
-              base: "minmax(0, 1fr)",
-              lg: "360px minmax(0, 1fr)",
-              xl: "440px minmax(0, 1fr)",
-            }}
-            gridTemplateRows={{
-              base: "repeat(2, minmax(0, 1fr))",
-              lg: "minmax(0, 1fr)",
-            }}
-          >
-            <Skeleton h="full" minH={0} />
-            <Skeleton h="full" minH={0} />
-          </Grid>
-        </VStack>
-      </Box>
-    );
+    return <WorkspaceLoadingState />;
   }
 
   if (!run || run.city_id !== cityId) {
-    const transientLoadFailure = runFailed && !run;
     return (
-      <Flex
-        h="calc(100dvh - 80px)"
-        minH={0}
-        overflow="hidden"
-        align="center"
-        justify="center"
-        bg="background.alternativeLight"
-        p={6}
-      >
-        <VStack
-          align="start"
-          gap={4}
-          maxW="560px"
-          border="1px solid"
-          borderColor="sentiment.negativeDefault"
-          borderRadius="rounded"
-          bg="sentiment.negativeOverlay"
-          p={6}
-        >
-          <Heading
-            as="h1"
-            fontFamily="heading"
-            fontSize="title.md"
-            color="content.primary"
-          >
-            {t(
-              transientLoadFailure
-                ? "workspace-refresh-error-title"
-                : "workspace-load-error-title",
-            )}
-          </Heading>
-          <Text fontSize="body.sm" color="content.secondary">
-            {t(
-              transientLoadFailure
-                ? "workspace-refresh-error-description"
-                : "workspace-load-error-description",
-            )}
-          </Text>
-          {transientLoadFailure ? (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => void refetchRun()}
-            >
-              <Icon as={LuRefreshCw} />
-              {t("try-again")}
-            </Button>
-          ) : (
-            <Button asChild size="sm" variant="outline">
-              <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
-                <Icon as={LuArrowLeft} />
-                {t("all-concept-notes")}
-              </NextLink>
-            </Button>
-          )}
-        </VStack>
-      </Flex>
+      <WorkspaceUnavailableState
+        cityId={cityId}
+        lng={lng}
+        transientLoadFailure={runFailed && !run}
+        onRetry={() => void refetchRun()}
+      />
     );
   }
 

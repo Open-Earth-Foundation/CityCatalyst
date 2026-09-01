@@ -377,6 +377,7 @@ export function DraftTab({
       return;
     }
 
+    let focusFrame: number | null = null;
     const frame = requestAnimationFrame(() => {
       setFocusedChapterId(focusChapterId);
       const preview = previewElement.current;
@@ -395,9 +396,18 @@ export function DraftTab({
         preview.scrollTop -
         48;
       preview.scrollTo({ behavior: "smooth", top: Math.max(0, targetTop) });
-      findingElement?.focus({ preventScroll: true });
+      if (findingElement) {
+        focusFrame = requestAnimationFrame(() => {
+          findingElement.focus({ preventScroll: true });
+        });
+      }
     });
-    return () => cancelAnimationFrame(frame);
+    return () => {
+      cancelAnimationFrame(frame);
+      if (focusFrame !== null) {
+        cancelAnimationFrame(focusFrame);
+      }
+    };
   }, [chapters, focusChapterId, focusedFinding]);
 
   let status: DraftStatusPresentation = {

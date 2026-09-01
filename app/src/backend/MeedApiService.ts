@@ -89,6 +89,15 @@ type MeedResponseActionRemoved = {
   };
 };
 
+type ExclusionsPreviewRequest = {
+  cityDataList: {
+    locode: string;
+    excludedSectorTags: string[];
+    excludedCoBenefitKeys: string[];
+    excludedActionsFreeText: string;
+  }[];
+};
+
 export default class MeedApiService {
   public static async runRanking(
     inventoryId: string,
@@ -343,6 +352,14 @@ export default class MeedApiService {
       `climate-finance/projects?country_code=${countryLocode}&action_id=${actionId}`,
     );
     return result;
+  }
+
+  public static async getExclusionsPreview(data: ExclusionsPreviewRequest) {
+    const result = await this.makeRequest(
+      "prioritize/exclusions/preview",
+      data,
+    );
+    return result.results;
   }
 
   public static async translateExplanations(

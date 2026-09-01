@@ -25,14 +25,9 @@ import {
 } from "react-icons/lu";
 
 import { Button } from "@/components/ui/button";
-import { toaster } from "@/components/ui/toaster";
 import { useTranslation } from "@/i18n/client";
 import { api } from "@/services/api";
-import type {
-  ConceptNoteChapterValidationFinding,
-  ConceptNoteDraftChapter,
-  ConceptNoteUploadResponse,
-} from "@/util/types";
+import type { ConceptNoteUploadResponse } from "@/util/types";
 
 import {
   getConceptNoteBundleProgress,
@@ -82,14 +77,6 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
-  const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(null);
-  const [chatComposerRequest, setChatComposerRequest] = useState<{
-    content: string;
-    id: string;
-  } | null>(null);
-  const [resolvingChapterId, setResolvingChapterId] = useState<string | null>(
-    null,
-  );
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -103,7 +90,7 @@ export function ConceptNoteWorkspace({
   } = api.useGetConceptNoteRunQuery(
     { cityId, runId },
     {
-      pollingInterval: 5_000,
+      pollingInterval: 15_000,
       skipPollingIfUnfocused: true,
     },
   );
@@ -119,7 +106,7 @@ export function ConceptNoteWorkspace({
     isLoading: draftLoading,
     refetch: refetchDraft,
   } = api.useGetConceptNoteDraftQuery(runId, {
-    pollingInterval: 3_000,
+    pollingInterval: 15_000,
     skipPollingIfUnfocused: true,
   });
   const { data: population } = api.useGetMostRecentCityPopulationQuery({
@@ -127,6 +114,12 @@ export function ConceptNoteWorkspace({
   });
   const { data: inventory } = api.useGetInventoryByCityIdQuery(cityId);
   const { data: cityFiles } = api.useGetUserFilesQuery(cityId);
+  const persistedUpload = run?.uploads?.[0];
+  const selectedUploadId = activeUploadId ?? persistedUpload?.upload_id ?? null;
+  const persistedUploadStatus =
+    persistedUpload?.upload_id === selectedUploadId
+      ? persistedUpload.status
+      : null;
   const [uploadSourceMutation, uploadState] =
     api.useUploadConceptNoteSourceMutation();
   const [retryUpload, retryUploadState] =
@@ -135,25 +128,39 @@ export function ConceptNoteWorkspace({
     api.useRetryConceptNoteContextBundleMutation();
   const [startDraftMutation, startDraftState] =
     api.useStartConceptNoteDraftMutation();
-  const [validateChapter] = api.useValidateConceptNoteChapterMutation();
   const { data: refreshedUpload, isError: uploadRefreshFailed } =
     api.useGetConceptNoteUploadStatusQuery(
-      { runId, uploadId: activeUploadId ?? "" },
+      { runId, uploadId: selectedUploadId ?? "" },
       {
-        skip: !activeUploadId,
+        skip: !selectedUploadId,
         pollingInterval:
-          activeUploadId &&
-          shouldPollConceptNoteUpload(uploadDetails?.status ?? null)
+          selectedUploadId &&
+          shouldPollConceptNoteUpload(
+            persistedUploadStatus ?? uploadDetails?.status ?? null,
+          )
             ? 2_000
-            : activeUploadId
-              ? 5_000
-              : 0,
+            : 0,
         skipPollingIfUnfocused: true,
       },
     );
 
   const bundle = getConceptNoteBundleProgress(run?.progress_summary ?? {});
-  const effectiveUpload = refreshedUpload ?? uploadDetails;
+  const persistedUploadDetails: ConceptNoteUploadResponse | null =
+    persistedUpload
+      ? {
+          uploadId: persistedUpload.upload_id,
+          runId: persistedUpload.run_id,
+          status: persistedUpload.status,
+          filename: persistedUpload.filename,
+          sourceLabel: persistedUpload.source_label,
+          pageCount: persistedUpload.page_count,
+          errorCode: persistedUpload.error_code ?? undefined,
+          receivedAt: persistedUpload.received_at,
+          completedAt: persistedUpload.completed_at,
+        }
+      : null;
+  const effectiveUpload =
+    refreshedUpload ?? uploadDetails ?? persistedUploadDetails;
   const effectiveUploadError = uploadRefreshFailed
     ? t("refresh-status-error")
     : uploadError;
@@ -258,43 +265,6 @@ export function ConceptNoteWorkspace({
     }
   }
 
-  async function resolveChapterFindings(chapterId: string): Promise<void> {
-    setResolvingChapterId(chapterId);
-    try {
-      await validateChapter({ chapterId, runId }).unwrap();
-      await refetchDraft();
-      toaster.create({
-        title: t("workspace-finding-rechecked"),
-        description: t("workspace-finding-rechecked-description"),
-        type: "success",
-        meta: { closable: true },
-      });
-    } catch {
-      toaster.create({
-        title: t("workspace-finding-recheck-failed"),
-        description: t("workspace-finding-recheck-failed-description"),
-        type: "error",
-        meta: { closable: true },
-      });
-    } finally {
-      setResolvingChapterId(null);
-    }
-  }
-
-  function askClimaToFixFinding(
-    chapter: ConceptNoteDraftChapter,
-    finding: ConceptNoteChapterValidationFinding,
-  ): void {
-    setChatComposerRequest({
-      id: crypto.randomUUID(),
-      content: t("workspace-ask-clima-prompt", {
-        action: finding.suggested_action,
-        chapter: chapter.title,
-        finding: finding.message,
-      }),
-    });
-  }
-
   if (runLoading) {
     return (
       <Box
@@ -336,7 +306,8 @@ export function ConceptNoteWorkspace({
     );
   }
 
-  if (runFailed || !run || run.city_id !== cityId) {
+  if (!run || run.city_id !== cityId) {
+    const transientLoadFailure = runFailed && !run;
     return (
       <Flex
         h="calc(100dvh - 80px)"
@@ -363,17 +334,36 @@ export function ConceptNoteWorkspace({
             fontSize="title.md"
             color="content.primary"
           >
-            {t("workspace-load-error-title")}
+            {t(
+              transientLoadFailure
+                ? "workspace-refresh-error-title"
+                : "workspace-load-error-title",
+            )}
           </Heading>
           <Text fontSize="body.sm" color="content.secondary">
-            {t("workspace-load-error-description")}
+            {t(
+              transientLoadFailure
+                ? "workspace-refresh-error-description"
+                : "workspace-load-error-description",
+            )}
           </Text>
-          <Button asChild size="sm" variant="outline">
-            <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
-              <Icon as={LuArrowLeft} />
-              {t("all-concept-notes")}
-            </NextLink>
-          </Button>
+          {transientLoadFailure ? (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => void refetchRun()}
+            >
+              <Icon as={LuRefreshCw} />
+              {t("try-again")}
+            </Button>
+          ) : (
+            <Button asChild size="sm" variant="outline">
+              <NextLink href={`/${lng}/cities/${cityId}/concept-notes`}>
+                <Icon as={LuArrowLeft} />
+                {t("all-concept-notes")}
+              </NextLink>
+            </Button>
+          )}
         </VStack>
       </Flex>
     );
@@ -466,7 +456,6 @@ export function ConceptNoteWorkspace({
                 bg="sentiment.positiveDefault"
                 onClick={() => {
                   setReviewChapterId(null);
-                  setReviewFindingKey(null);
                   setReviewOpen(true);
                 }}
               >
@@ -537,7 +526,7 @@ export function ConceptNoteWorkspace({
           >
             <ConceptNoteChatPanel
               bundleStatus={bundle.status}
-              composerRequest={chatComposerRequest}
+              composerRequest={null}
               documentGrounding={bundle.documentGrounding}
               lng={lng}
               onOpenContext={() => setTab("context")}
@@ -608,7 +597,6 @@ export function ConceptNoteWorkspace({
                   draft={draft ?? null}
                   draftError={draftStartError}
                   focusChapterId={reviewChapterId}
-                  focusFindingKey={reviewFindingKey}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -616,15 +604,9 @@ export function ConceptNoteWorkspace({
                   isStartingDraft={startDraftState.isLoading}
                   lng={lng}
                   noteName={run.name}
-                  onAskClima={askClimaToFixFinding}
-                  onClearFindingFocus={() => setReviewFindingKey(null)}
                   onOpenContext={() => setTab("context")}
                   onRetry={() => void retryContextBundle()}
-                  onResolveChapter={(chapterId) =>
-                    void resolveChapterFindings(chapterId)
-                  }
                   onStartDrafting={() => void startDrafting()}
-                  resolvingChapterId={resolvingChapterId}
                 />
               </Tabs.Content>
               <Tabs.Content
@@ -681,9 +663,8 @@ export function ConceptNoteWorkspace({
         noteName={run.name}
         open={reviewOpen}
         runId={runId}
-        onAddInformation={(chapterId, findingKey) => {
+        onAddInformation={(chapterId) => {
           setReviewChapterId(chapterId);
-          setReviewFindingKey(findingKey ?? null);
           setTab("draft");
         }}
         onReviewSetup={() => setTab("context")}

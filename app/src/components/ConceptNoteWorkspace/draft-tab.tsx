@@ -15,12 +15,10 @@ import {
   LuCheck,
   LuCircleAlert,
   LuDatabase,
-  LuMessageCircle,
   LuPanelLeftClose,
   LuPanelLeftOpen,
   LuRefreshCw,
   LuSparkles,
-  LuX,
 } from "react-icons/lu";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -31,8 +29,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useTranslation } from "@/i18n/client";
 import type {
   ConceptNoteApplicationContext,
-  ConceptNoteChapterValidationFinding,
-  ConceptNoteDraftChapter,
   ConceptNoteDraftRunStatus,
   ConceptNoteDraftState,
 } from "@/util/types";
@@ -45,8 +41,6 @@ import {
   replaceMissingInformationMarkers,
 } from "./draft-markdown";
 import {
-  chapterValidationFindingGroup,
-  chapterValidationFindingKey,
   type ChapterDisplayStatus,
   getChapterDisplayStatus,
 } from "./chapter-validation";
@@ -60,22 +54,14 @@ interface DraftTabProps {
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
   focusChapterId: string | null;
-  focusFindingKey: string | null;
   isDraftRunning: boolean;
   isRetrying: boolean;
   isStartingDraft: boolean;
   lng: string;
   noteName: string;
-  onAskClima: (
-    chapter: ConceptNoteDraftChapter,
-    finding: ConceptNoteChapterValidationFinding,
-  ) => void;
-  onClearFindingFocus: () => void;
   onOpenContext: () => void;
   onRetry: () => void;
-  onResolveChapter: (chapterId: string) => void;
   onStartDrafting: () => void;
-  resolvingChapterId: string | null;
 }
 
 interface DraftStatusPresentation {
@@ -265,31 +251,6 @@ function chapterPreviewMarkdown(markdown: string, title: string): string {
   return replaceMissingInformationMarkers(body);
 }
 
-const DISMISSED_REVIEW_FINDINGS_KEY = "cnb-dismissed-review-findings";
-
-function findingDismissalKey(
-  chapter: ConceptNoteDraftChapter,
-  finding: ConceptNoteChapterValidationFinding,
-): string {
-  return [
-    chapter.validation?.validated_at ?? "saved-review",
-    chapterValidationFindingKey(chapter.chapter_id, finding),
-  ].join("::");
-}
-
-function findingGroupTranslationKey(
-  finding: ConceptNoteChapterValidationFinding,
-): string {
-  const group = chapterValidationFindingGroup(finding);
-  if (group === "conflicts_logic") {
-    return "validation-group-conflicts-logic";
-  }
-  if (group === "evidence") {
-    return "validation-group-evidence";
-  }
-  return "validation-group-missing-information";
-}
-
 export function DraftTab({
   applicationContext,
   applicationContextFailed,
@@ -299,29 +260,20 @@ export function DraftTab({
   draft,
   draftError,
   focusChapterId,
-  focusFindingKey,
   isDraftRunning,
   isRetrying,
   isStartingDraft,
   lng,
   noteName,
-  onAskClima,
-  onClearFindingFocus,
   onOpenContext,
   onRetry,
-  onResolveChapter,
   onStartDrafting,
-  resolvingChapterId,
 }: DraftTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
-  const findingElements = useRef<Record<string, HTMLDivElement | null>>({});
   const previewElement = useRef<HTMLDivElement | null>(null);
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
   const [isChapterPanelOpen, setIsChapterPanelOpen] = useState(true);
-  const [dismissedFindingKeys, setDismissedFindingKeys] = useState<Set<string>>(
-    new Set(),
-  );
   const isReady = bundle.status === "ready";
   const isBuilding = bundle.status === "building";
   const isFailed = bundle.status === "failed";
@@ -352,54 +304,6 @@ export function DraftTab({
       : t("drafting-setup-missing", {
           requirements: missingDraftingRequirements.join(", "),
         });
-  const dismissedFindingsStorageKey = draft?.run_id
-    ? `${DISMISSED_REVIEW_FINDINGS_KEY}:${draft.run_id}`
-    : null;
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      if (!dismissedFindingsStorageKey) {
-        setDismissedFindingKeys(new Set());
-        return;
-      }
-      try {
-        const savedKeys = JSON.parse(
-          window.localStorage.getItem(dismissedFindingsStorageKey) ?? "[]",
-        );
-        setDismissedFindingKeys(
-          new Set(
-            Array.isArray(savedKeys)
-              ? savedKeys.filter(
-                  (key): key is string => typeof key === "string",
-                )
-              : [],
-          ),
-        );
-      } catch {
-        setDismissedFindingKeys(new Set());
-      }
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [dismissedFindingsStorageKey]);
-
-  function updateDismissedFindings(update: (keys: Set<string>) => void): void {
-    setDismissedFindingKeys((currentKeys) => {
-      const nextKeys = new Set(currentKeys);
-      update(nextKeys);
-      if (dismissedFindingsStorageKey) {
-        try {
-          window.localStorage.setItem(
-            dismissedFindingsStorageKey,
-            JSON.stringify([...nextKeys]),
-          );
-        } catch {
-          // Dismissal remains available for this session if storage is blocked.
-        }
-      }
-      return nextKeys;
-    });
-  }
-
   useEffect(() => {
     if (
       !focusChapterId ||
@@ -412,22 +316,18 @@ export function DraftTab({
       setFocusedChapterId(focusChapterId);
       const preview = previewElement.current;
       const chapterElement = chapterElements.current[focusChapterId];
-      const targetElement =
-        (focusFindingKey &&
-          findingElements.current[`${focusChapterId}::${focusFindingKey}`]) ||
-        chapterElement;
-      if (!preview || !targetElement) {
+      if (!preview || !chapterElement) {
         return;
       }
       const chapterTop =
-        targetElement.getBoundingClientRect().top -
+        chapterElement.getBoundingClientRect().top -
         preview.getBoundingClientRect().top +
         preview.scrollTop -
         48;
       preview.scrollTo({ behavior: "smooth", top: Math.max(0, chapterTop) });
     });
     return () => cancelAnimationFrame(frame);
-  }, [chapters, focusChapterId, focusFindingKey]);
+  }, [chapters, focusChapterId]);
 
   let status: DraftStatusPresentation = {
     background: "background.neutral",
@@ -885,318 +785,44 @@ export function DraftTab({
               </Box>
 
               <VStack align="stretch" mt={4} gap={5}>
-                {chapters.map((chapter) => {
-                  const savedFindings = chapter.validation?.findings ?? [];
-                  const visibleFindings = savedFindings.filter(
-                    (finding) =>
-                      chapterValidationFindingKey(
-                        chapter.chapter_id,
-                        finding,
-                      ) === focusFindingKey ||
-                      !dismissedFindingKeys.has(
-                        findingDismissalKey(chapter, finding),
-                      ),
-                  );
-                  const dismissedCount =
-                    savedFindings.length - visibleFindings.length;
-                  const hasInformation =
-                    chapter.missing_information.length > 0 ||
-                    savedFindings.length > 0;
-
-                  return (
-                    <Box
-                      key={chapter.chapter_id}
-                      ref={(element: HTMLDivElement | null) => {
-                        chapterElements.current[chapter.chapter_id] = element;
-                      }}
-                      scrollMarginTop={4}
+                {chapters.map((chapter) => (
+                  <Box
+                    key={chapter.chapter_id}
+                    ref={(element: HTMLDivElement | null) => {
+                      chapterElements.current[chapter.chapter_id] = element;
+                    }}
+                    scrollMarginTop={4}
+                  >
+                    <Text
+                      mb={3}
+                      pb={2}
+                      borderBottom="1px solid"
+                      borderColor="border.neutral"
+                      fontFamily="heading"
+                      fontSize="18px"
+                      fontWeight="semibold"
+                      lineHeight="28px"
+                      color="content.primary"
                     >
-                      <Text
-                        mb={3}
-                        pb={2}
-                        borderBottom="1px solid"
-                        borderColor="border.neutral"
-                        fontFamily="heading"
-                        fontSize="18px"
-                        fontWeight="semibold"
-                        lineHeight="28px"
-                        color="content.primary"
+                      {chapter.position + 1} · {chapter.title}
+                    </Text>
+                    {chapter.body_markdown ? (
+                      <ReactMarkdown
+                        components={markdownComponents}
+                        remarkPlugins={[remarkGfm]}
                       >
-                        {chapter.position + 1} · {chapter.title}
+                        {chapterPreviewMarkdown(
+                          chapter.body_markdown,
+                          chapter.title,
+                        )}
+                      </ReactMarkdown>
+                    ) : (
+                      <Text fontSize="body.sm" color="content.tertiary">
+                        {t("chapter-awaiting-copy")}
                       </Text>
-                      {chapter.body_markdown ? (
-                        <ReactMarkdown
-                          components={markdownComponents}
-                          remarkPlugins={[remarkGfm]}
-                        >
-                          {chapterPreviewMarkdown(
-                            chapter.body_markdown,
-                            chapter.title,
-                          )}
-                        </ReactMarkdown>
-                      ) : (
-                        <Text fontSize="body.sm" color="content.tertiary">
-                          {t("chapter-awaiting-copy")}
-                        </Text>
-                      )}
-
-                      {hasInformation && (
-                        <VStack
-                          align="stretch"
-                          gap={3}
-                          mt={5}
-                          borderTop="1px solid"
-                          borderColor="border.neutral"
-                          pt={4}
-                        >
-                          <Box>
-                            <Text
-                              fontFamily="heading"
-                              fontSize="body.sm"
-                              fontWeight="semibold"
-                              color="content.primary"
-                            >
-                              {t("workspace-missing-information")}
-                            </Text>
-                            <Text
-                              mt={1}
-                              fontSize="label.sm"
-                              color="content.tertiary"
-                            >
-                              {t("workspace-missing-information-description")}
-                            </Text>
-                          </Box>
-
-                          {chapter.missing_information.length > 0 && (
-                            <Box>
-                              <Text
-                                mb={2}
-                                fontSize="label.sm"
-                                fontWeight="semibold"
-                                color="content.secondary"
-                              >
-                                {t("workspace-draft-prompts")}
-                              </Text>
-                              <VStack align="stretch" gap={2}>
-                                {chapter.missing_information.map(
-                                  (missingInformation) => (
-                                    <HStack
-                                      key={missingInformation}
-                                      align="start"
-                                      gap={2}
-                                      borderRadius="rounded"
-                                      bg="sentiment.warningOverlay"
-                                      px={3}
-                                      py={2}
-                                    >
-                                      <Icon
-                                        as={LuCircleAlert}
-                                        flexShrink={0}
-                                        mt={0.5}
-                                        color="sentiment.warningDefault"
-                                      />
-                                      <Text
-                                        fontSize="label.sm"
-                                        color="content.secondary"
-                                      >
-                                        {missingInformation}
-                                      </Text>
-                                    </HStack>
-                                  ),
-                                )}
-                              </VStack>
-                            </Box>
-                          )}
-
-                          {savedFindings.length > 0 && (
-                            <Box>
-                              <Flex align="center" justify="space-between">
-                                <Text
-                                  fontSize="label.sm"
-                                  fontWeight="semibold"
-                                  color="content.secondary"
-                                >
-                                  {t("workspace-review-findings")}
-                                </Text>
-                                {dismissedCount > 0 && (
-                                  <Button
-                                    size="xs"
-                                    variant="ghost"
-                                    color="content.link"
-                                    onClick={() =>
-                                      updateDismissedFindings((keys) => {
-                                        for (const finding of savedFindings) {
-                                          keys.delete(
-                                            findingDismissalKey(
-                                              chapter,
-                                              finding,
-                                            ),
-                                          );
-                                        }
-                                      })
-                                    }
-                                  >
-                                    {t("workspace-show-dismissed", {
-                                      count: dismissedCount,
-                                    })}
-                                  </Button>
-                                )}
-                              </Flex>
-                              {chapter.validation?.is_stale && (
-                                <Text
-                                  mt={2}
-                                  fontSize="label.sm"
-                                  color="sentiment.warningDefault"
-                                >
-                                  {t("workspace-review-findings-stale")}
-                                </Text>
-                              )}
-                              <VStack align="stretch" gap={3} mt={2}>
-                                {visibleFindings.map((finding) => {
-                                  const findingKey =
-                                    chapterValidationFindingKey(
-                                      chapter.chapter_id,
-                                      finding,
-                                    );
-                                  const isFocused =
-                                    chapter.chapter_id === focusChapterId &&
-                                    findingKey === focusFindingKey;
-                                  return (
-                                    <Box
-                                      key={findingKey}
-                                      ref={(element: HTMLDivElement | null) => {
-                                        findingElements.current[
-                                          `${chapter.chapter_id}::${findingKey}`
-                                        ] = element;
-                                      }}
-                                      border="1px solid"
-                                      borderColor={
-                                        isFocused
-                                          ? "content.link"
-                                          : "border.neutral"
-                                      }
-                                      borderRadius="rounded"
-                                      bg={
-                                        isFocused
-                                          ? "background.neutral"
-                                          : "base.light"
-                                      }
-                                      p={3}
-                                      boxShadow={isFocused ? "1dp" : "none"}
-                                    >
-                                      <Flex
-                                        align="start"
-                                        justify="space-between"
-                                        gap={3}
-                                      >
-                                        <Text
-                                          fontSize="label.sm"
-                                          fontWeight="semibold"
-                                          color="content.primary"
-                                        >
-                                          {t(
-                                            findingGroupTranslationKey(finding),
-                                          )}
-                                        </Text>
-                                        <Text
-                                          flexShrink={0}
-                                          fontSize="label.xs"
-                                          fontWeight="semibold"
-                                          color={
-                                            finding.severity === "blocking"
-                                              ? "sentiment.negativeDefault"
-                                              : "sentiment.warningDefault"
-                                          }
-                                        >
-                                          {t(
-                                            finding.severity === "blocking"
-                                              ? "review-blocking"
-                                              : "review-warning",
-                                          )}
-                                        </Text>
-                                      </Flex>
-                                      <Text
-                                        mt={1}
-                                        fontSize="body.sm"
-                                        color="content.primary"
-                                      >
-                                        {finding.message}
-                                      </Text>
-                                      <Text
-                                        mt={2}
-                                        fontSize="label.sm"
-                                        color="content.secondary"
-                                      >
-                                        {t("validation-suggested-action", {
-                                          action: finding.suggested_action,
-                                        })}
-                                      </Text>
-                                      <HStack mt={3} gap={2} flexWrap="wrap">
-                                        <Button
-                                          size="xs"
-                                          variant="outline"
-                                          loading={
-                                            resolvingChapterId ===
-                                            chapter.chapter_id
-                                          }
-                                          onClick={() =>
-                                            onResolveChapter(chapter.chapter_id)
-                                          }
-                                        >
-                                          <Icon as={LuRefreshCw} />
-                                          {t("workspace-resolve-finding")}
-                                        </Button>
-                                        <Button
-                                          size="xs"
-                                          variant="ghost"
-                                          color="content.link"
-                                          onClick={() => {
-                                            onClearFindingFocus();
-                                            updateDismissedFindings((keys) =>
-                                              keys.add(
-                                                findingDismissalKey(
-                                                  chapter,
-                                                  finding,
-                                                ),
-                                              ),
-                                            );
-                                          }}
-                                        >
-                                          <Icon as={LuX} />
-                                          {t("workspace-dismiss-finding")}
-                                        </Button>
-                                        <Button
-                                          size="xs"
-                                          variant="ghost"
-                                          color="content.link"
-                                          onClick={() =>
-                                            onAskClima(chapter, finding)
-                                          }
-                                        >
-                                          <Icon as={LuMessageCircle} />
-                                          {t("workspace-ask-clima")}
-                                        </Button>
-                                      </HStack>
-                                    </Box>
-                                  );
-                                })}
-                              </VStack>
-                              {dismissedCount > 0 && (
-                                <Text
-                                  mt={2}
-                                  fontSize="label.xs"
-                                  color="content.tertiary"
-                                >
-                                  {t("workspace-dismissed-local-note")}
-                                </Text>
-                              )}
-                            </Box>
-                          )}
-                        </VStack>
-                      )}
-                    </Box>
-                  );
-                })}
+                    )}
+                  </Box>
+                ))}
               </VStack>
             </Box>
           </Flex>

@@ -11,7 +11,7 @@ from app.models.cnb.concept_note_runs import (
     ConceptNoteRunListResponse,
     ConceptNoteStartRequest,
 )
-from app.models.db.concept_note import ConceptNoteRun
+from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.models.db.thread import Thread
 from app.persistence.concept_notes.runs import ConceptNoteRunRepository
 from app.services.citycatalyst_client import (
@@ -92,6 +92,7 @@ def _run_service(
         funding_reference_validator=funding_validator,
     )
     service.repository = repository
+    repository.list_uploads_for_run.return_value = []
     return service, repository, cc_client, funding_validator
 
 
@@ -263,6 +264,39 @@ async def test_get_run_revalidates_city_access_owned_by_citycatalyst() -> None:
         token="token",
         user_id=payload.user_id,
     )
+
+
+async def test_get_run_returns_owned_upload_metadata() -> None:
+    """Keep uploaded filenames visible when the workspace is resumed."""
+    payload = _start_request()
+    run = _persisted_run(
+        payload,
+        request_fingerprint=_request_fingerprint(payload),
+    )
+    upload = ConceptNoteUpload(
+        upload_id=uuid4(),
+        run_id=run.run_id,
+        uploaded_by_user_id=payload.user_id,
+        filename="Richfield_FloodRiskPrioritization.pdf",
+        source_label="Richfield Flood Risk Prioritization",
+        ingest_status="ready",
+        page_count=55,
+        received_at=datetime.now(timezone.utc),
+        ingest_completed_at=datetime.now(timezone.utc),
+    )
+    service, repository, _, _ = _run_service()
+    repository.get_for_user.return_value = run
+    repository.list_uploads_for_run.return_value = [upload]
+
+    response = await service.get_run(
+        run_id=run.run_id,
+        requested_user_id=payload.user_id,
+        authorization="Bearer token",
+    )
+
+    assert response.uploads[0].filename == upload.filename
+    assert response.uploads[0].status == "ready"
+    assert response.uploads[0].page_count == 55
 
 
 async def test_list_runs_rejects_authenticated_user_mismatch() -> None:

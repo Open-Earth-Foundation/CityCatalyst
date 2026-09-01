@@ -270,7 +270,7 @@ Content-Type: application/json
     "cc_access_token": "jwt_token_from_citycatalyst"
   },
   "options": {
-    "model": "openai/gpt-5.4-mini"
+    "model": "openai/gpt-5.6-terra"
   }
 }
 ```
@@ -941,7 +941,7 @@ Content-Type: application/json
   "content": "What are climate risks?",
   "thread_id": "550e8400-e29b-41d4-a716-446655440000",
   "inventory_id": "inv-456",
-  "options": { "model": "openai/gpt-5.4-mini" }
+  "options": { "model": "openai/gpt-5.6-terra" }
 }
 ```
 

@@ -1028,6 +1028,18 @@ export interface ConceptNoteRun {
   status: string;
   workflow_step: string;
   progress_summary: Record<string, unknown>;
+  uploads?: Array<{
+    upload_id: string;
+    run_id: string;
+    status: ConceptNoteUploadStatus;
+    filename: string;
+    source_label?: string | null;
+    source_format: "pdf" | "markdown";
+    page_count?: number | null;
+    error_code?: string | null;
+    received_at: string;
+    completed_at?: string | null;
+  }>;
   created_at: string;
   updated_at: string;
 }

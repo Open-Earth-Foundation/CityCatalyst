@@ -79,7 +79,7 @@ const translations: Record<string, string> = {
   "review-no-conflicts": "No conflicts",
   "review-no-evidence-warnings": "No evidence warnings",
   "review-no-missing-information": "No missing information",
-  "review-fix-blockers": "Fix blockers ({{count}})",
+  "review-fix-missing-information": "Fix missing information",
   "review-review-warnings": "Review warnings ({{count}})",
   "review-rerun": "Re-run review",
   "review-retry-failed": "Retry {{count}} failed chapters",
@@ -87,15 +87,14 @@ const translations: Record<string, string> = {
   "review-saved-results-at": "Showing saved results from {{date}}.",
   "review-saved-results-description": "Showing saved results.",
   "review-open-chapter": "Open chapter to fix",
-  "review-omitted-prompts": "Unanswered prompts are omitted from the file",
+  "review-missing-information-impact":
+    "Missing information must be resolved or confirmed before export",
   "review-step-conflicts-logic": "Conflicts & logic",
   "review-step-decision": "Decide & export",
   "review-step-missing-information": "Missing information",
   "review-step-number": "Step {{number}}",
   "review-template-failures": "{{count}} chapters fail the template.",
   "review-warning": "Review",
-  "review-unresolved-blockers":
-    "Validation blockers remain unresolved in exported text",
   "review-workspace-warnings": "Warnings stay in the workspace for follow-up",
   "source-context-ready": "Evidence available",
   "source-context-ready-export": "Evidence is linked.",
@@ -651,12 +650,15 @@ describe("guided review before export", () => {
 
     await click("Continue to decision");
     expect(document.body.textContent).toContain("Choose what happens next");
-    expect(document.body.textContent).toContain("Fix blockers (3)");
+    expect(document.body.textContent).toContain("Fix missing information");
     expect(document.body.textContent).toContain("Review warnings (2)");
     expect(document.body.textContent).toContain(
+      "Missing information must be resolved or confirmed before export",
+    );
+    expect(document.body.textContent).not.toContain(
       "Validation blockers remain unresolved in exported text",
     );
-    expect(document.body.textContent).toContain(
+    expect(document.body.textContent).not.toContain(
       "Unanswered prompts are omitted from the file",
     );
     expect(document.body.textContent).toContain("Export anyway");

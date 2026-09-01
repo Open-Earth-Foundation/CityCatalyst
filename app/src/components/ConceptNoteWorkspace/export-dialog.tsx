@@ -91,9 +91,8 @@ interface ReviewFindingListProps {
 }
 
 interface ReviewImpactSummaryProps {
-  blockingCount: number;
   lng: string;
-  omittedPromptCount: number;
+  missingInformationCount: number;
   status: ConceptNoteChapterValidationStatus;
   warningCount: number;
 }
@@ -251,9 +250,8 @@ function ReviewFindingList({
 }
 
 function ReviewImpactSummary({
-  blockingCount,
   lng,
-  omittedPromptCount,
+  missingInformationCount,
   status,
   warningCount,
 }: ReviewImpactSummaryProps) {
@@ -274,8 +272,7 @@ function ReviewImpactSummary({
         gap={5}
         gridTemplateColumns={{
           base: "1fr",
-          sm: "repeat(2, 1fr)",
-          md: "repeat(4, 1fr)",
+          sm: "repeat(3, 1fr)",
         }}
       >
         <Box>
@@ -305,23 +302,10 @@ function ReviewImpactSummary({
             fontWeight="semibold"
             color="content.primary"
           >
-            {blockingCount}
+            {missingInformationCount}
           </Text>
           <Text fontSize="label.sm" color="content.tertiary">
-            {t("review-unresolved-blockers")}
-          </Text>
-        </Box>
-        <Box>
-          <Text
-            fontFamily="heading"
-            fontSize="title.md"
-            fontWeight="semibold"
-            color="content.primary"
-          >
-            {omittedPromptCount}
-          </Text>
-          <Text fontSize="label.sm" color="content.tertiary">
-            {t("review-omitted-prompts")}
+            {t("review-missing-information-impact")}
           </Text>
         </Box>
         <Box>
@@ -395,6 +379,12 @@ export function ExportDialog({
     () => countUnresolvedExportItems(chapters),
     [chapters],
   );
+  const missingInformationCount = Math.max(
+    review.blockingCount,
+    unresolvedCount,
+  );
+  const firstChapterWithMissingInformation =
+    chapters.find((chapter) => chapter.missing_information.length > 0) ?? null;
   const canExport =
     canExportConceptNote(chapters, acceptedMissingInformation) &&
     !exportingFormat;
@@ -1161,20 +1151,21 @@ export function ExportDialog({
                     </Box>
 
                     <ReviewImpactSummary
-                      blockingCount={review.blockingCount}
                       lng={lng}
-                      omittedPromptCount={unresolvedCount}
+                      missingInformationCount={missingInformationCount}
                       status={effectiveReviewStatus}
                       warningCount={review.warningCount}
                     />
 
                     <VStack align="stretch" gap={3}>
-                      {review.blockingCount > 0 && (
+                      {missingInformationCount > 0 && (
                         <Button
                           justifyContent="flex-start"
                           onClick={() =>
                             handleAddInformation(
-                              firstActionableFinding?.chapterId ?? null,
+                              firstActionableFinding?.chapterId ??
+                                firstChapterWithMissingInformation?.chapter_id ??
+                                null,
                               firstActionableFinding
                                 ? chapterValidationFindingKey(
                                     firstActionableFinding.chapterId,
@@ -1185,9 +1176,7 @@ export function ExportDialog({
                           }
                         >
                           <Icon as={LuFileText} />
-                          {t("review-fix-blockers", {
-                            count: review.blockingCount,
-                          })}
+                          {t("review-fix-missing-information")}
                         </Button>
                       )}
                       {review.warningCount > 0 && (
@@ -1296,9 +1285,8 @@ export function ExportDialog({
                     </HStack>
 
                     <ReviewImpactSummary
-                      blockingCount={review.blockingCount}
                       lng={lng}
-                      omittedPromptCount={unresolvedCount}
+                      missingInformationCount={missingInformationCount}
                       status={effectiveReviewStatus}
                       warningCount={review.warningCount}
                     />

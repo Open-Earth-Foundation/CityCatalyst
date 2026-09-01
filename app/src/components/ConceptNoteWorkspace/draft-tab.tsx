@@ -13,10 +13,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { IconType } from "react-icons";
 import {
   LuCheck,
+  LuChevronDown,
+  LuChevronLeft,
+  LuChevronRight,
+  LuChevronUp,
   LuCircleAlert,
   LuDatabase,
-  LuPanelLeftClose,
-  LuPanelLeftOpen,
   LuRefreshCw,
   LuSparkles,
 } from "react-icons/lu";
@@ -25,6 +27,13 @@ import remarkGfm from "remark-gfm";
 
 import { createChatMarkdownComponents } from "@/components/shared/chat-markdown-components";
 import { Button } from "@/components/ui/button";
+import {
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverRoot,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useTranslation } from "@/i18n/client";
 import type {
@@ -135,40 +144,76 @@ const markdownComponents = {
 
     if (missingInformation) {
       return (
-        <Tooltip
-          showArrow
-          portalled
-          content={missingInformation}
-          contentProps={{
-            maxW: "360px",
-            px: 3,
-            py: 2,
-            fontSize: "label.sm",
-            lineHeight: "20px",
+        <PopoverRoot
+          lazyMount
+          positioning={{
+            placement: "top",
+            offset: { mainAxis: 10 },
           }}
         >
-          <chakra.button
-            type="button"
-            aria-label={missingInformation}
-            display="inline-flex"
-            alignItems="center"
-            justifyContent="center"
-            boxSize="18px"
-            mx={1}
-            borderRadius="full"
-            bg="sentiment.warningOverlay"
-            color="sentiment.warningDefault"
-            verticalAlign="text-bottom"
-            cursor="help"
-            _focusVisible={{
-              outline: "2px solid",
-              outlineColor: "content.link",
-              outlineOffset: "1px",
-            }}
+          <PopoverTrigger asChild>
+            <chakra.button
+              type="button"
+              aria-label={missingInformation}
+              display="inline-grid"
+              placeItems="center"
+              boxSize="26px"
+              mx={1}
+              border="1px solid"
+              borderColor="sentiment.warningDefault"
+              borderRadius="7px"
+              bg="sentiment.warningOverlay"
+              color="sentiment.warningDefault"
+              lineHeight={1}
+              verticalAlign="middle"
+              cursor="pointer"
+              transitionDuration="150ms"
+              transitionProperty="background, color, box-shadow, transform"
+              _hover={{
+                bg: "sentiment.warningDefault",
+                color: "base.light",
+                boxShadow: "1dp",
+              }}
+              _active={{ transform: "scale(0.95)" }}
+              _focusVisible={{
+                outline: "2px solid",
+                outlineColor: "content.link",
+                outlineOffset: "2px",
+              }}
+            >
+              <Icon as={LuCircleAlert} boxSize="16px" />
+            </chakra.button>
+          </PopoverTrigger>
+          <PopoverContent
+            w={{ base: "calc(100vw - 32px)", sm: "420px" }}
+            maxW="420px"
+            border="1px solid"
+            borderColor="sentiment.warningDefault"
+            borderRadius="rounded"
+            bg="base.light"
+            boxShadow="3dp"
           >
-            <Icon as={LuCircleAlert} boxSize="12px" />
-          </chakra.button>
-        </Tooltip>
+            <PopoverArrow />
+            <PopoverBody p={4}>
+              <HStack align="start" gap={3}>
+                <Icon
+                  as={LuCircleAlert}
+                  flexShrink={0}
+                  mt={0.5}
+                  boxSize="20px"
+                  color="sentiment.warningDefault"
+                />
+                <Text
+                  fontSize="body.sm"
+                  lineHeight="22px"
+                  color="content.primary"
+                >
+                  {missingInformation}
+                </Text>
+              </HStack>
+            </PopoverBody>
+          </PopoverContent>
+        </PopoverRoot>
       );
     }
 
@@ -588,12 +633,7 @@ export function DraftTab({
             direction={{ base: "column", lg: "row" }}
             flex={1}
             minH={0}
-            gap={3}
-            border="1px solid"
-            borderColor="border.neutral"
-            borderRadius="rounded"
-            bg="background.alternativeLight"
-            p={4}
+            gap={isChapterPanelOpen ? 5 : 0}
           >
             <VStack
               id="concept-note-chapter-panel"
@@ -601,76 +641,96 @@ export function DraftTab({
               aria-label={t("draft-sections")}
               align="stretch"
               flexShrink={0}
+              position="relative"
               gap={isChapterPanelOpen ? 2 : 0}
               w={
                 isChapterPanelOpen
                   ? { base: "full", lg: "160px", xl: "180px" }
-                  : { base: "full", lg: "40px" }
+                  : { base: "full", lg: "0px" }
               }
               maxH={
                 isChapterPanelOpen
                   ? { base: "190px", lg: "full" }
-                  : { base: "40px", lg: "full" }
+                  : { base: "0px", lg: "full" }
               }
               minH={0}
-              border="1px solid"
+              borderWidth={isChapterPanelOpen ? "1px" : "0"}
+              borderStyle="solid"
               borderColor="border.neutral"
               borderRadius="rounded"
-              bg="base.light"
-              overflow="hidden"
-              p={isChapterPanelOpen ? 3 : 1}
-              transition="width 160ms ease, padding 160ms ease"
+              bg={isChapterPanelOpen ? "base.light" : "transparent"}
+              overflow="visible"
+              p={isChapterPanelOpen ? 3 : 0}
+              transition="width 160ms ease, max-height 160ms ease, padding 160ms ease, border-width 160ms ease"
             >
-              <HStack
-                flexShrink={0}
-                justify={isChapterPanelOpen ? "space-between" : "center"}
-                gap={1}
-              >
-                {isChapterPanelOpen && (
-                  <Text
-                    fontFamily="heading"
-                    fontSize="10px"
-                    fontWeight="semibold"
-                    color="content.tertiary"
-                    letterSpacing="1.5px"
-                    textTransform="uppercase"
-                  >
-                    {t("draft-sections")}
-                  </Text>
+              {isChapterPanelOpen && (
+                <Text
+                  flexShrink={0}
+                  fontFamily="heading"
+                  fontSize="10px"
+                  fontWeight="semibold"
+                  color="content.tertiary"
+                  letterSpacing="1.5px"
+                  textTransform="uppercase"
+                >
+                  {t("draft-sections")}
+                </Text>
+              )}
+              <Tooltip
+                content={t(
+                  isChapterPanelOpen
+                    ? "hide-chapter-panel"
+                    : "show-chapter-panel",
                 )}
-                <Tooltip
-                  content={t(
+              >
+                <Button
+                  type="button"
+                  variant="outline"
+                  aria-controls="concept-note-chapter-panel"
+                  aria-expanded={isChapterPanelOpen}
+                  aria-label={t(
                     isChapterPanelOpen
                       ? "hide-chapter-panel"
                       : "show-chapter-panel",
                   )}
+                  position="absolute"
+                  zIndex={2}
+                  insetEnd={{ base: "50%", lg: "-18px" }}
+                  bottom={{ base: "-18px", lg: "auto" }}
+                  top={{ base: "auto", lg: "50%" }}
+                  transform={{
+                    base: "translateX(50%)",
+                    lg: "translateY(-50%)",
+                  }}
+                  minW="36px"
+                  h="36px"
+                  borderColor="border.neutral"
+                  borderRadius="full"
+                  bg="base.light"
+                  color="content.link"
+                  p={0}
+                  boxShadow="1dp"
+                  transitionDuration="150ms"
+                  transitionProperty="background, border-color, box-shadow"
+                  _hover={{
+                    borderColor: "content.link",
+                    bg: "background.neutral",
+                    boxShadow: "2dp",
+                  }}
+                  onClick={() => setIsChapterPanelOpen((isOpen) => !isOpen)}
                 >
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    aria-controls="concept-note-chapter-panel"
-                    aria-expanded={isChapterPanelOpen}
-                    aria-label={t(
-                      isChapterPanelOpen
-                        ? "hide-chapter-panel"
-                        : "show-chapter-panel",
-                    )}
-                    minW="28px"
-                    h="28px"
-                    color="content.link"
-                    p={0}
-                    _hover={{ bg: "background.neutral" }}
-                    onClick={() => setIsChapterPanelOpen((isOpen) => !isOpen)}
-                  >
-                    <Icon
-                      as={
-                        isChapterPanelOpen ? LuPanelLeftClose : LuPanelLeftOpen
-                      }
-                      boxSize="14px"
-                    />
-                  </Button>
-                </Tooltip>
-              </HStack>
+                  <Icon
+                    as={isChapterPanelOpen ? LuChevronUp : LuChevronDown}
+                    display={{ base: "block", lg: "none" }}
+                    boxSize="18px"
+                  />
+                  <Icon
+                    as={isChapterPanelOpen ? LuChevronLeft : LuChevronRight}
+                    display={{ base: "none", lg: "block" }}
+                    boxSize="18px"
+                  />
+                </Button>
+              </Tooltip>
               <VStack
                 id="concept-note-chapter-list"
                 hidden={!isChapterPanelOpen}

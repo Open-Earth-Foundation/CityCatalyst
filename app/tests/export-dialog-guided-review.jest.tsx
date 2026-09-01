@@ -12,11 +12,12 @@ import {
 } from "@jest/globals";
 import { ChakraProvider } from "@chakra-ui/react";
 import { configureStore } from "@reduxjs/toolkit";
-import { act, type ReactNode } from "react";
+import { act, type ComponentProps, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Provider } from "react-redux";
 
 import { chapterValidationFindingKey } from "@/components/ConceptNoteWorkspace/chapter-validation";
+import translations from "@/i18n/locales/en/concept-notes.json";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type {
   ConceptNoteChapterValidationResponse,
@@ -24,89 +25,6 @@ import type {
   ConceptNoteDraftState,
   ValidateConceptNoteChapterRequest,
 } from "@/util/types";
-
-const translations: Record<string, string> = {
-  cancel: "Cancel",
-  close: "Close",
-  "docx-description": "Editable document",
-  "export-failed": "Export failed",
-  "export-format": "Export {{format}}",
-  "guided-review-description": "Review description",
-  "guided-review-failed": "Review failed",
-  "guided-review-failed-description": "Try again",
-  "guided-review-template-unavailable":
-    "The application template is no longer available",
-  "guided-review-template-unavailable-description":
-    "Review application setup before running the review again.",
-  "guided-review-progress": "{{current}} of {{total}} chapters reviewed",
-  "guided-review-partial-failure":
-    "{{completed}} chapters were reviewed, but {{count}} could not be checked.",
-  "guided-review-chapter-failed-service":
-    "The review service was temporarily unavailable.",
-  "guided-review-running": "Reviewing the full document",
-  "guided-review-running-description":
-    "Up to three chapters at once. Completeness first, consistency second.",
-  "guided-review-steps": "Review steps",
-  "guided-review-title": "Review before export",
-  "missing-information-export-confirmation":
-    "I understand unresolved information is omitted.",
-  "pdf-description": "Review copy",
-  "review-action-label": "Recommended action:",
-  "review-application-setup": "Review application setup",
-  "review-back-conflicts": "Back to conflicts & logic",
-  "review-back-decision": "Back to decision",
-  "review-back-missing": "Back to missing information",
-  "review-blocking": "Blocking",
-  "review-conflicts-description":
-    "The consistency review found {{count}} issues.",
-  "review-conflicts-title": "Conflicts & logic",
-  "review-continue-export": "Continue to export",
-  "review-decision-description": "Choose what happens next.",
-  "review-decision-title": "Choose what happens next",
-  "review-document-status": "Document review status",
-  "review-evidence-description": "{{count}} evidence warnings.",
-  "review-evidence-title": "Evidence to add",
-  "review-draft-load-error": "The current draft could not be loaded.",
-  "review-draft-load-error-description": "Retry loading the draft.",
-  "review-export-as-is": "Export anyway",
-  "review-export-impact": "Export impact",
-  "review-export-description": "Choose a format.",
-  "review-export-title": "Export the current draft",
-  "review-missing-description":
-    "The completeness review found {{count}} items.",
-  "review-missing-title": "Missing information",
-  "review-next-conflicts": "Continue to conflicts & logic",
-  "review-next-decision": "Continue to decision",
-  "review-no-conflicts": "No conflicts",
-  "review-no-evidence-warnings": "No evidence warnings",
-  "review-no-missing-information": "No missing information",
-  "review-fix-missing-information": "Fix missing information",
-  "review-review-warnings": "Review warnings ({{count}})",
-  "review-rerun": "Re-run review",
-  "review-retry-failed": "Retry {{count}} failed chapters",
-  "review-saved-results": "Saved review results",
-  "review-saved-results-at": "Showing saved results from {{date}}.",
-  "review-saved-results-description": "Showing saved results.",
-  "review-open-chapter": "Open chapter to fix",
-  "review-missing-information-impact":
-    "Missing information must be resolved or confirmed before export",
-  "review-step-conflicts-logic": "Conflicts & logic",
-  "review-step-decision": "Decide & export",
-  "review-step-missing-information": "Missing information",
-  "review-step-number": "Step {{number}}",
-  "review-template-failures": "{{count}} chapters fail the template.",
-  "review-warning": "Review",
-  "review-workspace-warnings": "Warnings stay in the workspace for follow-up",
-  "source-context-ready": "Evidence available",
-  "source-context-ready-export": "Evidence is linked.",
-  "source-context-recommended": "Evidence missing",
-  "source-context-recommended-export": "Add a source when possible.",
-  "try-again": "Try again",
-  "validation-related-chapters": "Related chapters: {{chapters}}",
-  "validation-status-incomplete": "Incomplete",
-  "validation-status-needs-review": "Needs review",
-  "validation-status-ready": "Ready",
-};
 
 const validateChapter = jest.fn(
   (
@@ -123,7 +41,7 @@ const validateChapter = jest.fn(
 jest.unstable_mockModule("@/i18n/client", () => ({
   useTranslation: () => ({
     t: (key: string, values?: Record<string, string | number>) => {
-      let value = translations[key] ?? key;
+      let value = translations[key as keyof typeof translations] ?? key;
       for (const [name, replacement] of Object.entries(values ?? {})) {
         value = value.replace(`{{${name}}}`, String(replacement));
       }
@@ -137,6 +55,8 @@ let api: typeof import("@/services/api").api;
 let container: HTMLDivElement;
 let root: Root;
 let store: ReturnType<typeof createTestStore>;
+
+type ExportDialogProps = ComponentProps<typeof ExportDialog>;
 
 function createTestStore() {
   return configureStore({
@@ -304,6 +224,36 @@ async function renderWithProviders(children: ReactNode): Promise<void> {
   });
 }
 
+function defaultDialogProps(): ExportDialogProps {
+  return {
+    draft: draft(),
+    draftError: false,
+    hasApplicationTemplate: true,
+    hasUploadedEvidence: false,
+    lng: "en",
+    noteName: "Kraków Tram",
+    onAddInformation: jest.fn(),
+    onOpenChange: jest.fn(),
+    onRetryDraft: jest.fn(),
+    onReviewComplete: jest.fn(async () => undefined),
+    onReviewSetup: jest.fn(),
+    open: true,
+    runId: "run-1",
+  };
+}
+
+async function renderDialog(
+  overrides: Partial<ExportDialogProps> = {},
+): Promise<void> {
+  await renderWithProviders(
+    <ExportDialog {...defaultDialogProps()} {...overrides} />,
+  );
+}
+
+function validatedChapterIds(): string[] {
+  return validateChapter.mock.calls.map(([request]) => request.chapterId);
+}
+
 function cloneForTest<Value>(value: Value): Value {
   return JSON.parse(JSON.stringify(value)) as Value;
 }
@@ -364,23 +314,11 @@ describe("guided review before export", () => {
         }),
     }));
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={draftWithChapterCount(5)}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={onReviewComplete}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({
+      draft: draftWithChapterCount(5),
+      onReviewComplete,
+    });
+    await settle();
     await settle();
 
     expect(validateChapter).toHaveBeenCalledTimes(3);
@@ -412,52 +350,22 @@ describe("guided review before export", () => {
   });
 
   it("waits for a delayed draft before starting the first review", async () => {
-    const props = {
-      draftError: false,
-      hasApplicationTemplate: true,
-      hasUploadedEvidence: false,
-      lng: "en",
-      noteName: "Kraków Tram",
-      onAddInformation: jest.fn(),
-      onOpenChange: jest.fn(),
-      onRetryDraft: jest.fn(),
-      onReviewComplete: jest.fn(async () => undefined),
-      onReviewSetup: jest.fn(),
-      open: true,
-      runId: "run-1",
-    };
-
-    await renderWithProviders(<ExportDialog {...props} draft={null} />);
+    await renderDialog({ draft: null });
     await settle();
     expect(validateChapter).not.toHaveBeenCalled();
 
-    await renderWithProviders(<ExportDialog {...props} draft={draft()} />);
+    await renderDialog();
     await settle();
 
-    expect(
-      validateChapter.mock.calls.map(([request]) => request.chapterId),
-    ).toEqual(["chapter-target", "chapter-related"]);
+    expect(validatedChapterIds()).toEqual([
+      "chapter-target",
+      "chapter-related",
+    ]);
     expect(document.body.textContent).toContain("Missing information");
   });
 
   it("opens current saved results without rerunning and offers an explicit rerun", async () => {
-    await renderWithProviders(
-      <ExportDialog
-        draft={draftWithSavedValidations()}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({ draft: draftWithSavedValidations() });
     await settle();
 
     expect(validateChapter).not.toHaveBeenCalled();
@@ -466,9 +374,10 @@ describe("guided review before export", () => {
     await click("Re-run review");
     await settle();
 
-    expect(
-      validateChapter.mock.calls.map(([request]) => request.chapterId),
-    ).toEqual(["chapter-target", "chapter-related"]);
+    expect(validatedChapterIds()).toEqual([
+      "chapter-target",
+      "chapter-related",
+    ]);
   });
 
   it("revalidates a saved result whose revision no longer matches", async () => {
@@ -478,23 +387,7 @@ describe("guided review before export", () => {
       revision_number: 2,
     };
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={savedDraft}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({ draft: savedDraft });
     await settle();
 
     expect(validateChapter).toHaveBeenCalledTimes(1);
@@ -515,23 +408,7 @@ describe("guided review before export", () => {
       },
     }));
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={draft()}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog();
     await settle();
 
     expect(document.body.textContent).toContain("A required amount is missing");
@@ -540,35 +417,21 @@ describe("guided review before export", () => {
       "The review service was temporarily unavailable.",
     );
 
-    await click("Retry 1 failed chapters");
+    await click("Retry failed chapter");
     await settle();
 
-    expect(
-      validateChapter.mock.calls.map(([request]) => request.chapterId),
-    ).toEqual(["chapter-target", "chapter-related", "chapter-related"]);
+    expect(validatedChapterIds()).toEqual([
+      "chapter-target",
+      "chapter-related",
+      "chapter-related",
+    ]);
     expect(document.body.textContent).not.toContain(
       "The review service was temporarily unavailable.",
     );
   });
 
   it("does not call a document ready while unanswered prompts will be omitted", async () => {
-    await renderWithProviders(
-      <ExportDialog
-        draft={draftWithSavedValidations({ ready: true })}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({ draft: draftWithSavedValidations({ ready: true }) });
     await settle();
     await click("Continue to conflicts & logic");
     await click("Continue to decision");
@@ -578,26 +441,9 @@ describe("guided review before export", () => {
   });
 
   it("renders a visible primary export label for a genuinely ready document", async () => {
-    await renderWithProviders(
-      <ExportDialog
-        draft={draftWithSavedValidations({
-          missingInformation: [],
-          ready: true,
-        })}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({
+      draft: draftWithSavedValidations({ missingInformation: [], ready: true }),
+    });
     await settle();
     await click("Continue to conflicts & logic");
     await click("Continue to decision");
@@ -613,28 +459,17 @@ describe("guided review before export", () => {
     const onOpenChange = jest.fn();
     const onReviewComplete = jest.fn(async () => undefined);
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={draft()}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={onAddInformation}
-        onOpenChange={onOpenChange}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={onReviewComplete}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({
+      onAddInformation,
+      onOpenChange,
+      onReviewComplete,
+    });
     await settle();
 
-    expect(
-      validateChapter.mock.calls.map(([request]) => request.chapterId),
-    ).toEqual(["chapter-target", "chapter-related"]);
+    expect(validatedChapterIds()).toEqual([
+      "chapter-target",
+      "chapter-related",
+    ]);
     expect(document.body.textContent).toContain("Missing information");
     expect(document.body.textContent).toContain("Evidence to add");
     expect(document.body.textContent).toContain(
@@ -673,23 +508,7 @@ describe("guided review before export", () => {
   it("passes the exact finding target when returning to the draft", async () => {
     const onAddInformation = jest.fn();
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={draft()}
-        draftError={false}
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={onAddInformation}
-        onOpenChange={jest.fn()}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({ onAddInformation });
     await settle();
 
     const finding = validationFor("chapter-target").findings[0];
@@ -705,23 +524,11 @@ describe("guided review before export", () => {
     const onOpenChange = jest.fn();
     const onReviewSetup = jest.fn();
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={draft()}
-        draftError={false}
-        hasApplicationTemplate={false}
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={onOpenChange}
-        onRetryDraft={jest.fn()}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={onReviewSetup}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({
+      hasApplicationTemplate: false,
+      onOpenChange,
+      onReviewSetup,
+    });
     await settle();
 
     expect(validateChapter).not.toHaveBeenCalled();
@@ -737,23 +544,7 @@ describe("guided review before export", () => {
   it("shows a retry action when loading the draft fails", async () => {
     const onRetryDraft = jest.fn();
 
-    await renderWithProviders(
-      <ExportDialog
-        draft={null}
-        draftError
-        hasApplicationTemplate
-        hasUploadedEvidence={false}
-        lng="en"
-        noteName="Kraków Tram"
-        onAddInformation={jest.fn()}
-        onOpenChange={jest.fn()}
-        onRetryDraft={onRetryDraft}
-        onReviewComplete={jest.fn()}
-        onReviewSetup={jest.fn()}
-        open
-        runId="run-1"
-      />,
-    );
+    await renderDialog({ draft: null, draftError: true, onRetryDraft });
     await settle();
 
     expect(document.body.textContent).toContain(

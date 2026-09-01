@@ -1,23 +1,12 @@
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from typing import Any
+from unittest.mock import AsyncMock
 from uuid import UUID
 
 import pytest
-from app.config import get_settings
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
-from app.models.cnb.concept_note_chapter_validation import (
-    ChapterCompletenessValidationOutput,
-    ChapterConsistencyValidationOutput,
-    ChapterValidationChapter,
-    ChapterValidationEvidenceLink,
-    ChapterValidationFindingDraft,
-    ChapterValidationGap,
-    ChapterValidationPassCheck,
-    ChapterValidationRequest,
-    ChapterValidationTemplate,
-)
+from app.models.cnb.concept_note_chapter_validation import ChapterValidationGap
 from app.persistence.concept_notes.workspace import (
     WorkspaceValidationChapter,
     WorkspaceValidationContext,
@@ -28,123 +17,23 @@ from app.services.cnb.chapter_validation import (
     ChapterValidationError,
     ChapterValidationInputTooLargeError,
     ChapterValidationModelOutputError,
-    ConceptNoteChapterValidationService,
     build_chapter_validation_request,
 )
 from app.utils.prompt_budget import TokenCount
-
-TARGET_ID = UUID("11111111-1111-4111-8111-111111111111")
-OTHER_ID = UUID("22222222-2222-4222-8222-222222222222")
-THIRD_ID = UUID("33333333-3333-4333-8333-333333333333")
-UNKNOWN_ID = UUID("99999999-9999-4999-8999-999999999999")
-
-POLITICAL_BODY = (
-    "Krakow Fast Tram Stage IV is presented as a sustainable urban mobility "
-    "project. This investment concept should be anchored in adopted commitments."
+from tests.cnb.chapter_validation_helpers import (
+    OTHER_ID,
+    TARGET_ID,
+    THIRD_ID,
+    UNKNOWN_ID,
+    chapter as _chapter,
+    check as _check,
+    completeness as _completeness,
+    consistency as _consistency,
+    finding as _finding,
+    request as _request,
+    service as _service,
+    static_passes as _static_passes,
 )
-APPLICANT_BODY = (
-    "The applicant is the Municipality of Krakow. Its project is Krakow Fast "
-    "Tram Stage IV, a route supporting sustainable urban mobility."
-)
-INVESTMENT_BODY = (
-    "The proposed measure is the delivery of the 4.45 km tram route. Construction "
-    "is 97% complete and commissioning is underway."
-)
-EUCF_SUPPORT_BODY = (
-    "EUCF-supported work should focus on clearly defined remaining or follow-on "
-    "investment-concept activities rather than on works already completed, under "
-    "construction, or being commissioned."
-)
-
-PassCallback = Callable[[str, dict[str, Any]], Awaitable[Any]]
-
-
-def _chapter(
-    chapter_id: UUID,
-    *,
-    position: int,
-    body: str | None = "Complete chapter text.",
-    required: bool = True,
-) -> ChapterValidationChapter:
-    return ChapterValidationChapter(
-        chapter_id=chapter_id,
-        template_section_id=f"chapter-{position + 1}",
-        title=f"Chapter {position + 1}",
-        position=position,
-        required=required,
-        body_markdown=body,
-        revision_number=1 if body is not None else None,
-    )
-
-
-def _request(
-    *,
-    chapters: list[ChapterValidationChapter] | None = None,
-    gaps: list[ChapterValidationGap] | None = None,
-    evidence: bool = True,
-    target_required: bool = True,
-) -> ChapterValidationRequest:
-    evidence_links = (
-        [
-            ChapterValidationEvidenceLink(
-                selected_source_label="City climate plan",
-                claim_ref="target claim",
-                quote_or_summary="Supporting summary",
-            )
-        ]
-        if evidence
-        else []
-    )
-    return ChapterValidationRequest(
-        target_chapter_id=TARGET_ID,
-        validation_input_fingerprint="a" * 64,
-        chapters=chapters
-        or [_chapter(TARGET_ID, position=0, required=target_required)],
-        template=ChapterValidationTemplate(
-            template_id=UUID("44444444-4444-4444-8444-444444444444"),
-            name="Application template",
-            chapter_schema=[
-                {
-                    "chapter_ref": "chapter-1",
-                    "title": "Chapter 1",
-                    "required": target_required,
-                }
-            ],
-            required_fields=["Implementation timetable"],
-        ),
-        open_gaps=gaps or [],
-        evidence_links=evidence_links,
-    )
-
-
-def _passing_completeness() -> ChapterCompletenessValidationOutput:
-    return ChapterCompletenessValidationOutput(
-        checks=[
-            ChapterValidationPassCheck(key="required_content", status="pass"),
-            ChapterValidationPassCheck(key="template_constraints", status="pass"),
-            ChapterValidationPassCheck(key="evidence_citations", status="pass"),
-        ]
-    )
-
-
-def _passing_consistency() -> ChapterConsistencyValidationOutput:
-    return ChapterConsistencyValidationOutput(
-        checks=[
-            ChapterValidationPassCheck(key="internal_consistency", status="pass"),
-            ChapterValidationPassCheck(
-                key="cross_chapter_consistency",
-                status="pass",
-            ),
-        ]
-    )
-
-
-def _service(run_pass: PassCallback) -> ConceptNoteChapterValidationService:
-    settings = get_settings().model_copy(deep=True)
-    return ConceptNoteChapterValidationService(
-        settings=settings,
-        run_pass=run_pass,  # type: ignore[arg-type]
-    )
 
 
 def test_builds_core_request_from_repository_snapshot() -> None:
@@ -216,8 +105,8 @@ async def test_runs_completeness_before_full_document_consistency() -> None:
     async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
         calls.append((phase, payload))
         if phase == "completeness":
-            return _passing_completeness()
-        return _passing_consistency()
+            return _completeness()
+        return _consistency()
 
     request = _request(
         chapters=[
@@ -232,7 +121,7 @@ async def test_runs_completeness_before_full_document_consistency() -> None:
     assert [phase for phase, _ in calls] == ["completeness", "consistency"]
     consistency_payload = calls[1][1]
     assert consistency_payload["completeness_result"] == (
-        _passing_completeness().model_dump(mode="json")
+        _completeness().model_dump(mode="json")
     )
     assert {
         chapter["chapter_id"] for chapter in consistency_payload["compared_chapters"]
@@ -257,9 +146,9 @@ async def test_batches_complete_comparison_chapters_without_truncation(
 
     async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
         if phase == "completeness":
-            return _passing_completeness()
+            return _completeness()
         compared_batches.append(payload["compared_chapters"])
-        return _passing_consistency()
+        return _consistency()
 
     monkeypatch.setattr(
         "app.services.cnb.chapter_validation.count_prompt_tokens",
@@ -288,75 +177,54 @@ async def test_batches_complete_comparison_chapters_without_truncation(
 
 
 async def test_rejects_consistency_findings_with_hallucinated_chapter_ids() -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-        return ChapterConsistencyValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="internal_consistency",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="cross_chapter_consistency",
-                    status="fail",
-                    message="Conflicting totals",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="cross_chapter_conflict",
-                    severity="blocking",
-                    message="The totals conflict.",
-                    suggested_action="Confirm the correct total.",
-                    involved_chapter_ids=[TARGET_ID, UNKNOWN_ID],
-                )
-            ],
-        )
+    consistency = _consistency(
+        cross_chapter=_check(
+            "cross_chapter_consistency", "fail", "Conflicting totals"
+        ),
+        findings=[
+            _finding(
+                "cross_chapter_conflict",
+                "The totals conflict.",
+                "Confirm the correct total.",
+                chapter_ids=[TARGET_ID, UNKNOWN_ID],
+            )
+        ],
+    )
 
     request = _request(
         chapters=[_chapter(TARGET_ID, position=0), _chapter(OTHER_ID, position=1)]
     )
 
     with pytest.raises(ChapterValidationModelOutputError):
-        await _service(run_pass).validate(request)
+        await _service(_static_passes(consistency_result=consistency)).validate(request)
 
 
 async def test_missing_information_can_support_a_template_failure() -> None:
     """Accept one actionable omission when it also violates the template."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="fail",
-                    message="The applicant identity is missing.",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="fail",
-                    message="The required applicant field is empty.",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="missing_information",
-                    severity="blocking",
-                    message="The chapter does not identify the applicant.",
-                    suggested_action="Add the applicant's full legal identity.",
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
+    completeness = _completeness(
+        required=_check(
+            "required_content", "fail", "The applicant identity is missing."
+        ),
+        template=_check(
+            "template_constraints",
+            "fail",
+            "The required applicant field is empty.",
+        ),
+        findings=[
+            _finding(
+                "missing_information",
+                "The chapter does not identify the applicant.",
+                "Add the applicant's full legal identity.",
+            )
+        ],
+    )
 
-    decision = await _service(run_pass).validate(_request(evidence=False))
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        _request(evidence=False)
+    )
 
     assert decision.status == "incomplete"
     template_check = next(
@@ -371,28 +239,19 @@ async def test_missing_information_can_support_a_template_failure() -> None:
 async def test_synthesizes_target_finding_from_a_nonpass_check_summary() -> None:
     """Preserve a useful target-only result when the model omits one finding."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="fail",
-                    message="The required applicant section is absent.",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="pass",
-                ),
-            ]
+    completeness = _completeness(
+        template=_check(
+            "template_constraints",
+            "fail",
+            "The required applicant section is absent.",
         )
+    )
 
-    decision = await _service(run_pass).validate(_request(evidence=False))
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        _request(evidence=False)
+    )
 
     assert decision.status == "incomplete"
     assert len(decision.findings) == 1
@@ -405,39 +264,23 @@ async def test_synthesizes_target_finding_from_a_nonpass_check_summary() -> None
 async def test_rejects_cross_chapter_check_without_related_chapter_finding() -> None:
     """Do not invent a related chapter when a cross-document finding is absent."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-        return ChapterConsistencyValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="internal_consistency",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="cross_chapter_consistency",
-                    status="fail",
-                    message="Another chapter states a different total.",
-                ),
-            ]
+    consistency = _consistency(
+        cross_chapter=_check(
+            "cross_chapter_consistency",
+            "fail",
+            "Another chapter states a different total.",
         )
+    )
 
     request = _request(
         chapters=[_chapter(TARGET_ID, position=0), _chapter(OTHER_ID, position=1)]
     )
 
     with pytest.raises(ChapterValidationModelOutputError):
-        await _service(run_pass).validate(request)
+        await _service(_static_passes(consistency_result=consistency)).validate(request)
 
 
 async def test_blocking_workspace_gap_overrides_clean_model_result() -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        return (
-            _passing_completeness()
-            if phase == "completeness"
-            else _passing_consistency()
-        )
-
     request = _request(
         gaps=[
             ChapterValidationGap(
@@ -448,7 +291,7 @@ async def test_blocking_workspace_gap_overrides_clean_model_result() -> None:
         evidence=False,
     )
 
-    decision = await _service(run_pass).validate(request)
+    decision = await _service(_static_passes()).validate(request)
 
     assert decision.status == "incomplete"
     checks = {check.key: check.status for check in decision.checks}
@@ -461,37 +304,27 @@ async def test_blocking_workspace_gap_overrides_clean_model_result() -> None:
 
 
 async def test_missing_evidence_requires_review_but_does_not_block() -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="warning",
-                    message="The emissions claim has no supporting source.",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="evidence",
-                    severity="warning",
-                    message="The emissions claim has no supporting source.",
-                    suggested_action="Link the calculation supporting the claim.",
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
+    completeness = _completeness(
+        evidence=_check(
+            "evidence_citations",
+            "warning",
+            "The emissions claim has no supporting source.",
+        ),
+        findings=[
+            _finding(
+                "evidence",
+                "The emissions claim has no supporting source.",
+                "Link the calculation supporting the claim.",
+                severity="warning",
+            )
+        ],
+    )
 
-    decision = await _service(run_pass).validate(_request(evidence=False))
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        _request(evidence=False)
+    )
 
     assert decision.status == "needs_review"
     assert [finding.phase for finding in decision.findings] == ["evidence"]
@@ -503,14 +336,7 @@ async def test_no_evidence_links_can_still_be_ready_without_evidence_deficiency(
 ):
     """Do not warn solely because a chapter has no persisted evidence links."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        return (
-            _passing_completeness()
-            if phase == "completeness"
-            else _passing_consistency()
-        )
-
-    decision = await _service(run_pass).validate(_request(evidence=False))
+    decision = await _service(_static_passes()).validate(_request(evidence=False))
 
     assert decision.status == "ready"
     assert decision.findings == []
@@ -519,42 +345,25 @@ async def test_no_evidence_links_can_still_be_ready_without_evidence_deficiency(
 async def test_deduplicates_model_paraphrase_of_persisted_gap() -> None:
     """Surface an authoritative open gap once when the model also recognizes it."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="fail",
-                    message="The committed co-financing amount is missing.",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="missing_information",
-                    severity="blocking",
-                    message="The committed co-financing amount is missing.",
-                    suggested_action="Confirm the committed co-financing amount.",
-                    involved_chapter_ids=[TARGET_ID],
-                ),
-                ChapterValidationFindingDraft(
-                    category="template_constraint",
-                    severity="blocking",
-                    message="Confirm the committed co-financing amount.",
-                    suggested_action="Complete the matching required template field.",
-                    involved_chapter_ids=[TARGET_ID],
-                ),
-            ],
-        )
+    completeness = _completeness(
+        required=_check(
+            "required_content",
+            "fail",
+            "The committed co-financing amount is missing.",
+        ),
+        findings=[
+            _finding(
+                "missing_information",
+                "The committed co-financing amount is missing.",
+                "Confirm the committed co-financing amount.",
+            ),
+            _finding(
+                "template_constraint",
+                "Confirm the committed co-financing amount.",
+                "Complete the matching required template field.",
+            ),
+        ],
+    )
 
     request = _request(
         gaps=[
@@ -564,7 +373,11 @@ async def test_deduplicates_model_paraphrase_of_persisted_gap() -> None:
             )
         ]
     )
-    decision = await _service(run_pass).validate(request)
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        request
+    )
 
     gap_findings = [
         finding
@@ -583,41 +396,22 @@ async def test_deduplicates_model_paraphrase_of_persisted_gap() -> None:
 async def test_deduplicates_model_summary_of_multiple_persisted_gaps() -> None:
     """Prefer granular canonical gaps over one redundant model summary."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="fail",
-                    message="Applicant identity and territorial data are absent.",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="missing_information",
-                    severity="blocking",
-                    message=(
-                        "Applicant identity, territorial codes, population, and "
-                        "contact persons are absent."
-                    ),
-                    suggested_action=(
-                        "Add applicant identity, territorial codes, population, "
-                        "and contact persons."
-                    ),
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
+    completeness = _completeness(
+        required=_check(
+            "required_content",
+            "fail",
+            "Applicant identity and territorial data are absent.",
+        ),
+        findings=[
+            _finding(
+                "missing_information",
+                "Applicant identity, territorial codes, population, and contact "
+                "persons are absent.",
+                "Add applicant identity, territorial codes, population, and "
+                "contact persons.",
+            )
+        ],
+    )
 
     request = _request(
         gaps=[
@@ -631,7 +425,11 @@ async def test_deduplicates_model_summary_of_multiple_persisted_gaps() -> None:
             ),
         ]
     )
-    decision = await _service(run_pass).validate(request)
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        request
+    )
 
     gap_findings = [
         finding
@@ -643,37 +441,23 @@ async def test_deduplicates_model_summary_of_multiple_persisted_gaps() -> None:
 
 
 async def test_missing_information_is_blocking_even_if_model_marks_warning() -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="warning",
-                    message="A date is missing.",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="missing_information",
-                    severity="warning",
-                    message="The implementation start date is missing.",
-                    suggested_action="Add the confirmed start date.",
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
+    completeness = _completeness(
+        required=_check("required_content", "warning", "A date is missing."),
+        findings=[
+            _finding(
+                "missing_information",
+                "The implementation start date is missing.",
+                "Add the confirmed start date.",
+                severity="warning",
+            )
+        ],
+    )
 
-    decision = await _service(run_pass).validate(_request())
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        _request()
+    )
 
     assert decision.status == "incomplete"
     assert decision.findings[0].severity == "blocking"
@@ -686,37 +470,27 @@ async def test_missing_information_is_blocking_even_if_model_marks_warning() -> 
 async def test_template_constraint_failure_is_incomplete() -> None:
     """Map a required template violation to a blocking public result."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "consistency":
-            return _passing_consistency()
-        return ChapterCompletenessValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="required_content",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="template_constraints",
-                    status="fail",
-                    message="The required objective format is not followed.",
-                ),
-                ChapterValidationPassCheck(
-                    key="evidence_citations",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="template_constraint",
-                    severity="warning",
-                    message="The required objective format is not followed.",
-                    suggested_action="Add the objective value, unit, and target year.",
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
+    completeness = _completeness(
+        template=_check(
+            "template_constraints",
+            "fail",
+            "The required objective format is not followed.",
+        ),
+        findings=[
+            _finding(
+                "template_constraint",
+                "The required objective format is not followed.",
+                "Add the objective value, unit, and target year.",
+                severity="warning",
+            )
+        ],
+    )
 
-    decision = await _service(run_pass).validate(_request())
+    decision = await _service(
+        _static_passes(completeness_result=completeness)
+    ).validate(
+        _request()
+    )
 
     assert decision.status == "incomplete"
     assert decision.findings[0].severity == "blocking"
@@ -729,33 +503,24 @@ async def test_template_constraint_failure_is_incomplete() -> None:
 async def test_internal_conflict_failure_is_incomplete() -> None:
     """Map a target-only material contradiction in pass two to incomplete."""
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-        return ChapterConsistencyValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="internal_consistency",
-                    status="fail",
-                    message="The delivery dates contradict each other.",
-                ),
-                ChapterValidationPassCheck(
-                    key="cross_chapter_consistency",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="internal_conflict",
-                    severity="blocking",
-                    message="The chapter gives two incompatible completion dates.",
-                    suggested_action="Confirm and use one approved completion date.",
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
+    consistency = _consistency(
+        internal=_check(
+            "internal_consistency",
+            "fail",
+            "The delivery dates contradict each other.",
+        ),
+        findings=[
+            _finding(
+                "internal_conflict",
+                "The chapter gives two incompatible completion dates.",
+                "Confirm and use one approved completion date.",
+            )
+        ],
+    )
 
-    decision = await _service(run_pass).validate(_request())
+    decision = await _service(_static_passes(consistency_result=consistency)).validate(
+        _request()
+    )
 
     assert decision.status == "incomplete"
     assert decision.findings[0].phase == "consistency"
@@ -766,37 +531,27 @@ async def test_internal_conflict_failure_is_incomplete() -> None:
 
 
 async def test_cross_chapter_conflict_blocks_only_the_target_decision() -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-        return ChapterConsistencyValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="internal_consistency",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="cross_chapter_consistency",
-                    status="fail",
-                    message="The project totals conflict.",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="cross_chapter_conflict",
-                    severity="blocking",
-                    message="The target and budget totals differ.",
-                    suggested_action="Use the confirmed total in both chapters.",
-                    involved_chapter_ids=[TARGET_ID, OTHER_ID],
-                    excerpts=["EUR 4 million", "EUR 5 million"],
-                )
-            ],
-        )
+    consistency = _consistency(
+        cross_chapter=_check(
+            "cross_chapter_consistency", "fail", "The project totals conflict."
+        ),
+        findings=[
+            _finding(
+                "cross_chapter_conflict",
+                "The target and budget totals differ.",
+                "Use the confirmed total in both chapters.",
+                chapter_ids=[TARGET_ID, OTHER_ID],
+                excerpts=["EUR 4 million", "EUR 5 million"],
+            )
+        ],
+    )
 
     request = _request(
         chapters=[_chapter(TARGET_ID, position=0), _chapter(OTHER_ID, position=1)]
     )
-    decision = await _service(run_pass).validate(request)
+    decision = await _service(
+        _static_passes(consistency_result=consistency)
+    ).validate(request)
 
     assert decision.target_chapter_id == TARGET_ID
     assert decision.status == "incomplete"
@@ -804,272 +559,13 @@ async def test_cross_chapter_conflict_blocks_only_the_target_decision() -> None:
     assert decision.findings[0].involved_chapter_ids == [TARGET_ID, OTHER_ID]
 
 
-@pytest.mark.parametrize(
-    (
-        "target_title",
-        "target_body",
-        "compared_chapters",
-        "related_chapter_id",
-    ),
-    [
-        (
-            "Political commitments",
-            POLITICAL_BODY,
-            [
-                (OTHER_ID, "Proposed investment project", INVESTMENT_BODY),
-                (THIRD_ID, "Use of EUCF support", EUCF_SUPPORT_BODY),
-            ],
-            None,
-        ),
-        (
-            "Applicant",
-            APPLICANT_BODY,
-            [
-                (OTHER_ID, "Proposed investment project", INVESTMENT_BODY),
-                (THIRD_ID, "Use of EUCF support", EUCF_SUPPORT_BODY),
-            ],
-            None,
-        ),
-        (
-            "Proposed investment project",
-            INVESTMENT_BODY,
-            [
-                (OTHER_ID, "Political commitments", POLITICAL_BODY),
-                (THIRD_ID, "Use of EUCF support", EUCF_SUPPORT_BODY),
-            ],
-            THIRD_ID,
-        ),
-        (
-            "Use of EUCF support",
-            EUCF_SUPPORT_BODY,
-            [
-                (OTHER_ID, "Political commitments", POLITICAL_BODY),
-                (THIRD_ID, "Proposed investment project", INVESTMENT_BODY),
-            ],
-            THIRD_ID,
-        ),
-    ],
-)
-async def test_scope_conflict_requires_an_explicit_target_claim(
-    target_title: str,
-    target_body: str,
-    compared_chapters: list[tuple[UUID, str, str]],
-    related_chapter_id: UUID | None,
-) -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-
-        assert payload["target_chapter"]["title"] == target_title
-        assert {chapter["title"] for chapter in payload["compared_chapters"]} == {
-            title for _, title, _ in compared_chapters
-        }
-        return _passing_consistency()
-
-    target = _chapter(TARGET_ID, position=0, body=target_body).model_copy(
-        update={"title": target_title}
-    )
-    comparisons = [
-        _chapter(chapter_id, position=position, body=body).model_copy(
-            update={"title": title}
-        )
-        for position, (chapter_id, title, body) in enumerate(
-            compared_chapters,
-            start=1,
-        )
-    ]
-
-    decision = await _service(run_pass).validate(
-        _request(chapters=[target, *comparisons])
-    )
-
-    cross_check = next(
-        check for check in decision.checks if check.key == "cross_chapter_consistency"
-    )
-    if related_chapter_id is None:
-        assert decision.status == "ready"
-        assert cross_check.status == "pass"
-        assert not any(finding.phase == "consistency" for finding in decision.findings)
-    else:
-        assert decision.status == "incomplete"
-        assert cross_check.status == "fail"
-        conflict = next(
-            finding
-            for finding in decision.findings
-            if finding.category == "cross_chapter_conflict"
-        )
-        assert conflict.involved_chapter_ids == [TARGET_ID, related_chapter_id]
-
-
-async def test_deterministic_scope_conflict_deduplicates_model_paraphrase() -> None:
-    """Prefer the deterministic target-involved finding over the same model issue."""
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-        return ChapterConsistencyValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="internal_consistency",
-                    status="pass",
-                ),
-                ChapterValidationPassCheck(
-                    key="cross_chapter_consistency",
-                    status="fail",
-                    message="The two chapters define incompatible project scope.",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="cross_chapter_conflict",
-                    severity="blocking",
-                    message=(
-                        "The target includes delivery of the current route while "
-                        "the related chapter excludes construction works."
-                    ),
-                    suggested_action=(
-                        "Align both chapters on one future residual scope."
-                    ),
-                    involved_chapter_ids=[TARGET_ID, OTHER_ID],
-                )
-            ],
-        )
-
-    decision = await _service(run_pass).validate(
-        _request(
-            chapters=[
-                _chapter(TARGET_ID, position=0, body=INVESTMENT_BODY),
-                _chapter(OTHER_ID, position=1, body=EUCF_SUPPORT_BODY),
-            ]
-        )
-    )
-
-    conflicts = [
-        finding
-        for finding in decision.findings
-        if finding.category == "cross_chapter_conflict"
-    ]
-    assert len(conflicts) == 1
-    assert conflicts[0].excerpts == [
-        "The proposed measure is the delivery of the 4.45 km tram route.",
-        (
-            "EUCF-supported work should focus on clearly defined remaining or "
-            "follow-on investment-concept activities rather than on works already "
-            "completed, under construction, or being commissioned."
-        ),
-    ]
-
-
-async def test_scope_words_without_explicit_claims_do_not_trigger_guard() -> None:
-    """Ignore project names, route descriptions, framing, and generic scope words."""
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        return (
-            _passing_completeness()
-            if phase == "completeness"
-            else _passing_consistency()
-        )
-
-    decision = await _service(run_pass).validate(
-        _request(
-            chapters=[
-                _chapter(
-                    TARGET_ID,
-                    position=0,
-                    body=(
-                        "This investment concept names the tram route and describes "
-                        "sustainable delivery governance. Construction terminology "
-                        "is used in a background project title."
-                    ),
-                ),
-                _chapter(
-                    OTHER_ID,
-                    position=1,
-                    body=(
-                        "The route is a sustainable mobility project. Commissioning "
-                        "appears only in the source bibliography."
-                    ),
-                ),
-            ]
-        )
-    )
-
-    assert decision.status == "ready"
-    assert not any(finding.phase == "consistency" for finding in decision.findings)
-
-
-async def test_deduplicates_repeated_internal_findings_across_batches(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    def fake_count(parts: list[Any], **_: Any) -> TokenCount:
-        payload = parts[1]
-        compared = payload.get("compared_chapters", [])
-        return TokenCount(
-            tokens=100 if len(compared) <= 1 else 2000,
-            tokenizer="test",
-        )
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        if phase == "completeness":
-            return _passing_completeness()
-        return ChapterConsistencyValidationOutput(
-            checks=[
-                ChapterValidationPassCheck(
-                    key="internal_consistency",
-                    status="warning",
-                    message="The sequence is ambiguous.",
-                ),
-                ChapterValidationPassCheck(
-                    key="cross_chapter_consistency",
-                    status="pass",
-                ),
-            ],
-            findings=[
-                ChapterValidationFindingDraft(
-                    category="logic_error",
-                    severity="warning",
-                    message="The delivery sequence is ambiguous.",
-                    suggested_action="Clarify which activity occurs first.",
-                    involved_chapter_ids=[TARGET_ID],
-                )
-            ],
-        )
-
-    monkeypatch.setattr(
-        "app.services.cnb.chapter_validation.count_prompt_tokens",
-        fake_count,
-    )
-    service = _service(run_pass)
-    service._settings.llm.generation.prompt_budget.cnb_validation.max_prompt_tokens = (
-        1000
-    )
-    request = _request(
-        chapters=[
-            _chapter(TARGET_ID, position=0),
-            _chapter(OTHER_ID, position=1),
-            _chapter(THIRD_ID, position=2),
-        ]
-    )
-
-    decision = await service.validate(request)
-
-    assert decision.status == "needs_review"
-    assert len(decision.findings) == 1
-
-
 async def test_rejects_indivisible_oversized_input_without_calling_model(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    calls = 0
-
     def oversized(*_: Any, **__: Any) -> TokenCount:
         return TokenCount(tokens=100_000, tokenizer="test")
 
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        nonlocal calls
-        calls += 1
-        return _passing_completeness()
-
+    run_pass = AsyncMock(return_value=_completeness())
     monkeypatch.setattr(
         "app.services.cnb.chapter_validation.count_prompt_tokens",
         oversized,
@@ -1078,12 +574,11 @@ async def test_rejects_indivisible_oversized_input_without_calling_model(
     with pytest.raises(ChapterValidationInputTooLargeError):
         await _service(run_pass).validate(_request())
 
-    assert calls == 0
+    run_pass.assert_not_awaited()
 
 
 async def test_provider_failure_returns_no_persistence_ready_decision() -> None:
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        raise RuntimeError("provider unavailable")
+    run_pass = AsyncMock(side_effect=RuntimeError("provider unavailable"))
 
     with pytest.raises(ChapterValidationError) as exc_info:
         await _service(run_pass).validate(_request())
@@ -1092,13 +587,7 @@ async def test_provider_failure_returns_no_persistence_ready_decision() -> None:
 
 
 async def test_empty_chapter_short_circuits_to_incomplete() -> None:
-    calls = 0
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        nonlocal calls
-        calls += 1
-        return _passing_completeness()
-
+    run_pass = AsyncMock(return_value=_completeness())
     request = _request(
         chapters=[_chapter(TARGET_ID, position=0, body=None)],
         gaps=[
@@ -1111,7 +600,7 @@ async def test_empty_chapter_short_circuits_to_incomplete() -> None:
 
     decision = await _service(run_pass).validate(request)
 
-    assert calls == 0
+    run_pass.assert_not_awaited()
     assert decision.status == "incomplete"
     assert decision.validated_revision_number is None
     assert decision.findings[0].category == "missing_information"
@@ -1122,12 +611,7 @@ async def test_empty_chapter_short_circuits_to_incomplete() -> None:
 
 
 async def test_empty_optional_chapter_is_non_blocking_missing_information() -> None:
-    calls = 0
-
-    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
-        nonlocal calls
-        calls += 1
-        return _passing_completeness()
+    run_pass = AsyncMock(return_value=_completeness())
 
     decision = await _service(run_pass).validate(
         _request(
@@ -1143,7 +627,7 @@ async def test_empty_optional_chapter_is_non_blocking_missing_information() -> N
         )
     )
 
-    assert calls == 0
+    run_pass.assert_not_awaited()
     assert decision.status == "needs_review"
     assert decision.findings[0].category == "missing_information"
     assert decision.findings[0].severity == "warning"

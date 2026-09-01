@@ -316,6 +316,40 @@ class StreamingHandlerCompletionTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(recorded["fallback_instructions"], original_instructions)
         self.assertEqual(agent.instructions, original_instructions)
 
+    async def test_cnb_fallback_retains_composed_cnb_instructions(self) -> None:
+        payload = MessageCreateRequest(
+            user_id="user-1", content="Check the project budget"
+        )
+        handler = StreamingHandler(
+            thread_id=str(uuid4()), user_id="user-1", session_factory=None
+        )
+        handler.workflow_context = ChatWorkflowContext(concept_note_run_id=str(uuid4()))
+        instructions = "Shared core + CNB-specific instructions"
+        agent = SimpleNamespace(instructions=instructions)
+        recorded = {}
+
+        class Messages:
+            def run_stream(self, prompt):
+                recorded["instructions"] = agent.instructions
+
+                async def chunks():
+                    yield "No source context available"
+
+                return chunks()
+
+        agent.messages = Messages()
+        with patch(
+            "app.utils.streaming_handler.Runner.run_streamed",
+            side_effect=RuntimeError("unavailable"),
+        ):
+            chunks = [
+                chunk
+                async for chunk in handler._stream_agent_events(agent, payload, [])
+            ]
+        assert chunks == [b"No source context available"]
+        assert recorded["instructions"] == instructions
+        assert handler._mlflow_tags(payload)["prompt_name"] == "cnb_chat"
+
     async def test_cancelled_stream_logs_cancelled_mlflow_summary(self) -> None:
         payload = MessageCreateRequest(user_id="user-1", content="hello")
         handler = StreamingHandler(

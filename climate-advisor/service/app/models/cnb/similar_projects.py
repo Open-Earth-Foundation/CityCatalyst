@@ -178,6 +178,23 @@ class CnbSimilarProjectLlmDecisionSet(SimilarProjectsModel):
         return self
 
 
+class SimilarProjectSelection(SimilarProjectsModel):
+    """Model decision for the candidate at the same position in the input."""
+
+    project_name: str
+    decision: Literal["selected", "rejected"]
+    fit_rationale: str = Field(min_length=1)
+    matched_tags: list[str] = Field(default_factory=list)
+    evidence_positions: list[int] = Field(default_factory=list)
+    caveats: list[str] = Field(default_factory=list)
+
+
+class SimilarProjectSelections(SimilarProjectsModel):
+    """Ordered, identifier-free model selections; positions are one-based."""
+
+    decisions: list[SimilarProjectSelection]
+
+
 class CnbSimilarProjectMatch(SimilarProjectsModel):
     """Final selected similar project retained in the context bundle."""
 

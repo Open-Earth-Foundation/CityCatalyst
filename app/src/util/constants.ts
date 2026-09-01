@@ -1,9 +1,11 @@
-import { BsTruck } from "react-icons/bs";
-import { PiTrashLight } from "react-icons/pi";
-import { TbBuildingCommunity } from "react-icons/tb";
 import { LuWheat } from "react-icons/lu";
 import { IconBaseProps } from "react-icons";
-import { LiaIndustrySolid } from "react-icons/lia";
+import {
+  MdOutlineHomeWork,
+  MdOutlineLocalShipping,
+  MdOutlineDeleteOutline,
+  MdOutlineFactory,
+} from "react-icons/md";
 import { SectorColors, SubSectorColors } from "@/lib/theme/custom-colors";
 import { logger } from "@/services/logger";
 
@@ -80,7 +82,7 @@ export const SECTORS: ISector[] = [
     number: 1,
     name: "stationary-energy",
     description: "stationary-energy-description",
-    icon: TbBuildingCommunity,
+    icon: MdOutlineHomeWork,
     color: SectorColors.I,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
@@ -94,7 +96,7 @@ export const SECTORS: ISector[] = [
     number: 2,
     name: "transportation",
     description: "transportation-description",
-    icon: BsTruck,
+    icon: MdOutlineLocalShipping,
     color: SectorColors.II,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 2] },
@@ -108,7 +110,7 @@ export const SECTORS: ISector[] = [
     number: 3,
     name: "waste",
     description: "waste-description",
-    icon: PiTrashLight,
+    icon: MdOutlineDeleteOutline,
     color: SectorColors.III,
     inventoryTypes: {
       [InventoryTypeEnum.GPC_BASIC]: { scopes: [1, 3] },
@@ -122,7 +124,7 @@ export const SECTORS: ISector[] = [
     number: 4,
     name: "ippu",
     description: "ippu-description",
-    icon: LiaIndustrySolid,
+    icon: MdOutlineFactory,
     color: SectorColors.IV,
     testId: "ippu-sector-card",
     inventoryTypes: {

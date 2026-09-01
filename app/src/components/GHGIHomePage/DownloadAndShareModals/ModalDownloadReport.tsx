@@ -1,7 +1,6 @@
-import { Box, Center, Text } from "@chakra-ui/react";
+import { Center, Separator, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import DownloadButtons from "./DownloadButtons";
-import ModalPublishButtons from "./PublishButtons";
 import { InventoryResponse } from "@/util/types";
 
 import {
@@ -19,7 +18,6 @@ const ModalDownloadReport = ({
   onDownloadShareClose,
   inventoryId,
   cityLocode,
-  onPublishOpen,
   inventory,
 }: {
   t: TFunction;
@@ -28,7 +26,6 @@ const ModalDownloadReport = ({
   onDownloadShareClose: () => void;
   inventoryId: string | undefined;
   cityLocode: string | undefined;
-  onPublishOpen: () => void;
   inventory?: InventoryResponse;
 }) => {
   return (
@@ -36,37 +33,34 @@ const ModalDownloadReport = ({
       open={isDownloadShareOpen}
       onOpenChange={onDownloadShareClose}
       onInteractOutside={onDownloadShareClose}
+      placement="center"
     >
       <DialogContent minW="544px">
         <DialogHeader>
           <Center>
             <Text
-              fontSize="headline.sm"
-              mx="8px"
+              color="fg"
+              fontFamily="body"
+              fontSize="lg"
+              fontWeight="semibold"
+              lineHeight="28"
               data-testid="download-modal-title"
             >
-              {t("download-and-share")}
+              {t("download-inventory")}
             </Text>
           </Center>
         </DialogHeader>
         <DialogCloseTrigger />
-        <Box divideX="2px" my="24px" />
-        <DialogBody px={0}>
+        <Separator borderColor="border.overlay" mt={0} mb="l" />
+        <DialogBody px={0} py={0}>
           <DownloadButtons
             t={t}
             lng={lng}
             inventoryId={inventoryId}
             cityLocode={cityLocode}
             inventoryYear={inventory?.year}
+            onClose={onDownloadShareClose}
           />
-          <Box divideX="2px" my="12px" />
-          <Box px="16px">
-            <ModalPublishButtons
-              t={t}
-              onClose={onDownloadShareClose}
-              onPublishOpen={onPublishOpen}
-            />
-          </Box>
         </DialogBody>
       </DialogContent>
     </DialogRoot>

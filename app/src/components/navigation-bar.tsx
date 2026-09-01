@@ -49,13 +49,10 @@ import { Trans } from "react-i18next";
 import JNDrawer from "./HomePage/JNDrawer";
 import { getCityHomePath } from "@/util/routes";
 import { useRouteParams } from "@/hooks/useRouteParams";
+import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 import { getParamValue } from "@/util/helpers";
 import { env } from "@/lib/runtime-env";
-import {
-  getActiveModuleSegment,
-  resolveCitySwitchPath,
-} from "@/util/module-navigation";
-import { toaster } from "@/components/ui/toaster";
+import { getActiveModuleSegment } from "@/util/module-navigation";
 
 function countryFromLanguage(language: string) {
   return language == "en" ? "us" : language;
@@ -112,6 +109,7 @@ export function NavigationBar({
   const [getProjects] = api.useLazyGetProjectsQuery();
   const [getProjectModulesTrigger] = api.useLazyGetProjectModulesQuery();
   const router = useRouter();
+  const navigateToCity = useCitySwitchNavigation(lng);
 
   const onChangeLanguage = async (language: string) => {
     Cookies.set("i18next", language, { path: "/", sameSite: "strict" });
@@ -187,27 +185,7 @@ export function NavigationBar({
       .unwrap()
       .catch(() => []);
 
-    const { path, blockedModuleId } = resolveCitySwitchPath({
-      pathname,
-      lng,
-      newCityId: targetProject.city.cityId,
-      availableModuleIds: new Set(projectModules.map((mod) => mod.id)),
-    });
-
-    if (blockedModuleId) {
-      const blockedModule = projectModules.find(
-        (mod) => mod.id === blockedModuleId,
-      );
-      toaster.create({
-        type: "info",
-        title: t("module-unavailable-for-city", {
-          module:
-            blockedModule?.name?.[lng] || blockedModule?.name?.en || "",
-        }),
-      });
-    }
-
-    router.push(path);
+    navigateToCity(targetProject.city.cityId, projectModules);
   }
 
   function logOut() {

@@ -35,7 +35,7 @@ import {
   MenuRoot,
   MenuTrigger,
 } from "@/components/ui/menu";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTranslation } from "@/i18n/client";
 import type { TFunction } from "i18next";
 
@@ -46,8 +46,7 @@ import { stageOrder, stageIcons } from "@/config/stages";
 import { getDashboardPath } from "@/util/routes";
 import { useOrganizationContext } from "@/hooks/organization-context-provider/use-organizational-context";
 import { isModuleVisible } from "@/util/module-visibility";
-import { resolveCitySwitchPath } from "@/util/module-navigation";
-import { toaster } from "@/components/ui/toaster";
+import { useCitySwitchNavigation } from "@/hooks/useCitySwitchNavigation";
 
 const ProjectFilterSection = ({
   t,
@@ -63,7 +62,7 @@ const ProjectFilterSection = ({
   organizationId?: string;
 }) => {
   const router = useRouter();
-  const pathname = usePathname();
+  const navigateToCity = useCitySwitchNavigation(lng);
   const [selectedProject, setSelectedProject] = useState<string>("");
 
   // Check user access status for permission-based UI
@@ -76,10 +75,6 @@ const ProjectFilterSection = ({
   const { data: projectModulesForSwitch } = useGetProjectModulesQuery(
     selectedProject,
     { skip: !selectedProject },
-  );
-  const availableModuleIds = useMemo(
-    () => new Set((projectModulesForSwitch ?? []).map((mod) => mod.id)),
-    [projectModulesForSwitch],
   );
 
   // Initialize with current project and city based on currentCityId
@@ -208,28 +203,9 @@ const ProjectFilterSection = ({
   const searchResults = getSearchResults();
 
   // Handle city selection and navigation, preserving the current module
-  // (GHGI/HIAP/dashboard) for the new city when it's available.
+  // (GHGI/HIAP/MEED/dashboard) for the new city when it's available.
   const handleCitySelection = (cityId: string) => {
-    const { path, blockedModuleId } = resolveCitySwitchPath({
-      pathname,
-      lng,
-      newCityId: cityId,
-      availableModuleIds,
-    });
-
-    if (blockedModuleId) {
-      const blockedModule = projectModulesForSwitch?.find(
-        (mod) => mod.id === blockedModuleId,
-      );
-      toaster.create({
-        type: "info",
-        title: t("module-unavailable-for-city", {
-          module: blockedModule?.name?.[lng] || blockedModule?.name?.en || "",
-        }),
-      });
-    }
-
-    router.push(path);
+    navigateToCity(cityId, projectModulesForSwitch ?? []);
   };
 
   return (
@@ -492,7 +468,7 @@ const JNDrawer = ({
 }) => {
   const { t } = useTranslation(lng, "dashboard");
   const router = useRouter();
-  const pathname = usePathname();
+  const navigateToCity = useCitySwitchNavigation(lng);
   const { data: projectsData, isLoading } = useGetUserProjectsQuery({});
   const { organization, setOrganization } = useOrganizationContext();
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
@@ -552,26 +528,7 @@ const JNDrawer = ({
       .unwrap()
       .catch(() => []);
 
-    const { path, blockedModuleId } = resolveCitySwitchPath({
-      pathname,
-      lng,
-      newCityId: targetProject.city.cityId,
-      availableModuleIds: new Set(newProjectModules.map((mod) => mod.id)),
-    });
-
-    if (blockedModuleId) {
-      const blockedModule = newProjectModules.find(
-        (mod) => mod.id === blockedModuleId,
-      );
-      toaster.create({
-        type: "info",
-        title: t("module-unavailable-for-city", {
-          module: blockedModule?.name?.[lng] || blockedModule?.name?.en || "",
-        }),
-      });
-    }
-
-    router.push(path);
+    navigateToCity(targetProject.city.cityId, newProjectModules);
     onClose();
   }
 

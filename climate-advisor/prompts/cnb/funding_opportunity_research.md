@@ -12,9 +12,9 @@ record identities, or seed values.
 
 <task>
 Build the best available source-grounded dossier for the seeded funding
-program. Preserve the supplied funder and program names and all stable
-`funder_ref`, `funding_opportunity_ref`, and `funded_project_ref` values in
-`current_filled_object`. If a seed appears wrong, retain it and record the
+program. Preserve the supplied funder and program names, and keep existing
+record names and array order in `current_filled_object`. Append new records
+instead of reordering or dropping existing ones. If a seed appears wrong, retain it and record the
 suspected alternative in `conflicts`.
 
 Research funder type and geography; program finance route, instrument,
@@ -46,7 +46,7 @@ record precise gaps. A `funded_projects.target_funded_projects` gap may explain
 a shortfall but cannot replace projects already named by captured evidence.
 
 For each sparse project retain evidence at
-`funded_projects[<funded_project_ref>]` summarizing both its published name and
+`funded_projects[0]` (using its zero-based array position) summarizing both its published name and
 its funded relationship to this program. Add field-level evidence for optional
 values. Retain disagreements in `conflicts`; never infer awards, rules, weights,
 hard gates, dates, projects, or statuses.
@@ -57,8 +57,8 @@ Input is a JSON object containing:
 
 - `research_request`: authoritative seeds (`funder_name`, `funder_url`,
   `program_name`, `program_url`), optional `application_template_url`, optional
-  `target_project`, code-enforced `target_funded_projects`, and `max_turns`
-- `current_filled_object` (`FundingOpportunityResearchResult`): the validated
+  `target_project`, and code-enforced `target_funded_projects`
+- `current_filled_object` (`ResearchPromptResult`): the validated
   working dossier for this turn
 - `seed_sources`: captured Firecrawl results for supplied URLs
 - `missing_data`: code-generated unresolved coverage targets
@@ -67,7 +67,7 @@ Input is a JSON object containing:
   audit priority
 - `final_gap_audit`: the code-owned final-turn checklist or null
 
-Preserve supported populated values and stable references. Revise a value only
+Preserve supported populated values and existing array order. Revise a value only
 when new authoritative evidence establishes a better one. Remove resolved gaps,
 and resolve each `missing_data` item with evidence or a precise gap. Continue
 productive research while tools and turns remain.
@@ -82,57 +82,53 @@ productive research while tools and turns remain.
 Prefer funder and government domains. Follow a named award to an official
 project page or report when available. Seed URLs are already scraped. After
 inspecting them, use at least one search and one extraction when productive
-turns remain. Evidence may cite only a `source_ref` returned by seed capture,
-scrape, or extraction. Verify extracted claims against captured Markdown and
+turns remain. Evidence may cite only a public `source_url` returned by seed capture,
+scrape, or extraction (the `url` field in tool results). Verify extracted claims against captured Markdown and
 stop when coverage is sufficient, no productive action remains, or the caller
 identifies the final turn.
 </tools>
 
 <output>
-Return only one JSON object matching `FundingOpportunityResearchResult`. The
+Return only one JSON object matching `ResearchPromptResult`. The
 caller owns bundle metadata, run IDs, hashes, timestamps, snapshots, traces,
 and review state.
 
 Required top-level fields:
 
-- `funder`: `funder_ref`, exact seeded `name`, nullable `funder_type`, `country`,
+- `funder`: exact seeded `name`, nullable `funder_type`, `country`,
   `region`, and `profile` with `stated` and `derived` arrays of string key/value
   facts
-- `funding_opportunities`: exactly one row containing unique
-  `funding_opportunity_ref`, matching `funder_ref`, seeded `name`, nullable
+- `funding_opportunities`: exactly one row containing seeded `name`, nullable
   `applicant_type`, `category`, `sector`, `finance_route`, `instrument_type`, `region_scope`, `min_award`,
   `max_award`, `currency`, `status`, `summary`, and string arrays `hazards` and
   `interventions`
-- `funded_projects`: zero or more rows containing unique `funded_project_ref`,
-  matching `funder_ref`, `name`, nullable `applicant_name`,
+- `funded_projects`: zero or more rows containing `name`, nullable `applicant_name`,
   `applicant_type`, `reported_funder_name`, `city`, `state_region`, `country`, `category`, `sector`,
   `finance_route`, `instrument_type`, `region_scope`, `award_amount`, `currency`,
   `award_year`, `status`, `summary`, and string arrays `hazards` and
   `interventions`
-- `funder_templates`: rows with unique `template_ref`, the
-  `funding_opportunity_ref`, `template_name`, nullable `output_format`, a
-  `chapter_schema` of `chapter_ref`, `title`, nullable `description` and
+- `funder_templates`: rows with `template_name`, nullable `output_format`, a
+  `chapter_schema` of `title`, nullable `description` and
   `required`, and `required_fields`
-- `funder_criteria`: rows with unique `criterion_ref`, the
-  `funding_opportunity_ref`, `criterion_type`, `label`, `requirement_text`,
+- `funder_criteria`: rows with `criterion_type`, `label`, `requirement_text`,
   nullable `weight`, `hard_gate`, and `normalized_rule`
-- `source_assessments`: rows with `source_ref`, `source_type`, nullable ISO
+- `source_assessments`: rows with captured `source_url`, `source_type`, nullable ISO
   `publication_date`, and nullable `license_status`
-- `evidence`: rows with unique `evidence_ref`, exactly one non-null parent
-  reference (`funding_opportunity_ref` or `funded_project_ref`), `target_path`,
-  captured `source_ref`, nullable `source_location`, and concise
-  `quote_or_summary`
-- `gaps`: `target_path` and `reason` strings
-- `conflicts`: `target_path`, string arrays `candidate_values` and
-  `evidence_refs`, and `explanation`
+- `evidence`: rows with `project_position` (zero-based project array position, or
+  null for programme/funder/template/criterion facts), `field` (semantic field
+  path), captured `source_url`, nullable `source_location`, and `quote_or_summary`.
+  A null source URL means unverified old context, not support for a new claim.
+- `gaps`: `field` and `reason` strings
+- `conflicts`: `field`, string array `candidate_values`, integer array
+  `evidence_positions` (zero-based positions in this response's evidence array), and `explanation`
 
 Use paths such as `funder.profile.stated.eligibility`,
-`funding_opportunities[opportunity-001].max_award`,
-`funded_projects[project-001].award_amount`, and
-`funder_criteria[eligibility-1].hard_gate`. Exact-path evidence is required for
+`funding_opportunities[0].max_award`,
+`funded_projects[0].award_amount`, and
+`funder_criteria[0].hard_gate`. Exact-path evidence is required for
 every material populated non-seed field; one array path may support its
 primitive values. Evidence on funder, template, or criterion paths uses the
-opportunity parent reference. Do not fabricate quotes; a faithful concise
+a null `project_position`. Do not fabricate quotes; a faithful concise
 summary is acceptable.
 
 An absent template is valid. On the final turn audit award bounds, currencies,
@@ -145,7 +141,6 @@ null or empty and become precise gaps when useful.
 <example_output>
 {
   "funder": {
-    "funder_ref": "funder-001",
     "name": "Example Funder",
     "funder_type": null,
     "country": null,
@@ -154,8 +149,6 @@ null or empty and become precise gaps when useful.
   },
   "funding_opportunities": [
     {
-      "funding_opportunity_ref": "opportunity-001",
-      "funder_ref": "funder-001",
       "name": "Example Program",
       "applicant_type": null,
       "category": null,

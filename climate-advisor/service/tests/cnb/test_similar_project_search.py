@@ -5,7 +5,6 @@ from types import SimpleNamespace
 from uuid import UUID, uuid4
 
 import pytest
-
 from app.models.cnb.similar_projects import (
     CnbSimilarProjectCandidate,
     CnbSimilarProjectEvidence,
@@ -13,6 +12,8 @@ from app.models.cnb.similar_projects import (
     CnbSimilarProjectLlmDecisionSet,
     CnbSimilarProjectMatch,
     CnbSimilarProjectSearchRequest,
+    SimilarProjectSelection,
+    SimilarProjectSelections,
 )
 from app.services.cnb import similar_project_search
 from app.services.cnb.similar_project_search import (
@@ -63,13 +64,26 @@ class FakeReferenceData:
 
 
 class FakeResponses:
-    def __init__(self, decisions: CnbSimilarProjectLlmDecisionSet | None) -> None:
+    def __init__(self, decisions: CnbSimilarProjectLlmDecisionSet | None, candidates=None) -> None:
         self.decisions = decisions
+        self.candidates = candidates or []
         self.calls: list[dict[str, object]] = []
 
     def parse(self, **kwargs: object) -> SimpleNamespace:
         self.calls.append(kwargs)
-        return SimpleNamespace(output=[], output_parsed=self.decisions)
+        by_id = {candidate.funded_project_id: candidate for candidate in self.candidates}
+        public_decisions = []
+        for item in self.decisions.decisions if self.decisions else []:
+            candidate = by_id[item.funded_project_id]
+            public_decisions.append(SimilarProjectSelection(
+                project_name=candidate.name, decision=item.decision, fit_rationale=item.fit_rationale,
+                matched_tags=item.matched_tags, caveats=item.caveats,
+                evidence_positions=[
+                    next(i + 1 for i, evidence in enumerate(candidate.evidence) if evidence.evidence_ref == ref)
+                    for ref in item.evidence_refs
+                ],
+            ))
+        return SimpleNamespace(output=[], output_parsed=SimilarProjectSelections(decisions=public_decisions))
 
 
 def _request(*, funder_scope: str = "same_funder") -> CnbSimilarProjectSearchRequest:
@@ -114,7 +128,7 @@ def _service(
     reference_data: FakeReferenceData,
     decisions: CnbSimilarProjectLlmDecisionSet | None,
 ) -> tuple[ProjectMatchingService, FakeResponses]:
-    responses = FakeResponses(decisions)
+    responses = FakeResponses(decisions, reference_data.candidates)
     return (
         ProjectMatchingService(
             openai_client=SimpleNamespace(responses=responses),
@@ -274,10 +288,11 @@ def test_service_filters_orders_selects_and_persists_a_grounded_match() -> None:
     assert reference_data.calls == [request.funder_id]
     payload = json.loads(responses.calls[0]["input"])
     assert responses.calls[0]["store"] is False
-    assert [item["funded_project_id"] for item in payload["candidates"]] == [
-        str(selected.funded_project_id),
-        str(less_related.funded_project_id),
+    assert [item["name"] for item in payload["candidates"]] == [
+        selected.name,
+        less_related.name,
     ]
+    assert "funded_project_id" not in responses.calls[0]["input"]
 
 
 def test_v1_policy_keeps_preferred_mismatches_and_unknowns_eligible() -> None:

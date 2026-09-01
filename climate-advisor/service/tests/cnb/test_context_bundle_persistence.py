@@ -221,8 +221,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
-            source_label=ready_upload.filename,
-            filename=ready_upload.filename,
+            source_index=1,
         )
         assert query_source.source.upload_id == ready_id
         replacement = await begin_build(
@@ -239,8 +238,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
             session_factory=session_factory,
             user_id="owner",
             run_id=run_id,
-            source_label=ready_upload.filename,
-            filename=ready_upload.filename,
+            source_index=1,
         )
         assert rebuilding_query_source.source.upload_id == ready_id
         with pytest.raises(ContextBundlePersistenceError) as forbidden:
@@ -248,8 +246,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="other-user",
                 run_id=run_id,
-                source_label=ready_upload.filename,
-                filename=ready_upload.filename,
+                source_index=1,
             )
         assert forbidden.value.code == "concept_note_run_forbidden"
         with pytest.raises(ContextBundlePersistenceError) as unavailable:
@@ -257,8 +254,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                source_label=f"{queued_id}.pdf",
-                filename=f"{queued_id}.pdf",
+                source_index=2,
             )
         assert unavailable.value.code == "concept_note_source_not_selected"
 
@@ -271,8 +267,7 @@ async def test_pdf_only_commit_uses_typed_empties_and_preserves_other_sections(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                source_label=ready_upload.filename,
-                filename=ready_upload.filename,
+                source_index=1,
             )
         assert wrong_step.value.code == "concept_note_source_query_not_allowed"
     finally:
@@ -333,6 +328,7 @@ async def test_agent_projection_removes_ids_but_keeps_backend_identity(
         assert context is not None
         assert "concept_note_run_id" not in context
         assert "upload_id" not in context["selected_sources"][0]
+        assert context["selected_sources"][0]["source_index"] == 1
         assert "page_count" not in context["selected_sources"][0]
         assert "block_count" not in context["selected_sources"][0]
         assert "build_id" not in context["context_bundle_status"]
@@ -362,7 +358,7 @@ async def test_agent_projection_removes_ids_but_keeps_backend_identity(
 
 
 @pytest.mark.asyncio
-async def test_source_name_lookup_rejects_ambiguous_documents(tmp_path) -> None:
+async def test_source_index_lookup_disambiguates_duplicate_names(tmp_path) -> None:
     engine, session_factory = await database(tmp_path)
     run_id = uuid4()
     uploads = [
@@ -388,15 +384,38 @@ async def test_source_name_lookup_rejects_ambiguous_documents(tmp_path) -> None:
         assert await commit_build(
             session_factory, snapshot, [selected(item) for item in uploads]
         )
-        with pytest.raises(ContextBundlePersistenceError) as ambiguous:
+        context = await load_agent_context(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+        )
+        assert context is not None
+        assert [source["source_index"] for source in context["selected_sources"]] == [
+            1,
+            2,
+        ]
+        first = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=1,
+        )
+        second = await load_query_source(
+            session_factory=session_factory,
+            user_id="owner",
+            run_id=run_id,
+            source_index=2,
+        )
+        assert first.source.upload_id == uploads[0].upload_id
+        assert second.source.upload_id == uploads[1].upload_id
+        with pytest.raises(ContextBundlePersistenceError) as unavailable:
             await load_query_source(
                 session_factory=session_factory,
                 user_id="owner",
                 run_id=run_id,
-                source_label="plan.pdf",
-                filename="plan.pdf",
+                source_index=3,
             )
-        assert ambiguous.value.code == "concept_note_source_ambiguous"
+        assert unavailable.value.code == "concept_note_source_not_selected"
     finally:
         await engine.dispose()
 

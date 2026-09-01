@@ -1661,10 +1661,11 @@ after the bundle is ready, and only during `interviewing`,
 
 The model-facing context excludes identifier and fingerprint fields recursively;
 the persisted bundle above retains its backend IDs and integrity metadata. The
-main CNB agent selects a source by its exact `source_label` and `filename` from
+main CNB agent selects a source by its one-based, model-safe `source_index` from
 the always-on summaries and asks one bounded natural-language question. The tool
-resolves the upload inside the authorized run and rejects duplicate label/filename
-pairs rather than selecting arbitrarily. Its model-facing result omits upload IDs.
+maps that index to the persisted upload inside the authorized run, so duplicate
+label/filename pairs remain independently queryable. Its model-facing result
+returns the source index but omits upload IDs.
 Generated block fingerprints are replaced with readable document headings, while
 the backend retains exact block anchors for source verification.
 Questions spanning documents require

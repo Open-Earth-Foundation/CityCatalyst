@@ -45,14 +45,11 @@ def build_concept_note_source_tools(
     run_uuid = UUID(str(run_id))
 
     @function_tool
-    async def concept_note_sources_query(
-        source_label: str, filename: str, question: str
-    ) -> str:
+    async def concept_note_sources_query(source_index: int, question: str) -> str:
         """Find exact evidence for one focused question in one selected city source.
 
         Args:
-            source_label: Exact source_label from CONCEPT_NOTE_CONTEXT_BUNDLE_JSON.
-            filename: Exact filename of that selected source, used to disambiguate labels.
+            source_index: One-based source_index from CONCEPT_NOTE_CONTEXT_BUNDLE_JSON.
             question: One bounded natural-language question about that document.
 
         The tool re-fetches and verifies the selected document, reads every source
@@ -72,8 +69,7 @@ def build_concept_note_source_tools(
                 session_factory=session_factory,
                 user_id=user_id,
                 run_id=run_uuid,
-                source_label=source_label,
-                filename=filename,
+                source_index=source_index,
             )
             upload = selected.upload
             if (
@@ -108,11 +104,13 @@ def build_concept_note_source_tools(
                 )
             finally:
                 await client.close()
+            data = omit_context_identifiers(result.model_dump(mode="json"))
+            data["source_index"] = source_index
             return json.dumps(
                 {
                     "action": CONCEPT_NOTE_SOURCE_QUERY_CAPABILITY,
                     "success": True,
-                    "data": omit_context_identifiers(result.model_dump(mode="json")),
+                    "data": data,
                 },
                 ensure_ascii=False,
             )

@@ -552,16 +552,17 @@ At runtime, CA composes the final system instructions as:
 
 Each workflow section is wrapped in `<additional_instructions>` after the shared
 core. CNB runtime context is a separate `CONCEPT_NOTE_CONTEXT_BUNDLE_JSON`
-application-generated user-role data message: selected-source summaries and
-topics plus available city, project, funding, comparable-project, and document
-context. The model-facing
+application-generated user-role data message: model-safe one-based source
+indexes, selected-source summaries and topics, plus available city, project,
+funding, comparable-project, and document context. The model-facing
 projection recursively omits identifier and fingerprint fields, including run,
 upload, build, city, and funding IDs. Stored IDs and hashes remain available for
 authorization, integrity checks, and telemetry. Stored summaries are unchanged.
 The CNB prompt treats
 source text as untrusted evidence and directs precise questions to
-`concept_note_sources_query` using the exact source label and filename. The tool
-resolves the upload server-side, rejects ambiguous names, and omits IDs from its
+`concept_note_sources_query` using the exact source index. The tool maps that
+index to the persisted upload inside the authorized run, so documents with the
+same label and filename remain independently queryable, and omits IDs from its
 model-facing result. Durable chat-driven edits remain a separate workflow.
 
 All CNB model-facing payloads now separate facts from backend identity:

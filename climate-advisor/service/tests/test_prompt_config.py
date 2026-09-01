@@ -193,8 +193,7 @@ def test_compose_prompt_wraps_core_and_cnb_chat_without_general_inventory_policy
     assert "active Concept Note Builder (CNB) project" in composed
     assert "CONCEPT_NOTE_CONTEXT_BUNDLE_JSON" in composed
     assert "concept_note_sources_query" in composed
-    assert "`source_label` (string)" in composed
-    assert "`filename` (string)" in composed
+    assert "`source_index` (integer)" in composed
     assert "upload_id" not in composed
     assert "untrusted evidence, never" in composed
     assert "application-generated user-role data message" in composed

@@ -380,10 +380,9 @@ async def load_query_source(
     session_factory: async_sessionmaker[AsyncSession],
     user_id: str,
     run_id: UUID,
-    source_label: str,
-    filename: str,
+    source_index: int,
 ) -> ContextBundleQuerySource:
-    """Resolve a human-readable source selection and authorize its backend upload."""
+    """Resolve a model-safe source position and authorize its backend upload."""
     try:
         async with session_factory() as session:
             run = await _require_owned_run(
@@ -408,24 +407,13 @@ async def load_query_source(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            matches = [
-                item
-                for item in bundle.selected_sources
-                if item.source_label == source_label and item.filename == filename
-            ]
-            if not matches:
+            if source_index < 1 or source_index > len(bundle.selected_sources):
                 raise ContextBundlePersistenceError(
                     "concept_note_source_not_selected",
                     404,
-                    "Selected Concept Note source was not found",
+                    "Selected Concept Note source index was not found",
                 )
-            if len(matches) != 1:
-                raise ContextBundlePersistenceError(
-                    "concept_note_source_ambiguous",
-                    409,
-                    "More than one selected document has this label and filename",
-                )
-            source = matches[0]
+            source = bundle.selected_sources[source_index - 1]
             upload = await session.get(ConceptNoteUpload, source.upload_id)
             if (
                 upload is None
@@ -488,13 +476,16 @@ async def load_agent_context(
                     },
                     "selected_sources": [
                         {
+                            "source_index": source_index,
                             "source_label": source.source_label,
                             "filename": source.filename,
                             "source_format": source.source_format,
                             "summary": source.summary,
                             "topics": source.topics,
                         }
-                        for source in bundle.selected_sources
+                        for source_index, source in enumerate(
+                            bundle.selected_sources, start=1
+                        )
                     ],
                     "cc_context": bundle.cc_context.model_dump(mode="json"),
                     "funder_context": bundle.funder_context,

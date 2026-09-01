@@ -64,13 +64,14 @@ def _chapter(
     *,
     position: int,
     body: str | None = "Complete chapter text.",
+    required: bool = True,
 ) -> ChapterValidationChapter:
     return ChapterValidationChapter(
         chapter_id=chapter_id,
         template_section_id=f"chapter-{position + 1}",
         title=f"Chapter {position + 1}",
         position=position,
-        required=True,
+        required=required,
         body_markdown=body,
         revision_number=1 if body is not None else None,
     )
@@ -81,6 +82,7 @@ def _request(
     chapters: list[ChapterValidationChapter] | None = None,
     gaps: list[ChapterValidationGap] | None = None,
     evidence: bool = True,
+    target_required: bool = True,
 ) -> ChapterValidationRequest:
     evidence_links = (
         [
@@ -96,7 +98,8 @@ def _request(
     return ChapterValidationRequest(
         target_chapter_id=TARGET_ID,
         validation_input_fingerprint="a" * 64,
-        chapters=chapters or [_chapter(TARGET_ID, position=0)],
+        chapters=chapters
+        or [_chapter(TARGET_ID, position=0, required=target_required)],
         template=ChapterValidationTemplate(
             template_id=UUID("44444444-4444-4444-8444-444444444444"),
             name="Application template",
@@ -104,7 +107,7 @@ def _request(
                 {
                     "chapter_ref": "chapter-1",
                     "title": "Chapter 1",
-                    "required": True,
+                    "required": target_required,
                 }
             ],
             required_fields=["Implementation timetable"],
@@ -1116,3 +1119,33 @@ async def test_empty_chapter_short_circuits_to_incomplete() -> None:
     checks = {check.key: check.status for check in decision.checks}
     assert checks["blocking_gaps"] == "fail"
     assert checks["evidence_citations"] == "pass"
+
+
+async def test_empty_optional_chapter_is_non_blocking_missing_information() -> None:
+    calls = 0
+
+    async def run_pass(phase: str, payload: dict[str, Any]) -> Any:
+        nonlocal calls
+        calls += 1
+        return _passing_completeness()
+
+    decision = await _service(run_pass).validate(
+        _request(
+            chapters=[
+                _chapter(
+                    TARGET_ID,
+                    position=0,
+                    body=None,
+                    required=False,
+                )
+            ],
+            target_required=False,
+        )
+    )
+
+    assert calls == 0
+    assert decision.status == "needs_review"
+    assert decision.findings[0].category == "missing_information"
+    assert decision.findings[0].severity == "warning"
+    checks = {check.key: check.status for check in decision.checks}
+    assert checks["required_content"] == "warning"

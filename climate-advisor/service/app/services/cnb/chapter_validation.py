@@ -1075,18 +1075,23 @@ def _aggregate_status(
 def _empty_chapter_decision(
     request: ChapterValidationRequest,
 ) -> ChapterValidationDecision:
-    """Return a deterministic incomplete result without spending model tokens."""
+    """Return a deterministic missing-information result without model spend."""
     target = next(
         chapter
         for chapter in request.chapters
         if chapter.chapter_id == request.target_chapter_id
     )
+    is_required = target.required
     empty_finding = ChapterValidationFinding(
         phase="completeness",
         category="missing_information",
-        severity="blocking",
+        severity="blocking" if is_required else "warning",
         message="The chapter has no content to validate.",
-        suggested_action="Draft the chapter before marking it ready.",
+        suggested_action=(
+            "Draft the chapter before marking it ready."
+            if is_required
+            else "Add content if it is relevant, or leave the optional chapter blank."
+        ),
         involved_chapter_ids=[request.target_chapter_id],
     )
     findings = [empty_finding, *_deterministic_gap_findings(request)]
@@ -1102,7 +1107,10 @@ def _empty_chapter_decision(
         ChapterValidationCheckKey,
         tuple[ChapterValidationCheckStatus, str | None],
     ] = {key: ("pass", None) for key in _CHECK_ORDER}
-    check_state["required_content"] = ("fail", empty_finding.message)
+    check_state["required_content"] = (
+        "fail" if is_required else "warning",
+        empty_finding.message,
+    )
     if request.open_gaps:
         check_state["blocking_gaps"] = (
             gap_status,
@@ -1121,7 +1129,7 @@ def _empty_chapter_decision(
         target_chapter_id=request.target_chapter_id,
         validated_revision_number=target.revision_number,
         validation_input_fingerprint=request.validation_input_fingerprint,
-        status="incomplete",
+        status=_aggregate_status(checks, findings),
         checks=checks,
         findings=_deduplicate_findings(findings),
     )

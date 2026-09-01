@@ -2204,9 +2204,10 @@ The final fixed checks use `pass`, `warning`, or `fail`. Open
 content, template violations, and material contradictions produce
 `incomplete`. Evidence deficiencies and non-blocking ambiguity produce
 `needs_review`. Only a result with no failures or warnings is `ready`. An empty
-chapter is deterministically persisted as `incomplete`; model, structured-output,
-or template-loading failures preserve the previous validation and chapter
-status.
+required chapter is deterministically persisted as `incomplete`; an empty
+optional chapter remains visible as non-blocking missing information with
+`needs_review`. Model, structured-output, or template-loading failures preserve
+the previous validation and chapter status.
 
 The draft contract nests validation under each chapter with status, stale flag,
 validated revision/time, fixed checks, and findings. Findings include phase,

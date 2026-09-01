@@ -6,7 +6,6 @@ import { navigateToGHGIModule } from "./helpers";
 // call the endpoint to create an inventory
 
 const testIds = {
-  addDataToInventoryNavButton: "add-data-to-inventory-card",
   addDataStepHeading: "add-data-step-title",
   stationaryEnergySectorCard: "stationary-energy-sector-card",
   transportationSectorCard: "transportation-sector-card",
@@ -69,8 +68,11 @@ test.describe.serial("Manual Input", () => {
 
   test("should render sector list page", async () => {
     await navigateToGHGIModule(page);
-    const navButton = page.getByTestId(testIds.addDataToInventoryNavButton);
-    await navButton.click();
+    // The dashboard toolbar redesign (CC-657) dropped the "add data" nav
+    // card in favor of per-sector links from the calculation tab, so this
+    // workflow now goes to the data page directly.
+    const dashboardPathname = new URL(page.url()).pathname;
+    await page.goto(`${dashboardPathname.replace(/\/$/, "")}/data/`);
     await page.waitForURL(regexForPath("/data/"));
     await expect(page).toHaveURL(regexForPath("/data/"));
     const pageHeader = page.getByTestId(testIds.addDataStepHeading);

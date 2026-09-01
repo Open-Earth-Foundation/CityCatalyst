@@ -1,27 +1,38 @@
-import { Modules } from "./constants";
+import type { ModuleAttributes } from "@/models/Module";
 
-export type ModuleRouteSegment = {
-  segment: "GHGI" | "HIAP" | "MEED" | "concept-notes" | "dashboard";
-  moduleId?: string; // undefined => ungated route
+/** Journey Navigator home isn't a gated module, so it has no DB row/moduleId. */
+const DASHBOARD_SEGMENT = "dashboard";
+
+export type ActiveModule = {
+  segment: string;
+  moduleId?: string; // undefined => ungated route (e.g. dashboard)
+  name?: ModuleAttributes["name"];
 };
 
-const MODULE_ROUTES: ModuleRouteSegment[] = [
-  { segment: "GHGI", moduleId: Modules.GHGI.id },
-  { segment: "HIAP", moduleId: Modules.HIAP.id },
-  { segment: "MEED", moduleId: Modules.MEED.id },
-  { segment: "concept-notes", moduleId: Modules.CONCEPT_NOTE_BUILDER.id },
-  { segment: "dashboard" },
-];
-
-/** Detect which module (if any) the given pathname is currently inside. */
+/**
+ * Detect which module (if any) the given pathname is currently inside, using
+ * each module's `url` (e.g. "/GHGI") as its route segment. Falls back to the
+ * ungated Journey Navigator dashboard route, which has no module row.
+ */
 export function getActiveModuleSegment(
   pathname: string | null,
-): ModuleRouteSegment | null {
+  modules: ModuleAttributes[],
+): ActiveModule | null {
   if (!pathname) return null;
-  return (
-    MODULE_ROUTES.find((route) => pathname.includes(`/${route.segment}`)) ??
-    null
-  );
+
+  for (const mod of modules) {
+    if (!mod.url.startsWith("/")) continue; // external tool, not an app route
+    const segment = mod.url.slice(1);
+    if (pathname.includes(`/${segment}`)) {
+      return { segment, moduleId: mod.id, name: mod.name };
+    }
+  }
+
+  if (pathname.includes(`/${DASHBOARD_SEGMENT}`)) {
+    return { segment: DASHBOARD_SEGMENT };
+  }
+
+  return null;
 }
 
 /**
@@ -34,15 +45,17 @@ export function resolveCitySwitchPath({
   pathname,
   lng,
   newCityId,
+  modules,
   availableModuleIds,
 }: {
   pathname: string | null;
   lng: string;
   newCityId: string;
+  modules: ModuleAttributes[];
   availableModuleIds: Set<string>;
 }): { path: string; blockedModuleId?: string } {
   const journeyNavigatorPath = `/${lng}/cities/${newCityId}`;
-  const active = getActiveModuleSegment(pathname);
+  const active = getActiveModuleSegment(pathname, modules);
 
   if (!active) {
     return { path: journeyNavigatorPath };

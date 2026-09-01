@@ -31,7 +31,11 @@ import {
 } from "react-icons/md";
 import Cookies from "js-cookie";
 import { useParams, useRouter } from "next/navigation";
-import { api, useGetUserAccessStatusQuery } from "@/services/api";
+import {
+  api,
+  useGetModulesQuery,
+  useGetUserAccessStatusQuery,
+} from "@/services/api";
 import {
   MenuContent,
   MenuItem,
@@ -94,6 +98,7 @@ export function NavigationBar({
 
   const { data: session, status } = useSession();
   const { data: userInfo } = api.useGetUserInfoQuery();
+  const { data: allModules } = useGetModulesQuery();
   const { data: rawOrganizations } = api.useGetUserOrganizationsQuery(
     undefined,
     {
@@ -121,22 +126,15 @@ export function NavigationBar({
     router.refresh();
   };
 
-  // Derive the active module name from the current pathname
+  // Derive the active module name from the current pathname, using the
+  // Modules table as the source of truth so new modules work without code
+  // changes here.
   const moduleName = useMemo(() => {
-    const active = getActiveModuleSegment(pathname);
-    switch (active?.segment) {
-      case "GHGI":
-        return t("page-title-ghg-inventories");
-      case "HIAP":
-        return t("page-title-hiap");
-      case "MEED":
-        return t("page-title-meed");
-      case "dashboard":
-        return t("page-title-dashboard");
-      default:
-        return null;
-    }
-  }, [pathname, t]);
+    const active = getActiveModuleSegment(pathname, allModules ?? []);
+    if (!active) return null;
+    if (!active.moduleId) return t("page-title-dashboard");
+    return active.name?.[activeLng] || active.name?.en || null;
+  }, [pathname, allModules, activeLng, t]);
 
   // Memoize city to ensure it updates when route changes
   const currentCityId = useMemo(

@@ -2,23 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, Self
+from typing import Annotated, ClassVar, Literal, Self
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 ChapterValidationStatus = Literal["ready", "needs_review", "incomplete"]
-ChapterValidationCheckStatus = Literal["pass", "warning", "fail"]
 ChapterValidationPhase = Literal["completeness", "consistency", "evidence"]
 ChapterValidationSeverity = Literal["warning", "blocking"]
-ChapterValidationCheckKey = Literal[
-    "required_content",
-    "template_constraints",
-    "blocking_gaps",
-    "evidence_citations",
-    "internal_consistency",
-    "cross_chapter_consistency",
-]
 ChapterValidationFindingCategory = Literal[
     "missing_information",
     "template_constraint",
@@ -103,16 +94,6 @@ class ChapterValidationRequest(BaseModel):
         return self
 
 
-class ChapterValidationPassCheck(BaseModel):
-    """Compact check returned by one LLM validation pass."""
-
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-
-    key: ChapterValidationCheckKey
-    status: ChapterValidationCheckStatus
-    message: ConciseText | None = None
-
-
 class ChapterValidationFindingDraft(BaseModel):
     """Concise actionable finding returned by a validation pass."""
 
@@ -126,72 +107,42 @@ class ChapterValidationFindingDraft(BaseModel):
     excerpts: list[ExcerptText] = Field(default_factory=list, max_length=3)
 
 
-class ChapterCompletenessValidationOutput(BaseModel):
-    """Structured output of the missing-information-first LLM pass."""
-
+class _ChapterValidationOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
-    checks: list[ChapterValidationPassCheck] = Field(min_length=3, max_length=3)
+    allowed_categories: ClassVar[set[ChapterValidationFindingCategory]]
     findings: list[ChapterValidationFindingDraft] = Field(
         default_factory=list,
         max_length=50,
     )
 
     @model_validator(mode="after")
-    def validate_completeness_contract(self) -> Self:
-        """Keep pass one limited to completeness and evidence concerns."""
-        _require_check_keys(
-            self.checks,
-            {"required_content", "template_constraints", "evidence_citations"},
-        )
-        allowed_categories = {
-            "missing_information",
-            "template_constraint",
-            "unresolved_gap",
-            "evidence",
-        }
-        if any(finding.category not in allowed_categories for finding in self.findings):
-            raise ValueError("completeness output contains a consistency finding")
+    def validate_categories(self) -> Self:
+        if any(
+            finding.category not in self.allowed_categories for finding in self.findings
+        ):
+            raise ValueError("validation output contains an out-of-scope finding")
         return self
 
 
-class ChapterConsistencyValidationOutput(BaseModel):
-    """Structured output of one target-versus-document LLM pass."""
+class ChapterCompletenessValidationOutput(_ChapterValidationOutput):
+    """Missing-information and evidence findings from the first pass."""
 
-    model_config = ConfigDict(extra="forbid")
-
-    checks: list[ChapterValidationPassCheck] = Field(min_length=2, max_length=2)
-    findings: list[ChapterValidationFindingDraft] = Field(
-        default_factory=list,
-        max_length=50,
-    )
-
-    @model_validator(mode="after")
-    def validate_consistency_contract(self) -> Self:
-        """Keep pass two limited to logic and contradiction findings."""
-        _require_check_keys(
-            self.checks,
-            {"internal_consistency", "cross_chapter_consistency"},
-        )
-        allowed_categories = {
-            "internal_conflict",
-            "cross_chapter_conflict",
-            "logic_error",
-        }
-        if any(finding.category not in allowed_categories for finding in self.findings):
-            raise ValueError("consistency output contains a completeness finding")
-        return self
+    allowed_categories = {
+        "missing_information",
+        "template_constraint",
+        "unresolved_gap",
+        "evidence",
+    }
 
 
-class ChapterValidationCheck(BaseModel):
-    """Stable public check contract persisted and exposed to the frontend."""
+class ChapterConsistencyValidationOutput(_ChapterValidationOutput):
+    """Logic and contradiction findings from the second pass."""
 
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-
-    key: ChapterValidationCheckKey
-    label: str = Field(min_length=1, max_length=200)
-    status: ChapterValidationCheckStatus
-    message: ConciseText | None = None
+    allowed_categories = {
+        "internal_conflict",
+        "cross_chapter_conflict",
+        "logic_error",
+    }
 
 
 class ChapterValidationFinding(BaseModel):
@@ -217,31 +168,4 @@ class ChapterValidationDecision(BaseModel):
     validated_revision_number: int | None = Field(default=None, ge=1)
     validation_input_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
     status: ChapterValidationStatus
-    checks: list[ChapterValidationCheck] = Field(min_length=6, max_length=6)
     findings: list[ChapterValidationFinding] = Field(default_factory=list)
-
-    @model_validator(mode="after")
-    def validate_final_check_set(self) -> Self:
-        """Guarantee the public result always contains all fixed checks once."""
-        _require_check_keys(
-            self.checks,
-            {
-                "required_content",
-                "template_constraints",
-                "blocking_gaps",
-                "evidence_citations",
-                "internal_consistency",
-                "cross_chapter_consistency",
-            },
-        )
-        return self
-
-
-def _require_check_keys(
-    checks: list[ChapterValidationPassCheck] | list[ChapterValidationCheck],
-    expected: set[str],
-) -> None:
-    """Reject missing, duplicate, or out-of-scope fixed checks."""
-    actual = [check.key for check in checks]
-    if len(actual) != len(set(actual)) or set(actual) != expected:
-        raise ValueError(f"checks must contain exactly: {sorted(expected)}")

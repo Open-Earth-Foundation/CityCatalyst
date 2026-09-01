@@ -35,12 +35,6 @@ def upgrade() -> None:
         ),
         sa.Column("status", sa.String(length=32), nullable=False),
         sa.Column(
-            "checks",
-            postgresql.JSONB(astext_type=sa.Text()),
-            nullable=False,
-            server_default=sa.text("'[]'::jsonb"),
-        ),
-        sa.Column(
             "findings",
             postgresql.JSONB(astext_type=sa.Text()),
             nullable=False,

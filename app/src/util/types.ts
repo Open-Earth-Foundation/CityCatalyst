@@ -1015,8 +1015,7 @@ export interface WebhookSubscriptionResponse {
   lastUpdated: string | null;
 }
 
-export interface WebhookSubscriptionSecretResponse
-  extends WebhookSubscriptionResponse {
+export interface WebhookSubscriptionSecretResponse extends WebhookSubscriptionResponse {
   secret: string;
 }
 

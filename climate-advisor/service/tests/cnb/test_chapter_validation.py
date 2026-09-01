@@ -18,14 +18,12 @@ from app.services.cnb.chapter_validation import (
     build_chapter_validation_request,
 )
 from app.utils.prompt_budget import TokenCount
-
 from tests.cnb.chapter_validation_helpers import (
     OTHER_ID,
     TARGET_ID,
     THIRD_ID,
     UNKNOWN_ID,
     chapter,
-    check,
     completeness,
     consistency,
     finding,
@@ -152,7 +150,6 @@ async def test_batches_complete_comparison_chapters_without_truncation(
 
 async def test_rejects_hallucinated_chapter_ids() -> None:
     model_result = consistency(
-        cross_chapter=check("cross_chapter_consistency", "fail", "Conflict"),
         findings=[
             finding(
                 "cross_chapter_conflict",
@@ -188,8 +185,6 @@ async def test_authoritative_gap_blocks_a_clean_model_result() -> None:
     )
 
     assert decision.status == "incomplete"
-    checks = {item.key: item.status for item in decision.checks}
-    assert checks["blocking_gaps"] == "fail"
     assert any(item.category == "missing_information" for item in decision.findings)
 
 

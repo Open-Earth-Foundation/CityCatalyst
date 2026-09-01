@@ -81,7 +81,7 @@ function chapter(index: number): ConceptNoteDraftChapter {
 function result(chapterId: string): ConceptNoteChapterValidationResponse {
   return {
     chapter_id: chapterId,
-    checks: [{ key: "template_constraints", status: "fail" }],
+    checks: [],
     findings: [
       {
         category: "missing_information",

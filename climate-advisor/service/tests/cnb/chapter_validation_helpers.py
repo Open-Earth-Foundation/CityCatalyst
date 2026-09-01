@@ -9,13 +9,10 @@ from app.models.cnb.concept_note_chapter_validation import (
     ChapterCompletenessValidationOutput,
     ChapterConsistencyValidationOutput,
     ChapterValidationChapter,
-    ChapterValidationCheckKey,
-    ChapterValidationCheckStatus,
     ChapterValidationEvidenceLink,
     ChapterValidationFindingCategory,
     ChapterValidationFindingDraft,
     ChapterValidationGap,
-    ChapterValidationPassCheck,
     ChapterValidationRequest,
     ChapterValidationSeverity,
     ChapterValidationTemplate,
@@ -73,14 +70,6 @@ def request(
     )
 
 
-def check(
-    key: ChapterValidationCheckKey,
-    status: ChapterValidationCheckStatus = "pass",
-    message: str | None = None,
-) -> ChapterValidationPassCheck:
-    return ChapterValidationPassCheck(key=key, status=status, message=message)
-
-
 def finding(
     category: ChapterValidationFindingCategory,
     message: str,
@@ -100,31 +89,16 @@ def finding(
 
 def completeness(
     *,
-    evidence: ChapterValidationPassCheck | None = None,
     findings: list[ChapterValidationFindingDraft] | None = None,
 ) -> ChapterCompletenessValidationOutput:
-    return ChapterCompletenessValidationOutput(
-        checks=[
-            check("required_content"),
-            check("template_constraints"),
-            evidence or check("evidence_citations"),
-        ],
-        findings=findings or [],
-    )
+    return ChapterCompletenessValidationOutput(findings=findings or [])
 
 
 def consistency(
     *,
-    cross_chapter: ChapterValidationPassCheck | None = None,
     findings: list[ChapterValidationFindingDraft] | None = None,
 ) -> ChapterConsistencyValidationOutput:
-    return ChapterConsistencyValidationOutput(
-        checks=[
-            check("internal_consistency"),
-            cross_chapter or check("cross_chapter_consistency"),
-        ],
-        findings=findings or [],
-    )
+    return ChapterConsistencyValidationOutput(findings=findings or [])
 
 
 def static_passes(

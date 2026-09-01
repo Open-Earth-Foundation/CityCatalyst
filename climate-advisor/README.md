@@ -67,7 +67,7 @@ comparisons.
 `llm_config.yaml` configures `cnb_chapter_validator` as GPT-5.6 Terra with
 medium reasoning and a 50,000-token validation prompt budget. The service uses
 temperature zero. Model or parse failures persist nothing. Successful results
-store concise checks and actionable findings, never reasoning, and are guarded
+store actionable findings, never reasoning, and are guarded
 by a transactional fingerprint covering active chapter metadata and revisions,
 target gaps and evidence links, and every application-template field. See
 [`ConceptNoteBuilderArchitecture.md`](../docs/ConceptNoteBuilderArchitecture.md#chapter-validation)

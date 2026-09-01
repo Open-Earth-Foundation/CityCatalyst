@@ -60,12 +60,6 @@ Input is one JSON object with:
 <output>
 Return only one `ChapterCompletenessValidationOutput` JSON object.
 
-- `checks` (array): exactly three objects, one for each key
-  `required_content`, `template_constraints`, and `evidence_citations`
-  - `key` (string): one of those exact keys
-  - `status` (`pass | warning | fail`): use `fail` for a blocking problem,
-    `warning` for a non-blocking problem, and `pass` when none is found
-  - `message` (string or null): concise summary; required for non-pass checks
 - `findings` (array): zero or more actionable objects
   - `category` (`missing_information | template_constraint | unresolved_gap |
     evidence`)
@@ -76,14 +70,11 @@ Return only one `ChapterCompletenessValidationOutput` JSON object.
   - `excerpts` (array of strings): zero to three short verbatim excerpts from
     the target chapter
 
-Every non-pass check must have at least one corresponding finding. Prefer a
-`template_constraint` finding for a non-pass `template_constraints` check. When
-the same problem is both a missing required field and a template violation, one
-actionable `missing_information` or `unresolved_gap` finding may support both
-checks; do not duplicate the finding only to change its category. Do not emit
-workflow status, labels, timestamps, phase fields, or model reasoning.
+When the same problem is both missing required information and a template
+violation, emit one actionable finding rather than duplicating it under another
+category. Do not emit workflow status, labels, timestamps, or model reasoning.
 </output>
 
 <example_output>
-{"checks":[{"key":"required_content","status":"fail","message":"The delivery timetable is not specified."},{"key":"template_constraints","status":"pass","message":null},{"key":"evidence_citations","status":"warning","message":"The emissions-reduction claim has no linked support."}],"findings":[{"category":"missing_information","severity":"blocking","message":"The chapter does not state when implementation begins or ends.","suggested_action":"Add the confirmed implementation start and end dates.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":[]},{"category":"evidence","severity":"warning","message":"The projected emissions reduction is not connected to an evidence link.","suggested_action":"Link the calculation or source supporting the projected reduction.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The programme will reduce emissions by 30%."]}]}
+{"findings":[{"category":"missing_information","severity":"blocking","message":"The chapter does not state when implementation begins or ends.","suggested_action":"Add the confirmed implementation start and end dates.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":[]},{"category":"evidence","severity":"warning","message":"The projected emissions reduction is not connected to an evidence link.","suggested_action":"Link the calculation or source supporting the projected reduction.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The programme will reduce emissions by 30%."]}]}
 </example_output>

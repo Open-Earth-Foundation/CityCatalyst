@@ -102,11 +102,7 @@ export function useGuidedReview({
   const progressPercent = chapters.length
     ? Math.round((completedChapterCount / chapters.length) * 100)
     : 0;
-  const reviewFindings = [
-    ...review.groups.missing_information,
-    ...review.groups.conflicts_logic,
-    ...review.groups.evidence,
-  ];
+  const reviewFindings = Object.values(review.groups).flat();
   const firstActionableFinding =
     reviewFindings.find(({ finding }) => finding.severity === "blocking") ??
     reviewFindings[0] ??

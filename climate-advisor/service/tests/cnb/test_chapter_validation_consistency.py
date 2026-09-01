@@ -1,11 +1,8 @@
 import pytest
-
 from tests.cnb.chapter_validation_helpers import (
     OTHER_ID,
     TARGET_ID,
     chapter,
-    check,
-    completeness,
     consistency,
     finding,
     request,
@@ -50,7 +47,6 @@ async def test_scope_guard_requires_explicit_incompatible_claims(
 
 async def test_deterministic_scope_conflict_deduplicates_model_paraphrase() -> None:
     model_result = consistency(
-        cross_chapter=check("cross_chapter_consistency", "fail", "Scope conflict"),
         findings=[
             finding(
                 "cross_chapter_conflict",
@@ -61,9 +57,7 @@ async def test_deterministic_scope_conflict_deduplicates_model_paraphrase() -> N
             )
         ],
     )
-    decision = await service(
-        static_passes(consistency_result=model_result)
-    ).validate(
+    decision = await service(static_passes(consistency_result=model_result)).validate(
         request(
             chapters=[
                 chapter(TARGET_ID, position=0, body=INVESTMENT_BODY),

@@ -62,7 +62,6 @@ class WorkspaceValidationSnapshot:
     validated_revision_number: int | None
     validation_input_fingerprint: str
     validated_at: datetime
-    checks: list[dict[str, Any]]
     findings: list[dict[str, Any]]
 
 
@@ -255,7 +254,6 @@ class ConceptNoteWorkspaceRepository:
         template_fingerprint: str,
         expected_fingerprint: str,
         status: str,
-        checks: list[dict[str, Any]],
         findings: list[dict[str, Any]],
     ) -> WorkspaceValidationSnapshot:
         """Atomically replace a validation if its complete input remains current.
@@ -294,7 +292,6 @@ class ConceptNoteWorkspaceRepository:
             stored.validated_revision_id = context.target.revision_id
             stored.validation_input_fingerprint = context.fingerprint
             stored.status = status
-            stored.checks = deepcopy(checks)
             stored.findings = deepcopy(findings)
             stored.validated_at = validated_at
 
@@ -320,7 +317,6 @@ class ConceptNoteWorkspaceRepository:
                 validated_revision_number=context.target.revision_number,
                 validation_input_fingerprint=stored.validation_input_fingerprint,
                 validated_at=stored.validated_at,
-                checks=deepcopy(stored.checks),
                 findings=deepcopy(stored.findings),
             )
 
@@ -892,7 +888,6 @@ def _chapter_snapshot(
             ),
             validation_input_fingerprint=stored_validation.validation_input_fingerprint,
             validated_at=stored_validation.validated_at,
-            checks=deepcopy(stored_validation.checks),
             findings=deepcopy(stored_validation.findings),
         )
 

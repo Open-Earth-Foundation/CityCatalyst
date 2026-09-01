@@ -302,6 +302,16 @@ export function GuidedReviewDecisionPanel({
     review,
     setStage,
   } = controller;
+  const targetChapterId =
+    firstActionableFinding?.chapterId ??
+    firstChapterWithMissingInformation?.chapter_id ??
+    null;
+  const findingKey = firstActionableFinding
+    ? chapterValidationFindingKey(
+        firstActionableFinding.chapterId,
+        firstActionableFinding.finding,
+      )
+    : null;
 
   return (
     <VStack align="stretch" gap={6}>
@@ -317,59 +327,30 @@ export function GuidedReviewDecisionPanel({
         status={effectiveReviewStatus}
         warningCount={review.warningCount}
       />
-      <VStack align="stretch" gap={3}>
-        {missingInformationCount > 0 && (
-          <Button
-            justifyContent="flex-start"
-            onClick={() =>
-              onAddInformation(
-                firstActionableFinding?.chapterId ??
-                  firstChapterWithMissingInformation?.chapter_id ??
-                  null,
-                firstActionableFinding
-                  ? chapterValidationFindingKey(
-                      firstActionableFinding.chapterId,
-                      firstActionableFinding.finding,
-                    )
-                  : null,
-              )
-            }
-          >
-            <Icon as={LuFileText} />
-            {t("review-fix-missing-information")}
-          </Button>
-        )}
-        {review.warningCount > 0 && (
-          <Button
-            justifyContent="flex-start"
-            variant="outline"
-            onClick={() => setStage("missing_information")}
-          >
-            <Icon as={LuSearchCheck} />
-            {t("review-review-warnings", { count: review.warningCount })}
-          </Button>
-        )}
-        <Button
-          justifyContent="flex-start"
-          variant={effectiveReviewStatus === "ready" ? "solid" : "ghost"}
-          color={
-            effectiveReviewStatus === "ready" ? "base.light" : "content.link"
-          }
-          onClick={() => setStage("export")}
-        >
-          <Icon as={LuDownload} />
-          {t(
-            effectiveReviewStatus === "ready"
-              ? "review-continue-export"
-              : "review-export-as-is",
-          )}
+      {missingInformationCount > 0 && (
+        <Button onClick={() => onAddInformation(targetChapterId, findingKey)}>
+          <Icon as={LuFileText} />
+          {t("review-fix-missing-information")}
         </Button>
-      </VStack>
-      <Button
-        alignSelf="flex-start"
-        variant="ghost"
-        onClick={() => setStage("conflicts_logic")}
-      >
+      )}
+      {review.warningCount > 0 && (
+        <Button
+          variant="outline"
+          onClick={() => setStage("missing_information")}
+        >
+          <Icon as={LuSearchCheck} />
+          {t("review-review-warnings", { count: review.warningCount })}
+        </Button>
+      )}
+      <Button variant="ghost" onClick={() => setStage("export")}>
+        <Icon as={LuDownload} />
+        {t(
+          effectiveReviewStatus === "ready"
+            ? "review-continue-export"
+            : "review-export-as-is",
+        )}
+      </Button>
+      <Button variant="ghost" onClick={() => setStage("conflicts_logic")}>
         <Icon as={LuArrowLeft} />
         {t("review-back-conflicts")}
       </Button>

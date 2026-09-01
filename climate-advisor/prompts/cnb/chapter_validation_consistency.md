@@ -74,8 +74,8 @@ Input is one JSON object with:
 - `target_chapter` (object): `chapter_id`, nullable `template_section_id`,
   `title`, zero-based `position`, `required`, nullable full `body_markdown`, and
   nullable `revision_number`
-- `completeness_result` (object): pass-one `checks` and `findings`, provided so
-  this pass does not repeat them
+- `completeness_result` (object): pass-one `findings`, provided so this pass
+  does not repeat them
 - `compared_chapters` (array): a complete non-truncated batch of other active
   chapters, each with the same fields as `target_chapter`
 </input>
@@ -83,12 +83,6 @@ Input is one JSON object with:
 <output>
 Return only one `ChapterConsistencyValidationOutput` JSON object.
 
-- `checks` (array): exactly two objects, one for each key
-  `internal_consistency` and `cross_chapter_consistency`
-  - `key` (string): one of those exact keys
-  - `status` (`pass | warning | fail`): use `fail` for a blocking problem,
-    `warning` for a non-blocking ambiguity, and `pass` when none is found
-  - `message` (string or null): concise summary; required for non-pass checks
 - `findings` (array): zero or more actionable objects
   - `category` (`internal_conflict | cross_chapter_conflict | logic_error`)
   - `severity` (`warning | blocking`)
@@ -98,18 +92,17 @@ Return only one `ChapterConsistencyValidationOutput` JSON object.
   - `excerpts` (array of strings): zero to three short verbatim excerpts from
     the involved chapters
 
-Every non-pass check must have at least one corresponding finding. Do not emit
-workflow status, labels, timestamps, phase fields, or model reasoning.
+Do not emit workflow status, labels, timestamps, or model reasoning.
 </output>
 
 <example_output>
-{"checks":[{"key":"internal_consistency","status":"pass","message":null},{"key":"cross_chapter_consistency","status":"fail","message":"The target and budget chapters use incompatible project totals."}],"findings":[{"category":"cross_chapter_conflict","severity":"blocking","message":"The target chapter states a EUR 4 million total while the budget chapter states EUR 5 million.","suggested_action":"Confirm the approved total and use the same amount in both chapters.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The total project cost is EUR 4 million.","Total eligible expenditure: EUR 5 million."]}]}
+{"findings":[{"category":"cross_chapter_conflict","severity":"blocking","message":"The target chapter states a EUR 4 million total while the budget chapter states EUR 5 million.","suggested_action":"Confirm the approved total and use the same amount in both chapters.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The total project cost is EUR 4 million.","Total eligible expenditure: EUR 5 million."]}]}
 </example_output>
 
 <example_output>
-{"checks":[{"key":"internal_consistency","status":"fail","message":"The proposed future scope is described as work already nearing completion."},{"key":"cross_chapter_consistency","status":"fail","message":"The target includes current construction that the support chapter excludes."}],"findings":[{"category":"logic_error","severity":"blocking","message":"The target defines the proposal as delivery of the route while also stating that construction is 97% complete and commissioning is underway.","suggested_action":"Define a genuinely future residual or follow-on measure, schedule, and cost, and distinguish it from current works.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The proposed measure is delivery of the route.","Construction is 97% complete and commissioning is underway."]},{"category":"cross_chapter_conflict","severity":"blocking","message":"The target includes delivery of the current route while the support chapter excludes ongoing construction and commissioning.","suggested_action":"Use one explicit eligible future scope in both chapters and exclude current works consistently.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The proposed measure is delivery of the route.","Support will not fund ongoing construction or commissioning."]}]}
+{"findings":[{"category":"logic_error","severity":"blocking","message":"The target defines the proposal as delivery of the route while also stating that construction is 97% complete and commissioning is underway.","suggested_action":"Define a genuinely future residual or follow-on measure, schedule, and cost, and distinguish it from current works.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111"],"excerpts":["The proposed measure is delivery of the route.","Construction is 97% complete and commissioning is underway."]},{"category":"cross_chapter_conflict","severity":"blocking","message":"The target includes delivery of the current route while the support chapter excludes ongoing construction and commissioning.","suggested_action":"Use one explicit eligible future scope in both chapters and exclude current works consistently.","involved_chapter_ids":["11111111-1111-4111-8111-111111111111","22222222-2222-4222-8222-222222222222"],"excerpts":["The proposed measure is delivery of the route.","Support will not fund ongoing construction or commissioning."]}]}
 </example_output>
 
 <example_output>
-{"checks":[{"key":"internal_consistency","status":"pass","message":null},{"key":"cross_chapter_consistency","status":"pass","message":null}],"findings":[]}
+{"findings":[]}
 </example_output>

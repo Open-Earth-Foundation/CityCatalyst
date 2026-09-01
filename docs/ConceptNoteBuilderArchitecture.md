@@ -229,7 +229,7 @@ flowchart LR
 | CN upload/run associations and Markdown result identity            | Climate Advisor (`CA_DATABASE_URL`) | Owns the run binding, lifecycle, label, and immutable result identity.                               |
 | Uploaded source objects, OCR result objects, and their S3 pointers | CityCatalyst                        | Reuses authenticated CC upload, S3 storage, project/city permissions, and the CC result catalog.     |
 | Document chapters and revisions                                    | `CNB_DATABASE_URL`                  | Draft document state before export; `run_id` is an external CA identifier.                           |
-| Latest chapter validations                                         | `CNB_DATABASE_URL`                  | Fixed checks, actionable findings, validated revision, input fingerprint, and validation timestamp.  |
+| Latest chapter validations                                         | `CNB_DATABASE_URL`                  | Actionable findings, validated revision, input fingerprint, and validation timestamp.                |
 | Funder profiles and criteria                                       | `CNB_DATABASE_URL`                  | Shared curated corpus, reusable across cities and agents.                                            |
 | Funding opportunities and funded projects                          | `CNB_DATABASE_URL`                  | Separate programme and awarded-project tables with explicit foreign keys.                            |
 | Exported DOCX/PDF file references                                  | `CNB_DATABASE_URL`                  | Workflow output artifacts.                                                                           |
@@ -914,7 +914,6 @@ erDiagram
         uuid validated_revision_id
         string validation_input_fingerprint
         string status
-        jsonb checks
         jsonb findings
         timestamp validated_at
     }
@@ -2228,8 +2227,7 @@ delivery and a late implementation state). Project names, route descriptions,
 sustainability framing, generic references to an investment concept, and an
 omitted future scope are not treated as contradictions.
 
-The final fixed checks use `pass`, `warning`, or `fail`. Open
-`missing_information`, `critical`, and `blocking` gaps, missing required
+Open `missing_information`, `critical`, and `blocking` gaps, missing required
 content, template violations, and material contradictions produce
 `incomplete`. Evidence deficiencies and non-blocking ambiguity produce
 `needs_review`. Only a result with no failures or warnings is `ready`. An empty
@@ -2239,7 +2237,7 @@ optional chapter remains visible as non-blocking missing information with
 the previous validation and chapter status.
 
 The draft contract nests validation under each chapter with status, stale flag,
-validated revision/time, fixed checks, and findings. Findings include phase,
+validated revision/time, derived fixed checks, and findings. Findings include phase,
 category, severity, actionable resolution, involved chapter IDs, and optional
 excerpts. The guided modal first presents Missing information with evidence
 warnings, then Conflicts & logic, and finally a decision step. The decision and

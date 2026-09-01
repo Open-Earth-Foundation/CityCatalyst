@@ -308,7 +308,6 @@ def test_cnb_upgrade_downgrade_and_chain_isolation() -> None:
             "created_at",
         },
         "concept_note_chapter_validations": {
-            "checks",
             "findings",
             "validated_at",
         },

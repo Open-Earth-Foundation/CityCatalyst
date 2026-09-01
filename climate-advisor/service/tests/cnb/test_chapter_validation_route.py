@@ -56,7 +56,6 @@ def test_validation_route_returns_persisted_result_with_chapter_id() -> None:
         is_stale=False,
         validated_revision_number=3,
         validated_at=validated_at,
-        checks=[],
         findings=[],
     )
     service = SimpleNamespace(validate=AsyncMock(return_value=validation))

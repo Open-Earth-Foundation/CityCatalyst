@@ -206,20 +206,12 @@ async def test_upsert_projects_staleness_and_rejects_an_old_fingerprint() -> Non
             chapter_id=target_id,
             template_fingerprint=TEMPLATE_FINGERPRINT,
         )
-        checks = [
-            {
-                "key": "required_content",
-                "label": "Required content",
-                "status": "pass",
-            }
-        ]
         stored = await repository.upsert_validation(
             run_id=run_id,
             chapter_id=target_id,
             template_fingerprint=TEMPLATE_FINGERPRINT,
             expected_fingerprint=context.fingerprint,
             status="ready",
-            checks=checks,
             findings=[],
         )
         assert stored.status == "ready"
@@ -257,9 +249,9 @@ async def test_upsert_projects_staleness_and_rejects_an_old_fingerprint() -> Non
                 template_fingerprint=TEMPLATE_FINGERPRINT,
                 expected_fingerprint=context.fingerprint,
                 status="ready",
-                checks=checks,
                 findings=[],
             )
+
 
 async def test_copy_omits_validation_and_delete_removes_source_result() -> None:
     """A duplicate drops validation-derived states and dependent result rows."""
@@ -284,7 +276,6 @@ async def test_copy_omits_validation_and_delete_removes_source_result() -> None:
             template_fingerprint=TEMPLATE_FINGERPRINT,
             expected_fingerprint=context.fingerprint,
             status="ready",
-            checks=[],
             findings=[],
         )
 

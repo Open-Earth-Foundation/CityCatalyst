@@ -7,10 +7,7 @@ from uuid import uuid4
 
 import pytest
 from app.models.cnb.concept_note_application_context import ApplicationContextTemplate
-from app.models.cnb.concept_note_chapter_validation import (
-    ChapterValidationCheck,
-    ChapterValidationDecision,
-)
+from app.models.cnb.concept_note_chapter_validation import ChapterValidationDecision
 from app.persistence.concept_notes.workspace import (
     WorkspaceValidationChapter,
     WorkspaceValidationContext,
@@ -58,22 +55,11 @@ def _context() -> WorkspaceValidationContext:
 
 
 def _decision(context: WorkspaceValidationContext) -> ChapterValidationDecision:
-    keys = (
-        "required_content",
-        "template_constraints",
-        "blocking_gaps",
-        "evidence_citations",
-        "internal_consistency",
-        "cross_chapter_consistency",
-    )
     return ChapterValidationDecision(
         target_chapter_id=context.target.chapter_id,
         validated_revision_number=2,
         validation_input_fingerprint=context.fingerprint,
         status="ready",
-        checks=[
-            ChapterValidationCheck(key=key, label=key, status="pass") for key in keys
-        ],
         findings=[],
     )
 
@@ -109,7 +95,6 @@ def _workflow(
 @pytest.mark.asyncio
 async def test_workflow_persists_the_validated_fingerprint() -> None:
     context = _context()
-    decision = _decision(context)
     template = _template()
     workflow, workspace, validator, app_context, _ = _workflow(
         context=context,
@@ -126,7 +111,6 @@ async def test_workflow_persists_the_validated_fingerprint() -> None:
         validated_revision_number=2,
         validation_input_fingerprint=context.fingerprint,
         validated_at=datetime.now(UTC),
-        checks=[item.model_dump(mode="json") for item in decision.checks],
         findings=[],
     )
     run = SimpleNamespace(run_id=uuid4(), workflow_step="editing_document")
@@ -134,6 +118,7 @@ async def test_workflow_persists_the_validated_fingerprint() -> None:
     response = await workflow.validate(run=run, chapter_id=context.target.chapter_id)
 
     assert response.status == "ready"
+    assert len(response.checks) == 6
     app_context.load_for_run.assert_has_awaits([call(run), call(run)])
     validator.validate.assert_awaited_once()
     assert workspace.upsert_validation.await_args.kwargs["expected_fingerprint"] == (

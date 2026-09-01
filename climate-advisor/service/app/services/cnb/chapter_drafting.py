@@ -730,7 +730,6 @@ def _validation_response(
         is_stale=validation.is_stale,
         validated_revision_number=validation.validated_revision_number,
         validated_at=validation.validated_at,
-        checks=validation.checks,
         findings=validation.findings,
     )
 

@@ -30,7 +30,7 @@ class ConceptNoteChapterDraftOutput(BaseModel):
 
 
 class ConceptNoteValidationCheckResponse(BaseModel):
-    """One concise readiness check shown in the chapter validation summary."""
+    """One derived readiness area in the public validation response."""
 
     key: str
     label: str

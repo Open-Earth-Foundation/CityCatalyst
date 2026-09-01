@@ -145,9 +145,6 @@ class ConceptNoteChapterValidation(CnbBase):
         String(64), nullable=False
     )
     status: Mapped[str] = mapped_column(String(32), nullable=False)
-    checks: Mapped[list[dict[str, Any]]] = mapped_column(
-        JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
-    )
     findings: Mapped[list[dict[str, Any]]] = mapped_column(
         JSONBCompat(), nullable=False, default=list, server_default=text("'[]'::jsonb")
     )

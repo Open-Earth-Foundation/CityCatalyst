@@ -10,10 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/i18n/client";
 import type { ConceptNoteChapterValidationStatus } from "@/util/types";
 
-import type {
-  ChapterReviewErrorKind,
-  DocumentReviewFinding,
-} from "./chapter-validation";
+import type { DocumentReviewFinding } from "./chapter-validation";
 import type { FailedChapterReview } from "./use-guided-review";
 
 function statusTranslationKey(
@@ -22,16 +19,6 @@ function statusTranslationKey(
   if (status === "ready") return "validation-status-ready";
   if (status === "needs_review") return "validation-status-needs-review";
   return "validation-status-incomplete";
-}
-
-function failureDescriptionKey(errorKind: ChapterReviewErrorKind): string {
-  if (errorKind === "template_unavailable") {
-    return "guided-review-chapter-failed-template";
-  }
-  if (errorKind === "service_unavailable") {
-    return "guided-review-chapter-failed-service";
-  }
-  return "guided-review-chapter-failed-generic";
 }
 
 export function ReviewFindingList({
@@ -275,22 +262,9 @@ export function SavedReviewSummary({
               completed: reviewedCount,
             })}
           </Text>
-          <VStack align="stretch" gap={2} mt={3}>
-            {failedChapters.map(({ chapter, errorKind }) => (
-              <Box key={chapter.chapter_id}>
-                <Text
-                  fontSize="label.sm"
-                  fontWeight="semibold"
-                  color="content.primary"
-                >
-                  {chapter.title}
-                </Text>
-                <Text fontSize="label.sm" color="content.secondary">
-                  {t(failureDescriptionKey(errorKind))}
-                </Text>
-              </Box>
-            ))}
-          </VStack>
+          <Text mt={2} fontSize="label.sm" color="content.secondary">
+            {failedChapters.map(({ chapter }) => chapter.title).join(", ")}
+          </Text>
           <Button mt={4} size="xs" variant="outline" onClick={onRetryFailed}>
             {t("review-retry-failed", { count: failedChapters.length })}
           </Button>

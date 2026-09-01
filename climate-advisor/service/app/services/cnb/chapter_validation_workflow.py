@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Any
 from uuid import UUID
 
 from app.db.cnb_reference import get_cnb_reference_session_factory
@@ -41,6 +42,22 @@ REVISION_CHANGED_MESSAGE = (
     "run validation again"
 )
 STORAGE_UNAVAILABLE_MESSAGE = "Concept Note validation storage is unavailable"
+_CHECKS = (
+    ("required_content", "Required content", {"missing_information"}),
+    ("template_constraints", "Template constraints", {"template_constraint"}),
+    ("blocking_gaps", "Open gaps", {"unresolved_gap"}),
+    ("evidence_citations", "Evidence and citations", {"evidence"}),
+    (
+        "internal_consistency",
+        "Internal logic",
+        {"internal_conflict", "logic_error"},
+    ),
+    (
+        "cross_chapter_consistency",
+        "Cross-chapter consistency",
+        {"cross_chapter_conflict"},
+    ),
+)
 
 
 class ChapterValidationWorkflowError(Exception):
@@ -190,7 +207,6 @@ class ConceptNoteChapterValidationWorkflowService:
                 template_fingerprint=template_fingerprint,
                 expected_fingerprint=decision.validation_input_fingerprint,
                 status=decision.status,
-                checks=[check.model_dump(mode="json") for check in decision.checks],
                 findings=[
                     finding.model_dump(mode="json") for finding in decision.findings
                 ],
@@ -245,12 +261,34 @@ def chapter_validation_response(
         is_stale=snapshot.is_stale,
         validated_revision_number=snapshot.validated_revision_number,
         validated_at=snapshot.validated_at,
-        checks=[
-            ConceptNoteValidationCheckResponse.model_validate(check)
-            for check in snapshot.checks
-        ],
+        checks=_validation_checks(snapshot.findings),
         findings=[
             ConceptNoteValidationFindingResponse.model_validate(finding)
             for finding in snapshot.findings
         ],
     )
+
+
+def _validation_checks(
+    findings: list[dict[str, Any]],
+) -> list[ConceptNoteValidationCheckResponse]:
+    """Derive the stable public summary instead of persisting duplicate data."""
+    checks: list[ConceptNoteValidationCheckResponse] = []
+    for key, label, categories in _CHECKS:
+        matches = [item for item in findings if item.get("category") in categories]
+        status = (
+            "fail"
+            if any(item.get("severity") == "blocking" for item in matches)
+            else "warning"
+            if matches
+            else "pass"
+        )
+        checks.append(
+            ConceptNoteValidationCheckResponse(
+                key=key,
+                label=label,
+                status=status,
+                message=matches[0].get("message") if matches else None,
+            )
+        )
+    return checks

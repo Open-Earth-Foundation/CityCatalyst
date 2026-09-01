@@ -193,9 +193,8 @@ export function buildDocumentReviewSummary(
         ? "needs_review"
         : "ready",
     templateFailureCount: reviewedChapters.filter(({ validation }) =>
-      validation.checks.some(
-        (check) =>
-          check.key === "template_constraints" && check.status === "fail",
+      validation.findings.some(
+        (finding) => finding.category === "template_constraint",
       ),
     ).length,
     warningCount: allFindings.filter(

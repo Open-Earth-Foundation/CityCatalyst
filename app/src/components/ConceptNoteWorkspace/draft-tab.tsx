@@ -50,6 +50,7 @@ import {
   replaceMissingInformationMarkers,
 } from "./draft-markdown";
 import {
+  chapterValidationFindingKey,
   type ChapterDisplayStatus,
   getChapterDisplayStatus,
 } from "./chapter-validation";
@@ -63,6 +64,7 @@ interface DraftTabProps {
   draft: ConceptNoteDraftState | null;
   draftError: string | null;
   focusChapterId: string | null;
+  focusFindingKey: string | null;
   isDraftRunning: boolean;
   isRetrying: boolean;
   isStartingDraft: boolean;
@@ -305,6 +307,7 @@ export function DraftTab({
   draft,
   draftError,
   focusChapterId,
+  focusFindingKey,
   isDraftRunning,
   isRetrying,
   isStartingDraft,
@@ -316,6 +319,7 @@ export function DraftTab({
 }: DraftTabProps) {
   const { t } = useTranslation(lng, "concept-notes");
   const chapterElements = useRef<Record<string, HTMLDivElement | null>>({});
+  const focusedFindingElement = useRef<HTMLDivElement | null>(null);
   const previewElement = useRef<HTMLDivElement | null>(null);
   const [focusedChapterId, setFocusedChapterId] = useState<string | null>(null);
   const [isChapterPanelOpen, setIsChapterPanelOpen] = useState(true);
@@ -327,6 +331,22 @@ export function DraftTab({
   const showDraftSetup = !draftStarted || draft?.status === "failed";
   const activeChapterTitle = currentChapter(draft);
   const chapters = useMemo(() => draft?.chapters ?? [], [draft?.chapters]);
+  const focusedFinding = useMemo(() => {
+    if (!focusChapterId || !focusFindingKey) {
+      return null;
+    }
+    const chapter = chapters.find(
+      ({ chapter_id: chapterId }) => chapterId === focusChapterId,
+    );
+    const finding = chapter?.validation?.findings.find(
+      (candidate) =>
+        chapterValidationFindingKey(chapter.chapter_id, candidate) ===
+        focusFindingKey,
+    );
+    return chapter && finding
+      ? { chapterId: chapter.chapter_id, finding }
+      : null;
+  }, [chapters, focusChapterId, focusFindingKey]);
   const selectedChapterId =
     focusedChapterId ?? draft?.current_chapter_id ?? chapters[0]?.chapter_id;
   const totalChapters =
@@ -364,15 +384,21 @@ export function DraftTab({
       if (!preview || !chapterElement) {
         return;
       }
-      const chapterTop =
-        chapterElement.getBoundingClientRect().top -
+      const findingElement =
+        focusedFinding?.chapterId === focusChapterId
+          ? focusedFindingElement.current
+          : null;
+      const targetElement = findingElement ?? chapterElement;
+      const targetTop =
+        targetElement.getBoundingClientRect().top -
         preview.getBoundingClientRect().top +
         preview.scrollTop -
         48;
-      preview.scrollTo({ behavior: "smooth", top: Math.max(0, chapterTop) });
+      preview.scrollTo({ behavior: "smooth", top: Math.max(0, targetTop) });
+      findingElement?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
-  }, [chapters, focusChapterId]);
+  }, [chapters, focusChapterId, focusedFinding]);
 
   let status: DraftStatusPresentation = {
     background: "background.neutral",
@@ -866,6 +892,69 @@ export function DraftTab({
                     >
                       {chapter.position + 1} · {chapter.title}
                     </Text>
+                    {focusedFinding?.chapterId === chapter.chapter_id && (
+                      <Box
+                        ref={focusedFindingElement}
+                        data-testid="focused-review-finding"
+                        data-review-finding-key={focusFindingKey}
+                        tabIndex={-1}
+                        mb={4}
+                        border="1px solid"
+                        borderColor={
+                          focusedFinding.finding.severity === "blocking"
+                            ? "sentiment.negativeDefault"
+                            : "sentiment.warningDefault"
+                        }
+                        borderRadius="rounded"
+                        bg={
+                          focusedFinding.finding.severity === "blocking"
+                            ? "sentiment.negativeOverlay"
+                            : "sentiment.warningOverlay"
+                        }
+                        p={3}
+                        scrollMarginTop={12}
+                        _focusVisible={{
+                          outline: "2px solid",
+                          outlineColor: "content.link",
+                          outlineOffset: "2px",
+                        }}
+                      >
+                        <Text
+                          fontSize="label.sm"
+                          fontWeight="semibold"
+                          color="content.primary"
+                        >
+                          {t(
+                            focusedFinding.finding.severity === "blocking"
+                              ? "review-blocking"
+                              : "review-warning",
+                          )}
+                        </Text>
+                        <Text mt={1} fontSize="body.sm" color="content.primary">
+                          {focusedFinding.finding.message}
+                        </Text>
+                        {focusedFinding.finding.excerpts?.[0] && (
+                          <Text
+                            mt={2}
+                            fontSize="label.sm"
+                            fontStyle="italic"
+                            color="content.secondary"
+                          >
+                            {focusedFinding.finding.excerpts[0]}
+                          </Text>
+                        )}
+                        <Text
+                          mt={2}
+                          fontSize="label.sm"
+                          color="content.secondary"
+                        >
+                          <chakra.span fontWeight="semibold">
+                            {t("review-action-label")}
+                          </chakra.span>{" "}
+                          {focusedFinding.finding.suggested_action}
+                        </Text>
+                      </Box>
+                    )}
                     {chapter.body_markdown ? (
                       <ReactMarkdown
                         components={markdownComponents}

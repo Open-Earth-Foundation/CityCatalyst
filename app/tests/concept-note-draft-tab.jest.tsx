@@ -15,6 +15,7 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 
 import type { ConceptNoteBundleProgress } from "@/components/ConceptNoteDashboard/utils";
+import { chapterValidationFindingKey } from "@/components/ConceptNoteWorkspace/chapter-validation";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type { ConceptNoteDraftState } from "@/util/types";
 
@@ -23,6 +24,9 @@ const translations: Record<string, string> = {
   "draft-sections": "Sections",
   "hide-chapter-panel": "Hide chapter panel",
   "jump-to-chapter": "Jump to {{chapter}}",
+  "review-action-label": "Recommended action:",
+  "review-blocking": "Blocking",
+  "review-warning": "Review",
   "show-chapter-panel": "Show chapter panel",
 };
 
@@ -161,6 +165,7 @@ describe("Concept Note draft chapter panel", () => {
             draft={draft}
             draftError={null}
             focusChapterId={null}
+            focusFindingKey={null}
             isDraftRunning={false}
             isRetrying={false}
             isStartingDraft={false}
@@ -238,6 +243,7 @@ describe("Concept Note draft chapter panel", () => {
             draft={reviewDraft}
             draftError={null}
             focusChapterId="chapter-1"
+            focusFindingKey={null}
             isDraftRunning={false}
             isRetrying={false}
             isStartingDraft={false}
@@ -259,5 +265,74 @@ describe("Concept Note draft chapter panel", () => {
     expect(document.body.textContent).not.toContain(
       "Confirm the co-financing amount.",
     );
+  });
+
+  it("focuses the exact finding selected from guided review", async () => {
+    const finding = {
+      category: "missing_information",
+      excerpts: ["The budget section does not state a confirmed amount."],
+      involved_chapter_ids: ["chapter-1"],
+      message: "The confirmed co-financing amount is missing.",
+      phase: "completeness" as const,
+      severity: "blocking" as const,
+      suggested_action: "Add the confirmed amount and source.",
+    };
+    const reviewDraft: ConceptNoteDraftState = {
+      ...draft,
+      chapters: [
+        {
+          ...draft.chapters[0],
+          validation: {
+            checks: [],
+            findings: [finding],
+            is_stale: false,
+            status: "incomplete",
+            validated_at: "2026-08-31T10:00:00Z",
+            validated_revision_number: 1,
+          },
+        },
+      ],
+    };
+    const findingKey = chapterValidationFindingKey("chapter-1", finding);
+
+    await act(async () => {
+      root.render(
+        <ChakraProvider value={appTheme}>
+          <DraftTab
+            applicationContext={null}
+            applicationContextFailed={false}
+            applicationContextLoading={false}
+            bundle={bundle}
+            canStartDrafting
+            draft={reviewDraft}
+            draftError={null}
+            focusChapterId="chapter-1"
+            focusFindingKey={findingKey}
+            isDraftRunning={false}
+            isRetrying={false}
+            isStartingDraft={false}
+            lng="en"
+            noteName="Kraków Tram"
+            onOpenContext={jest.fn()}
+            onRetry={jest.fn()}
+            onStartDrafting={jest.fn()}
+          />
+        </ChakraProvider>,
+      );
+    });
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 20));
+    });
+
+    const focusedFinding = document.querySelector(
+      '[data-testid="focused-review-finding"]',
+    );
+    expect(focusedFinding?.getAttribute("data-review-finding-key")).toBe(
+      findingKey,
+    );
+    expect(focusedFinding?.textContent).toContain(finding.message);
+    expect(focusedFinding?.textContent).toContain(finding.excerpts[0]);
+    expect(focusedFinding?.textContent).toContain(finding.suggested_action);
+    expect(document.activeElement).toBe(focusedFinding);
   });
 });

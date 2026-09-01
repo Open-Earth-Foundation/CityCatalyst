@@ -77,6 +77,7 @@ export function ConceptNoteWorkspace({
   const [tab, setTab] = useState<WorkspaceTab>("draft");
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewChapterId, setReviewChapterId] = useState<string | null>(null);
+  const [reviewFindingKey, setReviewFindingKey] = useState<string | null>(null);
   const [activeUploadId, setActiveUploadId] = useState(initialUploadId ?? null);
   const [uploadDetails, setUploadDetails] =
     useState<ConceptNoteUploadResponse | null>(null);
@@ -456,6 +457,7 @@ export function ConceptNoteWorkspace({
                 bg="sentiment.positiveDefault"
                 onClick={() => {
                   setReviewChapterId(null);
+                  setReviewFindingKey(null);
                   setReviewOpen(true);
                 }}
               >
@@ -597,6 +599,7 @@ export function ConceptNoteWorkspace({
                   draft={draft ?? null}
                   draftError={draftStartError}
                   focusChapterId={reviewChapterId}
+                  focusFindingKey={reviewFindingKey}
                   applicationContextFailed={applicationContextFailed}
                   applicationContextLoading={applicationContextLoading}
                   isDraftRunning={isDraftRunning}
@@ -663,8 +666,9 @@ export function ConceptNoteWorkspace({
         noteName={run.name}
         open={reviewOpen}
         runId={runId}
-        onAddInformation={(chapterId) => {
+        onAddInformation={(chapterId, findingKey) => {
           setReviewChapterId(chapterId);
+          setReviewFindingKey(findingKey ?? null);
           setTab("draft");
         }}
         onReviewSetup={() => setTab("context")}

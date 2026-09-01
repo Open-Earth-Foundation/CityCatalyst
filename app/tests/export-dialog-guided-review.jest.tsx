@@ -16,6 +16,7 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { Provider } from "react-redux";
 
+import { chapterValidationFindingKey } from "@/components/ConceptNoteWorkspace/chapter-validation";
 import { appTheme } from "@/lib/theme/recipes/app-theme";
 import type {
   ConceptNoteChapterValidationResponse,
@@ -667,6 +668,37 @@ describe("guided review before export", () => {
     expect(document.body.textContent).toContain("Export the current draft");
     expect(document.body.textContent).toContain("Export DOCX");
     expect(button("Export DOCX").disabled).toBe(true);
+  });
+
+  it("passes the exact finding target when returning to the draft", async () => {
+    const onAddInformation = jest.fn();
+
+    await renderWithProviders(
+      <ExportDialog
+        draft={draft()}
+        draftError={false}
+        hasApplicationTemplate
+        hasUploadedEvidence={false}
+        lng="en"
+        noteName="Kraków Tram"
+        onAddInformation={onAddInformation}
+        onOpenChange={jest.fn()}
+        onRetryDraft={jest.fn()}
+        onReviewComplete={jest.fn()}
+        onReviewSetup={jest.fn()}
+        open
+        runId="run-1"
+      />,
+    );
+    await settle();
+
+    const finding = validationFor("chapter-target").findings[0];
+    await click("Open chapter to fix");
+
+    expect(onAddInformation).toHaveBeenCalledWith(
+      "chapter-target",
+      chapterValidationFindingKey("chapter-target", finding),
+    );
   });
 
   it("blocks review when the application template is unavailable", async () => {

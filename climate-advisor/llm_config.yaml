@@ -26,6 +26,9 @@ models:
   cnb_chapter_drafter:
     name: "openai/gpt-5.6-terra"
     reasoning_effort: "medium"
+  cnb_chapter_validator:
+    name: "openai/gpt-5.6-terra"
+    reasoning_effort: "medium"
 
 # Generation Parameters
 generation:
@@ -44,6 +47,8 @@ generation:
       max_key_excerpts: 8
       max_topics: 12
       max_question_chars: 2000
+    cnb_validation:
+      max_prompt_tokens: 50000
 
 # System Prompts
 prompts:
@@ -72,6 +77,8 @@ prompts:
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
   cnb_chapter_drafting: "prompts/cnb/chapter_drafting.md"
+  cnb_chapter_validation_completeness: "prompts/cnb/chapter_validation_completeness.md"
+  cnb_chapter_validation_consistency: "prompts/cnb/chapter_validation_consistency.md"
 
 # API Configuration
 api:

@@ -18,9 +18,9 @@ test.describe.skip("CSV Download", () => {
     await expect(heroCityName).toBeVisible({ timeout: 10000 });
     await expect(heroCityName).toHaveText("Chicago", { timeout: 5000 });
 
-    // Wait for the ActionCards component to render (indicates inventory data is loaded)
-    const addDataCard = page.getByTestId("add-data-to-inventory-card");
-    await expect(addDataCard).toBeVisible({ timeout: 10000 });
+    // Wait for the dashboard toolbar to render (indicates inventory data is loaded)
+    const downloadActionCard = page.getByTestId("download-action-card");
+    await expect(downloadActionCard).toBeVisible({ timeout: 10000 });
   });
 
   test("User can download inventory as CSV", async ({ page }) => {
@@ -298,10 +298,9 @@ test.describe.skip("CSV Download", () => {
     // Navigate to Dashboard
     await page.waitForLoadState("networkidle");
     console.log("URL:", page.url());
-    // Navigate to Add Data section
-    const addDataButton = page.getByTestId("add-data-to-inventory-card");
-    await expect(addDataButton).toBeVisible({ timeout: 15000 });
-    await addDataButton.click();
+    // Navigate to Add Data section directly (dashboard no longer links to it)
+    const dashboardPathname = new URL(page.url()).pathname;
+    await page.goto(`${dashboardPathname.replace(/\/$/, "")}/data/`);
 
     // Verify we're on the data entry page
     await expect(page.getByTestId("add-data-step-title")).toBeVisible();

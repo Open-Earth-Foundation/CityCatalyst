@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import { navigateToGHGIModule } from "./helpers";
 
 const testIds = {
-  addDataToInventoryNavButton: "add-data-to-inventory-card",
   addDataStepHeading: "add-data-step-title",
   stationaryEnergySectorCard: "stationary-energy-sector-card",
   transportationSectorCard: "transportation-sector-card",
@@ -32,8 +31,11 @@ test.describe("Third Party Datasets", () => {
     await expect(page).toHaveTitle(/CityCatalyst/i);
 
     // Step 2: Navigate to add data page
-    const navButton = page.getByTestId(testIds.addDataToInventoryNavButton);
-    await navButton.click();
+    // The dashboard toolbar redesign (CC-657) dropped the "add data" nav
+    // card in favor of per-sector links from the calculation tab, so this
+    // workflow now goes to the data page directly.
+    const dashboardPathname = new URL(page.url()).pathname;
+    await page.goto(`${dashboardPathname.replace(/\/$/, "")}/data/`);
     await page.waitForURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
     await expect(page).toHaveURL(/\/cities\/[^\/]+\/GHGI\/[^\/]+\/data\/$/);
 

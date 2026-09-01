@@ -419,7 +419,13 @@ export function Hero({
                 </Box>
               </Box>
             </Box>
-            <Box mt={-25}>
+            <Box
+              mt={-25}
+              w="422px"
+              flexShrink={0}
+              borderRadius="8px"
+              overflow="hidden"
+            >
               <CityMap
                 locode={inventory?.city?.locode || city?.locode || null}
                 width={422}

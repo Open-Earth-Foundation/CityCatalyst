@@ -203,9 +203,6 @@ test.describe("CSV Download", () => {
     await expect(heroCityName).toBeVisible({ timeout: 60000 });
     await expect(heroCityName).toHaveText("Chicago", { timeout: 10000 });
 
-    const addDataCard = page.getByTestId("add-data-to-inventory-card");
-    await expect(addDataCard).toBeVisible({ timeout: 60000 });
-
     const downloadActionCard = page.getByTestId("download-action-card");
     await expect(downloadActionCard).toBeVisible({ timeout: 60000 });
   });

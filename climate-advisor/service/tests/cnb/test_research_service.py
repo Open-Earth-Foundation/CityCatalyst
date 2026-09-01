@@ -1,12 +1,13 @@
 """Tests for CNB funder research service orchestration and artifacts."""
 
+import json
 from contextlib import contextmanager, nullcontext
 from datetime import datetime, timezone
-import json
 from pathlib import Path
 from types import SimpleNamespace
 
 from app.services.cnb import research_service
+from app.services.cnb.research_prompt import model_research_state
 from app.services.cnb.research_service import run_funding_opportunity_research
 from app.tools.firecrawl import CapturedSource
 from tests.cnb.helpers import build_request, build_result
@@ -30,7 +31,9 @@ def test_service_writes_pending_review_artifacts_on_final_turn(
             return SimpleNamespace(
                 id="response-001",
                 output=[],
-                output_parsed=parsed_result,
+                output_parsed=model_research_state(parsed_result, [
+                    SimpleNamespace(source_ref="source-002", url=str(build_request().program_url))
+                ]),
             )
 
     class FakeOpenAI:

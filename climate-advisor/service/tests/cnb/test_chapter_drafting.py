@@ -174,8 +174,15 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         )
     )
     included_sources = ApplicationContextIncludedSources(ghgi=True)
+    source = {
+        "source_label": "Drainage plan",
+        "page_count": 1,
+        "block_count": None,
+        "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+    }
+    run_context = {"context_bundle": {"selected_sources": [source]}}
     service._load_run_context = AsyncMock(
-        return_value=({"context_bundle": {}}, included_sources)
+        return_value=(run_context, included_sources)
     )
     service._lease_is_active = AsyncMock(return_value=True)
     service._mark_current_chapter = AsyncMock(return_value=True)
@@ -194,10 +201,18 @@ async def test_drafts_in_order_and_passes_every_previous_chapter() -> None:
         "Chapter 2",
     ]
     assert payloads[0]["previous_chapters"] == []
+    for payload in payloads:
+        assert payload["run_context"]["context_bundle"]["selected_sources"] == [
+            {
+                "source_label": "Drainage plan",
+                "key_excerpts": [{"text": "Drainage upgrades", "page": 1}],
+            }
+        ]
+    assert source["page_count"] == 1
+    assert source["block_count"] is None
     assert payloads[0]["application_context"]["included_sources"]["ghgi"] is True
     assert payloads[1]["previous_chapters"] == [
         {
-            "chapter_ref": "chapter-1",
             "title": "Chapter 1",
             "body_markdown": "Draft for Chapter 1",
         }

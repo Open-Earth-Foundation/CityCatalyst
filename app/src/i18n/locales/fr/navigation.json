@@ -7,5 +7,6 @@
   "account-frozen-warning-text": "Votre compte est gelé. Veuillez contacter un administrateur ou <bold>{{ email }}</bold> pour le réactiver",
   "page-title-ghg-inventories": "Inventaires de GEI",
   "page-title-hiap": "Actions & Plans",
+  "page-title-meed": "Actions & Plans v2",
   "page-title-dashboard": "Dashboard de la Ville"
 }

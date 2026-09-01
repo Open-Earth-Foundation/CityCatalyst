@@ -47,6 +47,11 @@ interface HeroProps {
   lng: string;
   city?: CityWithProjectDataResponse | undefined;
   numberFormat?: string;
+  /**
+   * Label for the second breadcrumb crumb. Modules that aren't matched by the
+   * pathname fallback below should pass their own translated name.
+   */
+  moduleLabel?: string;
 }
 
 export function Hero({
@@ -58,6 +63,7 @@ export function Hero({
   lng,
   city,
   numberFormat,
+  moduleLabel: moduleLabelProp,
 }: HeroProps) {
   const { t } = useTranslation(lng, "dashboard");
   const pathname = usePathname();
@@ -105,10 +111,11 @@ export function Hero({
   );
 
   const moduleLabel = useMemo(() => {
+    if (moduleLabelProp) return moduleLabelProp;
     if (pathname.includes("/HIAP")) return t("breadcrumb-hiap");
     if (pathname.includes("/dashboard")) return t("dashboard");
     return t("ghg-inventories");
-  }, [pathname, t]);
+  }, [moduleLabelProp, pathname, t]);
 
   const cityId = inventory?.cityId ?? city?.cityId;
   const breadcrumbsHomeHref = cityId ? `/${lng}/cities/${cityId}` : `/${lng}`;
@@ -237,7 +244,7 @@ export function Hero({
                           {value}{" "}
                           {unit && (
                             // eslint-disable-next-line i18next/no-literal-string
-                            <span style={{ fontSize: "16px" }}>{unit}CO2e</span>
+                            <span style={{ fontSize: "16px" }}>{unit}</span>
                           )}
                         </>
                       </Text>

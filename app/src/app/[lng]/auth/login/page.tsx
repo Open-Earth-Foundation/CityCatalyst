@@ -7,7 +7,7 @@ import { Box, Heading, Link, Text } from "@chakra-ui/react";
 import { TFunction } from "i18next";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, use } from "react";
+import { Suspense, useEffect, use, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "@/components/ui/button";
@@ -48,6 +48,11 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
     register,
     formState: { errors },
   } = useForm<LoginInputs>();
+  // Gates native form submit until the client handlers are attached (E2E/hydration).
+  const [isFormReady, setIsFormReady] = useState(false);
+  useEffect(() => {
+    setIsFormReady(true);
+  }, []);
 
   const searchParams = useSearchParams();
   const queryParams = Object.fromEntries(searchParams.entries());
@@ -110,7 +115,12 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
       <Text my={4} color="content.tertiary">
         {t("login-details")}
       </Text>
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
+      <form
+        noValidate
+        data-testid="login-form"
+        data-ready={isFormReady ? "true" : "false"}
+        onSubmit={handleSubmit(onSubmit)}
+      >
         <Box display="flex" flexDirection="column" gap="16px">
           <EmailInput register={register} error={errors.email} t={t} />
           <PasswordInput
@@ -131,6 +141,7 @@ export default function Login(props: { params: Promise<{ lng: string }> }) {
             type="submit"
             formNoValidate
             loading={isLoading}
+            disabled={!isFormReady || isLoading}
             h={16}
             width="full"
             bgColor="interactive.secondary"

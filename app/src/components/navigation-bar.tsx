@@ -122,6 +122,7 @@ export function NavigationBar({
     if (!pathname) return null;
     if (pathname.includes("/GHGI")) return t("page-title-ghg-inventories");
     if (pathname.includes("/HIAP")) return t("page-title-hiap");
+    if (pathname.includes("/MEED")) return t("page-title-meed");
     if (pathname.includes("/dashboard")) return t("page-title-dashboard");
     return null;
   }, [pathname, t]);

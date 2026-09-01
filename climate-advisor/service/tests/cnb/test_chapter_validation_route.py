@@ -78,8 +78,8 @@ def test_validation_route_returns_persisted_result_with_chapter_id() -> None:
     )
 
 
-def test_validation_route_preserves_concurrent_revision_error_code() -> None:
-    """Return a machine-readable 409 when validation inputs become stale."""
+def test_validation_route_preserves_error_code_and_sanitizes_detail() -> None:
+    """Return a stable code without exposing the internal exception message."""
     service = SimpleNamespace(
         validate=AsyncMock(
             side_effect=ChapterValidationWorkflowError(
@@ -95,6 +95,6 @@ def test_validation_route_preserves_concurrent_revision_error_code() -> None:
     assert response.status_code == 409
     assert response.json() == {
         "code": "chapter_revision_changed",
-        "detail": "The document changed during validation; run validation again",
+        "detail": "Unable to validate the requested chapter",
         "status": 409,
     }

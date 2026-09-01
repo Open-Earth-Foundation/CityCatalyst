@@ -163,8 +163,9 @@ export function pickE2EOnboardingInventoryYear(): string {
 async function walkCitiesOnboardingWizard(
   page: Page,
 ): Promise<{ cityId: string }> {
-  // Step 0: welcome page → click "Get Started"
+  // Step 0: welcome page → click "Get started"
   await page.goto("/en/cities/onboarding/");
+  await page.waitForLoadState("domcontentloaded");
 
   if (page.url().includes("/auth/login")) {
     throw new Error("Authentication failed - redirected to login page");
@@ -173,8 +174,12 @@ async function walkCitiesOnboardingWizard(
   await page.waitForTimeout(500);
   await dismissCookieConsent(page);
 
-  const getStartedButton = page.getByRole("button", { name: /Get Started/i });
-  await expect(getStartedButton).toBeVisible();
+  await expect(page.getByTestId("start-page-title")).toBeVisible({
+    timeout: 60000,
+  });
+
+  const getStartedButton = page.getByTestId("start-inventory-button");
+  await expect(getStartedButton).toBeVisible({ timeout: 30000 });
   await getStartedButton.click();
 
   // Step 0: select city

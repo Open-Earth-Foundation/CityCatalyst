@@ -191,9 +191,55 @@ export function keyBy<T>(
   );
 }
 
-/** Format an amount of emissions in kg to a human-readable string
+/**
+ * Product display labels for GHG emissions (CC-486).
+ * Input values are always kilograms (DB `co2eq` storage unit).
+ */
+export const EMISSIONS_CO2E_SUFFIX = "CO₂e";
+
+export type EmissionsScaleUnit =
+  | "mgCO₂e"
+  | "gCO₂e"
+  | "kgCO₂e"
+  | "mtCO₂e"
+  | "ktCO₂e"
+  | "MtCO₂e"
+  | "GtCO₂e"
+  | "TtCO₂e";
+
+/**
+ * Pick the display scale for an absolute emissions amount in kg.
+ */
+export function resolveEmissionsScale(kgAbs: number): {
+  scale: number;
+  unit: EmissionsScaleUnit;
+} {
+  if (!Number.isFinite(kgAbs) || kgAbs === 0) {
+    return { scale: 1, unit: "kgCO₂e" };
+  }
+  if (kgAbs >= 1e15) return { scale: 1e15, unit: "TtCO₂e" };
+  if (kgAbs >= 1e12) return { scale: 1e12, unit: "GtCO₂e" };
+  if (kgAbs >= 1e9) return { scale: 1e9, unit: "MtCO₂e" };
+  if (kgAbs >= 1e6) return { scale: 1e6, unit: "ktCO₂e" };
+  if (kgAbs >= 1e3) return { scale: 1e3, unit: "mtCO₂e" };
+  if (kgAbs >= 1) return { scale: 1, unit: "kgCO₂e" };
+  if (kgAbs >= 1e-3) return { scale: 1e-3, unit: "gCO₂e" };
+  return { scale: 1e-6, unit: "mgCO₂e" };
+}
+
+function emissionsUnitForGas(
+  unit: EmissionsScaleUnit,
+  gas?: string | null,
+): string {
+  if (!gas) return unit;
+  // Gas-specific totals (e.g. CO2/CH4/N2O) drop the "e" equivalence suffix.
+  return unit.replace(/CO₂e$/, gas);
+}
+
+/**
+ * Format an amount of emissions in kg for UI display.
  * @param totalEmissions total amount of emissions in kg
- * @return formatted string with the amount of emissions in kg, t, kt, Mt or Gt (gas name needs to be appanded by the caller)
+ * @returns value + full unit label (e.g. mtCO₂e). Callers must not append CO2e.
  */
 export function formatEmissions(
   totalEmissions: number,
@@ -202,25 +248,7 @@ export function formatEmissions(
   value: string;
   unit: string;
 } {
-  let unit = "";
-  let scale = 1;
-
-  if (totalEmissions >= 1e12) {
-    unit = "Gt";
-    scale = 1e12;
-  } else if (totalEmissions >= 1e9) {
-    unit = "Mt";
-    scale = 1e9;
-  } else if (totalEmissions >= 1e6) {
-    unit = "kt";
-    scale = 1e6;
-  } else if (totalEmissions >= 1e3) {
-    unit = "t";
-    scale = 1e3;
-  } else {
-    unit = "kg ";
-    scale = 1;
-  }
+  const { scale, unit } = resolveEmissionsScale(Math.abs(totalEmissions));
   const value = formatNumber(totalEmissions / scale, format, 1);
   return { value, unit };
 }
@@ -365,47 +393,27 @@ export function toDecimal(
   return new Decimal(value);
 }
 
+/**
+ * Format kg emissions as a single UI string (e.g. "1.23 mtCO₂e").
+ * Prefer this for tables/charts; use formatEmissions when value and unit are styled separately.
+ */
 export function convertKgToTonnes(
   valueInKg: number | Decimal | bigint,
   numberFormat?: string,
   gas?: string | null,
 ): string {
-  const gasSuffix = gas ? ` ${gas}` : " CO2e";
-
   const kg = toDecimal(valueInKg);
-  if (!kg) return `0 t${gasSuffix}`;
-
-  const gigaTonne = new Decimal("1e12");
-  const megaTonne = new Decimal("1e9");
-  const kiloTonne = new Decimal("1e6");
-  const tonne = new Decimal("1e3");
-
-  let num;
-  let unitPrefix;
-  if (kg.gte(gigaTonne)) {
-    // Convert to gigatonnes if the value is 1,000,000,000,000 kg or more
-    num = kg.div(gigaTonne);
-    unitPrefix = "Gt";
-  } else if (kg.gte(megaTonne)) {
-    // Convert to megatonnes if the value is 1,000,000,000 kg or more but less than 1,000,000,000,000 kg
-    num = kg.div(megaTonne);
-    unitPrefix = "Mt";
-  } else if (kg.gte(kiloTonne)) {
-    // Convert to kilotonnes if the value is 1,000,000 kg or more but less than 1,000,000,000 kg
-    num = kg.div(kiloTonne);
-    unitPrefix = "kt";
-  } else if (kg.gte(tonne)) {
-    // Convert to tonnes if the value is 1,000 kg or more but less than 1,000,000 kg
-    num = kg.div(tonne);
-    unitPrefix = "t";
-  } else {
-    // Return as tonnes even if the value is less than 1,000 kg
-    num = kg.div(tonne);
-    unitPrefix = "t";
+  if (!kg) {
+    return `0 ${emissionsUnitForGas("kgCO₂e", gas)}`;
   }
 
-  const formattedNumber = formatNumber(num.toNumber(), numberFormat, 2);
-  return `${formattedNumber} ${unitPrefix}${gasSuffix}`;
+  const { scale, unit } = resolveEmissionsScale(kg.abs().toNumber());
+  const formattedNumber = formatNumber(
+    kg.div(scale).toNumber(),
+    numberFormat,
+    2,
+  );
+  return `${formattedNumber} ${emissionsUnitForGas(unit, gas)}`;
 }
 
 export const toKebabCase = (input: string | undefined): string => {

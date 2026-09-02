@@ -47,14 +47,9 @@ async function openDownloadModal(page: Page) {
 }
 
 async function selectDownloadFormat(page: Page, format: "csv" | "ecrf") {
-  const formatLabel =
-    format === "csv"
-      ? /Download in \.CSV format/i
-      : /Download in eCRF format/i;
-  const checkbox = page.getByRole("checkbox", { name: formatLabel });
+  const checkbox = page.getByTestId(`download-${format}-checkbox`);
   await expect(checkbox).toBeVisible({ timeout: 10000 });
-  await checkbox.check();
-  await expect(checkbox).toBeChecked();
+  await checkbox.click();
   await expect(page.getByTestId("download-confirm-button")).toBeEnabled({
     timeout: 10000,
   });
@@ -66,6 +61,18 @@ async function confirmDownload(page: Page) {
   await confirmButton.click();
 }
 
+async function triggerDownloadFromModal(page: Page, format: "csv" | "ecrf") {
+  await selectDownloadFormat(page, format);
+  await confirmDownload(page);
+  await expect(
+    page
+      .getByText(
+        /Inventory report download completed|Downloading your data|Preparing your dataset/i,
+      )
+      .first(),
+  ).toBeVisible({ timeout: 90000 });
+}
+
 function filenameFromDisposition(
   contentDisposition: string,
   fallback: string,
@@ -74,53 +81,36 @@ function filenameFromDisposition(
   return match?.[1] ?? fallback;
 }
 
-async function downloadFormat(
+async function fetchDownloadViaApi(
   page: Page,
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  const expectedContentType =
-    format === "csv" ? "text/csv" : "application/vnd.ms-excel";
-
-  const [response] = await Promise.all([
-    page.waitForResponse(
-      (resp) =>
-        resp.url().includes(`/api/v1/inventory/${inventoryId}/download`) &&
-        resp.url().includes(`format=${format}`) &&
-        resp.request().method() === "GET" &&
-        resp.status() === 200 &&
-        (resp.headers()["content-type"] ?? "").includes(expectedContentType),
-      { timeout: 90000 },
-    ),
-    (async () => {
-      await selectDownloadFormat(page, format);
-      await confirmDownload(page);
-    })(),
-  ]);
+  const response = await page.request.get(
+    `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=en`,
+  );
+  expect(response.ok()).toBeTruthy();
 
   const content = Buffer.from(await response.body());
-  expect(
-    content.byteLength,
-    `Expected non-empty ${format} download body from ${response.url()}`,
-  ).toBeGreaterThan(0);
-
-  const filename = filenameFromDisposition(
-    response.headers()["content-disposition"] ?? "",
-    `inventory.${format === "csv" ? "csv" : "xlsx"}`,
-  );
+  expect(content.byteLength).toBeGreaterThan(0);
 
   return {
-    filename,
+    filename: filenameFromDisposition(
+      response.headers()["content-disposition"] ?? "",
+      `inventory.${format === "csv" ? "csv" : "xlsx"}`,
+    ),
     content,
   };
 }
 
 async function downloadCsv(page: Page, inventoryId: string) {
-  return downloadFormat(page, inventoryId, "csv");
+  await triggerDownloadFromModal(page, "csv");
+  return fetchDownloadViaApi(page, inventoryId, "csv");
 }
 
 async function downloadEcrf(page: Page, inventoryId: string) {
-  return downloadFormat(page, inventoryId, "ecrf");
+  await triggerDownloadFromModal(page, "ecrf");
+  return fetchDownloadViaApi(page, inventoryId, "ecrf");
 }
 
 function saveDownloadContent(

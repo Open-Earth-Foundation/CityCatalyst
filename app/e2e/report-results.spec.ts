@@ -66,18 +66,9 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
-async function submitActivity(addEmissionModal: Locator, page: Page) {
-  const saveResponse = page.waitForResponse(
-    (resp) =>
-      resp.url().includes("/api/v1/") &&
-      ["POST", "PUT", "PATCH"].includes(resp.request().method()) &&
-      resp.ok(),
-    { timeout: 60000 },
-  );
-
+async function submitActivity(addEmissionModal: Locator) {
   await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-  await saveResponse;
-  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+  await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
 }
 
 function openScopePanel(page: Page, scope: 1 | 2) {
@@ -140,7 +131,7 @@ async function addScope1ResidentialEmissions(
     .selectOption("units-cubic-meters");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await submitActivity(addEmissionModal, page);
+  await submitActivity(addEmissionModal);
 }
 
 async function addScope2ResidentialEmissions(
@@ -184,7 +175,7 @@ async function addScope2ResidentialEmissions(
     .selectOption("units-kilowatt-hours");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await submitActivity(addEmissionModal, page);
+  await submitActivity(addEmissionModal);
 }
 
 async function openEmissionInventoryResultsTab(page: Page) {

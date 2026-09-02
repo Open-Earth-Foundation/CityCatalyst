@@ -81,11 +81,11 @@ async def test_discovery_runs_once_after_context_and_keeps_only_safe_projection(
     )
     client.discover_native_inputs.assert_awaited_once_with(
         request_payload={
-            "user_id": "user-1",
-            "organization_id": "organization-1",
-            "project_id": "project-1",
-            "city_id": "city-1",
-            "inventory_id": "inventory-1",
+            "userId": "user-1",
+            "organizationId": "organization-1",
+            "projectId": "project-1",
+            "cityId": "city-1",
+            "inventoryId": "inventory-1",
         },
         token="jwt-token",
         user_id="user-1",

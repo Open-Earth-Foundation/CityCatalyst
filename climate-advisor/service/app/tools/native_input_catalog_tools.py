@@ -235,8 +235,8 @@ def _read_payload(
     payload = context.to_discovery_payload()
     payload.update(
         {
-            "catalog_id": selection.catalog_id,
-            "capability_id": selection.capability_id,
+            "catalogId": selection.catalog_id,
+            "capabilityId": selection.capability_id,
             "input": input_payload,
         }
     )

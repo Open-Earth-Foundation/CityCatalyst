@@ -36,11 +36,11 @@ class ActiveRequestContext:
         payload = {
             field: value
             for field, value in (
-                ("user_id", self.user_id),
-                ("organization_id", self.organization_id),
-                ("project_id", self.project_id),
-                ("city_id", self.city_id),
-                ("inventory_id", self.inventory_id),
+                ("userId", self.user_id),
+                ("organizationId", self.organization_id),
+                ("projectId", self.project_id),
+                ("cityId", self.city_id),
+                ("inventoryId", self.inventory_id),
             )
             if value
         }

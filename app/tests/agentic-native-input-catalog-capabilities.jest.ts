@@ -77,7 +77,7 @@ describe("internal CA NativeInputCatalog discovery route", () => {
 
   it("returns the Core safe discovery envelope", async () => {
     const response = await discoverRoute(
-      mockRequest({ user_id: userId, city_id: cityId }, undefined, {
+      mockRequest({ userId, cityId }, undefined, {
         "X-Service-Name": "climate-advisor",
         "X-Service-Key": serviceKey,
       }),
@@ -108,7 +108,7 @@ describe("internal CA NativeInputCatalog discovery route", () => {
 
   it("requires the Climate Advisor service contract", async () => {
     const response = await discoverRoute(
-      mockRequest({ user_id: userId }, undefined, {}),
+      mockRequest({ userId }, undefined, {}),
       { params: Promise.resolve({}) },
     );
 
@@ -116,7 +116,7 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     expect(discoverNativeInputs).not.toHaveBeenCalled();
   });
 
-  it("requires a bearer-bound session even when the body omits user_id", async () => {
+  it("requires a bearer-bound session even when the body omits userId", async () => {
     jest.spyOn(Auth, "getServerSession").mockResolvedValue(null);
 
     const response = await discoverRoute(
@@ -134,7 +134,7 @@ describe("internal CA NativeInputCatalog discovery route", () => {
   it("rejects a body user that does not match the bearer session", async () => {
     const response = await discoverRoute(
       mockRequest(
-        { user_id: "33333333-3333-4333-8333-333333333333" },
+        { userId: "33333333-3333-4333-8333-333333333333" },
         undefined,
         {
           "X-Service-Name": "climate-advisor",
@@ -150,7 +150,7 @@ describe("internal CA NativeInputCatalog discovery route", () => {
 
   it("rejects malformed discovery filters before calling Core", async () => {
     const response = await discoverRoute(
-      mockRequest({ city_id: "not-a-uuid" }, undefined, {
+      mockRequest({ cityId: "not-a-uuid" }, undefined, {
         "X-Service-Name": "climate-advisor",
         "X-Service-Key": serviceKey,
       }),
@@ -165,7 +165,7 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     hasServerFeatureFlag.mockReturnValue(false);
 
     const response = await discoverRoute(
-      mockRequest({ user_id: userId }, undefined, {
+      mockRequest({ userId }, undefined, {
         "X-Service-Name": "climate-advisor",
         "X-Service-Key": serviceKey,
       }),
@@ -181,10 +181,10 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     const response = await readRoute(
       mockRequest(
         {
-          catalog_id: catalogId,
-          capability_id: "ghgi.inventory.status_overview",
-          user_id: userId,
-          city_id: cityId,
+          catalogId,
+          capabilityId: "ghgi.inventory.status_overview",
+          userId,
+          cityId,
           input: { include_summary: true },
         },
         undefined,
@@ -218,8 +218,8 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     const response = await readRoute(
       mockRequest(
         {
-          catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-          capability_id: "ghgi.inventory.status_overview",
+          catalogId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          capabilityId: "ghgi.inventory.status_overview",
           input: {},
         },
         undefined,
@@ -236,8 +236,8 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     const response = await readRoute(
       mockRequest(
         {
-          catalog_id: "not-a-uuid",
-          capability_id: "",
+          catalogId: "not-a-uuid",
+          capabilityId: "",
           input: [],
         },
         undefined,
@@ -257,9 +257,9 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     const response = await readRoute(
       mockRequest(
         {
-          catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-          capability_id: "ghgi.inventory.status_overview",
-          user_id: "33333333-3333-4333-8333-333333333333",
+          catalogId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          capabilityId: "ghgi.inventory.status_overview",
+          userId: "33333333-3333-4333-8333-333333333333",
           input: {},
         },
         undefined,
@@ -285,8 +285,8 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     const response = await readRoute(
       mockRequest(
         {
-          catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-          capability_id: "ghgi.inventory.status_overview",
+          catalogId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          capabilityId: "ghgi.inventory.status_overview",
           input: {},
         },
         undefined,
@@ -313,8 +313,8 @@ describe("internal CA NativeInputCatalog discovery route", () => {
     const response = await readRoute(
       mockRequest(
         {
-          catalog_id: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-          capability_id: "ghgi.inventory.status_overview",
+          catalogId: "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+          capabilityId: "ghgi.inventory.status_overview",
           input: {},
         },
         undefined,

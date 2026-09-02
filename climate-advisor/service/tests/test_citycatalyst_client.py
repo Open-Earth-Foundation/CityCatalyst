@@ -589,11 +589,11 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
                 result = await client.discover_native_inputs(
                     request_payload={
-                        "user_id": "user-1",
-                        "organization_id": "organization-1",
-                        "project_id": "project-1",
-                        "city_id": "city-1",
-                        "inventory_id": "inventory-1",
+                        "userId": "user-1",
+                        "organizationId": "organization-1",
+                        "projectId": "project-1",
+                        "cityId": "city-1",
+                        "inventoryId": "inventory-1",
                     },
                     token="jwt-token",
                     user_id="user-1",
@@ -608,7 +608,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
         self.assertEqual(recorded["headers"]["X-Service-Name"], "climate-advisor")
-        self.assertEqual(recorded["json"]["inventory_id"], "inventory-1")
+        self.assertEqual(recorded["json"]["inventoryId"], "inventory-1")
 
     async def test_read_native_input_posts_exact_selection_and_bounded_input(self) -> None:
         with patch(
@@ -634,8 +634,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
                 result = await client.read_native_input(
                     request_payload={
-                        "catalog_id": "catalog-1",
-                        "capability_id": "capability-1",
+                        "catalogId": "catalog-1",
+                        "capabilityId": "capability-1",
                         "context": {"city_id": "city-1", "inventory_id": "inventory-1"},
                         "input": {"limit": 10},
                     },
@@ -651,8 +651,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
             "https://cc.example/api/v1/internal/ca/capabilities/native-inputs/read",
         )
         self.assertEqual(recorded["headers"]["Authorization"], "Bearer jwt-token")
-        self.assertEqual(recorded["json"]["catalog_id"], "catalog-1")
-        self.assertEqual(recorded["json"]["capability_id"], "capability-1")
+        self.assertEqual(recorded["json"]["catalogId"], "catalog-1")
+        self.assertEqual(recorded["json"]["capabilityId"], "capability-1")
         self.assertEqual(recorded["json"]["input"]["limit"], 10)
 
     async def test_read_native_input_normalizes_selection_failure_without_upstream_text(
@@ -683,8 +683,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                 with self.assertRaises(CityCatalystClientError) as captured:
                     await client.read_native_input(
                         request_payload={
-                            "catalog_id": "stale-catalog",
-                            "capability_id": "stale-capability",
+                            "catalogId": "stale-catalog",
+                            "capabilityId": "stale-capability",
                             "input": {"limit": 10},
                         },
                         token="jwt-token",
@@ -718,8 +718,8 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
                 with self.assertRaises(CityCatalystClientError) as captured:
                     await client.read_native_input(
                         request_payload={
-                            "catalog_id": "catalog-1",
-                            "capability_id": "capability-1",
+                            "catalogId": "catalog-1",
+                            "capabilityId": "capability-1",
                             "input": {},
                         },
                         token="jwt-token",
@@ -761,7 +761,7 @@ class CityCatalystClientTests(unittest.IsolatedAsyncioTestCase):
 
             with patch.object(client, "_get_client", new=AsyncMock(return_value=stub)):
                 result = await client.discover_native_inputs(
-                    request_payload={"user_id": "user-1"},
+                    request_payload={"userId": "user-1"},
                     token="expired-token",
                     user_id="user-1",
                     thread_id="thread-1",
@@ -844,8 +844,8 @@ async def test_selection_failure_matrix_has_one_stable_non_disclosing_client_err
             with pytest.raises(CityCatalystClientError) as captured:
                 await client.read_native_input(
                     request_payload={
-                        "catalog_id": f"{selection_state}-catalog",
-                        "capability_id": f"{selection_state}-capability",
+                        "catalogId": f"{selection_state}-catalog",
+                        "capabilityId": f"{selection_state}-capability",
                         "input": {},
                     },
                     token="jwt-token",

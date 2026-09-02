@@ -37,14 +37,14 @@ export const NATIVE_INPUT_DISCOVERY_CAPABILITY = "native_input.discover";
 
 const discoveryRequestSchema = z
   .object({
-    user_id: z.string().uuid().optional(),
-    organization_id: z.string().uuid().optional(),
-    project_id: z.string().uuid().optional(),
-    city_id: z.string().uuid().optional(),
-    inventory_id: z.string().uuid().optional(),
+    userId: z.string().uuid().optional(),
+    organizationId: z.string().uuid().optional(),
+    projectId: z.string().uuid().optional(),
+    cityId: z.string().uuid().optional(),
+    inventoryId: z.string().uuid().optional(),
     kind: z.string().trim().min(1).max(64).optional(),
-    owning_module: z.string().trim().min(1).max(64).optional(),
-    capability_id: z.string().trim().min(1).max(128).optional(),
+    owningModule: z.string().trim().min(1).max(64).optional(),
+    capabilityId: z.string().trim().min(1).max(128).optional(),
   })
   .strict();
 
@@ -56,20 +56,20 @@ export const POST = apiHandler(async (req, { session }) => {
   if (!session?.user?.id) {
     throw new createHttpError.Unauthorized("Authentication required");
   }
-  if (body.user_id) requireRequestUser(session, body.user_id);
+  if (body.userId) requireRequestUser(session, body.userId);
 
   const request: NativeInputDiscoveryRequest = {
-    ...(body.user_id ? { userId: body.user_id } : {}),
-    ...(body.organization_id ? { organizationId: body.organization_id } : {}),
-    ...(body.project_id ? { projectId: body.project_id } : {}),
-    ...(body.city_id ? { cityId: body.city_id } : {}),
-    ...(body.inventory_id ? { inventoryId: body.inventory_id } : {}),
+    ...(body.userId ? { userId: body.userId } : {}),
+    ...(body.organizationId ? { organizationId: body.organizationId } : {}),
+    ...(body.projectId ? { projectId: body.projectId } : {}),
+    ...(body.cityId ? { cityId: body.cityId } : {}),
+    ...(body.inventoryId ? { inventoryId: body.inventoryId } : {}),
     ...(body.kind ? { kind: body.kind } : {}),
-    ...(body.owning_module ? { owningModule: body.owning_module } : {}),
-    ...(body.capability_id
+    ...(body.owningModule ? { owningModule: body.owningModule } : {}),
+    ...(body.capabilityId
       ? {
           capabilityId:
-            body.capability_id as NativeInputDiscoveryRequest["capabilityId"],
+            body.capabilityId as NativeInputDiscoveryRequest["capabilityId"],
         }
       : {}),
   };

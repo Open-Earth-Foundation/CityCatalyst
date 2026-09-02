@@ -184,13 +184,13 @@ async def test_selected_tool_reads_only_bound_context_with_declared_bounded_inpu
     assert client.requests == [
         {
             "request_payload": {
-                "user_id": "user-1",
-                "organization_id": "organization-1",
-                "project_id": "project-1",
-                "city_id": "city-1",
-                "inventory_id": "inventory-1",
-                "catalog_id": "catalog-1",
-                "capability_id": "ghgi.inventory.status_overview",
+                "userId": "user-1",
+                "organizationId": "organization-1",
+                "projectId": "project-1",
+                "cityId": "city-1",
+                "inventoryId": "inventory-1",
+                "catalogId": "catalog-1",
+                "capabilityId": "ghgi.inventory.status_overview",
                 "input": {"city_id": "city-1", "inventory_id": "inventory-1"},
             },
             "token": "jwt-token",

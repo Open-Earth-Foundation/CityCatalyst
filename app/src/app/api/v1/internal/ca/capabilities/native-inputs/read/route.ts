@@ -37,13 +37,13 @@ export const NATIVE_INPUT_READ_CAPABILITY = "native_input.read";
 
 const selectedReadRequestSchema = z
   .object({
-    catalog_id: z.string().uuid(),
-    capability_id: z.string().trim().min(1).max(128),
-    user_id: z.string().uuid().optional(),
-    organization_id: z.string().uuid().optional(),
-    project_id: z.string().uuid().optional(),
-    city_id: z.string().uuid().optional(),
-    inventory_id: z.string().uuid().optional(),
+    catalogId: z.string().uuid(),
+    capabilityId: z.string().trim().min(1).max(128),
+    userId: z.string().uuid().optional(),
+    organizationId: z.string().uuid().optional(),
+    projectId: z.string().uuid().optional(),
+    cityId: z.string().uuid().optional(),
+    inventoryId: z.string().uuid().optional(),
     input: z.record(z.string(), z.unknown()),
   })
   .strict();
@@ -56,17 +56,17 @@ export const POST = apiHandler(async (req, { session }) => {
   if (!session?.user?.id) {
     throw new createHttpError.Unauthorized("Authentication required");
   }
-  if (body.user_id) requireRequestUser(session, body.user_id);
+  if (body.userId) requireRequestUser(session, body.userId);
 
   const request: NativeInputSelectedReadRequest = {
-    catalogId: body.catalog_id,
+    catalogId: body.catalogId,
     capabilityId:
-      body.capability_id as NativeInputSelectedReadRequest["capabilityId"],
-    ...(body.user_id ? { userId: body.user_id } : {}),
-    ...(body.organization_id ? { organizationId: body.organization_id } : {}),
-    ...(body.project_id ? { projectId: body.project_id } : {}),
-    ...(body.city_id ? { cityId: body.city_id } : {}),
-    ...(body.inventory_id ? { inventoryId: body.inventory_id } : {}),
+      body.capabilityId as NativeInputSelectedReadRequest["capabilityId"],
+    ...(body.userId ? { userId: body.userId } : {}),
+    ...(body.organizationId ? { organizationId: body.organizationId } : {}),
+    ...(body.projectId ? { projectId: body.projectId } : {}),
+    ...(body.cityId ? { cityId: body.cityId } : {}),
+    ...(body.inventoryId ? { inventoryId: body.inventoryId } : {}),
     input: body.input,
   };
 

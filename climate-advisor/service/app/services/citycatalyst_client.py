@@ -642,7 +642,7 @@ class CityCatalystClient:
 
     def _refresh_user_id(self, payload: Dict[str, Any]) -> Optional[str]:
         """Return the user id available for internal capability token refresh."""
-        user_id = payload.get("user_id")
+        user_id = payload.get("userId") or payload.get("user_id")
         if user_id is None:
             return None
         user_id_text = str(user_id).strip()

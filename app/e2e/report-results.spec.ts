@@ -66,6 +66,20 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
+async function submitActivity(addEmissionModal: Locator, page: Page) {
+  const saveResponse = page.waitForResponse(
+    (resp) =>
+      resp.url().includes("/api/v1/") &&
+      ["POST", "PUT", "PATCH"].includes(resp.request().method()) &&
+      resp.ok(),
+    { timeout: 60000 },
+  );
+
+  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
+  await saveResponse;
+  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+}
+
 function openScopePanel(page: Page, scope: 1 | 2) {
   return page
     .locator('[role="tabpanel"][data-state="open"]')
@@ -126,8 +140,7 @@ async function addScope1ResidentialEmissions(
     .selectOption("units-cubic-meters");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+  await submitActivity(addEmissionModal, page);
 }
 
 async function addScope2ResidentialEmissions(
@@ -136,7 +149,12 @@ async function addScope2ResidentialEmissions(
   inventoryId: string,
 ) {
   await openResidentialSubsector(page, cityId, inventoryId);
-  await page.getByRole("tab", { name: /Scope 2/i }).click();
+
+  const scopeTwoTab = page.getByRole("tab", { name: /Scope 2/i });
+  await scopeTwoTab.click();
+  await expect(scopeTwoTab).toHaveAttribute("aria-selected", "true", {
+    timeout: 10000,
+  });
 
   const scopeTwoPanel = openScopePanel(page, 2);
   await expect(scopeTwoPanel).toBeVisible({ timeout: 30000 });
@@ -160,14 +178,15 @@ async function addScope2ResidentialEmissions(
   await addEmissionModal
     .getByLabel(/Energy usage type/i)
     .selectOption("energy-usage-electricity");
-  await addEmissionModal.getByLabel("Energy consumption").fill("100");
+  await addEmissionModal
+    .getByLabel(/Total fuel consumed amount/i)
+    .fill("100");
   await addEmissionModal
     .getByLabel(/Select Unit/i)
     .selectOption("units-kilowatt-hours");
   await fillCustomEmissionFactors(addEmissionModal);
 
-  await addEmissionModal.getByTestId("add-emission-modal-submit").click();
-  await expect(addEmissionModal).not.toBeVisible({ timeout: 30000 });
+  await submitActivity(addEmissionModal, page);
 }
 
 async function openEmissionInventoryResultsTab(page: Page) {

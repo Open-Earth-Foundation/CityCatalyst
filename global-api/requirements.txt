@@ -17,7 +17,7 @@ SQLAlchemy==2.0.51
 tqdm==4.68.*
 uvicorn==0.51.0
 xarray==2026.*
-geojson==3.2.*
+geojson==3.3.*
 openclimate==0.1.*
 nest_asyncio==1.6.*
 xlrd==2.0.*

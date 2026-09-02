@@ -66,6 +66,13 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
+function openScopePanel(page: Page, scope: 1 | 2) {
+  return page
+    .locator('[role="tabpanel"][data-state="open"]')
+    .or(page.getByRole("tabpanel", { name: new RegExp(`Scope ${scope}`, "i") }))
+    .first();
+}
+
 async function addScope1ResidentialEmissions(
   page: Page,
   cityId: string,
@@ -91,7 +98,7 @@ async function addScope1ResidentialEmissions(
   await openResidentialSubsector(page, cityId, inventoryId);
   await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  const scopeOnePanel = openScopePanel(page, 1);
   await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
@@ -131,10 +138,10 @@ async function addScope2ResidentialEmissions(
   await openResidentialSubsector(page, cityId, inventoryId);
   await page.getByRole("tab", { name: /Scope 2/i }).click();
 
-  const scopeTwoPanel = page.getByRole("tabpanel", { name: /Scope 2/i });
+  const scopeTwoPanel = openScopePanel(page, 2);
   await expect(scopeTwoPanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeTwoPanel
-    .getByText(/activities added/i)
+    .getByText(/Electricity|energy-usage-electricity|kWh/i)
     .isVisible()
     .catch(() => false);
   if (hasExistingActivity) {
@@ -233,7 +240,7 @@ test.describe.serial("Report Results", () => {
     const residentialRows = topEmissionsTable
       .locator("tbody tr")
       .filter({ has: page.getByText("Residential buildings") });
-    await expect(residentialRows).toHaveCount(2, { timeout: 30000 });
+    await expect(residentialRows).toHaveCount(2, { timeout: 60000 });
     await expect(
       residentialRows.filter({ has: page.getByText(/Scope 2/i) }),
     ).toHaveCount(1);

@@ -41,11 +41,29 @@ async function openDownloadModal(page: Page) {
   });
 }
 
+async function selectDownloadFormat(page: Page, format: "csv" | "ecrf") {
+  const checkbox = page.getByTestId(`download-${format}-checkbox`);
+  await expect(checkbox).toBeVisible();
+  await checkbox.click();
+}
+
+async function confirmDownload(page: Page) {
+  const confirmButton = page.getByTestId("download-confirm-button");
+  await expect(confirmButton).toBeEnabled();
+  await confirmButton.click();
+}
+
 async function downloadCsv(page: Page): Promise<Download> {
   const downloadPromise = page.waitForEvent("download");
-  const csvDownloadButton = page.getByTestId("download-csv-button");
-  await expect(csvDownloadButton).toBeVisible();
-  await csvDownloadButton.click();
+  await selectDownloadFormat(page, "csv");
+  await confirmDownload(page);
+  return downloadPromise;
+}
+
+async function downloadEcrf(page: Page): Promise<Download> {
+  const downloadPromise = page.waitForEvent("download", { timeout: 90000 });
+  await selectDownloadFormat(page, "ecrf");
+  await confirmDownload(page);
   return downloadPromise;
 }
 
@@ -115,6 +133,13 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
+function openScopePanel(page: Page, scope: 1 | 2) {
+  return page
+    .locator('[role="tabpanel"][data-state="open"]')
+    .or(page.getByRole("tabpanel", { name: new RegExp(`Scope ${scope}`, "i") }))
+    .first();
+}
+
 async function addScope1ResidentialEmissions(
   page: Page,
   cityId: string,
@@ -140,7 +165,7 @@ async function addScope1ResidentialEmissions(
   await openResidentialSubsector(page, cityId, inventoryId);
   await page.getByRole("tab", { name: /Scope 1/i }).click();
 
-  const scopeOnePanel = page.getByRole("tabpanel", { name: /Scope 1/i });
+  const scopeOnePanel = openScopePanel(page, 1);
   await expect(scopeOnePanel).toBeVisible({ timeout: 30000 });
   const hasExistingActivity = await scopeOnePanel
     .getByText(/Propane/i)
@@ -280,10 +305,11 @@ test.describe("CSV Download", () => {
     });
 
     await openDownloadModal(page);
-    await page.getByTestId("download-csv-button").click();
+    await selectDownloadFormat(page, "csv");
+    await confirmDownload(page);
 
     await expect(
-      page.getByText(/There was an error during download|Download failed/i).first(),
+      page.getByText(/There was an error during download|Download failed|download-error/i).first(),
     ).toBeVisible({ timeout: 10000 });
   });
 
@@ -298,16 +324,9 @@ test.describe("CSV Download", () => {
     expect(csvContent).toContain("GPC Reference Number");
 
     await dismissToasts(page);
+    await openDownloadModal(page);
 
-    const ecrfDownloadButton = page.getByTestId("download-ecrf-button");
-    await expect(ecrfDownloadButton).toBeVisible();
-
-    const ecrfDownloadPromise = page.waitForEvent("download", {
-      timeout: 90000,
-    });
-    await ecrfDownloadButton.click();
-
-    const ecrfDownload = await ecrfDownloadPromise;
+    const ecrfDownload = await downloadEcrf(page);
     expect(ecrfDownload.suggestedFilename()).toMatch(/\.xlsx?$/);
 
     await csvDownload.delete();

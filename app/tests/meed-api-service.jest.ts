@@ -171,15 +171,7 @@ describe("MeedApiService versioned persistence", () => {
       }),
       { transaction: mockTransaction },
     );
-    expect(rankingModel.findOne).toHaveBeenCalledWith({
-      where: expect.objectContaining({
-        inventoryId: "inventory-1",
-        userId: "user-1",
-        inputDigest: expect.any(String),
-        contentDigest: expect.any(String),
-      }),
-      transaction: mockTransaction,
-    });
+    expect(rankingModel.findOne).not.toHaveBeenCalled();
     expect(rankedModel).not.toHaveProperty("destroy");
     expect(registerMEEDRanking).toHaveBeenCalledWith(expect.any(String));
     expect(result).toEqual({
@@ -188,7 +180,34 @@ describe("MeedApiService versioned persistence", () => {
     });
   });
 
-  it("reads the latest completed version and falls back to legacy rows", async () => {
+  it("creates a new version for every successful invocation, even with identical output", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue(response("action-1"));
+
+    await MeedApiService.runRanking("inventory-1", request, "user-1");
+    await MeedApiService.runRanking("inventory-1", request, "user-1");
+
+    expect(rankingModel.create).toHaveBeenCalledTimes(2);
+    expect(rankingModel.create.mock.calls[0][0]).toEqual(
+      expect.objectContaining({
+        inventoryId: "inventory-1",
+        userId: "user-1",
+        status: "completed",
+      }),
+    );
+    expect(rankingModel.create.mock.calls[1][0]).toEqual(
+      expect.objectContaining({
+        inventoryId: "inventory-1",
+        userId: "user-1",
+        status: "completed",
+      }),
+    );
+    expect(rankingModel.create.mock.calls[0][0].id).not.toBe(
+      rankingModel.create.mock.calls[1][0].id,
+    );
+    expect(rankingModel.findOne).not.toHaveBeenCalled();
+  });
+
+  it("reads the latest completed version for the inventory and falls back to legacy rows", async () => {
     rankingModel.findOne.mockResolvedValueOnce({ id: "ranking-latest" });
     rankedModel.findAll.mockResolvedValueOnce([{ id: "ranked-latest" }]);
     removedModel.findAll.mockResolvedValueOnce([{ id: "removed-latest" }]);
@@ -202,7 +221,6 @@ describe("MeedApiService versioned persistence", () => {
     expect(rankingModel.findOne).toHaveBeenCalledWith({
       where: {
         inventoryId: "inventory-1",
-        userId: "user-1",
         status: "completed",
       },
       order: [["created", "DESC"]],

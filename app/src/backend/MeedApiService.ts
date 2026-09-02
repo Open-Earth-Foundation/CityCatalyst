@@ -242,27 +242,6 @@ export default class MeedApiService {
     }
 
     const data = await db.sequelize.transaction(async (transaction) => {
-      const existingRanking = await db.models.MeedRanking.findOne({
-        where: {
-          inventoryId,
-          userId: userId ?? null,
-          inputDigest,
-          contentDigest,
-        },
-        transaction,
-      });
-      if (existingRanking) {
-        const rankedActions = await db.models.MeedActionRanked.findAll({
-          where: { rankingId: existingRanking.id },
-          transaction,
-        });
-        const removedActions = await db.models.MeedActionRemoved.findAll({
-          where: { rankingId: existingRanking.id },
-          transaction,
-        });
-        return { ranking: existingRanking, rankedActions, removedActions };
-      }
-
       const ranking = await db.models.MeedRanking.create(
         {
           id: randomUUID(),
@@ -334,9 +313,9 @@ export default class MeedApiService {
     };
   }
 
-  public static async getRanking(inventoryId: string, userId?: string) {
+  public static async getRanking(inventoryId: string, _userId?: string) {
     const latestRanking = await db.models.MeedRanking.findOne({
-      where: { inventoryId, userId: userId ?? null, status: "completed" },
+      where: { inventoryId, status: "completed" },
       order: [["created", "DESC"]],
     });
     if (latestRanking) {

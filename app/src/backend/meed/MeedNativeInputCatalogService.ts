@@ -45,7 +45,6 @@ type MeedRankingLike = {
 };
 
 type CatalogScope = {
-  userId: string | null;
   inventoryId: string | null;
   cityId: string | null;
   projectId: string | null;
@@ -53,17 +52,26 @@ type CatalogScope = {
 };
 
 type CatalogModel = {
-  findAll: (options: Record<string, unknown>) => Promise<Array<Record<string, unknown>>>;
-  findOne: (options: Record<string, unknown>) => Promise<Record<string, unknown> | null>;
+  findAll: (
+    options: Record<string, unknown>,
+  ) => Promise<Array<Record<string, unknown>>>;
+  findOne: (
+    options: Record<string, unknown>,
+  ) => Promise<Record<string, unknown> | null>;
 };
 
 type MeedRankingModel = {
   findAll: (options: Record<string, unknown>) => Promise<MeedRankingLike[]>;
-  findByPk: (id: string, options?: Record<string, unknown>) => Promise<MeedRankingLike | null>;
+  findByPk: (
+    id: string,
+    options?: Record<string, unknown>,
+  ) => Promise<MeedRankingLike | null>;
 };
 
 type MeedActionModel = {
-  findAll: (options: Record<string, unknown>) => Promise<Array<Record<string, unknown>>>;
+  findAll: (
+    options: Record<string, unknown>,
+  ) => Promise<Array<Record<string, unknown>>>;
 };
 
 type MeedModels = typeof db.models & {
@@ -88,7 +96,9 @@ async function resolveScope(ranking: MeedRankingLike): Promise<CatalogScope> {
               {
                 model: db.models.Project,
                 as: "project",
-                include: [{ model: db.models.Organization, as: "organization" }],
+                include: [
+                  { model: db.models.Organization, as: "organization" },
+                ],
               },
             ],
           },
@@ -100,7 +110,6 @@ async function resolveScope(ranking: MeedRankingLike): Promise<CatalogScope> {
   const project = city?.project;
   const organization = project?.organization;
   const scope: CatalogScope = {
-    userId: ranking.userId ?? null,
     inventoryId: inventory?.inventoryId ?? ranking.inventoryId ?? null,
     cityId: inventory?.cityId ?? city?.cityId ?? null,
     projectId: city?.projectId ?? project?.projectId ?? null,
@@ -109,7 +118,6 @@ async function resolveScope(ranking: MeedRankingLike): Promise<CatalogScope> {
   };
 
   if (
-    !scope.userId &&
     !scope.inventoryId &&
     !scope.cityId &&
     !scope.projectId &&
@@ -137,7 +145,9 @@ async function buildMEEDRankingInput(
     throw new Error("MEED rankings require an inventory");
   }
   if (!ranking.inputDigest || !ranking.contentDigest) {
-    throw new Error("Completed MEED rankings require input and content digests");
+    throw new Error(
+      "Completed MEED rankings require input and content digests",
+    );
   }
 
   const rankedActions = await models().MeedActionRanked.findAll({
@@ -154,7 +164,7 @@ async function buildMEEDRankingInput(
   }
 
   const scope = await resolveScope(ranking);
-  const sourceId = `${scope.inventoryId}:${scope.userId ?? "anonymous"}:${ranking.inputDigest}:${ranking.contentDigest}`;
+  const sourceId = ranking.id;
 
   return {
     kind: "hiap_meed_ranking",
@@ -183,7 +193,6 @@ async function supersedePreviousVersions(
       owningModule: MEED_MODULE,
       sourceType: MEED_RANKING_SOURCE_TYPE,
       inventoryId: input.inventoryId,
-      userId: input.userId ?? null,
       availability: "active",
     },
   });
@@ -238,9 +247,12 @@ export async function registerMEEDRanking(
       owningModule: MEED_MODULE,
       sourceType: MEED_RANKING_SOURCE_TYPE,
       sourceId: input.sourceId,
-      availability: "active",
+      availability: { [Op.ne]: "withdrawn" },
     },
   });
+  if (existing?.availability === "superseded") {
+    return { catalog: existing, created: false };
+  }
   const registration = existing
     ? { catalog: existing, created: false }
     : await registerNativeInput(input);

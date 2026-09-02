@@ -7,6 +7,7 @@ import {
   it,
   jest,
 } from "@jest/globals";
+import { Op } from "sequelize";
 
 const catalogModel = {
   findAll: jest.fn(),
@@ -130,7 +131,7 @@ describe("MeedNativeInputCatalogService", () => {
         kind: "hiap_meed_ranking",
         owningModule: "hiap_meed",
         sourceType: "hiap_meed_ranking",
-        sourceId: expect.stringMatching(/^inventory-1:user-1:/),
+        sourceId: "ranking-1",
         inventoryId: "inventory-1",
         cityId: "city-1",
         projectId: "project-1",
@@ -142,6 +143,7 @@ describe("MeedNativeInputCatalogService", () => {
         }),
       }),
     );
+    expect(registerNativeInput.mock.calls[0][0]).not.toHaveProperty("userId");
 
     const registrationInput = registerNativeInput.mock.calls[0][0];
     expect(registrationInput).not.toHaveProperty("rankedActions");
@@ -168,19 +170,21 @@ describe("MeedNativeInputCatalogService", () => {
     expect(registerNativeInput).not.toHaveBeenCalled();
   });
 
-  it("is idempotent for an active source identity and supersedes changed versions", async () => {
+  it("reuses the same catalog entry when the same ranking is retried", async () => {
     catalogModel.findOne.mockResolvedValueOnce({ id: "catalog-existing" });
     await expect(registerMEEDRanking("ranking-1")).resolves.toEqual({
       catalog: { id: "catalog-existing" },
       created: false,
     });
     expect(registerNativeInput).not.toHaveBeenCalled();
+  });
 
+  it("supersedes the previous active inventory version even when content matches an older run", async () => {
     catalogModel.findOne.mockResolvedValueOnce(null);
     catalogModel.findAll.mockResolvedValueOnce([
       {
         id: "catalog-old",
-        sourceId: "inventory-1:user-1:old-input:old-result",
+        sourceId: "ranking-old",
         availability: "active",
       },
     ]);
@@ -189,6 +193,64 @@ describe("MeedNativeInputCatalogService", () => {
       "catalog-old",
       expect.objectContaining({ sourceType: "hiap_meed_ranking" }),
     );
+    expect(catalogModel.findAll).toHaveBeenCalledWith({
+      where: {
+        owningModule: "hiap_meed",
+        sourceType: "hiap_meed_ranking",
+        inventoryId: "inventory-1",
+        availability: "active",
+      },
+    });
+  });
+
+  it("keeps only the newest source active across an A to B to C history", async () => {
+    rankingModel.findByPk
+      .mockResolvedValueOnce({ ...completedRanking, id: "ranking-a" })
+      .mockResolvedValueOnce({ ...completedRanking, id: "ranking-b" })
+      .mockResolvedValueOnce({ ...completedRanking, id: "ranking-c" });
+    catalogModel.findOne.mockResolvedValue(null);
+    catalogModel.findAll
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ id: "catalog-a", availability: "active" }])
+      .mockResolvedValueOnce([{ id: "catalog-b", availability: "active" }]);
+    registerNativeInput
+      .mockResolvedValueOnce({ catalog: { id: "catalog-a" }, created: true })
+      .mockResolvedValueOnce({ catalog: { id: "catalog-b" }, created: true })
+      .mockResolvedValueOnce({ catalog: { id: "catalog-c" }, created: true });
+
+    await registerMEEDRanking("ranking-a");
+    await registerMEEDRanking("ranking-b");
+    await registerMEEDRanking("ranking-c");
+
+    expect(
+      registerNativeInput.mock.calls.map(([input]) => input.sourceId),
+    ).toEqual(["ranking-a", "ranking-b", "ranking-c"]);
+    expect(
+      supersedeNativeInput.mock.calls.map(([catalogId]) => catalogId),
+    ).toEqual(["catalog-a", "catalog-b"]);
+  });
+
+  it("does not reactivate a historical source when it is registered again", async () => {
+    catalogModel.findOne.mockResolvedValueOnce({
+      id: "catalog-historical",
+      availability: "superseded",
+    });
+
+    await expect(registerMEEDRanking("ranking-1")).resolves.toEqual({
+      catalog: { id: "catalog-historical", availability: "superseded" },
+      created: false,
+    });
+
+    expect(registerNativeInput).not.toHaveBeenCalled();
+    expect(supersedeNativeInput).not.toHaveBeenCalled();
+    expect(catalogModel.findOne).toHaveBeenCalledWith({
+      where: {
+        owningModule: "hiap_meed",
+        sourceType: "hiap_meed_ranking",
+        sourceId: "ranking-1",
+        availability: { [Op.ne]: "withdrawn" },
+      },
+    });
   });
 
   it("repairs older active versions when the current registration already exists", async () => {
@@ -196,7 +258,7 @@ describe("MeedNativeInputCatalogService", () => {
     catalogModel.findAll.mockResolvedValueOnce([
       {
         id: "catalog-old",
-        sourceId: "inventory-1:user-1:old-input:old-result",
+        sourceId: "ranking-old",
         availability: "active",
       },
     ]);

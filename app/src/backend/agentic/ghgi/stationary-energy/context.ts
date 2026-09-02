@@ -13,6 +13,7 @@ import {
 } from "@/util/helpers";
 import { STATIONARY_ENERGY } from "@/util/methodologies/stationary-energy";
 import { LANGUAGES } from "@/util/types";
+import { isNotEstimated } from "@/util/notation-keys";
 
 type StationaryEnergyLocale = `${LANGUAGES}`;
 
@@ -433,11 +434,7 @@ function hasCommittedCurrentValue(value: Record<string, unknown>): boolean {
   }
 
   const unavailableReason = stringField(value["unavailable_reason"]);
-  return Boolean(
-    unavailableReason &&
-      unavailableReason !== "reason-NE" &&
-      unavailableReason !== "not-estimated",
-  );
+  return Boolean(unavailableReason && !isNotEstimated(unavailableReason));
 }
 
 async function buildSourceCandidates(

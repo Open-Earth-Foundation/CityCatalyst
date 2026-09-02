@@ -115,13 +115,21 @@ export default function ChatPopover({
   const isStationaryEnergyAgenticRoute = pathname.includes(
     "/draft/stationary-energy",
   );
+  const isConceptNotesRoute = /(^|\/)concept-notes(?:\/|$)/.test(pathname);
 
   // Hide the global launcher on the initial city onboarding page (not the GHGI onboarding).
   // The pathname for the first onboarding is "/<lng>/cities/onboarding" (no cityId).
-  const isCityOnboardingRoute = /^\/[^/]+\/cities\/onboarding(\/|$)/.test(pathname);
+  const isCityOnboardingRoute = /^\/[^/]+\/cities\/onboarding(\/|$)/.test(
+    pathname,
+  );
 
   // Hide the global launcher where Clima is embedded as the primary workflow.
-  if (pathname.startsWith(`/${lng}/auth`) || isStationaryEnergyAgenticRoute || isCityOnboardingRoute) {
+  if (
+    pathname.startsWith(`/${lng}/auth`) ||
+    isStationaryEnergyAgenticRoute ||
+    isCityOnboardingRoute ||
+    isConceptNotesRoute
+  ) {
     return null;
   }
 

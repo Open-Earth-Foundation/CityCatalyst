@@ -1,21 +1,23 @@
-"""Atomic persistence for PDF-first Concept Note context-bundle builds."""
+"""Atomic persistence for Concept Note context-bundle builds."""
 
 from __future__ import annotations
 
 import hashlib
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
+from app.models.cnb.concept_note_markdown import source_format_from_filename
 from app.models.cnb.context_bundle import ConceptNoteContextBundle, SelectedSource
 from app.models.db.concept_note import (
     ConceptNoteContextBundle as ConceptNoteContextBundleRow,
 )
 from app.models.db.concept_note import ConceptNoteRun, ConceptNoteUpload
 from app.persistence.concept_notes.markdown import ConceptNoteUploadSnapshot
+from app.utils.concept_note_context import omit_context_identifiers
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
@@ -45,6 +47,7 @@ class ContextBundleBuildSnapshot:
     build_id: UUID
     uploads: list[ConceptNoteUploadSnapshot]
     already_current: bool
+    previous_sources: list[SelectedSource] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -66,6 +69,7 @@ async def begin_build(
     """Snapshot ready uploads and persist the active guarded build."""
     try:
         async with session_factory() as session, session.begin():
+            # Snapshot the owned run and its currently ready source set atomically.
             run = await _require_owned_run(
                 session=session,
                 user_id=user_id,
@@ -90,13 +94,20 @@ async def begin_build(
             ]
             fingerprint = source_fingerprint(ready_uploads)
             previous = _bundle_progress(run.context_summary)
+            bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
+            previous_bundle = normalize_bundle(
+                bundle_row.context_bundle if bundle_row is not None else None
+            )
+            previous_sources = list(previous_bundle.selected_sources)
+
+            # Reuse only a ready bundle built from this exact source set.
             already_current = bool(
                 not force
                 and previous.get("status") == "ready"
                 and previous.get("source_fingerprint") == fingerprint
-                and ready_uploads
             )
             if not already_current:
+                # Preserve the last completed context while its replacement builds.
                 status_counts: dict[str, int] = {}
                 for upload in uploads:
                     status_counts[upload.ingest_status] = (
@@ -108,6 +119,15 @@ async def begin_build(
                         "build_id": str(build_id),
                         "source_fingerprint": fingerprint,
                         "status": "building",
+                        "document_grounding": _document_grounding(previous),
+                        "available_context": _available_context_from_bundle(
+                            previous_bundle
+                        ),
+                        "missing_context": (
+                            previous.get("missing_context")
+                            if isinstance(previous.get("missing_context"), list)
+                            else []
+                        ),
                         "source_counts": {
                             "ready": len(ready_uploads),
                             "queued": status_counts.get("queued", 0),
@@ -131,6 +151,7 @@ async def begin_build(
                 build_id=build_id,
                 uploads=ready_uploads,
                 already_current=already_current,
+                previous_sources=previous_sources,
             )
     except ContextBundlePersistenceError:
         raise
@@ -158,6 +179,7 @@ async def complete_build(
     """Commit only the active build's owned bundle sections."""
     try:
         async with session_factory() as session, session.begin():
+            # Reject stale workers before writing any bundle state.
             run = await _require_owned_run(
                 session=session,
                 user_id=user_id,
@@ -177,19 +199,20 @@ async def complete_build(
                     build_id,
                 )
                 return False
+
+            # Require one result per ready source; zero uploaded sources is valid.
             ready_count = progress.get("source_counts", {}).get("ready")
             selected_upload_ids = {source.upload_id for source in selected_sources}
-            if (
-                not selected_sources
-                or ready_count != len(selected_sources)
-                or len(selected_upload_ids) != len(selected_sources)
+            if ready_count != len(selected_sources) or len(selected_upload_ids) != len(
+                selected_sources
             ):
                 raise ContextBundlePersistenceError(
                     "incomplete_source_coverage",
                     409,
-                    "Every ready city PDF must be analyzed exactly once",
+                    "Every ready city source must be analyzed exactly once",
                 )
 
+            # Replace derived bundle sections while retaining unrelated context.
             bundle_row = await session.get(
                 ConceptNoteContextBundleRow,
                 run_id,
@@ -207,16 +230,24 @@ async def complete_build(
             bundle.cc_context.hiap = hiap
             bundle_row.context_bundle = bundle.model_dump(mode="json")
 
+            # Publish typed readiness and advance new runs into interviewing.
+            next_progress = {
+                **progress,
+                "status": "ready",
+                "document_grounding": (
+                    "uploaded_evidence" if selected_sources else "none"
+                ),
+                "available_context": _available_context_from_bundle(bundle),
+                "missing_context": [] if selected_sources else ["source_documents"],
+                "optional_sources": optional_sources,
+                "warnings": warnings,
+                "retryable": False,
+                "completion_event": "concept_note_context_bundle_ready",
+            }
+            next_progress.pop("context_mode", None)
             run.context_summary = _replace_bundle_progress(
                 run.context_summary,
-                {
-                    **progress,
-                    "status": "ready",
-                    "optional_sources": optional_sources,
-                    "warnings": warnings,
-                    "retryable": False,
-                    "completion_event": "concept_note_context_bundle_ready",
-                },
+                next_progress,
             )
             if run.workflow_step == "assembling_context":
                 run.workflow_step = "interviewing"
@@ -304,8 +335,9 @@ async def recover_stale_builds(
                     ConceptNoteRun.status == "active",
                     ConceptNoteRun.updated_at < stale_before,
                     (
-                        ConceptNoteRun.context_summary["context_bundle"]["status"]
-                        .as_string()
+                        ConceptNoteRun.context_summary["context_bundle"][
+                            "status"
+                        ].as_string()
                         == "building"
                     ),
                 )
@@ -348,9 +380,9 @@ async def load_query_source(
     session_factory: async_sessionmaker[AsyncSession],
     user_id: str,
     run_id: UUID,
-    upload_id: UUID,
+    source_index: int,
 ) -> ContextBundleQuerySource:
-    """Authorize a ready selected source for the active workflow step."""
+    """Resolve a model-safe source position and authorize its backend upload."""
     try:
         async with session_factory() as session:
             run = await _require_owned_run(
@@ -365,7 +397,7 @@ async def load_query_source(
                     409,
                     "Source query is not available in the current workflow step",
                 )
-            if _bundle_progress(run.context_summary).get("status") != "ready":
+            if not _has_usable_bundle(_bundle_progress(run.context_summary)):
                 raise ContextBundlePersistenceError(
                     "concept_note_context_bundle_not_ready",
                     409,
@@ -375,21 +407,14 @@ async def load_query_source(
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            source = next(
-                (
-                    item
-                    for item in bundle.selected_sources
-                    if item.upload_id == upload_id
-                ),
-                None,
-            )
-            if source is None:
+            if source_index < 1 or source_index > len(bundle.selected_sources):
                 raise ContextBundlePersistenceError(
                     "concept_note_source_not_selected",
                     404,
-                    "Selected Concept Note source was not found",
+                    "Selected Concept Note source index was not found",
                 )
-            upload = await session.get(ConceptNoteUpload, upload_id)
+            source = bundle.selected_sources[source_index - 1]
+            upload = await session.get(ConceptNoteUpload, source.upload_id)
             if (
                 upload is None
                 or upload.run_id != run_id
@@ -423,9 +448,10 @@ async def load_agent_context(
     user_id: str,
     run_id: UUID,
 ) -> dict[str, Any] | None:
-    """Return compact ready bundle context for the authorized CNB agent."""
+    """Return the authorized CNB context without model-facing identity metadata."""
     try:
         async with session_factory() as session:
+            # Keep the last usable bundle available during a later rebuild.
             run = await _require_owned_run(
                 session=session,
                 user_id=user_id,
@@ -433,32 +459,40 @@ async def load_agent_context(
                 lock=False,
             )
             bundle_progress = _bundle_progress(run.context_summary)
-            if bundle_progress.get("status") != "ready":
+            if not _has_usable_bundle(bundle_progress):
                 return None
+
+            # Return only the compact context needed by the agent runtime.
             bundle_row = await session.get(ConceptNoteContextBundleRow, run_id)
             bundle = normalize_bundle(
                 bundle_row.context_bundle if bundle_row is not None else None
             )
-            return {
-                "concept_note_run_id": str(run_id),
-                "workflow_step": run.workflow_step,
-                "context_bundle_status": bundle_progress,
-                "selected_sources": [
-                    {
-                        "upload_id": str(source.upload_id),
-                        "source_label": source.source_label,
-                        "filename": source.filename,
-                        "page_count": source.page_count,
-                        "summary": source.summary,
-                        "topics": source.topics,
-                    }
-                    for source in bundle.selected_sources
-                ],
-                "cc_context": bundle.cc_context.model_dump(mode="json"),
-                "funder_context": bundle.funder_context,
-                "similar_projects": bundle.similar_projects,
-                "document_context": bundle.document_context,
-            }
+            return omit_context_identifiers(
+                {
+                    "workflow_step": run.workflow_step,
+                    "context_bundle_status": {
+                        key: value for key, value in bundle_progress.items()
+                        if key in {"status", "document_grounding", "available_context", "missing_context", "warnings"}
+                    },
+                    "selected_sources": [
+                        {
+                            "source_index": source_index,
+                            "source_label": source.source_label,
+                            "filename": source.filename,
+                            "source_format": source.source_format,
+                            "summary": source.summary,
+                            "topics": source.topics,
+                        }
+                        for source_index, source in enumerate(
+                            bundle.selected_sources, start=1
+                        )
+                    ],
+                    "cc_context": bundle.cc_context.model_dump(mode="json"),
+                    "funder_context": bundle.funder_context,
+                    "similar_projects": bundle.similar_projects,
+                    "document_context": bundle.document_context,
+                }
+            )
     except ContextBundlePersistenceError:
         raise
     except (OSError, SQLAlchemyError, ValueError) as exc:
@@ -504,6 +538,7 @@ def source_fingerprint(uploads: list[ConceptNoteUploadSnapshot]) -> str:
         {
             "upload_id": str(upload.upload_id),
             "sha256": upload.markdown_sha256,
+            "source_format": upload.source_format,
             "page_count": upload.page_count,
         }
         for upload in uploads
@@ -556,6 +591,40 @@ def _bundle_progress(summary: Any) -> dict[str, Any]:
     return progress if isinstance(progress, dict) else {}
 
 
+def _has_usable_bundle(progress: dict[str, Any]) -> bool:
+    """Return whether the current or last-completed bundle may serve requests."""
+    return progress.get("status") == "ready" or _document_grounding(progress) in {
+        "none",
+        "uploaded_evidence",
+    }
+
+
+def _document_grounding(progress: dict[str, Any]) -> str | None:
+    """Read document grounding while accepting pre-rename persisted progress."""
+    grounding = progress.get("document_grounding")
+    if grounding in {"none", "uploaded_evidence"}:
+        return grounding
+    legacy_mode = progress.get("context_mode")
+    if not isinstance(legacy_mode, str):
+        return None
+    return {"thin": "none", "grounded": "uploaded_evidence"}.get(legacy_mode)
+
+
+def _available_context_from_bundle(
+    bundle: ConceptNoteContextBundle,
+) -> dict[str, bool]:
+    """Report which context sections exist in one persisted bundle snapshot."""
+    context = bundle.cc_context
+    return {
+        "city": context.city is not None,
+        "project": context.project is not None,
+        "ghgi": context.ghgi is not None,
+        "ccra": context.ccra is not None,
+        "hiap": context.hiap is not None,
+        "uploaded_documents": bool(bundle.selected_sources),
+    }
+
+
 def _replace_bundle_progress(summary: Any, progress: dict[str, Any]) -> dict[str, Any]:
     """Replace only context-bundle progress and preserve unrelated run metadata."""
     return {
@@ -572,6 +641,7 @@ def _upload_snapshot(upload: ConceptNoteUpload) -> ConceptNoteUploadSnapshot:
         user_id=upload.uploaded_by_user_id,
         filename=upload.filename,
         source_label=upload.source_label,
+        source_format=source_format_from_filename(upload.filename),
         markdown_s3_key=upload.markdown_s3_key,
         markdown_sha256=upload.markdown_sha256,
         page_count=upload.page_count,

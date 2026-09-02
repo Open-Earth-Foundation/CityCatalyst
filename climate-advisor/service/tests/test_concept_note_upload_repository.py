@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.db import Base
-from app.models.concept_note_markdown import (
+from app.models.cnb.concept_note_markdown import (
     ConceptNoteMarkdownRequest,
     ConceptNoteUploadCreateRequest,
 )

@@ -185,3 +185,6 @@ demo-recording/
 
 # AI-DLC working artifacts are kept locally and excluded from pull requests
 /aidlc-docs/
+
+# Local load-test evidence generated during runs
+load-test/results/

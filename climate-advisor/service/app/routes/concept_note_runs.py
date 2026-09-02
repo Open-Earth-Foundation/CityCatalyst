@@ -5,6 +5,11 @@ from __future__ import annotations
 from typing import Annotated
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.db.session import get_session
 from app.models.cnb.concept_note_application_context import (
     ConceptNoteApplicationContextResponse,
@@ -29,12 +34,17 @@ from app.services.cnb.context_bundle import (
     ContextBundleService,
     get_context_bundle_service,
 )
-from app.services.concept_note_runs import ConceptNoteRunService
 from app.services.concept_note_lifecycle import ConceptNoteLifecycleService
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
+from app.services.concept_note_runs import ConceptNoteRunService
+from app.utils.cnb_observability import CNBInteraction
+from app.utils.mlflow_logging import (
+    climate_advisor_experiment_name,
+    log_tags,
+    set_span_outputs,
+    start_run as start_mlflow_run,
+    start_trace_span,
+    update_current_trace_context,
+)
 
 router = APIRouter()
 
@@ -74,12 +84,47 @@ async def start_concept_note_run(
     session: AsyncSession = Depends(get_session),
 ) -> JSONResponse:
     """Create a concept-note run or replay an identical idempotent request."""
-    service = ConceptNoteRunService(session)
-    response = await service.start_run_and_schedule_context(
-        payload,
-        authorization=authorization,
-        context_bundle_service=context_bundle_service,
-    )
+    interaction = CNBInteraction.START
+    with start_mlflow_run(
+        run_name=interaction.mlflow_run_name,
+        experiment_name=climate_advisor_experiment_name(),
+        tags={
+            "endpoint": "/v1/concept-notes/start",
+            "workflow": "CNB",
+            "workflow_name": "concept_note_run_lifecycle",
+            "interaction": interaction.value,
+        },
+    ), start_trace_span(
+        name="CNB start",
+        span_type="CHAIN",
+        attributes={
+            "workflow": "CNB",
+            "workflow_name": "concept_note_run_lifecycle",
+            "interaction": interaction.value,
+        },
+    ) as span:
+        service = ConceptNoteRunService(session)
+        response = await service.start_run_and_schedule_context(
+            payload,
+            authorization=authorization,
+            context_bundle_service=context_bundle_service,
+        )
+        result = "created" if response.created else "replayed"
+        correlation_tags = {
+            "concept_note_run_id": str(response.run_id),
+            "result": result,
+        }
+        log_tags(correlation_tags)
+        update_current_trace_context(
+            session_id=response.run_id,
+            tags={
+                "workflow": "CNB",
+                "interaction": interaction.value,
+                **correlation_tags,
+            },
+            metadata=correlation_tags,
+        )
+        set_span_outputs(span, correlation_tags)
 
     return JSONResponse(
         status_code=201 if response.created else 200,

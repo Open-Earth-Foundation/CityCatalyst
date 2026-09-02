@@ -386,7 +386,7 @@ const InviteCollaboratorsStep = forwardRef<
             {t("invite-collaborators-select-cities")}
           </Text>
           {selectedProject.length > 0 ? (
-            <Box bg="background.default" px={6} py={4}>
+            <Box bg="background.default" py={4}>
               <Checkbox
                 checked={
                   cityData.length > 0 &&

@@ -74,22 +74,36 @@ function filenameFromDisposition(
   return match?.[1] ?? fallback;
 }
 
-async function fetchDownloadViaApi(
+async function fetchDownloadInBrowser(
   page: Page,
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  const response = await page.request.get(
-    `/api/v1/inventory/${inventoryId}/download?format=${format}&lng=en`,
-  );
-  expect(response.ok()).toBeTruthy();
+  const result = await page.evaluate(
+    async ({ id, fmt }) => {
+      const response = await fetch(
+        `/api/v1/inventory/${id}/download?format=${fmt}&lng=en`,
+      );
+      if (!response.ok) {
+        throw new Error(`Download failed with status ${response.status}`);
+      }
 
-  const content = Buffer.from(await response.body());
+      const disposition = response.headers.get("content-disposition") ?? "";
+      const buffer = await response.arrayBuffer();
+      return {
+        disposition,
+        content: Array.from(new Uint8Array(buffer)),
+      };
+    },
+    { id: inventoryId, fmt: format },
+  );
+
+  const content = Buffer.from(result.content);
   expect(content.byteLength).toBeGreaterThan(0);
 
   return {
     filename: filenameFromDisposition(
-      response.headers()["content-disposition"] ?? "",
+      result.disposition,
       `inventory.${format === "csv" ? "csv" : "xlsx"}`,
     ),
     content,
@@ -101,33 +115,8 @@ async function downloadFormat(
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  const responsePromise = page
-    .waitForResponse(
-      (resp) =>
-        resp.url().includes(`/inventory/${inventoryId}/download`) &&
-        resp.url().includes(`format=${format}`) &&
-        resp.request().method() === "GET",
-      { timeout: 60000 },
-    )
-    .catch(() => null);
-
   await triggerDownloadFromModal(page, format);
-  const browserResponse = await responsePromise;
-
-  if (browserResponse?.ok()) {
-    const content = Buffer.from(await browserResponse.body());
-    if (content.byteLength > 0) {
-      return {
-        filename: filenameFromDisposition(
-          browserResponse.headers()["content-disposition"] ?? "",
-          `inventory.${format === "csv" ? "csv" : "xlsx"}`,
-        ),
-        content,
-      };
-    }
-  }
-
-  return fetchDownloadViaApi(page, inventoryId, format);
+  return fetchDownloadInBrowser(page, inventoryId, format);
 }
 
 async function downloadCsv(page: Page, inventoryId: string) {

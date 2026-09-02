@@ -67,12 +67,9 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
 }
 
 async function fillEnergyConsumptionAmount(addEmissionModal: Locator) {
-  const energyInput = addEmissionModal.locator(
-    '[name="activity.activity-energy-consumption"]',
-  );
-  await expect(energyInput).toBeVisible({ timeout: 10000 });
-  await energyInput.click();
-  await energyInput.fill("100");
+  const energyField = addEmissionModal.getByLabel(/^Energy Consumption$/i);
+  await expect(energyField).toBeVisible({ timeout: 10000 });
+  await energyField.fill("100");
 }
 
 async function submitActivity(addEmissionModal: Locator) {

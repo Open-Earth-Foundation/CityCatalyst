@@ -66,6 +66,16 @@ async function fillCustomEmissionFactors(addEmissionModal: Locator) {
   await addEmissionModal.getByLabel("Explanatory comments").fill("test");
 }
 
+async function fillEnergyConsumptionAmount(addEmissionModal: Locator) {
+  const energyInput = addEmissionModal
+    .getByLabel(/^Energy Consumption$/i)
+    .locator("input")
+    .first();
+  await expect(energyInput).toBeVisible({ timeout: 10000 });
+  await energyInput.click();
+  await energyInput.fill("100");
+}
+
 async function submitActivity(addEmissionModal: Locator) {
   await addEmissionModal.getByTestId("add-emission-modal-submit").click();
   await expect(addEmissionModal).not.toBeVisible({ timeout: 60000 });
@@ -169,7 +179,7 @@ async function addScope2ResidentialEmissions(
   await addEmissionModal
     .getByLabel(/Energy usage type/i)
     .selectOption("energy-usage-electricity");
-  await addEmissionModal.getByLabel(/^Energy Consumption$/i).fill("100");
+  await fillEnergyConsumptionAmount(addEmissionModal);
   await addEmissionModal
     .getByLabel(/Select Unit/i)
     .selectOption("units-kilowatt-hours");

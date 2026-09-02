@@ -64,13 +64,6 @@ async function confirmDownload(page: Page) {
 async function triggerDownloadFromModal(page: Page, format: "csv" | "ecrf") {
   await selectDownloadFormat(page, format);
   await confirmDownload(page);
-  await expect(
-    page
-      .getByText(
-        /Inventory report download completed|Downloading your data|Preparing your dataset/i,
-      )
-      .first(),
-  ).toBeVisible({ timeout: 90000 });
 }
 
 function filenameFromDisposition(

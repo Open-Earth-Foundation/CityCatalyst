@@ -46,10 +46,11 @@ async function openDownloadModal(page: Page) {
   });
 }
 
+/** Chakra v3 / Ark checkbox: click the control part rather than the root. */
 async function selectDownloadFormat(page: Page, format: "csv" | "ecrf") {
   const checkbox = page.getByTestId(`download-${format}-checkbox`);
   await expect(checkbox).toBeVisible({ timeout: 10000 });
-  await checkbox.click();
+  await checkbox.locator('[data-part="control"]').click();
   await expect(page.getByTestId("download-confirm-button")).toBeEnabled({
     timeout: 10000,
   });
@@ -74,6 +75,11 @@ function filenameFromDisposition(
   return match?.[1] ?? fallback;
 }
 
+/**
+ * Verify downloads via in-browser fetch (same auth cookies as the UI).
+ * The modal uses fetch + blob + programmatic <a> click, which does not
+ * reliably fire Playwright's download event — especially on Firefox.
+ */
 async function fetchDownloadInBrowser(
   page: Page,
   inventoryId: string,

@@ -47,13 +47,17 @@ async function openDownloadModal(page: Page) {
 }
 
 async function selectDownloadFormat(page: Page, format: "csv" | "ecrf") {
-  const checkbox = page.getByTestId(`download-${format}-checkbox`);
-  await expect(checkbox).toBeVisible();
-  const hiddenInput = checkbox.locator('input[type="checkbox"]');
-  if (!(await hiddenInput.isChecked())) {
-    await checkbox.click();
-  }
-  await expect(hiddenInput).toBeChecked();
+  const formatLabel =
+    format === "csv"
+      ? /Download in \.CSV format/i
+      : /Download in eCRF format/i;
+  const checkbox = page.getByRole("checkbox", { name: formatLabel });
+  await expect(checkbox).toBeVisible({ timeout: 10000 });
+  await checkbox.check();
+  await expect(checkbox).toBeChecked();
+  await expect(page.getByTestId("download-confirm-button")).toBeEnabled({
+    timeout: 10000,
+  });
 }
 
 async function confirmDownload(page: Page) {
@@ -75,19 +79,31 @@ async function downloadFormat(
   inventoryId: string,
   format: "csv" | "ecrf",
 ): Promise<DownloadResult> {
-  const responsePromise = page.waitForResponse(
-    (resp) =>
-      resp.url().includes(`/inventory/${inventoryId}/download`) &&
-      resp.url().includes(`format=${format}`) &&
-      resp.request().method() === "GET" &&
-      resp.ok(),
-    { timeout: 90000 },
-  );
+  const expectedContentType =
+    format === "csv" ? "text/csv" : "application/vnd.ms-excel";
 
-  await selectDownloadFormat(page, format);
-  await confirmDownload(page);
+  const [response] = await Promise.all([
+    page.waitForResponse(
+      (resp) =>
+        resp.url().includes(`/api/v1/inventory/${inventoryId}/download`) &&
+        resp.url().includes(`format=${format}`) &&
+        resp.request().method() === "GET" &&
+        resp.status() === 200 &&
+        (resp.headers()["content-type"] ?? "").includes(expectedContentType),
+      { timeout: 90000 },
+    ),
+    (async () => {
+      await selectDownloadFormat(page, format);
+      await confirmDownload(page);
+    })(),
+  ]);
 
-  const response = await responsePromise;
+  const content = Buffer.from(await response.body());
+  expect(
+    content.byteLength,
+    `Expected non-empty ${format} download body from ${response.url()}`,
+  ).toBeGreaterThan(0);
+
   const filename = filenameFromDisposition(
     response.headers()["content-disposition"] ?? "",
     `inventory.${format === "csv" ? "csv" : "xlsx"}`,
@@ -95,7 +111,7 @@ async function downloadFormat(
 
   return {
     filename,
-    content: Buffer.from(await response.body()),
+    content,
   };
 }
 

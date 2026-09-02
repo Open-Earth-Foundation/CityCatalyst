@@ -178,9 +178,7 @@ async function addScope2ResidentialEmissions(
   await addEmissionModal
     .getByLabel(/Energy usage type/i)
     .selectOption("energy-usage-electricity");
-  await addEmissionModal
-    .getByLabel(/Total fuel consumed amount/i)
-    .fill("100");
+  await addEmissionModal.getByLabel(/^Energy Consumption$/i).fill("100");
   await addEmissionModal
     .getByLabel(/Select Unit/i)
     .selectOption("units-kilowatt-hours");

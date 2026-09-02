@@ -96,14 +96,46 @@ async function fetchDownloadViaApi(
   };
 }
 
+async function downloadFormat(
+  page: Page,
+  inventoryId: string,
+  format: "csv" | "ecrf",
+): Promise<DownloadResult> {
+  const responsePromise = page
+    .waitForResponse(
+      (resp) =>
+        resp.url().includes(`/inventory/${inventoryId}/download`) &&
+        resp.url().includes(`format=${format}`) &&
+        resp.request().method() === "GET",
+      { timeout: 60000 },
+    )
+    .catch(() => null);
+
+  await triggerDownloadFromModal(page, format);
+  const browserResponse = await responsePromise;
+
+  if (browserResponse?.ok()) {
+    const content = Buffer.from(await browserResponse.body());
+    if (content.byteLength > 0) {
+      return {
+        filename: filenameFromDisposition(
+          browserResponse.headers()["content-disposition"] ?? "",
+          `inventory.${format === "csv" ? "csv" : "xlsx"}`,
+        ),
+        content,
+      };
+    }
+  }
+
+  return fetchDownloadViaApi(page, inventoryId, format);
+}
+
 async function downloadCsv(page: Page, inventoryId: string) {
-  await triggerDownloadFromModal(page, "csv");
-  return fetchDownloadViaApi(page, inventoryId, "csv");
+  return downloadFormat(page, inventoryId, "csv");
 }
 
 async function downloadEcrf(page: Page, inventoryId: string) {
-  await triggerDownloadFromModal(page, "ecrf");
-  return fetchDownloadViaApi(page, inventoryId, "ecrf");
+  return downloadFormat(page, inventoryId, "ecrf");
 }
 
 function saveDownloadContent(

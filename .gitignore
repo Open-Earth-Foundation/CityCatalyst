@@ -182,3 +182,6 @@ demo-recording/
 
 # Codex
 .codex/
+
+# AI-DLC working artifacts are kept locally and excluded from pull requests
+/aidlc-docs/

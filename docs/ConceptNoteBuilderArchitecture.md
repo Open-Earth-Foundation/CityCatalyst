@@ -928,9 +928,10 @@ their source records:
   restricted deletion.
 
 `concept_note_runs.thread_id` is a nullable integration identifier for the
-CityCatalyst-owned chat thread. The CA database must not create a foreign key to
-a local `threads` table. CityCatalyst validates thread ownership before passing
-the identifier into the Climate Advisor workflow.
+dedicated chat thread. It deliberately has no database foreign key so legacy
+thread bindings remain compatible. Rename updates the owned thread title and
+delete removes the dedicated thread. CityCatalyst validates thread ownership
+before passing the identifier into the workflow.
 
 `concept_note_chapter_revisions` enforces a unique
 `(chapter_id, revision_number)` pair so each chapter has one unambiguous latest
@@ -1535,12 +1536,23 @@ object; this contract does not infer percentages or document/upload counts.
 CityCatalyst exposes the same list at
 `GET /api/v1/concept-notes?city_id=...`, deriving the user from the session and
 rejecting malformed or mixed-city successful responses from Climate Advisor.
+Its single-run read, rename, duplicate, and delete routes also require `city_id` so
+CityCatalyst can authorize the requested city before issuing the Climate Advisor
+token. Climate Advisor remains authoritative for run ownership and stored city
+binding.
 The CityCatalyst dashboard consumes this contract at
-`/{lng}/cities/{cityId}/concept-notes`. Its first implementation exposes only
-new-note and resume navigation. Resume carries the durable run ID and loads the
-authorized single-run detail before continuing; inferred progress percentages
-and unsupported duplicate, delete, and export actions remain intentionally
-absent.
+`/{lng}/cities/{cityId}/concept-notes`. Each card exposes Resume, Duplicate,
+Export, and Delete, with a compact rename button beside the title. Rename uses
+the single-run patch contract; Duplicate remains on the dashboard while its
+working copy is created; Delete requires permanent-deletion confirmation and
+removes the card only after server confirmation. Resume carries the durable run
+ID and loads the authorized single-run detail before continuing.
+
+Duplicate creates a fresh thread, copies current context and chapter content
+into new mutable records, and reuses immutable Markdown artifacts by key. Delete
+removes the managed workspace before deleting the CA run and dedicated thread.
+Shared city/project files and immutable source artifacts remain outside the
+deletion boundary. No archive or restore state is added.
 
 The dashboard and wiring pages are hidden unless both
 `CA_SERVICE_INTEGRATION` and `CONCEPT_NOTE_BUILDER` are present in
@@ -1606,10 +1618,13 @@ Rules:
   dropping content. For native Markdown, derives deterministic heading/block
   anchors from the stored UTF-8 bytes and partitions without inventing
   synthetic pagination.
-- Uses configured GPT-5.4 mini readers with process-wide concurrency no greater
-  than four, then GPT-5.4 for final document synthesis.
-- Requires every partition reader to acknowledge every segment and verifies
-  every retained excerpt as an exact substring of its cited source location.
+- Uses configured GPT-5.6 Luna readers with low reasoning and process-wide
+  concurrency no greater than three, then GPT-5.6 Sol with medium reasoning for
+  final document synthesis. Both retain tool-free structured outputs through
+  OpenRouter Chat Completions and omit temperature.
+- Requires exactly one ordered result per input section and verifies every
+  retained excerpt as an exact substring of that section. Generated segment
+  identifiers are attached only by backend code, never included in the prompt.
 - Requires every factual sentence in a synthesized document summary to remain
   self-contained and supported by an exact retained excerpt. Conflicting
   evidence remains explicit instead of being silently reconciled.
@@ -1644,10 +1659,18 @@ source content. Climate Advisor registers its function-tool implementation
 after the bundle is ready, and only during `interviewing`,
 `drafting_document`, or `editing_document`.
 
-The main CNB agent selects one `upload_id` from the always-on summaries and asks
-one bounded natural-language question. Questions spanning documents require
+The model-facing context excludes identifier and fingerprint fields recursively;
+the persisted bundle above retains its backend IDs and integrity metadata. The
+main CNB agent selects a source by its one-based, model-safe `source_index` from
+the always-on summaries and asks one bounded natural-language question. The tool
+maps that index to the persisted upload inside the authorized run, so duplicate
+label/filename pairs remain independently queryable. Its model-facing result
+returns the source index but omits upload IDs.
+Generated block fingerprints are replaced with readable document headings, while
+the backend retains exact block anchors for source verification.
+Questions spanning documents require
 separate calls. The function re-fetches and verifies that document, fans out
-tool-free GPT-5.4 mini readers over every source-preserving partition using
+tool-free GPT-5.6 Luna readers over every source-preserving partition using
 deterministic code-controlled `Runner.run` calls, and returns only after every
 partition succeeds. Its result contains the source label, verified page- or
 block-located excerpts, source-unit/segment coverage counts, and reader caveats for the calling agent
@@ -1656,6 +1679,24 @@ to combine. If no passage supports the question it returns an explicit
 ignored and reader agents receive no external tools.
 
 ### Internal Research Capabilities
+
+The JSON model boundary is distinct from the persisted schemas in this document.
+Model-facing data omits database UUIDs, generated record/chapter references, source
+hashes, storage paths and build bookkeeping. Research uses `ResearchPromptResult`:
+public source URLs, zero-based record positions in field paths, and evidence-array
+positions. Code validates these selections and reconstructs the internal
+`FundingOpportunityResearchResult` before existing provenance checks and persistence.
+Existing record names/order must be preserved; new records append. Unknown source
+URLs, invalid positions and reassigned rows trigger a bounded correction retry.
+
+Funder identity matching uses exact canonical names and rejects ambiguity.
+Similar-project selection returns one decision per input candidate, with its name
+and one-based evidence positions; code restores the internal IDs and applies the
+existing tag, evidence and selection-limit validation. Source readers similarly
+use ordered sections, and summary synthesis receives pages/readable headings.
+Chapter inputs and retained CNB tool history use the identifier-free projection.
+The backend and provider protocol still retain identifiers necessary for ownership,
+integrity, trace correlation and tool-response routing.
 
 These are internal service capabilities, not user-facing tools. They are invoked
 by workflow orchestration during funder profiling, similar-project matching, and
@@ -2180,23 +2221,38 @@ The configured prompt/model roles are:
 ```yaml
 models:
   cnb_source_reader:
-    name: openai/gpt-5.4-mini
+    name: openai/gpt-5.6-luna
+    reasoning_effort: low
   cnb_source_synthesizer:
-    name: openai/gpt-5.4
+    name: openai/gpt-5.6-sol
+    reasoning_effort: medium
 prompts:
   cnb_source_document_mapping: "prompts/cnb/source_document_mapping.md"
   cnb_source_summary_synthesis: "prompts/cnb/source_summary_synthesis.md"
   cnb_source_question_reading: "prompts/cnb/source_question_reading.md"
 ```
 
+The main CNB chat uses `models.agentic_flow` (`openai/gpt-5.6-sol`) with explicit
+`reasoning_effort: none` for its Chat Completions function-tool loop. Funding
+research and similar-project selection use Sol with medium reasoning on the
+existing Responses API path; canonical-funder identity matching uses Luna with
+low reasoning. Chapter drafting remains GPT-5.6 Terra with medium reasoning.
+
 Prompt composition should follow the current CA pattern:
 
 - General chat keeps using the default prompt.
-- Active CNB runs currently keep the default prompt; the dedicated Concept Note
-  prompt belongs with the future writing and editing workflow.
-- Runtime context injection is separate from prompt-file composition.
-- That future prompt should describe chapter editing rules, evidence-review
-  rules, and no-fabrication guardrails.
+- Active CNB context chat composes `prompts.core` with `prompts.cnb_chat`
+  (`prompts/cnb/chat.md`), using the same `<additional_instructions>` wrapper as
+  Stationary Energy review chat. It provides source-query guidance, evidence
+  handling, and no-fabrication rules without granting document-mutation tools.
+- Runtime context injection is separate from prompt-file composition. CNB bundle
+  JSON and its unavailable-bundle marker use application-generated `user`-role
+  data messages, not `system` messages. Retained `INTERNAL_TOOL_OUTPUT_JSON`
+  messages are likewise projected to the user role for CNB only; live tool-call
+  messages retain their protocol roles. The system prompt identifies these as
+  untrusted evidence rather than user requests and retains the behavioral rules.
+- Future chat-driven editing adds chapter-editing and approval rules separately;
+  the current CNB chat must not claim that suggested wording was saved.
 
 CNB context should be injected as a bounded JSON block:
 
@@ -2206,6 +2262,33 @@ CURRENT_DOCUMENT_STATE_JSON
 ACTIVE_WORKFLOW_STEP
 UI_CONTEXT
 ```
+
+## MLflow Interaction Names
+
+Run logging uses explicit `MlflowClient` run IDs stored in a task-local context,
+not MLflow's thread-local fluent active-run stack. All shared logging helpers and
+run termination target that ID. Failed starts mask the enclosing target, queued
+writes drain before closure, and exceptions/cancellation terminate only the
+affected request. Trace metadata explicitly links to the source run through
+`mlflow.sourceRun` and records session/user using MLflow 3.2 metadata keys.
+CNB chat carries `prompt_name=cnb_chat` for the composed CNB workflow prompt.
+
+All user-initiated CNB telemetry uses the `Clima` experiment and the visible
+`workflow=CNB` tag. The durable CNB `run_id` remains a correlation tag; it must
+not be embedded in `mlflow.runName`. The run name identifies the interaction
+boundary with this stable, low-cardinality contract:
+
+| CNB interaction | `mlflow.runName` | Integration boundary |
+| --- | --- | --- |
+| Start or idempotently replay a CNB run | `cnb_start` | `POST /v1/concept-notes/start` |
+| Ask a non-mutating question in the CNB chat | `cnb_chat` | `/v1/messages` with an active `concept_note_run_id` |
+| Answer, correct, skip, or retry missing information | `cnb_missing_information` | The run-scoped gap-resolution operation from CC-730 |
+| Propose or apply a document edit through chat | `cnb_chat_edit` | The dedicated revision operation planned in CC-732 |
+
+The future CC-732 flow must classify edit intent before opening its MLflow run:
+ordinary questions remain `cnb_chat`, while a durable edit proposal or apply
+operation uses `cnb_chat_edit`. More detailed actions belong in tags or spans so
+dashboards can group the four interaction types without parsing dynamic names.
 
 ## SSE Events
 
@@ -2267,6 +2350,9 @@ POST /v1/concept-notes/start
 GET  /v1/concept-notes?user_id={user_id}&city_id={city_id}
 POST /v1/concept-notes/{run_id}/cc-context
 GET  /v1/concept-notes/{run_id}
+PATCH /v1/concept-notes/{run_id}
+POST /v1/concept-notes/{run_id}/duplicate
+DELETE /v1/concept-notes/{run_id}
 GET  /v1/concept-notes/{run_id}/status
 POST /v1/concept-notes/{run_id}/retry
 POST /v1/concept-notes/{run_id}/context-bundle/retry
@@ -2288,7 +2374,10 @@ POST /v1/concept-notes/{run_id}/export/pdf
 ```text
 POST /api/v1/concept-notes/start
 GET  /api/v1/concept-notes?city_id={city_id}
-GET  /api/v1/concept-notes/{run_id}
+GET  /api/v1/concept-notes/{run_id}?city_id={city_id}
+PATCH /api/v1/concept-notes/{run_id}?city_id={city_id}
+POST /api/v1/concept-notes/{run_id}/duplicate?city_id={city_id}
+DELETE /api/v1/concept-notes/{run_id}?city_id={city_id}
 POST /api/v1/concept-notes/{run_id}/messages
 POST /api/v1/concept-notes/{run_id}/uploads
 GET  /api/v1/concept-notes/{run_id}/uploads/{upload_id}

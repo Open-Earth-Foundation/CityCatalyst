@@ -1,8 +1,7 @@
-import { Box, Button, HStack, Image, Text } from "@chakra-ui/react";
+import { Box, Button, HStack, Separator, Text } from "@chakra-ui/react";
 import type { TFunction } from "i18next";
 import i18next from "i18next";
 import { api } from "@/services/api";
-import { useState } from "react";
 import { UnpublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/UnpublishedView";
 import { PublishedView } from "@/components/GHGIHomePage/DownloadAndShareModals/PublishedView";
 import { trackEvent } from "@/lib/analytics";
@@ -14,6 +13,7 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  DialogCloseTrigger,
 } from "@/components/ui/dialog";
 import type { InventoryResponse } from "@/util/types";
 
@@ -32,7 +32,6 @@ const ModalPublish = ({
   inventory?: InventoryResponse;
   setModalOpen: (open: boolean) => void;
 }) => {
-  const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
   const { copyToClipboard } = useCopyToClipboard({});
 
   const [changePublishStatus, { isLoading: updateLoading }] =
@@ -78,8 +77,6 @@ const ModalPublish = ({
           });
         }
 
-        // Clear internal state and close modal
-        setIsAuthorized(false);
         onPublishClose();
       } else if (result.error) {
         // Show error toast for API errors
@@ -117,32 +114,28 @@ const ModalPublish = ({
       open={isPublishOpen}
       onOpenChange={(e) => setModalOpen(e.open)}
       onInteractOutside={onPublishClose}
+      placement="center"
     >
-      <DialogContent minW="fit-content">
+      <DialogContent width="448px" maxW="448px">
         <DialogHeader>
-          <HStack>
-            <Image
-              src="/assets/publish.svg"
-              alt="publish-to-web"
-              width="24px"
-              height="24px"
-            />
-            <Text fontSize="headline.sm" mx="8px">
-              {t("publish-to-web")}
-            </Text>
-          </HStack>
+          <Text
+            color="fg"
+            fontFamily="body"
+            fontSize="lg"
+            fontWeight="semibold"
+            lineHeight="28"
+          >
+            {inventory?.isPublic
+              ? t("published-inventory")
+              : t("publish-to-web")}
+          </Text>
         </DialogHeader>
+        <DialogCloseTrigger onClick={onPublishClose} />
 
         <DialogBody>
           <Box my="24px" divideX="2px" />
           {!inventory?.isPublic ? (
-            <UnpublishedView
-              t={t}
-              checked={isAuthorized}
-              onAuthorizeChange={() =>
-                setIsAuthorized((isAuth: boolean) => !isAuth)
-              }
-            />
+            <UnpublishedView t={t} />
           ) : (
             <PublishedView
               t={t}
@@ -151,18 +144,38 @@ const ModalPublish = ({
             />
           )}
         </DialogBody>
+        <Separator borderColor="border.overlay" />
         <DialogFooter>
-          <Box>
+          <HStack gap={3}>
             <Button
-              disabled={!inventory?.isPublic && !isAuthorized}
-              colorScheme="blue"
-              mr={3}
+              variant="outline"
+              onClick={onPublishClose}
+              borderRadius="pill"
+              border="1px solid"
+              borderColor="gray.muted"
+            >
+              <Text
+                color="#27272A"
+                textAlign="center"
+                fontFamily="heading"
+                fontSize="button.md"
+                fontWeight="semibold"
+                lineHeight="16"
+                letterSpacing="wider"
+                textTransform="uppercase"
+              >
+                {t("cancel")}
+              </Text>
+            </Button>
+            <Button
+              bg={inventory?.isPublic ? "sentiment.negativeDefault" : undefined}
+              colorScheme={inventory?.isPublic ? undefined : "blue"}
               loading={updateLoading}
               onClick={handlePublishChange}
             >
-              {inventory?.isPublic ? t("unpublish") : t("publish-to-web")}
+              {inventory?.isPublic ? t("unpublish") : t("publish")}
             </Button>
-          </Box>
+          </HStack>
         </DialogFooter>
       </DialogContent>
     </DialogRoot>

@@ -74,7 +74,7 @@ export function useGuidedReview({
     [],
   );
   const [completedChapterCount, setCompletedChapterCount] = useState(0);
-  const [acceptedMissingInformation, setAcceptedMissingInformation] =
+  const [acceptedIncompleteReview, setAcceptedIncompleteReview] =
     useState(false);
   const [exportError, setExportError] = useState(false);
   const [exportingFormat, setExportingFormat] =
@@ -90,23 +90,32 @@ export function useGuidedReview({
     () => countUnresolvedExportItems(chapters),
     [chapters],
   );
+  const blockingMissingInformation = review.groups.missing_information.filter(
+    ({ finding }) => finding.severity === "blocking",
+  );
+  const blockingConflictCount = review.groups.conflicts_logic.filter(
+    ({ finding }) => finding.severity === "blocking",
+  ).length;
   const missingInformationCount = Math.max(
-    review.blockingCount,
+    blockingMissingInformation.length,
     unresolvedCount,
   );
+  const blockingIssueCount =
+    missingInformationCount +
+    review.blockingCount -
+    blockingMissingInformation.length;
   const firstChapterWithMissingInformation =
     chapters.find((chapter) => chapter.missing_information.length > 0) ?? null;
+  const firstMissingInformationFinding = blockingMissingInformation[0] ?? null;
+  const requiresExportAcknowledgement =
+    blockingIssueCount > 0 || failedChapters.length > 0;
   const canExport =
-    canExportConceptNote(chapters, acceptedMissingInformation) &&
+    canExportConceptNote(chapters, acceptedIncompleteReview) &&
+    (!requiresExportAcknowledgement || acceptedIncompleteReview) &&
     !exportingFormat;
   const progressPercent = chapters.length
     ? Math.round((completedChapterCount / chapters.length) * 100)
     : 0;
-  const reviewFindings = Object.values(review.groups).flat();
-  const firstActionableFinding =
-    reviewFindings.find(({ finding }) => finding.severity === "blocking") ??
-    reviewFindings[0] ??
-    null;
   const effectiveReviewStatus: ConceptNoteChapterValidationStatus =
     failedChapters.length > 0 || reviewedChapters.length < chapters.length
       ? "incomplete"
@@ -142,7 +151,7 @@ export function useGuidedReview({
       setFailedChapters([]);
       setReviewError(null);
       setCompletedChapterCount(preservedResults.length);
-      setAcceptedMissingInformation(false);
+      setAcceptedIncompleteReview(false);
       setExportError(false);
 
       const completedByChapterId = new Map(
@@ -221,7 +230,7 @@ export function useGuidedReview({
     setFailedChapters([]);
     setReviewError(null);
     setCompletedChapterCount(0);
-    setAcceptedMissingInformation(false);
+    setAcceptedIncompleteReview(false);
     setExportError(false);
 
     if (!hasApplicationTemplate) {
@@ -301,7 +310,9 @@ export function useGuidedReview({
   }
 
   return {
-    acceptedMissingInformation,
+    acceptedIncompleteReview,
+    blockingConflictCount,
+    blockingIssueCount,
     cancelActiveRequest,
     canExport,
     chapters,
@@ -311,8 +322,8 @@ export function useGuidedReview({
     exportError,
     exportingFormat,
     failedChapters,
-    firstActionableFinding,
     firstChapterWithMissingInformation,
+    firstMissingInformationFinding,
     handleExport,
     lastValidatedAt,
     missingInformationCount,
@@ -322,7 +333,8 @@ export function useGuidedReview({
     review,
     reviewedChapters,
     reviewError,
-    setAcceptedMissingInformation,
+    requiresExportAcknowledgement,
+    setAcceptedIncompleteReview,
     setStage,
     stage,
     unresolvedCount,

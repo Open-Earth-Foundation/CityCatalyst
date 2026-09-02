@@ -295,21 +295,23 @@ export function GuidedReviewDecisionPanel({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
+    blockingConflictCount,
+    blockingIssueCount,
     effectiveReviewStatus,
-    firstActionableFinding,
     firstChapterWithMissingInformation,
+    firstMissingInformationFinding,
     missingInformationCount,
     review,
     setStage,
   } = controller;
   const targetChapterId =
-    firstActionableFinding?.chapterId ??
+    firstMissingInformationFinding?.chapterId ??
     firstChapterWithMissingInformation?.chapter_id ??
     null;
-  const findingKey = firstActionableFinding
+  const findingKey = firstMissingInformationFinding
     ? chapterValidationFindingKey(
-        firstActionableFinding.chapterId,
-        firstActionableFinding.finding,
+        firstMissingInformationFinding.chapterId,
+        firstMissingInformationFinding.finding,
       )
     : null;
 
@@ -322,8 +324,8 @@ export function GuidedReviewDecisionPanel({
         title={t("review-decision-title")}
       />
       <ReviewImpactSummary
+        blockingIssueCount={blockingIssueCount}
         lng={lng}
-        missingInformationCount={missingInformationCount}
         status={effectiveReviewStatus}
         warningCount={review.warningCount}
       />
@@ -331,6 +333,14 @@ export function GuidedReviewDecisionPanel({
         <Button onClick={() => onAddInformation(targetChapterId, findingKey)}>
           <Icon as={LuFileText} />
           {t("review-fix-missing-information")}
+        </Button>
+      )}
+      {blockingConflictCount > 0 && (
+        <Button variant="outline" onClick={() => setStage("conflicts_logic")}>
+          <Icon as={LuSearchCheck} />
+          {t("review-review-blocking-conflicts", {
+            count: blockingConflictCount,
+          })}
         </Button>
       )}
       {review.warningCount > 0 && (
@@ -378,17 +388,17 @@ export function GuidedReviewExportPanel({
 }) {
   const { t } = useTranslation(lng, "concept-notes");
   const {
-    acceptedMissingInformation,
+    acceptedIncompleteReview,
+    blockingIssueCount,
     canExport,
     effectiveReviewStatus,
     exportError,
     exportingFormat,
     handleExport,
-    missingInformationCount,
     review,
-    setAcceptedMissingInformation,
+    requiresExportAcknowledgement,
+    setAcceptedIncompleteReview,
     setStage,
-    unresolvedCount,
   } = controller;
 
   return (
@@ -437,23 +447,21 @@ export function GuidedReviewExportPanel({
         </Box>
       </HStack>
       <ReviewImpactSummary
+        blockingIssueCount={blockingIssueCount}
         lng={lng}
-        missingInformationCount={missingInformationCount}
         status={effectiveReviewStatus}
         warningCount={review.warningCount}
       />
-      {unresolvedCount > 0 && (
+      {requiresExportAcknowledgement && (
         <Checkbox
           alignItems="start"
-          checked={acceptedMissingInformation}
+          checked={acceptedIncompleteReview}
           onCheckedChange={(details) =>
-            setAcceptedMissingInformation(details.checked === true)
+            setAcceptedIncompleteReview(details.checked === true)
           }
         >
           <Text fontSize="body.sm" lineHeight="22px" color="content.primary">
-            {t("missing-information-export-confirmation", {
-              count: unresolvedCount,
-            })}
+            {t("review-incomplete-export-confirmation")}
           </Text>
         </Checkbox>
       )}

@@ -123,13 +123,13 @@ export function ReviewFindingList({
 }
 
 export function ReviewImpactSummary({
+  blockingIssueCount,
   lng,
-  missingInformationCount,
   status,
   warningCount,
 }: {
+  blockingIssueCount: number;
   lng: string;
-  missingInformationCount: number;
   status: ConceptNoteChapterValidationStatus;
   warningCount: number;
 }) {
@@ -146,8 +146,8 @@ export function ReviewImpactSummary({
             : "sentiment.negativeDefault",
     },
     {
-      label: t("review-missing-information-impact"),
-      value: missingInformationCount,
+      label: t("review-blocking-issues-impact"),
+      value: blockingIssueCount,
       color: "content.primary",
     },
     {

@@ -178,14 +178,17 @@ export function useConceptNoteWorkspaceData({
   }
 
   async function retryActiveUpload(): Promise<void> {
-    if (!activeUploadId) return;
+    const uploadId = selectedUploadId;
+    if (!uploadId) return;
     setUploadError(null);
     try {
       const upload = await retryUpload({
         runId,
-        uploadId: activeUploadId,
+        uploadId,
       }).unwrap();
+      setActiveUploadId(uploadId);
       setUploadDetails(upload);
+      await refetchRun();
     } catch {
       setUploadError(t("conversion-retry-error"));
     }
